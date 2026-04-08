@@ -8,7 +8,7 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Repository Purpose
 
-A Quarkus-based StarCraft II agent platform. The primary purpose is R&D — it is a living testbed for Drools, Quarkus Flow, and CaseHub (a Blackboard/CMMN framework). Intelligence is provided by swappable plugins; the platform provides scaffolding, SC2 connection, and the CaseHub control loop.
+**QuarkusMind** — a Quarkus-based StarCraft II agent platform. The primary purpose is R&D — it is a living testbed for Drools, Quarkus Flow, and CaseHub (a Blackboard/CMMN framework). Intelligence is provided by swappable plugins; the platform provides scaffolding, SC2 connection, and the CaseHub control loop.
 
 See `docs/superpowers/specs/` for the design spec and `docs/library-research.md` for the library evaluation log.
 
@@ -64,7 +64,7 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 
 **Integration tests** (`@QuarkusTest`, full CDI context):
 - Use `@Inject` to get beans; scheduler is disabled — call `orchestrator.gameTick()` directly
-- Tests: `QaEndpointsTest`, `FullMockPipelineIT`, `DroolsStrategyTaskTest`, `EconomicsFlowTest`, `DroolsTacticsRuleUnitTest`, `DroolsTacticsTaskIT`
+- Tests: `QaEndpointsTest`, `FullMockPipelineIT`, `DroolsStrategyTaskTest`, `EconomicsFlowTest`, `DroolsTacticsRuleUnitTest`, `DroolsTacticsTaskIT`, `DroolsScoutingRulesTest`, `DroolsScoutingTaskIT`
 - Flow integration tests emit to a SmallRye channel and assert after `Thread.sleep(300)` — the flow processes asynchronously
 
 **Never use `@QuarkusTest` for tests that can be plain JUnit** — boot cost is significant.
@@ -87,15 +87,16 @@ See `NATIVE.md` for the per-dependency compatibility tracker.
 ## Code Organisation
 
 ```
-src/main/java/org/acme/starcraft/
+src/main/java/io/quarkmind/
   domain/              Plain Java records — no framework deps, always native-safe
   sc2/                 CDI interfaces (SC2Client, GameObserver, CommandDispatcher, ScenarioRunner)
   sc2/intent/          Intent types (BuildIntent, TrainIntent, AttackIntent, MoveIntent)
   sc2/mock/            Mock SC2 implementation — SimulatedGame, MockGameObserver, MockCommandDispatcher
   sc2/mock/scenario/   ScenarioLibrary — living specification of SC2 behaviour
-  agent/               CaseHub intelligence layer — StarCraftCaseFile keys, GameStateTranslator, AgentOrchestrator
+  agent/               CaseHub intelligence layer — QuarkMindCaseFile keys, GameStateTranslator, AgentOrchestrator
   agent/plugin/        Plugin seam interfaces (StrategyTask, EconomicsTask, TacticsTask, ScoutingTask)
-  plugin/              Active plugin implementations (DroolsStrategyTask, FlowEconomicsTask, DroolsTacticsTask)
+  plugin/              Active plugin implementations (DroolsStrategyTask, FlowEconomicsTask, DroolsTacticsTask, BasicScoutingTask)
+  plugin/scouting/     Drools CEP scouting — DroolsScoutingTask, ScoutingSessionManager, event records
   plugin/tactics/      Pure-Java GOAP planning — WorldState, GoapAction, GoapPlanner (no framework deps)
   plugin/flow/         Quarkus Flow integration — EconomicsFlow, EconomicsDecisionService, EconomicsLifecycle
   qa/                  QA REST endpoints — dev/test only (@UnlessBuildProfile("prod"))
@@ -142,7 +143,7 @@ Run this when setting up a new environment or after any change to the `feature/s
 - **SC2 interfaces** (`sc2/`) are contracts only — no implementation logic.
 - **QA endpoints** (`qa/`) carry `@UnlessBuildProfile("prod")` — they must never appear in production.
 - **`SimulatedGame`** is the living specification of SC2 behaviour. When real SC2 surprises us, update `SimulatedGame` to replicate the quirk and write a test.
-- **`StarCraftCaseFile`** holds all CaseFile key constants. Never use raw string keys elsewhere.
+- **`QuarkMindCaseFile`** holds all CaseFile key constants. Never use raw string keys elsewhere.
 - **CaseFile key namespaces:** `game.*` for SC2 observation state, `agent.*` for plugin-written reasoning state.
 - **Commit attribution:** Do not add `Co-Authored-By` trailers to commits.
 
@@ -163,7 +164,7 @@ Run this when setting up a new environment or after any change to the `feature/s
 ## Work Tracking
 
 **Issue tracking:** enabled
-**GitHub repo:** mdproctor/starcraft
+**GitHub repo:** mdproctor/quarkmind
 **Changelog:** GitHub Releases (run `gh release create --generate-notes` at milestones)
 
 **Automatic behaviours (Claude follows these at all times in this project):**
