@@ -140,6 +140,11 @@ public class DroolsTacticsTask implements TacticsTask {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
+    static Optional<Unit> selectFocusTarget(List<Unit> enemies) {
+        return enemies.stream()
+            .min(Comparator.comparingInt(e -> e.health() + e.shields()));
+    }
+
     private TacticsRuleUnit buildRuleUnit(List<Unit> army, List<Unit> enemies,
                                           Set<String> inRangeTags, String strategy) {
         TacticsRuleUnit data = new TacticsRuleUnit();
