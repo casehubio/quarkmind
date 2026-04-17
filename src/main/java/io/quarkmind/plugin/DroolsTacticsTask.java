@@ -47,7 +47,7 @@ public class DroolsTacticsTask implements TacticsTask {
             Map.of("lowHealth", true),
             Map.of("unitSafe", true), 1),
         "ATTACK",         new GoapAction("ATTACK",
-            Map.of("inRange", true, "enemyVisible", true),
+            Map.of("inRange", true, "enemyVisible", true, "onCooldown", false),
             Map.of("enemyEliminated", true), 2),
         "MOVE_TO_ENGAGE", new GoapAction("MOVE_TO_ENGAGE",
             Map.of("enemyVisible", true, "inRange", false),
@@ -219,6 +219,7 @@ public class DroolsTacticsTask implements TacticsTask {
                 "lowHealth",       false,
                 "enemyVisible",    true,
                 "inRange",         true,
+                "onCooldown",      false,
                 "unitSafe",        false,
                 "enemyEliminated", false));
             case "out-of-range" -> new WorldState(Map.of(
