@@ -247,7 +247,7 @@ Blog posts are Jekyll posts published at `mdproctor.github.io/quarkmind/blog/`. 
 
 Two benchmark tests run via `mvn test -Pbenchmark`:
 - `GameLoopBenchmarkTest` — per-phase tick timings across the full plugin chain. Run before/after any change that could affect game loop latency; paste results into `docs/benchmarks/`.
-- `ScoutingCalibrationTest` — runs all replay datasets to 3-min mark and prints enemy unit count statistics per matchup. Re-run after adding new replay data or changing scouting CEP windows.
+- `ScoutingCalibrationTest` — runs all replay datasets to 3-min mark and prints enemy unit count statistics per matchup. Re-run after adding new replay data or changing scouting CEP windows. Current dataset: 29 AI Arena PvP replays + 30 IEM10 (11 PvZ, 11 PvT, 8 PvP).
 
 **When to run `GameLoopBenchmarkTest`:**
 - Adding or modifying a plugin (`StrategyTask`, `EconomicsTask`, `TacticsTask`, `ScoutingTask`)
