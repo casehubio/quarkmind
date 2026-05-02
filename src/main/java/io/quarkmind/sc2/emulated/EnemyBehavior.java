@@ -113,22 +113,21 @@ class EnemyBehavior implements PlayerBehavior {
 
     private void tickAttackLaunch(GameState observation, IntentQueue queue) {
         EnemyAttackConfig atk = strategy.attackConfig();
-
         int stagingSize = enemy.stagingArea.size();
-        if (stagingSize < atk.armyThreshold()) return;
-        if (framesSinceLastAttack < atk.attackIntervalFrames()) return;
+        if (stagingSize == 0) return;
+        boolean thresholdMet = stagingSize >= atk.armyThreshold();
+        boolean timerFired   = framesSinceLastAttack >= atk.attackIntervalFrames();
+        if (!thresholdMet && !timerFired) return;
 
-        // Launch — move all staged units to active units and issue AttackIntents
         initialAttackSize = stagingSize;
-        List<Unit> wave = new ArrayList<>(enemy.stagingArea);
-        enemy.units.addAll(wave);
-        enemy.stagingArea.clear();
-        framesSinceLastAttack = 0;
-
-        for (Unit u : wave) {
+        for (Unit u : enemy.stagingArea) {
+            enemy.units.add(u);
             queue.add(new AttackIntent(u.tag(), NEXUS_POS));
         }
-        log.infof("[ENEMY] Attack launched: %d units (strategy=%s)", wave.size(), strategy.name());
+        log.infof("[ENEMY] Attack launched: %d units (threshold=%b timer=%b)",
+            stagingSize, thresholdMet, timerFired);
+        enemy.stagingArea.clear();
+        framesSinceLastAttack = 0;
     }
 
     // -------------------------------------------------------------------------
@@ -187,6 +186,11 @@ class EnemyBehavior implements PlayerBehavior {
     /** Test helper — simulates a wave having been launched without actually moving units. */
     void setInitialAttackSizeForTesting(int n) {
         this.initialAttackSize = n;
+    }
+
+    /** Test helper — sets the frames-since-last-attack counter directly. */
+    void setFramesSinceLastAttackForTesting(long n) {
+        this.framesSinceLastAttack = n;
     }
 
     /** Resets all state for a new game or strategy switch. */
