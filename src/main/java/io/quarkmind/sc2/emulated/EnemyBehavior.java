@@ -1,0 +1,216 @@
+package io.quarkmind.sc2.emulated;
+
+import io.quarkmind.domain.*;
+import io.quarkmind.sc2.IntentQueue;
+import io.quarkmind.sc2.intent.AttackIntent;
+import io.quarkmind.sc2.intent.MoveIntent;
+import io.quarkmind.sc2.intent.TrainIntent;
+import org.jboss.logging.Logger;
+
+import java.util.*;
+
+/**
+ * Drives the enemy player each game tick by accumulating minerals, queuing
+ * unit training, launching attacks, and managing retreats.
+ *
+ * <p>No tech-tree gating — units are trained freely when minerals allow.
+ * Tech-tree validation is Task 9.
+ *
+ * <p>Package-private: wired by {@link EmulatedGame} which is in the same package.
+ */
+class EnemyBehavior implements PlayerBehavior {
+
+    private static final Logger log = Logger.getLogger(EnemyBehavior.class);
+
+    static final Point2d NEXUS_POS   = new Point2d(8, 8);
+    static final Point2d STAGING_POS = new Point2d(26, 26);
+
+    private EnemyStrategy strategy;
+    private final PlayerState enemy;
+
+    // Production state
+    private Optional<UnitType> currentTarget = Optional.empty();
+    private boolean trainingPending = false;  // waiting for a previously issued TrainIntent to complete
+    private int nextTag = 1000;
+
+    // Attack state — Long.MAX_VALUE on init means "first attack, no cooldown applies"
+    private long framesSinceLastAttack = Long.MAX_VALUE;
+    private int initialAttackSize = 0;
+
+    // Retreat state — package-private for EmulatedGame.moveEnemyUnits()
+    private final Set<String> retreating = new HashSet<>();
+
+    EnemyBehavior(EnemyStrategy strategy, PlayerState enemy) {
+        this.strategy = strategy;
+        this.enemy    = enemy;
+    }
+
+    @Override
+    public void tick(GameState observation, IntentQueue queue) {
+        accumulateMinerals();
+        tickProduction(observation, queue);
+        tickAttackLaunch(observation, queue);
+        tickRetreat(observation, queue);
+        framesSinceLastAttack++;
+    }
+
+    // -------------------------------------------------------------------------
+    // Mineral accumulation
+    // -------------------------------------------------------------------------
+
+    private void accumulateMinerals() {
+        enemy.minerals += strategy.mineralsPerTick();
+    }
+
+    // -------------------------------------------------------------------------
+    // Production
+    // -------------------------------------------------------------------------
+
+    private void tickProduction(GameState observation, IntentQueue queue) {
+        // If a TrainIntent was previously issued but not yet reflected in enemy.units,
+        // wait until the unit appears (i.e., enemy.units grows). For simplicity in the
+        // emulated game, we track a boolean flag: trainingPending. EmulatedGame calls
+        // applyEnemyTrain() which calls back notifyUnitTrained() to clear the flag.
+        // But since EnemyBehavior doesn't yet know when a unit finishes training
+        // (EmulatedGame handles the completion timer), we use a simpler heuristic:
+        // once a TrainIntent is queued, we do NOT queue another until told otherwise.
+        // The flag is cleared by notifyUnitTrained() called from EmulatedGame.
+        if (trainingPending) return;
+
+        // Pick a target if we don't have one
+        if (currentTarget.isEmpty()) {
+            EnemyObservation obs = buildObservation(observation);
+            currentTarget = strategy.nextUnit(obs);
+        }
+
+        if (currentTarget.isEmpty()) return;
+
+        UnitType target = currentTarget.get();
+        int cost = SC2Data.mineralCost(target);
+        if (enemy.minerals < cost) return;
+
+        // Afford it — deduct and issue
+        enemy.minerals -= cost;
+        String buildingTag = "enemy-nexus-" + nextTag++;
+        queue.add(new TrainIntent(buildingTag, target));
+        trainingPending = true;
+        currentTarget = Optional.empty();
+        log.debugf("[ENEMY] Queued TrainIntent: %s (cost=%d, minerals_left=%.0f)",
+            target, cost, enemy.minerals);
+    }
+
+    /**
+     * Called by EmulatedGame when a pending enemy TrainIntent's unit completes.
+     * Clears the trainingPending flag so the next unit can be queued.
+     */
+    void notifyUnitTrained() {
+        trainingPending = false;
+    }
+
+    // -------------------------------------------------------------------------
+    // Attack launch
+    // -------------------------------------------------------------------------
+
+    private void tickAttackLaunch(GameState observation, IntentQueue queue) {
+        EnemyAttackConfig atk = strategy.attackConfig();
+
+        int stagingSize = enemy.stagingArea.size();
+        if (stagingSize < atk.armyThreshold()) return;
+        if (framesSinceLastAttack < atk.attackIntervalFrames()) return;
+
+        // Launch — move all staged units to active units and issue AttackIntents
+        initialAttackSize = stagingSize;
+        List<Unit> wave = new ArrayList<>(enemy.stagingArea);
+        enemy.units.addAll(wave);
+        enemy.stagingArea.clear();
+        framesSinceLastAttack = 0;
+
+        for (Unit u : wave) {
+            queue.add(new AttackIntent(u.tag(), NEXUS_POS));
+        }
+        log.infof("[ENEMY] Attack launched: %d units (strategy=%s)", wave.size(), strategy.name());
+    }
+
+    // -------------------------------------------------------------------------
+    // Retreat
+    // -------------------------------------------------------------------------
+
+    private void tickRetreat(GameState observation, IntentQueue queue) {
+        if (initialAttackSize == 0) return;
+
+        EnemyAttackConfig atk = strategy.attackConfig();
+
+        // 1. Per-unit health threshold
+        if (atk.retreatHealthPercent() > 0) {
+            for (Unit u : enemy.units) {
+                if (retreating.contains(u.tag())) continue;
+                double totalHp    = u.health() + u.shields();
+                double maxTotalHp = (double) u.maxHealth() + u.maxShields();
+                if (maxTotalHp > 0 && totalHp / maxTotalHp * 100 < atk.retreatHealthPercent()) {
+                    retreating.add(u.tag());
+                    queue.add(new MoveIntent(u.tag(), STAGING_POS));
+                    log.debugf("[ENEMY] Unit %s retreating (%.1f%% hp)", u.tag(),
+                        totalHp / maxTotalHp * 100);
+                }
+            }
+        }
+
+        // 2. Army-wide depletion threshold
+        if (atk.retreatArmyPercent() > 0) {
+            double survivingPct = (double) enemy.units.size() / initialAttackSize * 100;
+            if (survivingPct < atk.retreatArmyPercent()) {
+                for (Unit u : enemy.units) {
+                    if (retreating.contains(u.tag())) continue;
+                    retreating.add(u.tag());
+                    queue.add(new MoveIntent(u.tag(), STAGING_POS));
+                }
+                log.infof("[ENEMY] Army retreat: %.0f%% surviving (%d/%d)",
+                    survivingPct, enemy.units.size(), initialAttackSize);
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Accessors
+    // -------------------------------------------------------------------------
+
+    /** Returns the current set of retreating unit tags. Package-private for EmulatedGame. */
+    Set<String> retreatingUnits() {
+        return Collections.unmodifiableSet(retreating);
+    }
+
+    /** Marks a unit as no longer retreating (arrived at staging). Package-private. */
+    void clearRetreating(String tag) {
+        retreating.remove(tag);
+    }
+
+    /** Test helper — simulates a wave having been launched without actually moving units. */
+    void setInitialAttackSizeForTesting(int n) {
+        this.initialAttackSize = n;
+    }
+
+    /** Resets all state for a new game or strategy switch. */
+    void reset(EnemyStrategy newStrategy) {
+        this.strategy         = newStrategy;
+        this.currentTarget    = Optional.empty();
+        this.trainingPending  = false;
+        this.framesSinceLastAttack = Long.MAX_VALUE;
+        this.initialAttackSize = 0;
+        this.retreating.clear();
+        this.nextTag = 1000;
+        newStrategy.reset();
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    private EnemyObservation buildObservation(GameState obs) {
+        return new EnemyObservation(
+            obs.myUnits(),                 // from enemy's POV, "player units" = the friendly units
+            Set.of(),                      // enemy buildings not tracked in emulated game
+            (int) enemy.minerals,
+            obs.gameFrame()
+        );
+    }
+}
