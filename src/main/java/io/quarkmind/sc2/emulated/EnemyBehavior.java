@@ -173,6 +173,11 @@ class EnemyBehavior implements PlayerBehavior {
     // Accessors
     // -------------------------------------------------------------------------
 
+    /** Returns the current strategy. Package-private for EmulatedGame reset(). */
+    EnemyStrategy currentStrategy() {
+        return strategy;
+    }
+
     /** Returns the current set of retreating unit tags. Package-private for EmulatedGame. */
     Set<String> retreatingUnits() {
         return Collections.unmodifiableSet(retreating);
