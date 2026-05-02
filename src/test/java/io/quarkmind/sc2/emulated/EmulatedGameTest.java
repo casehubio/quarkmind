@@ -16,6 +16,23 @@ class EmulatedGameTest {
 
     EmulatedGame game;
 
+    /**
+     * Minimal EnemyStrategy implementation for E6 retreat tests.
+     * Only attackConfig() is needed — tickEnemyRetreat() is the only consumer.
+     * The economy/training methods are stubs; they are tested separately once
+     * EnemyBehavior + FixedBuildOrderStrategy are implemented (Task 2/5/6).
+     */
+    static EnemyStrategy retreatStrategy(EnemyAttackConfig atk) {
+        return new EnemyStrategy() {
+            @Override public String name()              { return "test"; }
+            @Override public Race race()                { return Race.PROTOSS; }
+            @Override public int mineralsPerTick()      { return 0; }
+            @Override public EnemyAttackConfig attackConfig() { return atk; }
+            @Override public java.util.Optional<UnitType> nextUnit(EnemyObservation obs) { return java.util.Optional.empty(); }
+            @Override public boolean shouldSwitch(EnemyObservation obs) { return false; }
+        };
+    }
+
     @BeforeEach
     void setUp() {
         game = new EmulatedGame();
@@ -367,166 +384,15 @@ class EmulatedGameTest {
     }
 
     // ---- E4: enemy economy ----
+    // Tests removed — EnemyStrategy is now an interface; the old record-based economy
+    // implementation (buildOrder/loop) has been gutted. Economy tests will be restored
+    // in Task 6 (Refactor EmulatedGame with EnemyBehavior + FixedBuildOrderStrategy).
 
     @Test
     void enemyStrategyNullIsNoop() {
         game.setEnemyStrategy(null);
         game.tick(); // must not throw NullPointerException
         assertThat(game.snapshot().enemyStagingArea()).isEmpty();
-    }
-
-    @Test
-    void enemyAccumulatesMineralsEachTick() {
-        game.setEnemyStrategy(new EnemyStrategy(
-            List.of(), false, 5, new EnemyAttackConfig(10, 9999, 0, 0)));
-
-        game.tick();
-        assertThat(game.enemyMinerals()).isEqualTo(5);
-
-        game.tick();
-        assertThat(game.enemyMinerals()).isEqualTo(10);
-    }
-
-    @Test
-    void enemyTrainsUnitWhenMineralsAfford() {
-        // 20 minerals/tick, Zealot costs 100 → trains after 5 ticks
-        game.setEnemyStrategy(new EnemyStrategy(
-            List.of(new EnemyBuildStep(UnitType.ZEALOT)),
-            false, 20,
-            new EnemyAttackConfig(10, 9999, 0, 0)));
-
-        for (int i = 0; i < 5; i++) game.tick();
-
-        assertThat(game.snapshot().enemyStagingArea()).hasSize(1);
-        assertThat(game.snapshot().enemyStagingArea().get(0).type()).isEqualTo(UnitType.ZEALOT);
-    }
-
-    @Test
-    void enemyDoesNotTrainWhenInsufficientMinerals() {
-        game.setEnemyStrategy(new EnemyStrategy(
-            List.of(new EnemyBuildStep(UnitType.ZEALOT)),
-            false, 0,   // no mineral income
-            new EnemyAttackConfig(10, 9999, 0, 0)));
-
-        for (int i = 0; i < 10; i++) game.tick();
-
-        assertThat(game.snapshot().enemyStagingArea()).isEmpty();
-    }
-
-    @Test
-    void enemySendsAttackWhenArmyThresholdMet() {
-        // threshold=1, 20 minerals/tick → after 5 ticks: 1 Zealot trained → attack fires
-        game.setEnemyStrategy(new EnemyStrategy(
-            List.of(new EnemyBuildStep(UnitType.ZEALOT)),
-            true, 20,
-            new EnemyAttackConfig(1, 9999, 0, 0)));
-
-        for (int i = 0; i < 5; i++) game.tick();
-
-        assertThat(game.snapshot().enemyStagingArea()).isEmpty();  // cleared — attack sent
-        assertThat(game.snapshot().enemyUnits()).isNotEmpty();
-        assertThat(game.snapshot().enemyUnits().get(0).type()).isEqualTo(UnitType.ZEALOT);
-    }
-
-    @Test
-    void enemySendsAttackWhenTimerFires() {
-        // threshold=100 (never), timer=5 frames. 10 minerals/tick, Zealot(100) trains at tick 10.
-        // At tick 5: staging empty → no attack (timer fires but guard prevents it).
-        // At tick 10: Zealot trained, framesSinceAttack=10 >= 5 → timer fires → attack.
-        game.setEnemyStrategy(new EnemyStrategy(
-            List.of(new EnemyBuildStep(UnitType.ZEALOT)),
-            true, 10,
-            new EnemyAttackConfig(100, 5, 0, 0)));
-
-        for (int i = 0; i < 5; i++) game.tick();
-        assertThat(game.snapshot().enemyUnits()).isEmpty(); // timer fired but staging empty → no attack
-
-        for (int i = 0; i < 5; i++) game.tick(); // tick 10: Zealot trained, timer fires → attack
-        assertThat(game.snapshot().enemyStagingArea()).isEmpty();
-        assertThat(game.snapshot().enemyUnits()).hasSize(1);
-    }
-
-    @Test
-    void timerFiresBeforeArmyThreshold() {
-        // threshold=3, timer=5. 25 minerals/tick, Zealot(100) trains at tick 4.
-        // At tick 4: 1 unit in staging, threshold not met (3), timer not fired (4 < 5).
-        // At tick 5: minerals=25 remaining, can't afford 2nd Zealot yet.
-        //   framesSinceAttack=5 >= 5 → timer fires with 1 unit in staging → attack.
-        game.setEnemyStrategy(new EnemyStrategy(
-            List.of(new EnemyBuildStep(UnitType.ZEALOT)),
-            true, 25,
-            new EnemyAttackConfig(3, 5, 0, 0)));
-
-        for (int i = 0; i < 4; i++) game.tick();
-        assertThat(game.snapshot().enemyStagingArea()).hasSize(1); // training done, attack not yet
-
-        game.tick(); // frame 5: timer fires → attack sent
-        assertThat(game.snapshot().enemyStagingArea()).isEmpty();
-        assertThat(game.snapshot().enemyUnits()).hasSize(1);
-    }
-
-    @Test
-    void enemyStagingClearedAfterAttack() {
-        game.setEnemyStrategy(new EnemyStrategy(
-            List.of(new EnemyBuildStep(UnitType.ZEALOT)),
-            true, 20,
-            new EnemyAttackConfig(1, 9999, 0, 0)));
-
-        for (int i = 0; i < 5; i++) game.tick(); // trains 1 Zealot → threshold=1 → attack fires
-
-        assertThat(game.snapshot().enemyStagingArea()).isEmpty();
-    }
-
-    @Test
-    void enemyBuildOrderLoops() {
-        // 2-step order [Zealot, Stalker] with loop=true, 125 minerals/tick
-        // tick 1: +125 → train Zealot(100). minerals=25. staging=[Z].
-        // tick 2: +125=150 → train Stalker(125). minerals=25. staging=[Z,S].
-        // tick 3: +125=150 → loop: train Zealot(100). minerals=50. staging=[Z,S,Z].
-        game.setEnemyStrategy(new EnemyStrategy(
-            List.of(new EnemyBuildStep(UnitType.ZEALOT), new EnemyBuildStep(UnitType.STALKER)),
-            true, 125,
-            new EnemyAttackConfig(10, 9999, 0, 0)));
-
-        game.tick();
-        assertThat(game.snapshot().enemyStagingArea()).hasSize(1);
-        assertThat(game.snapshot().enemyStagingArea().get(0).type()).isEqualTo(UnitType.ZEALOT);
-
-        game.tick();
-        assertThat(game.snapshot().enemyStagingArea()).hasSize(2);
-        assertThat(game.snapshot().enemyStagingArea().get(1).type()).isEqualTo(UnitType.STALKER);
-
-        game.tick();
-        assertThat(game.snapshot().enemyStagingArea()).hasSize(3);
-        assertThat(game.snapshot().enemyStagingArea().get(2).type()).isEqualTo(UnitType.ZEALOT); // looped
-    }
-
-    @Test
-    void enemyBuildOrderStopsWhenExhausted() {
-        // loop=false, 2-step order, 100 minerals/tick → exactly 2 units, then stops
-        game.setEnemyStrategy(new EnemyStrategy(
-            List.of(new EnemyBuildStep(UnitType.ZEALOT), new EnemyBuildStep(UnitType.ZEALOT)),
-            false, 100,
-            new EnemyAttackConfig(10, 9999, 0, 0)));
-
-        for (int i = 0; i < 10; i++) game.tick();
-
-        assertThat(game.snapshot().enemyStagingArea()).hasSize(2); // exactly 2, not more
-    }
-
-    @Test
-    void enemyUnitsStayAtSpawnUntilAttack() {
-        // threshold=5 (won't fire with 3 units), timer=9999 — no attack
-        game.setEnemyStrategy(new EnemyStrategy(
-            List.of(new EnemyBuildStep(UnitType.ZEALOT)),
-            true, 100,
-            new EnemyAttackConfig(5, 9999, 0, 0)));
-
-        for (int i = 0; i < 3; i++) game.tick();
-
-        game.snapshot().enemyStagingArea().forEach(u ->
-            assertThat(u.position()).isEqualTo(new Point2d(26, 26)));
-        assertThat(game.snapshot().enemyUnits()).isEmpty();
     }
 
     // ---- E5: damage types, armour, Hardened Shield ----
@@ -629,7 +495,7 @@ class EmulatedGameTest {
     void lowHealthUnitRetreats() {
         // Zealot HP+shields = 1+0 / 150 = 0.7% — below retreatHealthPercent=30
         EnemyAttackConfig atk = new EnemyAttackConfig(10, 9999, 30, 0);
-        game.setEnemyStrategy(new EnemyStrategy(List.of(), false, 0, atk));
+        game.setEnemyStrategy(retreatStrategy(atk));
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(14, 14));
         String tag = game.snapshot().enemyUnits().get(0).tag();
         game.setEnemyHealthForTesting(tag, 1);
@@ -645,7 +511,7 @@ class EmulatedGameTest {
     void healthyUnitDoesNotRetreat() {
         // Zealot at full HP+shields = 150/150 = 100% — well above retreatHealthPercent=30
         EnemyAttackConfig atk = new EnemyAttackConfig(10, 9999, 30, 0);
-        game.setEnemyStrategy(new EnemyStrategy(List.of(), false, 0, atk));
+        game.setEnemyStrategy(retreatStrategy(atk));
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(14, 14));
         game.setInitialAttackSizeForTesting(1);
 
@@ -658,7 +524,7 @@ class EmulatedGameTest {
     void armyDepletionTriggersGroupRetreat() {
         // 1 unit alive of 4 launched = 25% — below retreatArmyPercent=50
         EnemyAttackConfig atk = new EnemyAttackConfig(10, 9999, 0, 50);
-        game.setEnemyStrategy(new EnemyStrategy(List.of(), false, 0, atk));
+        game.setEnemyStrategy(retreatStrategy(atk));
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(14, 14));
         String tag = game.snapshot().enemyUnits().get(0).tag();
         game.setInitialAttackSizeForTesting(4); // 1 alive of 4 launched = 25% < 50%
@@ -673,7 +539,7 @@ class EmulatedGameTest {
         // Tick 1: retreat fires → target becomes STAGING_POS (26,26)
         // Tick 2: unit moves toward staging — measurably closer than after tick 1
         EnemyAttackConfig atk = new EnemyAttackConfig(10, 9999, 30, 0);
-        game.setEnemyStrategy(new EnemyStrategy(List.of(), false, 0, atk));
+        game.setEnemyStrategy(retreatStrategy(atk));
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(14, 14));
         String tag = game.snapshot().enemyUnits().get(0).tag();
         game.setEnemyHealthForTesting(tag, 1);
@@ -701,7 +567,7 @@ class EmulatedGameTest {
         // Tick 2: moveEnemyUnits moves it back toward STAGING_POS (dist ~0.5 = speed → snaps to (26,26)).
         //         Transfer check: distance = 0 < 0.1 → TRANSFERRED.
         EnemyAttackConfig atk = new EnemyAttackConfig(10, 9999, 30, 0);
-        game.setEnemyStrategy(new EnemyStrategy(List.of(), false, 0, atk));
+        game.setEnemyStrategy(retreatStrategy(atk));
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(26, 26)); // at staging
         String tag = game.snapshot().enemyUnits().get(0).tag();
         game.setEnemyHealthForTesting(tag, 1);
@@ -722,7 +588,7 @@ class EmulatedGameTest {
     void retreatedUnitKeepsDamagedHp() {
         // Zealot: 40+0 / 150 = 26.7% < 30% → retreats. HP preserved at 40 in staging.
         EnemyAttackConfig atk = new EnemyAttackConfig(10, 9999, 30, 0);
-        game.setEnemyStrategy(new EnemyStrategy(List.of(), false, 0, atk));
+        game.setEnemyStrategy(retreatStrategy(atk));
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(26, 26)); // at staging
         String tag = game.snapshot().enemyUnits().get(0).tag();
         game.setEnemyHealthForTesting(tag, 40);
@@ -740,7 +606,7 @@ class EmulatedGameTest {
     void disabledThresholdsNeverRetreat() {
         // Both thresholds = 0 → no retreat regardless of HP
         EnemyAttackConfig atk = new EnemyAttackConfig(10, 9999, 0, 0);
-        game.setEnemyStrategy(new EnemyStrategy(List.of(), false, 0, atk));
+        game.setEnemyStrategy(retreatStrategy(atk));
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(14, 14));
         String tag = game.snapshot().enemyUnits().get(0).tag();
         game.setEnemyHealthForTesting(tag, 1);
@@ -756,7 +622,7 @@ class EmulatedGameTest {
     void retreatDoesNotFireBeforeFirstAttack() {
         // initialAttackSize = 0 (no wave launched) — guard prevents any retreat
         EnemyAttackConfig atk = new EnemyAttackConfig(10, 9999, 30, 50);
-        game.setEnemyStrategy(new EnemyStrategy(List.of(), false, 0, atk));
+        game.setEnemyStrategy(retreatStrategy(atk));
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(14, 14));
         String tag = game.snapshot().enemyUnits().get(0).tag();
         game.setEnemyHealthForTesting(tag, 1);
@@ -775,7 +641,7 @@ class EmulatedGameTest {
         // Tick 2: probe cooldown=1, no fire. Zealot survives.
         // Tick 3: probe fires again. Zealot HP=1-4<0, dies. resolveCombat cleans retreatingUnits.
         EnemyAttackConfig atk = new EnemyAttackConfig(10, 9999, 30, 0);
-        game.setEnemyStrategy(new EnemyStrategy(List.of(), false, 0, atk));
+        game.setEnemyStrategy(retreatStrategy(atk));
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(9.3f, 9));
         String tag = game.snapshot().enemyUnits().get(0).tag();
         game.setEnemyHealthForTesting(tag, 5);
@@ -801,7 +667,7 @@ class EmulatedGameTest {
         // Army-wide check then fires (1/4 = 25% < 50%). The already-retreating unit must be
         // skipped — its target must NOT be overwritten, and it must not be double-added.
         EnemyAttackConfig atk = new EnemyAttackConfig(10, 9999, 30, 50);
-        game.setEnemyStrategy(new EnemyStrategy(List.of(), false, 0, atk));
+        game.setEnemyStrategy(retreatStrategy(atk));
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(14, 14));
         String tag = game.snapshot().enemyUnits().get(0).tag();
         game.setEnemyHealthForTesting(tag, 1);

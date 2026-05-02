@@ -256,51 +256,10 @@ public class EmulatedGame {
     }
 
     private void tickEnemyStrategy() {
-        if (enemyStrategy == null) return;
-
-        // 1. Accumulate enemy minerals
-        enemyMineralAccumulator += enemyStrategy.mineralsPerTick();
-
-        // 2. Execute next build step if affordable and order not exhausted
-        List<EnemyBuildStep> order = enemyStrategy.buildOrder();
-        if (!order.isEmpty()) {
-            boolean canAdvance = enemyStrategy.loop() || enemyBuildIndex < order.size();
-            if (canAdvance) {
-                EnemyBuildStep step = order.get(enemyBuildIndex % order.size());
-                int cost = SC2Data.mineralCost(step.unitType());
-                if ((int) enemyMineralAccumulator >= cost) {
-                    enemyMineralAccumulator -= cost;
-                    String tag = "enemy-" + nextTag++;
-                    int hp = SC2Data.maxHealth(step.unitType());
-                    enemyStagingArea.add(new Unit(tag, step.unitType(),
-                        STAGING_POS, hp, hp,
-                        SC2Data.maxShields(step.unitType()), SC2Data.maxShields(step.unitType()), 0, 0));
-                    if (enemyStrategy.loop() || enemyBuildIndex < order.size() - 1)
-                        enemyBuildIndex++;
-                    else
-                        enemyBuildIndex = order.size(); // mark exhausted
-                    log.debugf("[EMULATED] Enemy trained %s (staging size=%d)",
-                        step.unitType(), enemyStagingArea.size());
-                }
-            }
-        }
-
-        // 3. Check attack triggers (army threshold OR frame timer)
-        framesSinceLastAttack++;
-        EnemyAttackConfig atk = enemyStrategy.attackConfig();
-        boolean thresholdMet = enemyStagingArea.size() >= atk.armyThreshold();
-        boolean timerFired   = framesSinceLastAttack >= atk.attackIntervalFrames();
-        if ((thresholdMet || timerFired) && !enemyStagingArea.isEmpty()) {
-            initialAttackSize = enemyStagingArea.size();   // E6: denominator for army retreat check
-            for (Unit u : enemyStagingArea) {
-                enemyUnits.add(u);
-                enemyTargets.put(u.tag(), NEXUS_POS);
-            }
-            log.infof("[EMULATED] Enemy attack launched: %d units (threshold=%b timer=%b)",
-                enemyStagingArea.size(), thresholdMet, timerFired);
-            enemyStagingArea.clear();
-            framesSinceLastAttack = 0;
-        }
+        // TODO (Task 6): refactor to use EnemyBehavior driven by the new EnemyStrategy interface.
+        // The old record-based implementation (buildOrder/loop fields) has been removed.
+        // For now this method is a no-op; enemy economy and attacks are pending the
+        // EnemyBehavior + FixedBuildOrderStrategy implementation in Tasks 2/5/6.
     }
 
     public void applyIntent(Intent intent) {
