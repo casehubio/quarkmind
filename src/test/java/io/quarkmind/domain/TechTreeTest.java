@@ -86,9 +86,19 @@ class TechTreeTest {
     }
 
     @Test
-    void unknownUnit_treatedAsNoPrereqs() {
+    void observer_withRoboticsFacility_canTrain() {
         // OBSERVER is mapped with ROBOTICS_FACILITY as its prereq;
         // providing that building satisfies canTrain.
         assertThat(tree.canTrain(UnitType.OBSERVER, Set.of(BuildingType.ROBOTICS_FACILITY))).isTrue();
+    }
+
+    @Test
+    void overseer_requiresHatcheryAndLair() {
+        assertThat(tree.nextRequired(UnitType.OVERSEER, Set.of()))
+            .contains(BuildingType.HATCHERY);
+        assertThat(tree.nextRequired(UnitType.OVERSEER, Set.of(BuildingType.HATCHERY)))
+            .contains(BuildingType.LAIR);
+        assertThat(tree.canTrain(UnitType.OVERSEER,
+            Set.of(BuildingType.HATCHERY, BuildingType.LAIR))).isTrue();
     }
 }
