@@ -39,7 +39,7 @@ class EnemyStrategyLibraryTest {
     @Test
     void allNamedStrategiesHaveNonEmptyBuildOrder() {
         var obs = new EnemyObservation(List.of(), Set.of(), 9999, 0L);
-        // REACTIVE placeholder may not have a build order, skip it
+        // REACTIVE delegates to its inner strategy — skip direct nextUnit test here
         EnemyStrategyLibrary.allNames().stream()
             .filter(n -> !n.equals("REACTIVE"))
             .forEach(name -> {
