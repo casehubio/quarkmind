@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import io.quarkmind.sc2.emulated.VisibilityGrid;
 import io.quarkmind.sc2.emulated.TileVisibility;
 import io.quarkmind.plugin.tactics.TerrainAwareKiteStrategy;
@@ -28,7 +29,7 @@ class EmulatedGameTest {
             @Override public Race race()                { return Race.PROTOSS; }
             @Override public int mineralsPerTick()      { return 0; }
             @Override public EnemyAttackConfig attackConfig() { return atk; }
-            @Override public java.util.Optional<UnitType> nextUnit(EnemyObservation obs) { return java.util.Optional.empty(); }
+            @Override public Optional<UnitType> nextUnit(EnemyObservation obs) { return Optional.empty(); }
             @Override public boolean shouldSwitch(EnemyObservation obs) { return false; }
         };
     }
