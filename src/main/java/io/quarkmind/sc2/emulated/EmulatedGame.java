@@ -72,6 +72,11 @@ public class EmulatedGame {
         geysers.add(new Resource("geyser-0", new Point2d(5, 11), 2250));
         geysers.add(new Resource("geyser-1", new Point2d(11, 5), 2250));
 
+        // Seed enemy player with effectively unlimited supply and gas so TrainIntents are never
+        // rejected by resource checks. Minerals are earned each tick via EnemyBehavior.accumulateMinerals().
+        enemy.supply  = 200;
+        enemy.vespene = 9999;
+
         // Reset enemy behavior (if set)
         if (enemyBehavior != null) enemyBehavior.reset(enemyBehavior.currentStrategy());
     }
@@ -278,6 +283,7 @@ public class EmulatedGame {
         friendly.unitCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
         enemy.unitCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
         friendly.blinkCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
+        enemy.blinkCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
 
         Map<String, Integer> pending       = new HashMap<>();
         Set<String>          firedFriendly = new HashSet<>();
@@ -297,6 +303,7 @@ public class EmulatedGame {
                 });
         }
         for (Unit attacker : enemy.units) {
+            if (!enemy.attackingUnits.contains(attacker.tag())) continue;
             if (enemy.unitCooldowns.getOrDefault(attacker.tag(), 0) > 0) continue;
             nearestInRange(attacker.position(), friendly.units, SC2Data.attackRange(attacker.type()))
                 .ifPresent(target -> {
@@ -536,6 +543,7 @@ public class EmulatedGame {
         enemy.units.add(new Unit(tag, type, position, hp, hp,
             SC2Data.maxShields(type), SC2Data.maxShields(type), 0, 0));
         enemy.unitTargets.put(tag, EnemyBehavior.NEXUS_POS);
+        enemy.attackingUnits.add(tag);  // test-spawned enemies are in attack mode by default
     }
 
     /** Sets a friendly unit's health for combat threshold tests. */

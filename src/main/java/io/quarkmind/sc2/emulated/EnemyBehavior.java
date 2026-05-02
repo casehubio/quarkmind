@@ -89,8 +89,8 @@ class EnemyBehavior implements PlayerBehavior {
         int cost = SC2Data.mineralCost(target);
         if (enemy.minerals < cost) return;
 
-        // Afford it — deduct and issue
-        enemy.minerals -= cost;
+        // Afford it — issue the intent; handleTrain() does the actual mineral deduction.
+        // Do NOT deduct here: double deduction was the bug (EnemyBehavior deducted, then handleTrain deducted again).
         String buildingTag = "enemy-nexus-" + nextTag++;
         queue.add(new TrainIntent(buildingTag, target));
         trainingPending = true;

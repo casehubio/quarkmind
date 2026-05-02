@@ -1259,4 +1259,32 @@ class EmulatedGameTest {
             .filter(u -> u.tag().equals(tag))
             .mapToInt(u -> u.health() + u.shields()).findFirst().orElse(0);
     }
+
+    // ---- Enemy production tests ----
+
+    @Test
+    void enemyBehavior_accumulatesMinerals() {
+        game.setEnemyStrategy(new FixedBuildOrderStrategy("TEST", Race.PROTOSS,
+            List.of(UnitType.ZEALOT), 5, new EnemyAttackConfig(3, 200, 0, 0)));
+        game.reset();
+        double before = game.enemy.minerals;
+        game.tick();
+        assertThat(game.enemy.minerals).isGreaterThan(before);
+    }
+
+    @Test
+    void enemyBehavior_trainsUnitsWhenMineralsAccumulate() {
+        game.setEnemyStrategy(new FixedBuildOrderStrategy("TEST", Race.PROTOSS,
+            List.of(UnitType.ZEALOT), 10, new EnemyAttackConfig(3, 200, 0, 0)));
+        game.reset();
+        // Seed enough minerals to afford a Zealot (cost=100) immediately
+        game.enemy.minerals = 200;
+        // Run enough ticks for the unit to complete training (Zealot = 28 ticks)
+        int zealotTrainTime = SC2Data.trainTimeInTicks(UnitType.ZEALOT);
+        for (int i = 0; i < zealotTrainTime + 5; i++) game.tick();
+        // Enemy should have at least one Zealot in staging area or active units
+        boolean hasZealot = game.enemy.stagingArea.stream().anyMatch(u -> u.type() == UnitType.ZEALOT)
+            || game.enemy.units.stream().anyMatch(u -> u.type() == UnitType.ZEALOT);
+        assertThat(hasZealot).isTrue();
+    }
 }
