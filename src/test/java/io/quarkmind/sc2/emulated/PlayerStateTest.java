@@ -55,12 +55,17 @@ class PlayerStateTest {
     @Test
     void clear_resetsAllState() {
         PlayerState s = new PlayerState();
-        s.minerals = 500;
-        s.vespene  = 100;
-        s.supply   = 22;
+        s.minerals   = 500;
+        s.vespene    = 100;
+        s.supply     = 22;
         s.supplyUsed = 10;
         s.units.add(new Unit("u1", UnitType.ZEALOT, new Point2d(1,1), 100,100,50,50,0,0));
         s.buildings.add(new Building("b1", BuildingType.GATEWAY, new Point2d(2,2), 500,500,true));
+        s.stagingArea.add(new Unit("u2", UnitType.ZEALOT, new Point2d(3,3), 100,100,50,50,0,0));
+        s.unitTargets.put("u1", new Point2d(10, 10));
+        s.attackingUnits.add("u1");
+        s.unitCooldowns.put("u1", 5);
+        s.blinkCooldowns.put("u1", 3);
         s.pendingCompletions.add(new PlayerState.PendingCompletion(999L, () -> {}));
         s.clear();
         assertThat(s.minerals).isZero();
@@ -70,6 +75,10 @@ class PlayerStateTest {
         assertThat(s.units).isEmpty();
         assertThat(s.buildings).isEmpty();
         assertThat(s.stagingArea).isEmpty();
+        assertThat(s.unitTargets).isEmpty();
+        assertThat(s.attackingUnits).isEmpty();
+        assertThat(s.unitCooldowns).isEmpty();
+        assertThat(s.blinkCooldowns).isEmpty();
         assertThat(s.pendingCompletions).isEmpty();
     }
 
