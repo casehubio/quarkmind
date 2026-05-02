@@ -3,8 +3,9 @@ package io.quarkmind.sc2.emulated;
 import io.quarkus.arc.profile.IfBuildProfile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import io.quarkmind.domain.EnemyStrategy;
 import io.quarkmind.domain.GameState;
-import io.quarkmind.domain.UnitType;
+import io.quarkmind.domain.Race;
 import io.quarkmind.domain.TerrainGrid;
 import io.quarkmind.qa.EmulatedConfig;
 import io.quarkmind.sc2.IntentQueue;
@@ -52,22 +53,26 @@ public class EmulatedEngine implements SC2Engine {
 
     @Override
     public void joinGame() {
-        // Apply wave config from EmulatedConfig before reset() so pendingWaves is populated
-        game.configureWave(
-            config.getWaveSpawnFrame(),
-            config.getWaveUnitCount(),
-            UnitType.valueOf(config.getWaveUnitType()));
-        // Wire pathfinding and the independent physics wall constraint
+        // Wire terrain and pathfinding
         TerrainGrid grid = TerrainGrid.emulatedMap();
         game.setMovementStrategy(new PathfindingMovement(grid));
         game.setTerrainGrid(grid);
         terrainProvider.setTerrain(grid);
         log.info("[EMULATED] PathfindingMovement wired — wall y=18, gap x=11-13");
-        log.info("[EMULATED] Wall physics constraint active — no unit may land on a wall tile");
+
+        // Build enemy strategy from config
+        Race   race         = config.getEnemyRace();
+        String strategyName = config.getEnemyStrategyName();
+        EnemyStrategy strategy = (strategyName != null && !strategyName.isBlank())
+            ? EnemyStrategyLibrary.forName(strategyName)
+            : EnemyStrategyLibrary.randomForRace(race);
+
+        EnemyBehavior enemyBehavior = new EnemyBehavior(strategy, game.enemy);
+        game.setEnemyBehavior(enemyBehavior);
+
         game.reset();
-        log.infof("[EMULATED] Joined game — wave at frame %d (%dx%s), speed=%.2f",
-            config.getWaveSpawnFrame(), config.getWaveUnitCount(),
-            config.getWaveUnitType(), config.getUnitSpeed());
+        log.infof("[EMULATED] Joined game — enemy strategy=%s race=%s speed=%.2f",
+            strategy.name(), race, config.getUnitSpeed());
     }
 
     @Override

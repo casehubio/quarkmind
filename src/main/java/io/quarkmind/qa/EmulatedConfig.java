@@ -1,8 +1,10 @@
 package io.quarkmind.qa;
 
+import io.quarkmind.domain.Race;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import java.util.Optional;
 
 /**
  * Live configuration for EmulatedGame.
@@ -11,12 +13,12 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  * Layer 3: visualizer config panel calls the REST endpoint.
  *
  * <p>No profile guard — this bean is instantiated in all profiles (including %mock and %prod).
- * It is only actively read by EmulatedEngine (@IfBuildProfile("emulated")). All four
+ * It is only actively read by EmulatedEngine (@IfBuildProfile("emulated")). All
  * @ConfigProperty fields must retain their defaultValue permanently to avoid resolution
  * failures in profiles where the property is not configured.
  *
- * <p>Enemy strategy configuration has been removed in the EnemyStrategy interface refactor.
- * Strategy wiring is now handled by EnemyBehavior (Task 5+).
+ * <p>Enemy strategy wiring is handled by EnemyBehavior (Task 5+).
+ * Race and strategy name are configurable via config properties and REST.
  */
 @ApplicationScoped
 public class EmulatedConfig {
@@ -36,37 +38,54 @@ public class EmulatedConfig {
     @ConfigProperty(name = "emulated.unit.speed", defaultValue = "0.5")
     double defaultUnitSpeed;
 
+    @ConfigProperty(name = "emulated.enemy.race", defaultValue = "PROTOSS")
+    String defaultEnemyRace;
+
+    @ConfigProperty(name = "emulated.enemy.strategy")
+    Optional<String> defaultEnemyStrategy;
+
     // Volatile for thread safety (REST thread writes, scheduler thread reads)
     private volatile int    waveSpawnFrame;
     private volatile int    waveUnitCount;
     private volatile String waveUnitType;
     private volatile double unitSpeed;
+    private volatile Race   enemyRace;
+    private volatile String enemyStrategyName;
 
     @PostConstruct
     void init() {
-        waveSpawnFrame = defaultWaveSpawnFrame;
-        waveUnitCount  = defaultWaveUnitCount;
-        waveUnitType   = defaultWaveUnitType;
-        unitSpeed      = defaultUnitSpeed;
+        waveSpawnFrame    = defaultWaveSpawnFrame;
+        waveUnitCount     = defaultWaveUnitCount;
+        waveUnitType      = defaultWaveUnitType;
+        unitSpeed         = defaultUnitSpeed;
+        enemyRace         = Race.valueOf(defaultEnemyRace);
+        enemyStrategyName = defaultEnemyStrategy.filter(s -> !s.isBlank()).orElse(null);
     }
 
-    public int    getWaveSpawnFrame() { return waveSpawnFrame; }
-    public int    getWaveUnitCount()  { return waveUnitCount;  }
-    public String getWaveUnitType()   { return waveUnitType;   }
-    public double getUnitSpeed()      { return unitSpeed;      }
+    public int    getWaveSpawnFrame()     { return waveSpawnFrame;    }
+    public int    getWaveUnitCount()      { return waveUnitCount;     }
+    public String getWaveUnitType()       { return waveUnitType;      }
+    public double getUnitSpeed()          { return unitSpeed;         }
+    public Race   getEnemyRace()          { return enemyRace;         }
+    public String getEnemyStrategyName()  { return enemyStrategyName; }
 
-    public void setWaveSpawnFrame(int v)  { this.waveSpawnFrame = v; }
-    public void setWaveUnitCount(int v)   { this.waveUnitCount  = v; }
-    public void setWaveUnitType(String v) { this.waveUnitType   = v; }
-    public void setUnitSpeed(double v)    { this.unitSpeed      = v; }
+    public void setWaveSpawnFrame(int v)     { this.waveSpawnFrame    = v; }
+    public void setWaveUnitCount(int v)      { this.waveUnitCount     = v; }
+    public void setWaveUnitType(String v)    { this.waveUnitType      = v; }
+    public void setUnitSpeed(double v)       { this.unitSpeed         = v; }
+    public void setEnemyRace(Race r)         { this.enemyRace         = r; }
+    public void setEnemyStrategyName(String n) { this.enemyStrategyName = n; }
 
     public boolean isActive() { return active; }
 
     /** Serialisable snapshot for the REST response body. */
     public record Snapshot(boolean active, int waveSpawnFrame, int waveUnitCount,
-                           String waveUnitType, double unitSpeed) {}
+                           String waveUnitType, double unitSpeed,
+                           String enemyRace, String enemyStrategyName) {}
 
     public Snapshot snapshot() {
-        return new Snapshot(active, waveSpawnFrame, waveUnitCount, waveUnitType, unitSpeed);
+        return new Snapshot(active, waveSpawnFrame, waveUnitCount, waveUnitType, unitSpeed,
+            enemyRace != null ? enemyRace.name() : null,
+            enemyStrategyName);
     }
 }

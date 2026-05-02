@@ -1,5 +1,6 @@
 package io.quarkmind.qa;
 
+import io.quarkmind.domain.Race;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -30,6 +31,37 @@ public class EmulatedConfigResource {
             config.setWaveUnitType((String) updates.get("waveUnitType"));
         if (updates.containsKey("unitSpeed"))
             config.setUnitSpeed(((Number) updates.get("unitSpeed")).doubleValue());
+        if (updates.containsKey("enemyRace")) {
+            try {
+                config.setEnemyRace(Race.valueOf(((String) updates.get("enemyRace")).trim().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                return Response.status(400).entity("Unknown race: " + updates.get("enemyRace")).build();
+            }
+        }
+        if (updates.containsKey("enemyStrategyName")) {
+            String name = ((String) updates.get("enemyStrategyName")).trim();
+            config.setEnemyStrategyName(name.isBlank() ? null : name);
+        }
         return Response.ok(config.snapshot()).build();
+    }
+
+    @PUT
+    @Path("/enemy-race")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response setEnemyRace(String race) {
+        try {
+            config.setEnemyRace(Race.valueOf(race.trim().toUpperCase()));
+            return Response.ok().build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(400).entity("Unknown race: " + race).build();
+        }
+    }
+
+    @PUT
+    @Path("/enemy-strategy")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response setEnemyStrategy(String strategyName) {
+        config.setEnemyStrategyName(strategyName.trim().isBlank() ? null : strategyName.trim());
+        return Response.ok().build();
     }
 }
