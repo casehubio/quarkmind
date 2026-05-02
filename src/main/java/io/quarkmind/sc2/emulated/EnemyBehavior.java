@@ -3,6 +3,7 @@ package io.quarkmind.sc2.emulated;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.AttackIntent;
+import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.jboss.logging.Logger;
@@ -13,8 +14,10 @@ import java.util.*;
  * Drives the enemy player each game tick by accumulating minerals, queuing
  * unit training, launching attacks, and managing retreats.
  *
- * <p>No tech-tree gating — units are trained freely when minerals allow.
- * Tech-tree validation is Task 9.
+ * <p>Tech-tree gating: if a target unit's prerequisites are not met, a BuildIntent
+ * for the first missing prerequisite building is queued instead. Buildings are
+ * deduplicated via {@code pendingBuildings} — a prereq that is already pending or
+ * already built is never re-queued.
  *
  * <p>Package-private: wired by {@link EmulatedGame} which is in the same package.
  */
@@ -27,11 +30,14 @@ class EnemyBehavior implements PlayerBehavior {
 
     private EnemyStrategy strategy;
     private final PlayerState enemy;
+    private final TechTree techTree;
 
     // Production state
     private Optional<UnitType> currentTarget = Optional.empty();
     private boolean trainingPending = false;  // waiting for a previously issued TrainIntent to complete
     private int nextTag = 1000;
+    // Tracks building types currently pending completion — prevents duplicate BuildIntents
+    private final Set<BuildingType> pendingBuildings = new HashSet<>();
 
     // Attack state — Long.MAX_VALUE on init means "first attack, no cooldown applies"
     private long framesSinceLastAttack = Long.MAX_VALUE;
@@ -40,9 +46,10 @@ class EnemyBehavior implements PlayerBehavior {
     // Retreat state — package-private for EmulatedGame.moveEnemyUnits()
     private final Set<String> retreating = new HashSet<>();
 
-    EnemyBehavior(EnemyStrategy strategy, PlayerState enemy) {
-        this.strategy = strategy;
-        this.enemy    = enemy;
+    EnemyBehavior(EnemyStrategy strategy, PlayerState enemy, TechTree techTree) {
+        this.strategy  = strategy;
+        this.enemy     = enemy;
+        this.techTree  = techTree;
     }
 
     @Override
@@ -86,6 +93,26 @@ class EnemyBehavior implements PlayerBehavior {
         if (currentTarget.isEmpty()) return;
 
         UnitType target = currentTarget.get();
+
+        // Tech-tree gate: if prerequisites are not met, queue the first missing building
+        Set<BuildingType> built = builtBuildingTypes();
+        if (!techTree.canTrain(target, built)) {
+            techTree.nextRequired(target, built).ifPresent(prereq -> {
+                if (!pendingBuildings.contains(prereq)) {
+                    int bCost = SC2Data.mineralCost(prereq);
+                    if (enemy.minerals >= bCost) {
+                        enemy.minerals -= bCost;
+                        String tag = "ebldg-" + nextTag++;
+                        Point2d pos = buildingPosition(pendingBuildings.size());
+                        queue.add(new BuildIntent(tag, prereq, pos));
+                        pendingBuildings.add(prereq);
+                        log.debugf("[ENEMY] Queued BuildIntent: %s (prereq for %s)", prereq, target);
+                    }
+                }
+            });
+            return;
+        }
+
         int cost = SC2Data.mineralCost(target);
         if (enemy.minerals < cost) return;
 
@@ -97,6 +124,17 @@ class EnemyBehavior implements PlayerBehavior {
         currentTarget = Optional.empty();
         log.debugf("[ENEMY] Queued TrainIntent: %s (cost=%d, minerals_left=%.0f)",
             target, cost, enemy.minerals);
+    }
+
+    private Set<BuildingType> builtBuildingTypes() {
+        Set<BuildingType> built = new HashSet<>();
+        for (Building b : enemy.buildings) built.add(b.type());
+        return built;
+    }
+
+    private static Point2d buildingPosition(int index) {
+        // Place buildings in a cluster at tile (50+index, 50) — far corner
+        return new Point2d(50 + index, 50);
     }
 
     /**
@@ -206,8 +244,20 @@ class EnemyBehavior implements PlayerBehavior {
         this.framesSinceLastAttack = Long.MAX_VALUE;
         this.initialAttackSize = 0;
         this.retreating.clear();
+        this.pendingBuildings.clear();
         this.nextTag = 1000;
         newStrategy.reset();
+
+        // Seed enemy main structure (free — no mineral cost applied here; minerals seeded separately)
+        BuildingType main = switch (newStrategy.race()) {
+            case PROTOSS -> BuildingType.NEXUS;
+            case TERRAN  -> BuildingType.COMMAND_CENTER;
+            case ZERG    -> BuildingType.HATCHERY;
+        };
+        int hp = SC2Data.maxBuildingHealth(main);
+        enemy.buildings.add(new Building("enemy-main", main,
+            new Point2d(50, 51), hp, hp, true));
+        log.debugf("[ENEMY] Seeded main structure: %s", main);
     }
 
     // -------------------------------------------------------------------------

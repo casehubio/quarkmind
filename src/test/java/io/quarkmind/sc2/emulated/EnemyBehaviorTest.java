@@ -3,11 +3,13 @@ package io.quarkmind.sc2.emulated;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.AttackIntent;
+import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import static org.assertj.core.api.Assertions.*;
 
@@ -28,11 +30,19 @@ class EnemyBehaviorTest {
             List.of(), List.of(), 0L);
     }
 
+    /** Permissive TechTree — always allows training, never requires a prereq building. */
+    static TechTree permissive() {
+        return new TechTree() {
+            @Override public boolean canTrain(UnitType u, Set<BuildingType> b) { return true; }
+            @Override public Optional<BuildingType> nextRequired(UnitType u, Set<BuildingType> b) { return Optional.empty(); }
+        };
+    }
+
     @BeforeEach
     void setUp() {
         enemy    = new PlayerState();
         queue    = new IntentQueue();
-        behavior = new EnemyBehavior(zealotSpam(), enemy);
+        behavior = new EnemyBehavior(zealotSpam(), enemy, permissive());
     }
 
     // ---- mineral accumulation ----
@@ -132,5 +142,53 @@ class EnemyBehaviorTest {
         // A MoveIntent toward staging should be in queue
         var intents = queue.drainAll();
         assertThat(intents).anyMatch(i -> i instanceof MoveIntent);
+    }
+
+    // ---- tech-tree gating ----
+
+    @Test
+    void whenTargetNeedsPrereq_queuesBuildIntent() {
+        // Stalker needs GATEWAY + CYBERNETICS_CORE; enemy has neither
+        EnemyStrategy stalker = new FixedBuildOrderStrategy("STALK", Race.PROTOSS,
+            List.of(UnitType.STALKER), 50, new EnemyAttackConfig(3, 200, 0, 0));
+        enemy.minerals = 500;
+        var b = new EnemyBehavior(stalker, enemy, new TechTree());
+        b.tick(emptyState(), queue);
+        var intents = queue.drainAll();
+        assertThat(intents).anyMatch(i -> i instanceof BuildIntent bi
+            && bi.buildingType() == BuildingType.GATEWAY);
+        assertThat(intents).noneMatch(i -> i instanceof TrainIntent);
+    }
+
+    @Test
+    void whenPrereqBuilt_trainsProceedsNormally() {
+        EnemyStrategy stalker = new FixedBuildOrderStrategy("STALK", Race.PROTOSS,
+            List.of(UnitType.STALKER), 50, new EnemyAttackConfig(3, 200, 0, 0));
+        enemy.minerals = 500;
+        // Pre-place required buildings
+        enemy.buildings.add(new Building("gw", BuildingType.GATEWAY,
+            new Point2d(50, 50), 500, 500, true));
+        enemy.buildings.add(new Building("cc", BuildingType.CYBERNETICS_CORE,
+            new Point2d(51, 50), 500, 500, true));
+        var b = new EnemyBehavior(stalker, enemy, new TechTree());
+        b.tick(emptyState(), queue);
+        var intents = queue.drainAll();
+        assertThat(intents).anyMatch(i -> i instanceof TrainIntent t
+            && t.unitType() == UnitType.STALKER);
+    }
+
+    @Test
+    void doesNotDoubleQueuePendingBuilding() {
+        EnemyStrategy stalker = new FixedBuildOrderStrategy("STALK", Race.PROTOSS,
+            List.of(UnitType.STALKER), 50, new EnemyAttackConfig(3, 200, 0, 0));
+        enemy.minerals = 500;
+        var b = new EnemyBehavior(stalker, enemy, new TechTree());
+        b.tick(emptyState(), queue);
+        queue.drainAll(); // first tick queues GATEWAY
+        b.tick(emptyState(), queue);
+        var second = queue.drainAll();
+        long buildCount = second.stream().filter(i -> i instanceof BuildIntent bi
+            && bi.buildingType() == BuildingType.GATEWAY).count();
+        assertThat(buildCount).isZero();
     }
 }
