@@ -1,6 +1,7 @@
 package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.*;
+import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.*;
 import org.jboss.logging.Logger;
 
@@ -15,42 +16,22 @@ import java.util.*;
 public class EmulatedGame {
 
     private static final Logger log = Logger.getLogger(EmulatedGame.class);
-    private static final Point2d NEXUS_POS    = new Point2d(8, 8);
-    private static final Point2d STAGING_POS  = new Point2d(26, 26);
 
-    // E1 fields
-    private double mineralAccumulator;
-    private int    miningProbes;
-    private int    vespene;
-    private int    supply;
-    private int    supplyUsed;
-    private long   gameFrame;
-    private final List<Unit>     myUnits     = new ArrayList<>();
-    private final List<Building> myBuildings = new ArrayList<>();
-    private final List<Unit>     enemyUnits  = new ArrayList<>();
-    private final List<Resource> geysers     = new ArrayList<>();
+    // --- Per-player state ---
+    final PlayerState friendly = new PlayerState();
+    final PlayerState enemy    = new PlayerState();
 
-    // E2 fields
+    // --- Enemy AI ---
+    private EnemyBehavior enemyBehavior;
+    private final IntentQueue enemyIntentQueue = new IntentQueue();
+
+    // --- Shared / game-level state ---
+    private long gameFrame;
+    private int  miningProbes;
+    private int  nextTag = 200;
     private double unitSpeed = 0.5;
-    private final Map<String, Point2d> unitTargets  = new HashMap<>();
-    private final Map<String, Point2d> enemyTargets = new HashMap<>();
-    private final Set<String>          attackingUnits = new HashSet<>(); // E3: units with active AttackIntent
-    // E4: per-unit attack cooldowns (absent key = 0 = can attack immediately)
-    private final Map<String, Integer> unitCooldowns  = new HashMap<>();
-    private final Map<String, Integer> enemyCooldowns = new HashMap<>();
-    private final Map<String, Integer> blinkCooldowns = new HashMap<>();
-    // E4: enemy economy
-    private EnemyStrategy enemyStrategy;
-    private double        enemyMineralAccumulator;
-    private int           enemyBuildIndex;
-    private long          framesSinceLastAttack;
-    private final List<Unit> enemyStagingArea = new ArrayList<>();
-    // E6: retreat tracking
-    private final Set<String> retreatingUnits  = new HashSet<>();
-    private int               initialAttackSize = 0;
-    private final List<EnemyWave>         pendingWaves       = new ArrayList<>();
-    private final List<PendingCompletion> pendingCompletions = new ArrayList<>();
-    private int nextTag = 200;
+    private final List<Resource> geysers = new ArrayList<>();
+    private final List<EnemyWave> pendingWaves = new ArrayList<>();
     private final DamageCalculator damageCalculator = new DamageCalculator();
     private MovementStrategy movementStrategy = new DirectMovement();
     // E7: hard physics constraint — no unit may land on a wall tile regardless of movement strategy.
@@ -60,66 +41,60 @@ public class EmulatedGame {
     // E9: fog of war — persists across ticks, reset on game restart
     private final VisibilityGrid visibility = new VisibilityGrid();
 
-    private record PendingCompletion(long completesAtTick, Runnable action) {}
-
     public void reset() {
-        mineralAccumulator = SC2Data.INITIAL_MINERALS;
-        miningProbes       = SC2Data.INITIAL_PROBES;
-        vespene            = SC2Data.INITIAL_VESPENE;
-        supply             = SC2Data.INITIAL_SUPPLY;
-        supplyUsed         = SC2Data.INITIAL_SUPPLY_USED;
-        gameFrame          = 0;
-        myUnits.clear();
-        myBuildings.clear();
-        enemyUnits.clear();
-        geysers.clear();
-        unitTargets.clear();
-        enemyTargets.clear();
-        attackingUnits.clear();
-        unitCooldowns.clear();
-        enemyCooldowns.clear();
-        blinkCooldowns.clear();
-        enemyMineralAccumulator = 0;
-        enemyBuildIndex         = 0;
-        framesSinceLastAttack   = 0;
-        enemyStagingArea.clear();
-        retreatingUnits.clear();
-        initialAttackSize = 0;
-        pendingCompletions.clear();
-        nextTag = 200;
+        friendly.clear();
+        enemy.clear();
+        nextTag     = 200;
+        gameFrame   = 0;
+        miningProbes = SC2Data.INITIAL_PROBES;
         movementStrategy.reset();
         visibility.reset();
+        geysers.clear();
         // pendingWaves intentionally NOT cleared — configured before reset() via configureWave()
         // terrainGrid and random intentionally NOT cleared — set by EmulatedEngine before reset(), persist across resets
 
+        // Seed friendly player
+        friendly.minerals   = SC2Data.INITIAL_MINERALS;
+        friendly.vespene    = SC2Data.INITIAL_VESPENE;
+        friendly.supply     = SC2Data.INITIAL_SUPPLY;
+        friendly.supplyUsed = SC2Data.INITIAL_SUPPLY_USED;
         for (int i = 0; i < SC2Data.INITIAL_PROBES; i++) {
-            myUnits.add(new Unit("probe-" + i, UnitType.PROBE,
+            friendly.units.add(new Unit("probe-" + i, UnitType.PROBE,
                 new Point2d(9 + i * 0.5f, 9),
                 SC2Data.maxHealth(UnitType.PROBE), SC2Data.maxHealth(UnitType.PROBE),
                 SC2Data.maxShields(UnitType.PROBE), SC2Data.maxShields(UnitType.PROBE), 0, 0));
         }
-        myBuildings.add(new Building("nexus-0", BuildingType.NEXUS,
+        friendly.buildings.add(new Building("nexus-0", BuildingType.NEXUS,
             new Point2d(8, 8),
             SC2Data.maxBuildingHealth(BuildingType.NEXUS),
             SC2Data.maxBuildingHealth(BuildingType.NEXUS),
             true));
         geysers.add(new Resource("geyser-0", new Point2d(5, 11), 2250));
         geysers.add(new Resource("geyser-1", new Point2d(11, 5), 2250));
+
+        // Reset enemy behavior (if set)
+        if (enemyBehavior != null) enemyBehavior.reset(enemyBehavior.currentStrategy());
     }
 
     public void tick() {
         gameFrame++;
-        mineralAccumulator += miningProbes * SC2Data.MINERALS_PER_PROBE_PER_TICK;
+        friendly.minerals += miningProbes * SC2Data.MINERALS_PER_PROBE_PER_TICK;
         moveFriendlyUnits();
         // Recompute after movement, before combat: a unit that dies this tick still
         // provided vision for this frame — correct SC2 behaviour.
-        visibility.recompute(myUnits, myBuildings, terrainGrid);
+        visibility.recompute(friendly.units, friendly.buildings, terrainGrid);
         moveEnemyUnits();
         resolveCombat();
-        tickEnemyRetreat();
-        fireCompletions();
+        tickEnemyRetreatTransfer();
+        friendly.fireCompletions(gameFrame);
+        enemy.fireCompletions(gameFrame);
         spawnEnemyWaves();
-        tickEnemyStrategy();
+        // Enemy behavior tick
+        if (enemyBehavior != null) {
+            GameState enemyPov = snapshotForEnemy();
+            enemyBehavior.tick(enemyPov, enemyIntentQueue);
+            enemyIntentQueue.drainAll().forEach(intent -> applyIntent(intent, enemy));
+        }
     }
 
     /**
@@ -141,27 +116,28 @@ public class EmulatedGame {
     }
 
     private void moveFriendlyUnits() {
-        myUnits.replaceAll(u -> {
-            Point2d target = unitTargets.get(u.tag());
+        friendly.units.replaceAll(u -> {
+            Point2d target = friendly.unitTargets.get(u.tag());
             if (target == null) return u;
             Point2d newPos = enforceWall(u.tag(),
                 movementStrategy.advance(u.tag(), u.position(), target, unitSpeed),
                 u.position());
-            if (distance(newPos, target) < 0.2) unitTargets.remove(u.tag());
+            if (distance(newPos, target) < 0.2) friendly.unitTargets.remove(u.tag());
             return new Unit(u.tag(), u.type(), newPos, u.health(), u.maxHealth(),
                             u.shields(), u.maxShields(), 0, 0);
         });
     }
 
     private void moveEnemyUnits() {
-        enemyUnits.replaceAll(u -> {
+        Set<String> retreating = enemyBehavior != null ? enemyBehavior.retreatingUnits() : Set.of();
+        enemy.units.replaceAll(u -> {
             // Non-retreating units stop to fight when a friendly is within attack range.
             // Retreating units always move — they are disengaging, not attacking.
-            if (!retreatingUnits.contains(u.tag()) &&
-                    nearestInRange(u.position(), myUnits, SC2Data.attackRange(u.type())).isPresent()) {
+            if (!retreating.contains(u.tag()) &&
+                    nearestInRange(u.position(), friendly.units, SC2Data.attackRange(u.type())).isPresent()) {
                 return u; // stay and fight — resolveCombat() handles the attack this tick
             }
-            Point2d target = enemyTargets.getOrDefault(u.tag(), NEXUS_POS);
+            Point2d target = enemy.unitTargets.getOrDefault(u.tag(), EnemyBehavior.NEXUS_POS);
             Point2d newPos = enforceWall(u.tag(),
                 movementStrategy.advance(u.tag(), u.position(), target, unitSpeed),
                 u.position());
@@ -178,10 +154,23 @@ public class EmulatedGame {
         });
     }
 
-    private void fireCompletions() {
-        pendingCompletions.removeIf(item -> {
-            if (item.completesAtTick() > gameFrame) return false;
-            item.action().run();
+    /**
+     * Transfers retreating enemy units that have arrived at staging back to enemy.stagingArea.
+     * The retreat decision (marking units, issuing MoveIntent) is done by EnemyBehavior.
+     * EmulatedGame detects arrival and transfers.
+     */
+    private void tickEnemyRetreatTransfer() {
+        if (enemyBehavior == null) return;
+        Set<String> retreating = enemyBehavior.retreatingUnits();
+        enemy.units.removeIf(u -> {
+            if (!retreating.contains(u.tag())) return false;
+            if (distance(u.position(), EnemyBehavior.STAGING_POS) >= 0.1) return false;
+            enemyBehavior.clearRetreating(u.tag());
+            enemy.unitTargets.remove(u.tag());
+            movementStrategy.clearUnit(u.tag());
+            enemy.stagingArea.add(u);
+            log.debugf("[EMULATED] Unit %s arrived at staging (hp=%d shields=%d)",
+                u.tag(), u.health(), u.shields());
             return true;
         });
     }
@@ -195,9 +184,9 @@ public class EmulatedGame {
                                           wave.spawnPosition().y());
                 String tag = "enemy-" + nextTag++;
                 int hp = SC2Data.maxHealth(type);
-                enemyUnits.add(new Unit(tag, type, pos, hp, hp,
+                enemy.units.add(new Unit(tag, type, pos, hp, hp,
                     SC2Data.maxShields(type), SC2Data.maxShields(type), 0, 0));
-                enemyTargets.put(tag, wave.targetPosition());
+                enemy.unitTargets.put(tag, wave.targetPosition());
             }
             log.infof("[EMULATED] Enemy wave spawned: %dx%s at frame %d",
                 wave.unitTypes().size(), wave.unitTypes().get(0), gameFrame);
@@ -205,148 +194,100 @@ public class EmulatedGame {
         });
     }
 
-    private void tickEnemyRetreat() {
-        if (enemyStrategy == null || initialAttackSize == 0) return;
-        EnemyAttackConfig atk = enemyStrategy.attackConfig();
-
-        // 1. Per-unit health threshold
-        if (atk.retreatHealthPercent() > 0) {
-            for (Unit u : enemyUnits) {
-                if (retreatingUnits.contains(u.tag())) continue;
-                double totalHp    = u.health() + u.shields();
-                double maxTotalHp = (double) u.maxHealth() + u.maxShields();
-                if (totalHp / maxTotalHp * 100 < atk.retreatHealthPercent()) {
-                    retreatingUnits.add(u.tag());
-                    enemyTargets.put(u.tag(), STAGING_POS);
-                    log.debugf("[EMULATED] Unit %s retreating (%.1f%% hp)", u.tag(),
-                        totalHp / maxTotalHp * 100);
-                }
-            }
-        }
-
-        // 2. Army-wide depletion threshold
-        if (atk.retreatArmyPercent() > 0) {
-            double survivingPct = (double) enemyUnits.size() / initialAttackSize * 100;
-            if (survivingPct < atk.retreatArmyPercent()) {
-                for (Unit u : enemyUnits) {
-                    if (retreatingUnits.contains(u.tag())) continue;
-                    retreatingUnits.add(u.tag());
-                    enemyTargets.put(u.tag(), STAGING_POS);
-                }
-                log.infof("[EMULATED] Army retreat: %.0f%% surviving (%d/%d)",
-                    survivingPct, enemyUnits.size(), initialAttackSize);
-            }
-        }
-
-        // 3. Transfer arrived retreating units back to enemyStagingArea.
-        // Threshold < 0.1 (not 0.5): stepToward snaps units to exactly STAGING_POS when
-        // within unitSpeed (0.5) of it. After snapping, distance = 0.0. Using < 0.1 avoids
-        // the floating-point ambiguity of comparing ~0.5 against 0.5 at the pre-snap position.
-        enemyUnits.removeIf(u -> {
-            if (!retreatingUnits.contains(u.tag())) return false;
-            if (distance(u.position(), STAGING_POS) >= 0.1) return false;
-            retreatingUnits.remove(u.tag());
-            enemyTargets.remove(u.tag());
-            movementStrategy.clearUnit(u.tag());
-            enemyStagingArea.add(u);  // damaged HP preserved — no healing
-            log.debugf("[EMULATED] Unit %s arrived at staging (hp=%d shields=%d)",
-                u.tag(), u.health(), u.shields());
-            return true;
-        });
-    }
-
-    private void tickEnemyStrategy() {
-        // TODO (Task 6): refactor to use EnemyBehavior driven by the new EnemyStrategy interface.
-        // The old record-based implementation (buildOrder/loop fields) has been removed.
-        // For now this method is a no-op; enemy economy and attacks are pending the
-        // EnemyBehavior + FixedBuildOrderStrategy implementation in Tasks 2/5/6.
-    }
 
     public void applyIntent(Intent intent) {
+        applyIntent(intent, friendly);
+    }
+
+    void applyIntent(Intent intent, PlayerState state) {
         switch (intent) {
-            case MoveIntent   m -> setTarget(m.unitTag(), m.targetLocation(), false);
-            case AttackIntent a -> setTarget(a.unitTag(), a.targetLocation(), true);
-            case TrainIntent  t -> handleTrain(t);
-            case BuildIntent  b -> handleBuild(b);
-            case BlinkIntent  b -> executeBlink(b.unitTag());
+            case MoveIntent   m -> setTarget(m.unitTag(), m.targetLocation(), false, state);
+            case AttackIntent a -> setTarget(a.unitTag(), a.targetLocation(), true,  state);
+            case TrainIntent  t -> handleTrain(t, state);
+            case BuildIntent  b -> handleBuild(b, state);
+            case BlinkIntent  b -> executeBlink(b.unitTag(), state);
         }
     }
 
-    private void setTarget(String tag, Point2d target, boolean isAttack) {
-        if (myUnits.stream().anyMatch(u -> u.tag().equals(tag))) {
-            unitTargets.put(tag, target);
-            if (isAttack) attackingUnits.add(tag);
-            else          attackingUnits.remove(tag);  // MoveIntent cancels auto-attack
+    private void setTarget(String tag, Point2d target, boolean isAttack, PlayerState state) {
+        if (state.units.stream().anyMatch(u -> u.tag().equals(tag))) {
+            state.unitTargets.put(tag, target);
+            if (isAttack) state.attackingUnits.add(tag);
+            else          state.attackingUnits.remove(tag);  // MoveIntent cancels auto-attack
             log.debugf("[EMULATED] %s → (%.1f,%.1f) attack=%b", tag, target.x(), target.y(), isAttack);
         }
     }
 
-    private void handleTrain(TrainIntent t) {
+    private void handleTrain(TrainIntent t, PlayerState state) {
         // Note: t.unitTag() (the training building) is intentionally not validated in the emulator —
         // we have one Nexus and training always succeeds if resources allow. In real SC2 the tag
         // would identify which specific building to queue the unit in.
         int mCost = SC2Data.mineralCost(t.unitType());
         int gCost = SC2Data.gasCost(t.unitType());
         int sCost = SC2Data.supplyCost(t.unitType());
-        if ((int) mineralAccumulator < mCost || vespene < gCost || supplyUsed + sCost > supply) {
+        if ((int) state.minerals < mCost || state.vespene < gCost || state.supplyUsed + sCost > state.supply) {
             log.debugf("[EMULATED] Cannot train %s — insufficient resources", t.unitType());
             return;
         }
-        mineralAccumulator -= mCost;
-        vespene -= gCost;
+        state.minerals -= mCost;
+        state.vespene -= gCost;
+        boolean isEnemy = (state == enemy);
         long completesAt = gameFrame + SC2Data.trainTimeInTicks(t.unitType());
-        pendingCompletions.add(new PendingCompletion(completesAt, () -> {
+        state.pendingCompletions.add(new PlayerState.PendingCompletion(completesAt, () -> {
             // TODO: reserve supplyUsed at queue time (not completion time) to prevent
             // double-queuing when two TrainIntents arrive before either completes.
-            supplyUsed += sCost;
+            state.supplyUsed += sCost;
             String tag = "unit-" + nextTag++;
             int hp = SC2Data.maxHealth(t.unitType());
-            myUnits.add(new Unit(tag, t.unitType(), new Point2d(9, 9), hp, hp,
+            state.units.add(new Unit(tag, t.unitType(), new Point2d(9, 9), hp, hp,
                 SC2Data.maxShields(t.unitType()), SC2Data.maxShields(t.unitType()), 0, 0));
             log.debugf("[EMULATED] Trained %s (tag=%s)", t.unitType(), tag);
+            if (isEnemy && enemyBehavior != null) {
+                enemyBehavior.notifyUnitTrained();
+            }
         }));
     }
 
-    private void handleBuild(BuildIntent b) {
+    private void handleBuild(BuildIntent b, PlayerState state) {
         int mCost = SC2Data.mineralCost(b.buildingType());
-        if ((int) mineralAccumulator < mCost) {
+        if ((int) state.minerals < mCost) {
             log.debugf("[EMULATED] Cannot build %s — insufficient minerals", b.buildingType());
             return;
         }
-        mineralAccumulator -= mCost;
+        state.minerals -= mCost;
         String tag = "bldg-" + nextTag++;
         BuildingType bt = b.buildingType();
-        myBuildings.add(new Building(tag, bt, b.location(),
+        state.buildings.add(new Building(tag, bt, b.location(),
             SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), false));
         long completesAt = gameFrame + SC2Data.buildTimeInTicks(bt);
-        pendingCompletions.add(new PendingCompletion(completesAt, () -> {
-            markBuildingComplete(tag);
-            supply += SC2Data.supplyBonus(bt);
+        state.pendingCompletions.add(new PlayerState.PendingCompletion(completesAt, () -> {
+            markBuildingComplete(tag, state);
+            state.supply += SC2Data.supplyBonus(bt);
             log.debugf("[EMULATED] Completed %s (tag=%s)", bt, tag);
         }));
     }
 
-    private void markBuildingComplete(String tag) {
-        myBuildings.replaceAll(b -> b.tag().equals(tag)
+    private void markBuildingComplete(String tag, PlayerState state) {
+        state.buildings.replaceAll(b -> b.tag().equals(tag)
             ? new Building(b.tag(), b.type(), b.position(), b.health(), b.maxHealth(), true)
             : b);
     }
 
     private void resolveCombat() {
         // Step 1: decrement all cooldowns (floor 0)
-        unitCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
-        enemyCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
-        blinkCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
+        friendly.unitCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
+        enemy.unitCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
+        friendly.blinkCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
 
         Map<String, Integer> pending       = new HashMap<>();
         Set<String>          firedFriendly = new HashSet<>();
         Set<String>          firedEnemy    = new HashSet<>();
 
         // Step 2: collect damage from units where cooldown == 0
-        for (Unit attacker : myUnits) {
-            if (!attackingUnits.contains(attacker.tag())) continue;
-            if (unitCooldowns.getOrDefault(attacker.tag(), 0) > 0) continue;
-            nearestInRange(attacker.position(), enemyUnits, SC2Data.attackRange(attacker.type()))
+        for (Unit attacker : friendly.units) {
+            if (!friendly.attackingUnits.contains(attacker.tag())) continue;
+            if (friendly.unitCooldowns.getOrDefault(attacker.tag(), 0) > 0) continue;
+            nearestInRange(attacker.position(), enemy.units, SC2Data.attackRange(attacker.type()))
                 .ifPresent(target -> {
                     if (!missesHighGround(attacker.position(), target.position(), attacker.type())) {
                         pending.merge(target.tag(),
@@ -355,9 +296,9 @@ public class EmulatedGame {
                     firedFriendly.add(attacker.tag()); // cooldown resets even on miss
                 });
         }
-        for (Unit attacker : enemyUnits) {
-            if (enemyCooldowns.getOrDefault(attacker.tag(), 0) > 0) continue;
-            nearestInRange(attacker.position(), myUnits, SC2Data.attackRange(attacker.type()))
+        for (Unit attacker : enemy.units) {
+            if (enemy.unitCooldowns.getOrDefault(attacker.tag(), 0) > 0) continue;
+            nearestInRange(attacker.position(), friendly.units, SC2Data.attackRange(attacker.type()))
                 .ifPresent(target -> {
                     if (!missesHighGround(attacker.position(), target.position(), attacker.type())) {
                         pending.merge(target.tag(),
@@ -368,24 +309,24 @@ public class EmulatedGame {
         }
 
         // Step 3: apply damage — two-pass (collect all, then apply)
-        myUnits.replaceAll(u -> applyDamage(u, pending.getOrDefault(u.tag(), 0)));
-        myUnits.removeIf(u -> {
+        friendly.units.replaceAll(u -> applyDamage(u, pending.getOrDefault(u.tag(), 0)));
+        friendly.units.removeIf(u -> {
             if (u.health() <= 0) {
-                unitTargets.remove(u.tag());
-                attackingUnits.remove(u.tag());
-                unitCooldowns.remove(u.tag());
-                blinkCooldowns.remove(u.tag());
+                friendly.unitTargets.remove(u.tag());
+                friendly.attackingUnits.remove(u.tag());
+                friendly.unitCooldowns.remove(u.tag());
+                friendly.blinkCooldowns.remove(u.tag());
                 movementStrategy.clearUnit(u.tag());
                 return true;
             }
             return false;
         });
-        enemyUnits.replaceAll(u -> applyDamage(u, pending.getOrDefault(u.tag(), 0)));
-        enemyUnits.removeIf(u -> {
+        enemy.units.replaceAll(u -> applyDamage(u, pending.getOrDefault(u.tag(), 0)));
+        enemy.units.removeIf(u -> {
             if (u.health() <= 0) {
-                enemyTargets.remove(u.tag());
-                enemyCooldowns.remove(u.tag());
-                retreatingUnits.remove(u.tag());  // E6: clean up if killed while retreating
+                enemy.unitTargets.remove(u.tag());
+                enemy.unitCooldowns.remove(u.tag());
+                if (enemyBehavior != null) enemyBehavior.clearRetreating(u.tag());
                 movementStrategy.clearUnit(u.tag());
                 return true;
             }
@@ -393,13 +334,13 @@ public class EmulatedGame {
         });
 
         // Step 4: reset cooldown for units that fired
-        for (Unit u : myUnits) {
+        for (Unit u : friendly.units) {
             if (firedFriendly.contains(u.tag()))
-                unitCooldowns.put(u.tag(), SC2Data.attackCooldownInTicks(u.type()));
+                friendly.unitCooldowns.put(u.tag(), SC2Data.attackCooldownInTicks(u.type()));
         }
-        for (Unit u : enemyUnits) {
+        for (Unit u : enemy.units) {
             if (firedEnemy.contains(u.tag()))
-                enemyCooldowns.put(u.tag(), SC2Data.attackCooldownInTicks(u.type()));
+                enemy.unitCooldowns.put(u.tag(), SC2Data.attackCooldownInTicks(u.type()));
         }
     }
 
@@ -410,8 +351,11 @@ public class EmulatedGame {
                 distance(from, u.position()) * 1000 + u.health() + u.shields()));
     }
 
-    private Point2d blinkRetreatTarget(Unit unit) {
-        Unit nearest = enemyUnits.stream()
+    /**
+     * Computes blink retreat target for a unit. Uses the opposing player's units as threat source.
+     */
+    private Point2d blinkRetreatTarget(Unit unit, PlayerState opponents) {
+        Unit nearest = opponents.units.stream()
             .min(Comparator.comparingDouble(e -> distance(unit.position(), e.position())))
             .orElse(null);
         if (nearest == null) return unit.position();
@@ -435,14 +379,15 @@ public class EmulatedGame {
         return unit.position(); // all directions blocked — stay put
     }
 
-    void executeBlink(String tag) {
-        myUnits.replaceAll(u -> {
+    private void executeBlink(String tag, PlayerState state) {
+        PlayerState opponents = (state == friendly) ? enemy : friendly;
+        state.units.replaceAll(u -> {
             if (!u.tag().equals(tag)) return u;
-            Point2d dest = blinkRetreatTarget(u);
+            Point2d dest = blinkRetreatTarget(u, opponents);
             int restored = Math.min(u.shields() + SC2Data.blinkShieldRestore(u.type()), u.maxShields());
-            unitTargets.put(tag, dest);
-            blinkCooldowns.put(tag, SC2Data.blinkCooldownInTicks(u.type()));
-            attackingUnits.remove(tag); // blink cancels attack mode
+            state.unitTargets.put(tag, dest);
+            state.blinkCooldowns.put(tag, SC2Data.blinkCooldownInTicks(u.type()));
+            state.attackingUnits.remove(tag); // blink cancels attack mode
             return new Unit(u.tag(), u.type(), dest,
                             u.health(), u.maxHealth(), restored, u.maxShields(), 0, 0);
         });
@@ -496,42 +441,50 @@ public class EmulatedGame {
         // is configured, return all enemies as pre-fog behaviour.
 
         // Stamp weapon cooldown from unitCooldowns map onto each friendly unit.
-        // myUnits always carries weaponCooldownTicks=0; the true cooldown lives in unitCooldowns.
-        List<Unit> friendlyWithCooldown = myUnits.stream()
+        // friendly.units always carries weaponCooldownTicks=0; the true cooldown lives in unitCooldowns.
+        List<Unit> friendlyWithCooldown = friendly.units.stream()
             .map(u -> new Unit(u.tag(), u.type(), u.position(),
                                u.health(), u.maxHealth(), u.shields(), u.maxShields(),
-                               unitCooldowns.getOrDefault(u.tag(), 0),
-                               blinkCooldowns.getOrDefault(u.tag(), 0)))
+                               friendly.unitCooldowns.getOrDefault(u.tag(), 0),
+                               friendly.blinkCooldowns.getOrDefault(u.tag(), 0)))
             .toList();
 
         if (terrainGrid != null) {
-            List<Unit> visibleEnemies = enemyUnits.stream()
+            List<Unit> visibleEnemies = enemy.units.stream()
                 .filter(u -> visibility.isVisible(u.position()))
                 .toList();
-            List<Unit> visibleStaging = enemyStagingArea.stream()
+            List<Unit> visibleStaging = enemy.stagingArea.stream()
                 .filter(u -> visibility.isVisible(u.position()))
                 .toList();
             return new GameState(
-                (int) mineralAccumulator,
-                vespene, supply, supplyUsed,
-                friendlyWithCooldown, List.copyOf(myBuildings),
+                (int) friendly.minerals,
+                friendly.vespene, friendly.supply, friendly.supplyUsed,
+                friendlyWithCooldown, List.copyOf(friendly.buildings),
                 visibleEnemies,
-                List.of(),   // enemyBuildings: not modelled in emulated physics
+                List.copyOf(enemy.buildings),
                 visibleStaging,
                 List.copyOf(geysers),
                 List.of(),   // mineralPatches: not modelled in emulated physics
                 gameFrame);
         }
         return new GameState(
-            (int) mineralAccumulator, // floor: fractional minerals accumulate silently
-            vespene, supply, supplyUsed,
-            friendlyWithCooldown, List.copyOf(myBuildings),
-            List.copyOf(enemyUnits),
-            List.of(),   // enemyBuildings: not modelled in emulated physics
-            List.copyOf(enemyStagingArea),
+            (int) friendly.minerals, // floor: fractional minerals accumulate silently
+            friendly.vespene, friendly.supply, friendly.supplyUsed,
+            friendlyWithCooldown, List.copyOf(friendly.buildings),
+            List.copyOf(enemy.units),
+            List.copyOf(enemy.buildings),
+            List.copyOf(enemy.stagingArea),
             List.copyOf(geysers),
             List.of(),   // mineralPatches: not modelled in emulated physics
             gameFrame);
+    }
+
+    private GameState snapshotForEnemy() {
+        // Enemy sees friendly units as their "enemies"
+        return new GameState(0, 0, 0, 0,
+            List.of(), List.of(),
+            List.copyOf(friendly.units), List.of(), List.of(),
+            List.of(), List.of(), gameFrame);
     }
 
     /** Returns the current visibility grid — used by EmulatedEngine to update VisibilityHolder. */
@@ -549,7 +502,7 @@ public class EmulatedGame {
         pendingWaves.add(new EnemyWave(
             spawnFrame,
             new ArrayList<>(types),
-            STAGING_POS,
+            EnemyBehavior.STAGING_POS,
             new Point2d(8, 8)
         ));
     }
@@ -558,32 +511,43 @@ public class EmulatedGame {
 
     void setMiningProbes(int count) { this.miningProbes = count; }
 
-    void setEnemyStrategy(EnemyStrategy s) { this.enemyStrategy = s; }
-    int  enemyMinerals()                   { return (int) enemyMineralAccumulator; }
-    int  enemyStagingSize()                { return enemyStagingArea.size(); }
+    /** Wires an EnemyStrategy through an EnemyBehavior — test shim for retreat tests. */
+    void setEnemyStrategy(EnemyStrategy s) {
+        if (s == null) {
+            this.enemyBehavior = null;
+        } else {
+            this.enemyBehavior = new EnemyBehavior(s, enemy);
+        }
+    }
+
+    /** Sets the EnemyBehavior directly — for tests that need full control. */
+    void setEnemyBehavior(EnemyBehavior b) { this.enemyBehavior = b; }
+
+    int  enemyMinerals()  { return (int) enemy.minerals; }
+    int  enemyStagingSize() { return enemy.stagingArea.size(); }
 
     /** Direct mineral override for tests — avoids tick-based accumulation. */
-    void setMineralsForTesting(int amount) { this.mineralAccumulator = amount; }
+    void setMineralsForTesting(int amount) { friendly.minerals = amount; }
 
     /** Positions an enemy near the base for combat tests. */
     void spawnEnemyForTesting(UnitType type, Point2d position) {
         int hp = SC2Data.maxHealth(type);
         String tag = "test-enemy-" + nextTag++;
-        enemyUnits.add(new Unit(tag, type, position, hp, hp,
+        enemy.units.add(new Unit(tag, type, position, hp, hp,
             SC2Data.maxShields(type), SC2Data.maxShields(type), 0, 0));
-        enemyTargets.put(tag, NEXUS_POS);
+        enemy.unitTargets.put(tag, EnemyBehavior.NEXUS_POS);
     }
 
     /** Sets a friendly unit's health for combat threshold tests. */
     void setHealthForTesting(String tag, int health) {
-        myUnits.replaceAll(u -> u.tag().equals(tag)
+        friendly.units.replaceAll(u -> u.tag().equals(tag)
             ? new Unit(u.tag(), u.type(), u.position(), health, u.maxHealth(), u.shields(), u.maxShields(), 0, 0)
             : u);
     }
 
     /** Sets a friendly unit's shields for shield absorption tests. */
     void setShieldsForTesting(String tag, int shields) {
-        myUnits.replaceAll(u -> u.tag().equals(tag)
+        friendly.units.replaceAll(u -> u.tag().equals(tag)
             ? new Unit(u.tag(), u.type(), u.position(), u.health(), u.maxHealth(), shields, u.maxShields(), 0, 0)
             : u);
     }
@@ -592,28 +556,32 @@ public class EmulatedGame {
     String spawnFriendlyForTesting(UnitType type, Point2d position) {
         String tag = "test-unit-" + nextTag++;
         int hp = SC2Data.maxHealth(type);
-        myUnits.add(new Unit(tag, type, position, hp, hp,
+        friendly.units.add(new Unit(tag, type, position, hp, hp,
             SC2Data.maxShields(type), SC2Data.maxShields(type), 0, 0));
         return tag;
     }
 
     /** Sets an enemy unit's shields directly — for testing Hardened Shield at 0 shields. */
     void setEnemyShieldsForTesting(String tag, int shields) {
-        enemyUnits.replaceAll(u -> u.tag().equals(tag)
+        enemy.units.replaceAll(u -> u.tag().equals(tag)
             ? new Unit(u.tag(), u.type(), u.position(), u.health(), u.maxHealth(),
                        shields, u.maxShields(), 0, 0)
             : u);
     }
 
     /** Returns a copy of retreating unit tags — for E6 retreat assertions. */
-    Set<String> retreatingUnitTags() { return Set.copyOf(retreatingUnits); }
+    Set<String> retreatingUnitTags() {
+        return enemyBehavior != null ? Set.copyOf(enemyBehavior.retreatingUnits()) : Set.of();
+    }
 
     /** Sets initialAttackSize directly — simulates a wave having been launched. */
-    void setInitialAttackSizeForTesting(int n) { this.initialAttackSize = n; }
+    void setInitialAttackSizeForTesting(int n) {
+        if (enemyBehavior != null) enemyBehavior.setInitialAttackSizeForTesting(n);
+    }
 
     /** Sets an enemy unit's health directly — for retreat health threshold tests. */
     void setEnemyHealthForTesting(String tag, int health) {
-        enemyUnits.replaceAll(u -> u.tag().equals(tag)
+        enemy.units.replaceAll(u -> u.tag().equals(tag)
             ? new Unit(u.tag(), u.type(), u.position(), health, u.maxHealth(),
                        u.shields(), u.maxShields(), 0, 0)
             : u);
@@ -626,19 +594,19 @@ public class EmulatedGame {
     /** Injects a predictable Random for miss-chance tests. */
     void setRandomForTesting(Random r) { this.random = r; }
 
-    /** Adds a unit directly to enemyStagingArea — for fog-of-war staging visibility tests. */
+    /** Adds a unit directly to enemy staging area — for fog-of-war staging visibility tests. */
     void addStagedUnitForTesting(UnitType type, Point2d position) {
         String tag = "test-staging-" + nextTag++;
         int hp = SC2Data.maxHealth(type);
-        enemyStagingArea.add(new Unit(tag, type, position, hp, hp,
+        enemy.stagingArea.add(new Unit(tag, type, position, hp, hp,
             SC2Data.maxShields(type), SC2Data.maxShields(type), 0, 0));
     }
 
-    /** Test helper — adds a friendly unit directly to myUnits. Package-private. */
+    /** Test helper — adds a friendly unit directly to friendly.units. Package-private. */
     void spawnFriendlyUnitForTesting(UnitType type, Point2d position) {
         int hp  = SC2Data.maxHealth(type);
         int sh  = SC2Data.maxShields(type);
         String tag = "test-friendly-" + nextTag++;
-        myUnits.add(new Unit(tag, type, position, hp, hp, sh, sh, 0, 0));
+        friendly.units.add(new Unit(tag, type, position, hp, hp, sh, sh, 0, 0));
     }
 }
