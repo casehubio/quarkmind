@@ -89,11 +89,27 @@ class EnemyBehaviorTest {
     }
 
     @Test
-    void tick_doesNotAttack_belowThreshold() {
+    void tick_doesNotAttack_belowThreshold_andTimerNotFired() {
+        // Seed timer so it hasn't elapsed (interval=200, set to 50)
+        behavior.setFramesSinceLastAttackForTesting(50L);
         enemy.stagingArea.add(new Unit("s0", UnitType.ZEALOT,
             new Point2d(26,26), 100,100,50,50,0,0));
         behavior.tick(emptyState(), queue);
         assertThat(queue.drainAll()).noneMatch(i -> i instanceof AttackIntent);
+    }
+
+    @Test
+    void tick_launchesAttack_whenTimerFires_evenBelowThreshold() {
+        // threshold=3, only 1 unit in staging — threshold alone wouldn't fire
+        enemy.stagingArea.add(new Unit("s0", UnitType.ZEALOT,
+            new Point2d(26,26), 100,100,50,50,0,0));
+        // attackIntervalFrames=200 — set counter to exactly the threshold
+        behavior.setInitialAttackSizeForTesting(1);
+        behavior.setFramesSinceLastAttackForTesting(200L);
+        behavior.tick(emptyState(), queue);
+        var intents = queue.drainAll();
+        assertThat(intents).anyMatch(i -> i instanceof AttackIntent);
+        assertThat(enemy.stagingArea).isEmpty();
     }
 
     // ---- retreat ----
