@@ -30,6 +30,12 @@ class EnemyBehaviorTest {
             List.of(), List.of(), 0L);
     }
 
+    static GameState stateWithFrame(long frame) {
+        return new GameState(50, 0, 15, 12,
+            List.of(), List.of(), List.of(), List.of(), List.of(),
+            List.of(), List.of(), frame);
+    }
+
     /** Permissive TechTree — always allows training, never requires a prereq building. */
     static TechTree permissive() {
         return new TechTree() {
@@ -208,5 +214,30 @@ class EnemyBehaviorTest {
         var intents = queue.drainAll();
         assertThat(intents).anyMatch(i -> i instanceof BuildIntent bi
             && bi.buildingType() == BuildingType.CYBERNETICS_CORE);
+    }
+
+    // ---- ReactiveStrategy wiring ----
+
+    @Test
+    void reactiveStrategy_remainsActiveAfterShouldSwitch() {
+        // ReactiveStrategy with 10-frame re-eval interval
+        ReactiveStrategy reactive = new ReactiveStrategy(10);
+        enemy.minerals = 0;
+        var b = new EnemyBehavior(reactive, enemy, permissive());
+
+        // Tick frames 1–9 — shouldSwitch returns false (not a multiple of 10)
+        for (int i = 1; i < 10; i++) {
+            b.tick(stateWithFrame(i), queue);
+            queue.drainAll();
+        }
+        // Outer strategy unchanged
+        assertThat(b.currentStrategy()).isSameAs(reactive);
+
+        // Tick frame 10 — shouldSwitch fires, resolveCounter() runs internally
+        b.tick(stateWithFrame(10), queue);
+        queue.drainAll();
+
+        // Outer wrapper must still be the same ReactiveStrategy instance
+        assertThat(b.currentStrategy()).isSameAs(reactive);
     }
 }

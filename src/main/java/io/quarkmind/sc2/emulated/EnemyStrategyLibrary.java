@@ -6,9 +6,12 @@ import java.util.*;
 /**
  * Static registry of named enemy strategies.
  * <p>
- * {@link #forName(String)} returns a fresh {@link FixedBuildOrderStrategy} instance
- * on every call, so each caller gets independent build-order state.
- * {@link #randomForRace(Race)} likewise returns a fresh instance.
+ * {@link #forName(String)} returns a fresh strategy instance on every call, so each caller
+ * gets independent state. {@link #randomForRace(Race)} likewise returns a fresh instance.
+ * <p>
+ * {@code "REACTIVE"} is a special entry: {@link #forName} returns a new {@link ReactiveStrategy}
+ * with a 50-frame re-evaluation interval. It is excluded from {@link #randomForRace} because it
+ * has no fixed race — its race reflects whichever counter it has selected at runtime.
  */
 public final class EnemyStrategyLibrary {
 
@@ -22,11 +25,14 @@ public final class EnemyStrategyLibrary {
 
     private static final Random RANDOM = new Random();
 
-    /** Template records — one per named strategy. Never mutated; cloned on lookup. */
+    /** Template records — one per FixedBuildOrderStrategy. Never mutated; cloned on lookup. */
     private record Template(String name, Race race, List<UnitType> buildOrder,
                             int mineralsPerTick, EnemyAttackConfig attackConfig) {}
 
     private static final Map<String, Template> REGISTRY = new LinkedHashMap<>();
+
+    /** Ordered name set including REACTIVE (which has no Template entry). */
+    private static final Set<String> ALL_NAMES = new LinkedHashSet<>();
 
     static {
         add("PROTOSS_4GATE",        Race.PROTOSS, FAST_PUSH, 2,
@@ -53,11 +59,8 @@ public final class EnemyStrategyLibrary {
             UnitType.MARAUDER, UnitType.MARAUDER, UnitType.MEDIVAC);
         add("TERRAN_MECH",           Race.TERRAN,  SLOW_PUSH, 2,
             UnitType.HELLION, UnitType.HELLION, UnitType.SIEGE_TANK, UnitType.SIEGE_TANK);
-        // REACTIVE is a placeholder — Race.PROTOSS is a temporary sentinel only.
-        // Task 11 replaces this entry with a real ReactiveStrategy whose race() reflects
-        // the selected counter strategy at runtime. Do not use REACTIVE.race() as meaningful data.
-        add("REACTIVE",              Race.PROTOSS, FAST_PUSH, 2,
-            UnitType.ZEALOT, UnitType.STALKER);
+        // REACTIVE has no Template — forName("REACTIVE") creates a fresh ReactiveStrategy(50).
+        ALL_NAMES.add("REACTIVE");
     }
 
     private EnemyStrategyLibrary() {}
@@ -65,16 +68,22 @@ public final class EnemyStrategyLibrary {
     private static void add(String name, Race race, EnemyAttackConfig atk,
                             int mpt, UnitType... units) {
         REGISTRY.put(name, new Template(name, race, List.of(units), mpt, atk));
+        ALL_NAMES.add(name);
     }
 
     /**
-     * Returns a fresh strategy instance with build index at zero.
-     * Each call produces a distinct object — callers may advance their instance
-     * independently without affecting other callers.
+     * Returns a fresh strategy instance.
+     * <p>
+     * For {@code "REACTIVE"}, returns a new {@link ReactiveStrategy} with a 50-frame interval.
+     * For all other names, returns a fresh {@link FixedBuildOrderStrategy} with build index at zero.
+     * Each call produces a distinct object — callers may advance their instance independently.
      *
      * @throws IllegalArgumentException if the name is not registered
      */
     public static EnemyStrategy forName(String name) {
+        if ("REACTIVE".equals(name)) {
+            return new ReactiveStrategy(50);
+        }
         Template t = REGISTRY.get(name);
         if (t == null) throw new IllegalArgumentException("Unknown strategy: " + name);
         return new FixedBuildOrderStrategy(t.name(), t.race(), t.buildOrder(),
@@ -83,13 +92,13 @@ public final class EnemyStrategyLibrary {
 
     /**
      * Returns a fresh strategy instance chosen at random from strategies of the given race,
-     * excluding the REACTIVE placeholder.
+     * excluding REACTIVE (which has no fixed race).
      *
      * @throws IllegalStateException if no non-REACTIVE strategies exist for the race
      */
     public static EnemyStrategy randomForRace(Race race) {
         List<Template> pool = REGISTRY.values().stream()
-            .filter(t -> t.race() == race && !t.name().equals("REACTIVE"))
+            .filter(t -> t.race() == race)
             .toList();
         if (pool.isEmpty()) throw new IllegalStateException("No strategies for race: " + race);
         Template t = pool.get(RANDOM.nextInt(pool.size()));
@@ -99,6 +108,6 @@ public final class EnemyStrategyLibrary {
 
     /** Returns an unmodifiable view of all registered strategy names, in insertion order. */
     public static Set<String> allNames() {
-        return Collections.unmodifiableSet(REGISTRY.keySet());
+        return Collections.unmodifiableSet(ALL_NAMES);
     }
 }

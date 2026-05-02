@@ -55,10 +55,31 @@ class EnemyBehavior implements PlayerBehavior {
     @Override
     public void tick(GameState observation, IntentQueue queue) {
         accumulateMinerals();
+        tickStrategySwitch(observation);
         tickProduction(observation, queue);
         tickAttackLaunch(observation, queue);
         tickRetreat(observation, queue);
         framesSinceLastAttack++;
+    }
+
+    // -------------------------------------------------------------------------
+    // Strategy switching
+    // -------------------------------------------------------------------------
+
+    private void tickStrategySwitch(GameState observation) {
+        EnemyObservation obs = buildObservation(observation);
+        if (!strategy.shouldSwitch(obs)) return;
+
+        if (strategy instanceof ReactiveStrategy r) {
+            // ReactiveStrategy resolves its counter internally and stays active as the
+            // outer wrapper — the same instance continues driving future re-evaluations.
+            r.resolveCounter();
+        } else {
+            // Fixed strategies are replaced wholesale with a random strategy of the same race.
+            strategy = EnemyStrategyLibrary.randomForRace(strategy.race());
+        }
+        currentTarget = Optional.empty();
+        log.infof("[ENEMY] Strategy re-evaluated: %s", strategy.name());
     }
 
     // -------------------------------------------------------------------------
