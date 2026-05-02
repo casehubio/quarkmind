@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import io.quarkmind.domain.EnemyStrategy;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Race;
+import io.quarkmind.domain.TechTree;
 import io.quarkmind.domain.TerrainGrid;
 import io.quarkmind.qa.EmulatedConfig;
 import io.quarkmind.sc2.IntentQueue;
@@ -67,7 +68,7 @@ public class EmulatedEngine implements SC2Engine {
             ? EnemyStrategyLibrary.forName(strategyName)
             : EnemyStrategyLibrary.randomForRace(race);
 
-        EnemyBehavior enemyBehavior = new EnemyBehavior(strategy, game.enemy);
+        EnemyBehavior enemyBehavior = new EnemyBehavior(strategy, game.enemy, new TechTree());
         game.setEnemyBehavior(enemyBehavior);
 
         game.reset();

@@ -518,12 +518,17 @@ public class EmulatedGame {
 
     void setMiningProbes(int count) { this.miningProbes = count; }
 
-    /** Wires an EnemyStrategy through an EnemyBehavior — test shim for retreat tests. */
+    /** Wires an EnemyStrategy through an EnemyBehavior — test shim for retreat tests.
+     *  Uses a permissive TechTree so existing tests are not affected by tech-tree gating. */
     void setEnemyStrategy(EnemyStrategy s) {
         if (s == null) {
             this.enemyBehavior = null;
         } else {
-            this.enemyBehavior = new EnemyBehavior(s, enemy);
+            TechTree permissive = new TechTree() {
+                @Override public boolean canTrain(UnitType u, Set<BuildingType> b) { return true; }
+                @Override public Optional<BuildingType> nextRequired(UnitType u, Set<BuildingType> b) { return Optional.empty(); }
+            };
+            this.enemyBehavior = new EnemyBehavior(s, enemy, permissive);
         }
     }
 
