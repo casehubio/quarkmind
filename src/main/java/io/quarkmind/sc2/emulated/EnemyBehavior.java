@@ -74,6 +74,9 @@ class EnemyBehavior implements PlayerBehavior {
     // -------------------------------------------------------------------------
 
     private void tickProduction(GameState observation, IntentQueue queue) {
+        // Prune pendingBuildings: any type now present in enemy.buildings is no longer pending
+        pendingBuildings.removeIf(bt -> builtBuildingTypes().contains(bt));
+
         // If a TrainIntent was previously issued but not yet reflected in enemy.units,
         // wait until the unit appears (i.e., enemy.units grows). For simplicity in the
         // emulated game, we track a boolean flag: trainingPending. EmulatedGame calls

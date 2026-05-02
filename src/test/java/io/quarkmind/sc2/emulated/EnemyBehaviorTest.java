@@ -191,4 +191,22 @@ class EnemyBehaviorTest {
             && bi.buildingType() == BuildingType.GATEWAY).count();
         assertThat(buildCount).isZero();
     }
+
+    @Test
+    void pendingBuilding_prunedOnceBuilt_allowsRetry() {
+        EnemyStrategy stalker = new FixedBuildOrderStrategy("STALK", Race.PROTOSS,
+            List.of(UnitType.STALKER), 50, new EnemyAttackConfig(3, 200, 0, 0));
+        enemy.minerals = 500;
+        var b = new EnemyBehavior(stalker, enemy, new TechTree());
+        // First tick — queues GATEWAY (pending)
+        b.tick(emptyState(), queue);
+        queue.drainAll();
+        // Simulate building completing: add it to enemy.buildings
+        enemy.buildings.add(new Building("gw", BuildingType.GATEWAY, new Point2d(50, 50), 500, 500, true));
+        // Second tick — GATEWAY is built, should prune and move to CYBERNETICS_CORE
+        b.tick(emptyState(), queue);
+        var intents = queue.drainAll();
+        assertThat(intents).anyMatch(i -> i instanceof BuildIntent bi
+            && bi.buildingType() == BuildingType.CYBERNETICS_CORE);
+    }
 }
