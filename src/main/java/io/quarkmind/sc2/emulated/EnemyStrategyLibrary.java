@@ -20,6 +20,8 @@ public final class EnemyStrategyLibrary {
     private static final EnemyAttackConfig FLOOD =
         new EnemyAttackConfig(8, 120, 15, 25);
 
+    private static final Random RANDOM = new Random();
+
     /** Template records — one per named strategy. Never mutated; cloned on lookup. */
     private record Template(String name, Race race, List<UnitType> buildOrder,
                             int mineralsPerTick, EnemyAttackConfig attackConfig) {}
@@ -51,7 +53,9 @@ public final class EnemyStrategyLibrary {
             UnitType.MARAUDER, UnitType.MARAUDER, UnitType.MEDIVAC);
         add("TERRAN_MECH",           Race.TERRAN,  SLOW_PUSH, 2,
             UnitType.HELLION, UnitType.HELLION, UnitType.SIEGE_TANK, UnitType.SIEGE_TANK);
-        // REACTIVE placeholder — replaced by ReactiveStrategy in a later task
+        // REACTIVE is a placeholder — Race.PROTOSS is a temporary sentinel only.
+        // Task 11 replaces this entry with a real ReactiveStrategy whose race() reflects
+        // the selected counter strategy at runtime. Do not use REACTIVE.race() as meaningful data.
         add("REACTIVE",              Race.PROTOSS, FAST_PUSH, 2,
             UnitType.ZEALOT, UnitType.STALKER);
     }
@@ -88,7 +92,7 @@ public final class EnemyStrategyLibrary {
             .filter(t -> t.race() == race && !t.name().equals("REACTIVE"))
             .toList();
         if (pool.isEmpty()) throw new IllegalStateException("No strategies for race: " + race);
-        Template t = pool.get(new Random().nextInt(pool.size()));
+        Template t = pool.get(RANDOM.nextInt(pool.size()));
         return new FixedBuildOrderStrategy(t.name(), t.race(), t.buildOrder(),
                                            t.mineralsPerTick(), t.attackConfig());
     }

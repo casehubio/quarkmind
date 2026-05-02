@@ -69,17 +69,13 @@ class EnemyStrategyLibraryTest {
 
     @Test
     void forName_returnsIndependentInstances_withResetBuildIndex() {
-        // Calling forName twice should give instances that start from the beginning
         EnemyObservation obs = new EnemyObservation(List.of(), Set.of(), 9999, 0L);
         EnemyStrategy s1 = EnemyStrategyLibrary.forName("PROTOSS_4GATE");
-        s1.nextUnit(obs); // advance once
+        s1.nextUnit(obs); // advance s1 once
 
         EnemyStrategy s2 = EnemyStrategyLibrary.forName("PROTOSS_4GATE");
-        // s2 must start from beginning regardless of s1's state
-        var first1 = s1.nextUnit(obs);
-        var first2 = s2.nextUnit(obs);
-        // Both should return the second unit of the build order (or first if independent)
-        // Key assertion: they're not the same object
         assertThat(s1).isNotSameAs(s2);
+        // s2 must always start at index 0 (first unit = ZEALOT for PROTOSS_4GATE)
+        assertThat(s2.nextUnit(obs)).contains(UnitType.ZEALOT);
     }
 }
