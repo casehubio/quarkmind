@@ -96,7 +96,7 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 
 **Unit tests** (no Quarkus, fast):
 - Instantiate classes directly via `new` — no CDI
-- Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `BasicStrategyTaskTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`
+- Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `BasicStrategyTaskTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`
 - Package-private static methods on CDI beans (e.g. `DroolsTacticsTask.computeInRangeTags`, `computeOnCooldownTags`) are tested from the same package without CDI — make them `static` (not `private`) to enable this. Strategy classes (`DirectKiteStrategy`, `LowestHpFocusFireStrategy`) follow the same pattern
 
 **Integration tests** (`@QuarkusTest`, full CDI context):
@@ -130,12 +130,13 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 - `spawnFriendlyUnitForTesting(UnitType, Point2d)` — adds a friendly unit directly to `myUnits` (for blink and per-unit-type combat tests)
 - `setHealthForTesting(String tag, int health)` — sets a friendly unit's HP directly
 - `setShieldsForTesting(String tag, int shields)` — sets a friendly unit's shields directly
-- `setEnemyStrategy(EnemyStrategy)` — sets the active enemy AI strategy for economy/attack tests
-- `enemyMinerals()` — returns current enemy mineral accumulator (int) for economy assertions
-- `enemyStagingSize()` — returns count of staged enemy units waiting to attack
+- `setEnemyStrategy(EnemyStrategy)` — compatibility shim: wraps the strategy in an `EnemyBehavior` with a permissive `TechTree`; use for unit tests that don't exercise tech gating
+- `setEnemyBehavior(EnemyBehavior)` — inject a fully configured `EnemyBehavior`; use when testing tech tree or reactive strategy switching
+- `enemyMinerals()` — returns current enemy mineral count (int) — delegates to `enemy.minerals`
+- `enemyStagingSize()` — returns count of staged enemy units — delegates to `enemy.stagingArea.size()`
 - `setTerrainGrid(TerrainGrid)` — activate terrain for tests that verify wall enforcement or high-ground miss-chance mechanics (default null = no terrain effects)
 - `setRandomForTesting(Random)` — inject a predictable Random for miss-chance tests (always-miss: return 0.0; always-hit: return 1.0)
-- `addStagedUnitForTesting(UnitType, Point2d)` — inject a unit into `enemyStagingArea` (for fog-of-war visibility tests where staging area filtering is under test)
+- `addStagedUnitForTesting(UnitType, Point2d)` — inject a unit into `enemy.stagingArea` (for fog-of-war visibility tests where staging area filtering is under test)
 
 **SimulatedGame test helpers** (public, usable from any test including `VisualizerRenderTest`):
 - `setUnitHealth(String tag, int health)` — inject low-health state for visualiser E2E tests

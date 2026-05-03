@@ -56,8 +56,13 @@ Plain Java records in `domain/` — no framework dependencies, always native-com
 | `PendingCompletion` | Under-construction building: completesAtTick, buildingType |
 | `GameStateTick` | Immutable record passed to FlowEconomicsTask; Jackson-serialisable |
 | `ResourceBudget` | Per-tick spending budget: minerals/vespene consumed by plugins |
+| `Race` | Enum: PROTOSS, ZERG, TERRAN — used by `EnemyStrategy` and `TechTree` |
+| `EnemyObservation` | Snapshot from the enemy's perspective: playerUnits, enemyBuildings, minerals, gameFrame |
+| `EnemyStrategy` | Interface — see §Mock Infrastructure |
+| `EnemyAttackConfig` | Record: armyThreshold, attackIntervalFrames, retreatHealthPercent, retreatArmyPercent |
+| `TechTree` | Prerequisite graph — see §Mock Infrastructure |
 
-`SC2Data` in `domain/` provides shared constants for both `SimulatedGame` and `EmulatedGame`: damage-per-tick, attack range, supply cost, shield values. Centralised here to eliminate drift between engines.
+`SC2Data` in `domain/` provides shared constants for both `SimulatedGame` and `EmulatedGame`: damage-per-tick, attack range, supply cost, shield values, building health, and mineral costs. Centralised here to eliminate drift between engines.
 
 ---
 
@@ -131,8 +136,16 @@ Plugins are registered at startup by `QuarkMindTaskRegistrar` — injecting each
 | `SimulatedGame` | Hand-crafted stateful SC2 simulation; CDI bean in `%mock` profile |
 | `ReplaySimulatedGame` | Replay-driven variant; plain Java, driven from real `.SC2Replay` tracker events (PlayerStats, UnitBorn, UnitDied, UnitInit, UnitDone). Captures neutral units (`ctrlId==0`) as mineral patches and geysers; enemy buildings tracked via UnitBorn/UnitInit/UnitDone/UnitDied. |
 | `ReplayEngine` | `SC2Engine` for `%replay` profile — observe-only, records agent intents |
-| `EmulatedGame` | Physics simulation engine: mineral harvesting, build times, movement, combat (E1-E3 complete); CDI bean in `%emulated` profile |
-| `EmulatedEngine` | `SC2Engine` wrapping `EmulatedGame`; active on `@IfBuildProfile("emulated")` |
+| `EmulatedGame` | Physics referee: holds `PlayerState friendly` + `PlayerState enemy`; both players share the same `applyIntent(Intent, PlayerState)` and `IntentQueue` drain path; CDI bean in `%emulated` profile |
+| `PlayerState` | Per-player mutable state: units, buildings, stagingArea, minerals, supply, pendingCompletions, movement/combat maps |
+| `PlayerBehavior` | Interface: `tick(GameState, IntentQueue)` — drives decisions for one player per tick |
+| `EnemyBehavior` | `implements PlayerBehavior`; owns production loop, tech-tree gating, attack launch, retreat, strategy switching |
+| `EnemyStrategy` | Interface: `name()`, `race()`, `mineralsPerTick()`, `attackConfig()`, `nextUnit(obs)`, `shouldSwitch(obs)` |
+| `FixedBuildOrderStrategy` | `EnemyStrategy` implementation: loops a fixed `List<UnitType>`, never switches |
+| `ReactiveStrategy` | `EnemyStrategy` implementation: re-evaluates every N frames, counter-picks based on dominant friendly unit type |
+| `EnemyStrategyLibrary` | Static registry of 9 named strategies (3 Protoss, 3 Zerg, 3 Terran) + `REACTIVE`; `forName(String)` and `randomForRace(Race)` return fresh instances |
+| `TechTree` | Domain class: static prerequisite graph for all three races; `canTrain(unit, builtSet)` and `nextRequired(unit, builtSet)` |
+| `EmulatedEngine` | `SC2Engine` wrapping `EmulatedGame`; active on `@IfBuildProfile("emulated")`; wires `EnemyBehavior` at `joinGame()` using race + strategy from `EmulatedConfig` |
 | `ScenarioLibrary` | Named test scenarios (set-resources, spawn-enemy-attack, etc.) |
 | `SC2Data` | Shared constants — see §Domain Model |
 
@@ -143,6 +156,15 @@ Plugins are registered at startup by `QuarkMindTaskRegistrar` — injecting each
 | `EmulatedGame` separate from `SimulatedGame` | `EmulatedGame` in `sc2/emulated/` | `SimulatedGame` is the scripted test oracle; mixing physics corrupts its determinism | Evolve SimulatedGame in-place |
 | `SC2Data` in `domain/` | Shared constants for both engines | Eliminates drift between SimulatedGame and EmulatedGame data tables | Duplicate tables in each engine |
 | `@IfBuildProfile("emulated")` on `EmulatedEngine` | Positive guard — active only in `%emulated` | Prevents CDI ambiguity without growing other engines' exclusion lists | Add "emulated" to all other `@UnlessBuildProfile` lists |
+| Symmetric `PlayerState` × 2 | Both players same data shape; `applyIntent(Intent, PlayerState)` shared | Eliminates duplicated train/build/move logic; combat symmetric by construction | Asymmetric enemy subclass with overrides |
+| `PlayerBehavior` interface | `tick(GameState, IntentQueue)` — same contract for both sides | Future CaseHub-driven enemy is a drop-in; friendly side already satisfies the contract implicitly | Enemy-specific callback shape |
+| `EnemyBehavior` package-private | Only `EmulatedGame` (same package) constructs and wires it | No reason to expose production detail; `setEnemyBehavior()` shim for tests | Public CDI bean |
+| `setEnemyStrategy()` test shim | Wraps strategy in an `EnemyBehavior` with a permissive `TechTree` | Existing tests don't exercise tech gating — shim preserves backward compatibility | Force all tests to supply `TechTree` |
+| `TechTree` in `domain/` | No framework deps; friendly plugins can optionally consult it | Prerequisite logic is pure data; no reason to couple to emulation layer | `sc2/emulated/` package (would prevent friendly-side use) |
+| `EnemyStrategyLibrary.forName()` returns fresh instance | Each caller gets independent build-order index and internal state | Shared instance would corrupt state if two callers advance the build order | Singleton strategy objects |
+| `REACTIVE` excluded from `randomForRace()` | Has no fixed race; race reflects chosen counter at runtime | `randomForRace()` callers expect a race-homogeneous pool | Include REACTIVE in random pool |
+| Mineral accumulation inside `EnemyBehavior` | `enemy.minerals += strategy.mineralsPerTick()` each tick | Decouples rate from physics tick; rate is a strategy decision | `EmulatedGame` accumulates minerals and gives enemy a budget |
+| Tech-tree building deduplication via `pendingBuildings` | `Set<BuildingType>` tracks in-progress prereq builds | Without dedup, every tick without minerals queues another `BuildIntent` for the same prereq | Re-check enemy.buildings only — misses in-flight builds |
 
 ### Emulation Engine Progress
 
@@ -151,7 +173,7 @@ Plugins are registered at startup by `QuarkMindTaskRegistrar` — injecting each
 | E1 | Unit movement, probe mineral harvesting, build times, `EmulatedGame`/`EmulatedEngine` infrastructure | ✅ Complete |
 | E2 | Vector-based movement, scripted enemy wave at frame 200, full intent handling, cost deduction, `EmulatedConfig` live config panel | ✅ Complete |
 | E3 | Shields/maxShields on `Unit`, two-pass simultaneous combat resolution, `SC2Data.damagePerTick`/`attackRange`/`maxShields`, unit death | ✅ Complete |
-| E4 | Enemy active AI — enemy economy, production, attack waves | 🔜 Next |
+| E4 | Enemy active AI — `PlayerState`×2 symmetric architecture, `EnemyBehavior`, `EnemyStrategyLibrary` (9 strategies + REACTIVE), `TechTree`, `ReactiveStrategy` | ✅ Complete |
 | E5 | Pathfinding + terrain — A* on tile map, units navigate obstacles | 🔜 Planned |
 
 ### Combat Model (E3)
@@ -264,15 +286,15 @@ A PixiJS 8 live visualizer renders game state each tick, served by Quarkus over 
 
 ## Current State
 
-E3 complete. QuarkMind:
+E4 complete. QuarkMind:
 - Connects to and issues commands in a live SC2 game (all four plugins, real unit/building tags, sealed Intent dispatch)
-- Runs full agent loop against `EmulatedGame` with Protoss combat (shields, two-pass simultaneous resolution, health tinting, unit death)
+- Runs full agent loop against `EmulatedGame` with symmetric two-player physics: friendly and enemy each have a `PlayerState`, both share the same `applyIntent()` / `IntentQueue` path
+- Enemy driven by `EnemyBehavior` implementing `PlayerBehavior`: production loop, tech-tree gating (`TechTree`), 9 named strategies across all 3 races via `EnemyStrategyLibrary`, and `ReactiveStrategy` that counter-picks based on observed friendly unit composition
 - Renders live game state in a PixiJS 8 visualizer via WebSocket, wrapped in Electron
-- 236 tests: unit + integration + Playwright E2E
+- 258 tests: unit + integration + Playwright E2E
 
 ## Next Steps
 
-- **E4: Enemy active AI** — enemy economy (mineral harvesting, unit production) and attack waves, so the bot faces a real opponent. Before starting: brainstorm, create GitHub epic + child issues, write plan. Run `mvn test -Pbenchmark` and record the post-E3 baseline before changing anything.
 - **E5: Pathfinding + terrain** — A* on tile map, units navigate obstacles
 - **#13 Live SC2 smoke test** — blocked on SC2 availability
 - **#14 GraalVM native image tracing** — blocked on #13
