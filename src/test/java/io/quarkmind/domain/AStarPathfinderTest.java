@@ -186,4 +186,62 @@ class AStarPathfinderTest {
             (int) wp.x() == 5 && (int) wp.y() == 5);
         assertThat(passedRamp).isTrue();
     }
+
+    // ---- smoothPath() tests ----
+
+    @Test
+    void smoothPath_emptyPath_returnsEmpty() {
+        assertThat(AStarPathfinder.smoothPath(List.of(), open(10, 10))).isEmpty();
+    }
+
+    @Test
+    void smoothPath_singlePoint_returnsSinglePoint() {
+        List<Point2d> path = List.of(new Point2d(1.5f, 1.5f));
+        assertThat(AStarPathfinder.smoothPath(path, open(10, 10))).hasSize(1);
+    }
+
+    @Test
+    void smoothPath_twoPoints_returnsBoth() {
+        List<Point2d> path = List.of(new Point2d(1.5f, 1.5f), new Point2d(5.5f, 5.5f));
+        assertThat(AStarPathfinder.smoothPath(path, open(10, 10))).hasSize(2);
+    }
+
+    @Test
+    void smoothPath_openGround_reducesWaypoints() {
+        TerrainGrid g = open(20, 20);
+        List<Point2d> raw = pf.findPath(g, new Point2d(0, 0), new Point2d(19, 0));
+        List<Point2d> smoothed = AStarPathfinder.smoothPath(raw, g);
+        assertThat(smoothed.size()).isLessThan(raw.size());
+        // Goal is preserved
+        Point2d last = smoothed.get(smoothed.size() - 1);
+        assertThat(last.x()).isEqualTo(raw.get(raw.size() - 1).x());
+        assertThat(last.y()).isEqualTo(raw.get(raw.size() - 1).y());
+    }
+
+    @Test
+    void smoothPath_walledCorner_preservesWaypointAroundWall() {
+        TerrainGrid.Height[][] g = new TerrainGrid.Height[10][10];
+        for (TerrainGrid.Height[] col : g) Arrays.fill(col, TerrainGrid.Height.LOW);
+        for (int y = 0; y <= 5; y++) g[5][y] = TerrainGrid.Height.WALL;
+        TerrainGrid grid = new TerrainGrid(10, 10, g);
+        List<Point2d> raw = pf.findPath(grid, new Point2d(2, 2), new Point2d(8, 2));
+        List<Point2d> smoothed = AStarPathfinder.smoothPath(raw, grid);
+        assertThat(smoothed).isNotEmpty();
+        Point2d last = smoothed.get(smoothed.size() - 1);
+        assertThat(last.x()).isEqualTo(raw.get(raw.size() - 1).x());
+        assertThat(smoothed.size()).isLessThanOrEqualTo(raw.size());
+        for (Point2d wp : smoothed) {
+            assertThat(grid.isWalkable((int) wp.x(), (int) wp.y()))
+                .as("smoothed waypoint %s must be walkable", wp).isTrue();
+        }
+    }
+
+    @Test
+    void smoothPath_zigzagOnOpenGround_reducesWaypoints() {
+        TerrainGrid g = open(30, 30);
+        List<Point2d> raw = pf.findPath(g, new Point2d(0, 0), new Point2d(29, 29));
+        assertThat(raw.size()).isGreaterThan(2);
+        List<Point2d> smoothed = AStarPathfinder.smoothPath(raw, g);
+        assertThat(smoothed.size()).isLessThan(raw.size());
+    }
 }
