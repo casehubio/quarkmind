@@ -94,4 +94,37 @@ class TerrainGridTest {
         assertThat(g.isWalkable(1, 0)).isFalse();  // bit 6 = 0
         assertThat(g.isWalkable(7, 0)).isFalse();  // bit 0 = 0
     }
+
+    // ---- movementCost ----
+
+    private TerrainGrid single(TerrainGrid.Height h) {
+        TerrainGrid.Height[][] g = {{h}};
+        return new TerrainGrid(1, 1, g);
+    }
+
+    @Test
+    void movementCost_low_isOne() {
+        assertThat(single(TerrainGrid.Height.LOW).movementCost(0, 0)).isEqualTo(1.0);
+    }
+
+    @Test
+    void movementCost_high_isOne() {
+        assertThat(single(TerrainGrid.Height.HIGH).movementCost(0, 0)).isEqualTo(1.0);
+    }
+
+    @Test
+    void movementCost_ramp_isOnePointFive() {
+        assertThat(single(TerrainGrid.Height.RAMP).movementCost(0, 0)).isEqualTo(1.5);
+    }
+
+    @Test
+    void movementCost_wall_isOne() {
+        assertThat(single(TerrainGrid.Height.WALL).movementCost(0, 0)).isEqualTo(1.0);
+    }
+
+    @Test
+    void movementCost_outOfBounds_isOne() {
+        assertThat(single(TerrainGrid.Height.LOW).movementCost(-1, 0)).isEqualTo(1.0);
+        assertThat(single(TerrainGrid.Height.LOW).movementCost(5, 5)).isEqualTo(1.0);
+    }
 }

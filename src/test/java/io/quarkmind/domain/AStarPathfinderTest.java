@@ -108,4 +108,50 @@ class AStarPathfinderTest {
             }
         }
     }
+
+    // ---- Weighted cost tests ----
+
+    /**
+     * Map layout (10 wide, 10 tall):
+     *   Wall row at y=5, two gaps:
+     *     x=3 → LOW tile (cost 1.0)
+     *     x=7 → RAMP tile (cost 1.5)
+     *   Start (2,2) → Goal (2,8)
+     *   Both routes have equal tile count; flat gap costs less.
+     */
+    private TerrainGrid twoGapMap() {
+        TerrainGrid.Height[][] g = new TerrainGrid.Height[10][10];
+        for (TerrainGrid.Height[] col : g) Arrays.fill(col, TerrainGrid.Height.LOW);
+        for (int x = 0; x < 10; x++) g[x][5] = TerrainGrid.Height.WALL;
+        g[3][5] = TerrainGrid.Height.LOW;   // flat gap
+        g[7][5] = TerrainGrid.Height.RAMP;  // ramp gap
+        return new TerrainGrid(10, 10, g);
+    }
+
+    @Test
+    void weightedCost_prefersFlat_overRamp() {
+        TerrainGrid g = twoGapMap();
+        List<Point2d> path = pf.findPath(g, new Point2d(2, 2), new Point2d(2, 8));
+        assertThat(path).isNotEmpty();
+        boolean passedFlatGap = path.stream().anyMatch(wp ->
+            (int) wp.x() == 3 && (int) wp.y() == 5);
+        boolean passedRampGap = path.stream().anyMatch(wp ->
+            (int) wp.x() == 7 && (int) wp.y() == 5);
+        assertThat(passedFlatGap).as("should use flat gap at x=3").isTrue();
+        assertThat(passedRampGap).as("should not use ramp gap at x=7").isFalse();
+    }
+
+    @Test
+    void weightedCost_rampStillUsed_whenOnlyOption() {
+        TerrainGrid.Height[][] g = new TerrainGrid.Height[10][10];
+        for (TerrainGrid.Height[] col : g) Arrays.fill(col, TerrainGrid.Height.LOW);
+        for (int x = 0; x < 10; x++) g[x][5] = TerrainGrid.Height.WALL;
+        g[5][5] = TerrainGrid.Height.RAMP;
+        TerrainGrid grid = new TerrainGrid(10, 10, g);
+        List<Point2d> path = pf.findPath(grid, new Point2d(2, 2), new Point2d(8, 8));
+        assertThat(path).isNotEmpty();
+        boolean passedRamp = path.stream().anyMatch(wp ->
+            (int) wp.x() == 5 && (int) wp.y() == 5);
+        assertThat(passedRamp).isTrue();
+    }
 }

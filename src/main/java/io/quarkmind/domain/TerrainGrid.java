@@ -28,6 +28,12 @@ public final class TerrainGrid {
         return heightAt(x, y) != Height.WALL;
     }
 
+    /** Movement cost multiplier for this tile. RAMP = 1.5×, all others = 1.0×. */
+    public double movementCost(int x, int y) {
+        if (x < 0 || x >= width || y < 0 || y >= height) return 1.0;
+        return grid[x][y] == Height.RAMP ? 1.5 : 1.0;
+    }
+
     public int width()  { return width; }
     public int height() { return height; }
 
