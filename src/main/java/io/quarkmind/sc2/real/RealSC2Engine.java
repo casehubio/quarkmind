@@ -42,6 +42,7 @@ public class RealSC2Engine implements SC2Engine {
     private static final Logger log = Logger.getLogger(RealSC2Engine.class);
 
     @Inject IntentQueue intentQueue;
+    @Inject SC2BotAgent botAgent;
 
     @ConfigProperty(name = "starcraft.sc2.map", defaultValue = "Simple128")
     String mapName;
@@ -50,7 +51,6 @@ public class RealSC2Engine implements SC2Engine {
     String difficultyStr;
 
     private S2Coordinator coordinator;
-    private SC2BotAgent botAgent;
     private final AtomicBoolean connected = new AtomicBoolean(false);
     private CompletableFuture<Void> gameLoop;
 
@@ -62,8 +62,6 @@ public class RealSC2Engine implements SC2Engine {
     @Fallback(fallbackMethod = "connectFallback")
     public void connect() {
         log.info("[SC2] Connecting to StarCraft II...");
-        botAgent = new SC2BotAgent(intentQueue);
-
         Difficulty difficulty = Difficulty.valueOf(difficultyStr);
         coordinator = S2Coordinator.setup()
                 .loadSettings(new String[]{})
