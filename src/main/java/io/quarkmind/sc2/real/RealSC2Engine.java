@@ -126,10 +126,6 @@ public class RealSC2Engine implements SC2Engine {
     /** Polls the GameState stored by the most recent {@code SC2BotAgent.onStep()} call. */
     @Override
     public GameState observe() {
-        if (botAgent == null) {
-            log.warn("[SC2] observe() called before SC2BotAgent was set — returning empty state");
-            return emptyState();
-        }
         GameState state = botAgent.getLatestGameState();
         if (state == null) {
             log.debug("[SC2] No observation yet — first frame pending");
