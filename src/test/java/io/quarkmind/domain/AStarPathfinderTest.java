@@ -130,6 +130,9 @@ class AStarPathfinderTest {
 
     @Test
     void weightedCost_prefersFlat_overRamp() {
+        // With start/goal near x=2 and flat gap at x=3, A*'s heuristic already steers toward x=3.
+        // The weighting makes this deterministic rather than heuristic-coincident.
+        // The strict cost-regression proof is in weightedCost_rampPathCostsMoreThanFlatPath below.
         TerrainGrid g = twoGapMap();
         List<Point2d> path = pf.findPath(g, new Point2d(2, 2), new Point2d(2, 8));
         assertThat(path).isNotEmpty();
@@ -139,6 +142,35 @@ class AStarPathfinderTest {
             (int) wp.x() == 7 && (int) wp.y() == 5);
         assertThat(passedFlatGap).as("should use flat gap at x=3").isTrue();
         assertThat(passedRampGap).as("should not use ramp gap at x=7").isFalse();
+    }
+
+    @Test
+    void weightedCost_rampPathCostsMoreThanFlatPath() {
+        // Two identical maps — only the gap tile differs (RAMP vs LOW at the same position).
+        // A* finds the same waypoints through both (only one gap exists).
+        // Sum of movementCost() along the path is 0.5 higher for the ramp map.
+        // This verifies the cost multiplier flows correctly from TerrainGrid into the path cost.
+        TerrainGrid.Height[][] g = new TerrainGrid.Height[10][10];
+        for (TerrainGrid.Height[] col : g) Arrays.fill(col, TerrainGrid.Height.LOW);
+        for (int x = 0; x < 10; x++) g[x][5] = TerrainGrid.Height.WALL;
+
+        g[5][5] = TerrainGrid.Height.RAMP;
+        TerrainGrid rampGrid = new TerrainGrid(10, 10, g);
+
+        g[5][5] = TerrainGrid.Height.LOW;
+        TerrainGrid flatGrid = new TerrainGrid(10, 10, g);
+
+        List<Point2d> rampPath = pf.findPath(rampGrid, new Point2d(5, 1), new Point2d(5, 9));
+        List<Point2d> flatPath = pf.findPath(flatGrid, new Point2d(5, 1), new Point2d(5, 9));
+
+        assertThat(rampPath).isEqualTo(flatPath); // same route — only gap tile cost differs
+
+        double rampCost = rampPath.stream()
+            .mapToDouble(wp -> rampGrid.movementCost((int) wp.x(), (int) wp.y())).sum();
+        double flatCost = flatPath.stream()
+            .mapToDouble(wp -> flatGrid.movementCost((int) wp.x(), (int) wp.y())).sum();
+
+        assertThat(rampCost - flatCost).isCloseTo(0.5, org.assertj.core.data.Offset.offset(0.001));
     }
 
     @Test
