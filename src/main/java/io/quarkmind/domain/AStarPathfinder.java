@@ -54,6 +54,7 @@ public final class AStarPathfinder {
                 int ny = cur.y() + d[1];
                 if (!grid.isWalkable(nx, ny) || closed[nx][ny]) continue;
                 double cost = (d[0] != 0 && d[1] != 0) ? DIAG : 1.0;
+                cost *= grid.movementCost(nx, ny);
                 open.add(new Node(nx, ny, cur.g() + cost, cur));
             }
         }
