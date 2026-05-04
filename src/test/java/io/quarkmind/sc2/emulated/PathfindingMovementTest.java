@@ -74,4 +74,14 @@ class PathfindingMovementTest {
         assertThat(pm.advance("u1", new Point2d(1f, 1f), new Point2d(10f, 10f), 0.5)).isNotNull();
         assertThat(pm.advance("u2", new Point2d(2f, 2f), new Point2d(12f, 12f), 0.5)).isNotNull();
     }
+
+    @Test
+    void smoothingReducesWaypointCount_onOpenGround() {
+        PathfindingMovement pm = new PathfindingMovement(open());
+        // Drive one step to trigger path computation with smoothing
+        Point2d after = pm.advance("u1", new Point2d(2f, 2f), new Point2d(28f, 28f), 0.5);
+        // Unit should still move toward the target despite smoothing
+        assertThat(EmulatedGame.distance(after, new Point2d(28f, 28f)))
+            .isLessThan(EmulatedGame.distance(new Point2d(2f, 2f), new Point2d(28f, 28f)));
+    }
 }

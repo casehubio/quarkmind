@@ -24,11 +24,11 @@ public class PathfindingMovement implements MovementStrategy {
         // Recompute path when target changes
         if (!target.equals(lastTargets.get(unitTag))) {
             List<Point2d> path = pathfinder.findPath(grid, current, target);
-            log.infof("[PATHFINDING] %s: computed %d waypoints from (%.1f,%.1f) to (%.1f,%.1f)%s",
-                unitTag, path.size(), current.x(), current.y(), target.x(), target.y(),
-                path.isEmpty() ? " — EMPTY, falling back to direct movement" :
-                    " — first=(%.1f,%.1f)".formatted(path.get(0).x(), path.get(0).y()));
-            waypoints.put(unitTag, new ArrayDeque<>(path));
+            List<Point2d> smoothed = AStarPathfinder.smoothPath(path, grid);
+            log.infof("[PATHFINDING] %s: %d waypoints → %d smoothed from (%.1f,%.1f) to (%.1f,%.1f)%s",
+                unitTag, path.size(), smoothed.size(), current.x(), current.y(), target.x(), target.y(),
+                path.isEmpty() ? " — EMPTY, falling back to direct movement" : "");
+            waypoints.put(unitTag, new ArrayDeque<>(smoothed));
             lastTargets.put(unitTag, target);
         }
 
