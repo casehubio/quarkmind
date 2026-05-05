@@ -24,3 +24,5 @@
 | [2026-04-23-mdp02-e18-e19-the-full-roster.md](2026-04-23-mdp02-e18-e19-the-full-roster.md) | 2026-04-23 | All 65 multiplayer unit sprites — coverage gap, design decisions, Quarkus ClassTooLargeException, fog-observer showcase pattern |
 | [2026-04-24-mdp01-buildings-all-three-races.md](2026-04-24-mdp01-buildings-all-three-races.md) | 2026-04-24 | E20+E21: 9 Protoss building sprites, then domain expanded to 48 types (all 3 races), 39 canvas draw functions, tile-z coordinate gotcha |
 | [2026-04-26-mdp01-the-replay-plays.md](2026-04-26-mdp01-the-replay-plays.md) | 2026-04-26 | E22+E23: real SC2 terrain from .SC2Map binary, unit movement from GAME_EVENTS, replay controls, Electron wrapper, @IfBuildProfile gotcha |
+| [2026-04-28-mdp01-seeing-is-believing.md](2026-04-28-mdp01-seeing-is-believing.md) | 2026-04-28 | Real pixel tests replace NDC projection checks; three Three.js bugs surfaced |
+| [2026-05-05-mdp01-both-sides-of-the-board.md](2026-05-05-mdp01-both-sides-of-the-board.md) | 2026-05-05 | Symmetric PlayerState refactor, silent supply=0 failure, Bresenham LOS gotcha in path smoothing |
