@@ -746,7 +746,9 @@ class EmulatedGameTest {
         // Wall at y=18, gap at x=11-13. Enemy spawns at (26,26) and heads to nexus (8,8).
         // DirectMovement would cross y=18 at x≈26 (wall tile) — the live bug.
         // With PathfindingMovement the unit must stay within x=[11,13] when at y=18.
-        game.setMovementStrategy(new PathfindingMovement(TerrainGrid.emulatedMap()));
+        TerrainGrid terrain = TerrainGrid.emulatedMap();
+        game.setMovementStrategy(new PathfindingMovement(terrain));
+        game.setTerrainGrid(terrain); // enables enforceWall() — unit can't cross wall tiles during stepToward
         game.configureWave(1, 1, UnitType.ZEALOT);
         game.reset();
         game.tick(); // frame 1: wave spawns at (26,26)
