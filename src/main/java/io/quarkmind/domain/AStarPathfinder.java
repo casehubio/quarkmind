@@ -90,27 +90,30 @@ public final class AStarPathfinder {
     }
 
     /**
-     * Bresenham line-of-sight check. Returns true if the straight line between
-     * {@code from} and {@code to} (in world tile-centre coordinates) crosses no WALL tiles.
+     * Sub-tile line-of-sight check. Samples every 0.4 world units along the line
+     * between {@code from} and {@code to} and returns false if any sample falls in
+     * a WALL tile. This finer resolution (below the 0.5-tile movement speed) ensures
+     * that movement along a smoothed segment never crosses a wall tile between steps.
+     * Tile-centre Bresenham is insufficient because continuous movement at speed=0.5
+     * can land in tiles the centre-to-centre line misses.
      */
     private static boolean hasLos(TerrainGrid grid, Point2d from, Point2d to) {
-        int x0 = (int) from.x(), y0 = (int) from.y();
-        int x1 = (int) to.x(),   y1 = (int) to.y();
+        double dx   = to.x() - from.x();
+        double dy   = to.y() - from.y();
+        double dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 0.001) return grid.isWalkable((int) from.x(), (int) from.y());
 
-        int dx  = Math.abs(x1 - x0);
-        int dy  = Math.abs(y1 - y0);
-        int sx  = x0 < x1 ? 1 : -1;
-        int sy  = y0 < y1 ? 1 : -1;
-        int err = dx - dy;
-        int x = x0, y = y0;
+        double nx = dx / dist;
+        double ny = dy / dist;
+        double step = 0.4; // below movement speed (0.5) — catches all wall crossings
 
-        while (x != x1 || y != y1) {
-            if (!grid.isWalkable(x, y)) return false;
-            int e2 = 2 * err;
-            if (e2 > -dy) { err -= dy; x += sx; }
-            if (e2 <  dx) { err += dx; y += sy; }
+        for (double d = 0; d <= dist + step; d += step) {
+            double t = Math.min(d, dist);
+            int tx = (int)(from.x() + nx * t);
+            int ty = (int)(from.y() + ny * t);
+            if (!grid.isWalkable(tx, ty)) return false;
         }
-        return grid.isWalkable(x1, y1);
+        return true;
     }
 
     private static int[] nearestWalkable(TerrainGrid grid, int x, int y) {
