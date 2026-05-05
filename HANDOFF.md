@@ -1,40 +1,30 @@
-# Handover — 2026-04-28 (end of session)
+# Handover — 2026-05-05
 
-**Head commit:** `395f7d5` — camera auto-centre + mineral depletion tests
+**Head commit:** `20e74ab` — blog entry "both sides of the board"
 
 ## What Changed This Session
 
-**Visual testing overhaul** — the critical lesson: `@QuarkusTest` Playwright tests always run mock profile. They proved nothing about the replay viewer. Built `ReplayVisualizerIT` which starts the real replay jar as a subprocess on port 8082, opens headless Chromium, samples actual WebGL pixels. Three bugs surfaced:
-- `preserveDrawingBuffer: false` (Three.js default) makes pixel sampling silently return black
-- Creep at `y=0.02` was below the ground plane at `y=0.04` — depth-tested invisible
-- `BoxGeometry` minerals occluded by cliff geometry from isometric angle → switched to `THREE.Sprite`
+**Two epics landed:**
 
-Fixed: `depthTest:false` + `renderOrder:10` on creep, sprites for minerals/geysers, brighter colours.
+**Enemy Active AI (#116, closed)** — `EmulatedGame` refactored to symmetric `PlayerState × 2`. Both players drain through `applyIntent(Intent, PlayerState)`. `EnemyBehavior implements PlayerBehavior` drives enemy production, attack, and retreat via the same `TrainIntent`/`AttackIntent`/`MoveIntent` types the friendly AI uses. `TechTree` (full three-race prerequisite graph) gates production. `EnemyStrategyLibrary` holds 9 named strategies + `ReactiveStrategy` (counter-picks every 50 frames). `SC2BotAgent` converted to `@ApplicationScoped @IfBuildProfile("sc2")` CDI bean.
 
-**Run real visual tests:** `mvn test -Pplaywright-replay` (builds jar, samples pixels, asserts cyan/green/purple)
+**Pathfinder enhancements (#120, closed)** — RAMP tiles now cost 1.5× in A*. `AStarPathfinder.smoothPath()` applies greedy string-pulling using sub-tile LOS sampling (0.4-unit steps, below movement speed 0.5). Key bug: Bresenham tile-centre LOS passes but movement at 0.5 tiles/tick lands in wall tiles the Bresenham line misses — caused infinite path-invalidation loops. Fixed by sub-tile sampling. `SC2BotAgent.onGameStart()` extracts pathing grid from `StartRaw.getPathingGrid()` and publishes via `TerrainProvider`.
 
-**Building click-to-inspect (#112)** — `GET /qa/building/{tag}`, raycaster extended to hit `buildingMeshes` + `enemyBuildingMeshes`, `clickBuilding(tag,isEnemy)` in `window.__test`.
-
-**Camera auto-centre (#113)** — `autocentreCamera(state)` fires once on first frame with `myBuildings`, sets `camTarget` to Nexus world position. Replay now opens at the Protoss base.
-
-**Mineral depletion (#114)** — `removeMineralPatchByTag` on `UnitDied` was already working. Tests document and lock in: count < 154 at game-end, monotonically non-increasing.
+**624 tests, 0 failures.**
 
 ## Immediate Next Step
 
-No open issues. All immediate work complete. Good candidates for a new epic:
-- **Enemy active AI (E4)** — emulated game has scripted waves; real enemy economy + production would make it a training ground
-- **Pathfinding + terrain (E5)** — terrain data is live; A* is the next emulator layer  
-- **Scouting CEP calibration** — 22 AI Arena replays exist to calibrate ROACH_RUSH/4GATE thresholds
-
-Before starting any of these: brainstorm first, create GitHub epic + child issues.
+No open active issues. Good candidates for next work:
+- **Pathfinder brainstorm still pending** — Task #1 in task list is marked in_progress but we fully completed it (spec + plan at `docs/superpowers/plans/2026-05-04-pathfinder.md`). Clean up task list.
+- **Protoss sprites plans** still untracked at `docs/superpowers/plans/2026-04-23-e18a/b-*.md`
+- The natural next epic: real enemy AI behaviour in the visualizer — does the enemy actually attack convincingly? Run `mvn quarkus:dev -Dquarkus.profile=emulated` and observe.
 
 ## Key Technical Notes
 
-- **`mvn test -Pplaywright-replay`** — the only test command that proves elements are visible to a human. Requires replay jar built first (profile does it automatically).
-- **`ReplayVisualizerIT`** — starts jar on port 8082, `@BeforeAll`/`@AfterAll` lifecycle. Add `focusOnFirstX()` + pixel test for any new visual element.
-- **`preserveDrawingBuffer:true`** on `WebGLRenderer` is required for `samplePixel()` to work.
-- **`autocentreCamera`** fires once, guarded by `cameraCentred` flag, resets on `ws.onopen`.
-- *Unchanged notes — `git show HEAD~1:HANDOFF.md`*
+- **`emulatedMap()` gap is x=11–13, y=18 (RAMP)** — `enemyRespectsWallWithPathfinding` test requires `game.setTerrainGrid(terrain)` in addition to `game.setMovementStrategy(new PathfindingMovement(terrain))` or `enforceWall()` is a no-op.
+- **`EnemyBehavior` constructor is 3-arg**: `(EnemyStrategy, PlayerState, TechTree)` — use permissive TechTree (`canTrain → true`) in unit tests that don't exercise tech gating.
+- **`setEnemyStrategy()` shim**: wraps strategy in `EnemyBehavior` with permissive TechTree — keeps existing tests working but skips tech tree checks.
+- **ocraft `ImageData.getData()` returns `byte[]` directly** — no `.toByteArray()` needed.
 
 ## Open Issues
 
@@ -48,7 +38,8 @@ Before starting any of these: brainstorm first, create GitHub epic + child issue
 
 | Context | Where |
 |---------|-------|
-| Blog entry (this session) | `docs/_posts/2026-04-28-mdp01-seeing-is-believing.md` |
-| Pixel test infrastructure | `src/test/java/io/quarkmind/qa/ReplayVisualizerIT.java` |
-| Replay profile | `mvn test -Pplaywright-replay` (pom.xml) |
+| Blog entry (this session) | `docs/_posts/2026-05-05-mdp01-both-sides-of-the-board.md` |
+| Enemy AI spec | `docs/superpowers/specs/2026-04-30-enemy-ai-design.md` |
+| Pathfinder spec | `docs/superpowers/specs/2026-05-04-pathfinder-design.md` |
+| Pathfinder plan | `docs/superpowers/plans/2026-05-04-pathfinder.md` |
 | Prior handover | `git show HEAD~1:HANDOFF.md` |
