@@ -7,7 +7,7 @@ QuarkMind (formerly "starcraft", package root `io.quarkmind`) is a Quarkus appli
 All four plugin seams (Strategy, Economics, Tactics, Scouting) are implemented using different R&D frameworks. The bot can connect to a live SC2 process and issue real game commands. An emulation engine (`EmulatedGame`) provides physics-based game simulation without requiring a live SC2 binary, served with a PixiJS 8 live visualizer in an Electron window.
 
 **GitHub:** `mdproctor/quarkmind`
-**Test count:** 258 (unit + integration + Playwright E2E)
+**Test count:** 624 (unit + integration + Playwright E2E)
 
 ---
 
@@ -174,7 +174,7 @@ Plugins are registered at startup by `QuarkMindTaskRegistrar` — injecting each
 | E2 | Vector-based movement, scripted enemy wave at frame 200, full intent handling, cost deduction, `EmulatedConfig` live config panel | ✅ Complete |
 | E3 | Shields/maxShields on `Unit`, two-pass simultaneous combat resolution, `SC2Data.damagePerTick`/`attackRange`/`maxShields`, unit death | ✅ Complete |
 | E4 | Enemy active AI — `PlayerState`×2 symmetric architecture, `EnemyBehavior`, `EnemyStrategyLibrary` (9 strategies + REACTIVE), `TechTree`, `ReactiveStrategy` | ✅ Complete |
-| E5 | Pathfinding + terrain — A* on tile map, units navigate obstacles | 🔜 Planned |
+| E5 | Pathfinding + terrain — A* on tile map, terrain-aware edge costs (RAMP=1.5×), sub-tile LOS path smoothing, SC2BotAgent CDI bean with `TerrainProvider` injection | ✅ Complete |
 
 ### Combat Model (E3)
 
@@ -216,6 +216,8 @@ A PixiJS 8 live visualizer renders game state each tick, served by Quarkus over 
 ## Real SC2 Integration
 
 `ActionTranslator` — a pure static class mirroring `ObservationTranslator` — converts the `IntentQueue` drain into `ResolvedCommand` records. `SC2BotAgent.onStep()` applies them via the ocraft `ActionInterface`.
+
+`SC2BotAgent` is `@ApplicationScoped @IfBuildProfile("sc2")` — a CDI bean injected by `RealSC2Engine`. It `@Inject`s `TerrainProvider` and extracts the pathing grid in `onGameStart()`, populating `TerrainGrid` for use by `AStarPathfinder`.
 
 | Decision | Chosen | Why | Alternatives Rejected |
 |---|---|---|---|
@@ -271,11 +273,11 @@ A PixiJS 8 live visualizer renders game state each tick, served by Quarkus over 
 
 ## Testing Strategy
 
-- **Unit tests** (`new`, no CDI): `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `EmulatedGameTest`
+- **Unit tests** (`new`, no CDI): `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `EmulatedGameTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`
 - **Integration tests** (`@QuarkusTest`, full CDI): `QaEndpointsTest`, `FullMockPipelineIT` — scheduler disabled, `orchestrator.gameTick()` called directly
 - **Playwright E2E tests**: 9 render tests verifying sprite counts, positions, health tinting, unit disappearance on death; inject state via `SimulatedGame.setUnitHealth()`/`removeUnit()`; use `window.__test` semantic API (not pixel comparison)
 - **Benchmark tests** (`@Tag("benchmark")`, `mvn test -Pbenchmark`): excluded from normal runs; `AtomicReference<TickTimings>` in `AgentOrchestrator` exposes last tick's phase breakdown; baseline: 2ms mean plugin time (pre-E2)
-- **Total: 236 tests** (as of E3 complete)
+- **Total: 624 tests**
 
 **Rules:**
 - Never use `@QuarkusTest` for tests that can be plain JUnit
@@ -286,16 +288,17 @@ A PixiJS 8 live visualizer renders game state each tick, served by Quarkus over 
 
 ## Current State
 
-E4 complete. QuarkMind:
+E5 complete. QuarkMind:
 - Connects to and issues commands in a live SC2 game (all four plugins, real unit/building tags, sealed Intent dispatch)
+- `SC2BotAgent` is a CDI bean (`@ApplicationScoped @IfBuildProfile("sc2")`); injects `TerrainProvider` and extracts the pathing grid in `onGameStart()`
 - Runs full agent loop against `EmulatedGame` with symmetric two-player physics: friendly and enemy each have a `PlayerState`, both share the same `applyIntent()` / `IntentQueue` path
 - Enemy driven by `EnemyBehavior` implementing `PlayerBehavior`: production loop, tech-tree gating (`TechTree`), 9 named strategies across all 3 races via `EnemyStrategyLibrary`, and `ReactiveStrategy` that counter-picks based on observed friendly unit composition
+- A* pathfinding with terrain-aware edge costs (RAMP tiles cost 1.5×); `AStarPathfinder.smoothPath()` applies sub-tile LOS greedy string-pulling post-processing; `PathfindingMovement.advance()` applies smoothing after `findPath()`
 - Renders live game state in a PixiJS 8 visualizer via WebSocket, wrapped in Electron
-- 258 tests: unit + integration + Playwright E2E
+- 624 tests: unit + integration + Playwright E2E
 
 ## Next Steps
 
-- **E5: Pathfinding + terrain** — A* on tile map, units navigate obstacles
 - **#13 Live SC2 smoke test** — blocked on SC2 availability
 - **#14 GraalVM native image tracing** — blocked on #13
 - **#16 Scouting CEP threshold calibration** — ROACH_RUSH ≥6, 3RAX ≥12, 4GATE ≥8/8 are R&D estimates; need replay data

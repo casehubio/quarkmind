@@ -96,7 +96,7 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 
 **Unit tests** (no Quarkus, fast):
 - Instantiate classes directly via `new` — no CDI
-- Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `BasicStrategyTaskTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`
+- Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `BasicStrategyTaskTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`
 - Package-private static methods on CDI beans (e.g. `DroolsTacticsTask.computeInRangeTags`, `computeOnCooldownTags`) are tested from the same package without CDI — make them `static` (not `private`) to enable this. Strategy classes (`DirectKiteStrategy`, `LowestHpFocusFireStrategy`) follow the same pattern
 
 **Integration tests** (`@QuarkusTest`, full CDI context):
