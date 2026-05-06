@@ -4428,6 +4428,130 @@ class VisualizerRenderTest {
         }
     }
 
+    /**
+     * Unit inspect panel must populate up-team with "🛡 Friendly" for owned units.
+     * Enemy team label ("⚔ Enemy") is covered by the building-click tests which use
+     * the same isEnemy flag path through showBuildingPanelAsync.
+     */
+    @Test
+    @Tag("browser")
+    void unitInspectPanelShowsTeamText() {
+        assumeTrue(browser != null, "Chromium not installed");
+        try (var context = browser.newContext(
+                 new Browser.NewContextOptions().setViewportSize(1280, 720));
+             var page = context.newPage()) {
+
+            page.navigate(pageUrl.toString());
+            page.waitForFunction("() => window.__test && window.__test.wsConnected()");
+
+            simulatedGame.spawnFriendlyUnitForTesting(UnitType.MARINE, new Point2d(14, 14));
+            final String marineTag = simulatedGame.snapshot().myUnits().stream()
+                .filter(u -> u.type() == UnitType.MARINE).findFirst()
+                .orElseThrow(() -> new AssertionError("Marine not found")).tag();
+            engine.observe();
+            page.waitForFunction("() => window.__test.unitHasTag('" + marineTag + "')");
+
+            final boolean hit = (boolean) page.evaluate(
+                "async () => window.__test.clickUnit('" + marineTag + "', false)");
+            assertTrue(hit, "Raycaster must hit the Marine");
+            final String team = (String) page.evaluate("() => window.__test.panelTeam()");
+            assertThat(team).as("friendly unit team label").contains("Friendly");
+        }
+    }
+
+    /**
+     * After clicking a unit, the portrait canvas (64×64) must have non-transparent
+     * pixels at the drawing centre. Verifies the draw function actually renders
+     * visible content — not just that the panel opened.
+     */
+    @Test
+    @Tag("browser")
+    void unitInspectPanelPortraitRendersNonBlankPixel() {
+        assumeTrue(browser != null, "Chromium not installed");
+        try (var context = browser.newContext(
+                 new Browser.NewContextOptions().setViewportSize(1280, 720));
+             var page = context.newPage()) {
+
+            page.navigate(pageUrl.toString());
+            page.waitForFunction("() => window.__test && window.__test.wsConnected()");
+
+            simulatedGame.spawnFriendlyUnitForTesting(UnitType.MARINE, new Point2d(14, 14));
+            final String marineTag = simulatedGame.snapshot().myUnits().stream()
+                .filter(u -> u.type() == UnitType.MARINE).findFirst()
+                .orElseThrow(() -> new AssertionError("Marine not found")).tag();
+            engine.observe();
+            page.waitForFunction("() => window.__test.unitHasTag('" + marineTag + "')");
+
+            final boolean hit = (boolean) page.evaluate(
+                "async () => window.__test.clickUnit('" + marineTag + "', false)");
+            assertTrue(hit, "Raycaster must hit Marine sprite");
+
+            @SuppressWarnings("unchecked")
+            final Map<String, Object> pixel = (Map<String, Object>) page.evaluate(
+                "() => window.__test.panelPortraitSample()");
+            final int alpha = ((Number) pixel.get("a")).intValue();
+            assertThat(alpha).as("portrait canvas centre pixel must be non-transparent").isGreaterThan(0);
+        }
+    }
+
+    /**
+     * Building inspect panel must populate up-hp-txt with "health/maxHealth".
+     * The existing building tests only assert the name; this adds HP coverage.
+     */
+    @Test
+    @Tag("browser")
+    void buildingInspectPanelShowsHpText() {
+        assumeTrue(browser != null, "Chromium not installed");
+        try (var context = browser.newContext(
+                 new Browser.NewContextOptions().setViewportSize(1280, 720));
+             var page = context.newPage()) {
+
+            page.navigate(pageUrl.toString());
+            page.waitForFunction("() => window.__test && window.__test.wsConnected()");
+            engine.observe();
+            page.waitForFunction("() => window.__test.buildingHasTag('nexus-0')");
+
+            final boolean hit = (boolean) page.evaluate(
+                "async () => window.__test.clickBuilding('nexus-0', false)");
+            assertTrue(hit, "Raycaster must hit Nexus");
+
+            final String hpText = (String) page.evaluate("() => window.__test.panelHpText()");
+            assertThat(hpText).as("building HP text must be populated").isNotEmpty();
+            assertThat(hpText).as("building HP text must contain /").contains("/");
+        }
+    }
+
+    /**
+     * After clicking a building, the portrait canvas must show the building's own
+     * sprite — not a blank canvas, not a stale unit portrait from a previous click.
+     * This test would fail before the fix to showBuildingPanelAsync (which never
+     * cleared or drew the portrait for buildings).
+     */
+    @Test
+    @Tag("browser")
+    void buildingInspectPanelPortraitRendersNonBlankPixel() {
+        assumeTrue(browser != null, "Chromium not installed");
+        try (var context = browser.newContext(
+                 new Browser.NewContextOptions().setViewportSize(1280, 720));
+             var page = context.newPage()) {
+
+            page.navigate(pageUrl.toString());
+            page.waitForFunction("() => window.__test && window.__test.wsConnected()");
+            engine.observe();
+            page.waitForFunction("() => window.__test.buildingHasTag('nexus-0')");
+
+            final boolean hit = (boolean) page.evaluate(
+                "async () => window.__test.clickBuilding('nexus-0', false)");
+            assertTrue(hit, "Raycaster must hit Nexus");
+
+            @SuppressWarnings("unchecked")
+            final Map<String, Object> pixel = (Map<String, Object>) page.evaluate(
+                "() => window.__test.panelPortraitSample()");
+            final int alpha = ((Number) pixel.get("a")).intValue();
+            assertThat(alpha).as("building portrait canvas must render non-transparent pixels").isGreaterThan(0);
+        }
+    }
+
     // --- Visual verification: minerals, geysers, creep, enemy buildings on-screen ---
 
     /**

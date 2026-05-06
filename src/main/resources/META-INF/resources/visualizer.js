@@ -221,6 +221,7 @@ window.__test = {
   clickBuilding: async (tag, isEnemy = false) => {
     const sp = isEnemy ? enemyBuildingMeshes.get(tag) : buildingMeshes.get(tag);
     if (!sp || !camera) return false;
+    scene.updateMatrixWorld(true); // Ensure matrixWorld is current before raycasting
     const ndc = sp.position.clone().project(camera);
     ndcMouse.x = ndc.x;
     ndcMouse.y = ndc.y;
@@ -235,6 +236,7 @@ window.__test = {
   clickUnit: async (tag, isEnemy = false) => {
     const sp = isEnemy ? enemySprites.get(tag) : unitSprites.get(tag);
     if (!sp || !camera) return false;
+    scene.updateMatrixWorld(true); // Ensure matrixWorld is current before raycasting
     const ndc = sp.position.clone().project(camera);
     ndcMouse.x = ndc.x;
     ndcMouse.y = ndc.y;
@@ -379,7 +381,17 @@ window.__test = {
     return ctx2d.getImageData(64, 64, 1, 1).data[3]; // alpha at centre
   },
 
+  unitHasTag:         (tag) => unitSprites.has(tag),
+  buildingHasTag:     (tag) => buildingMeshes.has(tag),
   panelVisible:       () => document.getElementById('unit-panel')?.classList.contains('visible') ?? false,
+  panelName:          () => document.getElementById('up-name')?.textContent ?? '',
+  panelTeam:          () => document.getElementById('up-team')?.textContent ?? '',
+  panelHpText:        () => document.getElementById('up-hp-txt')?.textContent ?? '',
+  panelPortraitSample:(x, y) => {
+    const c = document.getElementById('up-portrait');
+    const d = c.getContext('2d').getImageData(x ?? 16, y ?? 16, 1, 1).data;
+    return { r: d[0], g: d[1], b: d[2], a: d[3] };
+  },
   cameraMode:         () => cameraMode,
   enemyLayerVisible:  () => enemyVisible,
 };
@@ -485,8 +497,13 @@ async function showBuildingPanelAsync(tag, isEnemy) {
   hpEl.style.width      = hpPct + '%';
   hpEl.style.background = hpPct > 50 ? '#44cc44' : hpPct > 25 ? '#cccc44' : '#cc4444';
   document.getElementById('up-hp-txt').textContent = `${data.health}/${data.maxHealth}`;
-  // Buildings have no shields — hide that row; show complete status instead
   document.querySelector('.sh-row').style.display = 'none';
+  const pCanvas = document.getElementById('up-portrait');
+  const pCtx    = pCanvas.getContext('2d');
+  pCtx.clearRect(0, 0, 64, 64);
+  const tColor = isEnemy ? '#ff4422' : '#4488ff';
+  const fnName = 'draw' + data.type.split('_').map(w => w[0] + w.slice(1).toLowerCase()).join('');
+  if (typeof window[fnName] === 'function') window[fnName](pCtx, 32, 0, tColor);
   document.getElementById('unit-panel').classList.add('visible');
 }
 
