@@ -415,4 +415,27 @@ public final class SC2Data {
     public static int blinkShieldRestore(UnitType type) {
         return type == UnitType.STALKER ? 40 : 0;
     }
+
+    /**
+     * Circular collision radius (in tiles) used by the emulated physics engine.
+     * Units cannot enter a completed building's radius — they are blocked and repath.
+     * Radii approximate real SC2 building footprints: 5×5 → 2.5, 3×3 → 1.5, 2×2 → 1.0.
+     */
+    public static float buildingRadius(BuildingType type) {
+        return switch (type) {
+            // Large (5×5 footprint)
+            case NEXUS, HATCHERY, LAIR, HIVE,
+                 COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS -> 2.5f;
+            // Large-medium (4×4)
+            case ULTRALISK_CAVERN -> 2.0f;
+            // Small (2×2 footprint) — turrets, extractors, crawlers, power structures
+            case PYLON, SUPPLY_DEPOT, MISSILE_TURRET, SENSOR_TOWER,
+                 PHOTON_CANNON, SHIELD_BATTERY,
+                 SPINE_CRAWLER, SPORE_CRAWLER,
+                 EVOLUTION_CHAMBER, ASSIMILATOR, REFINERY, EXTRACTOR,
+                 NYDUS_CANAL -> 1.0f;
+            // Medium (3×3 or 4×3) — all remaining tech buildings
+            default -> 1.5f;
+        };
+    }
 }

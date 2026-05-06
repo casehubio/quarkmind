@@ -277,7 +277,7 @@ A PixiJS 8 live visualizer renders game state each tick, served by Quarkus over 
 - **Integration tests** (`@QuarkusTest`, full CDI): `QaEndpointsTest`, `FullMockPipelineIT` — scheduler disabled, `orchestrator.gameTick()` called directly
 - **Playwright E2E tests**: 251 render tests — sprite counts/positions/health tinting/death; panel inspect (team label, HP text, portrait canvas pixel alpha); pixel-colour sampling for minerals, geysers, creep; fog; use `window.__test` semantic API including `clickUnit(tag,isEnemy)`, `clickBuilding(tag,isEnemy)`, `panelTeam()`, `panelHpText()`, `panelPortraitSample()`, `unitHasTag(tag)`, `buildingHasTag(tag)`
 - **Benchmark tests** (`@Tag("benchmark")`, `mvn test -Pbenchmark`): excluded from normal runs; `AtomicReference<TickTimings>` in `AgentOrchestrator` exposes last tick's phase breakdown; baseline: 2ms mean plugin time (pre-E2)
-- **Total: 628 tests**
+- **Total: 631 tests**
 
 **Rules:**
 - Never use `@QuarkusTest` for tests that can be plain JUnit
@@ -294,8 +294,9 @@ E5 complete. QuarkMind:
 - Runs full agent loop against `EmulatedGame` with symmetric two-player physics: friendly and enemy each have a `PlayerState`, both share the same `applyIntent()` / `IntentQueue` path
 - Enemy driven by `EnemyBehavior` implementing `PlayerBehavior`: production loop, tech-tree gating (`TechTree`), 9 named strategies across all 3 races via `EnemyStrategyLibrary`, and `ReactiveStrategy` that counter-picks based on observed friendly unit composition
 - A* pathfinding with terrain-aware edge costs (RAMP tiles cost 1.5×); `AStarPathfinder.smoothPath()` applies sub-tile LOS greedy string-pulling post-processing; `PathfindingMovement.advance()` applies smoothing after `findPath()`
+- Building collision in emulated physics: `enforceWall()` blocks unit entry into completed building footprints; `SC2Data.buildingRadius(BuildingType)` maps types to circular radii (2.5 for Nexus/Hatchery/CC, 1.5 for 3×3 tech, 1.0 for 2×2 structures); entry-only semantics allow workers already near Nexus to move freely
 - Renders live game state in a PixiJS 8 visualizer via WebSocket, wrapped in Electron
-- 628 tests: unit + integration + Playwright E2E
+- 631 tests: unit + integration + Playwright E2E
 
 ## Next Steps
 

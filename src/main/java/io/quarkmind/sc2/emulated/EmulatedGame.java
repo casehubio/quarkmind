@@ -108,14 +108,36 @@ public class EmulatedGame {
      * This is independent of pathfinding and acts as an inviolable backstop.
      */
     private Point2d enforceWall(String unitTag, Point2d proposed, Point2d current) {
-        if (terrainGrid == null) return proposed;
-        int tx = (int) proposed.x();
-        int ty = (int) proposed.y();
-        if (!terrainGrid.isWalkable(tx, ty)) {
-            log.warnf("[PHYSICS] Wall collision blocked %s at (%.2f,%.2f) tile(%d,%d) — invalidating path",
-                unitTag, proposed.x(), proposed.y(), tx, ty);
-            movementStrategy.invalidatePath(unitTag); // repath next tick from current position
-            return current;
+        // Terrain wall — requires a terrain grid
+        if (terrainGrid != null) {
+            int tx = (int) proposed.x();
+            int ty = (int) proposed.y();
+            if (!terrainGrid.isWalkable(tx, ty)) {
+                log.warnf("[PHYSICS] Wall collision blocked %s at (%.2f,%.2f) tile(%d,%d) — invalidating path",
+                    unitTag, proposed.x(), proposed.y(), tx, ty);
+                movementStrategy.invalidatePath(unitTag);
+                return current;
+            }
+        }
+        // Building collision — always active; both sides' completed buildings are solid.
+        // Only block entry: units already inside a radius (e.g. workers near Nexus) move freely.
+        for (var bldg : friendly.buildings) {
+            float r = SC2Data.buildingRadius(bldg.type());
+            if (bldg.isComplete()
+                    && distance(current, bldg.position()) >= r
+                    && distance(proposed, bldg.position()) < r) {
+                movementStrategy.invalidatePath(unitTag);
+                return current;
+            }
+        }
+        for (var bldg : enemy.buildings) {
+            float r = SC2Data.buildingRadius(bldg.type());
+            if (bldg.isComplete()
+                    && distance(current, bldg.position()) >= r
+                    && distance(proposed, bldg.position()) < r) {
+                movementStrategy.invalidatePath(unitTag);
+                return current;
+            }
         }
         return proposed;
     }
