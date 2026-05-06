@@ -29,6 +29,7 @@ let tTheta = camTheta, tPhi = camPhi, tDist = camDist;
 
 let renderer, scene, camera;
 let wsConnected = false;
+let lastState   = null;
 let group2d, group3d;
 
 const unitSprites    = new Map();
@@ -428,7 +429,7 @@ function setupInspectPanel() {
       z-index:150; font-family:monospace; font-size:12px;
     }
     #unit-panel.visible { transform:translateX(0); }
-    #up-portrait { border-radius:3px; flex-shrink:0; }
+    #up-portrait { border-radius:3px; flex-shrink:0; width:64px !important; height:64px !important; }
     #up-info { flex:1; min-width:0; }
     #up-name { font-weight:bold; font-size:13px; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     #up-team { color:#aaa; margin-bottom:6px; font-size:11px; }
@@ -477,6 +478,11 @@ function setupInspectPanel() {
 }
 
 function showUnitPanel(tag, isEnemy) {
+  if (lastState) {
+    const units = isEnemy ? (lastState.enemyUnits || []) : (lastState.myUnits || []);
+    const u = units.find(u => u.tag === tag);
+    if (u) { _populateUnitPanel(u, isEnemy); document.getElementById('unit-panel').classList.add('visible'); return; }
+  }
   fetch(`/qa/unit/${encodeURIComponent(tag)}`)
     .then(r => r.ok ? r.json() : null)
     .then(data => {
@@ -487,8 +493,15 @@ function showUnitPanel(tag, isEnemy) {
 }
 
 async function showBuildingPanelAsync(tag, isEnemy) {
-  const r    = await fetch(`/qa/building/${encodeURIComponent(tag)}`);
-  const data = r.ok ? await r.json() : null;
+  let data = null;
+  if (lastState) {
+    const bldgs = isEnemy ? (lastState.enemyBuildings || []) : (lastState.myBuildings || []);
+    data = bldgs.find(b => b.tag === tag) ?? null;
+  }
+  if (!data) {
+    const r = await fetch(`/qa/building/${encodeURIComponent(tag)}`);
+    data = r.ok ? await r.json() : null;
+  }
   if (!data) return;
   document.getElementById('up-name').textContent = data.type.replace(/_/g, ' ');
   document.getElementById('up-team').textContent = isEnemy ? '⚔ Enemy' : '🛡 Friendly';
@@ -931,6 +944,7 @@ function connectWebSocket() {
 
 function onFrame(state, visibility) {
   if (!state) return;
+  lastState = state;
   autocentreCamera(state);
   updateHud(state);
   updateFog(visibility);
