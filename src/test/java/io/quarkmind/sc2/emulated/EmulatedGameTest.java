@@ -1274,6 +1274,82 @@ class EmulatedGameTest {
         assertThat(game.enemy.minerals).isGreaterThan(before);
     }
 
+    // --- Building collision ---
+
+    /**
+     * Units must not walk through completed buildings.
+     * A friendly Stalker heading directly into an enemy Hatchery must be blocked
+     * at the building's collision radius — it must not reach or pass through the centre.
+     */
+    @Test
+    void buildingCollisionBlocksFriendlyUnitFromEnteringEnemyBuilding() {
+        game.setTerrainGrid(TerrainGrid.emulatedMap()); // enables enforceWall backstop
+        // Enemy Hatchery at (20, 20) — well away from terrain wall
+        final var hatcheryPos = new Point2d(20f, 20f);
+        final float radius = SC2Data.buildingRadius(BuildingType.HATCHERY);
+        game.enemy.buildings.add(new Building("test-hatchery", BuildingType.HATCHERY,
+            hatcheryPos, 1500, 1500, true));
+        // Friendly Stalker starts 4 tiles south, heading north through the Hatchery
+        String tag = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(20f, 16f));
+        game.applyIntent(new MoveIntent(tag, new Point2d(20f, 25f)));
+        for (int i = 0; i < 20; i++) game.tick();
+
+        Unit unit = game.snapshot().myUnits().stream()
+            .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow();
+        double dist = EmulatedGame.distance(unit.position(), hatcheryPos);
+        assertThat(dist)
+            .as("Stalker must stop outside Hatchery radius %.1f — was %.2f", radius, dist)
+            .isGreaterThanOrEqualTo(radius - 0.1f);
+    }
+
+    /**
+     * Enemy units must also be blocked by friendly buildings.
+     * An enemy Zergling heading into the friendly Nexus at (8,8) must stop outside its radius.
+     */
+    @Test
+    void buildingCollisionBlocksEnemyUnitFromEnteringFriendlyBuilding() {
+        game.setTerrainGrid(TerrainGrid.emulatedMap());
+        game.reset(); // Nexus is at (8,8) in friendly.buildings after reset
+        final var nexusPos = new Point2d(8f, 8f);
+        final float radius = SC2Data.buildingRadius(BuildingType.NEXUS);
+        // Enemy Zergling starts 5 tiles north of Nexus, heading straight at it
+        String tag = "test-enemy-bldg-coll";
+        game.enemy.units.add(new Unit(tag, UnitType.ZERGLING, new Point2d(8f, 13f),
+            35, 35, 0, 0, 0, 0));
+        game.enemy.unitTargets.put(tag, nexusPos);
+        for (int i = 0; i < 20; i++) game.tick();
+
+        Unit unit = game.snapshot().enemyUnits().stream()
+            .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow();
+        double dist = EmulatedGame.distance(unit.position(), nexusPos);
+        assertThat(dist)
+            .as("Zergling must stop outside Nexus radius %.1f — was %.2f", radius, dist)
+            .isGreaterThanOrEqualTo(radius - 0.1f);
+    }
+
+    /**
+     * Incomplete buildings must NOT block movement — they are still under construction.
+     */
+    @Test
+    void incompleteBuildingDoesNotBlockMovement() {
+        // No terrain grid needed — building collision is always active, but incomplete
+        // buildings must not block. Unit at (20,9) heading to (20,17): passes through
+        // incomplete Hatchery at (20,13) and reaches past it.
+        final var bldgPos = new Point2d(20f, 13f);
+        game.enemy.buildings.add(new Building("wip-hatchery", BuildingType.HATCHERY,
+            bldgPos, 1500, 1500, false)); // isComplete = false
+        String tag = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(20f, 9f));
+        game.applyIntent(new MoveIntent(tag, new Point2d(20f, 17f)));
+        for (int i = 0; i < 20; i++) game.tick();
+
+        Unit unit = game.snapshot().myUnits().stream()
+            .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow();
+        // Unit must have passed through — it must be beyond the building centre
+        assertThat(unit.position().y())
+            .as("Unit must pass through incomplete building — y should exceed building y=13")
+            .isGreaterThan(13f);
+    }
+
     @Test
     void enemyBehavior_trainsUnitsWhenMineralsAccumulate() {
         game.setEnemyStrategy(new FixedBuildOrderStrategy("TEST", Race.PROTOSS,

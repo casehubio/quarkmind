@@ -4,10 +4,10 @@
 
 QuarkMind (formerly "starcraft", package root `io.quarkmind`) is a Quarkus application that plays StarCraft II (Protoss) as a plugin platform. Primary purpose is R&D: a living testbed for Drools, Quarkus Flow, and CaseHub (a Blackboard/CMMN framework). The platform provides scaffolding, SC2 connection, and the CaseHub control loop; intelligence is provided by swappable plugins behind CDI seams.
 
-All four plugin seams (Strategy, Economics, Tactics, Scouting) are implemented using different R&D frameworks. The bot can connect to a live SC2 process and issue real game commands. An emulation engine (`EmulatedGame`) provides physics-based game simulation without requiring a live SC2 binary, served with a PixiJS 8 live visualizer in an Electron window.
+All four plugin seams (Strategy, Economics, Tactics, Scouting) are implemented using different R&D frameworks. The bot can connect to a live SC2 process and issue real game commands. An emulation engine (`EmulatedGame`) provides physics-based game simulation without requiring a live SC2 binary, served with a Three.js live visualizer in an Electron window.
 
 **GitHub:** `mdproctor/quarkmind`
-**Test count:** 624 (unit + integration + Playwright E2E)
+**Test count:** 631 (unit + integration + Playwright E2E)
 
 ---
 
@@ -37,7 +37,7 @@ The game loop fires once per Quarkus Scheduler tick. Each tick:
 4. `AgentOrchestrator` cycles the CaseEngine; plugins fire and produce `Intent` objects
 5. `SC2Engine.dispatch()` drains the `IntentQueue` → `ActionTranslator.translate()` → `ResolvedCommand` records applied via ocraft `ActionInterface`
 
-In the `%emulated` profile, `EmulatedGame` replaces the SC2 client with a physics simulation engine; `GameStateBroadcaster` pushes state to a PixiJS 8 visualizer via WebSocket each tick.
+In the `%emulated` profile, `EmulatedGame` replaces the SC2 client with a physics simulation engine; `GameStateBroadcaster` pushes state to a Three.js visualizer via WebSocket each tick.
 
 ---
 
@@ -87,7 +87,7 @@ Plain Java records in `domain/` — no framework dependencies, always native-com
 | `visualizer/` | `GameStateBroadcaster` (WebSocket push), `SpriteProxyResource` (Liquipedia CORS proxy) |
 | `qa/` | QA REST endpoints — dev/test only (`@UnlessBuildProfile("prod")`) |
 | `electron/` | Electron wrapper — `main.js` spawns Quarkus as subprocess, health-polls, manages window |
-| `META-INF/resources/` | `visualizer.js` (PixiJS 8 app), `pixi.min.js` (bundled locally, no CDN) |
+| `META-INF/resources/` | `visualizer.js` (Three.js WebGL renderer — WebSocket client, 3D terrain, directional sprites, fog of war, unit inspect panel); `three.min.js` served at `/sprites/three.min.js`; `pixi.min.js` present but unused (dead, pending removal) |
 
 ---
 
@@ -175,6 +175,7 @@ Plugins are registered at startup by `QuarkMindTaskRegistrar` — injecting each
 | E3 | Shields/maxShields on `Unit`, two-pass simultaneous combat resolution, `SC2Data.damagePerTick`/`attackRange`/`maxShields`, unit death | ✅ Complete |
 | E4 | Enemy active AI — `PlayerState`×2 symmetric architecture, `EnemyBehavior`, `EnemyStrategyLibrary` (9 strategies + REACTIVE), `TechTree`, `ReactiveStrategy` | ✅ Complete |
 | E5 | Pathfinding + terrain — A* on tile map, terrain-aware edge costs (RAMP=1.5×), sub-tile LOS path smoothing, SC2BotAgent CDI bean with `TerrainProvider` injection | ✅ Complete |
+| E6 | Building collision — `enforceWall()` extended with circular building footprints; `SC2Data.buildingRadius(BuildingType)`; entry-only semantics; always active (independent of terrain grid) | ✅ Complete |
 
 ### Combat Model (E3)
 
@@ -182,33 +183,33 @@ Two-pass simultaneous combat resolution prevents order-dependency:
 1. **Collect phase**: for each unit in `attackingUnits`, accumulate damage into `Map<String, Integer>` (tag → total damage)
 2. **Apply phase**: subtract from health (and shields first for Protoss), remove units at HP ≤ 0
 
-`attackingUnits` is a `Set<String>` (unit tags) populated by `AttackIntent`. A `MoveIntent` does **not** clear it — SC2 semantics: move-only commands don't cancel auto-attack. A unit on retreat continues firing; E4 will add an explicit cancel path.
+`attackingUnits` is a `Set<String>` (unit tags) populated by `AttackIntent`. A `MoveIntent` **does** clear it — implemented in E4; a unit given a retreat/move command stops auto-attacking. This matches kiting semantics: `MoveIntent` on cooldown ticks disengages the unit, re-engaging next tick when GOAP reassigns `AttackIntent`.
 
 ---
 
 ## Visualizer
 
-A PixiJS 8 live visualizer renders game state each tick, served by Quarkus over WebSocket, wrapped in an Electron native window.
+A Three.js live visualizer renders game state each tick in a 3D orbiting-camera scene, served by Quarkus over WebSocket, wrapped in an Electron native window.
 
 | Component | Role |
 |---|---|
-| `GameStateBroadcaster` | `SC2Engine` frame listener; pushes JSON game state to all WebSocket clients on each tick; `GameState` now includes `mineralPatches` and `enemyBuildings` |
-| `SpriteProxyResource` | Server-side Liquipedia sprite fetch, re-served to browser (CORS bypass for WebGL texture loading) |
-| `visualizer.js` | PixiJS 8 application: unit sprites, health tinting (yellow→red), death removal |
-| `pixi.min.js` | Bundled locally in `META-INF/resources/` — no CDN dependency, works offline |
+| `GameStateBroadcaster` | `SC2Engine` frame listener; pushes JSON game state to all WebSocket clients on each tick |
+| `visualizer.js` | Three.js WebGL renderer: 3D terrain plane, directional canvas-2D sprite textures per unit type, fog of war, health tinting, unit/building inspect panel, SC2-style and free-orbit camera modes |
+| `visualizer.html` | Loads `three.min.js` from `/sprites/three.min.js`, then `visualizer.js`; no build step |
 | `electron/main.js` | Spawns Quarkus as subprocess, health-polls until ready, opens OS window |
 
-**Health tinting:** `healthTint()` writes to both the PixiJS `Container` and the inner `Sprite` from `makeUnitSprite()` — dual-locus write required because PixiJS 8 Container tint propagates but the inner Sprite tint is a separate locus.
+**Renderer migration:** The original PixiJS 8 renderer (E1–E13) was replaced by Three.js in E14 to support a 3D orbiting camera, terrain height, and directional sprite sheets. The server-side `GameStateBroadcast` protocol is unchanged.
 
-**Canvas testing:** `window.__test` semantic API exposed from `visualizer.js` — PixiJS renders to WebGL canvas with no DOM selectors; semantic assertions survive visual changes (preferred over screenshot pixel comparison).
+**Canvas testing:** `window.__test` semantic API exposed from `visualizer.js` — Three.js renders to a WebGL canvas; the API provides semantic assertions (sprite counts, positions, panel text, pixel samples) that survive visual changes.
 
 ### Visualizer Key Decisions
 
 | Decision | Chosen | Why | Alternatives Rejected |
 |---|---|---|---|
 | WebSocket push | `GameStateBroadcaster` as frame listener | Zero latency — pushed on each tick; no wasted polls | `setInterval(fetch)` polling |
-| Sprite source | Liquipedia via `SpriteProxyResource` | No binary bloat in git; CORS enforcement prevents direct browser fetch | Download sprites to git |
-| PixiJS bundled locally | `pixi.min.js` in `META-INF/resources/` | No CDN dependency; works offline | CDN link in HTML |
+| Three.js replaces PixiJS | Client-side only swap (E14) | 3D orbiting camera, terrain height, directional sprite textures impossible in PixiJS 2D | Stay with PixiJS — no 3D |
+| Directional sprites | Canvas 2D textures baked per facing | No asset pipeline; all geometry hand-coded in JS; survives SC2 asset restrictions | External sprite sheets |
+| `window.__test` semantic API | Exposes game state and DOM reads to Playwright | WebGL canvas has no accessible DOM; semantic API bridges the gap for CI | Screenshot pixel comparison |
 | Electron wraps Quarkus | `main.js` with health poll | Single native window; Quarkus lifecycle managed by Electron | Separate terminal windows |
 
 ---
@@ -264,7 +265,7 @@ A PixiJS 8 live visualizer renders game state each tick, served by Quarkus over 
 | `quarkus-flow` | CNCF Serverless Workflow — per-tick economics flow | ✅ Quarkus-native |
 | `ocraft-s2client` | SC2 protobuf API client | ❌ JVM-only — tracked in NATIVE.md |
 | `scelight-mpq` + `scelight-s2protocol` | SC2 replay parsing (local fork) | ❌ JVM-only — tracked in NATIVE.md |
-| `pixi.min.js` | PixiJS 8 WebGL renderer — bundled in `META-INF/resources/` | N/A (JS) |
+| `three.min.js` | Three.js WebGL renderer — served at `/sprites/three.min.js` | N/A (JS) |
 | Playwright + Chromium | E2E canvas testing via `window.__test` semantic API | N/A (test only) |
 | Electron | Native OS window wrapping Quarkus visualizer | N/A (desktop) |
 | Quarkus 3.34.2 | Container, CDI, scheduler, REST, WebSocket | ✅ BOM |
@@ -277,7 +278,7 @@ A PixiJS 8 live visualizer renders game state each tick, served by Quarkus over 
 - **Integration tests** (`@QuarkusTest`, full CDI): `QaEndpointsTest`, `FullMockPipelineIT` — scheduler disabled, `orchestrator.gameTick()` called directly
 - **Playwright E2E tests**: 251 render tests — sprite counts/positions/health tinting/death; panel inspect (team label, HP text, portrait canvas pixel alpha); pixel-colour sampling for minerals, geysers, creep; fog; use `window.__test` semantic API including `clickUnit(tag,isEnemy)`, `clickBuilding(tag,isEnemy)`, `panelTeam()`, `panelHpText()`, `panelPortraitSample()`, `unitHasTag(tag)`, `buildingHasTag(tag)`
 - **Benchmark tests** (`@Tag("benchmark")`, `mvn test -Pbenchmark`): excluded from normal runs; `AtomicReference<TickTimings>` in `AgentOrchestrator` exposes last tick's phase breakdown; baseline: 2ms mean plugin time (pre-E2)
-- **Total: 628 tests**
+- **Total: 631 tests**
 
 **Rules:**
 - Never use `@QuarkusTest` for tests that can be plain JUnit
@@ -288,14 +289,15 @@ A PixiJS 8 live visualizer renders game state each tick, served by Quarkus over 
 
 ## Current State
 
-E5 complete. QuarkMind:
+E5+ complete. QuarkMind:
 - Connects to and issues commands in a live SC2 game (all four plugins, real unit/building tags, sealed Intent dispatch)
 - `SC2BotAgent` is a CDI bean (`@ApplicationScoped @IfBuildProfile("sc2")`); injects `TerrainProvider` and extracts the pathing grid in `onGameStart()`
 - Runs full agent loop against `EmulatedGame` with symmetric two-player physics: friendly and enemy each have a `PlayerState`, both share the same `applyIntent()` / `IntentQueue` path
 - Enemy driven by `EnemyBehavior` implementing `PlayerBehavior`: production loop, tech-tree gating (`TechTree`), 9 named strategies across all 3 races via `EnemyStrategyLibrary`, and `ReactiveStrategy` that counter-picks based on observed friendly unit composition
 - A* pathfinding with terrain-aware edge costs (RAMP tiles cost 1.5×); `AStarPathfinder.smoothPath()` applies sub-tile LOS greedy string-pulling post-processing; `PathfindingMovement.advance()` applies smoothing after `findPath()`
-- Renders live game state in a PixiJS 8 visualizer via WebSocket, wrapped in Electron
-- 628 tests: unit + integration + Playwright E2E
+- Building collision in emulated physics: `enforceWall()` blocks unit entry into completed building footprints; `SC2Data.buildingRadius(BuildingType)` maps types to circular radii (2.5 for Nexus/Hatchery/CC, 1.5 for 3×3 tech, 1.0 for 2×2 structures); entry-only semantics allow workers already near Nexus to move freely
+- Three.js 3D visualizer (replaced PixiJS in E14): orbiting camera, terrain, directional cartoon sprites for all three races, fog of war, unit/building inspect panel (instant — reads from cached WebSocket state)
+- 631 tests: unit + integration + Playwright E2E
 
 ## Next Steps
 
@@ -310,30 +312,29 @@ E5 complete. QuarkMind:
 
 ## Open Questions
 
-- `attackingUnits` is never cleared by a `MoveIntent` — a unit given a retreat command continues firing; E4 should add an explicit cancel path
 - `ReplaySimulatedGame` uses `shields=0` for replay units — replay tracker events don't include instantaneous shield state
 - Observer supply cost defaults to 2 in `SC2Data.supplyCost` (real SC2 value is 1) — minor data gap, no test coverage for Observer training
-- Scouting CEP thresholds (#16) still need calibration against replay data
-- `attackingUnits` set is never cleared except on unit death — semantics evolve in E4 when retreat becomes a deliberate combat action
+- Scouting CEP thresholds (#115) still need calibration against replay data
 - Expansion detection heuristic: "enemy unit > 50 tiles from main base" accuracy against real SC2 unknown
 - GOAP goal assignment hot-reload — DRL enables it but never exercised in practice
 - Playwright Chromium install in CI — currently requires manual install step
 - `SC2Engine.tick()` ownership — who owns the tick loop when real SC2 is connected? Open since Phase 0
+- `pixi.min.js` dead file — still present in `META-INF/resources/` but not referenced by `visualizer.html`; safe to delete
 
 ---
 
 ## ADRs
 
+See [docs/adr/INDEX.md](adr/INDEX.md) for the full index.
+
 | ADR | Decision |
 |---|---|
-| [ADR-0001 — Quarkus Flow placement](adr/0001-quarkus-flow-placement.md) | Per-tick stateful plugin (Option A) — exercises Flow's stateful workflow model; Drools/Flow signal boundary clean |
-
-**ADR candidates (not yet written):**
-- Two-pass simultaneous combat resolution vs sequential
-- `attackingUnits` Set vs `unitTargets` semantics
-- Quarkus Flow single-step pattern for shared mutable budget state
-- `SC2Data` placement in `domain/` as shared engine constants
-- `EmulatedGame`/`SimulatedGame` separation
+| [ADR-0001](adr/0001-quarkus-flow-placement.md) | Quarkus Flow placement — per-tick stateful plugin |
+| [ADR-0002](adr/0002-two-pass-simultaneous-combat-resolution.md) | Two-pass simultaneous combat resolution |
+| [ADR-0003](adr/0003-attackingunits-set-semantics.md) | `attackingUnits` Set for attack-mode tracking |
+| [ADR-0004](adr/0004-flow-single-consume-step.md) | Quarkus Flow single `consume()` step for economics |
+| [ADR-0005](adr/0005-sc2data-in-domain.md) | `SC2Data` shared constants in `domain/` |
+| [ADR-0006](adr/0006-emulatedgame-simulatedgame-separation.md) | `EmulatedGame`/`SimulatedGame` separation |
 
 **Deferred (not yet designed):**
 - `HttpSC2Engine` — network bridge; SC2 on one machine, agent on another (Phase 4)
