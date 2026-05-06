@@ -275,9 +275,9 @@ A PixiJS 8 live visualizer renders game state each tick, served by Quarkus over 
 
 - **Unit tests** (`new`, no CDI): `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `EmulatedGameTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`
 - **Integration tests** (`@QuarkusTest`, full CDI): `QaEndpointsTest`, `FullMockPipelineIT` — scheduler disabled, `orchestrator.gameTick()` called directly
-- **Playwright E2E tests**: 9 render tests verifying sprite counts, positions, health tinting, unit disappearance on death; inject state via `SimulatedGame.setUnitHealth()`/`removeUnit()`; use `window.__test` semantic API (not pixel comparison)
+- **Playwright E2E tests**: 251 render tests — sprite counts/positions/health tinting/death; panel inspect (team label, HP text, portrait canvas pixel alpha); pixel-colour sampling for minerals, geysers, creep; fog; use `window.__test` semantic API including `clickUnit(tag,isEnemy)`, `clickBuilding(tag,isEnemy)`, `panelTeam()`, `panelHpText()`, `panelPortraitSample()`, `unitHasTag(tag)`, `buildingHasTag(tag)`
 - **Benchmark tests** (`@Tag("benchmark")`, `mvn test -Pbenchmark`): excluded from normal runs; `AtomicReference<TickTimings>` in `AgentOrchestrator` exposes last tick's phase breakdown; baseline: 2ms mean plugin time (pre-E2)
-- **Total: 624 tests**
+- **Total: 628 tests**
 
 **Rules:**
 - Never use `@QuarkusTest` for tests that can be plain JUnit
@@ -295,7 +295,7 @@ E5 complete. QuarkMind:
 - Enemy driven by `EnemyBehavior` implementing `PlayerBehavior`: production loop, tech-tree gating (`TechTree`), 9 named strategies across all 3 races via `EnemyStrategyLibrary`, and `ReactiveStrategy` that counter-picks based on observed friendly unit composition
 - A* pathfinding with terrain-aware edge costs (RAMP tiles cost 1.5×); `AStarPathfinder.smoothPath()` applies sub-tile LOS greedy string-pulling post-processing; `PathfindingMovement.advance()` applies smoothing after `findPath()`
 - Renders live game state in a PixiJS 8 visualizer via WebSocket, wrapped in Electron
-- 624 tests: unit + integration + Playwright E2E
+- 628 tests: unit + integration + Playwright E2E
 
 ## Next Steps
 
