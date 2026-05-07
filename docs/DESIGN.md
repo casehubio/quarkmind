@@ -319,7 +319,7 @@ E5+ complete. QuarkMind:
 - GOAP goal assignment hot-reload — DRL enables it but never exercised in practice
 - Playwright Chromium install in CI — currently requires manual install step
 - `SC2Engine.tick()` ownership — who owns the tick loop when real SC2 is connected? Open since Phase 0
-- `pixi.min.js` dead file — still present in `META-INF/resources/` but not referenced by `visualizer.html`; safe to delete
+
 
 ---
 
