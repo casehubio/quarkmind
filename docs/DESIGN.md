@@ -313,7 +313,7 @@ E5+ complete. QuarkMind:
 ## Open Questions
 
 - `ReplaySimulatedGame` uses `shields=0` for replay units — replay tracker events don't include instantaneous shield state
-- Observer supply cost defaults to 2 in `SC2Data.supplyCost` (real SC2 value is 1) — minor data gap, no test coverage for Observer training
+- Observer supply cost was defaulting to 2 (real SC2 value is 1) — fixed in `SC2Data.supplyCost`; test `SC2DataTest#observerSupplyCostIsOne` covers it
 - Scouting CEP thresholds (#115) still need calibration against replay data
 - Expansion detection heuristic: "enemy unit > 50 tiles from main base" accuracy against real SC2 unknown
 - GOAP goal assignment hot-reload — DRL enables it but never exercised in practice

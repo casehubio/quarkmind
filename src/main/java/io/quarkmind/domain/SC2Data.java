@@ -124,7 +124,7 @@ public final class SC2Data {
 
     public static int supplyCost(UnitType type) {
         return switch (type) {
-            case PROBE    -> 1;
+            case PROBE, OBSERVER -> 1;
             case ZEALOT   -> 2;
             case STALKER  -> 2;
             case IMMORTAL -> 4;

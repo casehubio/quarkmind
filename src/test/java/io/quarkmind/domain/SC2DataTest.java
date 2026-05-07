@@ -95,4 +95,10 @@ class SC2DataTest {
     void defaultDamageAppliesForUnknownType() {
         assertThat(SC2Data.damagePerAttack(UnitType.UNKNOWN)).isEqualTo(5);
     }
+
+    @Test
+    void observerSupplyCostIsOne() {
+        // Real SC2 value: Observer costs 1 supply. The default branch was returning 2.
+        assertThat(SC2Data.supplyCost(UnitType.OBSERVER)).isEqualTo(1);
+    }
 }
