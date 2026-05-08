@@ -105,7 +105,7 @@ class ScoutingCalibrationTest {
             "ZERG_ROACH_RUSH threshold (current: 4) ← ROACH"));
         sb.append(formatMatchup("PvT (Terran enemies)", stats.get("PvT"),
             List.of(UnitType.MARINE, UnitType.MARAUDER, UnitType.MEDIVAC, UnitType.SIEGE_TANK),
-            "TERRAN_3RAX threshold (current: 5) ← MARINE"));
+            "TERRAN_3RAX threshold (current: 7) ← MARINE"));
         sb.append(formatMatchup("PvP (Protoss enemies)", stats.get("PvP"),
             List.of(UnitType.STALKER, UnitType.ZEALOT, UnitType.IMMORTAL, UnitType.ADEPT),
             "PROTOSS_4GATE threshold (current: 4) ← STALKER+ZEALOT combined"));

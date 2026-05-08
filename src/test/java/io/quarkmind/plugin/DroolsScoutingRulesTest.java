@@ -43,12 +43,22 @@ class DroolsScoutingRulesTest {
         assertThat(data.getDetectedBuilds()).doesNotContain("ZERG_ROACH_RUSH");
     }
 
+    // Threshold raised from 5 → 7 (calibration: IEM10 normal play mean=4.4, max=6; threshold=7 avoids false positives)
     @Test
-    void fiveMarinesDetectsTerran3Rax() {
+    void sevenMarinesDetectsTerran3Rax() {
         ScoutingRuleUnit data = new ScoutingRuleUnit();
-        for (int i = 0; i < 5; i++) data.getUnitEvents().add(unit(UnitType.MARINE, i * 1000L));
+        for (int i = 0; i < 7; i++) data.getUnitEvents().add(unit(UnitType.MARINE, i * 1000L));
         fire(data);
         assertThat(data.getDetectedBuilds()).contains("TERRAN_3RAX");
+    }
+
+    @Test
+    void sixMarinesDoesNotDetect3Rax() {
+        // Calibration boundary: IEM10 normal play reaches max=6 Marines at 3-min; threshold=7 keeps false-positive rate at 0%
+        ScoutingRuleUnit data = new ScoutingRuleUnit();
+        for (int i = 0; i < 6; i++) data.getUnitEvents().add(unit(UnitType.MARINE, i * 1000L));
+        fire(data);
+        assertThat(data.getDetectedBuilds()).doesNotContain("TERRAN_3RAX");
     }
 
     @Test
