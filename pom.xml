@@ -87,8 +87,8 @@
         </dependency>
 
         <!-- SC2 Replay parsing — extracted from Scelight (Apache 2.0) -->
-        <!-- Source: /Users/mdproctor/claude/scelight, branch: feature/standalone-modules -->
-        <!-- Rebuild: cd /Users/mdproctor/claude/scelight && ./scripts/publish-replay-libs.sh -->
+        <!-- Source: /Users/mdproctor/dev/scelight, branch: feature/standalone-modules -->
+        <!-- Rebuild: cd /Users/mdproctor/dev/scelight && ./scripts/publish-replay-libs.sh -->
         <dependency>
             <groupId>hu.scelight</groupId>
             <artifactId>scelight-mpq</artifactId>
@@ -157,7 +157,6 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.11.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

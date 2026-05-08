@@ -232,9 +232,9 @@ Run this when setting up a new environment or after any change to the `feature/s
 
 ## Blog
 
-**Blog directory:** `docs/_posts/`
+**Blog directory:** `~/claude/public/quarkmind/blog/` (workspace)
 
-Blog posts are Jekyll posts published at `mdproctor.github.io/quarkmind/blog/`. Each post needs frontmatter: `layout: post`, `title`, `date`. Images go in `docs/blog/assets/` and are referenced as `/quarkmind/blog/assets/filename`.
+Blog entries are written to the workspace by `write-blog`, then published to `mdproctor.github.io/quarkmind/blog/` via `publish-blog`. Each post needs frontmatter: `layout: post`, `title`, `date`. Images go in `docs/blog/assets/` and are referenced as `/quarkmind/blog/assets/filename`.
 
 ## Writing Style Guide
 
@@ -289,6 +289,17 @@ mvn test -Pbenchmark
 `replays/replay-index.md` is a living index of SC2 replay datasets. Two datasets available: IEM10 Taipei 2016 (30 games, pre-processed JSON — use `IEM10JsonSimulatedGame`) and AI Arena bot replays (29 `.SC2Replay` files, 22 parseable — use `ReplaySimulatedGame`).
 
 **Check it before downloading new replays.** When a new dataset is added, update the index with metadata, labels, and scenario recommendations.
+
+## Project Artifacts
+
+Paths that are project content (not workspace noise). Skills use this to avoid
+filtering or dropping commits that touch these paths.
+
+| Path | What it is |
+|------|------------|
+| `CLAUDE.md` | Project conventions (build, test, naming) |
+| `docs/adr/` | Architecture decision records |
+| `docs/DESIGN.md` | Design document |
 
 ## Work Tracking
 

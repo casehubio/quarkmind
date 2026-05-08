@@ -1,45 +1,44 @@
-# Handover — 2026-05-05
+# Handover — 2026-05-11
 
-**Head commit:** `20e74ab` — blog entry "both sides of the board"
+**Head commit:** `640bfae` — project health cleanup
 
 ## What Changed This Session
 
-**Two epics landed:**
+**Decision — Phase 5 before Phase 6:**
+Confirmed: finish all Phase 5 gaps before opening Phase 6 epic. Rationale: Phase 6 validates EmulatedGame accuracy against real replays; an incomplete Phase 5 makes divergence noise-dominated.
 
-**Enemy Active AI (#116, closed)** — `EmulatedGame` refactored to symmetric `PlayerState × 2`. Both players drain through `applyIntent(Intent, PlayerState)`. `EnemyBehavior implements PlayerBehavior` drives enemy production, attack, and retreat via the same `TrainIntent`/`AttackIntent`/`MoveIntent` types the friendly AI uses. `TechTree` (full three-race prerequisite graph) gates production. `EnemyStrategyLibrary` holds 9 named strategies + `ReactiveStrategy` (counter-picks every 50 frames). `SC2BotAgent` converted to `@ApplicationScoped @IfBuildProfile("sc2")` CDI bean.
+**Tier-4 health check — all findings fixed (#126, closed):**
+- `GameStateTick` moved from `domain/` to `plugin/flow/` — upward layer violation (domain/ → agent/) resolved
+- `docs/running.md`: emulated mode section added; mock auto-start contradiction fixed; `%emulated` added to profiles table
+- `README.md`: plugin table updated (PassThrough stubs → real implementations)
+- `DESIGN.md`: test count 629, pixi.min.js ref removed, "E1–E6 complete", stale scouting calibration removed
+- `pom.xml`: scelight path comment corrected, mockito version pin removed (Quarkus BOM manages it at 5.21.0)
+- `.gitignore`: `electron-app/package-lock.json` added
 
-**Pathfinder enhancements (#120, closed)** — RAMP tiles now cost 1.5× in A*. `AStarPathfinder.smoothPath()` applies greedy string-pulling using sub-tile LOS sampling (0.4-unit steps, below movement speed 0.5). Key bug: Bresenham tile-centre LOS passes but movement at 0.5 tiles/tick lands in wall tiles the Bresenham line misses — caused infinite path-invalidation loops. Fixed by sub-tile sampling. `SC2BotAgent.onGameStart()` extracts pathing grid from `StartRaw.getPathingGrid()` and publishes via `TerrainProvider`.
-
-**624 tests, 0 failures.**
+**Garden entries:**
+- `GE-20260511-ce1c9d` — Java package move breaks wildcard + same-package imports
+- `GE-20260511-0b3fa2` — Quarkus BOM 3.34.2 manages mockito-junit-jupiter at 5.21.0
 
 ## Immediate Next Step
 
-No open active issues. Good candidates for next work:
-- **Pathfinder brainstorm still pending** — Task #1 in task list is marked in_progress but we fully completed it (spec + plan at `docs/superpowers/plans/2026-05-04-pathfinder.md`). Clean up task list.
-- **Protoss sprites plans** still untracked at `docs/superpowers/plans/2026-04-23-e18a/b-*.md`
-- The natural next epic: real enemy AI behaviour in the visualizer — does the enemy actually attack convincingly? Run `mvn quarkus:dev -Dquarkus.profile=emulated` and observe.
-
-## Key Technical Notes
-
-- **`emulatedMap()` gap is x=11–13, y=18 (RAMP)** — `enemyRespectsWallWithPathfinding` test requires `game.setTerrainGrid(terrain)` in addition to `game.setMovementStrategy(new PathfindingMovement(terrain))` or `enforceWall()` is a no-op.
-- **`EnemyBehavior` constructor is 3-arg**: `(EnemyStrategy, PlayerState, TechTree)` — use permissive TechTree (`canTrain → true`) in unit tests that don't exercise tech gating.
-- **`setEnemyStrategy()` shim**: wraps strategy in `EnemyBehavior` with permissive TechTree — keeps existing tests working but skips tech tree checks.
-- **ocraft `ImageData.getData()` returns `byte[]` directly** — no `.toByteArray()` needed.
+**Open Phase 5 completion epic.** Five items:
+1. Parallel training queues + supply reservation at queue time (`EmulatedGame.java:264`)
+2. Friendly auto-engage (units fight without explicit `AttackIntent`)
+3. Realistic mineral saturation (diminishing returns above 16 workers)
+4. Deferred visualizer work (probe overlap, HTML mineral display, geyser sprite, time-based UI tests)
 
 ## Open Issues
 
 | # | What | Status |
 |---|------|--------|
-| #74 | Unit genericisation as YAML | Parked |
 | #13 | Live SC2 smoke test | Blocked on SC2 |
 | #14 | GraalVM native image | Blocked on #13 |
+| #74 | YAML unit definitions | Parked |
 
 ## References
 
 | Context | Where |
 |---------|-------|
-| Blog entry (this session) | `docs/_posts/2026-05-05-mdp01-both-sides-of-the-board.md` |
-| Enemy AI spec | `docs/superpowers/specs/2026-04-30-enemy-ai-design.md` |
-| Pathfinder spec | `docs/superpowers/specs/2026-05-04-pathfinder-design.md` |
-| Pathfinder plan | `docs/superpowers/plans/2026-05-04-pathfinder.md` |
+| Blog entry (this session) | `~/claude/public/quarkmind/blog/2026-05-11-mdp01-accurate-not-just-working.md` |
+| Phase 5 gaps | `docs/roadmap-sc2-engine.md` — Phase 5 "Not yet implemented" |
 | Prior handover | `git show HEAD~1:HANDOFF.md` |

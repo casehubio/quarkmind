@@ -26,14 +26,15 @@ then
     detectedBuilds.add("ZERG_ROACH_RUSH");
 end
 
-// Calibration: IEM10 Taipei 2016 + AI Arena (11 PvT games) | threshold=5 | observed MARINE mean=4.4 | observed range=[0, 6]
+// Calibration: IEM10 Taipei 2016 + AI Arena (11 PvT games) | threshold=7 | observed MARINE mean=4.4 | observed range=[0, 6]
+// Raised from 5→7: normal play reaches max=6 Marines at 3-min; threshold=5 caused false positives in ~50% of normal games
 rule "Terran 3-Rax"
     salience 100
 when
     accumulate(
         /unitEvents[ this.type() == UnitType.MARINE ];
         $count : count();
-        $count >= 5
+        $count >= 7
     )
 then
     detectedBuilds.add("TERRAN_3RAX");

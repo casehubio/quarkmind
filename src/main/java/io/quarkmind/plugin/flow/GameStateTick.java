@@ -1,6 +1,9 @@
-package io.quarkmind.domain;
+package io.quarkmind.plugin.flow;
 
 import io.quarkmind.agent.ResourceBudget;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.Resource;
+import io.quarkmind.domain.Unit;
 
 import java.util.List;
 

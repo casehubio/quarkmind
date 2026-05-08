@@ -82,8 +82,8 @@ Each concern is a CDI interface extending CaseHub's `TaskDefinition`:
 |---|---|---|
 | Economics | `EconomicsTask` | `BasicEconomicsTask` — probe production + pylon supply |
 | Strategy | `StrategyTask` | `BasicStrategyTask` — gateway opener, Stalker training, strategy assessment |
-| Tactics | `TacticsTask` | `PassThroughTacticsTask` — stub |
-| Scouting | `ScoutingTask` | `PassThroughScoutingTask` — stub |
+| Tactics | `TacticsTask` | `DroolsTacticsTask` — Drools + custom GOAP planner |
+| Scouting | `ScoutingTask` | `BasicScoutingTask` — Drools CEP + Java-managed buffers |
 
 To replace a plugin, implement the interface and annotate it — the platform picks it up automatically:
 

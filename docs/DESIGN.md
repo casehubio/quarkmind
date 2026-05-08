@@ -7,7 +7,7 @@ QuarkMind (formerly "starcraft", package root `io.quarkmind`) is a Quarkus appli
 All four plugin seams (Strategy, Economics, Tactics, Scouting) are implemented using different R&D frameworks. The bot can connect to a live SC2 process and issue real game commands. An emulation engine (`EmulatedGame`) provides physics-based game simulation without requiring a live SC2 binary, served with a Three.js live visualizer in an Electron window.
 
 **GitHub:** `mdproctor/quarkmind`
-**Test count:** 631 (unit + integration + Playwright E2E)
+**Test count:** 629 (unit + integration + Playwright E2E)
 
 ---
 
@@ -54,7 +54,6 @@ Plain Java records in `domain/` — no framework dependencies, always native-com
 | `BuildingType` | Enum: NEXUS, PYLON, GATEWAY, CYBERNETICS_CORE, etc. |
 | `Point2d` | Map coordinate |
 | `PendingCompletion` | Under-construction building: completesAtTick, buildingType |
-| `GameStateTick` | Immutable record passed to FlowEconomicsTask; Jackson-serialisable |
 | `ResourceBudget` | Per-tick spending budget: minerals/vespene consumed by plugins |
 | `Race` | Enum: PROTOSS, ZERG, TERRAN — used by `EnemyStrategy` and `TechTree` |
 | `EnemyObservation` | Snapshot from the enemy's perspective: playerUnits, enemyBuildings, minerals, gameFrame |
@@ -82,12 +81,12 @@ Plain Java records in `domain/` — no framework dependencies, always native-com
 | `agent/plugin/` | Plugin seam interfaces: `StrategyTask`, `EconomicsTask`, `TacticsTask`, `ScoutingTask` |
 | `plugin/` | Real plugin implementations: `BasicEconomicsTask`, `BasicScoutingTask`, `BasicTacticsTask`, `DroolsStrategyTask`, `FlowEconomicsTask`, `DroolsTacticsTask` |
 | `plugin/drools/` | Drools Rule Units: `StrategyRuleUnit`, `TacticsRuleUnit`, `ScoutingRuleUnit`, `.drl` rule files |
-| `plugin/flow/` | Quarkus Flow: `EconomicsFlow`, `FlowEconomicsTask` |
+| `plugin/flow/` | Quarkus Flow: `EconomicsFlow`, `FlowEconomicsTask`, `GameStateTick` (flow-specific tick snapshot carrying domain state + `ResourceBudget`) |
 | `agent/QuarkMindTaskRegistrar` | Startup bean wiring all four plugin seams into `TaskDefinitionRegistry` |
 | `visualizer/` | `GameStateBroadcaster` (WebSocket push), `SpriteProxyResource` (Liquipedia CORS proxy) |
 | `qa/` | QA REST endpoints — dev/test only (`@UnlessBuildProfile("prod")`) |
 | `electron/` | Electron wrapper — `main.js` spawns Quarkus as subprocess, health-polls, manages window |
-| `META-INF/resources/` | `visualizer.js` (Three.js WebGL renderer — WebSocket client, 3D terrain, directional sprites, fog of war, unit inspect panel); `three.min.js` served at `/sprites/three.min.js`; `pixi.min.js` present but unused (dead, pending removal) |
+| `META-INF/resources/` | `visualizer.js` (Three.js WebGL renderer — WebSocket client, 3D terrain, directional sprites, fog of war, unit inspect panel); `three.min.js` served at `/sprites/three.min.js` |
 
 ---
 
@@ -278,7 +277,7 @@ A Three.js live visualizer renders game state each tick in a 3D orbiting-camera 
 - **Integration tests** (`@QuarkusTest`, full CDI): `QaEndpointsTest`, `FullMockPipelineIT` — scheduler disabled, `orchestrator.gameTick()` called directly
 - **Playwright E2E tests**: 251 render tests — sprite counts/positions/health tinting/death; panel inspect (team label, HP text, portrait canvas pixel alpha); pixel-colour sampling for minerals, geysers, creep; fog; use `window.__test` semantic API including `clickUnit(tag,isEnemy)`, `clickBuilding(tag,isEnemy)`, `panelTeam()`, `panelHpText()`, `panelPortraitSample()`, `unitHasTag(tag)`, `buildingHasTag(tag)`
 - **Benchmark tests** (`@Tag("benchmark")`, `mvn test -Pbenchmark`): excluded from normal runs; `AtomicReference<TickTimings>` in `AgentOrchestrator` exposes last tick's phase breakdown; baseline: 2ms mean plugin time (pre-E2)
-- **Total: 631 tests**
+- **Total: 629 tests**
 
 **Rules:**
 - Never use `@QuarkusTest` for tests that can be plain JUnit
@@ -289,7 +288,7 @@ A Three.js live visualizer renders game state each tick in a 3D orbiting-camera 
 
 ## Current State
 
-E5+ complete. QuarkMind:
+E1–E6 complete. QuarkMind:
 - Connects to and issues commands in a live SC2 game (all four plugins, real unit/building tags, sealed Intent dispatch)
 - `SC2BotAgent` is a CDI bean (`@ApplicationScoped @IfBuildProfile("sc2")`); injects `TerrainProvider` and extracts the pathing grid in `onGameStart()`
 - Runs full agent loop against `EmulatedGame` with symmetric two-player physics: friendly and enemy each have a `PlayerState`, both share the same `applyIntent()` / `IntentQueue` path
@@ -297,13 +296,12 @@ E5+ complete. QuarkMind:
 - A* pathfinding with terrain-aware edge costs (RAMP tiles cost 1.5×); `AStarPathfinder.smoothPath()` applies sub-tile LOS greedy string-pulling post-processing; `PathfindingMovement.advance()` applies smoothing after `findPath()`
 - Building collision in emulated physics: `enforceWall()` blocks unit entry into completed building footprints; `SC2Data.buildingRadius(BuildingType)` maps types to circular radii (2.5 for Nexus/Hatchery/CC, 1.5 for 3×3 tech, 1.0 for 2×2 structures); entry-only semantics allow workers already near Nexus to move freely
 - Three.js 3D visualizer (replaced PixiJS in E14): orbiting camera, terrain, directional cartoon sprites for all three races, fog of war, unit/building inspect panel (instant — reads from cached WebSocket state)
-- 631 tests: unit + integration + Playwright E2E
+- 629 tests: unit + integration + Playwright E2E
 
 ## Next Steps
 
 - **#13 Live SC2 smoke test** — blocked on SC2 availability
 - **#14 GraalVM native image tracing** — blocked on #13
-- **#16 Scouting CEP threshold calibration** — ROACH_RUSH ≥6, 3RAX ≥12, 4GATE ≥8/8 are R&D estimates; need replay data
 - **Deferred visualizer work** — probe overlap fix, HTML mineral display, geyser sprite, time-based UI tests
 - **LangChain4j experimental StrategyTask** — LLM-guided strategy as a fifth R&D integration (Phase 4+, Ollama local model); deferred until core emulation is stable
 - **Intent dispatch quality** — no guard against dead unit tags or incomplete buildings; bot commands whatever tag the plugin supplies
@@ -314,7 +312,6 @@ E5+ complete. QuarkMind:
 
 - `ReplaySimulatedGame` uses `shields=0` for replay units — replay tracker events don't include instantaneous shield state
 - Observer supply cost was defaulting to 2 (real SC2 value is 1) — fixed in `SC2Data.supplyCost`; test `SC2DataTest#observerSupplyCostIsOne` covers it
-- Scouting CEP thresholds (#115) still need calibration against replay data
 - Expansion detection heuristic: "enemy unit > 50 tiles from main base" accuracy against real SC2 unknown
 - GOAP goal assignment hot-reload — DRL enables it but never exercised in practice
 - Playwright Chromium install in CI — currently requires manual install step
@@ -336,6 +333,6 @@ See [docs/adr/INDEX.md](adr/INDEX.md) for the full index.
 | [ADR-0005](adr/0005-sc2data-in-domain.md) | `SC2Data` shared constants in `domain/` |
 | [ADR-0006](adr/0006-emulatedgame-simulatedgame-separation.md) | `EmulatedGame`/`SimulatedGame` separation |
 
-**Deferred (not yet designed):**
+**Deferred:**
 - `HttpSC2Engine` — network bridge; SC2 on one machine, agent on another (Phase 4)
-- Mineral collection model — worker-saturation curve replacing flat +5/tick trickle
+- Mineral collection model — worker-saturation curve planned improvement; current per-probe flat rate is implemented but does not model diminishing returns above optimal saturation
