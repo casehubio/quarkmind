@@ -232,9 +232,9 @@ Run this when setting up a new environment or after any change to the `feature/s
 
 ## Blog
 
-**Blog directory:** `docs/_posts/`
+**Blog directory:** `~/claude/public/quarkmind/blog/` (workspace)
 
-Blog posts are Jekyll posts published at `mdproctor.github.io/quarkmind/blog/`. Each post needs frontmatter: `layout: post`, `title`, `date`. Images go in `docs/blog/assets/` and are referenced as `/quarkmind/blog/assets/filename`.
+Blog entries are written to the workspace by `write-blog`, then published to `mdproctor.github.io/quarkmind/blog/` via `publish-blog`. Each post needs frontmatter: `layout: post`, `title`, `date`. Images go in `docs/blog/assets/` and are referenced as `/quarkmind/blog/assets/filename`.
 
 ## Writing Style Guide
 
