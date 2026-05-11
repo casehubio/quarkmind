@@ -45,4 +45,5 @@ nb-configuration.xml
 .certs/
 .worktrees/
 node_modules/
+electron-app/package-lock.json
 wksp

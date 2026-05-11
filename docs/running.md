@@ -25,13 +25,7 @@ cd /path/to/quarkmind && mvn compile
 
 ### Mock mode (default — no SC2 needed)
 
-Drives the agent against a hand-crafted `SimulatedGame`. The game does not auto-start; trigger it manually once the server is up.
-
-```bash
-mvn quarkus:dev
-```
-
-The game loop starts automatically on boot (`MockStartupBean`). The agent ticks every 500ms against `SimulatedGame`. Use [scenarios](#scenarios) to inject interesting situations.
+Drives the agent against a hand-crafted `SimulatedGame`. The game loop starts automatically on boot (`MockStartupBean`). The agent ticks every 500ms against `SimulatedGame`. Use [scenarios](#scenarios) to inject interesting situations.
 
 To stop:
 
@@ -60,6 +54,24 @@ mvn quarkus:dev -Dquarkus.profile=replay \
 `starcraft.replay.player` is the 1-indexed player ID to track as "our" player (default: 1).
 
 See [replays/replay-index.md](../replays/replay-index.md) for all available replays.
+
+### Emulated mode (no SC2 needed)
+
+Physics-based game simulation with a live Three.js visualizer. Units move, combat resolves with real damage tables, and the enemy AI runs full strategy selection and retreat logic — no real SC2 binary required.
+
+```bash
+mvn quarkus:dev -Dquarkus.profile=emulated
+# Opens visualizer at http://localhost:8080/visualizer.html
+# Logs to /tmp/quarkmind-emulated.log (rotation configured — max 20M, 3 backups)
+```
+
+The enemy strategy defaults to `REACTIVE`. Override at startup via `application.properties` or use the live config panel in the visualizer UI.
+
+To stop cleanly (always kill Java before deleting log files — see CLAUDE.md):
+
+```bash
+pkill -f 'quarkus:dev' && sleep 2 && rm -f /tmp/quarkmind-emulated.log*
+```
 
 ### Real SC2 mode
 
@@ -236,6 +248,7 @@ Tests run against the `%test` profile — same as mock but with the scheduler di
 | Profile | Command flag | Auto-start | Intents applied | QA endpoints |
 |---|---|---|---|---|
 | `%mock` | *(default)* | No | Yes (SimulatedGame) | Yes |
+| `%emulated` | `-Dquarkus.profile=emulated` | No | Yes (EmulatedGame + physics) | Yes |
 | `%replay` | `-Dquarkus.profile=replay` | Yes | No (recorded only) | Yes |
 | `%sc2` | `-Dquarkus.profile=sc2` | Yes | Yes (real SC2) | Yes |
 | `%test` | *(auto in `mvn test`)* | No | Yes (SimulatedGame) | Yes |
