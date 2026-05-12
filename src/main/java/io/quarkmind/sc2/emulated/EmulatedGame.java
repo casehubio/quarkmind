@@ -246,7 +246,7 @@ public class EmulatedGame {
     }
 
     private void handleTrain(TrainIntent t, PlayerState state) {
-        // Note: t.unitTag() (the training building) is intentionally not validated in the emulator —
+        // Note: t.buildingTag() (the training building) is intentionally not validated in the emulator —
         // we have one Nexus and training always succeeds if resources allow. In real SC2 the tag
         // would identify which specific building to queue the unit in.
         int mCost = SC2Data.mineralCost(t.unitType());
