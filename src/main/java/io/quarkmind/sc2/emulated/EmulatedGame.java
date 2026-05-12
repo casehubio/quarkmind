@@ -644,4 +644,26 @@ public class EmulatedGame {
         String tag = "test-friendly-" + nextTag++;
         friendly.units.add(new Unit(tag, type, position, hp, hp, sh, sh, 0, 0));
     }
+
+    /** Adds a complete friendly building — for tests that need a specific building to train from. */
+    Building spawnBuildingForTesting(BuildingType type, Point2d position) {
+        String tag = "bldg-test-" + nextTag++;
+        Building b = new Building(tag, type, position,
+            SC2Data.maxBuildingHealth(type), SC2Data.maxBuildingHealth(type), true);
+        friendly.buildings.add(b);
+        return b;
+    }
+
+    /** Adds a complete enemy building — for tests that seed enemy production infrastructure. */
+    void spawnEnemyBuildingForTesting(BuildingType type, Point2d position) {
+        String tag = "enemy-bldg-test-" + nextTag++;
+        int hp = SC2Data.maxBuildingHealth(type);
+        enemy.buildings.add(new Building(tag, type, position, hp, hp, true));
+    }
+
+    /** Sets friendly supply caps — for tests that need more than the 3 default free supply. */
+    void setSupplyForTesting(int supply, int supplyUsed) {
+        friendly.supply     = supply;
+        friendly.supplyUsed = supplyUsed;
+    }
 }
