@@ -142,12 +142,19 @@ class EnemyBehavior implements PlayerBehavior {
 
         // Afford it — issue the intent; handleTrain() does the actual mineral deduction.
         // Do NOT deduct here: double deduction was the bug (EnemyBehavior deducted, then handleTrain deducted again).
-        String buildingTag = "enemy-nexus-" + nextTag++;
-        queue.add(new TrainIntent(buildingTag, target));
+        BuildingType needed = SC2Data.trainedBy(target);
+        Optional<Building> trainer = enemy.buildings.stream()
+            .filter(b -> b.isComplete() && b.type() == needed)
+            .findFirst();
+        if (trainer.isEmpty()) {
+            log.debugf("[ENEMY] No ready %s to train %s — waiting", needed, target);
+            return;
+        }
+        queue.add(new TrainIntent(trainer.get().tag(), target));
         trainingPending = true;
         currentTarget = Optional.empty();
-        log.debugf("[ENEMY] Queued TrainIntent: %s (cost=%d, minerals_left=%.0f)",
-            target, cost, enemy.minerals);
+        log.debugf("[ENEMY] Queued TrainIntent: %s from %s (cost=%d, minerals_left=%.0f)",
+            target, trainer.get().tag(), cost, enemy.minerals);
     }
 
     private Set<BuildingType> builtBuildingTypes() {
