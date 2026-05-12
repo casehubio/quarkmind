@@ -101,4 +101,20 @@ class SC2DataTest {
         // Real SC2 value: Observer costs 1 supply. The default branch was returning 2.
         assertThat(SC2Data.supplyCost(UnitType.OBSERVER)).isEqualTo(1);
     }
+
+    @Test
+    void trainedByMapsKnownUnits() {
+        assertThat(SC2Data.trainedBy(UnitType.PROBE))    .isEqualTo(BuildingType.NEXUS);
+        assertThat(SC2Data.trainedBy(UnitType.ZEALOT))   .isEqualTo(BuildingType.GATEWAY);
+        assertThat(SC2Data.trainedBy(UnitType.STALKER))  .isEqualTo(BuildingType.GATEWAY);
+        assertThat(SC2Data.trainedBy(UnitType.IMMORTAL)) .isEqualTo(BuildingType.ROBOTICS_FACILITY);
+        assertThat(SC2Data.trainedBy(UnitType.OBSERVER)) .isEqualTo(BuildingType.ROBOTICS_FACILITY);
+        assertThat(SC2Data.trainedBy(UnitType.MARINE))   .isEqualTo(BuildingType.BARRACKS);
+        assertThat(SC2Data.trainedBy(UnitType.MARAUDER)) .isEqualTo(BuildingType.BARRACKS);
+        assertThat(SC2Data.trainedBy(UnitType.ZERGLING)) .isEqualTo(BuildingType.HATCHERY);
+        assertThat(SC2Data.trainedBy(UnitType.ROACH))    .isEqualTo(BuildingType.HATCHERY);
+        assertThat(SC2Data.trainedBy(UnitType.HYDRALISK)).isEqualTo(BuildingType.HATCHERY);
+        // Unmapped types return UNKNOWN, not a plausible sentinel
+        assertThat(SC2Data.trainedBy(UnitType.UNKNOWN)).isEqualTo(BuildingType.UNKNOWN);
+    }
 }

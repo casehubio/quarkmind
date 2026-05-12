@@ -336,6 +336,25 @@ public final class SC2Data {
         };
     }
 
+    public static BuildingType trainedBy(UnitType type) {
+        return switch (type) {
+            case PROBE                                  -> BuildingType.NEXUS;
+            case ZEALOT, STALKER, ADEPT, ARCHON        -> BuildingType.GATEWAY;
+            case IMMORTAL, OBSERVER, COLOSSUS,
+                 DISRUPTOR                             -> BuildingType.ROBOTICS_FACILITY;
+            case PHOENIX, ORACLE, VOID_RAY,
+                 CARRIER, TEMPEST, MOTHERSHIP          -> BuildingType.STARGATE;
+            case SCV                                   -> BuildingType.COMMAND_CENTER;
+            case MARINE, MARAUDER                      -> BuildingType.BARRACKS;
+            case MEDIVAC, VIKING                       -> BuildingType.STARPORT;
+            case HELLION                               -> BuildingType.FACTORY;
+            case DRONE, ZERGLING, ROACH, HYDRALISK,
+                 MUTALISK, BANELING, ULTRALISK,
+                 OVERLORD, OVERSEER                   -> BuildingType.HATCHERY;
+            default                                    -> BuildingType.UNKNOWN;
+        };
+    }
+
     /**
      * Damage dealt per attack event (replaces damagePerTick from E3).
      * Phase E4: units fire at cooldown intervals, not every tick.
