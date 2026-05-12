@@ -249,10 +249,17 @@ public class EmulatedGame {
 
     private void handleTrain(TrainIntent t, PlayerState state) {
         String buildingTag = t.buildingTag();
-        boolean buildingReady = state.buildings.stream()
-            .anyMatch(b -> b.tag().equals(buildingTag) && b.isComplete());
-        if (!buildingReady) {
+        Building building = state.buildings.stream()
+            .filter(b -> b.tag().equals(buildingTag) && b.isComplete())
+            .findFirst().orElse(null);
+        if (building == null) {
             log.debugf("[EMULATED] Train rejected — building %s not ready", buildingTag);
+            return;
+        }
+        BuildingType required = SC2Data.trainedBy(t.unitType());
+        if (required != BuildingType.UNKNOWN && building.type() != required) {
+            log.debugf("[EMULATED] Train rejected — %s cannot train %s (needs %s)",
+                building.type(), t.unitType(), required);
             return;
         }
         int mCost = SC2Data.mineralCost(t.unitType());

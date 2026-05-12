@@ -163,14 +163,16 @@ class EmulatedGameTest {
     @Test
     void trainIntentDeductsMinerals() {
         game.setMineralsForTesting(200);
-        game.applyIntent(new TrainIntent("nexus-0", UnitType.ZEALOT));
+        Building gw = game.spawnBuildingForTesting(BuildingType.GATEWAY, new Point2d(20, 20));
+        game.applyIntent(new TrainIntent(gw.tag(), UnitType.ZEALOT));
         assertThat(game.snapshot().minerals()).isEqualTo(100); // 200 - 100
     }
 
     @Test
     void trainedUnitAppearsAfterBuildTime() {
         game.setMineralsForTesting(500);
-        game.applyIntent(new TrainIntent("nexus-0", UnitType.ZEALOT));
+        Building gw = game.spawnBuildingForTesting(BuildingType.GATEWAY, new Point2d(20, 20));
+        game.applyIntent(new TrainIntent(gw.tag(), UnitType.ZEALOT));
         int before = game.snapshot().myUnits().size();
         for (int i = 0; i < 28; i++) game.tick(); // Zealot = 28 ticks
         assertThat(game.snapshot().myUnits()).hasSize(before + 1);
@@ -179,7 +181,8 @@ class EmulatedGameTest {
     @Test
     void trainBlockedIfInsufficientMinerals() {
         // 50 minerals, Zealot costs 100 — blocked
-        game.applyIntent(new TrainIntent("nexus-0", UnitType.ZEALOT));
+        Building gw = game.spawnBuildingForTesting(BuildingType.GATEWAY, new Point2d(20, 20));
+        game.applyIntent(new TrainIntent(gw.tag(), UnitType.ZEALOT));
         assertThat(game.snapshot().minerals()).isEqualTo(50); // unchanged
     }
 
@@ -1439,6 +1442,18 @@ class EmulatedGameTest {
         int mineralsBefore = (int) game.snapshot().minerals();
 
         game.applyIntent(new TrainIntent("no-such-building", UnitType.ZEALOT));
+
+        assertThat(game.snapshot().minerals()).isEqualTo(mineralsBefore); // no deduction
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(12);           // no supply change
+    }
+
+    @Test
+    void wrongBuildingTypeRejected() {
+        // Zealots require a Gateway, not a Nexus
+        game.setMineralsForTesting(500);
+        int mineralsBefore = (int) game.snapshot().minerals();
+
+        game.applyIntent(new TrainIntent("nexus-0", UnitType.ZEALOT)); // Nexus cannot train Zealots
 
         assertThat(game.snapshot().minerals()).isEqualTo(mineralsBefore); // no deduction
         assertThat(game.snapshot().supplyUsed()).isEqualTo(12);           // no supply change
