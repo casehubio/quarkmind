@@ -93,6 +93,8 @@ public class EmulatedGame {
         tickEnemyRetreatTransfer();
         friendly.fireCompletions(gameFrame);
         enemy.fireCompletions(gameFrame);
+        drainBuildingQueues(friendly);
+        drainBuildingQueues(enemy);
         spawnEnemyWaves();
         // Enemy behavior tick
         if (enemyBehavior != null) {
@@ -294,6 +296,20 @@ public class EmulatedGame {
                 enemyBehavior.notifyUnitTrained();
             }
         }));
+    }
+
+    private void drainBuildingQueues(PlayerState state) {
+        for (String buildingTag : new ArrayList<>(state.buildingQueues.keySet())) {
+            if (state.buildingTrainingUntil.containsKey(buildingTag)) continue;
+            Deque<UnitType> queue = state.buildingQueues.get(buildingTag);
+            if (queue == null || queue.isEmpty()) {
+                state.buildingQueues.remove(buildingTag);
+                continue;
+            }
+            UnitType next = queue.poll();
+            if (queue.isEmpty()) state.buildingQueues.remove(buildingTag);
+            startTraining(buildingTag, next, state);
+        }
     }
 
     private void handleBuild(BuildIntent b, PlayerState state) {
