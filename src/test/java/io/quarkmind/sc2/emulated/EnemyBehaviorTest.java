@@ -65,6 +65,8 @@ class EnemyBehaviorTest {
     @Test
     void tick_queuesTrainIntent_whenMineralsAvailable() {
         enemy.minerals = 200;
+        enemy.buildings.add(new Building("gw-test", BuildingType.GATEWAY,
+            new Point2d(52, 51), 500, 500, true));
         behavior.tick(emptyState(), queue);
         var intents = queue.drainAll();
         assertThat(intents).anyMatch(i -> i instanceof TrainIntent t
