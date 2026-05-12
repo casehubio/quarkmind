@@ -78,7 +78,6 @@ WebSocket.
 | E6 | Building collision — circular footprint radii, entry-only semantics | ✅ |
 
 **Not yet implemented:**
-- Friendly auto-engage (units stop and fight without explicit `AttackIntent`)
 - Realistic worker mineral collection model (currently flat +5/tick)
 
 **Accuracy goal (open):** the emulated engine is not yet validated against real

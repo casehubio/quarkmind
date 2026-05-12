@@ -160,12 +160,6 @@ public class EmulatedGame {
     private void moveEnemyUnits() {
         Set<String> retreating = enemyBehavior != null ? enemyBehavior.retreatingUnits() : Set.of();
         enemy.units.replaceAll(u -> {
-            // Non-retreating units stop to fight when a friendly is within attack range.
-            // Retreating units always move — they are disengaging, not attacking.
-            if (!retreating.contains(u.tag()) &&
-                    nearestInRange(u.position(), friendly.units, SC2Data.attackRange(u.type())).isPresent()) {
-                return u; // stay and fight — resolveCombat() handles the attack this tick
-            }
             Point2d target = enemy.unitTargets.getOrDefault(u.tag(), EnemyBehavior.NEXUS_POS);
             Point2d newPos = enforceWall(u.tag(),
                 movementStrategy.advance(u.tag(), u.position(), target, unitSpeed),
@@ -242,7 +236,7 @@ public class EmulatedGame {
         if (state.units.stream().anyMatch(u -> u.tag().equals(tag))) {
             state.unitTargets.put(tag, target);
             if (isAttack) state.attackingUnits.add(tag);
-            else          state.attackingUnits.remove(tag);  // MoveIntent cancels auto-attack
+            else          state.attackingUnits.remove(tag);  // dead write — cleanup tracked in #134
             log.debugf("[EMULATED] %s → (%.1f,%.1f) attack=%b", tag, target.x(), target.y(), isAttack);
         }
     }
@@ -357,7 +351,6 @@ public class EmulatedGame {
 
         // Step 2: collect damage from units where cooldown == 0
         for (Unit attacker : friendly.units) {
-            if (!friendly.attackingUnits.contains(attacker.tag())) continue;
             if (friendly.unitCooldowns.getOrDefault(attacker.tag(), 0) > 0) continue;
             nearestInRange(attacker.position(), enemy.units, SC2Data.attackRange(attacker.type()))
                 .ifPresent(target -> {
@@ -369,7 +362,6 @@ public class EmulatedGame {
                 });
         }
         for (Unit attacker : enemy.units) {
-            if (!enemy.attackingUnits.contains(attacker.tag())) continue;
             if (enemy.unitCooldowns.getOrDefault(attacker.tag(), 0) > 0) continue;
             nearestInRange(attacker.position(), friendly.units, SC2Data.attackRange(attacker.type()))
                 .ifPresent(target -> {

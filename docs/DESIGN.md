@@ -176,13 +176,13 @@ Plugins are registered at startup by `QuarkMindTaskRegistrar` — injecting each
 | E5 | Pathfinding + terrain — A* on tile map, terrain-aware edge costs (RAMP=1.5×), sub-tile LOS path smoothing, SC2BotAgent CDI bean with `TerrainProvider` injection | ✅ Complete |
 | E6 | Building collision — `enforceWall()` extended with circular building footprints; `SC2Data.buildingRadius(BuildingType)`; entry-only semantics; always active (independent of terrain grid) | ✅ Complete |
 
-### Combat Model (E3)
+### Combat Model (E3 + auto-engage)
 
 Two-pass simultaneous combat resolution prevents order-dependency:
-1. **Collect phase**: for each unit in `attackingUnits`, accumulate damage into `Map<String, Integer>` (tag → total damage)
+1. **Collect phase**: for every unit (friendly and enemy), if an opponent is within weapon range, accumulate effective damage into `Map<String, Integer>` (tag → total damage). No explicit `AttackIntent` required — units fire automatically at the nearest in-range opponent each tick.
 2. **Apply phase**: subtract from health (and shields first for Protoss), remove units at HP ≤ 0
 
-`attackingUnits` is a `Set<String>` (unit tags) populated by `AttackIntent`. A `MoveIntent` **does** clear it — implemented in E4; a unit given a retreat/move command stops auto-attacking. This matches kiting semantics: `MoveIntent` on cooldown ticks disengages the unit, re-engaging next tick when GOAP reassigns `AttackIntent`.
+`attackingUnits` is a `Set<String>` on `PlayerState`, still written by `setTarget` (AttackIntent adds, MoveIntent removes), but no longer consulted in combat resolution. It is retained as dead state; cleanup tracked in #134. Movement toward an attack target is still driven by `unitTargets`.
 
 ---
 
@@ -236,7 +236,8 @@ A Three.js live visualizer renders game state each tick in a 3D orbiting-camera 
 | Engine abstraction | Single `SC2Engine` seam (replaces 3 interfaces) | All three always move together; one injection point | Keep 3 separate seams |
 | Replay mode | `ReplayEngine` observe-only; `dispatch()` records intents | Replay is immutable; intents logged for offline evaluation | Apply intents to shadow simulation |
 | Resource arbitration | `ResourceBudget` in CaseFile, consumed by plugins | Prevents double-spend without inter-plugin communication | Check raw minerals; accept over-commit |
-| Build times | `PendingCompletion` with `completesAtTick`; buildings appear as `isComplete=false` immediately | Plugins need to see under-construction buildings; supply granted on completion | 1-tick instant or per-building queues |
+| Build times | `PendingCompletion` with `completesAtTick`; buildings appear as `isComplete=false` immediately | Plugins need to see under-construction buildings; supply granted on completion | 1-tick instant |
+| Training queues | Per-building queue (max 5 total); supply reserved at queue time; building type validated against `SC2Data.trainedBy()` | SC2-accurate: parallel training across buildings, no over-supply | Single global queue; supply at completion |
 | Active scouting | `@ApplicationScoped` state tracking scout probe tag | Singleton CDI bean state persists across ticks | CaseFile key per tick (doesn't persist) |
 | Mock auto-start | `MockStartupBean` with `@UnlessBuildProfile(anyOf = {"sc2","replay","test","prod"})` | Mirrors SC2StartupBean/ReplayStartupBean pattern; `anyOf` undocumented but works | Require manual POST /sc2/start |
 

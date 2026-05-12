@@ -9,8 +9,7 @@ import static org.assertj.core.api.Assertions.within;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import io.quarkmind.sc2.emulated.VisibilityGrid;
-import io.quarkmind.sc2.emulated.TileVisibility;
+
 import io.quarkmind.plugin.tactics.TerrainAwareKiteStrategy;
 
 class EmulatedGameTest {
@@ -309,8 +308,10 @@ class EmulatedGameTest {
     void firstAttackFiresImmediately() {
         // Initial cooldown = 0 (absent from map) — attack fires on first tick.
         // Probe vs Zealot (1 armour): effective = 5 - 1 = 4. Shields: 50 -> 46.
-        game.applyIntent(new AttackIntent("probe-0", new Point2d(9.3f, 9)));
-        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(9.3f, 9));
+        // Zealot at (6.0, 9): probe-0 at (9,9) is exactly 3.0 tiles away (within range=3.0).
+        // probe-1 at (9.5,9) is 3.5 tiles away — out of range. Only probe-0 fires.
+        game.applyIntent(new AttackIntent("probe-0", new Point2d(6.0f, 9)));
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(6.0f, 9));
 
         game.tick();
 
@@ -340,11 +341,17 @@ class EmulatedGameTest {
     void cooldownExpiresAndAttackFiresAgain() {
         // PROBE cooldown = 2: fires tick 1, skips tick 2, fires tick 3.
         // Probe vs Zealot (1 armour): effective = 5 - 1 = 4 per hit. Shields: 50 -> 46 -> 42.
-        game.applyIntent(new AttackIntent("probe-0", new Point2d(9.3f, 9)));
-        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(9.3f, 9));
+        // Zealot at (6.0,9): probe-0 at (9,9) is exactly 3.0 tiles away (within range=3.0).
+        // probe-1 at (9.5,9) is 3.5 tiles away — out of range.
+        // Zealot target set to (3,9) so it moves away from all probes (not toward nexus at 8,8).
+        game.applyIntent(new AttackIntent("probe-0", new Point2d(6.0f, 9)));
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(6.0f, 9));
+        // Override target so Zealot retreats away from probes — prevents probe-1 drifting into range.
+        String zealotTag = game.enemy.units.get(game.enemy.units.size() - 1).tag();
+        game.enemy.unitTargets.put(zealotTag, new Point2d(3f, 9f));
 
         game.tick(); // tick 1: attack (shields 50 -> 46)
-        game.tick(); // tick 2: cooldown 1 - no attack
+        game.tick(); // tick 2: cooldown 1 - no attack; Zealot moving away
         game.tick(); // tick 3: cooldown 0 - attack fires again (46 -> 42)
 
         int effective = SC2Data.damagePerAttack(UnitType.PROBE) - SC2Data.armour(UnitType.ZEALOT); // 4
@@ -354,18 +361,18 @@ class EmulatedGameTest {
     }
 
     @Test
-    void moveIntentCancelsAutoAttack() {
-        // AttackIntent adds to attackingUnits; MoveIntent removes it immediately
-        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(9.3f, 9));
-        game.applyIntent(new AttackIntent("probe-0", new Point2d(9.3f, 9)));
-        game.applyIntent(new MoveIntent("probe-0", new Point2d(9.3f, 9))); // cancel
+    void moveIntentDoesNotPreventAutoAttack() {
+        // Units auto-engage any enemy in range regardless of intent.
+        // Probe-0 at (9,9), Zealot at (6.0,9) — only probe-0 in range (distance=3.0).
+        // MoveIntent is issued to probe-0 but it still auto-attacks the Zealot while moving.
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(6.0f, 9));
+        game.applyIntent(new MoveIntent("probe-0", new Point2d(6.0f, 9))); // move toward enemy
 
-        // Run enough ticks for cooldown to cycle — probe should never attack
-        for (int i = 0; i < 5; i++) game.tick();
+        game.tick(); // probe-0 fires despite only having a MoveIntent
 
         Unit zealot = game.snapshot().enemyUnits().get(0);
-        // Probe-0 never attacked — Zealot shields untouched by probe
-        assertThat(zealot.shields()).isEqualTo(SC2Data.maxShields(UnitType.ZEALOT));
+        // Zealot shields must have dropped — auto-attack fired
+        assertThat(zealot.shields()).isLessThan(SC2Data.maxShields(UnitType.ZEALOT));
     }
 
     @Test
@@ -640,26 +647,29 @@ class EmulatedGameTest {
 
     @Test
     void deadUnitRemovedFromRetreatingSet() {
-        // Probe vs Zealot: 5−1(armour)=4 effective damage.
-        // Tick 1: probe fires, Zealot HP=5-4=1 → survives. Retreat fires (1/150<30%). In retreatingUnits.
-        // Tick 2: probe cooldown=1, no fire. Zealot survives.
-        // Tick 3: probe fires again. Zealot HP=1-4<0, dies. resolveCombat cleans retreatingUnits.
+        // Probe vs Zealot: 5−1(armour)=4 effective damage per probe hit.
+        // Tick 1: probe-0 hits, Zealot HP=9-4=5; retreat fires (5+0)/(150+50)=2.5%<30%. In retreatingUnits.
+        //         Zealot enters retreat mode (target → STAGING_POS) and begins moving away.
+        // Tick 2: probe-0 cooldown=1, no fire. As Zealot retreats toward (26,26) it drifts into
+        //         probe-1's range; probe-1 fires: HP=5-4=1. Zealot still alive, still retreating.
+        // Tick 3: probe-0 fires again. Zealot HP=1-4<0, dies. resolveCombat cleans retreatingUnits.
+        // HP=9 chosen so Zealot needs exactly 3 probe hits to die (9, 5, 1, dead).
         EnemyAttackConfig atk = new EnemyAttackConfig(10, 9999, 30, 0);
         game.setEnemyStrategy(retreatStrategy(atk));
-        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(9.3f, 9));
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(6.0f, 9));
         String tag = game.snapshot().enemyUnits().get(0).tag();
-        game.setEnemyHealthForTesting(tag, 5);
-        game.setEnemyShieldsForTesting(tag, 0); // 5/150=3.3% < 30% — retreats
+        game.setEnemyHealthForTesting(tag, 9);
+        game.setEnemyShieldsForTesting(tag, 0); // 9/200=4.5% < 30% — retreats on first hit
         game.setInitialAttackSizeForTesting(1);
-        game.applyIntent(new AttackIntent("probe-0", new Point2d(9.3f, 9)));
+        game.applyIntent(new AttackIntent("probe-0", new Point2d(6.0f, 9)));
 
-        game.tick(); // probe deals 4 dmg → Zealot HP=1; retreat fires
+        game.tick(); // probe-0 hits: HP=5; retreat fires → Zealot in retreatingUnits
         assertThat(game.retreatingUnitTags()).contains(tag);
 
-        game.tick(); // probe cooldown=1, no fire; Zealot still alive
+        game.tick(); // probe-1 enters range as Zealot retreats; hits: HP=1. Zealot alive, still retreating
         assertThat(game.retreatingUnitTags()).contains(tag);
 
-        game.tick(); // probe fires again → Zealot HP<0, dies; retreatingUnits cleaned
+        game.tick(); // probe-0 fires → HP=1-4<0, dies; resolveCombat clears retreatingUnits
         assertThat(game.retreatingUnitTags()).doesNotContain(tag);
         assertThat(game.snapshot().enemyUnits().stream()
             .anyMatch(u -> u.tag().equals(tag))).isFalse();
@@ -770,21 +780,24 @@ class EmulatedGameTest {
     }
 
     @Test
-    void enemyStopsToFightWhenInMeleeRange() {
-        // Zealot melee range = 0.5 tiles. Placed at (9.0,9.3) — probe-0 at distance 0.3 (in range),
-        // probe-1 at distance 0.58 (out of range). Enemy must NOT advance while probe-0 is within range.
+    void enemyAdvancesEvenWhileFighting() {
+        // Zealot melee range = 0.5 tiles. Placed at (9.0,9.3) — probe-0 at distance 0.3 (in range).
+        // After stop-to-fight removal: Zealot advances toward nexus each tick even while engaging.
+        // It attacks probe-0 AND moves toward (8,8) in the same tick.
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(9.0f, 9.3f));
         Point2d before = game.snapshot().enemyUnits().get(0).position();
 
         game.tick();
 
-        Point2d after = game.snapshot().enemyUnits().get(0).position();
-        assertThat(after.x()).as("enemy x must not change — stopped to fight").isCloseTo(before.x(), within(0.01f));
-        assertThat(after.y()).as("enemy y must not change — stopped to fight").isCloseTo(before.y(), within(0.01f));
-        // And the probe took damage from the stationary attacker
+        Unit zealot = game.enemy.units.stream()
+            .filter(u -> u.type() == UnitType.ZEALOT)
+            .findFirst().orElseThrow();
+        Point2d after = zealot.position();
+        assertThat(after).as("enemy must have moved — stop-to-fight removed").isNotEqualTo(before);
+        // And the probe also took damage — combat still fires while moving
         Unit probe = game.snapshot().myUnits().stream()
             .filter(u -> u.tag().equals("probe-0")).findFirst().orElseThrow();
-        assertThat(probe.shields()).as("probe-0 shields must drop — took combat damage").isLessThan(SC2Data.maxShields(UnitType.PROBE));
+        assertThat(probe.shields()).as("probe-0 shields must drop — Zealot attacked while moving").isLessThan(SC2Data.maxShields(UnitType.PROBE));
     }
 
     @Test
@@ -852,13 +865,14 @@ class EmulatedGameTest {
         // Stalker (friendly, range=5) on LOW (y=14), enemy Zealot on HIGH (y=19).
         // Distance = 5 tiles = attack range → attack fires.
         // Always-miss RNG (nextDouble()=0.0 < 0.25) → every ranged low→high attack misses.
-        // Observer on HIGH at (5,22) provides vision of (5,19) so snapshot() returns the Zealot.
+        // Observer on HIGH at (5,28) provides vision of (5,19): distance=9≤sight(10), HIGH→HIGH.
+        // Observer is at distance 9 > stalker range 5 — it does NOT attack the Zealot.
         game.setTerrainGrid(TerrainGrid.emulatedMap());
         game.setRandomForTesting(new java.util.Random() {
             @Override public double nextDouble() { return 0.0; } // always < 0.25 → miss
         });
         String stalkerTag = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(5, 14));
-        game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(5, 22)); // observer on HIGH
+        game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(5, 28)); // observer on HIGH, out of attack range
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(5, 19));
         game.applyIntent(new AttackIntent(stalkerTag, new Point2d(5, 19)));
 
@@ -873,13 +887,14 @@ class EmulatedGameTest {
     @Test
     void rangedAttackLowToHighHitsWhenRngSaysYes() {
         // Same positions, never-miss RNG (nextDouble()=1.0 ≥ 0.25) → attack lands.
-        // Observer on HIGH at (5,22) provides vision of (5,19) so snapshot() returns the Zealot.
+        // Observer on HIGH at (5,28) provides vision of (5,19): distance=9≤sight(10), HIGH→HIGH.
+        // Observer is at distance 9 > stalker range 5 — it does NOT attack the Zealot.
         game.setTerrainGrid(TerrainGrid.emulatedMap());
         game.setRandomForTesting(new java.util.Random() {
             @Override public double nextDouble() { return 1.0; } // never < 0.25 → hit
         });
         String stalkerTag = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(5, 14));
-        game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(5, 22)); // observer on HIGH
+        game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(5, 28)); // observer on HIGH, out of attack range
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(5, 19));
         game.applyIntent(new AttackIntent(stalkerTag, new Point2d(5, 19)));
 
@@ -888,6 +903,7 @@ class EmulatedGameTest {
         Unit zealot = game.snapshot().enemyUnits().stream()
             .filter(u -> u.type() == UnitType.ZEALOT)
             .findFirst().orElseThrow();
+        // Only the LOW→HIGH stalker fires (observer at y=28 is out of range).
         // Stalker vs Zealot: 13 base + 0 bonus (Zealot is LIGHT not ARMORED) - 1 armour = 12
         assertThat(zealot.shields()).isEqualTo(SC2Data.maxShields(UnitType.ZEALOT) - 12); // 38
     }
@@ -900,6 +916,7 @@ class EmulatedGameTest {
         // Enemy Marine at (1.1, 0) → floor → tile(1,0)=HIGH.
         // Distance = 0.5 tiles ≤ Zealot range 0.5 → attack fires.
         // Always-miss RNG → melee must still deal full damage (range check skips the miss roll).
+        // Marine target is set toward the Zealot (not the Nexus) so it doesn't walk out of range.
         TerrainGrid.Height[][] heights = new TerrainGrid.Height[2][1];
         heights[0][0] = TerrainGrid.Height.LOW;
         heights[1][0] = TerrainGrid.Height.HIGH;
@@ -909,6 +926,10 @@ class EmulatedGameTest {
         });
         String zealotTag = game.spawnFriendlyForTesting(UnitType.ZEALOT, new Point2d(0.6f, 0));
         game.spawnEnemyForTesting(UnitType.MARINE, new Point2d(1.1f, 0));
+        // Override Marine's default target (Nexus) to point toward the Zealot so it stays in range.
+        // Access enemy.units directly (same package) — snapshot() filters by fog before any tick.
+        String marineTag = game.enemy.units.get(game.enemy.units.size() - 1).tag();
+        game.enemy.unitTargets.put(marineTag, new Point2d(0.6f, 0f));
         game.applyIntent(new AttackIntent(zealotTag, new Point2d(1.1f, 0)));
 
         game.tick();
@@ -1064,40 +1085,32 @@ class EmulatedGameTest {
         assertThat(stalker.weaponCooldownTicks()).isEqualTo(0);
     }
 
-    // ---- E10: Focus-fire physics ----
+    // ---- E10: Auto-attack targeting ----
 
     @Test
-    void focusFire_eliminatesFirstEnemyBeforeSpreadFire() {
-        int focusTicks = runFocusFireScenario(true);
-        int spreadTicks = runFocusFireScenario(false);
-        assertThat(focusTicks).isLessThan(spreadTicks);
-    }
-
-    private int runFocusFireScenario(boolean focusFire) {
+    void autoAttack_prefersLowerHpAtEqualDistance() {
+        // With auto-engage, nearestInRange picks the nearest enemy; at equal distance it
+        // prefers lower HP+shields (natural focus fire). Two Zealots equidistant from a Stalker,
+        // one wounded — the Stalker always attacks the wounded one.
         game.reset();
-        String s0 = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(10, 10));
-        String s1 = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(10, 11));
-        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(12, 10));
-        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(12, 11));
-        int initialEnemyCount = game.snapshot().enemyUnits().size();
+        String stalkerTag = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(10, 10));
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(12, 10)); // zealot-0: full HP
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(12, 10)); // zealot-1: same pos, wounded
+        // Wound the second zealot so its HP+shields total is lower
+        String woundedTag = game.snapshot().enemyUnits().get(1).tag();
+        game.enemy.units.replaceAll(u -> u.tag().equals(woundedTag)
+            ? new Unit(u.tag(), u.type(), u.position(), 10, u.maxHealth(), 0, u.maxShields(), 0, 0)
+            : u);
 
-        for (int tick = 1; tick <= 60; tick++) {
-            List<Unit> enemies = game.snapshot().enemyUnits();
-            if (enemies.isEmpty()) return tick;
-            if (focusFire) {
-                // Both Stalkers target same (first) enemy
-                game.applyIntent(new AttackIntent(s0, enemies.get(0).position()));
-                game.applyIntent(new AttackIntent(s1, enemies.get(0).position()));
-            } else {
-                // Each Stalker targets a different enemy (spread fire)
-                game.applyIntent(new AttackIntent(s0, enemies.get(0).position()));
-                game.applyIntent(new AttackIntent(s1, enemies.size() > 1
-                    ? enemies.get(1).position() : enemies.get(0).position()));
-            }
-            game.tick();
-            if (game.snapshot().enemyUnits().size() < initialEnemyCount) return tick;
-        }
-        return 60;
+        game.tick();
+
+        // The wounded zealot (lower HP+shields) should have taken damage (or died)
+        boolean woundedTookDamage = game.enemy.units.stream()
+            .noneMatch(u -> u.tag().equals(woundedTag))  // died
+            || game.enemy.units.stream()
+                .filter(u -> u.tag().equals(woundedTag))
+                .anyMatch(u -> u.health() < 10);
+        assertThat(woundedTookDamage).as("auto-attack must target lower-HP enemy first").isTrue();
     }
 
     // ---- E12 blink tests ----
@@ -1315,10 +1328,11 @@ class EmulatedGameTest {
         game.reset(); // Nexus is at (8,8) in friendly.buildings after reset
         final var nexusPos = new Point2d(8f, 8f);
         final float radius = SC2Data.buildingRadius(BuildingType.NEXUS);
-        // Enemy Zergling starts 5 tiles north of Nexus, heading straight at it
+        // Enemy Zergling starts 5 tiles north of Nexus, heading straight at it.
+        // HP=1500 so it survives probe auto-attacks (probes enter range as it crosses y≈9).
         String tag = "test-enemy-bldg-coll";
         game.enemy.units.add(new Unit(tag, UnitType.ZERGLING, new Point2d(8f, 13f),
-            35, 35, 0, 0, 0, 0));
+            1500, 1500, 0, 0, 0, 0));
         game.enemy.unitTargets.put(tag, nexusPos);
         for (int i = 0; i < 20; i++) game.tick();
 
@@ -1476,5 +1490,25 @@ class EmulatedGameTest {
         boolean hasZealot = game.enemy.stagingArea.stream().anyMatch(u -> u.type() == UnitType.ZEALOT)
             || game.enemy.units.stream().anyMatch(u -> u.type() == UnitType.ZEALOT);
         assertThat(hasZealot).isTrue();
+    }
+
+    // ---- #129: auto-engage ----
+
+    @Test
+    void friendlyAutoEngagesWithoutAttackIntent() {
+        // Zealot at (6.0, 9) — exactly 3.0 tiles from probe-0 at (9,9), within probe range.
+        // probe-1 at (9.5,9) is 3.5 tiles away — out of range. Only probe-0 fires.
+        // No AttackIntent issued — probe-0 must auto-engage.
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(6.0f, 9.0f));
+        int zealotMaxShields = SC2Data.maxShields(UnitType.ZEALOT); // 50
+        int effective = Math.max(0, SC2Data.damagePerAttack(UnitType.PROBE) - SC2Data.armour(UnitType.ZEALOT)); // 5-1=4
+
+        game.tick();
+
+        Unit zealot = game.enemy.units.stream()
+            .filter(u -> u.type() == UnitType.ZEALOT)
+            .findFirst().orElseThrow();
+        // Exactly one probe auto-engaged — Zealot shields dropped by exactly one effective hit
+        assertThat(zealot.shields()).isEqualTo(zealotMaxShields - effective);
     }
 }
