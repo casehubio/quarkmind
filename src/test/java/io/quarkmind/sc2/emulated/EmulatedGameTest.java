@@ -1355,12 +1355,109 @@ class EmulatedGameTest {
         game.setEnemyStrategy(new FixedBuildOrderStrategy("TEST", Race.PROTOSS,
             List.of(UnitType.ZEALOT), 10, new EnemyAttackConfig(3, 200, 0, 0)));
         game.reset();
-        // Seed enough minerals to afford a Zealot (cost=100) immediately
+        // Seed Gateway: EnemyBehavior now looks up real building tags.
+        // setEnemyStrategy uses a permissive TechTree so no BuildIntent fires,
+        // but trainedBy(ZEALOT)=GATEWAY means we must have one in enemy.buildings.
+        game.spawnEnemyBuildingForTesting(BuildingType.GATEWAY, new Point2d(52, 51));
         game.enemy.minerals = 200;
-        // Run enough ticks for the unit to complete training (Zealot = 28 ticks)
+
         int zealotTrainTime = SC2Data.trainTimeInTicks(UnitType.ZEALOT);
         for (int i = 0; i < zealotTrainTime + 5; i++) game.tick();
-        // Enemy should have at least one Zealot in staging area or active units
+
+        boolean hasZealot = game.enemy.stagingArea.stream().anyMatch(u -> u.type() == UnitType.ZEALOT)
+            || game.enemy.units.stream().anyMatch(u -> u.type() == UnitType.ZEALOT);
+        assertThat(hasZealot).isTrue();
+    }
+
+    // ---- #128: parallel training queues ----
+
+    @Test
+    void parallelTrainingTwoGateways() {
+        game.setMineralsForTesting(500);
+        game.setSupplyForTesting(200, 0);
+        Building gw1 = game.spawnBuildingForTesting(BuildingType.GATEWAY, new Point2d(20, 20));
+        Building gw2 = game.spawnBuildingForTesting(BuildingType.GATEWAY, new Point2d(22, 20));
+        int before = game.snapshot().myUnits().size();
+
+        game.applyIntent(new TrainIntent(gw1.tag(), UnitType.ZEALOT));
+        game.applyIntent(new TrainIntent(gw2.tag(), UnitType.ZEALOT));
+
+        for (int i = 0; i < 28; i++) game.tick(); // Zealot = 28 ticks
+        assertThat(game.snapshot().myUnits()).hasSize(before + 2);
+    }
+
+    @Test
+    void supplyReservedAtQueueTime() {
+        game.setMineralsForTesting(500);
+        // Initial: supply=15, supplyUsed=12 → 3 free; PROBE costs 1 supply
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(12);
+
+        game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE)); // starts training
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(13); // reserved immediately
+
+        game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE)); // queued behind first
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(14); // queued unit also reserves supply
+
+        // No ticks yet — both increments are at queue time, not completion time
+    }
+
+    @Test
+    void queueFullRejected() {
+        game.setMineralsForTesting(5000);
+        game.setSupplyForTesting(200, 0);
+
+        // Fill queue to 5 total (1 training + 4 waiting)
+        for (int i = 0; i < 5; i++) {
+            game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE));
+        }
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(5); // 5 probes at 1 supply each
+
+        // 6th must be rejected — supply unchanged
+        game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE));
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(5);
+    }
+
+    @Test
+    void queueDrainsSequentially() {
+        game.setMineralsForTesting(500);
+        // supply=15, used=12, free=3 — enough for 3 probes at 1 each
+        int before = game.snapshot().myUnits().size();
+
+        game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE)); // starts (12 ticks)
+        game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE)); // queued
+
+        for (int i = 0; i < 12; i++) game.tick(); // first completes
+        assertThat(game.snapshot().myUnits()).hasSize(before + 1);
+
+        for (int i = 0; i < 12; i++) game.tick(); // second completes (started right after first)
+        assertThat(game.snapshot().myUnits()).hasSize(before + 2);
+    }
+
+    @Test
+    void buildingValidationRejectsUnknownTag() {
+        game.setMineralsForTesting(500);
+        int mineralsBefore = (int) game.snapshot().minerals();
+
+        game.applyIntent(new TrainIntent("no-such-building", UnitType.ZEALOT));
+
+        assertThat(game.snapshot().minerals()).isEqualTo(mineralsBefore); // no deduction
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(12);           // no supply change
+    }
+
+    @Test
+    void enemyUsesRealBuildingTagFromEnemyBuildings() {
+        // setEnemyStrategy uses a permissive TechTree — we must also seed the
+        // training building since EnemyBehavior now looks it up from enemy.buildings.
+        game.setEnemyStrategy(new FixedBuildOrderStrategy("TEST", Race.PROTOSS,
+            List.of(UnitType.ZEALOT), 10, new EnemyAttackConfig(3, 200, 0, 0)));
+        game.reset();
+        // Seed a Gateway so EnemyBehavior can find it via SC2Data.trainedBy(ZEALOT)=GATEWAY
+        game.spawnEnemyBuildingForTesting(BuildingType.GATEWAY, new Point2d(52, 51));
+        game.enemy.minerals = 200;
+
+        int zealotTrainTime = SC2Data.trainTimeInTicks(UnitType.ZEALOT);
+        for (int i = 0; i < zealotTrainTime + 5; i++) game.tick();
+
         boolean hasZealot = game.enemy.stagingArea.stream().anyMatch(u -> u.type() == UnitType.ZEALOT)
             || game.enemy.units.stream().anyMatch(u -> u.type() == UnitType.ZEALOT);
         assertThat(hasZealot).isTrue();
