@@ -264,8 +264,8 @@ public class EmulatedGame {
             return;
         }
         boolean isBusy = state.buildingTrainingUntil.containsKey(buildingTag);
-        int total = (isBusy ? 1 : 0)
-            + state.buildingQueues.getOrDefault(buildingTag, new ArrayDeque<>()).size();
+        Deque<UnitType> existingQueue = state.buildingQueues.get(buildingTag);
+        int total = (isBusy ? 1 : 0) + (existingQueue != null ? existingQueue.size() : 0);
         if (total >= 5) {
             log.debugf("[EMULATED] Train rejected — building %s queue full", buildingTag);
             return;
