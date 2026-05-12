@@ -80,7 +80,6 @@ WebSocket.
 **Not yet implemented:**
 - Friendly auto-engage (units stop and fight without explicit `AttackIntent`)
 - Realistic worker mineral collection model (currently flat +5/tick)
-- Parallel training queues (one per building)
 
 **Accuracy goal (open):** the emulated engine is not yet validated against real
 SC2 replay data — see Phase 6.
