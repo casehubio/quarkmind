@@ -246,29 +246,50 @@ public class EmulatedGame {
     }
 
     private void handleTrain(TrainIntent t, PlayerState state) {
-        // Note: t.buildingTag() (the training building) is intentionally not validated in the emulator —
-        // we have one Nexus and training always succeeds if resources allow. In real SC2 the tag
-        // would identify which specific building to queue the unit in.
+        String buildingTag = t.buildingTag();
+        boolean buildingReady = state.buildings.stream()
+            .anyMatch(b -> b.tag().equals(buildingTag) && b.isComplete());
+        if (!buildingReady) {
+            log.debugf("[EMULATED] Train rejected — building %s not ready", buildingTag);
+            return;
+        }
         int mCost = SC2Data.mineralCost(t.unitType());
         int gCost = SC2Data.gasCost(t.unitType());
         int sCost = SC2Data.supplyCost(t.unitType());
-        if ((int) state.minerals < mCost || state.vespene < gCost || state.supplyUsed + sCost > state.supply) {
+        if ((int) state.minerals < mCost || state.vespene < gCost
+                || state.supplyUsed + sCost > state.supply) {
             log.debugf("[EMULATED] Cannot train %s — insufficient resources", t.unitType());
             return;
         }
-        state.minerals -= mCost;
-        state.vespene -= gCost;
-        boolean isEnemy = (state == enemy);
-        long completesAt = gameFrame + SC2Data.trainTimeInTicks(t.unitType());
+        boolean isBusy = state.buildingTrainingUntil.containsKey(buildingTag);
+        int total = (isBusy ? 1 : 0)
+            + state.buildingQueues.getOrDefault(buildingTag, new ArrayDeque<>()).size();
+        if (total >= 5) {
+            log.debugf("[EMULATED] Train rejected — building %s queue full", buildingTag);
+            return;
+        }
+        state.supplyUsed += sCost;
+        state.minerals   -= mCost;
+        state.vespene    -= gCost;
+        if (!isBusy) {
+            startTraining(buildingTag, t.unitType(), state);
+        } else {
+            state.buildingQueues.computeIfAbsent(buildingTag, k -> new ArrayDeque<>())
+                .add(t.unitType());
+        }
+    }
+
+    private void startTraining(String buildingTag, UnitType unitType, PlayerState state) {
+        boolean isEnemy  = (state == enemy);
+        long completesAt = gameFrame + SC2Data.trainTimeInTicks(unitType);
+        state.buildingTrainingUntil.put(buildingTag, completesAt);
         state.pendingCompletions.add(new PlayerState.PendingCompletion(completesAt, () -> {
-            // TODO: reserve supplyUsed at queue time (not completion time) to prevent
-            // double-queuing when two TrainIntents arrive before either completes.
-            state.supplyUsed += sCost;
+            state.buildingTrainingUntil.remove(buildingTag);
             String tag = "unit-" + nextTag++;
-            int hp = SC2Data.maxHealth(t.unitType());
-            state.units.add(new Unit(tag, t.unitType(), new Point2d(9, 9), hp, hp,
-                SC2Data.maxShields(t.unitType()), SC2Data.maxShields(t.unitType()), 0, 0));
-            log.debugf("[EMULATED] Trained %s (tag=%s)", t.unitType(), tag);
+            int hp = SC2Data.maxHealth(unitType);
+            state.units.add(new Unit(tag, unitType, new Point2d(9, 9), hp, hp,
+                SC2Data.maxShields(unitType), SC2Data.maxShields(unitType), 0, 0));
+            log.debugf("[EMULATED] Trained %s (tag=%s)", unitType, tag);
             if (isEnemy && enemyBehavior != null) {
                 enemyBehavior.notifyUnitTrained();
             }
