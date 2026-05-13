@@ -80,10 +80,12 @@ class BlinkMechanicsTest {
 
     @Test
     void blinkCancelsAttackMode() {
-        // Place enemy adjacent so the stalker is in attack range (5 tiles)
-        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(10.0f, 10.3f));
+        // Place enemy at (10.0,12.5) — within Stalker range (dist=2.5≤5) but outside probe range.
+        // Probes are at y=9; distance from probe-2 at (10,9) to (10,12.5)=3.5>3.0 — all probes out of range.
+        // After blink, Stalker moves ~8 tiles away to (10,~2): distance to Zealot = ~10.5 > 5 → no attack.
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(10.0f, 12.5f));
         String tag = stalker().tag();
-        // Blink — moves unit 8 tiles away, out of range, attack mode cleared
+        // Blink — moves unit 8 tiles away (to ~(10,2)), out of range; no probe can reach the Zealot
         game.applyIntent(new BlinkIntent(tag));
         // Tick — stalker is now 8 tiles away from the zealot (range 5); should not deal damage
         int enemyHpBefore = game.snapshot().enemyUnits().get(0).health() +
