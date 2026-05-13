@@ -138,6 +138,9 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 - `setTerrainGrid(TerrainGrid)` — activate terrain for tests that verify wall enforcement or high-ground miss-chance mechanics (default null = no terrain effects)
 - `setRandomForTesting(Random)` — inject a predictable Random for miss-chance tests (always-miss: return 0.0; always-hit: return 1.0)
 - `addStagedUnitForTesting(UnitType, Point2d)` — inject a unit into `enemy.stagingArea` (for fog-of-war visibility tests where staging area filtering is under test)
+- `spawnBuildingForTesting(BuildingType, Point2d) → Building` — add a complete friendly building; returns the `Building` record so tests can use its tag in `TrainIntent`
+- `spawnEnemyBuildingForTesting(BuildingType, Point2d)` — add a complete enemy building; used to seed training infrastructure for enemy behavior tests
+- `setSupplyForTesting(int supply, int supplyUsed)` — override friendly supply caps; use when tests need more than the 3 default free supply slots
 
 **SimulatedGame test helpers** (public, usable from any test including `VisualizerRenderTest`):
 - `setUnitHealth(String tag, int health)` — inject low-health state for visualiser E2E tests
