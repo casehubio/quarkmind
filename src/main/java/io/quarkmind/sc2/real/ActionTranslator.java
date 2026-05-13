@@ -73,7 +73,7 @@ public final class ActionTranslator {
             return null;
         }
         return new ResolvedCommand(
-            toTag(intent.unitTag()),
+            toTag(intent.buildingTag()),
             ability,
             Optional.empty()
         );
