@@ -79,9 +79,23 @@ proactively suggest writing a handover before continuing.
 
 **Type:** java
 
+## Agentic Harness Goals
+
+**Read first:** `~/claude/casehub/parent/docs/AGENTIC-HARNESS-GUIDE.md`
+
+**Primary goal:** Living lab — a working testbed demonstrating that the CaseHub agentic harness pattern holds outside regulated enterprise domains, at millisecond game-loop granularity. The SC2 layer is domain-specific; the harness underneath (CaseFile blackboard, plugin coordination, adaptive agent selection) is the same pattern as AML, clinical, and devtown.
+
+**Secondary goal:** LLM and human tutorial material for the harness layer (not the SC2 layer). The tutorial structure applies to the CaseHub integration, independent of SC2 knowledge.
+
+**LAYER-LOG.md** (`LAYER-LOG.md` at project root) covers the harness layers only. A layer is not complete until its entry is written. See the AML reference implementation and `docs/protocols/universal/layer-log.md` in casehub-parent for the format.
+
+---
+
 ## Repository Purpose
 
-**QuarkusMind** — a Quarkus-based StarCraft II agent platform. The primary purpose is R&D — it is a living testbed for Drools, Quarkus Flow, and CaseHub (a Blackboard/CMMN framework). Intelligence is provided by swappable plugins; the platform provides scaffolding, SC2 connection, and the CaseHub control loop.
+**QuarkMind** — a Quarkus-based StarCraft II agent platform and CaseHub living lab. An agentic harness for game AI: coordinates plugin agents (strategy, economics, tactics, scouting) via CaseHub's case engine and blackboard. Intelligence is provided by swappable plugins; the platform provides scaffolding, SC2 connection, and the CaseHub control loop.
+
+Deep-dive: `~/claude/casehub/parent/docs/repos/quarkmind.md`
 
 See `docs/superpowers/specs/` for the design spec and `docs/library-research.md` for the library evaluation log.
 
