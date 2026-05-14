@@ -7,8 +7,6 @@ import io.quarkmind.domain.GameState;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.SC2Engine;
 import io.quarkmind.sc2.mock.ReplaySimulatedGame;
-import io.quarkmind.sc2.replay.GameEventStream;
-import io.quarkmind.sc2.replay.UnitOrder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
@@ -62,9 +60,7 @@ public class ReplayEngine implements SC2Engine {
         log.infof("[REPLAY] Loading replay: %s (player %d)", replayFile, watchedPlayerId);
         game = new ReplaySimulatedGame(Path.of(replayFile), watchedPlayerId);
         parseMapMetadata(Path.of(replayFile));
-        List<UnitOrder> orders = GameEventStream.parse(Path.of(replayFile));
-        game.loadOrders(orders);
-        log.infof("[REPLAY] Loaded %d movement orders from GAME_EVENTS", orders.size());
+        // Movement orders restored in Task 5 via ReplayCommandExtractor
         connected = true;
         log.infof("[REPLAY] Replay loaded — %d tracker events ready, map=%s (%dx%d)",
                 game.eventCount(), mapName, mapWidth, mapHeight);
