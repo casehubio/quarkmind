@@ -6,7 +6,6 @@ import hu.scelight.sc2.rep.model.Replay;
 import hu.scelight.sc2.rep.s2prot.Event;
 
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -24,7 +23,11 @@ public final class GameEventStream {
         if (replay == null || replay.gameEvents == null) {
             throw new IllegalArgumentException("No game events in replay: " + replayPath);
         }
-        return Arrays.asList(replay.gameEvents.getEvents());
+        Event[] raw = replay.gameEvents.getEvents();
+        if (raw == null) {
+            throw new IllegalArgumentException("No game events in replay: " + replayPath);
+        }
+        return List.of(raw);
     }
 
     /** Decode raw SC2 unit tag integer to "r-{index}-{recycle}" format. */
