@@ -56,7 +56,7 @@ public class AbilityMapping {
             0, UnitType.STALKER,
             1, UnitType.ZEALOT,
             5, UnitType.ADEPT,
-            6, UnitType.OBSERVER
+            6, UnitType.OBSERVER   // tentative — Observer is Robotics; abilCmdIndex=6 needs verification against more replays
     );
 
     // Robotics abilCmdIndex → UnitType
@@ -184,6 +184,8 @@ public class AbilityMapping {
             } else if (tu != null && tu.getTag() != null) {
                 orders.add(new ReplayCommand.Movement(
                         new UnitOrder(tag, loop, null, GameEventStream.decodeTag(tu.getTag()))));
+            } else {
+                log.debugf("[ABILITY] Move cmd at loop %d has no target — skipped for %s", loop, tag);
             }
         }
         return orders;
