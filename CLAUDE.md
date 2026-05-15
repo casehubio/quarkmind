@@ -81,7 +81,7 @@ proactively suggest writing a handover before continuing.
 
 ## Agentic Harness Goals
 
-**Read first:** `~/claude/casehub/parent/docs/AGENTIC-HARNESS-GUIDE.md`
+**Read first:** `https://raw.githubusercontent.com/casehubio/parent/main/docs/AGENTIC-HARNESS-GUIDE.md`
 
 **Primary goal:** Living lab — a working testbed demonstrating that the CaseHub agentic harness pattern holds outside regulated enterprise domains, at millisecond game-loop granularity. The SC2 layer is domain-specific; the harness underneath (CaseFile blackboard, plugin coordination, adaptive agent selection) is the same pattern as AML, clinical, and devtown.
 
@@ -95,7 +95,7 @@ proactively suggest writing a handover before continuing.
 
 **QuarkMind** — a Quarkus-based StarCraft II agent platform and CaseHub living lab. An agentic harness for game AI: coordinates plugin agents (strategy, economics, tactics, scouting) via CaseHub's case engine and blackboard. Intelligence is provided by swappable plugins; the platform provides scaffolding, SC2 connection, and the CaseHub control loop.
 
-Deep-dive: `~/claude/casehub/parent/docs/repos/quarkmind.md`
+Deep-dive: `https://raw.githubusercontent.com/casehubio/parent/main/docs/repos/quarkmind.md`
 
 See `docs/superpowers/specs/` for the design spec and `docs/library-research.md` for the library evaluation log.
 
