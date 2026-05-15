@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * <p>The ≤ 2 bound confirms that TrainIntent extraction is working correctly: all train
  * commands are present and applied to the right building type. Exact match would require
- * either mineral sync or a saturation-aware mining model (#130).
+ * either mineral sync or a saturation-aware mining model (#141).
  *
  * Refs #137
  */
@@ -43,7 +43,7 @@ class ReplayValidationTest {
 
         assertThat(report.summary().maxUnitDelta())
             .as("Unit count delta must stay ≤ 2 at every tick (flat mining model trains 1 tick "
-                + "early when emulated minerals exceed GT; exact match requires #130). "
+                + "early when emulated minerals exceed GT; exact match requires #141). "
                 + "Max was %d.\n%s",
                 report.summary().maxUnitDelta(), report.renderReport())
             .isLessThanOrEqualTo(2);
@@ -56,7 +56,7 @@ class ReplayValidationTest {
         // Emulated minerals exceed GT because the flat model has no saturation cap.
         // The GT mineral level reflects actual SC2 spending; emulated hoards income.
         // A 2000-mineral delta is expected; this test documents it, not bounds it.
-        // Exact mineral accuracy requires the saturation model from #130.
+        // Exact mineral accuracy requires the saturation model from #141.
         assertThat(report.summary().maxMineralDelta())
             .as("Mineral delta is expected to be large (flat vs saturation mining). Max was %d.\n%s",
                 report.summary().maxMineralDelta(), report.renderReport())
