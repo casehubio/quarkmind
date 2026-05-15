@@ -146,7 +146,17 @@
       "Bash(break)",
       "Read(//Users/mdproctor/claude-workspace/writing-styles/**)",
       "Read(//Users/mdproctor/claude/claude-workspace/**)",
-      "Bash(ls /Users/mdproctor/claude/quarkmind/docs/_posts/2026-04-16-mdp*.md)"
+      "Bash(ls /Users/mdproctor/claude/quarkmind/docs/_posts/2026-04-16-mdp*.md)",
+      "mcp__intellij-index__ide_index_status",
+      "mcp__intellij__get_project_modules",
+      "Bash(mvn -q test -Dtest=AbilityDiscoveryTest -Dreplay=replays/aiarena_protoss/ArgoBot_4721229.SC2Replay)",
+      "mcp__intellij__build_project",
+      "mcp__intellij__find_files_by_name_keyword",
+      "Bash(awk '{split\\($2,a,\"/\"\\); d=a[2]-a[1]; if\\(d<0\\)d=-d; if\\(d>max\\)max=d; print $0, \"delta=\"d} END {print \"MAX_UNIT_DELTA:\", max}')",
+      "Bash(awk 'NR>6 { *)",
+      "Bash(awk '{ *)",
+      "mcp__intellij__search_in_files_by_text",
+      "mcp__intellij__read_file"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"

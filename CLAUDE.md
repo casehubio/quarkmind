@@ -183,7 +183,7 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 
 **Unit tests** (no Quarkus, fast):
 - Instantiate classes directly via `new` — no CDI
-- Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `BasicStrategyTaskTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`
+- Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `BasicStrategyTaskTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`, `AbilityDiscoveryTest`, `AbilityMappingTest`, `ReplayCommandExtractorTest`, `ReplayValidationTest`, `ReplaySimulatedGameMovementTest`
 - Package-private static methods on CDI beans are tested from the same package without CDI — make them `static` (not `private`) to enable this.
 
 **Integration tests** (`@QuarkusTest`, full CDI context):
@@ -196,7 +196,7 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 - **For tests that click specific sprites:** get the unit/building tag from `simulatedGame.snapshot()` *before* calling `engine.observe()`, then wait with `unitHasTag(tag)` / `buildingHasTag(tag)`.
 - Install Chromium once: `mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chromium"`
 - Run mock-mode visual tests: `mvn test -Pplaywright`
-- Excluded from default surefire run via `excludedGroups=benchmark,browser`
+- Excluded from default surefire run via `excludedGroups=benchmark,browser,report`
 
 **Replay visual pixel tests** (`ReplayVisualizerIT`, `@Tag("browser")`):
 - Run with: `mvn test -Pplaywright-replay`
@@ -204,6 +204,10 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 
 **WebSocket integration tests** (`@QuarkusTest`, run in normal suite):
 - `GameStateWebSocketTest` — connects via `java.net.http.WebSocket`, calls `engine.observe()` directly
+
+**Replay divergence report** (`@Tag("report")`, excluded from default surefire run):
+- `ReplayValidationReportTest` — runs `ReplayValidationHarness` to completion and prints full economic divergence report to stdout
+- Run with: `mvn test -Preport`
 
 **Never use `@QuarkusTest` for tests that can be plain JUnit** — boot cost is significant.
 

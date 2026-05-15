@@ -76,7 +76,7 @@ Plain Java records in `domain/` — no framework dependencies, always native-com
 | `sc2/mock/scenario/` | `ScenarioLibrary` — living specification of SC2 behaviour |
 | `sc2/real/` | Real SC2: `RealSC2Client`, `RealGameObserver`, `RealCommandDispatcher`, `SC2BotAgent`, `ObservationTranslator`, `ActionTranslator` |
 | `sc2/emulated/` | Physics simulation: `EmulatedGame`, `EmulatedEngine`, `SC2Data` (shared with domain) |
-| `sc2/replay/` | Replay-driven: `ReplayEngine` (observe-only), `ReplaySimulatedGame` |
+| `sc2/replay/` | Replay-driven: `ReplayEngine` (observe-only), `ReplaySimulatedGame`, `GameEventStream` (thin MPQ reader: `events(Path) → List<Event>`), `AbilityMapping` (stateful `CmdEvent`→`Intent` translator; owns selection state per player), `ReplayCommandExtractor` (orchestrates `GameEventStream` + `AbilityMapping` → `ReplayCommandStream`), `DivergenceReport`, `ReplayValidationHarness` |
 | `agent/` | `AgentOrchestrator`, `GameStateTranslator`, `QuarkMindCaseFile` (key constants) |
 | `agent/plugin/` | Plugin seam interfaces: `StrategyTask`, `EconomicsTask`, `TacticsTask`, `ScoutingTask` |
 | `plugin/` | Real plugin implementations: `BasicEconomicsTask`, `BasicScoutingTask`, `BasicTacticsTask`, `DroolsStrategyTask`, `FlowEconomicsTask`, `DroolsTacticsTask` |
@@ -135,7 +135,7 @@ Plugins are registered at startup by `QuarkMindTaskRegistrar` — injecting each
 | `SimulatedGame` | Hand-crafted stateful SC2 simulation; CDI bean in `%mock` profile |
 | `ReplaySimulatedGame` | Replay-driven variant; plain Java, driven from real `.SC2Replay` tracker events (PlayerStats, UnitBorn, UnitDied, UnitInit, UnitDone). Captures neutral units (`ctrlId==0`) as mineral patches and geysers; enemy buildings tracked via UnitBorn/UnitInit/UnitDone/UnitDied. |
 | `ReplayEngine` | `SC2Engine` for `%replay` profile — observe-only, records agent intents |
-| `EmulatedGame` | Physics referee: holds `PlayerState friendly` + `PlayerState enemy`; both players share the same `applyIntent(Intent, PlayerState)` and `IntentQueue` drain path; CDI bean in `%emulated` profile |
+| `EmulatedGame` | Physics referee: holds `PlayerState friendly` + `PlayerState enemy`; both players share the same `applyIntent(Intent, PlayerState)` and `IntentQueue` drain path; CDI bean in `%emulated` profile. Exposes `injectReplayBuilding(Building)` and `markReplayBuildingComplete(String)` for replay validation harness (both auto-update supply); `setMiningProbes(int)` for harness resource model calibration. |
 | `PlayerState` | Per-player mutable state: units, buildings, stagingArea, minerals, supply, pendingCompletions, movement/combat maps |
 | `PlayerBehavior` | Interface: `tick(GameState, IntentQueue)` — drives decisions for one player per tick |
 | `EnemyBehavior` | `implements PlayerBehavior`; owns production loop, tech-tree gating, attack launch, retreat, strategy switching |
@@ -274,11 +274,12 @@ A Three.js live visualizer renders game state each tick in a 3D orbiting-camera 
 
 ## Testing Strategy
 
-- **Unit tests** (`new`, no CDI): `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `EmulatedGameTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`
+- **Unit tests** (`new`, no CDI): `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `EmulatedGameTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`, `AbilityDiscoveryTest`, `AbilityMappingTest`, `ReplayCommandExtractorTest`, `ReplayValidationTest`, `ReplaySimulatedGameMovementTest`
+- **Replay divergence report** (`@Tag("report")`, `mvn test -Preport`): `ReplayValidationReportTest` — runs `ReplayValidationHarness` to completion and prints full economic divergence report to stdout; excluded from default surefire run
 - **Integration tests** (`@QuarkusTest`, full CDI): `QaEndpointsTest`, `FullMockPipelineIT` — scheduler disabled, `orchestrator.gameTick()` called directly
 - **Playwright E2E tests**: 251 render tests — sprite counts/positions/health tinting/death; panel inspect (team label, HP text, portrait canvas pixel alpha); pixel-colour sampling for minerals, geysers, creep; fog; use `window.__test` semantic API including `clickUnit(tag,isEnemy)`, `clickBuilding(tag,isEnemy)`, `panelTeam()`, `panelHpText()`, `panelPortraitSample()`, `unitHasTag(tag)`, `buildingHasTag(tag)`
 - **Benchmark tests** (`@Tag("benchmark")`, `mvn test -Pbenchmark`): excluded from normal runs; `AtomicReference<TickTimings>` in `AgentOrchestrator` exposes last tick's phase breakdown; baseline: 2ms mean plugin time (pre-E2)
-- **Total: 629 tests**
+- **Total: ~649 tests**
 
 **Rules:**
 - Never use `@QuarkusTest` for tests that can be plain JUnit
@@ -336,4 +337,6 @@ See [docs/adr/INDEX.md](adr/INDEX.md) for the full index.
 
 **Deferred:**
 - `HttpSC2Engine` — network bridge; SC2 on one machine, agent on another (Phase 4)
-- Mineral collection model — worker-saturation curve planned improvement; current per-probe flat rate is implemented but does not model diminishing returns above optimal saturation
+- **#141 Saturation mining model** — flat per-probe rate causes ~1-tick early unit training against replay ground truth; saturation model needed for exact match in `ReplayValidationTest`
+- **#140 Terran replay files** — Terran ability IDs in `AbilityMapping` are stubs; need raw `.SC2Replay` files from Terran games to populate via `AbilityDiscoveryTest`
+- **#138 Terran/Zerg EmulatedGame** — `EmulatedGame` currently models Protoss mechanics only

@@ -55,8 +55,7 @@ public class AbilityMapping {
     private static final Map<Integer, UnitType> GATEWAY_UNITS = Map.of(
             0, UnitType.STALKER,
             1, UnitType.ZEALOT,
-            5, UnitType.ADEPT,
-            6, UnitType.OBSERVER   // tentative — Observer is Robotics; abilCmdIndex=6 needs verification against more replays
+            5, UnitType.ADEPT
     );
 
     // Robotics abilCmdIndex → UnitType
