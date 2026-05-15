@@ -60,7 +60,10 @@ public class ReplayEngine implements SC2Engine {
         log.infof("[REPLAY] Loading replay: %s (player %d)", replayFile, watchedPlayerId);
         game = new ReplaySimulatedGame(Path.of(replayFile), watchedPlayerId);
         parseMapMetadata(Path.of(replayFile));
-        // Movement orders restored in Task 5 via ReplayCommandExtractor
+        ReplayCommandStream commands = ReplayCommandExtractor.extract(Path.of(replayFile), watchedPlayerId);
+        game.loadOrders(commands.movementOrders());
+        log.infof("[REPLAY] Loaded %d movement orders, %d intents from GAME_EVENTS",
+                  commands.movementOrders().size(), commands.intents().size());
         connected = true;
         log.infof("[REPLAY] Replay loaded — %d tracker events ready, map=%s (%dx%d)",
                 game.eventCount(), mapName, mapWidth, mapHeight);
