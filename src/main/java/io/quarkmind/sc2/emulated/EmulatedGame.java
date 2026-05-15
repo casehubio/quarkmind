@@ -574,7 +574,8 @@ public class EmulatedGame {
 
     // --- Package-private: used by EmulatedGameTest ---
 
-    void setMiningProbes(int count) { this.miningProbes = count; }
+    /** Sets mining probe count. Package-private for tests; public for validation harnesses. */
+    public void setMiningProbes(int count) { this.miningProbes = count; }
 
     /** Wires an EnemyStrategy through an EnemyBehavior — test shim for retreat tests.
      *  Uses a permissive TechTree so existing tests are not affected by tech-tree gating. */
@@ -702,4 +703,30 @@ public class EmulatedGame {
         friendly.supply     = supply;
         friendly.supplyUsed = supplyUsed;
     }
+
+    /**
+     * Sets the supply cap for validation harnesses that sync supply from ground truth.
+     * Does not change supplyUsed — only expands or contracts the cap.
+     * Public: called from ReplayValidationHarness in a different package.
+     */
+    public void setSupplyCap(int supply) {
+        friendly.supply = supply;
+    }
+
+    /**
+     * Sets the mineral balance for validation harnesses that sync resources from ground truth.
+     * Public: called from ReplayValidationHarness in a different package.
+     */
+    public void setMinerals(int amount) {
+        friendly.minerals = amount;
+    }
+
+    /**
+     * Sets the vespene balance for validation harnesses that sync resources from ground truth.
+     * Public: called from ReplayValidationHarness in a different package.
+     */
+    public void setVespene(int amount) {
+        friendly.vespene = amount;
+    }
+
 }
