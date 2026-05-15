@@ -705,28 +705,33 @@ public class EmulatedGame {
     }
 
     /**
-     * Sets the supply cap for validation harnesses that sync supply from ground truth.
+     * Sets the supply cap from replay ground truth.
+     * The real player builds Pylons that EmulatedGame cannot reconstruct from game events;
+     * syncing supply from GT prevents the initial 15-supply cap from blocking training.
      * Does not change supplyUsed — only expands or contracts the cap.
      * Public: called from ReplayValidationHarness in a different package.
      */
-    public void setSupplyCap(int supply) {
+    public void setSupplyCapForHarness(int supply) {
         friendly.supply = supply;
     }
 
     /**
-     * Sets the mineral balance for validation harnesses that sync resources from ground truth.
-     * Public: called from ReplayValidationHarness in a different package.
+     * Injects a building directly into the friendly player state without resource deduction.
+     * Used by ReplayValidationHarness to sync buildings from replay tracker events.
+     * The building tag must match the replay's tracker-event tag format ("r-N-M").
      */
-    public void setMinerals(int amount) {
-        friendly.minerals = amount;
+    public void injectReplayBuilding(Building building) {
+        friendly.buildings.add(building);
     }
 
     /**
-     * Sets the vespene balance for validation harnesses that sync resources from ground truth.
-     * Public: called from ReplayValidationHarness in a different package.
+     * Updates an existing friendly building to complete status.
+     * Used by ReplayValidationHarness when a building finishes construction in the replay ground truth.
      */
-    public void setVespene(int amount) {
-        friendly.vespene = amount;
+    public void markReplayBuildingComplete(String tag) {
+        friendly.buildings.replaceAll(b -> b.tag().equals(tag)
+            ? new Building(b.tag(), b.type(), b.position(), b.health(), b.maxHealth(), true)
+            : b);
     }
 
 }
