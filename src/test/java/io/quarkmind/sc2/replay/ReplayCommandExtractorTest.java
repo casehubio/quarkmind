@@ -1,7 +1,6 @@
 package io.quarkmind.sc2.replay;
 
 import io.quarkmind.domain.SC2Data;
-import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
