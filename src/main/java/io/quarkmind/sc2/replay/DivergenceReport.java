@@ -22,6 +22,7 @@ public record DivergenceReport(List<TickSnapshot> ticks, Summary summary) {
     public record Summary(
         int firstUnitDivergenceTick,
         int firstBuildingDivergenceTick,
+        int maxUnitDelta,
         int maxMineralDelta,
         int maxVespeneDelta,
         boolean economicallyAccurate) {}
@@ -29,18 +30,20 @@ public record DivergenceReport(List<TickSnapshot> ticks, Summary summary) {
     public static DivergenceReport from(List<TickSnapshot> ticks) {
         int firstUnit     = -1;
         int firstBuilding = -1;
+        int maxUnit       = 0;
         int maxMineral    = 0;
         int maxVespene    = 0;
 
         for (TickSnapshot t : ticks) {
             if (firstUnit     == -1 && t.hasUnitDivergence())     firstUnit     = t.tick();
             if (firstBuilding == -1 && t.hasBuildingDivergence()) firstBuilding = t.tick();
+            maxUnit    = Math.max(maxUnit,    t.unitDelta());
             maxMineral = Math.max(maxMineral, t.mineralDelta());
             maxVespene = Math.max(maxVespene, t.vespeneDelta());
         }
 
         boolean accurate = (firstUnit == -1) && (firstBuilding == -1);
-        return new DivergenceReport(ticks, new Summary(firstUnit, firstBuilding, maxMineral, maxVespene, accurate));
+        return new DivergenceReport(ticks, new Summary(firstUnit, firstBuilding, maxUnit, maxMineral, maxVespene, accurate));
     }
 
     public String renderReport() {
@@ -52,6 +55,7 @@ public record DivergenceReport(List<TickSnapshot> ticks, Summary summary) {
             summary.firstUnitDivergenceTick()     == -1 ? "none" : summary.firstUnitDivergenceTick()));
         sb.append(String.format("First building divergence: tick %s%n",
             summary.firstBuildingDivergenceTick() == -1 ? "none" : summary.firstBuildingDivergenceTick()));
+        sb.append(String.format("Max unit delta:    %d%n", summary.maxUnitDelta()));
         sb.append(String.format("Max mineral delta: %d%n", summary.maxMineralDelta()));
         sb.append(String.format("Max vespene delta: %d%n", summary.maxVespeneDelta()));
         sb.append(String.format("%n%-6s  %-11s  %-13s  %-19s  %-19s%n",
