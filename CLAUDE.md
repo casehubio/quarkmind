@@ -310,6 +310,7 @@ Two benchmark tests run via `mvn test -Pbenchmark`:
 | `CLAUDE.md` | Project conventions (build, test, naming) |
 | `docs/adr/` | Architecture decision records |
 | `docs/DESIGN.md` | Design document |
+| `docs/protocols/` | Project-specific standing rules and conventions |
 
 ## Work Tracking
 
