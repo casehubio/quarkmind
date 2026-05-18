@@ -17,19 +17,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>Supply is synced from GT: the real player builds Pylons we cannot reconstruct from
  * game events, so without supply sync training would halt at the initial 15-supply cap.
  *
- * <p>Resources (minerals, vespene) are NOT synced — divergence is expected given
- * EmulatedGame's flat mining rate vs SC2's saturation-based model. Mining probe count IS
- * synced (scaled by LOOPS_PER_TICK) so the flat-rate model produces the correct per-tick
- * income. Even so, emulated minerals accumulate ~1800 more than GT because the flat model
- * has no saturation cap, which causes emulated to execute some train commands 1 tick early
- * (resource is never the bottleneck in emulated, occasionally is in GT). The resulting unit
- * count divergence is bounded at ≤ 2 and clears within 1 tick.
+ * <p>Resources (minerals, vespene) are NOT synced — divergence is expected because
+ * EmulatedGame does not deduct building costs (buildings are injected free). Mining probe
+ * count IS synced so the saturation model (#141) produces realistic per-outer-tick income.
+ * With the saturation model, mineral delta is bounded at ≤ 1100 over 3 minutes (down from
+ * ≤ 11,564 with the old flat model).
  *
- * <p>The sub-tick fix (#142) corrected loop-offset rounding in startTraining, moving
- * firstUnitDivergenceTick from 36 to 86. The remaining divergence is mineral-timing only
- * and requires saturation-aware mining (#141) or mineral sync to eliminate — see #146.
+ * <p>Unit count divergence (≤ 2) is NOT caused by mineral accumulation — it persists with
+ * the saturation model in place. The remaining cause is train-timing precision: the sub-tick
+ * fix (#142) corrected loop-offset rounding in startTraining, moving firstUnitDivergenceTick
+ * from 36 to 86. Divergence beyond tick 86 is building-cost timing only — see #146.
  *
- * Refs #137, #142
+ * <p>The ≤ 2 bound confirms TrainIntent extraction is working: all train commands are
+ * present and applied to the correct building type.
+ *
+ * Refs #137, #141, #142
  */
 class ReplayValidationTest {
 
@@ -49,8 +51,9 @@ class ReplayValidationTest {
             .isGreaterThanOrEqualTo(80);
 
         assertThat(report.summary().maxUnitDelta())
-            .as("Unit count delta must stay ≤ 2 at every tick (flat mining model trains 1 tick "
-                + "early when emulated minerals exceed GT; exact match requires #141 or #146). "
+            .as("Unit count delta must stay ≤ 2 at every tick. "
+                + "Saturation model (#141) and sub-tick fix (#142) both in place; "
+                + "remaining divergence is building-cost timing (#146). "
                 + "Max was %d.\n%s",
                 report.summary().maxUnitDelta(), report.renderReport())
             .isLessThanOrEqualTo(2);
@@ -60,13 +63,12 @@ class ReplayValidationTest {
     void mineralDeltaWithinToleranceForThreeMinutes() {
         DivergenceReport report = ReplayValidationHarness.run(REPLAY, 1, THREE_MINUTES_TICKS);
 
-        // Emulated minerals exceed GT because the flat model has no saturation cap.
-        // The GT mineral level reflects actual SC2 spending; emulated hoards income.
-        // A 2000-mineral delta is expected; this test documents it, not bounds it.
-        // Exact mineral accuracy requires the saturation model from #141.
+        // Emulated minerals exceed GT because buildings are injected free (no cost deducted).
+        // The saturation mining model (#141) reduced the residual delta from ~11,564 to ~850
+        // at the 3-minute mark. Exact parity is impossible without deducting building costs.
         assertThat(report.summary().maxMineralDelta())
-            .as("Mineral delta is expected to be large (flat vs saturation mining). Max was %d.\n%s",
+            .as("Mineral delta must stay ≤ 1100 (saturation model bound). Max was %d.\n%s",
                 report.summary().maxMineralDelta(), report.renderReport())
-            .isLessThan(5000); // just a sanity-level upper bound
+            .isLessThanOrEqualTo(1100);
     }
 }

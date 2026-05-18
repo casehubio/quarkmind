@@ -60,13 +60,11 @@ public final class ReplayValidationHarness {
         for (int tick = 0; tick < tickLimit && !replayGame.isComplete(); tick++) {
             long windowEnd = (long) (tick + 1) * SC2Data.LOOPS_PER_TICK;
 
-            // Sync probe count from current GT.
-            // MINERALS_PER_PROBE_PER_TICK is calibrated per-game-loop, not per replay tick,
-            // so multiply by LOOPS_PER_TICK to produce the correct per-replay-tick income.
-            // trainTimeInTicks values are in outer ticks, so emulated.tick() is called once —
-            // both systems stay consistent with the original EmulatedGame scheduling model.
+            // Sync probe count from current GT so the saturation model produces realistic
+            // per-outer-tick income. SC2Data.mineralIncomePerTick handles the per-tick
+            // rate internally; the raw probe count is the correct input.
             GameState gtBefore = replayGame.snapshot();
-            emulated.setMiningProbes(countProbes(gtBefore) * SC2Data.LOOPS_PER_TICK);
+            emulated.setMiningProbes(countProbes(gtBefore));
 
             emulated.tick();
             replayGame.tick();

@@ -51,7 +51,7 @@ class EmulatedGameTest {
     void mineralAccumulatesWithMiningProbes() {
         int ticks = 100;
         for (int i = 0; i < ticks; i++) game.tick();
-        double expected = SC2Data.INITIAL_MINERALS + (SC2Data.INITIAL_PROBES * SC2Data.MINERALS_PER_PROBE_PER_TICK * ticks);
+        double expected = SC2Data.INITIAL_MINERALS + SC2Data.mineralIncomePerTick(SC2Data.INITIAL_PROBES) * ticks;
         assertThat(game.snapshot().minerals()).isCloseTo((int) expected, within(1));
     }
 

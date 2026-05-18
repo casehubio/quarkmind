@@ -14,8 +14,43 @@ public final class SC2Data {
     /** Game loops per real-time second at SC2 Faster speed (16 loops/sec × 1.4 multiplier). */
     public static final double GAME_LOOPS_PER_SECOND = 22.4;
 
-    /** Minerals generated per mining probe per game tick at Faster speed. */
-    public static final double MINERALS_PER_PROBE_PER_TICK = 50.0 / 60.0 / GAME_LOOPS_PER_SECOND;
+    /** Mineral patches in a standard base. Determines the width of each saturation tier. */
+    public static final int MINERAL_PATCHES_PER_BASE = 8;
+
+    /**
+     * Per-probe mineral income per outer tick for each saturation tier.
+     * Index = tier (0-based). Length = max effective workers per patch.
+     * Swap or extend to adapt to a different RTS economy.
+     */
+    public static final double[] MINERAL_TIER_RATES_PER_TICK = {
+        50.0 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // first worker per patch  (~0.818 min/tick)
+        25.0 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // second worker per patch (~0.409 min/tick)
+         5.0 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // third worker per patch  (~0.082 min/tick)
+    };
+
+    /**
+     * Mineral income earned in one outer tick (LOOPS_PER_TICK game loops) for the given
+     * probe count mining a single standard base (8 patches). Applies a three-tier saturation
+     * model: first 8 probes earn full rate, next 8 earn half, next 8 earn ~10%. Beyond 24
+     * probes there is no additional income.
+     *
+     * <p>Single-base only — assumes all probes mine one Nexus. When expansion is modelled,
+     * this will need a base-count parameter to distribute probes across bases correctly.
+     * TODO(multi-base #143): extend to accept base count once expansion is simulated.
+     *
+     * @param probeCount number of mining probes (must be ≥ 0)
+     * @throws IllegalArgumentException if probeCount is negative
+     */
+    public static double mineralIncomePerTick(final int probeCount) {
+        if (probeCount < 0) throw new IllegalArgumentException("probeCount must be >= 0, got: " + probeCount);
+        double income = 0;
+        for (int tier = 0; tier < MINERAL_TIER_RATES_PER_TICK.length; tier++) {
+            final int tierStart    = tier * MINERAL_PATCHES_PER_BASE;
+            final int probesInTier = Math.min(Math.max(probeCount - tierStart, 0), MINERAL_PATCHES_PER_BASE);
+            income += probesInTier * MINERAL_TIER_RATES_PER_TICK[tier];
+        }
+        return income;
+    }
 
     public static final int INITIAL_MINERALS  = 50;
     public static final int INITIAL_VESPENE   = 0;

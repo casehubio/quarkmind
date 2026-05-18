@@ -83,7 +83,7 @@ public class EmulatedGame {
 
     public void tick() {
         gameFrame++;
-        friendly.minerals += miningProbes * SC2Data.MINERALS_PER_PROBE_PER_TICK;
+        friendly.minerals += SC2Data.mineralIncomePerTick(miningProbes);
         moveFriendlyUnits();
         // Recompute after movement, before combat: a unit that dies this tick still
         // provided vision for this frame — correct SC2 behaviour.

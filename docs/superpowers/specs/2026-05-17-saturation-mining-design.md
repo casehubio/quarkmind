@@ -95,7 +95,9 @@ After implementing:
 
 ## Testing
 
-### New: `SC2DataMiningTest` (plain JUnit, no CDI)
+### New tests in `SC2DataTest` (plain JUnit, no CDI)
+
+*(Spec named this class `SC2DataMiningTest`; tests were added to the existing `SC2DataTest` instead to keep domain tests consolidated.)*
 
 Boundary cases for `mineralIncomePerTick`:
 
