@@ -3,7 +3,6 @@ package io.quarkmind.sc2.emulated;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.*;
-import io.quarkmind.sc2.intent.TimedIntent;
 import org.jboss.logging.Logger;
 
 import java.util.*;
@@ -326,7 +325,7 @@ public class EmulatedGame {
             }
             UnitType next = queue.poll();
             if (queue.isEmpty()) state.buildingQueues.remove(buildingTag);
-            startTraining(buildingTag, next, state, 0L);
+            startTraining(buildingTag, next, state, 0L); // queued units have no loop context — 0L uses integer-tick precision
         }
     }
 
