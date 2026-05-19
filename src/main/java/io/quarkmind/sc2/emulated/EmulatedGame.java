@@ -3,6 +3,7 @@ package io.quarkmind.sc2.emulated;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.*;
+import io.quarkmind.sc2.intent.TimedIntent;
 import org.jboss.logging.Logger;
 
 import java.util.*;
@@ -222,6 +223,16 @@ public class EmulatedGame {
         applyIntent(intent, friendly);
     }
 
+    public void applyIntent(TimedIntent ti) {
+        switch (ti.intent()) {
+            case TrainIntent  t -> handleTrain(t, friendly, ti.loop());
+            case MoveIntent   m -> setTarget(m.unitTag(), m.targetLocation(), false, friendly);
+            case AttackIntent a -> setTarget(a.unitTag(), a.targetLocation(), true,  friendly);
+            case BuildIntent  b -> handleBuild(b, friendly);
+            case BlinkIntent  b -> executeBlink(b.unitTag(), friendly);
+        }
+    }
+
     void applyIntent(Intent intent, PlayerState state) {
         switch (intent) {
             case MoveIntent   m -> setTarget(m.unitTag(), m.targetLocation(), false, state);
@@ -242,6 +253,10 @@ public class EmulatedGame {
     }
 
     private void handleTrain(TrainIntent t, PlayerState state) {
+        handleTrain(t, state, 0L);
+    }
+
+    private void handleTrain(TrainIntent t, PlayerState state, long absLoop) {
         String buildingTag = t.buildingTag();
         Building building = state.buildings.stream()
             .filter(b -> b.tag().equals(buildingTag) && b.isComplete())
@@ -275,16 +290,18 @@ public class EmulatedGame {
         state.minerals   -= mCost;
         state.vespene    -= gCost;
         if (!isBusy) {
-            startTraining(buildingTag, t.unitType(), state);
+            startTraining(buildingTag, t.unitType(), state, absLoop);
         } else {
             state.buildingQueues.computeIfAbsent(buildingTag, k -> new ArrayDeque<>())
                 .add(t.unitType());
         }
     }
 
-    private void startTraining(String buildingTag, UnitType unitType, PlayerState state) {
+    private void startTraining(String buildingTag, UnitType unitType, PlayerState state, long absLoop) {
         boolean isEnemy  = (state == enemy);
-        long completesAt = gameFrame + SC2Data.trainTimeInTicks(unitType);
+        int  loopOffset  = (int)(absLoop % SC2Data.LOOPS_PER_TICK);
+        long completesAt = gameFrame
+            + (int)((loopOffset + SC2Data.trainTimeInLoops(unitType)) / SC2Data.LOOPS_PER_TICK);
         state.buildingTrainingUntil.put(buildingTag, completesAt);
         state.pendingCompletions.add(new PlayerState.PendingCompletion(completesAt, () -> {
             state.buildingTrainingUntil.remove(buildingTag);
@@ -309,7 +326,7 @@ public class EmulatedGame {
             }
             UnitType next = queue.poll();
             if (queue.isEmpty()) state.buildingQueues.remove(buildingTag);
-            startTraining(buildingTag, next, state);
+            startTraining(buildingTag, next, state, 0L);
         }
     }
 

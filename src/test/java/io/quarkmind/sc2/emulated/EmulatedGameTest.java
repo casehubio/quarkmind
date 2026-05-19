@@ -1511,4 +1511,48 @@ class EmulatedGameTest {
         // Exactly one probe auto-engaged — Zealot shields dropped by exactly one effective hit
         assertThat(zealot.shields()).isEqualTo(zealotMaxShields - effective);
     }
+
+    // ---- E13: loop-aware training (TimedIntent) ----
+
+    @Test
+    void probeCompletesOnTimeWithZeroLoopOffset() {
+        EmulatedGame game = new EmulatedGame();
+        game.reset();
+        game.tick(); // gameFrame = 1; matches harness pattern (applyIntent called post-tick)
+        int unitsBefore = game.snapshot().myUnits().size();
+
+        game.applyIntent(new TimedIntent(0L, new TrainIntent("nexus-0", UnitType.PROBE)));
+
+        for (int i = 0; i < 11; i++) game.tick(); // ticks 2–12, gameFrame = 12
+        assertThat(game.snapshot().myUnits().size())
+            .as("Probe should not have completed yet after 11 ticks")
+            .isEqualTo(unitsBefore);
+
+        game.tick(); // tick 13, gameFrame = 13 — completesAt = 1 + 12 = 13, fires here
+        assertThat(game.snapshot().myUnits().size())
+            .as("Probe should complete after 12 ticks with zero loop offset")
+            .isEqualTo(unitsBefore + 1);
+    }
+
+    @Test
+    void probeCompletesOneLaterWithLateLoopOffset() {
+        EmulatedGame game = new EmulatedGame();
+        game.reset();
+        game.tick(); // gameFrame = 1
+        int unitsBefore = game.snapshot().myUnits().size();
+
+        // loop=18: offset = 18 % 22 = 18; (18 + 268.8) / 22 = 286.8 / 22 = 13.03 → floor 13
+        // completesAt = 1 + 13 = 14; fires at gameFrame=14, i.e., after 13 ticks
+        game.applyIntent(new TimedIntent(18L, new TrainIntent("nexus-0", UnitType.PROBE)));
+
+        for (int i = 0; i < 12; i++) game.tick(); // ticks 2–13, gameFrame = 13
+        assertThat(game.snapshot().myUnits().size())
+            .as("Probe should not complete after 12 ticks — late command pushes to tick 13")
+            .isEqualTo(unitsBefore);
+
+        game.tick(); // tick 14, gameFrame = 14 — completesAt = 14, fires here
+        assertThat(game.snapshot().myUnits().size())
+            .as("Probe should complete after 13 ticks with loop offset 18")
+            .isEqualTo(unitsBefore + 1);
+    }
 }
