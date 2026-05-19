@@ -7,7 +7,7 @@ import java.util.Set;
 final class Sc2ReplayShared {
     private Sc2ReplayShared() {}
 
-    static final int LOOPS_PER_TICK = 22;
+    static final int LOOPS_PER_TICK = SC2Data.LOOPS_PER_TICK;
 
     static boolean isGeyser(String unitName) {
         return unitName.contains("VespeneGeyser") || unitName.contains("RichVespeneGeyser")
