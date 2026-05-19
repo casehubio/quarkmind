@@ -4,6 +4,7 @@ import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.jboss.logging.Logger;
 
