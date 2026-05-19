@@ -1,6 +1,7 @@
 package io.quarkmind.domain;
 
 import org.junit.jupiter.api.Test;
+import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static io.quarkmind.domain.UnitAttribute.*;
 
@@ -116,5 +117,24 @@ class SC2DataTest {
         assertThat(SC2Data.trainedBy(UnitType.HYDRALISK)).isEqualTo(BuildingType.HATCHERY);
         // Unmapped types return UNKNOWN, not a plausible sentinel
         assertThat(SC2Data.trainedBy(UnitType.UNKNOWN)).isEqualTo(BuildingType.UNKNOWN);
+    }
+
+    @Test
+    void trainTimeInLoopsDefinedForProtossUnits() {
+        assertThat(SC2Data.trainTimeInLoops(UnitType.PROBE))    .isEqualTo(268.8);
+        assertThat(SC2Data.trainTimeInLoops(UnitType.ZEALOT))   .isEqualTo(627.2);
+        assertThat(SC2Data.trainTimeInLoops(UnitType.STALKER))  .isEqualTo(694.4);
+        assertThat(SC2Data.trainTimeInLoops(UnitType.IMMORTAL)) .isEqualTo(896.0);
+        assertThat(SC2Data.trainTimeInLoops(UnitType.OBSERVER)) .isEqualTo(492.8);
+    }
+
+    @Test
+    void trainTimeInLoopsConsistentWithTicks() {
+        for (UnitType t : List.of(UnitType.PROBE, UnitType.ZEALOT,
+                                   UnitType.STALKER, UnitType.IMMORTAL, UnitType.OBSERVER)) {
+            assertThat((int)(SC2Data.trainTimeInLoops(t) / SC2Data.LOOPS_PER_TICK))
+                .as("trainTimeInLoops / LOOPS_PER_TICK must equal trainTimeInTicks for %s", t)
+                .isEqualTo(SC2Data.trainTimeInTicks(t));
+        }
     }
 }
