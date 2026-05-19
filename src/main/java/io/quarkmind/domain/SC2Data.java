@@ -14,8 +14,8 @@ public final class SC2Data {
     /** Game loops per real-time second at SC2 Faster speed (16 loops/sec × 1.4 multiplier). */
     public static final double GAME_LOOPS_PER_SECOND = 22.4;
 
-    /** Minerals generated per mining probe per game tick at Faster speed (22.4 loops/sec). */
-    public static final double MINERALS_PER_PROBE_PER_TICK = 50.0 / 60.0 / 22.4; // ≈ 0.0372
+    /** Minerals generated per mining probe per game tick at Faster speed. */
+    public static final double MINERALS_PER_PROBE_PER_TICK = 50.0 / 60.0 / GAME_LOOPS_PER_SECOND;
 
     public static final int INITIAL_MINERALS  = 50;
     public static final int INITIAL_VESPENE   = 0;
