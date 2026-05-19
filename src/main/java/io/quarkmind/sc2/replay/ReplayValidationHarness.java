@@ -2,6 +2,7 @@ package io.quarkmind.sc2.replay;
 
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.emulated.EmulatedGame;
 import io.quarkmind.sc2.intent.TimedIntent;
@@ -27,9 +28,6 @@ import java.util.Set;
  * </ul>
  */
 public final class ReplayValidationHarness {
-
-    /** Game loops per tick — 22 at SC2 Faster speed. */
-    private static final int LOOPS_PER_TICK = 22;
 
     private ReplayValidationHarness() {}
 
@@ -60,7 +58,7 @@ public final class ReplayValidationHarness {
         List<DivergenceReport.TickSnapshot> snapshots = new ArrayList<>(Math.min(tickLimit, 10000));
 
         for (int tick = 0; tick < tickLimit && !replayGame.isComplete(); tick++) {
-            long windowEnd = (long) (tick + 1) * LOOPS_PER_TICK;
+            long windowEnd = (long) (tick + 1) * SC2Data.LOOPS_PER_TICK;
 
             // Sync probe count from current GT.
             // MINERALS_PER_PROBE_PER_TICK is calibrated per-game-loop, not per replay tick,
@@ -68,7 +66,7 @@ public final class ReplayValidationHarness {
             // trainTimeInTicks values are in outer ticks, so emulated.tick() is called once —
             // both systems stay consistent with the original EmulatedGame scheduling model.
             GameState gtBefore = replayGame.snapshot();
-            emulated.setMiningProbes(countProbes(gtBefore) * LOOPS_PER_TICK);
+            emulated.setMiningProbes(countProbes(gtBefore) * SC2Data.LOOPS_PER_TICK);
 
             emulated.tick();
             replayGame.tick();
@@ -89,7 +87,7 @@ public final class ReplayValidationHarness {
             // Post-tick application matches the original harness timing: intents see the
             // post-tick gameFrame, so completion timing aligns with replay ground truth.
             while (cursor < intents.size() && intents.get(cursor).loop() < windowEnd) {
-                emulated.applyIntent(intents.get(cursor).intent());
+                emulated.applyIntent(intents.get(cursor));
                 cursor++;
             }
 
