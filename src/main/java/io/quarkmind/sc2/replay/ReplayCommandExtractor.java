@@ -3,6 +3,7 @@ package io.quarkmind.sc2.replay;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
 import hu.scelight.sc2.rep.s2prot.Event;
+import io.quarkmind.sc2.intent.TimedIntent;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

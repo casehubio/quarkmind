@@ -4,6 +4,7 @@ import io.quarkmind.domain.Building;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.emulated.EmulatedGame;
+import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.mock.ReplaySimulatedGame;
 import java.nio.file.Path;
 import java.util.ArrayList;
