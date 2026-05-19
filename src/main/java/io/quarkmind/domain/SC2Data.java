@@ -8,6 +8,12 @@ public final class SC2Data {
 
     private SC2Data() {}
 
+    /** Game loops per outer tick at SC2 Faster speed. */
+    public static final int    LOOPS_PER_TICK        = 22;
+
+    /** Game loops per real-time second at SC2 Faster speed (16 loops/sec × 1.4 multiplier). */
+    public static final double GAME_LOOPS_PER_SECOND = 22.4;
+
     /** Minerals generated per mining probe per game tick at Faster speed (22.4 loops/sec). */
     public static final double MINERALS_PER_PROBE_PER_TICK = 50.0 / 60.0 / 22.4; // ≈ 0.0372
 
@@ -55,15 +61,25 @@ public final class SC2Data {
         return UNIT_SPEEDS.getOrDefault(type, DEFAULT_UNIT_SPEED);
     }
 
-    public static int trainTimeInTicks(UnitType type) {
+    /**
+     * Exact train time in game loops at SC2 Faster speed.
+     * Source of truth for all train timing — {@link #trainTimeInTicks} derives from this.
+     * Values are in seconds × GAME_LOOPS_PER_SECOND (22.4), stored as exact literals
+     * to avoid IEEE 754 rounding from runtime multiplication.
+     */
+    public static double trainTimeInLoops(UnitType type) {
         return switch (type) {
-            case PROBE    -> 12;
-            case ZEALOT   -> 28;
-            case STALKER  -> 31;
-            case IMMORTAL -> 40;
-            case OBSERVER -> 22;
-            default       -> 30;
+            case PROBE    ->  268.8;  // 12s × 22.4
+            case ZEALOT   ->  627.2;  // 28s × 22.4
+            case STALKER  ->  694.4;  // 31s × 22.4
+            case IMMORTAL ->  896.0;  // 40s × 22.4
+            case OBSERVER ->  492.8;  // 22s × 22.4
+            default       ->  672.0;  // 30s × 22.4
         };
+    }
+
+    public static int trainTimeInTicks(UnitType type) {
+        return (int)(trainTimeInLoops(type) / LOOPS_PER_TICK);
     }
 
     public static int buildTimeInTicks(BuildingType type) {
