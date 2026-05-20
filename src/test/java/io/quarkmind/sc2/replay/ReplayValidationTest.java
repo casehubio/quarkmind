@@ -20,16 +20,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>Resources (minerals, vespene) are NOT synced — divergence is expected given
  * EmulatedGame's flat mining rate vs SC2's saturation-based model. Mining probe count IS
  * synced (scaled by LOOPS_PER_TICK) so the flat-rate model produces the correct per-tick
- * income. Even so, emulated minerals accumulate ~10x more than GT because the flat model
- * has no saturation cap, which causes emulated to train some units 1 tick early (resource
- * is never the bottleneck in emulated, occasionally is in GT). The resulting unit count
- * divergence is bounded at ≤ 2 and clears within 1 tick.
+ * income. Even so, emulated minerals accumulate ~1800 more than GT because the flat model
+ * has no saturation cap, which causes emulated to execute some train commands 1 tick early
+ * (resource is never the bottleneck in emulated, occasionally is in GT). The resulting unit
+ * count divergence is bounded at ≤ 2 and clears within 1 tick.
  *
- * <p>The ≤ 2 bound confirms that TrainIntent extraction is working correctly: all train
- * commands are present and applied to the right building type. Exact match would require
- * either mineral sync or a saturation-aware mining model (#141).
+ * <p>The sub-tick fix (#142) corrected loop-offset rounding in startTraining, moving
+ * firstUnitDivergenceTick from 36 to 86. The remaining divergence is mineral-timing only
+ * and requires saturation-aware mining (#141) or mineral sync to eliminate — see #146.
  *
- * Refs #137
+ * Refs #137, #142
  */
 class ReplayValidationTest {
 
@@ -41,9 +41,16 @@ class ReplayValidationTest {
     void unitCountWithinTwoOfGroundTruthForThreeMinutes() {
         DivergenceReport report = ReplayValidationHarness.run(REPLAY, 1, THREE_MINUTES_TICKS);
 
+        assertThat(report.summary().firstUnitDivergenceTick())
+            .as("Sub-tick fix (#142) must keep first divergence at or above tick 80 "
+                + "(was 36 before the fix; now 86 — mineral-timing gap tracked in #146). "
+                + "First divergence was at tick %d.\n%s",
+                report.summary().firstUnitDivergenceTick(), report.renderReport())
+            .isGreaterThanOrEqualTo(80);
+
         assertThat(report.summary().maxUnitDelta())
             .as("Unit count delta must stay ≤ 2 at every tick (flat mining model trains 1 tick "
-                + "early when emulated minerals exceed GT; exact match requires #141). "
+                + "early when emulated minerals exceed GT; exact match requires #141 or #146). "
                 + "Max was %d.\n%s",
                 report.summary().maxUnitDelta(), report.renderReport())
             .isLessThanOrEqualTo(2);
