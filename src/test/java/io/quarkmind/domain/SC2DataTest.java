@@ -1,7 +1,6 @@
 package io.quarkmind.domain;
 
 import org.junit.jupiter.api.Test;
-import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static io.quarkmind.domain.UnitAttribute.*;
 
@@ -129,12 +128,11 @@ class SC2DataTest {
     }
 
     @Test
-    void trainTimeInLoopsConsistentWithTicks() {
-        for (UnitType t : List.of(UnitType.PROBE, UnitType.ZEALOT,
-                                   UnitType.STALKER, UnitType.IMMORTAL, UnitType.OBSERVER)) {
-            assertThat((int)(SC2Data.trainTimeInLoops(t) / SC2Data.LOOPS_PER_TICK))
-                .as("trainTimeInLoops / LOOPS_PER_TICK must equal trainTimeInTicks for %s", t)
-                .isEqualTo(SC2Data.trainTimeInTicks(t));
-        }
+    void trainTimeInTicksDefinedForProtossUnits() {
+        assertThat(SC2Data.trainTimeInTicks(UnitType.PROBE))    .isEqualTo(12);
+        assertThat(SC2Data.trainTimeInTicks(UnitType.ZEALOT))   .isEqualTo(28);
+        assertThat(SC2Data.trainTimeInTicks(UnitType.STALKER))  .isEqualTo(31);
+        assertThat(SC2Data.trainTimeInTicks(UnitType.IMMORTAL)) .isEqualTo(40);
+        assertThat(SC2Data.trainTimeInTicks(UnitType.OBSERVER)) .isEqualTo(22);
     }
 }

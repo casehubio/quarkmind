@@ -61,7 +61,7 @@ Plain Java records in `domain/` — no framework dependencies, always native-com
 | `EnemyAttackConfig` | Record: armyThreshold, attackIntervalFrames, retreatHealthPercent, retreatArmyPercent |
 | `TechTree` | Prerequisite graph — see §Mock Infrastructure |
 
-`SC2Data` in `domain/` provides shared constants for both `SimulatedGame` and `EmulatedGame`: damage-per-tick, attack range, supply cost, shield values, building health, and mineral costs. Centralised here to eliminate drift between engines.
+`SC2Data` in `domain/` provides shared constants for both `SimulatedGame` and `EmulatedGame`: damage-per-tick, attack range, supply cost, shield values, building health, mineral costs, and SC2 timing constants (`LOOPS_PER_TICK=22`, `GAME_LOOPS_PER_SECOND=22.4`). `trainTimeInLoops(UnitType)` returns exact game-loop train durations (e.g. Probe=268.8); `trainTimeInTicks` derives from it. Centralised here to eliminate drift between engines.
 
 ---
 
@@ -71,7 +71,7 @@ Plain Java records in `domain/` — no framework dependencies, always native-com
 |---|---|
 | `domain/` | Plain Java records — no CDI, no framework imports |
 | `sc2/` | CDI interfaces: `SC2Engine` (unified engine seam), `ScenarioRunner`, `IntentQueue` |
-| `sc2/intent/` | Sealed `Intent` interface + types: `BuildIntent`, `TrainIntent`, `AttackIntent`, `MoveIntent` |
+| `sc2/intent/` | Sealed `Intent` interface + types: `BuildIntent`, `TrainIntent`, `AttackIntent`, `MoveIntent`; `TimedIntent` (Intent tagged with its absolute game loop) |
 | `sc2/mock/` | Mock implementation: `SimulatedGame`, `MockGameObserver`, `MockCommandDispatcher` |
 | `sc2/mock/scenario/` | `ScenarioLibrary` — living specification of SC2 behaviour |
 | `sc2/real/` | Real SC2: `RealSC2Client`, `RealGameObserver`, `RealCommandDispatcher`, `SC2BotAgent`, `ObservationTranslator`, `ActionTranslator` |
@@ -135,7 +135,7 @@ Plugins are registered at startup by `QuarkMindTaskRegistrar` — injecting each
 | `SimulatedGame` | Hand-crafted stateful SC2 simulation; CDI bean in `%mock` profile |
 | `ReplaySimulatedGame` | Replay-driven variant; plain Java, driven from real `.SC2Replay` tracker events (PlayerStats, UnitBorn, UnitDied, UnitInit, UnitDone). Captures neutral units (`ctrlId==0`) as mineral patches and geysers; enemy buildings tracked via UnitBorn/UnitInit/UnitDone/UnitDied. |
 | `ReplayEngine` | `SC2Engine` for `%replay` profile — observe-only, records agent intents |
-| `EmulatedGame` | Physics referee: holds `PlayerState friendly` + `PlayerState enemy`; both players share the same `applyIntent(Intent, PlayerState)` and `IntentQueue` drain path; CDI bean in `%emulated` profile. Exposes `injectReplayBuilding(Building)` and `markReplayBuildingComplete(String)` for replay validation harness (both auto-update supply); `setMiningProbes(int)` for harness resource model calibration. |
+| `EmulatedGame` | Physics referee: holds `PlayerState friendly` + `PlayerState enemy`; both players share the same `applyIntent(Intent, PlayerState)` and `IntentQueue` drain path; CDI bean in `%emulated` profile. `applyIntent(TimedIntent)` preserves the absolute game loop for sub-tick train-completion precision. Exposes `injectReplayBuilding(Building)` and `markReplayBuildingComplete(String)` for replay validation harness (both auto-update supply); `setMiningProbes(int)` for harness resource model calibration. |
 | `PlayerState` | Per-player mutable state: units, buildings, stagingArea, minerals, supply, pendingCompletions, movement/combat maps |
 | `PlayerBehavior` | Interface: `tick(GameState, IntentQueue)` — drives decisions for one player per tick |
 | `EnemyBehavior` | `implements PlayerBehavior`; owns production loop, tech-tree gating, attack launch, retreat, strategy switching |
@@ -337,6 +337,6 @@ See [docs/adr/INDEX.md](adr/INDEX.md) for the full index.
 
 **Deferred:**
 - `HttpSC2Engine` — network bridge; SC2 on one machine, agent on another (Phase 4)
-- **#141 Saturation mining model** — flat per-probe rate causes ~1-tick early unit training against replay ground truth; saturation model needed for exact match in `ReplayValidationTest`
+- **#141/#146 Saturation mining model** — flat per-probe rate causes EmulatedGame to accumulate ~1800 more minerals than GT, enabling trains GT's player couldn't yet afford (mineral-timing divergence). Sub-tick loop-offset rounding fixed in #142 (`firstUnitDivergenceTick` improved from 36 → 86); remaining divergence (`maxUnitDelta ≤ 2`) requires saturation model or mineral sync (#146)
 - **#140 Terran replay files** — Terran ability IDs in `AbilityMapping` are stubs; need raw `.SC2Replay` files from Terran games to populate via `AbilityDiscoveryTest`
 - **#138 Terran/Zerg EmulatedGame** — `EmulatedGame` currently models Protoss mechanics only
