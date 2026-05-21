@@ -179,11 +179,13 @@ class SC2DataTest {
 
     @Test
     void trainTimeInLoopsDefinedForProtossUnits() {
-        assertThat(SC2Data.trainTimeInLoops(UnitType.PROBE))    .isEqualTo(268.8);
-        assertThat(SC2Data.trainTimeInLoops(UnitType.ZEALOT))   .isEqualTo(627.2);
-        assertThat(SC2Data.trainTimeInLoops(UnitType.STALKER))  .isEqualTo(694.4);
-        assertThat(SC2Data.trainTimeInLoops(UnitType.IMMORTAL)) .isEqualTo(896.0);
-        assertThat(SC2Data.trainTimeInLoops(UnitType.OBSERVER)) .isEqualTo(492.8);
+        // Empirically calibrated from 29 AI Arena replays (SC2TrainTimeCalibrationTest).
+        // PROBE/ZEALOT/STALKER are replay-verified; IMMORTAL/OBSERVER are integer estimates.
+        assertThat(SC2Data.trainTimeInLoops(UnitType.PROBE))    .isEqualTo(272);  // 499 obs
+        assertThat(SC2Data.trainTimeInLoops(UnitType.ZEALOT))   .isEqualTo(618);  // 7 obs
+        assertThat(SC2Data.trainTimeInLoops(UnitType.STALKER))  .isEqualTo(698);  // 2 obs
+        assertThat(SC2Data.trainTimeInLoops(UnitType.IMMORTAL)) .isEqualTo(896);  // uncalibrated
+        assertThat(SC2Data.trainTimeInLoops(UnitType.OBSERVER)) .isEqualTo(493);  // uncalibrated
     }
 
     @Test

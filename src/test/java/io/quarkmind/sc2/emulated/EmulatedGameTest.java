@@ -1541,7 +1541,7 @@ class EmulatedGameTest {
         game.tick(); // gameFrame = 1
         int unitsBefore = game.snapshot().myUnits().size();
 
-        // loop=18: offset = 18 % 22 = 18; (18 + 268.8) / 22 = 286.8 / 22 = 13.03 → floor 13
+        // loop=18: offset = 18 % 22 = 18; (18 + 272) / 22 = 290 / 22 = 13.18... → floor 13
         // completesAt = 1 + 13 = 14; fires at gameFrame=14, i.e., after 13 ticks
         game.applyIntent(new TimedIntent(18L, new TrainIntent("nexus-0", UnitType.PROBE)));
 
@@ -1553,6 +1553,30 @@ class EmulatedGameTest {
         game.tick(); // tick 14, gameFrame = 14 — completesAt = 14, fires here
         assertThat(game.snapshot().myUnits().size())
             .as("Probe should complete after 13 ticks with loop offset 18")
+            .isEqualTo(unitsBefore + 1);
+    }
+
+    @Test
+    void probeCompletesOneLaterWithBoundaryLoopOffset() {
+        EmulatedGame game = new EmulatedGame();
+        game.reset();
+        game.tick(); // gameFrame = 1
+        int unitsBefore = game.snapshot().myUnits().size();
+
+        // loop=17: offset = 17 % 22 = 17; (17 + T_real) / 22 must give 13 ticks, not 12.
+        // Float formula: (17 + 268.8) / 22 = 285.8 / 22 = 12.99... → floor 12 (wrong)
+        // Integer formula: (17 + 272) / 22 = 289 / 22 = 13.13... → floor 13 (correct)
+        // completesAt = 1 + 13 = 14; fires at gameFrame=14, i.e., after 13 ticks
+        game.applyIntent(new TimedIntent(17L, new TrainIntent("nexus-0", UnitType.PROBE)));
+
+        for (int i = 0; i < 12; i++) game.tick(); // ticks 2–13, gameFrame = 13
+        assertThat(game.snapshot().myUnits().size())
+            .as("Probe should not complete after 12 ticks — offset 17 is the boundary that requires 13 ticks")
+            .isEqualTo(unitsBefore);
+
+        game.tick(); // tick 14, gameFrame = 14 — completesAt = 14, fires here
+        assertThat(game.snapshot().myUnits().size())
+            .as("Probe should complete after 13 ticks with boundary loop offset 17")
             .isEqualTo(unitsBefore + 1);
     }
 

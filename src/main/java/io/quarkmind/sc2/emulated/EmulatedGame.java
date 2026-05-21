@@ -300,7 +300,7 @@ public class EmulatedGame {
         boolean isEnemy  = (state == enemy);
         int  loopOffset  = (int)(absLoop % SC2Data.LOOPS_PER_TICK);
         long completesAt = gameFrame
-            + (int)((loopOffset + SC2Data.trainTimeInLoops(unitType)) / SC2Data.LOOPS_PER_TICK);
+            + (loopOffset + SC2Data.trainTimeInLoops(unitType)) / SC2Data.LOOPS_PER_TICK;
         state.buildingTrainingUntil.put(buildingTag, completesAt);
         state.pendingCompletions.add(new PlayerState.PendingCompletion(completesAt, () -> {
             state.buildingTrainingUntil.remove(buildingTag);

@@ -38,17 +38,20 @@ The fix has two parts: determine the correct integer values empirically, then ch
 4. `T_real(U) = min(born_loop[i] − command_loop[i])` across all instances of type U.
 5. Consistency check: at least two instances must agree on the minimum before asserting.
 
-### Source C — IEM10 JSON (30 games)
+### Source C — 28 other AI Arena replays (same patch)
 
-1. Parse `gameEvents` `Cmd` events; resolve `abilLink` → `(loop, unitType)` via `AbilityMapping`.
-2. Parse `trackerEvents` `UnitBorn` events → `(loop, unitType, playerId)`.
-3. Same FIFO-match and minimum-difference strategy, aggregated across all 30 games.
+1. The IEM10 JSON dataset was evaluated but found incompatible: it uses a 2016 SC2 patch
+   with different `abilLink` values (e.g. abilLink=167 for Nexus vs 175 in AI Arena replays),
+   making direct cross-validation impossible without a patch-aware abilLink table.
+2. Source C uses the 28 other `.SC2Replay` files in `replays/aiarena_protoss/` — same patch,
+   same abilLink mapping, different game patterns and opponents.
+3. Same command extraction and modal calibration, aggregated across all 28 replays.
 
 ### Conflict detection
 
 Per unit type: `assert T_real_A(U) == T_real_C(U)`.  
-On mismatch the failure message reports both values and the build numbers from each source's
-header — surfaces patch-version differences as a diagnostic, not a silent discard.
+Both sources are the same AI Arena patch so any mismatch indicates an unexpected game pattern
+or parsing inconsistency. The failure message reports both values and the source replay name.
 
 ### Output
 

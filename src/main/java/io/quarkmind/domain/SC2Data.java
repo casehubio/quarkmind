@@ -99,22 +99,28 @@ public final class SC2Data {
     /**
      * Exact train time in game loops at SC2 Faster speed.
      * Source of truth for all train timing — {@link #trainTimeInTicks} derives from this.
-     * Values are in seconds × GAME_LOOPS_PER_SECOND (22.4), stored as exact literals
-     * to avoid IEEE 754 rounding from runtime multiplication.
+     * Values are empirically calibrated from replay ground truth in
+     * {@code SC2TrainTimeCalibrationTest} (paired GAME_EVENTS commands + tracker UnitBorn events,
+     * 29 AI Arena replays). Observations: PROBE=499, ZEALOT=7, STALKER=2; IMMORTAL and OBSERVER
+     * are uncalibrated (no observations in the Protoss-vs-Protoss bot corpus) and retain
+     * integer-rounded estimates until replay data is available.
+     *
+     * <p>Note: values differ from {@code seconds × GAME_LOOPS_PER_SECOND} (22.4) because SC2
+     * stores training times as integer game loops — see issue #149.
      */
-    public static double trainTimeInLoops(UnitType type) {
+    public static int trainTimeInLoops(UnitType type) {
         return switch (type) {
-            case PROBE    ->  268.8;  // 12s × 22.4
-            case ZEALOT   ->  627.2;  // 28s × 22.4
-            case STALKER  ->  694.4;  // 31s × 22.4
-            case IMMORTAL ->  896.0;  // 40s × 22.4
-            case OBSERVER ->  492.8;  // 22s × 22.4
-            default       ->  672.0;  // 30s × 22.4
+            case PROBE    -> 272;  // empirical (499 obs, AI Arena replays)
+            case ZEALOT   -> 618;  // empirical (7 obs)
+            case STALKER  -> 698;  // empirical (2 obs — low confidence)
+            case IMMORTAL -> 896;  // uncalibrated — 40s × 22.4 = 896.0 (exact)
+            case OBSERVER -> 493;  // uncalibrated — ceil(22s × 22.4 = 492.8)
+            default       -> 672;  // uncalibrated — 30s × 22.4 = 672.0 (exact)
         };
     }
 
     public static int trainTimeInTicks(UnitType type) {
-        return (int)(trainTimeInLoops(type) / LOOPS_PER_TICK);
+        return trainTimeInLoops(type) / LOOPS_PER_TICK;
     }
 
     public static int buildTimeInTicks(BuildingType type) {
