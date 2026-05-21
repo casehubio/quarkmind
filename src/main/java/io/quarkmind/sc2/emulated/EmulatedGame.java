@@ -733,10 +733,24 @@ public class EmulatedGame {
 
     /**
      * Injects a building directly into the friendly player state without resource deduction.
-     * Used by ReplayValidationHarness to sync buildings from replay tracker events.
-     * The building tag must match the replay's tracker-event tag format ("r-N-M").
+     * Used by ReplayValidationHarness for buildings that are gifted at game start (not
+     * purchased), e.g. the initial Nexus. The real player never spent minerals on these,
+     * so no cost deduction is correct.
      */
     public void injectReplayBuilding(Building building) {
+        friendly.buildings.add(building);
+    }
+
+    /**
+     * Injects a building into the friendly player state and deducts its mineral cost.
+     * Used by ReplayValidationHarness for buildings ordered during the game.
+     * Minerals may go negative when EM's model-approximated balance is below the real
+     * player's balance at injection time. The debt is repaid through mining income over
+     * the next few ticks — this correctly blocks training during the player's
+     * mineral-constrained period without flooring EM at 0.
+     */
+    public void injectReplayBuildingWithCost(Building building) {
+        friendly.minerals -= SC2Data.mineralCost(building.type());
         friendly.buildings.add(building);
     }
 

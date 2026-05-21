@@ -135,7 +135,7 @@ Plugins are registered at startup by `QuarkMindTaskRegistrar` — injecting each
 | `SimulatedGame` | Hand-crafted stateful SC2 simulation; CDI bean in `%mock` profile |
 | `ReplaySimulatedGame` | Replay-driven variant; plain Java, driven from real `.SC2Replay` tracker events (PlayerStats, UnitBorn, UnitDied, UnitInit, UnitDone). Captures neutral units (`ctrlId==0`) as mineral patches and geysers; enemy buildings tracked via UnitBorn/UnitInit/UnitDone/UnitDied. |
 | `ReplayEngine` | `SC2Engine` for `%replay` profile — observe-only, records agent intents |
-| `EmulatedGame` | Physics referee: holds `PlayerState friendly` + `PlayerState enemy`; both players share the same `applyIntent(Intent, PlayerState)` and `IntentQueue` drain path; CDI bean in `%emulated` profile. `applyIntent(TimedIntent)` preserves the absolute game loop for sub-tick train-completion precision. Exposes `injectReplayBuilding(Building)` and `markReplayBuildingComplete(String)` for replay validation harness (both auto-update supply); `setMiningProbes(int probeCount)` — accepts actual probe count (harness syncs from GT before each tick); `tick()` delegates mineral accumulation to `SC2Data.mineralIncomePerTick(probeCount)`. |
+| `EmulatedGame` | Physics referee: holds `PlayerState friendly` + `PlayerState enemy`; both players share the same `applyIntent(Intent, PlayerState)` and `IntentQueue` drain path; CDI bean in `%emulated` profile. `applyIntent(TimedIntent)` preserves the absolute game loop for sub-tick train-completion precision. Exposes two harness injection paths: `injectReplayBuilding(Building)` (free, for game-start buildings gifted to the player) and `injectReplayBuildingWithCost(Building)` (deducts mineral cost; minerals may go negative, representing a short-lived debt repaid through income — clamping at 0 was evaluated and worsens divergence); `markReplayBuildingComplete(String)` marks a building complete by tag; `setMiningProbes(int probeCount)` — accepts actual probe count (harness syncs from GT before each tick); `setSupplyCapForHarness(int)` — syncs supply cap from GT; `tick()` delegates mineral accumulation to `SC2Data.mineralIncomePerTick(probeCount)`. |
 | `PlayerState` | Per-player mutable state: units, buildings, stagingArea, minerals, supply, pendingCompletions, movement/combat maps |
 | `PlayerBehavior` | Interface: `tick(GameState, IntentQueue)` — drives decisions for one player per tick |
 | `EnemyBehavior` | `implements PlayerBehavior`; owns production loop, tech-tree gating, attack launch, retreat, strategy switching |
@@ -307,8 +307,9 @@ E1–E6 complete. QuarkMind:
 - **Deferred visualizer work** — probe overlap fix, HTML mineral display, geyser sprite, time-based UI tests
 - **LangChain4j experimental StrategyTask** — LLM-guided strategy as a fifth R&D integration (Phase 4+, Ollama local model); deferred until core emulation is stable
 - **Intent dispatch quality** — no guard against dead unit tags or incomplete buildings; bot commands whatever tag the plugin supplies
-- **#142 Train-timing precision** — `trainTimeInTicks` uses integer outer-tick resolution; real SC2 train times are fractional ticks, causing 1-tick-early unit completions in `ReplayValidationHarness`
+- **#142 Train-timing precision** — `completesAt` in `startTraining` rounds one tick early for specific loop offsets, causing 1-tick-early unit completions in `ReplayValidationHarness` (`firstUnitDivergenceTick = 86`); fix belongs in the timing formula, not mineral tracking
 - **#143 Multi-base mining** — `SC2Data.mineralIncomePerTick` assumes one Nexus; needs a base-count parameter once expansion is modelled
+- **#148 Vespene income model** — `EmulatedGame` has no gas income; Stalker (50 gas) and Immortal (100 gas) train commands are rejected by the harness, adding 1 unit of divergence per gas unit trained in the replay
 
 ---
 

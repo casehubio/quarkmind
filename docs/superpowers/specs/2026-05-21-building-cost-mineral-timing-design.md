@@ -6,9 +6,9 @@
 
 ## Problem
 
-`ReplayValidationHarness` injects buildings into `EmulatedGame` from replay tracker events without deducting their mineral costs. EmulatedGame therefore accumulates ~850 more minerals than ground truth (GT) over a 3-minute game. When a train command arrives at a moment when the real player was briefly mineral-constrained, EmulatedGame executes it one tick earlier — causing `firstUnitDivergenceTick = 86` and `maxUnitDelta = 2`.
+`ReplayValidationHarness` injects buildings into `EmulatedGame` from replay tracker events without deducting their mineral costs. EmulatedGame therefore accumulates more minerals than ground truth (GT) over time. When a train command arrives at a moment when the real player was briefly mineral-constrained, EmulatedGame executes it one tick earlier — causing `firstUnitDivergenceTick = 86` and `maxUnitDelta = 2`.
 
-The saturation model (#141) already reduced the residual mineral delta from ~11,564 to ~850. The remaining delta is building-cost timing only.
+The saturation model (#141) already reduced the residual mineral delta from ~11,564 to ~850 at 3 minutes. The original hypothesis for #146 was that the remaining delta was building-cost timing only.
 
 ## Root Cause
 
@@ -20,7 +20,7 @@ public void injectReplayBuilding(Building building) {
 }
 ```
 
-In the real game, minerals are deducted when construction is ordered — which is the same loop the tracker event fires. The harness should mirror this.
+In the real game, minerals are deducted when construction is ordered.
 
 ## Design
 
@@ -30,7 +30,7 @@ Harness owns the routing decision between free injection (initial buildings) and
 
 ### Initial Building Detection
 
-The starting Nexus is free in SC2 — it is given to the player at game start, not purchased. Deducting its 400-mineral cost would immediately push EmulatedGame negative. Before the main loop, capture the set of GT building tags present in the initial snapshot:
+The starting Nexus is free in SC2 — it is gifted to the player at game start, not purchased. Before the main loop, capture the set of GT building tags present in the initial snapshot:
 
 ```java
 Set<String> initialBuildingTags = replayGame.snapshot().myBuildings().stream()
@@ -44,41 +44,63 @@ Any building whose tag appears in this set is a starting building — use free i
 
 ```java
 public void injectReplayBuildingWithCost(Building building) {
-    friendly.minerals = Math.max(0, friendly.minerals - SC2Data.mineralCost(building.buildingType()));
+    friendly.minerals -= SC2Data.mineralCost(building.type());
     friendly.buildings.add(building);
 }
 ```
 
-`Math.max(0, ...)` is a defensive guard. In a correct model it should never fire — the real player could not have ordered a building they could not afford. If it fires, it indicates a model gap worth investigating, not a crash condition.
+**No floor at 0.** Minerals may go negative when EM's model-approximated balance is below the real player's balance at injection time (a model artifact from income approximation timing). The debt is repaid through mining income over the next few ticks — this correctly blocks training during the player's mineral-constrained period without clamping EM at 0, which would instead mask the debt and cause EM to recover too quickly. The `handleTrain` guard (`(int) state.minerals < mCost`) correctly rejects training while balance is negative.
 
-### `ReplayValidationHarness` — routing in `syncBuildings`
+### `ReplayValidationHarness` — intended routing in `syncBuildings`
 
-`syncBuildings` gains an `initialBuildingTags` parameter. When a new building tag is seen:
-
-- Tag is in `initialBuildingTags` → `emulated.injectReplayBuilding(building)` (free)
-- Tag is not in `initialBuildingTags` → `emulated.injectReplayBuildingWithCost(building)` (deduct cost)
+```java
+if (initialBuildingTags.contains(gtBuilding.tag())) {
+    emulated.injectReplayBuilding(gtBuilding);      // free
+} else {
+    emulated.injectReplayBuildingWithCost(gtBuilding); // deduct cost
+}
+```
 
 ### Vespene costs
 
 No Protoss, Terran, or Zerg buildings have vespene costs — only upgrades do. No vespene deduction is needed.
 
+## Plan vs. Delivered
+
+### What was delivered
+
+`injectReplayBuildingWithCost` was implemented and tested on `EmulatedGame` as designed. The harness routing was **not** wired in.
+
+### Why the harness routing was not wired in
+
+Investigation during implementation revealed that deducting building costs in the harness makes unit-count divergence significantly worse (firstUnitDivergenceTick moved from 86 to 49, maxUnitDelta grew from 2 to 48–78 depending on floor strategy).
+
+**Root cause of the failure:** EM's continuous mineral model does not align with the real player's balance at building-injection time. GT mineral readings come from PlayerStats events sampled infrequently — the reading at the tick a building appears does not reflect the player's real-time balance when they ordered it. Deducting the building cost against EM's approximated balance creates a mineral debt that blocks trains EM should not miss, reversing the direction of the divergence.
+
+**What the investigation found about the tick-86 divergence:** The unit that diverges at tick 86 completes in EM at tick 86 and in the real game at tick 87. This is a completion-time formula issue in `startTraining` — `completesAt` rounds to 86 while SC2 completes the unit one tick later. This is independent of mineral balance; deducting building costs does not fix it.
+
+**Two independent divergence causes (filed as follow-on work):**
+1. Sub-tick timing formula in `startTraining` — causes the tick-86 discrepancy. See #146.
+2. No vespene income in EM — causes growing delta when gas units (Stalker, Immortal) are trained. See #148.
+
 ## Test Strategy
 
 ### Unit tests
 
-- `EmulatedGameTest`: test `injectReplayBuildingWithCost` deducts the correct mineral cost; test the `Math.max(0, ...)` floor when minerals are insufficient; verify the building is still added in both cases.
+- `EmulatedGameTest`: test `injectReplayBuildingWithCost` deducts the correct mineral cost; test the negative-balance (debt) case; verify the building is still added; verify free `injectReplayBuilding` is unchanged.
 
 ### Integration / validation
 
-Run `ReplayValidationHarness` after the fix and record actual values. Then tighten `ReplayValidationTest` assertions to document what the corrected model achieves:
+`ReplayValidationTest` assertions are unchanged — the existing bounds remain correct with the harness unmodified:
 
-- `firstUnitDivergenceTick` — expected `-1` (no divergence); assert accordingly
-- `maxUnitDelta` — expected `0`; assert accordingly
-- `maxMineralDelta` — record actual bound after the run; tighten from `≤ 1100`
+- `firstUnitDivergenceTick >= 80` (actual 86 — timing formula gap)
+- `maxUnitDelta <= 2` (timing formula + gas units)
+- `maxMineralDelta <= 1100` (saturation model bound)
 
-The test assertions are the specification — they document the model's actual accuracy, not aspirational bounds.
+The test docstring was updated to correctly document the two independent divergence causes.
 
 ## Out of Scope
 
-- Extra "nexus-0" in EmulatedGame during harness runs (EmulatedGame starts with a Nexus; harness also injects the GT Nexus — building delta is 1 throughout). Not blocking; tracked as a separate gap if needed.
+- Sub-tick timing formula refinement (why completesAt is 1 too low for some loop offsets) — primary fix needed for firstUnitDivergenceTick = -1.
+- Vespene income tracking (EmulatedGame has no gas model) — filed as #148.
 - Multi-base mining (#143) — `mineralIncomePerTick` TODO already documents this.

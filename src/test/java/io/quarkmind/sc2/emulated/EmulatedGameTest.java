@@ -1555,4 +1555,76 @@ class EmulatedGameTest {
             .as("Probe should complete after 13 ticks with loop offset 18")
             .isEqualTo(unitsBefore + 1);
     }
+
+    // --- injectReplayBuildingWithCost ---
+
+    @Test
+    void injectReplayBuildingWithCost_deductsMineralCost() {
+        game.setMineralsForTesting(500);
+        Building gateway = new Building("r-1-1", BuildingType.GATEWAY,
+            new Point2d(20, 20),
+            SC2Data.maxBuildingHealth(BuildingType.GATEWAY),
+            SC2Data.maxBuildingHealth(BuildingType.GATEWAY),
+            false);
+
+        game.injectReplayBuildingWithCost(gateway);
+
+        assertThat(game.snapshot().minerals())
+            .as("Gateway costs 150 minerals — should be deducted")
+            .isEqualTo(350); // 500 - 150
+    }
+
+    @Test
+    void injectReplayBuildingWithCost_addsBuildingToState() {
+        game.setMineralsForTesting(500);
+        Building gateway = new Building("r-1-1", BuildingType.GATEWAY,
+            new Point2d(20, 20),
+            SC2Data.maxBuildingHealth(BuildingType.GATEWAY),
+            SC2Data.maxBuildingHealth(BuildingType.GATEWAY),
+            false);
+        int buildingsBefore = game.snapshot().myBuildings().size();
+
+        game.injectReplayBuildingWithCost(gateway);
+
+        assertThat(game.snapshot().myBuildings()).hasSize(buildingsBefore + 1);
+        assertThat(game.snapshot().myBuildings())
+            .anyMatch(b -> b.tag().equals("r-1-1") && b.type() == BuildingType.GATEWAY);
+    }
+
+    @Test
+    void injectReplayBuildingWithCost_allowsMineralDebtWhenInsufficientBalance() {
+        game.setMineralsForTesting(50); // less than Gateway cost (150)
+        Building gateway = new Building("r-1-1", BuildingType.GATEWAY,
+            new Point2d(20, 20),
+            SC2Data.maxBuildingHealth(BuildingType.GATEWAY),
+            SC2Data.maxBuildingHealth(BuildingType.GATEWAY),
+            false);
+
+        game.injectReplayBuildingWithCost(gateway);
+
+        // Minerals go negative (debt), matching the real player's constrained state.
+        // The debt is repaid through mining income over subsequent ticks.
+        assertThat(game.snapshot().minerals())
+            .as("Mineral debt is tracked — balance is 50 - 150 = -100")
+            .isEqualTo(-100);
+        assertThat(game.snapshot().myBuildings())
+            .as("Building is still injected even with mineral debt")
+            .anyMatch(b -> b.tag().equals("r-1-1"));
+    }
+
+    @Test
+    void injectReplayBuilding_doesNotDeductMinerals() {
+        game.setMineralsForTesting(500);
+        Building nexus = new Building("r-0-1", BuildingType.NEXUS,
+            new Point2d(8, 8),
+            SC2Data.maxBuildingHealth(BuildingType.NEXUS),
+            SC2Data.maxBuildingHealth(BuildingType.NEXUS),
+            true);
+
+        game.injectReplayBuilding(nexus);
+
+        assertThat(game.snapshot().minerals())
+            .as("Free injection must not deduct minerals")
+            .isEqualTo(500);
+    }
 }
