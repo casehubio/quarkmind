@@ -734,6 +734,16 @@ public class EmulatedGame {
     }
 
     /**
+     * Sets the friendly vespene pool from replay ground truth.
+     * Mirrors the vespene the real player had available at this tick,
+     * so gas-unit TrainIntents are not rejected by the resource check.
+     * Public: called from ReplayValidationHarness in a different package.
+     */
+    public void setVespeneForHarness(int vespene) {
+        friendly.vespene = vespene;
+    }
+
+    /**
      * Injects a building directly into the friendly player state without resource deduction.
      * Used by ReplayValidationHarness for buildings that are gifted at game start (not
      * purchased), e.g. the initial Nexus. The real player never spent minerals on these,

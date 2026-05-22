@@ -185,6 +185,38 @@ class EmulatedGameTest {
         assertThat(game.snapshot().minerals()).isEqualTo(50); // unchanged
     }
 
+    @Test
+    void setVespeneForHarness_enablesGasUnitTraining() {
+        game.reset();
+
+        // Inject a complete Gateway — Stalkers train here
+        Building gateway = new Building(
+            "gw-vespene-test", BuildingType.GATEWAY,
+            new Point2d(12, 12),
+            SC2Data.maxBuildingHealth(BuildingType.GATEWAY),
+            SC2Data.maxBuildingHealth(BuildingType.GATEWAY),
+            true);
+        game.injectReplayBuilding(gateway);
+
+        // Tick 30 times to accumulate ≥125 minerals (Stalker costs 125 minerals + 50 gas)
+        for (int i = 0; i < 30; i++) game.tick();
+
+        // Attempt 1: vespene == 0 — TrainIntent rejected at gas check
+        game.applyIntent(new TrainIntent("gw-vespene-test", UnitType.STALKER));
+        for (int i = 0; i < SC2Data.trainTimeInTicks(UnitType.STALKER) + 1; i++) game.tick();
+        assertThat(game.snapshot().myUnits())
+            .as("Stalker train must be rejected when vespene == 0")
+            .noneMatch(u -> u.type() == UnitType.STALKER);
+
+        // Attempt 2: set vespene — TrainIntent accepted
+        game.setVespeneForHarness(50);
+        game.applyIntent(new TrainIntent("gw-vespene-test", UnitType.STALKER));
+        for (int i = 0; i < SC2Data.trainTimeInTicks(UnitType.STALKER) + 1; i++) game.tick();
+        assertThat(game.snapshot().myUnits())
+            .as("Stalker must be trained after setVespeneForHarness(50)")
+            .anyMatch(u -> u.type() == UnitType.STALKER);
+    }
+
     // ---- E2: build intent ----
 
     @Test
