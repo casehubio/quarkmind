@@ -310,6 +310,9 @@ public class EmulatedGame {
             absLoop + SC2Data.trainTimeInLoops(unitType));
         state.pendingCompletions.add(new PlayerState.PendingCompletion(completesAt, () -> {
             state.buildingTrainingUntil.remove(buildingTag);
+            if (!state.buildingQueues.containsKey(buildingTag)) {
+                state.buildingCompletionAtLoop.remove(buildingTag);
+            }
             String tag = "unit-" + nextTag++;
             int hp = SC2Data.maxHealth(unitType);
             state.units.add(new Unit(tag, unitType, new Point2d(9, 9), hp, hp,
