@@ -1,5 +1,7 @@
 # quarkmind Workspace
 
+**Name:** quarkmind
+
 **Physical path:** `/Users/mdproctor/claude/casehub/quarkmind/CLAUDE.md`
 **Symlinked at:** `/Users/mdproctor/claude/public/quarkmind/CLAUDE.md`
 **Project repo:** `/Users/mdproctor/claude/casehub/quarkmind`
