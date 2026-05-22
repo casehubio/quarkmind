@@ -1,8 +1,10 @@
 package io.quarkmind.sc2.replay;
 
 import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.emulated.EmulatedGame;
 import io.quarkmind.sc2.intent.TimedIntent;
@@ -66,7 +68,7 @@ public final class ReplayValidationHarness {
             // per-outer-tick income. SC2Data.mineralIncomePerTick handles the per-tick
             // rate internally; the raw probe count is the correct input.
             GameState gtBefore = replayGame.snapshot();
-            emulated.setMiningProbesPerBase(countProbes(gtBefore));
+            emulated.setMiningProbesPerBase(countProbesPerBase(gtBefore));
 
             emulated.tick();
             replayGame.tick();
@@ -126,11 +128,27 @@ public final class ReplayValidationHarness {
         }
     }
 
-    /** Counts Probe units in a GameState snapshot. */
-    private static int countProbes(GameState state) {
-        return (int) state.myUnits().stream()
-            .filter(u -> u.type() == UnitType.PROBE)
-            .count();
+    /** Counts Probe units per base, assigning each probe to its nearest complete Nexus. */
+    private static int[] countProbesPerBase(GameState state) {
+        List<Building> nexuses = state.myBuildings().stream()
+            .filter(b -> b.type() == BuildingType.NEXUS && b.isComplete())
+            .toList();
+        if (nexuses.isEmpty()) return new int[0];
+
+        int[] counts = new int[nexuses.size()];
+        for (Unit u : state.myUnits()) {
+            if (u.type() != UnitType.PROBE) continue;
+            int nearest = 0;
+            double minDist = Double.MAX_VALUE;
+            for (int i = 0; i < nexuses.size(); i++) {
+                double dx = u.position().x() - nexuses.get(i).position().x();
+                double dy = u.position().y() - nexuses.get(i).position().y();
+                double d = Math.sqrt(dx * dx + dy * dy);
+                if (d < minDist) { minDist = d; nearest = i; }
+            }
+            counts[nearest]++;
+        }
+        return counts;
     }
 
     /**
