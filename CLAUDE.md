@@ -1,14 +1,14 @@
 # quarkmind Workspace
 
-**Physical path:** `/Users/mdproctor/claude/quarkmind/CLAUDE.md`
+**Physical path:** `/Users/mdproctor/claude/casehub/quarkmind/CLAUDE.md`
 **Symlinked at:** `/Users/mdproctor/claude/public/quarkmind/CLAUDE.md`
-**Project repo:** `/Users/mdproctor/claude/quarkmind`
+**Project repo:** `/Users/mdproctor/claude/casehub/quarkmind`
 **Workspace:** `/Users/mdproctor/claude/public/quarkmind`
 **Workspace type:** public
 
 ## Session Start
 
-Run `add-dir /Users/mdproctor/claude/quarkmind` before any other work.
+Run `add-dir /Users/mdproctor/claude/casehub/quarkmind` before any other work.
 
 ## Artifact Locations
 
@@ -37,14 +37,23 @@ Run `add-dir /Users/mdproctor/claude/quarkmind` before any other work.
 
 Two git repositories are active in every session:
 - **Workspace** (`/Users/mdproctor/claude/public/quarkmind`) — plans, blog (staging), snapshots, handover
-- **Project repo** (`/Users/mdproctor/claude/quarkmind`) — source code, ADRs (`docs/adr/`), specs
+- **Project repo** (`/Users/mdproctor/claude/casehub/quarkmind`) — source code, ADRs (`docs/adr/`), specs
 
 Never rely on CWD for git operations — the session may have started in either repo. Always use explicit paths:
 ```bash
 git -C /Users/mdproctor/claude/public/quarkmind ...     # workspace artifacts
-git -C /Users/mdproctor/claude/quarkmind ...            # project artifacts
+git -C /Users/mdproctor/claude/casehub/quarkmind ...    # project artifacts
 ```
 The file path determines the repo: if the file lives under `Workspace`, use the workspace path; if under `Project repo`, use the project path.
+
+## Git workflow — fork model
+
+```
+origin   → personal fork   (git remote get-url origin)
+upstream → casehubio       (git remote get-url upstream)
+```
+
+Before starting any branch: `git fetch upstream && git rebase upstream/main` to sync local main with casehubio. At work-end: rebase the branch onto local main, push to `origin main`. PRs to `upstream` are created separately, on demand — never automatically at work-end.
 
 ## Rules
 
@@ -58,7 +67,7 @@ The file path determines the repo: if the file lives under `Workspace`, use the 
 |------------|-------------|-------|
 | adr        | project     | lands in `docs/adr/` — promoted at epic close |
 | specs      | project     | lands in `docs/superpowers/specs/` — promoted at epic close |
-| blog       | workspace   | staged here; published to mdproctor.github.io via publish-blog |
+| blog       | workspace   | staged here; published via publish-blog (destination in ~/.claude/blog-routing.yaml) |
 | plans      | workspace   | stay in workspace permanently |
 | design     | workspace   | epic journal stays in workspace |
 | snapshots  | workspace   | stay in workspace permanently |
@@ -94,6 +103,8 @@ proactively suggest writing a handover before continuing.
 ## Repository Purpose
 
 **QuarkMind** — a Quarkus-based StarCraft II agent platform and CaseHub living lab. An agentic harness for game AI: coordinates plugin agents (strategy, economics, tactics, scouting) via CaseHub's case engine and blackboard. Intelligence is provided by swappable plugins; the platform provides scaffolding, SC2 connection, and the CaseHub control loop.
+
+**CaseHub application family member** — registered alongside casehub-aml, casehub-clinical, and casehub-devtown as a living lab proving the harness pattern outside regulated enterprise domains. See [APPLICATIONS.md](https://raw.githubusercontent.com/casehubio/parent/main/docs/APPLICATIONS.md).
 
 Deep-dive: `https://raw.githubusercontent.com/casehubio/parent/main/docs/repos/quarkmind.md`
 
