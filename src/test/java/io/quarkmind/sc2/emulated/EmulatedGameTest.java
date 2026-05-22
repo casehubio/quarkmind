@@ -1516,6 +1516,21 @@ class EmulatedGameTest {
     }
 
     @Test
+    void completionLoopCleanedUpWithoutQueue() {
+        game.setMineralsForTesting(500);
+        game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE)); // single unit, no queue
+        for (int i = 0; i < 13; i++) game.tick(); // completes
+        // Verify no stale entry — train another unit later and verify it behaves normally
+        // (if stale entry existed with a high offset, this second unit would complete later than expected)
+        int unitsBefore = game.snapshot().myUnits().size();
+        game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE));
+        for (int i = 0; i < 12; i++) game.tick();
+        assertThat(game.snapshot().myUnits())
+            .as("Second unit (no queue) should complete in normal 12 ticks, not shifted by stale offset")
+            .hasSize(unitsBefore + 1);
+    }
+
+    @Test
     void buildingValidationRejectsUnknownTag() {
         game.setMineralsForTesting(500);
         int mineralsBefore = (int) game.snapshot().minerals();

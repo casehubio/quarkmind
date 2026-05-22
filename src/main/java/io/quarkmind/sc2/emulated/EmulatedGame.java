@@ -325,6 +325,7 @@ public class EmulatedGame {
             Deque<UnitType> queue = state.buildingQueues.get(buildingTag);
             if (queue == null || queue.isEmpty()) {
                 state.buildingQueues.remove(buildingTag);
+                state.buildingCompletionAtLoop.remove(buildingTag);
                 continue;
             }
             UnitType next = queue.poll();
