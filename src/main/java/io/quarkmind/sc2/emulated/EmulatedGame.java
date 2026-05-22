@@ -304,6 +304,8 @@ public class EmulatedGame {
         long completesAt = gameFrame
             + (loopOffset + SC2Data.trainTimeInLoops(unitType)) / SC2Data.LOOPS_PER_TICK;
         state.buildingTrainingUntil.put(buildingTag, completesAt);
+        state.buildingCompletionAtLoop.put(buildingTag,
+            absLoop + SC2Data.trainTimeInLoops(unitType));
         state.pendingCompletions.add(new PlayerState.PendingCompletion(completesAt, () -> {
             state.buildingTrainingUntil.remove(buildingTag);
             String tag = "unit-" + nextTag++;
@@ -327,7 +329,9 @@ public class EmulatedGame {
             }
             UnitType next = queue.poll();
             if (queue.isEmpty()) state.buildingQueues.remove(buildingTag);
-            startTraining(buildingTag, next, state, 0L); // queued units carry no original loop — sub-tick offset is lost; unit can complete ±1 tick vs replay
+            long completionLoop = state.buildingCompletionAtLoop.getOrDefault(buildingTag, 0L);
+            state.buildingCompletionAtLoop.remove(buildingTag);
+            startTraining(buildingTag, next, state, completionLoop);
         }
     }
 

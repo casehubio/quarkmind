@@ -1483,6 +1483,39 @@ class EmulatedGameTest {
     }
 
     @Test
+    void queuedUnitPreservesSubTickPrecision() {
+        EmulatedGame game = new EmulatedGame();
+        game.reset();
+        game.setMineralsForTesting(500);
+        game.tick(); // gameFrame = 1
+        int unitsBefore = game.snapshot().myUnits().size();
+
+        // Train Probe A at loop 10: offset=10, (10+272)/22 = 282/22 = 12
+        // completesAt = 1 + 12 = 13
+        game.applyIntent(new TimedIntent(10L, new TrainIntent("nexus-0", UnitType.PROBE)));
+        // Queue Probe B behind Probe A
+        game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE));
+
+        // Tick to frame 13: Probe A completes, drain starts Probe B
+        for (int i = 0; i < 12; i++) game.tick();
+        assertThat(game.snapshot().myUnits()).hasSize(unitsBefore + 1);
+
+        // Tick 12 more: frames 14–25
+        // Probe A's completion loop = 10 + 272 = 282; offset = 282 % 22 = 18
+        // With propagation: (18 + 272) / 22 = 290 / 22 = 13; completesAt = 13 + 13 = 26
+        // Without propagation (0L): (0 + 272) / 22 = 12; completesAt = 13 + 12 = 25
+        for (int i = 0; i < 12; i++) game.tick();
+        assertThat(game.snapshot().myUnits())
+            .as("Queued unit should NOT complete yet — sub-tick offset pushes it 1 tick later")
+            .hasSize(unitsBefore + 1);
+
+        game.tick(); // frame 26
+        assertThat(game.snapshot().myUnits())
+            .as("Queued unit completes at frame 26 with propagated sub-tick offset")
+            .hasSize(unitsBefore + 2);
+    }
+
+    @Test
     void buildingValidationRejectsUnknownTag() {
         game.setMineralsForTesting(500);
         int mineralsBefore = (int) game.snapshot().minerals();

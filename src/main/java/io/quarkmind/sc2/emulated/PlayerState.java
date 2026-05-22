@@ -21,6 +21,7 @@ class PlayerState {
     final List<PendingCompletion>  pendingCompletions  = new ArrayList<>();
     final Map<String, Deque<UnitType>> buildingQueues       = new HashMap<>();
     final Map<String, Long>            buildingTrainingUntil = new HashMap<>();
+    final Map<String, Long>            buildingCompletionAtLoop = new HashMap<>();
 
     // Resources
     double minerals;
@@ -49,6 +50,7 @@ class PlayerState {
         pendingCompletions.clear();
         buildingQueues.clear();
         buildingTrainingUntil.clear();
+        buildingCompletionAtLoop.clear();
         unitTargets.clear();
         attackingUnits.clear();
         unitCooldowns.clear();
