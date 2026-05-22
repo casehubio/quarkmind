@@ -34,9 +34,8 @@ public final class SC2Data {
      * model: first 8 probes earn full rate, next 8 earn half, next 8 earn ~10%. Beyond 24
      * probes there is no additional income.
      *
-     * <p>Single-base only — assumes all probes mine one Nexus. When expansion is modelled,
-     * this will need a base-count parameter to distribute probes across bases correctly.
-     * TODO(multi-base #143): extend to accept base count once expansion is simulated.
+     * <p>Per-base income — callers with multiple bases sum this across each base's
+     * probe count. See {@code EmulatedGame.tick()} for multi-base usage.
      *
      * @param probeCount number of mining probes (must be ≥ 0)
      * @throws IllegalArgumentException if probeCount is negative
