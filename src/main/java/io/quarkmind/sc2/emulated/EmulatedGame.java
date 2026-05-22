@@ -27,7 +27,7 @@ public class EmulatedGame {
 
     // --- Shared / game-level state ---
     private long gameFrame;
-    private int  miningProbes;
+    private int[] miningProbesPerBase;
     private int  nextTag = 200;
     private double unitSpeed = 0.5;
     private final List<Resource> geysers = new ArrayList<>();
@@ -46,7 +46,7 @@ public class EmulatedGame {
         enemy.clear();
         nextTag     = 200;
         gameFrame   = 0;
-        miningProbes = SC2Data.INITIAL_PROBES;
+        miningProbesPerBase = new int[]{SC2Data.INITIAL_PROBES};
         movementStrategy.reset();
         visibility.reset();
         geysers.clear();
@@ -83,7 +83,9 @@ public class EmulatedGame {
 
     public void tick() {
         gameFrame++;
-        friendly.minerals += SC2Data.mineralIncomePerTick(miningProbes);
+        for (int probesAtBase : miningProbesPerBase) {
+            friendly.minerals += SC2Data.mineralIncomePerTick(probesAtBase);
+        }
         moveFriendlyUnits();
         // Recompute after movement, before combat: a unit that dies this tick still
         // provided vision for this frame — correct SC2 behaviour.
@@ -597,8 +599,10 @@ public class EmulatedGame {
 
     // --- Package-private: used by EmulatedGameTest ---
 
-    /** Sets mining probe count. Package-private for tests; public for validation harnesses. */
-    public void setMiningProbes(int count) { this.miningProbes = count; }
+    /** Sets mining probe counts per base. Package-private for tests; public for validation harnesses. */
+    public void setMiningProbesPerBase(int... probesPerBase) {
+        this.miningProbesPerBase = probesPerBase;
+    }
 
     /** Wires an EnemyStrategy through an EnemyBehavior — test shim for retreat tests.
      *  Uses a permissive TechTree so existing tests are not affected by tech-tree gating. */

@@ -66,7 +66,7 @@ public final class ReplayValidationHarness {
             // per-outer-tick income. SC2Data.mineralIncomePerTick handles the per-tick
             // rate internally; the raw probe count is the correct input.
             GameState gtBefore = replayGame.snapshot();
-            emulated.setMiningProbes(countProbes(gtBefore));
+            emulated.setMiningProbesPerBase(countProbes(gtBefore));
 
             emulated.tick();
             replayGame.tick();

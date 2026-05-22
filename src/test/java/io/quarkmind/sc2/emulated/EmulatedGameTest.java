@@ -57,9 +57,28 @@ class EmulatedGameTest {
 
     @Test
     void zeroProbesYieldsNoMineralGain() {
-        game.setMiningProbes(0);
+        game.setMiningProbesPerBase(0);
         for (int i = 0; i < 100; i++) game.tick();
         assertThat(game.snapshot().minerals()).isEqualTo(50);
+    }
+
+    @Test
+    void multiBaseMiningDistributesIncomeAcrossBases() {
+        // 12 probes on each of 2 bases should earn more than 24 probes on 1 base
+        // because 24 probes on 1 base hits the diminishing tier3 (probes 17–24),
+        // while 12 probes per base each stay in the higher tier1+tier2 range.
+        game.setMineralsForTesting(0);
+        game.setMiningProbesPerBase(12, 12);
+        game.tick();
+
+        double twoBaseIncome = 2 * SC2Data.mineralIncomePerTick(12);
+        double oneBaseIncome = SC2Data.mineralIncomePerTick(24);
+        // Verify the test premise: two-base is actually higher
+        assertThat(twoBaseIncome).isGreaterThan(oneBaseIncome);
+
+        assertThat(game.snapshot().minerals())
+            .as("Multi-base income should sum per-base rates, not single-base curve")
+            .isCloseTo((int) twoBaseIncome, within(1));
     }
 
     @Test
