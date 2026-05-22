@@ -223,23 +223,25 @@ public class EmulatedGame {
     }
 
     public void applyIntent(TimedIntent ti) {
-        switch (ti.intent()) {
-            case TrainIntent  t -> handleTrain(t, friendly, ti.loop());
-            case MoveIntent   m -> setTarget(m.unitTag(), m.targetLocation(), false, friendly);
-            case AttackIntent a -> setTarget(a.unitTag(), a.targetLocation(), true,  friendly);
-            case BuildIntent  b -> handleBuild(b, friendly);
-            case BlinkIntent  b -> executeBlink(b.unitTag(), friendly);
-        }
+        Runnable action = switch (ti.intent()) {
+            case TrainIntent  t -> () -> handleTrain(t, friendly, ti.loop());
+            case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), false, friendly);
+            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), true,  friendly);
+            case BuildIntent  b -> () -> handleBuild(b, friendly);
+            case BlinkIntent  b -> () -> executeBlink(b.unitTag(), friendly);
+        };
+        action.run();
     }
 
     void applyIntent(Intent intent, PlayerState state) {
-        switch (intent) {
-            case MoveIntent   m -> setTarget(m.unitTag(), m.targetLocation(), false, state);
-            case AttackIntent a -> setTarget(a.unitTag(), a.targetLocation(), true,  state);
-            case TrainIntent  t -> handleTrain(t, state);
-            case BuildIntent  b -> handleBuild(b, state);
-            case BlinkIntent  b -> executeBlink(b.unitTag(), state);
-        }
+        Runnable action = switch (intent) {
+            case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), false, state);
+            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), true,  state);
+            case TrainIntent  t -> () -> handleTrain(t, state);
+            case BuildIntent  b -> () -> handleBuild(b, state);
+            case BlinkIntent  b -> () -> executeBlink(b.unitTag(), state);
+        };
+        action.run();
     }
 
     private void setTarget(String tag, Point2d target, boolean isAttack, PlayerState state) {
@@ -325,7 +327,7 @@ public class EmulatedGame {
             }
             UnitType next = queue.poll();
             if (queue.isEmpty()) state.buildingQueues.remove(buildingTag);
-            startTraining(buildingTag, next, state, 0L); // queued units have no loop context — 0L uses integer-tick precision
+            startTraining(buildingTag, next, state, 0L); // queued units carry no original loop — sub-tick offset is lost; unit can complete ±1 tick vs replay
         }
     }
 
