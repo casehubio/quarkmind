@@ -24,17 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * (1) income model approximation error (saturation model vs real per-loop SC2 accumulation),
  * and (2) building costs not deducted (buildings are injected free via injectReplayBuilding).
  *
- * <p>Unit count divergence has one remaining cause:
- * <ul>
- *   <li><b>Gas units</b>: EmulatedGame starts with 0 vespene and has no gas income model.
- *       Train commands for Stalkers (50 gas) and Immortals (100 gas) are rejected, creating a
- *       growing divergence proportional to the number of gas units trained. See #148.</li>
- * </ul>
- *
- * <p>The timing formula fix (#149) corrected {@code trainTimeInLoops} from float literals
- * (e.g. 268.8) to empirically calibrated integers (PROBE=272, ZEALOT=618, STALKER=698),
- * moving {@code firstUnitDivergenceTick} from 86 to 150. The remaining divergence is
- * entirely from gas units and will be eliminated by #148.
+ * <p>Unit count divergence: bounded at ≤ 2 within the 3-minute window. Vespene is synced from
+ * pre-tick ground truth (#148), so gas-unit train commands are never rejected. The residual
+ * delta comes from ±1 tick sub-tick imprecision in gas-unit training completion timing.
  *
  * Refs #137, #141, #142, #148, #149
  */
@@ -48,18 +40,19 @@ class ReplayValidationTest {
     void unitCountWithinToleranceForThreeMinutes() {
         DivergenceReport report = ReplayValidationHarness.run(REPLAY, 1, THREE_MINUTES_TICKS);
 
+        // Vespene sync (#148) ensures gas-unit train commands never fail for resource reasons.
+        // Unit divergence (if any) now starts late (150+) with tiny max delta (2 units),
+        // matching observed command extraction calibration issues pre-tick.
+        // Building divergence from tick 0 is a pre-existing Nexus tracker timing issue (#142).
         assertThat(report.summary().firstUnitDivergenceTick())
-            .as("Training-time fix (#149) moved first divergence from 86 to 150. "
-                + "Remaining cause is gas units (#148 — no vespene model). "
-                + "First divergence was at tick %d.\n%s",
-                report.summary().firstUnitDivergenceTick(), report.renderReport())
+            .as("Unit divergence should be delayed past tick 145 by vespene sync (#148).\n%s",
+                report.renderReport())
             .isGreaterThanOrEqualTo(145);
 
         assertThat(report.summary().maxUnitDelta())
-            .as("Max unit delta is driven by gas units rejected due to 0 vespene (#148). "
-                + "Will be 0 once #148 adds vespene income. Max was %d.\n%s",
-                report.summary().maxUnitDelta(), report.renderReport())
-            .isLessThanOrEqualTo(15);
+            .as("Max unit delta bounded at 2 by command extraction accuracy (#148).\n%s",
+                report.renderReport())
+            .isLessThanOrEqualTo(2);
     }
 
     @Test

@@ -21,8 +21,10 @@ import java.util.Set;
  *   <li>Buildings are injected from replay tracker events (ground truth) into EmulatedGame
  *       at each tick, using the same replay tags. This allows TrainIntents (which carry
  *       replay building tags) to be applied directly without tag remapping.</li>
- *   <li>Resources (minerals, vespene) are NOT synced — divergence here is expected given
- *       EmulatedGame's flat mining rate vs SC2's saturation-based model.</li>
+ *   <li>Minerals are NOT synced — divergence is expected given EmulatedGame's flat mining
+ *       rate vs SC2's saturation-based model.</li>
+ *   <li>Vespene IS synced from pre-tick ground truth so gas-unit TrainIntents can succeed
+ *       with the same resource availability as the real player. See #148.</li>
  *   <li>Mining probe count IS synced so the resource model uses realistic input.</li>
  *   <li>Unit count divergence measures train command extraction accuracy.</li>
  * </ul>
@@ -75,11 +77,16 @@ public final class ReplayValidationHarness {
             // Buildings that became complete this tick are also updated.
             syncBuildings(emulated, gt, injectedTags);
 
-            // Sync supply from GT: the real player builds Pylons we can't reconstruct.
-            // Without this, training would be blocked by the initial 15-supply cap.
+            // Sync supply (post-tick GT) and vespene (pre-tick GT): the real player builds
+            // Pylons we can't reconstruct (supply), and their vespene BEFORE issuing commands
+            // is what's available for train intents. Supply uses post-tick because Pylons
+            // complete mid-tick; vespene uses pre-tick because it precedes train-command
+            // deduction. Without these syncs, training would be blocked or gas-unit train
+            // commands would be rejected. See #148.
             if (gt.supply() > 0) {
                 emulated.setSupplyCapForHarness(gt.supply());
             }
+            emulated.setVespeneForHarness(gtBefore.vespene());
 
             // Apply TrainIntents for this tick window after ticking.
             // Post-tick application matches the original harness timing: intents see the
