@@ -110,6 +110,97 @@ Deep-dive: `https://raw.githubusercontent.com/casehubio/parent/main/docs/repos/q
 
 See `docs/superpowers/specs/` for the design spec and `docs/library-research.md` for the library evaluation log.
 
+---
+
+## Layering Rule
+
+This is an application, not a framework. If the capability requires SC2 game knowledge — unit stats, building costs, game loop mechanics, replay parsing — it belongs here. If it is purely about cases, commitments, trust, or audit records, it belongs in the foundation. Never re-implement foundation primitives here.
+
+---
+
+## Reference Documents
+
+| Document | What it covers |
+|----------|---------------|
+| `https://raw.githubusercontent.com/casehubio/parent/main/docs/repos/quarkmind.md` | QuarkMind domain ownership, harness layers, tutorial structure, dependencies |
+| `https://raw.githubusercontent.com/casehubio/parent/main/docs/AGENTIC-HARNESS-GUIDE.md` | The agentic harness pattern QuarkMind demonstrates — read before any harness-layer design decision |
+| `../parent/docs/repos/casehub-engine.md` | CaseFile blackboard, TaskDefinition, adaptive plugin dispatch |
+
+---
+
+## Design Phase References
+
+Read these **before designing**, not after. The concern column tells you when each applies.
+
+### Domain model and game AI design
+
+| Concern | Read first |
+|---------|-----------|
+| Designing a new entity, record, or SC2 domain concept | `quarkmind.md` — does QuarkMind already own it? `PLATFORM.md` capability ownership table — does the foundation own it? |
+| Adding a new `Intent` subtype (sealed `Intent permits ...`) | Update `Intent.java` permits clause AND every switch expression over `Intent` in the same commit — GE-20260418-9b272f; sealed-type exhaustiveness breaks across the codebase the moment the permits clause changes |
+| SC2 physics constants (train times, costs, armour, income) | Calibrate from replay data, not from formula — protocol `docs/protocols/sc2data-train-times-require-calibration.md`; run `SC2TrainTimeCalibrationTest` |
+| Plugin seam placement (`agent/plugin/` vs `plugin/`) | Seam *interfaces* in `agent/plugin/`; active *implementations* in `plugin/`. Never add game logic to the seam interfaces. |
+
+### Tutorial layer design
+
+| Concern | Read first |
+|---------|-----------|
+| Deciding which layer a feature belongs in | `quarkmind.md §Tutorial Layers` — layer teaching objectives and what each layer must NOT include |
+| Documenting a completed layer | `LAYER-LOG.md` — write the entry before closing the layer issue. Each entry: What it shows, Key wiring, Gotchas, Pattern to replicate. |
+| Understanding the harness pattern being taught | `AGENTIC-HARNESS-GUIDE.md` in casehub-parent |
+
+### Foundation integration
+
+| Concern | Read first |
+|---------|-----------|
+| casehub-engine (CaseFile, TaskDefinition, `AgentOrchestrator`) | `../parent/docs/repos/casehub-engine.md` |
+| casehub-qhorus (typed COMMAND/RESPONSE between plugin agents) | `../parent/docs/repos/casehub-qhorus.md` |
+| casehub-ledger (audit trail for agent decisions, trust scoring) | `../parent/docs/repos/casehub-ledger.md` |
+| Drools (strategy, tactics, scouting rule engines) | `docs/library-research.md` — Drools evaluation and integration rationale |
+| Quarkus Flow (durable economics execution) | ADR-0001 in `docs/adr/` — placement decision |
+| Boundary check — game domain or foundation? | `PLATFORM.md` application tier rule |
+
+### Testing
+
+| Concern | Read first |
+|---------|-----------|
+| Unit test vs `@QuarkusTest` | Testing Patterns in this CLAUDE.md — never `@QuarkusTest` for tests that can be plain JUnit; boot cost is significant |
+| EmulatedGame physics change | Run `mvn test -Pbenchmark` before and after — `GameLoopBenchmarkTest`; paste results in `docs/benchmarks/` |
+| Replay validation accuracy | Run `mvn test -Preport` for the full divergence report before closing any issue that changes EmulatedGame physics |
+| Playwright visual tests | `mvn test -Pplaywright` — requires Chromium; run after any change to `visualizer.js`, `GameState`, or the domain model |
+
+---
+
+## Tutorial Structure (harness layer-by-layer, from quarkmind.md)
+
+The tutorial covers the *harness layer only* — `AgentOrchestrator`, `CaseFile`, plugin seams, and foundation integration. The SC2 emulation layer (`EmulatedGame`, `ReplayValidationHarness`, SC2 physics) is domain-specific and not part of the tutorial progression. An LLM or developer studying the harness pattern can follow the layers independent of any SC2 knowledge.
+
+```
+Layer 1: naive game loop — direct plugin calls, no CaseHub blackboard | pending documentation
+Layer 2: + casehub-engine blackboard — AgentOrchestrator dispatches plugins via CaseFile per-tick shared state ✅ (active)
+Layer 3: + casehub-qhorus — typed COMMAND/RESPONSE between plugin agents | pending
+Layer 4: + casehub-ledger — audit trail for agent decisions; trust scoring on plugin outcomes | pending
+Layer 5: adaptive plugin selection — binding conditions in engine, not hardwired dispatch | pending
+Layer 6: trust routing — outcome-history-weighted plugin selection | pending
+Layer 7: comparison vs naive game AI and commercial frameworks | pending
+```
+
+**Note on Layer 1:** The naive baseline pre-dates CaseHub integration and exists in git history. LAYER-LOG documentation is pending — write the entry when the harness documentation epic begins.
+
+**No `NaiveXxxService @DefaultBean` displacement:** QuarkMind uses a single-module Quarkus app (no `api/`/`app/` split). There are no downstream JPA consumers. Layers add capability by implementing new CDI beans with the `@CaseType` qualifier that displace prior implementations — this mirrors the AML displacement pattern but at the plugin level, not the service level.
+
+### Foundation Gates
+
+| Capability | Foundation prerequisite |
+|-----------|------------------------|
+| Adaptive plugin selection (binding conditions) | casehub-engine P0 ✅ (engine#186) |
+| Plugin DECLINE vs FAILURE routing | casehub-engine P0 ✅ |
+| Typed inter-plugin messaging | casehub-qhorus — pending integration |
+| Agent decision audit trail | casehub-ledger — pending integration |
+| Trust-weighted plugin routing | casehub-engine P1.3 TrustWeightedSelectionStrategy — pending |
+
+---
+
 ## Development Commands
 
 **Build:**
