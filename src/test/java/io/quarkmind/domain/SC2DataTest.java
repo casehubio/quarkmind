@@ -186,6 +186,7 @@ class SC2DataTest {
         assertThat(SC2Data.trainTimeInLoops(UnitType.STALKER))  .isEqualTo(698);  // 2 obs
         assertThat(SC2Data.trainTimeInLoops(UnitType.IMMORTAL)) .isEqualTo(896);  // uncalibrated
         assertThat(SC2Data.trainTimeInLoops(UnitType.OBSERVER)) .isEqualTo(493);  // uncalibrated
+        assertThat(SC2Data.trainTimeInLoops(UnitType.UNKNOWN)).isEqualTo(672);  // default: 30s × 22.4 = 672.0 (exact)
     }
 
     @Test
@@ -195,5 +196,6 @@ class SC2DataTest {
         assertThat(SC2Data.trainTimeInTicks(UnitType.STALKER))  .isEqualTo(31);
         assertThat(SC2Data.trainTimeInTicks(UnitType.IMMORTAL)) .isEqualTo(40);
         assertThat(SC2Data.trainTimeInTicks(UnitType.OBSERVER)) .isEqualTo(22);
+        assertThat(SC2Data.trainTimeInTicks(UnitType.UNKNOWN)).isEqualTo(30);   // 672 / 22 = 30 (integer division)
     }
 }
