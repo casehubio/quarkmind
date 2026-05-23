@@ -604,7 +604,7 @@ public class EmulatedGame {
 
     /** Sets mining probe counts per base. Package-private for tests; public for validation harnesses. */
     public void setMiningProbesPerBase(int... probesPerBase) {
-        this.miningProbesPerBase = probesPerBase;
+        this.miningProbesPerBase = probesPerBase.clone();
     }
 
     /** Wires an EnemyStrategy through an EnemyBehavior — test shim for retreat tests.

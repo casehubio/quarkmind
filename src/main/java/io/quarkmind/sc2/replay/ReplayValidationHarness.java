@@ -129,7 +129,7 @@ public final class ReplayValidationHarness {
     }
 
     /** Counts Probe units per base, assigning each probe to its nearest complete Nexus. */
-    private static int[] countProbesPerBase(GameState state) {
+    static int[] countProbesPerBase(GameState state) {
         List<Building> nexuses = state.myBuildings().stream()
             .filter(b -> b.type() == BuildingType.NEXUS && b.isComplete())
             .toList();
@@ -143,8 +143,8 @@ public final class ReplayValidationHarness {
             for (int i = 0; i < nexuses.size(); i++) {
                 double dx = u.position().x() - nexuses.get(i).position().x();
                 double dy = u.position().y() - nexuses.get(i).position().y();
-                double d = Math.sqrt(dx * dx + dy * dy);
-                if (d < minDist) { minDist = d; nearest = i; }
+                double dSq = dx * dx + dy * dy;
+                if (dSq < minDist) { minDist = dSq; nearest = i; }
             }
             counts[nearest]++;
         }
