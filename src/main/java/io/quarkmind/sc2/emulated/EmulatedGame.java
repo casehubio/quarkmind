@@ -607,6 +607,29 @@ public class EmulatedGame {
         this.miningProbesPerBase = probesPerBase.clone();
     }
 
+    /** Assigns each probe to its nearest complete Nexus by squared distance. */
+    public static int[] countProbesPerBase(List<Building> buildings, List<Unit> units) {
+        List<Building> nexuses = buildings.stream()
+            .filter(b -> b.type() == BuildingType.NEXUS && b.isComplete())
+            .toList();
+        if (nexuses.isEmpty()) return new int[0];
+
+        int[] counts = new int[nexuses.size()];
+        for (Unit u : units) {
+            if (u.type() != UnitType.PROBE) continue;
+            int nearest = 0;
+            double minDistSq = Double.MAX_VALUE;
+            for (int i = 0; i < nexuses.size(); i++) {
+                double dx = u.position().x() - nexuses.get(i).position().x();
+                double dy = u.position().y() - nexuses.get(i).position().y();
+                double dSq = dx * dx + dy * dy;
+                if (dSq < minDistSq) { minDistSq = dSq; nearest = i; }
+            }
+            counts[nearest]++;
+        }
+        return counts;
+    }
+
     /** Wires an EnemyStrategy through an EnemyBehavior — test shim for retreat tests.
      *  Uses a permissive TechTree so existing tests are not affected by tech-tree gating. */
     void setEnemyStrategy(EnemyStrategy s) {

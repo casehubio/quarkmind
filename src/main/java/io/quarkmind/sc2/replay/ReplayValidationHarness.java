@@ -1,11 +1,8 @@
 package io.quarkmind.sc2.replay;
 
 import io.quarkmind.domain.Building;
-import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.SC2Data;
-import io.quarkmind.domain.Unit;
-import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.emulated.EmulatedGame;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.mock.ReplaySimulatedGame;
@@ -130,25 +127,7 @@ public final class ReplayValidationHarness {
 
     /** Counts Probe units per base, assigning each probe to its nearest complete Nexus. */
     static int[] countProbesPerBase(GameState state) {
-        List<Building> nexuses = state.myBuildings().stream()
-            .filter(b -> b.type() == BuildingType.NEXUS && b.isComplete())
-            .toList();
-        if (nexuses.isEmpty()) return new int[0];
-
-        int[] counts = new int[nexuses.size()];
-        for (Unit u : state.myUnits()) {
-            if (u.type() != UnitType.PROBE) continue;
-            int nearest = 0;
-            double minDist = Double.MAX_VALUE;
-            for (int i = 0; i < nexuses.size(); i++) {
-                double dx = u.position().x() - nexuses.get(i).position().x();
-                double dy = u.position().y() - nexuses.get(i).position().y();
-                double dSq = dx * dx + dy * dy;
-                if (dSq < minDist) { minDist = dSq; nearest = i; }
-            }
-            counts[nearest]++;
-        }
-        return counts;
+        return EmulatedGame.countProbesPerBase(state.myBuildings(), state.myUnits());
     }
 
     /**
