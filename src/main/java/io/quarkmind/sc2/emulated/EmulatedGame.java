@@ -28,6 +28,7 @@ public class EmulatedGame {
     // --- Shared / game-level state ---
     private long gameFrame;
     private int[] miningProbesPerBase;
+    private boolean miningProbesOverridden;
     private int  nextTag = 200;
     private double unitSpeed = 0.5;
     private final List<Resource> geysers = new ArrayList<>();
@@ -47,6 +48,7 @@ public class EmulatedGame {
         nextTag     = 200;
         gameFrame   = 0;
         miningProbesPerBase = new int[]{SC2Data.INITIAL_PROBES};
+        miningProbesOverridden = false;
         movementStrategy.reset();
         visibility.reset();
         geysers.clear();
@@ -82,6 +84,10 @@ public class EmulatedGame {
     }
 
     public void tick() {
+        if (!miningProbesOverridden) {
+            miningProbesPerBase = countProbesPerBase(friendly.buildings, friendly.units);
+        }
+        miningProbesOverridden = false;
         gameFrame++;
         for (int probesAtBase : miningProbesPerBase) {
             friendly.minerals += SC2Data.mineralIncomePerTick(probesAtBase);
@@ -602,9 +608,10 @@ public class EmulatedGame {
 
     // --- Package-private: used by EmulatedGameTest ---
 
-    /** Sets mining probe counts per base. Package-private for tests; public for validation harnesses. */
+    /** Sets mining probe counts per base — one-shot override consumed by the next tick. */
     public void setMiningProbesPerBase(int... probesPerBase) {
         this.miningProbesPerBase = probesPerBase.clone();
+        this.miningProbesOverridden = true;
     }
 
     /** Assigns each probe to its nearest complete Nexus by squared distance. */

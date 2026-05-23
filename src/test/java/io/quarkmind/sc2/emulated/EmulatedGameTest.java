@@ -58,8 +58,10 @@ class EmulatedGameTest {
     @Test
     void zeroProbesYieldsNoMineralGain() {
         game.setMiningProbesPerBase(0);
-        for (int i = 0; i < 100; i++) game.tick();
-        assertThat(game.snapshot().minerals()).isEqualTo(50);
+        game.tick();
+        assertThat(game.snapshot().minerals())
+            .as("Override to 0 probes: no mineral gain for that tick")
+            .isEqualTo(50);
     }
 
     @Test
@@ -1749,5 +1751,91 @@ class EmulatedGameTest {
         assertThat(game.snapshot().minerals())
             .as("Free injection must not deduct minerals")
             .isEqualTo(500);
+    }
+
+    // --- #152: auto-compute probe distribution ---
+
+    @Test
+    void tick_autoComputeProbeDistribution_singleBase_matchesManualSet() {
+        game.setMineralsForTesting(0);
+        // Do NOT call setMiningProbesPerBase — let auto-compute handle it
+        game.tick();
+
+        double expectedIncome = SC2Data.mineralIncomePerTick(SC2Data.INITIAL_PROBES);
+        assertThat(game.snapshot().minerals())
+            .as("Auto-compute should assign all probes to single nexus")
+            .isCloseTo((int) expectedIncome, within(1));
+    }
+
+    @Test
+    void setMiningProbesPerBase_overrideConsumedThenAutoComputeResumes() {
+        game.setMineralsForTesting(0);
+
+        // Override to zero probes — should produce zero income this tick
+        game.setMiningProbesPerBase(0);
+        game.tick();
+        assertThat(game.snapshot().minerals())
+            .as("Override to 0 probes should yield no income")
+            .isEqualTo(0);
+
+        // Next tick: no override set, auto-compute resumes.
+        // 12 probes near nexus-0 → full income.
+        game.setMineralsForTesting(0);
+        game.tick();
+        double expectedIncome = SC2Data.mineralIncomePerTick(SC2Data.INITIAL_PROBES);
+        assertThat(game.snapshot().minerals())
+            .as("Auto-compute should resume after override consumed")
+            .isCloseTo((int) expectedIncome, within(1));
+    }
+
+    @Test
+    void tick_autoComputesProbeDistribution_afterSecondNexusCompletes() {
+        game.setMineralsForTesting(5000);
+
+        // Build a second nexus at a distant location
+        game.applyIntent(new BuildIntent("probe-0", BuildingType.NEXUS, new Point2d(30, 30)));
+
+        // Tick through build time (NEXUS default = 40 ticks)
+        int buildTicks = SC2Data.buildTimeInTicks(BuildingType.NEXUS);
+        for (int i = 0; i < buildTicks; i++) game.tick();
+
+        // After completion, two nexuses should exist
+        GameState state = game.snapshot();
+        long nexusCount = state.myBuildings().stream()
+            .filter(b -> b.type() == BuildingType.NEXUS && b.isComplete())
+            .count();
+        assertThat(nexusCount).as("Two nexuses should be complete").isEqualTo(2);
+
+        // All 12 probes are near nexus-0 at (8,8), far from nexus-1 at (30,30).
+        // Auto-compute should assign all 12 to base 0, 0 to base 1.
+        // Income should match 12-probes-on-one-base, not split.
+        game.setMineralsForTesting(0);
+        game.tick();
+        double expectedIncome = SC2Data.mineralIncomePerTick(SC2Data.INITIAL_PROBES);
+        assertThat(game.snapshot().minerals())
+            .as("All probes near base 0 — income from one saturated base")
+            .isCloseTo((int) expectedIncome, within(1));
+    }
+
+    @Test
+    void countProbesPerBase_twoNexuses_distributesByProximity() {
+        Building nexus0 = new Building("nexus-0", BuildingType.NEXUS,
+            new Point2d(8, 8), 1500, 1500, true);
+        Building nexus1 = new Building("nexus-1", BuildingType.NEXUS,
+            new Point2d(30, 30), 1500, 1500, true);
+        List<Unit> probes = List.of(
+            probe("p-0", 9, 9),
+            probe("p-1", 29, 30));
+
+        int[] result = EmulatedGame.countProbesPerBase(
+            List.of(nexus0, nexus1), probes);
+
+        assertThat(result).containsExactly(1, 1);
+    }
+
+    private static Unit probe(String tag, float x, float y) {
+        return new Unit(tag, UnitType.PROBE, new Point2d(x, y),
+            SC2Data.maxHealth(UnitType.PROBE), SC2Data.maxHealth(UnitType.PROBE),
+            SC2Data.maxShields(UnitType.PROBE), SC2Data.maxShields(UnitType.PROBE), 0, 0);
     }
 }
