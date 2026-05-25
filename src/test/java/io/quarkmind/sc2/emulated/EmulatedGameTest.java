@@ -707,6 +707,9 @@ class EmulatedGameTest {
         //         probe-1's range; probe-1 fires: HP=5-4=1. Zealot still alive, still retreating.
         // Tick 3: probe-0 fires again. Zealot HP=1-4<0, dies. resolveCombat cleans retreatingUnits.
         // HP=9 chosen so Zealot needs exactly 3 probe hits to die (9, 5, 1, dead).
+        // NOTE: probe-1 engagement in Tick 2 depends on the Zealot's retreat path passing within
+        // probe-1's 3.0-tile attack range. If retreat speed, staging position, or probe placement
+        // changes, Tick 2 may no longer fire and the Zealot survives to Tick 4.
         EnemyAttackConfig atk = new EnemyAttackConfig(10, 9999, 30, 0);
         game.setEnemyStrategy(retreatStrategy(atk));
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(6.0f, 9));
@@ -1151,18 +1154,15 @@ class EmulatedGameTest {
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(12, 10)); // zealot-1: same pos, wounded
         // Wound the second zealot so its HP+shields total is lower
         String woundedTag = game.snapshot().enemyUnits().get(1).tag();
-        game.enemy.units.replaceAll(u -> u.tag().equals(woundedTag)
-            ? new Unit(u.tag(), u.type(), u.position(), 10, u.maxHealth(), 0, u.maxShields(), 0, 0)
-            : u);
+        game.setEnemyHealthForTesting(woundedTag, 10);
+        game.setEnemyShieldsForTesting(woundedTag, 0);
 
         game.tick();
 
         // The wounded zealot (lower HP+shields) should have taken damage (or died)
-        boolean woundedTookDamage = game.enemy.units.stream()
-            .noneMatch(u -> u.tag().equals(woundedTag))  // died
-            || game.enemy.units.stream()
-                .filter(u -> u.tag().equals(woundedTag))
-                .anyMatch(u -> u.health() < 10);
+        List<Unit> enemies = game.snapshot().enemyUnits();
+        boolean woundedTookDamage = enemies.stream().noneMatch(u -> u.tag().equals(woundedTag))  // died
+            || enemies.stream().filter(u -> u.tag().equals(woundedTag)).anyMatch(u -> u.health() < 10);
         assertThat(woundedTookDamage).as("auto-attack must target lower-HP enemy first").isTrue();
     }
 
