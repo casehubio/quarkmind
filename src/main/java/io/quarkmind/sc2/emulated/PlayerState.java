@@ -31,7 +31,6 @@ class PlayerState {
 
     // Movement / combat state (generalized — used for both players)
     final Map<String, Point2d> unitTargets    = new HashMap<>();
-    final Set<String>          attackingUnits = new HashSet<>();
     final Map<String, Integer> unitCooldowns  = new HashMap<>();
     final Map<String, Integer> blinkCooldowns = new HashMap<>();
 
@@ -52,7 +51,6 @@ class PlayerState {
         buildingTrainingUntil.clear();
         buildingCompletionAtLoop.clear();
         unitTargets.clear();
-        attackingUnits.clear();
         unitCooldowns.clear();
         blinkCooldowns.clear();
         minerals   = 0;

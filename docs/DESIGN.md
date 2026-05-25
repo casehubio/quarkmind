@@ -182,7 +182,7 @@ Two-pass simultaneous combat resolution prevents order-dependency:
 1. **Collect phase**: for every unit (friendly and enemy), if an opponent is within weapon range, accumulate effective damage into `Map<String, Integer>` (tag → total damage). No explicit `AttackIntent` required — units fire automatically at the nearest in-range opponent each tick.
 2. **Apply phase**: subtract from health (and shields first for Protoss), remove units at HP ≤ 0
 
-`attackingUnits` is a `Set<String>` on `PlayerState`, still written by `setTarget` (AttackIntent adds, MoveIntent removes), but no longer consulted in combat resolution. It is retained as dead state; cleanup tracked in #134. Movement toward an attack target is still driven by `unitTargets`.
+Movement toward an attack target is driven by `unitTargets`. `attackingUnits` (see ADR-0003) was removed in #134 — after auto-engage (#129) it became dead state with no reader in `resolveCombat`.
 
 ---
 
@@ -334,7 +334,7 @@ See [docs/adr/INDEX.md](adr/INDEX.md) for the full index.
 |---|---|
 | [ADR-0001](adr/0001-quarkus-flow-placement.md) | Quarkus Flow placement — per-tick stateful plugin |
 | [ADR-0002](adr/0002-two-pass-simultaneous-combat-resolution.md) | Two-pass simultaneous combat resolution |
-| [ADR-0003](adr/0003-attackingunits-set-semantics.md) | `attackingUnits` Set for attack-mode tracking |
+| [ADR-0003](adr/0003-attackingunits-set-semantics.md) | `attackingUnits` Set for attack-mode tracking *(superseded — removed in #134)* |
 | [ADR-0004](adr/0004-flow-single-consume-step.md) | Quarkus Flow single `consume()` step for economics |
 | [ADR-0005](adr/0005-sc2data-in-domain.md) | `SC2Data` shared constants in `domain/` |
 | [ADR-0006](adr/0006-emulatedgame-simulatedgame-separation.md) | `EmulatedGame`/`SimulatedGame` separation |

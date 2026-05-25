@@ -1234,12 +1234,12 @@ class EmulatedGameTest {
     // ---- E10: Kiting physics ----
 
     // At STALKER cooldown=1, kiting fires every other tick:
-    //   attack tick  → AttackIntent fires the weapon, cooldown set to 1
-    //   cooldown tick → MoveIntent(retreat) clears attackingUnits so no fire this tick;
-    //                   Stalker steps 0.5 tiles away from the approaching Zealot
+    //   attack tick  → AttackIntent fires the weapon; resolveCombat sets cooldown to 1
+    //   cooldown tick → cooldown > 0 suppresses fire; MoveIntent(retreat) steps the
+    //                   Stalker 0.5 tiles away from the approaching Zealot
     //
-    // The baseline is "standing-still": same every-other-tick fire rate (achieved by
-    // issuing MoveIntent(own position) on cooldown ticks to also clear attackingUnits),
+    // The baseline is "standing-still": same every-other-tick fire rate (cooldown=1
+    // after each shot, regardless of MoveIntent or AttackIntent on cooldown ticks),
     // but the Stalker never retreats.  This isolates the retreat movement as the only
     // variable.
     //
@@ -1258,9 +1258,9 @@ class EmulatedGameTest {
 
     /**
      * Baseline: same every-other-tick fire rate as kiting, but Stalker never retreats.
-     * MoveIntent(own position) on cooldown ticks clears attackingUnits (matching kiting's
-     * fire parity).  The Zealot closes at full speed (0.5 tiles/tick) and reaches melee
-     * range sooner — generating more Zealot attacks before the Stalker can kill it.
+     * Fire rate is controlled by the cooldown system, not intent type — both scenarios
+     * fire every other tick.  The Zealot closes at full speed (0.5 tiles/tick) and reaches
+     * melee range sooner — generating more Zealot attacks before the Stalker can kill it.
      */
     private int runStandingStillScenario() {
         game.reset();
@@ -1276,8 +1276,8 @@ class EmulatedGameTest {
                 // Off cooldown: attack in place — own position as target so Stalker does not move
                 game.applyIntent(new AttackIntent(tag, stalker.position()));
             } else {
-                // On cooldown: idle in place — MoveIntent(own pos) clears attackingUnits,
-                // giving the same every-other-tick fire rate as the kiting scenario
+                // On cooldown: idle in place — fire rate is controlled by cooldown,
+                // so this fires at the same every-other-tick rate as the kiting scenario
                 game.applyIntent(new MoveIntent(tag, stalker.position()));
             }
             game.tick();
@@ -1289,8 +1289,8 @@ class EmulatedGameTest {
 
     /**
      * Kiting: Stalker attacks in place when cooldown is 0, retreats 1 tile away from
-     * the Zealot on cooldown ticks.  MoveIntent on cooldown ticks clears attackingUnits
-     * (same fire rate as standing), but the retreat delays the Zealot reaching melee —
+     * the Zealot on cooldown ticks.  The cooldown system gives the same every-other-tick
+     * fire rate as standing, but the retreat delays the Zealot reaching melee —
      * resulting in significantly fewer Zealot attacks and more surviving HP.
      */
     private int runKitingScenario() {

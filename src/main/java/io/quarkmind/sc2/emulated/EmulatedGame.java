@@ -233,8 +233,8 @@ public class EmulatedGame {
     public void applyIntent(TimedIntent ti) {
         Runnable action = switch (ti.intent()) {
             case TrainIntent  t -> () -> handleTrain(t, friendly, ti.loop());
-            case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), false, friendly);
-            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), true,  friendly);
+            case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), friendly);
+            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), friendly);
             case BuildIntent  b -> () -> handleBuild(b, friendly, ti.loop());
             case BlinkIntent  b -> () -> executeBlink(b.unitTag(), friendly);
         };
@@ -243,8 +243,8 @@ public class EmulatedGame {
 
     void applyIntent(Intent intent, PlayerState state) {
         Runnable action = switch (intent) {
-            case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), false, state);
-            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), true,  state);
+            case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), state);
+            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), state);
             case TrainIntent  t -> () -> handleTrain(t, state);
             case BuildIntent  b -> () -> handleBuild(b, state, gameFrame * SC2Data.LOOPS_PER_TICK);
             case BlinkIntent  b -> () -> executeBlink(b.unitTag(), state);
@@ -252,12 +252,10 @@ public class EmulatedGame {
         action.run();
     }
 
-    private void setTarget(String tag, Point2d target, boolean isAttack, PlayerState state) {
+    private void setTarget(String tag, Point2d target, PlayerState state) {
         if (state.units.stream().anyMatch(u -> u.tag().equals(tag))) {
             state.unitTargets.put(tag, target);
-            if (isAttack) state.attackingUnits.add(tag);
-            else          state.attackingUnits.remove(tag);  // dead write — cleanup tracked in #134
-            log.debugf("[EMULATED] %s → (%.1f,%.1f) attack=%b", tag, target.x(), target.y(), isAttack);
+            log.debugf("[EMULATED] %s → (%.1f,%.1f)", tag, target.x(), target.y());
         }
     }
 
@@ -414,7 +412,6 @@ public class EmulatedGame {
         friendly.units.removeIf(u -> {
             if (u.health() <= 0) {
                 friendly.unitTargets.remove(u.tag());
-                friendly.attackingUnits.remove(u.tag());
                 friendly.unitCooldowns.remove(u.tag());
                 friendly.blinkCooldowns.remove(u.tag());
                 movementStrategy.clearUnit(u.tag());
@@ -488,7 +485,6 @@ public class EmulatedGame {
             int restored = Math.min(u.shields() + SC2Data.blinkShieldRestore(u.type()), u.maxShields());
             state.unitTargets.put(tag, dest);
             state.blinkCooldowns.put(tag, SC2Data.blinkCooldownInTicks(u.type()));
-            state.attackingUnits.remove(tag); // blink cancels attack mode
             return new Unit(u.tag(), u.type(), dest,
                             u.health(), u.maxHealth(), restored, u.maxShields(), 0, 0);
         });
@@ -669,7 +665,6 @@ public class EmulatedGame {
         enemy.units.add(new Unit(tag, type, position, hp, hp,
             SC2Data.maxShields(type), SC2Data.maxShields(type), 0, 0));
         enemy.unitTargets.put(tag, EnemyBehavior.NEXUS_POS);
-        enemy.attackingUnits.add(tag);  // test-spawned enemies are in attack mode by default
     }
 
     /** Sets a friendly unit's health for combat threshold tests. */

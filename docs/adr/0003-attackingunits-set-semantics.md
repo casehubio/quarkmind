@@ -1,7 +1,7 @@
 # 0003 — attackingUnits Set for attack-mode tracking
 
 Date: 2026-05-07
-Status: Accepted
+Status: Superseded (removed in #134, 2026-05-25)
 
 ## Context and Problem Statement
 
@@ -59,7 +59,13 @@ concerns cleanly, and the Set is cheap to query in `resolveCombat()`.
 
 ## Links
 
-* `PlayerState.attackingUnits` — field
-* `EmulatedGame.setTarget()` — where add/remove happens
-* `EmulatedGame.resolveCombat()` — where it is consumed
+* `PlayerState.attackingUnits` — field (removed in #134)
+* `EmulatedGame.setTarget()` — where add/remove happened (removed in #134)
+* `EmulatedGame.resolveCombat()` — where it was consumed (removed in #129; became dead state)
 * E4 emulation epic (attack cooldowns + cancel path)
+
+## Superseded by
+
+The decision drivers changed after #129 (auto-engage). `resolveCombat()` was rewritten to fire
+via `nearestInRange` without consulting `attackingUnits`, making the Set write-only dead state.
+`attackingUnits` was removed entirely in #134.
