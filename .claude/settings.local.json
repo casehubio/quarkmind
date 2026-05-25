@@ -159,7 +159,10 @@
       "mcp__intellij__read_file",
       "Bash(GIT_SEQUENCE_EDITOR='cp /tmp/squash_rebase_todo.txt' git -C /Users/mdproctor/claude/casehub/quarkmind rebase -i 593706734fd588ef1846294eafb34dc3fc9e3fa8)",
       "Bash(mvn test-compile *)",
-      "Bash(wait)"
+      "Bash(wait)",
+      "Bash(curl -s https://raw.githubusercontent.com/casehubio/parent/main/docs/repos/quarkmind.md)",
+      "Bash(curl -s https://raw.githubusercontent.com/casehubio/parent/main/docs/protocols/universal/layer-log.md)",
+      "Bash(mvn verify *)"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"
