@@ -178,16 +178,16 @@ Read these **before designing**, not after. The concern column tells you when ea
 The tutorial covers the *harness layer only* — `AgentOrchestrator`, `CaseFile`, plugin seams, and foundation integration. The SC2 emulation layer (`EmulatedGame`, `ReplayValidationHarness`, SC2 physics) is domain-specific and not part of the tutorial progression. An LLM or developer studying the harness pattern can follow the layers independent of any SC2 knowledge.
 
 ```
-Layer 1: naive game loop — direct plugin calls, no CaseHub blackboard | pending documentation
-Layer 2: + casehub-engine blackboard — AgentOrchestrator dispatches plugins via CaseFile per-tick shared state ✅ (active)
-Layer 3: + casehub-qhorus — typed COMMAND/RESPONSE between plugin agents | pending
-Layer 4: + casehub-ledger — audit trail for agent decisions; trust scoring on plugin outcomes | pending
-Layer 5: adaptive plugin selection — binding conditions in engine, not hardwired dispatch | pending
-Layer 6: trust routing — outcome-history-weighted plugin selection | pending
-Layer 7: comparison vs naive game AI and commercial frameworks | pending
+Layer 1: naive game loop — direct plugin calls, no CaseHub blackboard | documented in LAYER-LOG.md (conceptual baseline)
+Layer 2: + casehub-engine blackboard — AgentOrchestrator dispatches plugins via CaseFile per-tick shared state ✅ documented in LAYER-LOG.md
+Layer 3: + casehub-qhorus — typed COMMAND/RESPONSE between plugin agents | #155
+Layer 4: + casehub-ledger — audit trail for agent decisions; trust scoring on plugin outcomes | #156
+Layer 5: adaptive plugin selection — binding conditions in engine, not hardwired dispatch | #157
+Layer 6: trust routing — outcome-history-weighted plugin selection | #158
+Layer 7: comparison vs naive game AI and commercial frameworks | #159
 ```
 
-**Note on Layer 1:** The naive baseline pre-dates CaseHub integration and exists in git history. LAYER-LOG documentation is pending — write the entry when the harness documentation epic begins.
+**Note on Layer 1:** QuarkMind's first `AgentOrchestrator` already used `CaseEngine` (Layer 2). Layer 1 is documented in `LAYER-LOG.md` as a conceptual baseline describing the pattern Layer 2 replaced, not a deployed phase.
 
 **No `NaiveXxxService @DefaultBean` displacement:** QuarkMind uses a single-module Quarkus app (no `api/`/`app/` split). There are no downstream JPA consumers. Layers add capability by implementing new CDI beans with the `@CaseType` qualifier that displace prior implementations — this mirrors the AML displacement pattern but at the plugin level, not the service level.
 
