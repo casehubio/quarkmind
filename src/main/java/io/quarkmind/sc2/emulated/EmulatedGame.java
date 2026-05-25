@@ -235,7 +235,7 @@ public class EmulatedGame {
             case TrainIntent  t -> () -> handleTrain(t, friendly, ti.loop());
             case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), false, friendly);
             case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), true,  friendly);
-            case BuildIntent  b -> () -> handleBuild(b, friendly);
+            case BuildIntent  b -> () -> handleBuild(b, friendly, ti.loop());
             case BlinkIntent  b -> () -> executeBlink(b.unitTag(), friendly);
         };
         action.run();
@@ -246,7 +246,7 @@ public class EmulatedGame {
             case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), false, state);
             case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), true,  state);
             case TrainIntent  t -> () -> handleTrain(t, state);
-            case BuildIntent  b -> () -> handleBuild(b, state);
+            case BuildIntent  b -> () -> handleBuild(b, state, gameFrame * SC2Data.LOOPS_PER_TICK);
             case BlinkIntent  b -> () -> executeBlink(b.unitTag(), state);
         };
         action.run();
@@ -347,18 +347,20 @@ public class EmulatedGame {
         }
     }
 
-    private void handleBuild(BuildIntent b, PlayerState state) {
+    private void handleBuild(BuildIntent b, PlayerState state, long absLoop) {
         int mCost = SC2Data.mineralCost(b.buildingType());
         if ((int) state.minerals < mCost) {
             log.debugf("[EMULATED] Cannot build %s — insufficient minerals", b.buildingType());
             return;
         }
         state.minerals -= mCost;
-        String tag = "bldg-" + nextTag++;
-        BuildingType bt = b.buildingType();
+        final String tag = "bldg-" + nextTag++;
+        final BuildingType bt = b.buildingType();
         state.buildings.add(new Building(tag, bt, b.location(),
             SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), false));
-        long completesAt = gameFrame + SC2Data.buildTimeInTicks(bt);
+        final int loopOffset = (int)(absLoop % SC2Data.LOOPS_PER_TICK);
+        final long completesAt = gameFrame
+            + (loopOffset + SC2Data.buildTimeInLoops(bt)) / SC2Data.LOOPS_PER_TICK;
         state.pendingCompletions.add(new PlayerState.PendingCompletion(completesAt, () -> {
             markBuildingComplete(tag, state);
             state.supply += SC2Data.supplyBonus(bt);

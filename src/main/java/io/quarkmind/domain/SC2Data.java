@@ -122,60 +122,81 @@ public final class SC2Data {
         return trainTimeInLoops(type) / LOOPS_PER_TICK;
     }
 
-    public static int buildTimeInTicks(BuildingType type) {
+    /**
+     * Exact game-loop build time per building type.
+     *
+     * <p>Values are empirically calibrated from AI Arena replay tracker events
+     * (UnitInit → UnitDone loop diff) in {@code SC2BuildTimeCalibrationTest} where
+     * observations are available. Types marked "estimate" use {@code ticks × LOOPS_PER_TICK}
+     * and should be replaced with calibrated values when replay data is available.
+     *
+     * <p><b>Addon contamination risk:</b> {@link io.quarkmind.sc2.mock.Sc2ReplayShared#toBuildingType}
+     * maps add-on names (FactoryTechLab, BarracksTechLab, etc.) to their parent
+     * {@link BuildingType}. In replays where add-on completions dominate over structure completions,
+     * the calibrated modal value may reflect add-on build time (~400 loops) rather than the
+     * structure itself. Treat calibrated values for FACTORY, BARRACKS, and STARPORT with
+     * caution unless the observation count is large and the value is consistent with the SC2 wiki.
+     * See #154 for tracking.
+     */
+    public static int buildTimeInLoops(BuildingType type) {
         return switch (type) {
-            // Protoss
-            case PYLON             -> 18;
-            case GATEWAY           -> 47;
-            case CYBERNETICS_CORE  -> 37;
-            case ASSIMILATOR       -> 21;
-            case ROBOTICS_FACILITY -> 47;
-            case STARGATE          -> 44;
-            case FORGE             -> 30;
-            case TWILIGHT_COUNCIL  -> 37;
-            case PHOTON_CANNON     -> 25;
-            case SHIELD_BATTERY    -> 22;
-            case DARK_SHRINE       -> 71;
-            case TEMPLAR_ARCHIVES  -> 37;
-            case FLEET_BEACON      -> 37;
-            case ROBOTICS_BAY      -> 30;
-            // Terran
-            case COMMAND_CENTER    -> 60;
-            case ORBITAL_COMMAND   -> 25;
-            case PLANETARY_FORTRESS -> 30;
-            case SUPPLY_DEPOT      -> 18;
-            case BARRACKS          -> 40;
-            case ENGINEERING_BAY   -> 22;
-            case ARMORY            -> 40;
-            case MISSILE_TURRET    -> 16;
-            case BUNKER            -> 25;
-            case SENSOR_TOWER      -> 16;
-            case GHOST_ACADEMY     -> 25;
-            case FACTORY           -> 37;
-            case STARPORT          -> 25;
-            case FUSION_CORE       -> 40;
-            case REFINERY          -> 18;
-            // Zerg
-            case HATCHERY          -> 60;
-            case LAIR              -> 57;
-            case HIVE              -> 57;
-            case SPAWNING_POOL     -> 46;
-            case EVOLUTION_CHAMBER -> 25;
-            case ROACH_WARREN      -> 46;
-            case BANELING_NEST     -> 43;
-            case SPINE_CRAWLER     -> 36;
-            case SPORE_CRAWLER     -> 21;
-            case HYDRALISK_DEN     -> 29;
-            case LURKER_DEN        -> 57;
-            case INFESTATION_PIT   -> 46;
-            case SPIRE             -> 71;
-            case GREATER_SPIRE     -> 71;
-            case NYDUS_NETWORK     -> 21;
-            case NYDUS_CANAL       -> 11;
-            case ULTRALISK_CAVERN  -> 46;
-            case EXTRACTOR         -> 18;
-            default                -> 40;
+            // Protoss — empirical (SC2BuildTimeCalibrationTest, AI Arena replays)
+            case NEXUS             -> 1600; // empirical (71 obs, AI Arena replays)
+            case PYLON             -> 400;  // empirical (446 obs, AI Arena replays)
+            case GATEWAY           -> 1040; // empirical (189 obs, AI Arena replays)
+            case CYBERNETICS_CORE  -> 800;  // empirical (38 obs, AI Arena replays)
+            case ASSIMILATOR       -> 480;  // empirical (169 obs, AI Arena replays)
+            case ROBOTICS_FACILITY -> 1040; // empirical (26 obs, AI Arena replays)
+            case STARGATE          -> 960;  // empirical (31 obs, AI Arena replays)
+            case FORGE             -> 720;  // empirical (31 obs, AI Arena replays)
+            case TWILIGHT_COUNCIL  -> 800;  // empirical (21 obs, AI Arena replays)
+            case PHOTON_CANNON     -> 640;  // empirical (114 obs, AI Arena replays)
+            case SHIELD_BATTERY    -> 640;  // empirical (62 obs, AI Arena replays)
+            case DARK_SHRINE       -> 1562; // estimate: 71 × 22
+            case TEMPLAR_ARCHIVES  -> 814;  // estimate: 37 × 22
+            case FLEET_BEACON      -> 960;  // empirical (11 obs, AI Arena replays)
+            case ROBOTICS_BAY      -> 1040; // empirical (4 obs, AI Arena replays)
+            // Terran — estimates (ticks × LOOPS_PER_TICK)
+            case COMMAND_CENTER    -> 1600; // empirical (36 obs, AI Arena replays)
+            case ORBITAL_COMMAND   -> 550;  // estimate: 25 × 22
+            case PLANETARY_FORTRESS -> 660; // estimate: 30 × 22
+            case SUPPLY_DEPOT      -> 480;  // empirical (177 obs, AI Arena replays)
+            case BARRACKS          -> 1040; // empirical (45 obs, AI Arena replays)
+            case ENGINEERING_BAY   -> 560;  // empirical (12 obs, AI Arena replays)
+            case ARMORY            -> 1040; // empirical (18 obs, AI Arena replays)
+            case MISSILE_TURRET    -> 400;  // empirical (20 obs, AI Arena replays)
+            case BUNKER            -> 640;  // empirical (29 obs, AI Arena replays)
+            case SENSOR_TOWER      -> 352;  // estimate: 16 × 22
+            case GHOST_ACADEMY     -> 550;  // estimate: 25 × 22
+            case FACTORY           -> 960;  // estimate (~43s × 22.4); n=32 rejected (addon contamination via toBuildingType) — see #154
+            case STARPORT          -> 800;  // empirical (70 obs, AI Arena replays)
+            case FUSION_CORE       -> 1040; // empirical (4 obs, AI Arena replays)
+            case REFINERY          -> 480;  // empirical (80 obs, AI Arena replays)
+            // Zerg — estimates (ticks × LOOPS_PER_TICK)
+            case HATCHERY          -> 1600; // empirical (46 obs, AI Arena replays)
+            case LAIR              -> 1254; // estimate: 57 × 22
+            case HIVE              -> 1254; // estimate: 57 × 22
+            case SPAWNING_POOL     -> 1040; // empirical (12 obs, AI Arena replays)
+            case EVOLUTION_CHAMBER -> 560;  // empirical (17 obs, AI Arena replays)
+            case ROACH_WARREN      -> 880;  // empirical (7 obs, AI Arena replays)
+            case BANELING_NEST     -> 946;  // estimate: 43 × 22
+            case SPINE_CRAWLER     -> 800;  // empirical (47 obs, AI Arena replays)
+            case SPORE_CRAWLER     -> 480;  // empirical (15 obs, AI Arena replays)
+            case HYDRALISK_DEN     -> 640;  // empirical (3 obs, AI Arena replays)
+            case LURKER_DEN        -> 1254; // estimate: 57 × 22
+            case INFESTATION_PIT   -> 800;  // empirical (6 obs, AI Arena replays)
+            case SPIRE             -> 1600; // empirical (3 obs, AI Arena replays)
+            case GREATER_SPIRE     -> 1562; // estimate: 71 × 22
+            case NYDUS_NETWORK     -> 462;  // estimate: 21 × 22
+            case NYDUS_CANAL       -> 242;  // estimate: 11 × 22
+            case ULTRALISK_CAVERN  -> 1012; // estimate: 46 × 22
+            case EXTRACTOR         -> 480;  // empirical (67 obs, AI Arena replays)
+            default                -> 880;  // estimate: 40 × 22
         };
+    }
+
+    public static int buildTimeInTicks(BuildingType type) {
+        return buildTimeInLoops(type) / LOOPS_PER_TICK;
     }
 
     public static int supplyCost(UnitType type) {
