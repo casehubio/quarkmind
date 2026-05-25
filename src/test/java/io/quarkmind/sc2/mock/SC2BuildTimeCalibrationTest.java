@@ -103,7 +103,7 @@ class SC2BuildTimeCalibrationTest {
                 final BuildingType bt = Sc2ReplayShared.toBuildingType(unitName);
                 if (bt == BuildingType.UNKNOWN) continue;
 
-                final String tag = makeTag(event.getUnitTagIndex(), event.getUnitTagRecycle());
+                final String tag = Sc2ReplayShared.makeTag(event.getUnitTagIndex(), event.getUnitTagRecycle());
                 typeByTag.put(tag, bt);
                 initByTag.put(tag, rawEvent.getLoop());
 
@@ -112,7 +112,7 @@ class SC2BuildTimeCalibrationTest {
                 final Integer tagRecycle = rawEvent.get("unitTagRecycle");
                 if (tagIndex == null || tagRecycle == null) continue;
 
-                final String       tag      = makeTag(tagIndex, tagRecycle);
+                final String       tag      = Sc2ReplayShared.makeTag(tagIndex, tagRecycle);
                 final Integer      initLoop = initByTag.remove(tag);
                 final BuildingType bt       = typeByTag.remove(tag);
                 if (initLoop == null || bt == null) continue;
@@ -126,10 +126,6 @@ class SC2BuildTimeCalibrationTest {
     }
 
     // ---- Helpers ----
-
-    private static String makeTag(final int index, final int recycle) {
-        return "r-" + index + "-" + recycle;
-    }
 
     private static int modal(final List<Integer> values) {
         final Map<Integer, Integer> freq = new TreeMap<>();

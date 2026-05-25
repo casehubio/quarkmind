@@ -136,7 +136,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
     private void applyUnitBorn(Event rawEvent) {
         IBaseUnitEvent event = (IBaseUnitEvent) rawEvent;
         String unitName = event.getUnitTypeName().toString();
-        String tag      = makeTag(event.getUnitTagIndex(), event.getUnitTagRecycle());
+        String tag      = Sc2ReplayShared.makeTag(event.getUnitTagIndex(), event.getUnitTagRecycle());
         Integer ctrlId  = event.getControlPlayerId();
 
         if (ctrlId != null && ctrlId == 0) {
@@ -183,7 +183,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
         Integer tagIndex   = event.get("unitTagIndex");
         Integer tagRecycle = event.get("unitTagRecycle");
         if (tagIndex == null || tagRecycle == null) return;
-        String tag = makeTag(tagIndex, tagRecycle);
+        String tag = Sc2ReplayShared.makeTag(tagIndex, tagRecycle);
         removeUnitByTag(tag);
         removeEnemyByTag(tag);
         removeBuildingByTag(tag);
@@ -199,7 +199,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
         Integer ctrlId = event.getControlPlayerId();
         if (ctrlId == null) return;
         String       unitName = event.getUnitTypeName().toString();
-        String       tag      = makeTag(event.getUnitTagIndex(), event.getUnitTagRecycle());
+        String       tag      = Sc2ReplayShared.makeTag(event.getUnitTagIndex(), event.getUnitTagRecycle());
         BuildingType bt       = toBuildingType(unitName);
         Point2d      pos      = new Point2d(event.getXCoord(), event.getYCoord());
         if (ctrlId == watchedPlayerId) {
@@ -219,7 +219,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
         Integer tagIndex   = event.get("unitTagIndex");
         Integer tagRecycle = event.get("unitTagRecycle");
         if (tagIndex == null || tagRecycle == null) return;
-        String tag = makeTag(tagIndex, tagRecycle);
+        String tag = Sc2ReplayShared.makeTag(tagIndex, tagRecycle);
         Building pending = pendingBuildings.remove(tag);
         if (pending != null) {
             markBuildingComplete(tag);
@@ -270,10 +270,6 @@ public class ReplaySimulatedGame extends SimulatedGame {
     public boolean isComplete() { return eventCursor >= trackerEvents.length; }
 
     // --- Helpers ---
-
-    private static String makeTag(int index, int recycle) {
-        return "r-" + index + "-" + recycle;
-    }
 
     /** Thin delegate — preserves package-private accessibility for {@link ReplaySimulatedGameUnitTypeTest}. */
     static UnitType toUnitType(String name) { return Sc2ReplayShared.toUnitType(name); }

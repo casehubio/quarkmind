@@ -130,13 +130,12 @@ public final class SC2Data {
      * observations are available. Types marked "estimate" use {@code ticks × LOOPS_PER_TICK}
      * and should be replaced with calibrated values when replay data is available.
      *
-     * <p><b>Addon contamination risk:</b> {@link io.quarkmind.sc2.mock.Sc2ReplayShared#toBuildingType}
+     * <p><b>Addon contamination:</b> {@link io.quarkmind.sc2.mock.Sc2ReplayShared#toBuildingType}
      * maps add-on names (FactoryTechLab, BarracksTechLab, etc.) to their parent
-     * {@link BuildingType}. In replays where add-on completions dominate over structure completions,
-     * the calibrated modal value may reflect add-on build time (~400 loops) rather than the
-     * structure itself. Treat calibrated values for FACTORY, BARRACKS, and STARPORT with
-     * caution unless the observation count is large and the value is consistent with the SC2 wiki.
-     * See #154 for tracking.
+     * {@link BuildingType}. {@code SC2BuildTimeCalibrationTest} filters these via
+     * {@code ADDON_OR_MORPH_NAMES} before accumulating — values marked "addon-filtered"
+     * are calibrated from clean structure-only completions. Filtered at the test layer since #154;
+     * {@code toBuildingType} still maps addon names to parent types by design.
      */
     public static int buildTimeInLoops(BuildingType type) {
         return switch (type) {
@@ -161,15 +160,15 @@ public final class SC2Data {
             case ORBITAL_COMMAND   -> 550;  // estimate: 25 × 22
             case PLANETARY_FORTRESS -> 660; // estimate: 30 × 22
             case SUPPLY_DEPOT      -> 480;  // empirical (177 obs, AI Arena replays)
-            case BARRACKS          -> 1040; // empirical (45 obs, AI Arena replays)
+            case BARRACKS          -> 1040; // empirical (25 obs, AI Arena replays, addon-filtered)
             case ENGINEERING_BAY   -> 560;  // empirical (12 obs, AI Arena replays)
             case ARMORY            -> 1040; // empirical (18 obs, AI Arena replays)
             case MISSILE_TURRET    -> 400;  // empirical (20 obs, AI Arena replays)
             case BUNKER            -> 640;  // empirical (29 obs, AI Arena replays)
             case SENSOR_TOWER      -> 352;  // estimate: 16 × 22
             case GHOST_ACADEMY     -> 550;  // estimate: 25 × 22
-            case FACTORY           -> 960;  // estimate (~43s × 22.4); n=32 rejected (addon contamination via toBuildingType) — see #154
-            case STARPORT          -> 800;  // empirical (70 obs, AI Arena replays)
+            case FACTORY           -> 960;  // empirical (16 obs, AI Arena replays, addon-filtered)
+            case STARPORT          -> 800;  // empirical (39 obs, AI Arena replays, addon-filtered)
             case FUSION_CORE       -> 1040; // empirical (4 obs, AI Arena replays)
             case REFINERY          -> 480;  // empirical (80 obs, AI Arena replays)
             // Zerg — estimates (ticks × LOOPS_PER_TICK)

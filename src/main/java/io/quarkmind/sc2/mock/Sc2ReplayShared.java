@@ -228,4 +228,8 @@ final class Sc2ReplayShared {
             default                ->  400;
         };
     }
+
+    static String makeTag(int index, int recycle) {
+        return "r-" + index + "-" + recycle;
+    }
 }
