@@ -156,7 +156,10 @@
       "Bash(awk 'NR>6 { *)",
       "Bash(awk '{ *)",
       "mcp__intellij__search_in_files_by_text",
-      "mcp__intellij__read_file"
+      "mcp__intellij__read_file",
+      "Bash(GIT_SEQUENCE_EDITOR='cp /tmp/squash_rebase_todo.txt' git -C /Users/mdproctor/claude/casehub/quarkmind rebase -i 593706734fd588ef1846294eafb34dc3fc9e3fa8)",
+      "Bash(mvn test-compile *)",
+      "Bash(wait)"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"
