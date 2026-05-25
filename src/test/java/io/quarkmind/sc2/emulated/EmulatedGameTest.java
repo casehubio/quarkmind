@@ -1166,6 +1166,94 @@ class EmulatedGameTest {
         assertThat(woundedTookDamage).as("auto-attack must target lower-HP enemy first").isTrue();
     }
 
+    // ---- E11: Focus-fire via AttackIntent convergence ----
+
+    // Two Stalkers, two stationary Zealots on opposite sides:
+    //   S0 at (4,10) — 3 tiles left of ZA (7,10):  in range ✓, ZB out of range ✗
+    //   S1 at (16,10) — 4 tiles left of ZB (20,10): in range ✓, ZA out of range ✗
+    //
+    // Focus-fire (AttackIntents both toward ZA every tick):
+    //   Ticks 1-2: S1 fires at ZB (ZB dist=4.5, then 5.0 exactly at boundary); S0 fires at ZA.
+    //              Tick 3: S1 at (14.5,10), ZB dist=5.5 > 5 → exits range.
+    //   Ticks 3-7: S1 between ranges — no in-range target; S0 keeps hitting ZA.
+    //   Tick 8+:   S1 within 5 tiles of ZA — both Stalkers fire at ZA. ZA dies ~tick 10.
+    //
+    // Auto-engage baseline (no intents):
+    //   S0 fires at ZA (nearest in range), S1 fires at ZB (nearest in range).
+    //   ZA only receives S0's damage — still alive at tick 10.
+    //
+    // The test verifies convergence: AttackIntents move S1 toward ZA so that it eventually
+    // becomes the nearest in-range target, killing ZA faster than spread fire would.
+
+    // Two-part result: ticks until ZA dies + whether ZB survived
+    record FocusResult(int ticks, boolean zealotBAlive) {}
+
+    @Test
+    void focusFire_convergesOnTarget_killsFasterThanSpreadFire() {
+        FocusResult focus = runFocusFireScenario();
+        boolean zealotAAliveInAutoEngage = runAutoEngageScenario(focus.ticks());
+
+        assertThat(focus.zealotBAlive())
+            .as("ZealotB should still be alive when ZealotA dies (focus fire, not spread fire)")
+            .isTrue();
+        assertThat(zealotAAliveInAutoEngage)
+            .as("ZealotA should still be alive after %d ticks of spread fire (auto-engage), " +
+                "proving focus fire killed it faster", focus.ticks())
+            .isTrue();
+    }
+
+    private FocusResult runFocusFireScenario() {
+        game.reset();
+        String s0 = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(4, 10));
+        String s1 = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(16, 10));
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(7, 10));
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(20, 10));
+        List<Unit> initial = game.snapshot().enemyUnits();
+        String zealotATag = initial.get(0).tag();
+        String zealotBTag = initial.get(1).tag();
+        // Freeze enemies in place — targets set to own positions to prevent movement.
+        // moveEnemyUnits reads unitTargets but does not remove on arrival, so the
+        // entry persists across all ticks and stepToward returns the current position unchanged.
+        game.enemy.unitTargets.put(zealotATag, new Point2d(7, 10));
+        game.enemy.unitTargets.put(zealotBTag, new Point2d(20, 10));
+
+        Point2d zealotAPos = new Point2d(7, 10);
+        int ticks = 0;
+        while (ticks < 25) {
+            // DroolsTacticsTask pattern: re-issue AttackIntents every tick toward the focus target
+            game.applyIntent(new AttackIntent(s0, zealotAPos));
+            game.applyIntent(new AttackIntent(s1, zealotAPos));
+            game.tick();
+            ticks++;
+            boolean zealotADead = game.snapshot().enemyUnits().stream()
+                .noneMatch(u -> u.tag().equals(zealotATag));
+            if (zealotADead) break;
+        }
+
+        boolean zealotBAlive = game.snapshot().enemyUnits().stream()
+            .anyMatch(u -> u.tag().equals(zealotBTag));
+        return new FocusResult(ticks, zealotBAlive);
+    }
+
+    private boolean runAutoEngageScenario(int ticks) {
+        game.reset();
+        game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(4, 10));
+        game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(16, 10));
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(7, 10));
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(20, 10));
+        List<Unit> initial = game.snapshot().enemyUnits();
+        String zealotATag = initial.get(0).tag();
+        String zealotBTag = initial.get(1).tag();
+        game.enemy.unitTargets.put(zealotATag, new Point2d(7, 10));
+        game.enemy.unitTargets.put(zealotBTag, new Point2d(20, 10));
+
+        // No intents: auto-engage — S0 fires at ZA (nearest), S1 fires at ZB (nearest)
+        for (int i = 0; i < ticks; i++) game.tick();
+
+        return game.snapshot().enemyUnits().stream()
+            .anyMatch(u -> u.tag().equals(zealotATag));
+    }
+
     // ---- E12 blink tests ----
 
     @Test
