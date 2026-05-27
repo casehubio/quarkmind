@@ -29,6 +29,8 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
     private final String          replayName;
     private final String          matchup;
     private final int             watchedPlayerId;
+    private final int             watchedUserId;   // for gameEvents filtering (ToonPlayerDescMap.userID)
+    private final List<JsonNode>  gameEvents;       // raw game events from JSON
     private final List<JsonNode>  events;
     private final Map<String, Building> pendingBuildings = new HashMap<>();
 
@@ -57,12 +59,27 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
             }
         }
 
+        int protossUserId = 0;
+        for (JsonNode player : playerMap) {
+            if (player.get("playerID").asInt() == protossId) {
+                protossUserId = player.get("userID").asInt();
+                break;
+            }
+        }
         this.watchedPlayerId = protossId;
+        this.watchedUserId = protossUserId;
         this.matchup         = "Pv" + raceInitial(enemyRace);
 
         List<JsonNode> list = new ArrayList<>();
         for (JsonNode e : root.get("trackerEvents")) list.add(e);
         this.events = Collections.unmodifiableList(list);
+
+        List<JsonNode> gameEventList = new ArrayList<>();
+        JsonNode geNode = root.get("gameEvents");
+        if (geNode != null) {
+            for (JsonNode e : geNode) gameEventList.add(e);
+        }
+        this.gameEvents = Collections.unmodifiableList(gameEventList);
 
         reset();
     }
@@ -234,4 +251,8 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
     private static BuildingType toBuildingType(String name)        { return Sc2ReplayShared.toBuildingType(name); }
     private static int defaultUnitHealth(UnitType type)            { return Sc2ReplayShared.defaultUnitHealth(type); }
     private static int defaultBuildingHealth(BuildingType type)    { return Sc2ReplayShared.defaultBuildingHealth(type); }
+
+    // Package-private — used by IEM10CommandExtractor
+    int watchedUserId() { return watchedUserId; }
+    List<JsonNode> gameEvents() { return gameEvents; }
 }
