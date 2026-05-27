@@ -1,0 +1,152 @@
+package io.quarkmind.sc2.mock;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import io.quarkmind.domain.UnitType;
+import io.quarkmind.sc2.intent.TimedIntent;
+import io.quarkmind.sc2.intent.TrainIntent;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+// Note: tag format "j-index-recycle" mirrors IEM10JsonSimulatedGame.makeTag (package-private)
+// Do NOT use Sc2ReplayShared.makeTag here — that produces "r-" prefix for .SC2Replay binary parser
+
+/**
+ * Extracts training intents from IEM10 JSON gameEvents for any player.
+ *
+ * Uses IEM10 2016 build (~39948) abilLink constants — different from AI Arena
+ * 2023+ build (~67188). Both abilLink numbers and abilCmdIndex values changed
+ * between patches. See IEM10AbilityDiscoveryTest for derivation evidence.
+ *
+ * Selection tracking mirrors AbilityMapping: the first element of currentSelection
+ * when a Cmd fires is the building tag for the resulting TrainIntent. Building tags
+ * are "j-index-recycle" format, matching IEM10JsonSimulatedGame tracker event tags.
+ */
+public class IEM10CommandExtractor {
+
+    // IEM10 2016 build ~39948 — DO NOT use for AI Arena replays
+    private static final int NEXUS_2016          = 167;
+    private static final int GATEWAY_2016        = 164;
+    private static final int ROBOTICS_2016       = 166;
+    private static final int STARGATE_2016       = 165;
+    private static final int LARVA_2016          = 185;
+    private static final int HATCHERY_2016       = 235;
+    private static final int COMMAND_CENTER_2016 = 147;
+    private static final int BARRACKS_2016       = 151;
+
+    private IEM10CommandExtractor() {}
+
+    /** Extracts training intents for the watched (Protoss) player. */
+    public static List<TimedIntent> extract(IEM10JsonSimulatedGame game) {
+        return extract(game, game.watchedUserId());
+    }
+
+    /**
+     * Extracts training intents for any player identified by their gameEvents userId.
+     * The userId comes from ToonPlayerDescMap.userID — NOT playerID - 1.
+     */
+    public static List<TimedIntent> extract(IEM10JsonSimulatedGame game, int userId) {
+        List<String> currentSelection = new ArrayList<>();
+        List<TimedIntent> intents     = new ArrayList<>();
+
+        for (JsonNode event : game.gameEvents()) {
+            String evtType = event.path("evtTypeName").asText();
+            int    uid     = event.path("userid").path("userId").asInt(-1);
+            if (uid != userId) continue;
+
+            if ("SelectionDelta".equals(evtType)) {
+                applySelectionDelta(event, currentSelection);
+            } else if ("Cmd".equals(evtType)) {
+                if (!isTrainingCommand(event)) continue;
+                if (currentSelection.isEmpty()) continue;
+                JsonNode abil = event.path("abil");
+                if (abil.isMissingNode()) continue;
+                int  abilLink     = abil.path("abilLink").asInt(-1);
+                int  abilCmdIndex = abil.path("abilCmdIndex").asInt(0);
+                long loop         = event.path("loop").asLong();
+                if (abilLink < 0) continue;
+
+                UnitType unitType = dispatch(abilLink, abilCmdIndex);
+                if (unitType == null) continue;
+
+                String buildingTag = currentSelection.get(0);
+                intents.add(new TimedIntent(loop, new TrainIntent(buildingTag, unitType)));
+            }
+        }
+
+        return Collections.unmodifiableList(intents);
+    }
+
+    private static void applySelectionDelta(JsonNode event, List<String> selection) {
+        JsonNode delta      = event.path("delta");
+        JsonNode removeMask = delta.path("removeMask");
+
+        if (removeMask.has("Mask")) {
+            // Bit i set → remove selection[i]. Protocol encodes mask as 32-bit int,
+            // so this correctly handles up to 32 slots (the protocol's ceiling for this variant).
+            int mask = removeMask.get("Mask").asInt();
+            List<String> kept = new ArrayList<>();
+            for (int i = 0; i < selection.size(); i++) {
+                if ((mask & (1 << i)) == 0) kept.add(selection.get(i));
+            }
+            selection.clear();
+            selection.addAll(kept);
+        } else if (removeMask.has("SweepToEnd")) {
+            int from = removeMask.get("SweepToEnd").asInt();
+            while (selection.size() > from) selection.remove(selection.size() - 1);
+        } else if (removeMask.has("OneIndice")) {
+            int idx = removeMask.get("OneIndice").asInt();
+            if (idx < selection.size()) selection.remove(idx);
+        }
+        // "None" → nothing removed from current selection; addUnitTags are appended below
+
+        JsonNode addTags = delta.path("addUnitTags");
+        for (JsonNode tagNode : addTags) {
+            long packed  = tagNode.asLong();
+            int  index   = (int) (packed >> 18);
+            int  recycle = (int) (packed & 0x3FFFF);
+            String tag   = "j-" + index + "-" + recycle;  // IEM10 tracker tag format (see IEM10JsonSimulatedGame.makeTag)
+            if (!selection.contains(tag)) selection.add(tag);
+        }
+    }
+
+    /** Training commands have data: {None: null} — no target point or target unit. */
+    private static boolean isTrainingCommand(JsonNode event) {
+        JsonNode data = event.path("data");
+        if (data.isMissingNode()) return true;
+        return data.has("None") && data.size() == 1;
+    }
+
+    private static UnitType dispatch(int abilLink, int abilCmdIndex) {
+        return switch (abilLink) {
+            case NEXUS_2016    -> UnitType.PROBE;
+            case GATEWAY_2016  -> switch (abilCmdIndex) {
+                case 1  -> UnitType.STALKER;
+                case 6  -> UnitType.ADEPT;
+                default -> null;
+            };
+            case ROBOTICS_2016 -> switch (abilCmdIndex) {
+                case 1  -> UnitType.OBSERVER;
+                case 3  -> UnitType.IMMORTAL;
+                case 18 -> UnitType.DISRUPTOR;
+                default -> null;
+            };
+            case STARGATE_2016 -> switch (abilCmdIndex) {
+                case 0  -> UnitType.PHOENIX;
+                case 9  -> UnitType.TEMPEST;
+                default -> null;
+            };
+            case LARVA_2016    -> switch (abilCmdIndex) {
+                case 0  -> UnitType.DRONE;
+                case 1  -> UnitType.ZERGLING;
+                case 9  -> UnitType.ROACH;
+                default -> null;
+            };
+            case HATCHERY_2016       -> abilCmdIndex == 0 ? UnitType.QUEEN  : null;
+            case COMMAND_CENTER_2016 -> abilCmdIndex == 0 ? UnitType.SCV    : null;
+            case BARRACKS_2016       -> abilCmdIndex == 0 ? UnitType.MARINE : null;
+            default -> null;
+        };
+    }
+}

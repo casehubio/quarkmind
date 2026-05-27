@@ -28,6 +28,7 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
 
     private final String          replayName;
     private final String          matchup;
+    private final boolean         hasProtossPlayer;
     private final int             watchedPlayerId;
     private final int             watchedUserId;   // for gameEvents filtering (ToonPlayerDescMap.userID)
     private final List<JsonNode>  gameEvents;       // raw game events from JSON
@@ -44,11 +45,13 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
 
         JsonNode playerMap = root.get("ToonPlayerDescMap");
         int protossId  = 1;
+        boolean foundProtoss = false;
         String enemyRace = "Prot";
 
         for (JsonNode player : playerMap) {
             if (player.get("race").asText().equals("Prot")) {
                 protossId = player.get("playerID").asInt();
+                foundProtoss = true;
                 break;
             }
         }
@@ -66,9 +69,10 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
                 break;
             }
         }
-        this.watchedPlayerId = protossId;
-        this.watchedUserId = protossUserId;
-        this.matchup         = "Pv" + raceInitial(enemyRace);
+        this.watchedPlayerId  = protossId;
+        this.watchedUserId    = protossUserId;
+        this.hasProtossPlayer = foundProtoss;
+        this.matchup          = "Pv" + raceInitial(enemyRace);
 
         List<JsonNode> list = new ArrayList<>();
         for (JsonNode e : root.get("trackerEvents")) list.add(e);
@@ -252,7 +256,8 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
     private static int defaultUnitHealth(UnitType type)            { return Sc2ReplayShared.defaultUnitHealth(type); }
     private static int defaultBuildingHealth(BuildingType type)    { return Sc2ReplayShared.defaultBuildingHealth(type); }
 
-    // Package-private — used by IEM10CommandExtractor
+    // Package-private — used by IEM10CommandExtractor and tests
+    boolean hasProtossPlayer() { return hasProtossPlayer; }
     int watchedUserId() { return watchedUserId; }
     List<JsonNode> gameEvents() { return gameEvents; }
 }
