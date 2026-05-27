@@ -6,6 +6,7 @@ import io.quarkmind.domain.SC2Data;
 import io.quarkmind.sc2.emulated.EmulatedGame;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.mock.ReplaySimulatedGame;
+import io.quarkmind.sc2.mock.SimulatedGame;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,44 +34,41 @@ public final class ReplayValidationHarness {
     private ReplayValidationHarness() {}
 
     /**
-     * Runs the validation harness.
+     * Runs the validation harness against any SimulatedGame.
      *
-     * @param replayPath  path to a .SC2Replay file
-     * @param playerId    1-indexed player to validate
-     * @param tickLimit   maximum ticks to run (use Integer.MAX_VALUE for full replay)
+     * @param groundTruth ground-truth game state (e.g., ReplaySimulatedGame or IEM10JsonSimulatedGame)
+     * @param intents     list of timed intents to apply
+     * @param tickLimit   maximum ticks to run
      * @return divergence report comparing emulated vs ground-truth state at each tick
      */
-    public static DivergenceReport run(Path replayPath, int playerId, int tickLimit) {
-        ReplaySimulatedGame replayGame = new ReplaySimulatedGame(replayPath, playerId);
-        EmulatedGame        emulated   = new EmulatedGame();
+    public static DivergenceReport run(SimulatedGame groundTruth, List<TimedIntent> intents, int tickLimit) {
+        EmulatedGame emulated = new EmulatedGame();
 
-        replayGame.reset();
+        groundTruth.reset();
         emulated.reset();
 
-        assertInitialStateMatch(replayGame.snapshot(), emulated.snapshot(), replayPath, playerId);
+        assertInitialStateMatch(groundTruth.snapshot(), emulated.snapshot(), groundTruth.getClass().getSimpleName());
 
-        ReplayCommandStream commands = ReplayCommandExtractor.extract(replayPath, playerId);
-        List<TimedIntent>   intents  = commands.intents();
-        int                 cursor   = 0;
+        int cursor = 0;
 
         // Tracks which building tags have already been injected into EmulatedGame
         Set<String> injectedTags = new HashSet<>();
 
         List<DivergenceReport.TickSnapshot> snapshots = new ArrayList<>(Math.min(tickLimit, 10000));
 
-        for (int tick = 0; tick < tickLimit && !replayGame.isComplete(); tick++) {
+        for (int tick = 0; tick < tickLimit && !groundTruth.isComplete(); tick++) {
             long windowEnd = (long) (tick + 1) * SC2Data.LOOPS_PER_TICK;
 
             // Sync probe count from current GT so the saturation model produces realistic
             // per-outer-tick income. SC2Data.mineralIncomePerTick handles the per-tick
             // rate internally; the raw probe count is the correct input.
-            GameState gtBefore = replayGame.snapshot();
+            GameState gtBefore = groundTruth.snapshot();
             emulated.setMiningProbesPerBase(countProbesPerBase(gtBefore));
 
             emulated.tick();
-            replayGame.tick();
+            groundTruth.tick();
 
-            GameState gt = replayGame.snapshot();
+            GameState gt = groundTruth.snapshot();
 
             // Sync buildings from post-tick GT into EmulatedGame.
             // Buildings that became complete this tick are also updated.
@@ -109,6 +107,20 @@ public final class ReplayValidationHarness {
     }
 
     /**
+     * Runs the validation harness against a replay file.
+     *
+     * @param replayPath  path to a .SC2Replay file
+     * @param playerId    1-indexed player to validate
+     * @param tickLimit   maximum ticks to run (use Integer.MAX_VALUE for full replay)
+     * @return divergence report comparing emulated vs ground-truth state at each tick
+     */
+    public static DivergenceReport run(Path replayPath, int playerId, int tickLimit) {
+        ReplaySimulatedGame game    = new ReplaySimulatedGame(replayPath, playerId);
+        List<TimedIntent>   intents = ReplayCommandExtractor.extract(replayPath, playerId).intents();
+        return run(game, intents, tickLimit);
+    }
+
+    /**
      * Syncs buildings from the replay ground truth into EmulatedGame.
      * Injects any building whose tag has not yet been seen.
      * Marks buildings complete when ground truth says they are finished.
@@ -138,12 +150,11 @@ public final class ReplayValidationHarness {
      * Minerals are excluded: the first PlayerStats event arrives at loop 22, so the replay
      * starts with 0 minerals while EmulatedGame seeds 50.
      */
-    private static void assertInitialStateMatch(GameState gt, GameState em,
-                                                 Path replayPath, int playerId) {
+    private static void assertInitialStateMatch(GameState gt, GameState em, String label) {
         if (gt.myUnits().size() != em.myUnits().size()) {
             throw new IllegalStateException(String.format(
-                "Initial unit count mismatch for %s player %d — replay: %d, emulated: %d",
-                replayPath.getFileName(), playerId, gt.myUnits().size(), em.myUnits().size()));
+                "Initial unit count mismatch for %s — replay: %d, emulated: %d",
+                label, gt.myUnits().size(), em.myUnits().size()));
         }
     }
 }

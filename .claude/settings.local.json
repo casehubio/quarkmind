@@ -162,7 +162,11 @@
       "Bash(wait)",
       "Bash(curl -s https://raw.githubusercontent.com/casehubio/parent/main/docs/repos/quarkmind.md)",
       "Bash(curl -s https://raw.githubusercontent.com/casehubio/parent/main/docs/protocols/universal/layer-log.md)",
-      "Bash(mvn verify *)"
+      "Bash(mvn verify *)",
+      "mcp__intellij__get_all_open_file_paths",
+      "Bash(mvn -Dtest=IEM10AbilityDiscoveryTest test -DincludedGroups=diagnostic)",
+      "Bash(mvn -Dtest=IEM10AbilityDiscoveryTest -DincludedGroups=diagnostic -Dmaven.surefire.debug test)",
+      "Bash(mvn *)"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"

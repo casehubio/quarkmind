@@ -1,8 +1,11 @@
 package io.quarkmind.sc2.replay;
 
 import io.quarkmind.domain.*;
+import io.quarkmind.sc2.intent.TimedIntent;
+import io.quarkmind.sc2.mock.ReplaySimulatedGame;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,6 +62,16 @@ class ReplayValidationHarnessTest {
             List.of(nexus));
 
         assertThat(ReplayValidationHarness.countProbesPerBase(state)).containsExactly(1);
+    }
+
+    @Test
+    void generalFormAcceptsSimulatedGameArgument() {
+        Path replayPath = Path.of("replays/aiarena_protoss/Nothing_4720936.SC2Replay");
+        var game    = new ReplaySimulatedGame(replayPath, 1);
+        var intents = ReplayCommandExtractor.extract(replayPath, 1).intents();
+        DivergenceReport report = ReplayValidationHarness.run(game, intents, 183);
+        assertThat(report).isNotNull();
+        assertThat(report.ticks()).hasSize(183);
     }
 
     private static Unit probe(String tag, float x, float y) {

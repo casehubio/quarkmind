@@ -102,6 +102,15 @@ public class SimulatedGame {
             List.copyOf(geysers), List.copyOf(mineralPatches), gameFrame.get());
     }
 
+    /**
+     * Returns true if this game has reached completion.
+     * Default: base SimulatedGame never completes (always returns false).
+     * Subclasses override for replay or data-driven games.
+     */
+    public boolean isComplete() {
+        return false;
+    }
+
     /** Test helper: adds a unit to the staging area returned by snapshot(). */
     public synchronized void addStagedUnitForTesting(UnitType type, Point2d position) {
         testStagingArea.add(new Unit("staging-" + nextTag++, type, position,
