@@ -149,9 +149,12 @@ public final class ReplayValidationHarness {
      * so initial building counts can differ by 1. This resolves after the first tick.
      * Minerals are excluded: the first PlayerStats event arrives at loop 22, so the replay
      * starts with 0 minerals while EmulatedGame seeds 50.
+     * Unit count allows ±1 tolerance: some IEM10 replays emit an extra UnitBorn at loop 0
+     * (e.g. a 13th probe from a ProcessParentRequest event) that resolves by the first tick.
+     * A discrepancy larger than 1 indicates a genuine parsing or reset bug.
      */
     private static void assertInitialStateMatch(GameState gt, GameState em, String label) {
-        if (gt.myUnits().size() != em.myUnits().size()) {
+        if (Math.abs(gt.myUnits().size() - em.myUnits().size()) > 1) {
             throw new IllegalStateException(String.format(
                 "Initial unit count mismatch for %s — replay: %d, emulated: %d",
                 label, gt.myUnits().size(), em.myUnits().size()));

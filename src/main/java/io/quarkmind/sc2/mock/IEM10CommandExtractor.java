@@ -118,6 +118,10 @@ public class IEM10CommandExtractor {
         return data.has("None") && data.size() == 1;
     }
 
+    // Units not mapped: Zealot and WarpPrism were not resolved in the narrow-window
+    // correlation (IEM10AbilityDiscoveryTest) — signal too weak vs Probe noise.
+    // Terran Factory/Starport units beyond SCV/Marine similarly unresolved.
+    // See issue #160 for follow-up.
     private static UnitType dispatch(int abilLink, int abilCmdIndex) {
         return switch (abilLink) {
             case NEXUS_2016    -> UnitType.PROBE;
