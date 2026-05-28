@@ -287,7 +287,7 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 
 **Unit tests** (no Quarkus, fast):
 - Instantiate classes directly via `new` — no CDI
-- Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `BasicStrategyTaskTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`, `AbilityDiscoveryTest`, `AbilityMappingTest`, `ReplayCommandExtractorTest`, `ReplayValidationTest`, `ReplayValidationHarnessTest`, `ReplaySimulatedGameMovementTest`, `SC2DataTest`, `SC2TrainTimeCalibrationTest`
+- Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `IEM10CommandExtractorTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `BasicStrategyTaskTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`, `AbilityDiscoveryTest`, `AbilityMappingTest`, `ReplayCommandExtractorTest`, `ReplayValidationTest`, `ReplayValidationHarnessTest`, `ReplaySimulatedGameMovementTest`, `SC2DataTest`, `SC2TrainTimeCalibrationTest`
 - Package-private static methods on CDI beans are tested from the same package without CDI — make them `static` (not `private`) to enable this.
 
 **Integration tests** (`@QuarkusTest`, full CDI context):
@@ -300,7 +300,7 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 - **For tests that click specific sprites:** get the unit/building tag from `simulatedGame.snapshot()` *before* calling `engine.observe()`, then wait with `unitHasTag(tag)` / `buildingHasTag(tag)`.
 - Install Chromium once: `mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chromium"`
 - Run mock-mode visual tests: `mvn test -Pplaywright`
-- Excluded from default surefire run via `excludedGroups=benchmark,browser,report`
+- Excluded from default surefire run via `excludedGroups=benchmark,browser,report,diagnostic`
 
 **Replay visual pixel tests** (`ReplayVisualizerIT`, `@Tag("browser")`):
 - Run with: `mvn test -Pplaywright-replay`
@@ -310,8 +310,13 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 - `GameStateWebSocketTest` — connects via `java.net.http.WebSocket`, calls `engine.observe()` directly
 
 **Replay divergence report** (`@Tag("report")`, excluded from default surefire run):
-- `ReplayValidationReportTest` — runs `ReplayValidationHarness` to completion and prints full economic divergence report to stdout
+- `ReplayValidationReportTest` — runs `ReplayValidationHarness` against the default AI Arena binary replay; prints full economic divergence report to stdout
+- `IEM10MultiGameValidationTest` — runs `ReplayValidationHarness` across all 30 IEM10 JSON games; prints per-matchup aggregate divergence stats (PvT/PvZ/PvP)
 - Run with: `mvn test -Preport`
+
+**Diagnostic tests** (`@Tag("diagnostic")`, excluded from default surefire run):
+- `IEM10AbilityDiscoveryTest` — prints abilLink→unit correlation table across all 30 IEM10 games using narrow-window modal matching; documents how IEM10 2016 constants in `IEM10CommandExtractor` were derived
+- Run with: `mvn test -Pdiagnostic`
 
 **Never use `@QuarkusTest` for tests that can be plain JUnit** — boot cost is significant.
 
