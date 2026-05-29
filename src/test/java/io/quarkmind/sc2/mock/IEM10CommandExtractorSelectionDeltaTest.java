@@ -3,10 +3,8 @@ package io.quarkmind.sc2.mock;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.quarkmind.sc2.SelectionState;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,71 +34,71 @@ class IEM10CommandExtractorSelectionDeltaTest {
 
     @Test
     void maskVariantRemovesCorrectBitPositions() {
-        List<String> sel = new ArrayList<>(List.of("a", "b", "c", "d"));
+        SelectionState sel = SelectionState.of("a", "b", "c", "d");
         IEM10CommandExtractor.applySelectionDelta(event("Mask", 5), sel);
-        assertThat(sel).containsExactly("b", "d");
+        assertThat(sel.snapshot()).containsExactly("b", "d");
     }
 
     @Test
     void maskVariantWithZeroMaskRemovesNothing() {
-        List<String> sel = new ArrayList<>(List.of("a", "b"));
+        SelectionState sel = SelectionState.of("a", "b");
         IEM10CommandExtractor.applySelectionDelta(event("Mask", 0), sel);
-        assertThat(sel).containsExactly("a", "b");
+        assertThat(sel.snapshot()).containsExactly("a", "b");
     }
 
     @Test
     void sweepToEndTruncatesFromIndex() {
-        List<String> sel = new ArrayList<>(List.of("a", "b", "c"));
+        SelectionState sel = SelectionState.of("a", "b", "c");
         IEM10CommandExtractor.applySelectionDelta(event("SweepToEnd", 1), sel);
-        assertThat(sel).containsExactly("a");
+        assertThat(sel.snapshot()).containsExactly("a");
     }
 
     @Test
     void sweepToEndZeroRemovesAll() {
-        List<String> sel = new ArrayList<>(List.of("a", "b"));
+        SelectionState sel = SelectionState.of("a", "b");
         IEM10CommandExtractor.applySelectionDelta(event("SweepToEnd", 0), sel);
-        assertThat(sel).isEmpty();
+        assertThat(sel.snapshot()).isEmpty();
     }
 
     @Test
     void oneIndiceRemovesSingleItem() {
-        List<String> sel = new ArrayList<>(List.of("a", "b", "c"));
+        SelectionState sel = SelectionState.of("a", "b", "c");
         IEM10CommandExtractor.applySelectionDelta(event("OneIndice", 1), sel);
-        assertThat(sel).containsExactly("a", "c");
+        assertThat(sel.snapshot()).containsExactly("a", "c");
     }
 
     @Test
     void oneIndiceOutOfBoundsIsNoOp() {
-        List<String> sel = new ArrayList<>(List.of("a", "b"));
+        SelectionState sel = SelectionState.of("a", "b");
         IEM10CommandExtractor.applySelectionDelta(event("OneIndice", 5), sel);
-        assertThat(sel).containsExactly("a", "b");
+        assertThat(sel.snapshot()).containsExactly("a", "b");
     }
 
     @Test
     void noneVariantPreservesExistingSelection() {
-        List<String> sel = new ArrayList<>(List.of("a", "b"));
+        SelectionState sel = SelectionState.of("a", "b");
         IEM10CommandExtractor.applySelectionDelta(event("None", null), sel);
-        assertThat(sel).containsExactly("a", "b");
+        assertThat(sel.snapshot()).containsExactly("a", "b");
     }
 
     @Test
     void addUnitTagsDecodesPackedTag() {
-        List<String> sel = new ArrayList<>();
+        SelectionState sel = new SelectionState();
         IEM10CommandExtractor.applySelectionDelta(event("None", null, TAG_3_7), sel);
-        assertThat(sel).containsExactly("j-3-7");
+        assertThat(sel.snapshot()).containsExactly("j-3-7");
     }
 
     @Test
     void noneVariantAppendsTagsToExisting() {
-        List<String> sel = new ArrayList<>(List.of("a"));
+        SelectionState sel = SelectionState.of("a");
         IEM10CommandExtractor.applySelectionDelta(event("None", null, TAG_3_7), sel);
-        assertThat(sel).containsExactly("a", "j-3-7");
+        assertThat(sel.snapshot()).containsExactly("a", "j-3-7");
     }
 
     @Test
     void duplicateTagNotAdded() {
-        List<String> sel = new ArrayList<>();
+        SelectionState sel = new SelectionState();
         IEM10CommandExtractor.applySelectionDelta(event("None", null, TAG_3_7, TAG_3_7), sel);
-        assertThat(sel).hasSize(1).containsExactly("j-3-7");
+        assertThat(sel.snapshot()).hasSize(1).containsExactly("j-3-7");
     }
 }

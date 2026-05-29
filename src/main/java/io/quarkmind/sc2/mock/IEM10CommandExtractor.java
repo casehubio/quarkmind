@@ -2,12 +2,13 @@ package io.quarkmind.sc2.mock;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.sc2.SelectionState;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.List;  // For return type
 
 // Note: tag format "j-index-recycle" mirrors IEM10JsonSimulatedGame.makeTag (package-private)
 // Do NOT use Sc2ReplayShared.makeTag here — that produces "r-" prefix for .SC2Replay binary parser
@@ -19,9 +20,9 @@ import java.util.List;
  * 2023+ build (~67188). Both abilLink numbers and abilCmdIndex values changed
  * between patches. See IEM10AbilityDiscoveryTest for derivation evidence.
  *
- * Selection tracking mirrors AbilityMapping: the first element of currentSelection
- * when a Cmd fires is the building tag for the resulting TrainIntent. Building tags
- * are "j-index-recycle" format, matching IEM10JsonSimulatedGame tracker event tags.
+ * Selection tracking delegates to SelectionState. The first element of the current
+ * selection when a Cmd fires is the building tag for the resulting TrainIntent.
+ * Building tags are "j-index-recycle" format, matching IEM10JsonSimulatedGame tracker event tags.
  */
 public class IEM10CommandExtractor {
 
@@ -47,8 +48,8 @@ public class IEM10CommandExtractor {
      * The userId comes from ToonPlayerDescMap.userID — NOT playerID - 1.
      */
     public static List<TimedIntent> extract(IEM10JsonSimulatedGame game, int userId) {
-        List<String> currentSelection = new ArrayList<>();
-        List<TimedIntent> intents     = new ArrayList<>();
+        SelectionState currentSelection = new SelectionState();
+        List<TimedIntent> intents       = new ArrayList<>();
 
         for (JsonNode event : game.gameEvents()) {
             String evtType = event.path("evtTypeName").asText();
@@ -70,7 +71,7 @@ public class IEM10CommandExtractor {
                 UnitType unitType = dispatch(abilLink, abilCmdIndex);
                 if (unitType == null) continue;
 
-                String buildingTag = currentSelection.get(0);
+                String buildingTag = currentSelection.first();
                 intents.add(new TimedIntent(loop, new TrainIntent(buildingTag, unitType)));
             }
         }
@@ -78,36 +79,28 @@ public class IEM10CommandExtractor {
         return Collections.unmodifiableList(intents);
     }
 
-    static void applySelectionDelta(JsonNode event, List<String> selection) {
+    static void applySelectionDelta(JsonNode event, SelectionState selection) {
         JsonNode delta      = event.path("delta");
         JsonNode removeMask = delta.path("removeMask");
 
         if (removeMask.has("Mask")) {
-            // Bit i set → remove selection[i]. Protocol encodes mask as 32-bit int,
-            // so this correctly handles up to 32 slots (the protocol's ceiling for this variant).
             int mask = removeMask.get("Mask").asInt();
-            List<String> kept = new ArrayList<>();
-            for (int i = 0; i < selection.size(); i++) {
-                if ((mask & (1 << i)) == 0) kept.add(selection.get(i));
-            }
-            selection.clear();
-            selection.addAll(kept);
+            selection.removeIf(i -> (mask & (1 << i)) != 0);
         } else if (removeMask.has("SweepToEnd")) {
             int from = removeMask.get("SweepToEnd").asInt();
-            while (selection.size() > from) selection.remove(selection.size() - 1);
+            selection.truncateTo(from);
         } else if (removeMask.has("OneIndice")) {
             int idx = removeMask.get("OneIndice").asInt();
-            if (idx < selection.size()) selection.remove(idx);
+            selection.removeAt(idx);
         }
-        // "None" → nothing removed from current selection; addUnitTags are appended below
+        // "None" or absent removeMask → carry forward (no removal)
 
         JsonNode addTags = delta.path("addUnitTags");
         for (JsonNode tagNode : addTags) {
             long packed  = tagNode.asLong();
             int  index   = (int) (packed >> 18);
             int  recycle = (int) (packed & 0x3FFFF);
-            String tag   = "j-" + index + "-" + recycle;  // IEM10 tracker tag format (see IEM10JsonSimulatedGame.makeTag)
-            if (!selection.contains(tag)) selection.add(tag);
+            selection.addTag("j-" + index + "-" + recycle);
         }
     }
 
