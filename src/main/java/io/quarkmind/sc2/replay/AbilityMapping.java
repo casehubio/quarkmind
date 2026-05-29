@@ -4,6 +4,7 @@ import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.sc2.SelectionState;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.jboss.logging.Logger;
@@ -100,7 +101,7 @@ public class AbilityMapping {
     );
 
     private final int userId;  // 0-indexed game event userId = (playerId - 1)
-    private List<String> currentSelection = List.of();
+    private final SelectionState selection = new SelectionState();
 
     public AbilityMapping(int playerId) {
         this.userId = playerId - 1;
@@ -110,72 +111,52 @@ public class AbilityMapping {
         if (event.getUserId() != userId) return;
         var delta = event.getDelta();
         if (delta == null) {
-            currentSelection = List.of();
+            selection.clear();
             return;
         }
 
         var removeMask = delta.getRemoveMask();
         String variant = removeMask != null ? removeMask.value1 : null;
 
-        List<String> result;
-        if (variant == null) {
-            // No removeMask field — no delta; carry forward existing selection
-            result = new ArrayList<>(currentSelection);
+        if (variant == null || "None".equals(variant)) {
+            // carry forward — no removal
         } else if ("ZeroIndices".equals(variant)) {
-            // Payload is Integer[] of retained indices; empty = clear all
-            if (removeMask.value2 instanceof Integer[] indices && indices.length > 0) {
-                result = new ArrayList<>(indices.length);
-                for (int index : indices) {
-                    if (index < currentSelection.size()) result.add(currentSelection.get(index));
-                }
+            if (removeMask.value2 instanceof Integer[] indices) {
+                selection.retainOnly(toPrimitiveInts(indices));
             } else {
-                result = new ArrayList<>();
+                selection.clear();
             }
-        } else if ("None".equals(variant)) {
-            // No removal — carry forward current selection
-            result = new ArrayList<>(currentSelection);
         } else if ("Mask".equals(variant)) {
-            // Payload is BitArray; bit i set → remove index i (iterate downward)
-            result = new ArrayList<>(currentSelection);
             if (removeMask.value2 instanceof hu.belicza.andras.util.type.BitArray bitArray) {
-                for (int i = Math.min(result.size() - 1, bitArray.getCount() - 1); i >= 0; i--) {
-                    if (bitArray.getBit(i)) result.remove(i);
-                }
+                selection.removeIf(i -> i < bitArray.getCount() && bitArray.getBit(i));
             } else {
                 log.debugf("[SELECTION] Mask variant has unexpected payload type: %s", removeMask.value2);
             }
         } else if ("OneIndices".equals(variant)) {
-            // Payload is Integer[] of removed indices (sorted ascending); iterate descending
-            result = new ArrayList<>(currentSelection);
             if (removeMask.value2 instanceof Integer[] indices) {
                 for (int i = indices.length - 1; i >= 0; i--) {
-                    int idx = indices[i];
-                    if (idx < result.size()) result.remove(idx);
+                    selection.removeAt(indices[i]);
                 }
             } else {
                 log.debugf("[SELECTION] OneIndices variant has unexpected payload type: %s", removeMask.value2);
             }
         } else {
-            // Unknown variant — defensive: clear and start fresh
-            log.debugf("[SELECTION] Unknown removeMask variant '%s' — treating as full replacement", variant);
-            result = new ArrayList<>();
+            log.debugf("[SELECTION] Unknown removeMask variant '%s' — treating as full clear", variant);
+            selection.clear();
         }
 
         if (delta.getAddUnitTags() != null) {
             for (Integer rawTag : delta.getAddUnitTags()) {
                 if (rawTag != null) {
-                    String tag = GameEventStream.decodeTag(rawTag);
-                    if (!result.contains(tag)) result.add(tag);
+                    selection.addTag(GameEventStream.decodeTag(rawTag));
                 }
             }
         }
-
-        currentSelection = List.copyOf(result);
     }
 
     public List<ReplayCommand> process(CmdEvent event) {
         if (event.getUserId() != userId) return List.of();
-        if (currentSelection.isEmpty()) return List.of();
+        if (selection.isEmpty()) return List.of();
         Integer abilLink = event.getAbilLink();
         if (abilLink == null) return List.of();
         int idx = Objects.requireNonNullElse(event.getAbilCmdIndex(), 0);
@@ -183,12 +164,15 @@ public class AbilityMapping {
     }
 
     public void reset() {
-        currentSelection = List.of();
+        selection.clear();
     }
 
     /** Package-private — used by AbilityMappingTest to prime selection without replay parsing. */
     void setSelectionForTest(int forUserId, List<String> tags) {
-        if (forUserId == this.userId) this.currentSelection = List.copyOf(tags);
+        if (forUserId == this.userId) {
+            selection.clear();
+            tags.forEach(selection::addTag);
+        }
     }
 
     private List<ReplayCommand> dispatch(int abilLink, int idx, CmdEvent event) {
@@ -239,7 +223,7 @@ public class AbilityMapping {
     }
 
     private List<ReplayCommand> trainIntent(long loop, UnitType unitType) {
-        String buildingTag = currentSelection.get(0);
+        String buildingTag = selection.first();
         return List.of(new ReplayCommand.IntentCommand(
                 new TimedIntent(loop, new TrainIntent(buildingTag, unitType))));
     }
@@ -247,8 +231,8 @@ public class AbilityMapping {
     private List<ReplayCommand> moveOrders(CmdEvent event, long loop) {
         var tp = event.getTargetPoint();
         var tu = event.getTargetUnit();
-        List<ReplayCommand> orders = new ArrayList<>(currentSelection.size());
-        for (String tag : currentSelection) {
+        List<ReplayCommand> orders = new ArrayList<>(selection.size());
+        for (String tag : selection.snapshot()) {
             if (tp != null) {
                 float x = tp.getXFloat();
                 float y = tp.getYFloat();
@@ -269,5 +253,11 @@ public class AbilityMapping {
     private List<ReplayCommand> unknown(int abilLink, int idx) {
         log.debugf("[ABILITY] Unknown abilLink=%d abilCmdIndex=%d — skipped", abilLink, idx);
         return List.of();
+    }
+
+    private static int[] toPrimitiveInts(Integer[] boxed) {
+        int[] result = new int[boxed.length];
+        for (int i = 0; i < boxed.length; i++) result[i] = boxed[i];
+        return result;
     }
 }

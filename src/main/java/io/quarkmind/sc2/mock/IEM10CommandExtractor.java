@@ -8,7 +8,7 @@ import io.quarkmind.sc2.intent.TrainIntent;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;  // For return type
+import java.util.List;
 
 // Note: tag format "j-index-recycle" mirrors IEM10JsonSimulatedGame.makeTag (package-private)
 // Do NOT use Sc2ReplayShared.makeTag here — that produces "r-" prefix for .SC2Replay binary parser
