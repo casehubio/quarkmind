@@ -81,4 +81,9 @@ class SimulatedGameTest {
         game.setMinerals(500);
         assertThat(game.snapshot().minerals()).isEqualTo(500);
     }
+
+    @Test
+    void isCompleteReturnsFalseByDefault() {
+        assertThat(game.isComplete()).isFalse();
+    }
 }

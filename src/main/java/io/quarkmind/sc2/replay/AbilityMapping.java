@@ -28,7 +28,7 @@ import java.util.Objects;
  *   userId=0 (Protoss): 173=RoboticsTrain(idx0=Immortal), 170=WarpGateTrain(hasTP=location)
  *   userId=1 (Zerg):    42=Smart/Move, 193=LarvaTrain(variousIdx), 184=Queen/Inject
  * </pre>
- * Terran coverage pending issue #140.
+ * Terran coverage added in issue #140 (ABIL_COMMAND_CENTER=155 → SCV, ABIL_BARRACKS=159 → Marine/Marauder).
  */
 public class AbilityMapping {
 
@@ -51,6 +51,18 @@ public class AbilityMapping {
     private static final int ABIL_LARVA       = 193;
     // Queen is trained from Hatchery via abilLink=184 abilCmdIndex=1; other indices are macro (inject)
     private static final int ABIL_HATCHERY    = 184;
+
+    // --- Terran train (AI Arena build 75689) ---
+    // Derived from TerranDiscoveryTest: no-target Cmd events cross-referenced across
+    // Nothing_4720935 (18m), Tyckles_4721034 (15m), Starlight_4721165 (6m) Terran-wins PvT.
+    // Other abilLinks (157, 158, 161) have insufficient cross-replay evidence — logged as unknown.
+    private static final int ABIL_COMMAND_CENTER = 155; // idx=0 only → SCV
+    private static final int ABIL_BARRACKS       = 159; // idx=0 → Marine, idx=3 → Marauder
+
+    private static final Map<Integer, UnitType> BARRACKS_UNITS = Map.of(
+            0, UnitType.MARINE,
+            3, UnitType.MARAUDER
+    );
 
     // Gateway abilCmdIndex → UnitType (from discovery: idx1=Zealot most common, idx0=Stalker)
     private static final Map<Integer, UnitType> GATEWAY_UNITS = Map.of(
@@ -97,14 +109,68 @@ public class AbilityMapping {
     public void onSelection(SelectionDeltaEvent event) {
         if (event.getUserId() != userId) return;
         var delta = event.getDelta();
-        if (delta == null || delta.getAddUnitTags() == null) {
+        if (delta == null) {
             currentSelection = List.of();
             return;
         }
-        currentSelection = java.util.Arrays.stream(delta.getAddUnitTags())
-                .filter(Objects::nonNull)
-                .map(GameEventStream::decodeTag)
-                .toList();
+
+        var removeMask = delta.getRemoveMask();
+        String variant = removeMask != null ? removeMask.value1 : null;
+
+        List<String> result;
+        if (variant == null) {
+            // No removeMask field — no delta; carry forward existing selection
+            result = new ArrayList<>(currentSelection);
+        } else if ("ZeroIndices".equals(variant)) {
+            // Payload is Integer[] of retained indices; empty = clear all
+            if (removeMask.value2 instanceof Integer[] indices && indices.length > 0) {
+                result = new ArrayList<>(indices.length);
+                for (int index : indices) {
+                    if (index < currentSelection.size()) result.add(currentSelection.get(index));
+                }
+            } else {
+                result = new ArrayList<>();
+            }
+        } else if ("None".equals(variant)) {
+            // No removal — carry forward current selection
+            result = new ArrayList<>(currentSelection);
+        } else if ("Mask".equals(variant)) {
+            // Payload is BitArray; bit i set → remove index i (iterate downward)
+            result = new ArrayList<>(currentSelection);
+            if (removeMask.value2 instanceof hu.belicza.andras.util.type.BitArray bitArray) {
+                for (int i = Math.min(result.size() - 1, bitArray.getCount() - 1); i >= 0; i--) {
+                    if (bitArray.getBit(i)) result.remove(i);
+                }
+            } else {
+                log.debugf("[SELECTION] Mask variant has unexpected payload type: %s", removeMask.value2);
+            }
+        } else if ("OneIndices".equals(variant)) {
+            // Payload is Integer[] of removed indices (sorted ascending); iterate descending
+            result = new ArrayList<>(currentSelection);
+            if (removeMask.value2 instanceof Integer[] indices) {
+                for (int i = indices.length - 1; i >= 0; i--) {
+                    int idx = indices[i];
+                    if (idx < result.size()) result.remove(idx);
+                }
+            } else {
+                log.debugf("[SELECTION] OneIndices variant has unexpected payload type: %s", removeMask.value2);
+            }
+        } else {
+            // Unknown variant — defensive: clear and start fresh
+            log.debugf("[SELECTION] Unknown removeMask variant '%s' — treating as full replacement", variant);
+            result = new ArrayList<>();
+        }
+
+        if (delta.getAddUnitTags() != null) {
+            for (Integer rawTag : delta.getAddUnitTags()) {
+                if (rawTag != null) {
+                    String tag = GameEventStream.decodeTag(rawTag);
+                    if (!result.contains(tag)) result.add(tag);
+                }
+            }
+        }
+
+        currentSelection = List.copyOf(result);
     }
 
     public List<ReplayCommand> process(CmdEvent event) {
@@ -158,6 +224,15 @@ public class AbilityMapping {
             case ABIL_HATCHERY ->
                 // abilCmdIndex=1 = Train Queen; other indices are macro (inject, etc.) — skip
                     idx == 1 ? trainIntent(loop, UnitType.QUEEN) : List.of();
+
+            case ABIL_COMMAND_CENTER ->
+                    // idx=0 = Train SCV; other indices are Orbital abilities (call-down MULE, scan) — skip
+                    idx == 0 ? trainIntent(loop, UnitType.SCV) : unknown(abilLink, idx);
+
+            case ABIL_BARRACKS -> {
+                UnitType unit = BARRACKS_UNITS.get(idx);
+                yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
+            }
 
             default -> unknown(abilLink, idx);
         };

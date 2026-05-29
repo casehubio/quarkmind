@@ -78,7 +78,7 @@ public class IEM10CommandExtractor {
         return Collections.unmodifiableList(intents);
     }
 
-    private static void applySelectionDelta(JsonNode event, List<String> selection) {
+    static void applySelectionDelta(JsonNode event, List<String> selection) {
         JsonNode delta      = event.path("delta");
         JsonNode removeMask = delta.path("removeMask");
 

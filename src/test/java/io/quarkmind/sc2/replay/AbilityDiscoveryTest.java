@@ -14,8 +14,14 @@ import java.util.stream.Stream;
 /**
  * Scans replays and prints all observed (abilLink, abilCmdIndex) tuples with counts.
  * No assertions — output populates AbilityMapping's static table.
- * Covers Protoss (userId=0) and Zerg (userId=1) from PvZ aiarena replays.
- * Terran coverage requires .SC2Replay files — see issue #140.
+ *
+ * <p>Coverage by replay:
+ * <ul>
+ *   <li>Nothing_4720936 (PvZ): Protoss userId=0, Zerg userId=1</li>
+ *   <li>ArgoBot_4721229 (PvT): Protoss userId=1, Terran userId=0 (bot opponent)</li>
+ *   <li>Nothing_4720935 (PvT): Protoss userId=0, Terran userId=1 (RustyNikolaj)</li>
+ *   <li>Tyckles_4721034 (PvT): Protoss userId=0, Terran userId=1 (RustyNikolaj)</li>
+ * </ul>
  */
 class AbilityDiscoveryTest {
 
@@ -59,8 +65,10 @@ class AbilityDiscoveryTest {
 
     static Stream<Path> replayFiles() {
         return Stream.of(
-            Path.of("replays/aiarena_protoss/Nothing_4720936.SC2Replay"),
-            Path.of("replays/aiarena_protoss/ArgoBot_4721229.SC2Replay")
+            Path.of("replays/aiarena_protoss/Nothing_4720936.SC2Replay"),  // PvZ
+            Path.of("replays/aiarena_protoss/ArgoBot_4721229.SC2Replay"),  // PvT Terran=userId=0
+            Path.of("replays/aiarena_protoss/Nothing_4720935.SC2Replay"),  // PvT Terran=userId=1
+            Path.of("replays/aiarena_protoss/Tyckles_4721034.SC2Replay")   // PvT Terran=userId=1
         );
     }
 }

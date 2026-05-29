@@ -23,6 +23,12 @@ class AbilityMappingTest {
     static final int STALKER_ABIL     = 172;
     static final int STALKER_ABIL_IDX = 0;
 
+    // Terran constants — AI Arena build 75689 (derived from TerranDiscoveryTest 2026-05-29)
+    static final int TERRAN_CC_ABIL        = 155; // Command Center → SCV (idx=0 only)
+    static final int TERRAN_BARRACKS_ABIL  = 159; // Barracks → Marine (idx=0), Marauder (idx=3)
+    static final int TERRAN_MARINE_IDX     = 0;
+    static final int TERRAN_MARAUDER_IDX   = 3;
+
     AbilityMapping mapping;
 
     @BeforeEach
@@ -108,6 +114,55 @@ class AbilityMappingTest {
         // userId=1 is player 2, mapping is for player 1 (userId=0)
         List<ReplayCommand> result = mapping.process(
                 fakeCmdEvent(MOVE_ABIL, 1, 100, new float[]{10f, 10f}, null, 0));
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void trainScvProducesSingleTrainIntent() {
+        mapping.setSelectionForTest(0, List.of("r-cc-1"));
+        List<ReplayCommand> result = mapping.process(
+                fakeCmdEvent(TERRAN_CC_ABIL, 0, 500, null, null, 0));
+        assertThat(result).hasSize(1);
+        ReplayCommand.IntentCommand ic = (ReplayCommand.IntentCommand) result.get(0);
+        assertThat(ic.intent().loop()).isEqualTo(500);
+        TrainIntent t = (TrainIntent) ic.intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.SCV);
+        assertThat(t.buildingTag()).isEqualTo("r-cc-1");
+    }
+
+    @Test
+    void unknownCommandCenterIndexReturnsEmpty() {
+        mapping.setSelectionForTest(0, List.of("r-cc-1"));
+        List<ReplayCommand> result = mapping.process(
+                fakeCmdEvent(TERRAN_CC_ABIL, 0, 900, null, null, 99));
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void trainMarineProducesSingleTrainIntent() {
+        mapping.setSelectionForTest(0, List.of("r-bx-1"));
+        List<ReplayCommand> result = mapping.process(
+                fakeCmdEvent(TERRAN_BARRACKS_ABIL, 0, 600, null, null, TERRAN_MARINE_IDX));
+        assertThat(result).hasSize(1);
+        TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) result.get(0)).intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.MARINE);
+    }
+
+    @Test
+    void trainMarauderProducesSingleTrainIntent() {
+        mapping.setSelectionForTest(0, List.of("r-bx-2"));
+        List<ReplayCommand> result = mapping.process(
+                fakeCmdEvent(TERRAN_BARRACKS_ABIL, 0, 700, null, null, TERRAN_MARAUDER_IDX));
+        assertThat(result).hasSize(1);
+        TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) result.get(0)).intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.MARAUDER);
+    }
+
+    @Test
+    void unknownBarracksIndexReturnsEmpty() {
+        mapping.setSelectionForTest(0, List.of("r-bx-3"));
+        List<ReplayCommand> result = mapping.process(
+                fakeCmdEvent(TERRAN_BARRACKS_ABIL, 0, 800, null, null, 99));
         assertThat(result).isEmpty();
     }
 
