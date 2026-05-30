@@ -167,7 +167,9 @@
       "Bash(mvn -Dtest=IEM10AbilityDiscoveryTest test -DincludedGroups=diagnostic)",
       "Bash(mvn -Dtest=IEM10AbilityDiscoveryTest -DincludedGroups=diagnostic -Dmaven.surefire.debug test)",
       "Bash(mvn *)",
-      "Bash(GIT_SEQUENCE_EDITOR=\"cp /tmp/squash-plan-150.txt\" GIT_EDITOR=true git rebase *)"
+      "Bash(GIT_SEQUENCE_EDITOR=\"cp /tmp/squash-plan-150.txt\" GIT_EDITOR=true git rebase *)",
+      "mcp__intellij__search_file",
+      "Bash([ -f \"$dir/pom.xml\" ])"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"
