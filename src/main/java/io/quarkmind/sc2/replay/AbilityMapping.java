@@ -175,6 +175,11 @@ public class AbilityMapping {
         }
     }
 
+    /** Package-private — returns a snapshot of the current selection for test assertions. */
+    List<String> selectionSnapshotForTest() {
+        return selection.snapshot();
+    }
+
     private List<ReplayCommand> dispatch(int abilLink, int idx, CmdEvent event) {
         long loop = event.getLoop();
 
