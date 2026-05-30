@@ -51,11 +51,44 @@ public final class SC2Data {
         return income;
     }
 
-    public static final int INITIAL_MINERALS  = 50;
-    public static final int INITIAL_VESPENE   = 0;
-    public static final int INITIAL_SUPPLY    = 15;
+    public static final int INITIAL_MINERALS    = 50;
+    public static final int INITIAL_VESPENE    = 0;
+    public static final int INITIAL_SUPPLY     = 15;
     public static final int INITIAL_SUPPLY_USED = 12;
-    public static final int INITIAL_PROBES    = 12;
+    public static final int INITIAL_PROBES     = 12;
+
+    /**
+     * MULE lifetime in game loops. 64s × 22.4 loops/s = 1433.6 → ceiling = 1434.
+     * Uncalibrated — pending Terran replay data from #140.
+     */
+    public static final int MULE_LIFETIME_LOOPS = 1434;
+
+    /**
+     * Queen energy regeneration per game loop.
+     * Standard SC2 spellcaster regen: 0.5625 energy/sec at Faster speed.
+     * Per loop: 0.5625 / 22.4 ≈ 0.02511.
+     */
+    public static final double QUEEN_ENERGY_REGEN_PER_LOOP = 0.5625 / GAME_LOOPS_PER_SECOND;
+
+    /**
+     * Mineral income per active MULE per tick.
+     * MULE mines at ~3.45× SCV rate. SCV earns ≈50 minerals/min → MULE ≈172.5/min.
+     * Per tick (22 loops at 22.4 loops/sec = 0.982s): 172.5/60 × 0.982 ≈ 2.82.
+     * Uncalibrated — pending Terran replay data from #140.
+     */
+    public static double muleIncomePerTick() {
+        final double muleMinPerMin = 172.5;
+        final double secsPerTick   = LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND;
+        return muleMinPerMin / 60.0 * secsPerTick;
+    }
+
+    /**
+     * Number of units spawned from a single TrainIntent.
+     * Zergling produces 2 from 1 larva/1 supply cost; all others produce 1.
+     */
+    public static int trainCount(UnitType type) {
+        return type == UnitType.ZERGLING ? 2 : 1;
+    }
 
     /** Movement speed in tiles/sec at SC2 Faster speed (22.4 loops/sec). */
     public static final Map<UnitType, Double> UNIT_SPEEDS = Map.ofEntries(
@@ -109,12 +142,24 @@ public final class SC2Data {
      */
     public static int trainTimeInLoops(UnitType type) {
         return switch (type) {
-            case PROBE    -> 272;  // empirical (499 obs, AI Arena replays)
+            // Protoss — empirical (SC2TrainTimeCalibrationTest, AI Arena replays)
+            case PROBE    -> 272;  // empirical (499 obs)
             case ZEALOT   -> 618;  // empirical (7 obs)
             case STALKER  -> 698;  // empirical (2 obs — low confidence)
-            case IMMORTAL -> 896;  // uncalibrated — 40s × 22.4 = 896.0 (exact)
-            case OBSERVER -> 493;  // uncalibrated — ceil(22s × 22.4 = 492.8)
-            default       -> 672;  // uncalibrated — 30s × 22.4 = 672.0 (exact)
+            case IMMORTAL -> 896;  // uncalibrated — 40s × 22.4 = 896.0
+            case OBSERVER -> 493;  // uncalibrated — ceil(22s × 22.4)
+            // Terran — uncalibrated estimates; pending Terran replays from #140
+            case SCV      -> 275;  // estimate: ceil(12.25s × 22.4)
+            case MARINE   -> 563;  // estimate: ceil(25.13s × 22.4)
+            case MARAUDER -> 757;  // estimate: ceil(33.8s × 22.4)
+            // Zerg — uncalibrated estimates; pending Zerg replay calibration
+            case DRONE     -> 275; // estimate: same as SCV (same real-time duration)
+            case ZERGLING  -> 400; // estimate: ceil(17.85s × 22.4)
+            case ROACH     -> 572; // estimate: ceil(25.5s × 22.4)
+            case HYDRALISK -> 672; // estimate: 30s × 22.4
+            case OVERLORD  -> 357; // estimate: ceil(15.93s × 22.4)
+            case QUEEN     -> 900; // estimate: ceil(40.18s × 22.4)
+            default        -> 672; // uncalibrated — 30s × 22.4 = 672.0
         };
     }
 
@@ -200,11 +245,20 @@ public final class SC2Data {
 
     public static int supplyCost(UnitType type) {
         return switch (type) {
+            // Protoss
             case PROBE, OBSERVER -> 1;
-            case ZEALOT   -> 2;
-            case STALKER  -> 2;
-            case IMMORTAL -> 4;
-            default       -> 2;
+            case ZEALOT, STALKER -> 2;
+            case IMMORTAL        -> 4;
+            // Terran
+            case SCV, MARINE     -> 1;
+            case MARAUDER        -> 2;
+            case MULE            -> 0;
+            // Zerg
+            case DRONE, ZERGLING -> 1; // Zergling: 1 supply per 2-unit batch
+            case OVERLORD, EGG   -> 0;
+            case QUEEN           -> 2;
+            case ROACH, HYDRALISK -> 2;
+            default              -> 2;
         };
     }
 
@@ -219,14 +273,24 @@ public final class SC2Data {
 
     public static int maxHealth(UnitType type) {
         return switch (type) {
+            // Protoss
             case PROBE     ->  45;
             case ZEALOT    -> 100;
             case STALKER   ->  80;
             case IMMORTAL  -> 200;
+            // Terran
             case MARINE    ->  45;
             case MARAUDER  -> 125;
+            case SCV       ->  45;
+            case MULE      ->  60;
+            // Zerg
             case ROACH     -> 145;
             case HYDRALISK ->  90;
+            case DRONE     ->  40;
+            case ZERGLING  ->  35;
+            case OVERLORD  -> 200;
+            case QUEEN     -> 175;
+            case EGG       -> 200;
             default        -> 100;
         };
     }
@@ -248,7 +312,7 @@ public final class SC2Data {
 
     public static int armour(UnitType type) {
         return switch (type) {
-            case ZEALOT, STALKER, IMMORTAL, MARAUDER, ROACH -> 1;
+            case ZEALOT, STALKER, IMMORTAL, MARAUDER, ROACH, SCV, QUEEN -> 1;
             default -> 0;
         };
     }
@@ -337,12 +401,26 @@ public final class SC2Data {
 
     public static int mineralCost(UnitType type) {
         return switch (type) {
-            case PROBE    -> 50;
+            // Protoss
+            case PROBE    ->  50;
             case ZEALOT   -> 100;
             case STALKER  -> 125;
             case IMMORTAL -> 250;
-            case OBSERVER -> 25;
-            default       -> 100;
+            case OBSERVER ->  25;
+            // Terran
+            case SCV      ->  50;
+            case MARINE   ->  50;
+            case MARAUDER -> 100;
+            case MULE     ->   0;
+            // Zerg
+            case DRONE     ->  50;
+            case ZERGLING  ->  25;
+            case ROACH     ->  75;
+            case HYDRALISK -> 100;
+            case OVERLORD  -> 100;
+            case QUEEN     -> 150;
+            case EGG       ->   0;
+            default        -> 100;
         };
     }
 
@@ -405,10 +483,13 @@ public final class SC2Data {
 
     public static int gasCost(UnitType type) {
         return switch (type) {
-            case STALKER  -> 50;
-            case IMMORTAL -> 100;
-            case OBSERVER -> 75;
-            default       -> 0;
+            case STALKER   -> 50;
+            case IMMORTAL  -> 100;
+            case OBSERVER  -> 75;
+            case MARAUDER  -> 25;
+            case ROACH     -> 25;
+            case HYDRALISK -> 50;
+            default        ->  0;
         };
     }
 
@@ -421,12 +502,13 @@ public final class SC2Data {
             case PHOENIX, ORACLE, VOID_RAY,
                  CARRIER, TEMPEST, MOTHERSHIP          -> BuildingType.STARGATE;
             case SCV                                   -> BuildingType.COMMAND_CENTER;
+            case MULE                                  -> BuildingType.ORBITAL_COMMAND;
             case MARINE, MARAUDER                      -> BuildingType.BARRACKS;
             case MEDIVAC, VIKING                       -> BuildingType.STARPORT;
             case HELLION                               -> BuildingType.FACTORY;
             case DRONE, ZERGLING, ROACH, HYDRALISK,
                  MUTALISK, BANELING, ULTRALISK,
-                 OVERLORD, OVERSEER                   -> BuildingType.HATCHERY;
+                 OVERLORD, OVERSEER, QUEEN             -> BuildingType.HATCHERY;
             default                                    -> BuildingType.UNKNOWN;
         };
     }
@@ -448,8 +530,13 @@ public final class SC2Data {
             case IMMORTAL  -> 20;
             case MARINE    ->  6;
             case MARAUDER  -> 10;
+            case SCV       ->  5;
             case ROACH     ->  9;
             case HYDRALISK -> 12;
+            case ZERGLING  ->  5;
+            case QUEEN     -> 20;
+            case MULE      ->  0;
+            case EGG       ->  0;
             default        ->  5;
         };
     }
@@ -457,24 +544,24 @@ public final class SC2Data {
     /** Ticks between attacks (cooldown reset after firing). 1 tick = 500ms at Faster speed. */
     public static int attackCooldownInTicks(UnitType type) {
         return switch (type) {
-            case MARINE, HYDRALISK, STALKER                -> 1;
-            case PROBE, ZEALOT, IMMORTAL, MARAUDER, ROACH -> 2;
-            default                                        -> 2;
+            case MARINE, HYDRALISK, STALKER, ZERGLING -> 1;
+            case PROBE, ZEALOT, IMMORTAL, MARAUDER, ROACH, SCV, QUEEN -> 2;
+            case MULE, EGG -> Integer.MAX_VALUE; // non-combat
+            default        -> 2;
         };
     }
 
     /** Attack range in tiles. Zealots are melee (0.5 tiles). */
     public static float attackRange(UnitType type) {
         return switch (type) {
-            case ZEALOT    -> 0.5f;
-            case PROBE     -> 3.0f;
-            case STALKER   -> 5.0f;
-            case IMMORTAL  -> 5.5f;
-            case MARINE    -> 5.0f;
-            case MARAUDER  -> 5.0f;
-            case ROACH     -> 4.0f;
-            case HYDRALISK -> 5.0f;
-            default        -> 3.0f;
+            case ZEALOT, SCV, ZERGLING -> 0.5f;
+            case PROBE                 -> 3.0f;
+            case STALKER, MARINE, MARAUDER, HYDRALISK -> 5.0f;
+            case IMMORTAL              -> 5.5f;
+            case ROACH                 -> 4.0f;
+            case QUEEN                 -> 5.0f;
+            case MULE, EGG             -> 0.0f; // non-combat
+            default                    -> 3.0f;
         };
     }
 

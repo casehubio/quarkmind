@@ -63,7 +63,7 @@ public final class ReplayValidationHarness {
             // per-outer-tick income. SC2Data.mineralIncomePerTick handles the per-tick
             // rate internally; the raw probe count is the correct input.
             GameState gtBefore = groundTruth.snapshot();
-            emulated.setMiningProbesPerBase(countProbesPerBase(gtBefore));
+            emulated.setMiningProbesPerBase(countWorkersPerBase(gtBefore));
 
             emulated.tick();
             groundTruth.tick();
@@ -137,9 +137,10 @@ public final class ReplayValidationHarness {
         }
     }
 
-    /** Counts Probe units per base, assigning each probe to its nearest complete Nexus. */
-    static int[] countProbesPerBase(GameState state) {
-        return EmulatedGame.countProbesPerBase(state.myBuildings(), state.myUnits());
+    /** Counts worker units per base, assigning each to its nearest complete town hall. */
+    static int[] countWorkersPerBase(GameState state) {
+        return EmulatedGame.countWorkersPerBase(io.quarkmind.domain.Race.PROTOSS,
+            state.myBuildings(), state.myUnits());
     }
 
     /**

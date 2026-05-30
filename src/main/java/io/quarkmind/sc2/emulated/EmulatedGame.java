@@ -8,9 +8,10 @@ import org.jboss.logging.Logger;
 import java.util.*;
 
 /**
- * Phase E2 physics engine.
- * Probe-driven mineral harvesting, unit movement, scripted enemy waves,
- * and full intent handling (train/build/move/attack).
+ * Physics engine for emulated SC2 game state.
+ * Manages unit movement, mineral harvesting, combat, and intent handling.
+ * Race-specific mechanics (initial state, larva, MULE, Queen energy) delegate to
+ * a {@link RaceModel} plugin — see {@link #setPlayerRaceModel(RaceModel)}.
  * Not a CDI bean — owned and instantiated by {@link EmulatedEngine}.
  */
 public class EmulatedGame {
@@ -20,6 +21,9 @@ public class EmulatedGame {
     // --- Per-player state ---
     final PlayerState friendly = new PlayerState();
     final PlayerState enemy    = new PlayerState();
+
+    // --- Race model (plugin seam) ---
+    private RaceModel playerRaceModel = new ProtossRaceModel();
 
     // --- Enemy AI ---
     private EnemyBehavior enemyBehavior;
@@ -47,32 +51,16 @@ public class EmulatedGame {
         enemy.clear();
         nextTag     = 200;
         gameFrame   = 0;
-        miningProbesPerBase = new int[]{SC2Data.INITIAL_PROBES};
         miningProbesOverridden = false;
         movementStrategy.reset();
         visibility.reset();
         geysers.clear();
         // pendingWaves intentionally NOT cleared — configured before reset() via configureWave()
-        // terrainGrid and random intentionally NOT cleared — set by EmulatedEngine before reset(), persist across resets
+        // terrainGrid and random intentionally NOT cleared — set by EmulatedEngine before reset()
 
-        // Seed friendly player
-        friendly.minerals   = SC2Data.INITIAL_MINERALS;
-        friendly.vespene    = SC2Data.INITIAL_VESPENE;
-        friendly.supply     = SC2Data.INITIAL_SUPPLY;
-        friendly.supplyUsed = SC2Data.INITIAL_SUPPLY_USED;
-        for (int i = 0; i < SC2Data.INITIAL_PROBES; i++) {
-            friendly.units.add(new Unit("probe-" + i, UnitType.PROBE,
-                new Point2d(9 + i * 0.5f, 9),
-                SC2Data.maxHealth(UnitType.PROBE), SC2Data.maxHealth(UnitType.PROBE),
-                SC2Data.maxShields(UnitType.PROBE), SC2Data.maxShields(UnitType.PROBE), 0, 0));
-        }
-        friendly.buildings.add(new Building("nexus-0", BuildingType.NEXUS,
-            new Point2d(8, 8),
-            SC2Data.maxBuildingHealth(BuildingType.NEXUS),
-            SC2Data.maxBuildingHealth(BuildingType.NEXUS),
-            true));
-        geysers.add(new Resource("geyser-0", new Point2d(5, 11), 2250));
-        geysers.add(new Resource("geyser-1", new Point2d(11, 5), 2250));
+        // Seed friendly player via race model
+        playerRaceModel.seedInitialState(friendly, geysers);
+        miningProbesPerBase = countWorkersPerBase(playerRaceModel, friendly.buildings, friendly.units);
 
         // Seed enemy player with effectively unlimited supply and gas so TrainIntents are never
         // rejected by resource checks. Minerals are earned each tick via EnemyBehavior.accumulateMinerals().
@@ -85,13 +73,14 @@ public class EmulatedGame {
 
     public void tick() {
         if (!miningProbesOverridden) {
-            miningProbesPerBase = countProbesPerBase(friendly.buildings, friendly.units);
+            miningProbesPerBase = countWorkersPerBase(playerRaceModel, friendly.buildings, friendly.units);
         }
         miningProbesOverridden = false;
         gameFrame++;
-        for (int probesAtBase : miningProbesPerBase) {
-            friendly.minerals += SC2Data.mineralIncomePerTick(probesAtBase);
+        for (final int workersAtBase : miningProbesPerBase) {
+            friendly.minerals += SC2Data.mineralIncomePerTick(workersAtBase);
         }
+        playerRaceModel.tickPassive(friendly, gameFrame * (long) SC2Data.LOOPS_PER_TICK);
         moveFriendlyUnits();
         // Recompute after movement, before combat: a unit that dies this tick still
         // provided vision for this frame — correct SC2 behaviour.
@@ -263,39 +252,65 @@ public class EmulatedGame {
         handleTrain(t, state, 0L);
     }
 
-    private void handleTrain(TrainIntent t, PlayerState state, long absLoop) {
-        String buildingTag = t.buildingTag();
-        Building building = state.buildings.stream()
+    private void handleTrain(final TrainIntent t, final PlayerState state, final long absLoop) {
+        final String buildingTag = t.buildingTag();
+        final Building building = state.buildings.stream()
             .filter(b -> b.tag().equals(buildingTag) && b.isComplete())
             .findFirst().orElse(null);
         if (building == null) {
             log.debugf("[EMULATED] Train rejected — building %s not ready", buildingTag);
             return;
         }
-        BuildingType required = SC2Data.trainedBy(t.unitType());
+        final BuildingType required = SC2Data.trainedBy(t.unitType());
         if (required != BuildingType.UNKNOWN && building.type() != required) {
             log.debugf("[EMULATED] Train rejected — %s cannot train %s (needs %s)",
                 building.type(), t.unitType(), required);
             return;
         }
-        int mCost = SC2Data.mineralCost(t.unitType());
-        int gCost = SC2Data.gasCost(t.unitType());
-        int sCost = SC2Data.supplyCost(t.unitType());
+
+        // Phase 1: race-specific pre-check (read-only — no state mutation yet)
+        final RaceModel model = (state == friendly) ? playerRaceModel : null;
+        if (model != null) {
+            final ProductionResult pr = model.canProduce(state, buildingTag, t.unitType());
+            if (pr == ProductionResult.BLOCKED) {
+                log.debugf("[EMULATED] Train rejected — production resource unavailable for %s", t.unitType());
+                return;
+            }
+            if (pr == ProductionResult.HANDLED) {
+                log.debugf("[EMULATED] Train handled by race model (MULE) for %s", t.unitType());
+                return;
+            }
+        }
+
+        // Phase 2: resource check
+        final int mCost = SC2Data.mineralCost(t.unitType());
+        final int gCost = SC2Data.gasCost(t.unitType());
+        final int sCost = SC2Data.supplyCost(t.unitType());
         if ((int) state.minerals < mCost || state.vespene < gCost
                 || state.supplyUsed + sCost > state.supply) {
             log.debugf("[EMULATED] Cannot train %s — insufficient resources", t.unitType());
             return;
         }
-        boolean isBusy = state.buildingTrainingUntil.containsKey(buildingTag);
-        Deque<UnitType> existingQueue = state.buildingQueues.get(buildingTag);
-        int total = (isBusy ? 1 : 0) + (existingQueue != null ? existingQueue.size() : 0);
+
+        // Phase 3: queue check
+        final boolean isBusy = state.buildingTrainingUntil.containsKey(buildingTag);
+        final Deque<UnitType> existingQueue = state.buildingQueues.get(buildingTag);
+        final int total = (isBusy ? 1 : 0) + (existingQueue != null ? existingQueue.size() : 0);
         if (total >= 5) {
             log.debugf("[EMULATED] Train rejected — building %s queue full", buildingTag);
             return;
         }
+
+        // Phase 4: deduct resources
         state.supplyUsed += sCost;
         state.minerals   -= mCost;
         state.vespene    -= gCost;
+
+        // Phase 5: race-specific post-commit (larva consume, EGG spawn)
+        if (model != null) {
+            model.onProductionCommitted(state, buildingTag, t.unitType(), this::nextTagString);
+        }
+
         if (!isBusy) {
             startTraining(buildingTag, t.unitType(), state, absLoop);
         } else {
@@ -304,26 +319,35 @@ public class EmulatedGame {
         }
     }
 
-    private void startTraining(String buildingTag, UnitType unitType, PlayerState state, long absLoop) {
-        boolean isEnemy  = (state == enemy);
-        int  loopOffset  = (int)(absLoop % SC2Data.LOOPS_PER_TICK);
-        long completesAt = gameFrame
+    private String nextTagString() {
+        return "unit-" + nextTag++;
+    }
+
+    private void startTraining(final String buildingTag, final UnitType unitType,
+                               final PlayerState state, final long absLoop) {
+        final boolean isEnemy  = (state == enemy);
+        final RaceModel model  = (state == friendly) ? playerRaceModel : null;
+        final int  loopOffset  = (int)(absLoop % SC2Data.LOOPS_PER_TICK);
+        final long completesAt = gameFrame
             + (loopOffset + SC2Data.trainTimeInLoops(unitType)) / SC2Data.LOOPS_PER_TICK;
         state.buildingTrainingUntil.put(buildingTag, completesAt);
         state.buildingCompletionAtLoop.put(buildingTag,
             absLoop + SC2Data.trainTimeInLoops(unitType));
+        final int spawnCount = (model != null) ? model.trainCount(unitType) : 1;
         state.pendingCompletions.add(new PlayerState.PendingCompletion(completesAt, () -> {
             state.buildingTrainingUntil.remove(buildingTag);
             if (!state.buildingQueues.containsKey(buildingTag)) {
                 state.buildingCompletionAtLoop.remove(buildingTag);
             }
-            String tag = "unit-" + nextTag++;
-            int hp = SC2Data.maxHealth(unitType);
-            state.units.add(new Unit(tag, unitType, new Point2d(9, 9), hp, hp,
-                SC2Data.maxShields(unitType), SC2Data.maxShields(unitType), 0, 0));
-            log.debugf("[EMULATED] Trained %s (tag=%s)", unitType, tag);
-            if (isEnemy && enemyBehavior != null) {
-                enemyBehavior.notifyUnitTrained();
+            for (int i = 0; i < spawnCount; i++) {
+                final String tag = nextTagString();
+                final int hp = SC2Data.maxHealth(unitType);
+                state.units.add(new Unit(tag, unitType,
+                    new Point2d(9 + i * 0.5f, 9), hp, hp,
+                    SC2Data.maxShields(unitType), SC2Data.maxShields(unitType), 0, 0));
+                log.debugf("[EMULATED] Trained %s (tag=%s)", unitType, tag);
+                if (model != null) model.onUnitSpawned(state, unitType, tag, buildingTag);
+                if (isEnemy && enemyBehavior != null) enemyBehavior.notifyUnitTrained();
             }
         }));
     }
@@ -612,22 +636,43 @@ public class EmulatedGame {
         this.miningProbesOverridden = true;
     }
 
-    /** Assigns each probe to its nearest complete Nexus by squared distance. */
-    public static int[] countProbesPerBase(List<Building> buildings, List<Unit> units) {
-        List<Building> nexuses = buildings.stream()
-            .filter(b -> b.type() == BuildingType.NEXUS && b.isComplete())
-            .toList();
-        if (nexuses.isEmpty()) return new int[0];
+    // Cached models for countWorkersPerBase(Race, ...) — avoids per-call allocation
+    private static final RaceModel PROTOSS_WORKER_MODEL = new ProtossRaceModel();
+    private static final RaceModel TERRAN_WORKER_MODEL  = new TerranRaceModel();
+    private static final RaceModel ZERG_WORKER_MODEL    = new ZergRaceModel();
 
-        int[] counts = new int[nexuses.size()];
-        for (Unit u : units) {
-            if (u.type() != UnitType.PROBE) continue;
+    /** Race-aware overload for callers outside the package (e.g. ReplayValidationHarness). */
+    public static int[] countWorkersPerBase(final Race race,
+                                            final List<Building> buildings,
+                                            final List<Unit> units) {
+        final RaceModel model = switch (race) {
+            case PROTOSS -> PROTOSS_WORKER_MODEL;
+            case TERRAN  -> TERRAN_WORKER_MODEL;
+            case ZERG    -> ZERG_WORKER_MODEL;
+        };
+        return countWorkersPerBase(model, buildings, units);
+    }
+
+    /** Assigns each worker to its nearest complete town hall by squared distance. */
+    static int[] countWorkersPerBase(final RaceModel model,
+                                     final List<Building> buildings,
+                                     final List<Unit> units) {
+        final java.util.Set<BuildingType> townHalls = model.townHallTypes();
+        final UnitType workerType = model.workerType();
+        final List<Building> bases = buildings.stream()
+            .filter(b -> townHalls.contains(b.type()) && b.isComplete())
+            .toList();
+        if (bases.isEmpty()) return new int[0];
+
+        final int[] counts = new int[bases.size()];
+        for (final Unit u : units) {
+            if (u.type() != workerType) continue;
             int nearest = 0;
             double minDistSq = Double.MAX_VALUE;
-            for (int i = 0; i < nexuses.size(); i++) {
-                double dx = u.position().x() - nexuses.get(i).position().x();
-                double dy = u.position().y() - nexuses.get(i).position().y();
-                double dSq = dx * dx + dy * dy;
+            for (int i = 0; i < bases.size(); i++) {
+                final double dx = u.position().x() - bases.get(i).position().x();
+                final double dy = u.position().y() - bases.get(i).position().y();
+                final double dSq = dx * dx + dy * dy;
                 if (dSq < minDistSq) { minDistSq = dSq; nearest = i; }
             }
             counts[nearest]++;
@@ -651,6 +696,9 @@ public class EmulatedGame {
 
     /** Sets the EnemyBehavior directly — for tests that need full control. */
     void setEnemyBehavior(EnemyBehavior b) { this.enemyBehavior = b; }
+
+    /** Sets the player race model. Call before reset(). Default is ProtossRaceModel. */
+    void setPlayerRaceModel(RaceModel model) { this.playerRaceModel = model; }
 
     int  enemyMinerals()  { return (int) enemy.minerals; }
     int  enemyStagingSize() { return enemy.stagingArea.size(); }

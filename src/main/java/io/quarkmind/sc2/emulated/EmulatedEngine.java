@@ -61,19 +61,22 @@ public class EmulatedEngine implements SC2Engine {
         terrainProvider.setTerrain(grid);
         log.info("[EMULATED] PathfindingMovement wired — wall y=18, gap x=11-13");
 
+        // Wire player race model
+        game.setPlayerRaceModel(RaceModelFactory.forRace(config.getPlayerRace()));
+
         // Build enemy strategy from config
-        Race   race         = config.getEnemyRace();
+        Race   enemyRace    = config.getEnemyRace();
         String strategyName = config.getEnemyStrategyName();
         EnemyStrategy strategy = (strategyName != null && !strategyName.isBlank())
             ? EnemyStrategyLibrary.forName(strategyName)
-            : EnemyStrategyLibrary.randomForRace(race);
+            : EnemyStrategyLibrary.randomForRace(enemyRace);
 
         EnemyBehavior enemyBehavior = new EnemyBehavior(strategy, game.enemy, new TechTree());
         game.setEnemyBehavior(enemyBehavior);
 
         game.reset();
-        log.infof("[EMULATED] Joined game — enemy strategy=%s race=%s speed=%.2f",
-            strategy.name(), race, config.getUnitSpeed());
+        log.infof("[EMULATED] Joined game — player=%s enemy strategy=%s race=%s speed=%.2f",
+            config.getPlayerRace(), strategy.name(), enemyRace, config.getUnitSpeed());
     }
 
     @Override

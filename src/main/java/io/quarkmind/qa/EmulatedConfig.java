@@ -38,6 +38,9 @@ public class EmulatedConfig {
     @ConfigProperty(name = "emulated.unit.speed", defaultValue = "0.5")
     double defaultUnitSpeed;
 
+    @ConfigProperty(name = "emulated.player.race", defaultValue = "PROTOSS")
+    String defaultPlayerRace;
+
     @ConfigProperty(name = "emulated.enemy.race", defaultValue = "PROTOSS")
     String defaultEnemyRace;
 
@@ -49,6 +52,7 @@ public class EmulatedConfig {
     private volatile int    waveUnitCount;
     private volatile String waveUnitType;
     private volatile double unitSpeed;
+    private volatile Race   playerRace;
     private volatile Race   enemyRace;
     private volatile String enemyStrategyName;
 
@@ -58,6 +62,7 @@ public class EmulatedConfig {
         waveUnitCount     = defaultWaveUnitCount;
         waveUnitType      = defaultWaveUnitType;
         unitSpeed         = defaultUnitSpeed;
+        playerRace        = Race.valueOf(defaultPlayerRace);
         enemyRace         = Race.valueOf(defaultEnemyRace);
         enemyStrategyName = defaultEnemyStrategy.filter(s -> !s.isBlank()).orElse(null);
     }
@@ -66,6 +71,7 @@ public class EmulatedConfig {
     public int    getWaveUnitCount()      { return waveUnitCount;     }
     public String getWaveUnitType()       { return waveUnitType;      }
     public double getUnitSpeed()          { return unitSpeed;         }
+    public Race   getPlayerRace()         { return playerRace;        }
     public Race   getEnemyRace()          { return enemyRace;         }
     public String getEnemyStrategyName()  { return enemyStrategyName; }
 
@@ -73,6 +79,7 @@ public class EmulatedConfig {
     public void setWaveUnitCount(int v)      { this.waveUnitCount     = v; }
     public void setWaveUnitType(String v)    { this.waveUnitType      = v; }
     public void setUnitSpeed(double v)       { this.unitSpeed         = v; }
+    public void setPlayerRace(Race r)        { this.playerRace        = r; }
     public void setEnemyRace(Race r)         { this.enemyRace         = r; }
     public void setEnemyStrategyName(String n) { this.enemyStrategyName = n; }
 

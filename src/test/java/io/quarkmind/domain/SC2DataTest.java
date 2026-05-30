@@ -198,4 +198,123 @@ class SC2DataTest {
         assertThat(SC2Data.trainTimeInTicks(UnitType.OBSERVER)) .isEqualTo(22);
         assertThat(SC2Data.trainTimeInTicks(UnitType.UNKNOWN)).isEqualTo(30);   // 672 / 22 = 30 (integer division)
     }
+
+    // --- trainCount ---
+
+    @Test
+    void trainCount_zergling_returnsTwo() {
+        assertThat(SC2Data.trainCount(UnitType.ZERGLING)).isEqualTo(2);
+    }
+
+    @Test
+    void trainCount_nonZergling_returnsOne() {
+        assertThat(SC2Data.trainCount(UnitType.MARINE)).isEqualTo(1);
+        assertThat(SC2Data.trainCount(UnitType.DRONE)).isEqualTo(1);
+        assertThat(SC2Data.trainCount(UnitType.SCV)).isEqualTo(1);
+        assertThat(SC2Data.trainCount(UnitType.PROBE)).isEqualTo(1);
+    }
+
+    // --- trainedBy additions ---
+
+    @Test
+    void trainedBy_queen_isHatchery() {
+        assertThat(SC2Data.trainedBy(UnitType.QUEEN)).isEqualTo(BuildingType.HATCHERY);
+    }
+
+    @Test
+    void trainedBy_mule_isOrbitalCommand() {
+        assertThat(SC2Data.trainedBy(UnitType.MULE)).isEqualTo(BuildingType.ORBITAL_COMMAND);
+    }
+
+    @Test
+    void trainedBy_scv_isCommandCenter() {
+        assertThat(SC2Data.trainedBy(UnitType.SCV)).isEqualTo(BuildingType.COMMAND_CENTER);
+    }
+
+    // --- Terran unit stats ---
+
+    @Test
+    void scvMaxHealth() { assertThat(SC2Data.maxHealth(UnitType.SCV)).isEqualTo(45); }
+
+    @Test
+    void scvSupplyCost() { assertThat(SC2Data.supplyCost(UnitType.SCV)).isEqualTo(1); }
+
+    @Test
+    void scvMineralCost() { assertThat(SC2Data.mineralCost(UnitType.SCV)).isEqualTo(50); }
+
+    @Test
+    void marauderGasCost() { assertThat(SC2Data.gasCost(UnitType.MARAUDER)).isEqualTo(25); }
+
+    @Test
+    void marineMineralCost() { assertThat(SC2Data.mineralCost(UnitType.MARINE)).isEqualTo(50); }
+
+    @Test
+    void marauderMineralCost() { assertThat(SC2Data.mineralCost(UnitType.MARAUDER)).isEqualTo(100); }
+
+    // --- Zerg unit stats ---
+
+    @Test
+    void droneMaxHealth() { assertThat(SC2Data.maxHealth(UnitType.DRONE)).isEqualTo(40); }
+
+    @Test
+    void zerglingMaxHealth() { assertThat(SC2Data.maxHealth(UnitType.ZERGLING)).isEqualTo(35); }
+
+    @Test
+    void overlordMaxHealth() { assertThat(SC2Data.maxHealth(UnitType.OVERLORD)).isEqualTo(200); }
+
+    @Test
+    void queenMaxHealth() { assertThat(SC2Data.maxHealth(UnitType.QUEEN)).isEqualTo(175); }
+
+    @Test
+    void droneSupplyCost() { assertThat(SC2Data.supplyCost(UnitType.DRONE)).isEqualTo(1); }
+
+    @Test
+    void overlordSupplyCost() { assertThat(SC2Data.supplyCost(UnitType.OVERLORD)).isEqualTo(0); }
+
+    @Test
+    void zerglingSupplyCost() { assertThat(SC2Data.supplyCost(UnitType.ZERGLING)).isEqualTo(1); }
+
+    @Test
+    void roachGasCost() { assertThat(SC2Data.gasCost(UnitType.ROACH)).isEqualTo(25); }
+
+    @Test
+    void hydraliskGasCost() { assertThat(SC2Data.gasCost(UnitType.HYDRALISK)).isEqualTo(50); }
+
+    @Test
+    void droneMineralCost() { assertThat(SC2Data.mineralCost(UnitType.DRONE)).isEqualTo(50); }
+
+    @Test
+    void zerglingMineralCost() { assertThat(SC2Data.mineralCost(UnitType.ZERGLING)).isEqualTo(25); }
+
+    @Test
+    void roachMineralCost() { assertThat(SC2Data.mineralCost(UnitType.ROACH)).isEqualTo(75); }
+
+    @Test
+    void hydraliskMineralCost() { assertThat(SC2Data.mineralCost(UnitType.HYDRALISK)).isEqualTo(100); }
+
+    @Test
+    void overlordMineralCost() { assertThat(SC2Data.mineralCost(UnitType.OVERLORD)).isEqualTo(100); }
+
+    @Test
+    void queenMineralCost() { assertThat(SC2Data.mineralCost(UnitType.QUEEN)).isEqualTo(150); }
+
+    @Test
+    void queenSupplyCost() { assertThat(SC2Data.supplyCost(UnitType.QUEEN)).isEqualTo(2); }
+
+    // --- New SC2Data constants ---
+
+    @Test
+    void muleLifetimeLoopsIsPositive() {
+        assertThat(SC2Data.MULE_LIFETIME_LOOPS).isEqualTo(1434);
+    }
+
+    @Test
+    void muleIncomePerTickIsPositive() {
+        assertThat(SC2Data.muleIncomePerTick()).isGreaterThan(0);
+    }
+
+    @Test
+    void queenEnergyRegenPerLoopIsPositive() {
+        assertThat(SC2Data.QUEEN_ENERGY_REGEN_PER_LOOP).isGreaterThan(0);
+    }
 }

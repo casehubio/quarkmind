@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReplayValidationHarnessTest {
 
     @Test
-    void countProbesPerBase_zeroCompleteNexuses_returnsEmptyArray() {
+    void countWorkersPerBase_zeroCompleteNexuses_returnsEmptyArray() {
         Building incompleteNexus = new Building("nexus-0", BuildingType.NEXUS,
             new Point2d(8, 8), 750, 1500, false);
 
@@ -21,11 +21,11 @@ class ReplayValidationHarnessTest {
             List.of(probe("p-0", 9, 9), probe("p-1", 10, 9)),
             List.of(incompleteNexus));
 
-        assertThat(ReplayValidationHarness.countProbesPerBase(state)).isEmpty();
+        assertThat(ReplayValidationHarness.countWorkersPerBase(state)).isEmpty();
     }
 
     @Test
-    void countProbesPerBase_singleNexus_allProbesAssigned() {
+    void countWorkersPerBase_singleNexus_allProbesAssigned() {
         Building nexus = new Building("nexus-0", BuildingType.NEXUS,
             new Point2d(8, 8), 1500, 1500, true);
 
@@ -33,11 +33,11 @@ class ReplayValidationHarnessTest {
             List.of(probe("p-0", 9, 9), probe("p-1", 10, 9), probe("p-2", 7, 8)),
             List.of(nexus));
 
-        assertThat(ReplayValidationHarness.countProbesPerBase(state)).containsExactly(3);
+        assertThat(ReplayValidationHarness.countWorkersPerBase(state)).containsExactly(3);
     }
 
     @Test
-    void countProbesPerBase_twoNexuses_probesAssignedByProximity() {
+    void countWorkersPerBase_twoNexuses_probesAssignedByProximity() {
         Building nexus0 = new Building("nexus-0", BuildingType.NEXUS,
             new Point2d(8, 8), 1500, 1500, true);
         Building nexus1 = new Building("nexus-1", BuildingType.NEXUS,
@@ -47,11 +47,11 @@ class ReplayValidationHarnessTest {
             List.of(probe("p-0", 9, 9), probe("p-1", 10, 8), probe("p-2", 29, 30)),
             List.of(nexus0, nexus1));
 
-        assertThat(ReplayValidationHarness.countProbesPerBase(state)).containsExactly(2, 1);
+        assertThat(ReplayValidationHarness.countWorkersPerBase(state)).containsExactly(2, 1);
     }
 
     @Test
-    void countProbesPerBase_nonProbeUnitsIgnored() {
+    void countWorkersPerBase_nonProbeUnitsIgnored() {
         Building nexus = new Building("nexus-0", BuildingType.NEXUS,
             new Point2d(8, 8), 1500, 1500, true);
         Unit zealot = new Unit("z-0", UnitType.ZEALOT, new Point2d(10, 10),
@@ -61,7 +61,7 @@ class ReplayValidationHarnessTest {
             List.of(probe("p-0", 9, 9), zealot),
             List.of(nexus));
 
-        assertThat(ReplayValidationHarness.countProbesPerBase(state)).containsExactly(1);
+        assertThat(ReplayValidationHarness.countWorkersPerBase(state)).containsExactly(1);
     }
 
     @Test

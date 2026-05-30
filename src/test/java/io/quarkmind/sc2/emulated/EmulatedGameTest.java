@@ -1957,7 +1957,7 @@ class EmulatedGameTest {
     }
 
     @Test
-    void countProbesPerBase_twoNexuses_distributesByProximity() {
+    void countWorkersPerBase_twoNexuses_distributesByProximity() {
         Building nexus0 = new Building("nexus-0", BuildingType.NEXUS,
             new Point2d(8, 8), 1500, 1500, true);
         Building nexus1 = new Building("nexus-1", BuildingType.NEXUS,
@@ -1966,7 +1966,7 @@ class EmulatedGameTest {
             probe("p-0", 9, 9),
             probe("p-1", 29, 30));
 
-        int[] result = EmulatedGame.countProbesPerBase(
+        int[] result = EmulatedGame.countWorkersPerBase(Race.PROTOSS,
             List.of(nexus0, nexus1), probes);
 
         assertThat(result).containsExactly(1, 1);
