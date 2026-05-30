@@ -54,15 +54,17 @@ enum ProductionResult { PROCEED, HANDLED, BLOCKED }
 |--------|-----------|---------|
 | `seedInitialState` | `reset()` | Seeds units, buildings, resources, supply |
 | `tickPassive` | `tick()` after income | Larva regen, MULE expiry+income, Queen energy |
-| `canProduce` | `handleTrain()` after building check, **before** resource deduction | Check larva (Zerg), identify MULE short-circuit (Terran). Returns PROCEED (resources not yet checked — proceed to deduct), HANDLED (MULE — resources already managed, exit handleTrain), or BLOCKED (no larva — abort, no resource touch) |
-| `onProductionCommitted` | `handleTrain()` after resource deduction | Consume larva, spawn EGG (Zerg). Never called if `canProduce` returned HANDLED or BLOCKED |
+| `canProduce` | `handleTrain()` after building check, **before** resource deduction | Gate check only — no state mutation. Returns PROCEED (proceed to resource deduction), HANDLED (MULE — skip resource deduction, but still call `onProductionCommitted`), or BLOCKED (no larva — abort, no resource touch) |
+| `onProductionCommitted` | `handleTrain()` after gate check — called for PROCEED **and** HANDLED, never for BLOCKED | Consume larva + spawn EGG (Zerg); spawn MULE + register expiry (Terran HANDLED path). Resource deduction has already happened for PROCEED; for HANDLED it was skipped (MULE costs 0) |
 | `onUnitSpawned` | `startTraining()` on completion | Overlord supply, EGG removal (Zerg). `buildingTag` is lambda-captured in `startTraining` and passed through |
 | `trainCount` | `startTraining()` | 2 for ZERGLING, 1 for all others. Default method; only ZergRaceModel overrides |
 | `workerType` | `countWorkersPerBase()` | PROBE / SCV / DRONE |
 | `townHallTypes` | `countWorkersPerBase()` | Town hall building types per race |
 
 **Why `canProduce` / `onProductionCommitted` instead of one method:**
-The original `consumeProductionResource` spec had larva consumption happen before the resource check. If minerals were insufficient, the larva was already gone and a stranded EGG existed in `state.units`. Splitting into two explicit phases — `canProduce` (query only, no state mutation) followed by `onProductionCommitted` (mutate after resources are confirmed) — eliminates the ordering hazard entirely. The `ProductionResult` enum also makes the MULE short-circuit explicit (HANDLED) rather than a surprising `false` return.
+The original `consumeProductionResource` spec had larva consumption happen before the resource check. If minerals were insufficient, the larva was already gone and a stranded EGG existed in `state.units`. Splitting into two explicit phases eliminates the ordering hazard entirely. The `ProductionResult` enum makes the MULE short-circuit explicit (HANDLED) rather than a surprising `false` return.
+
+`canProduce` is a pure gate — no state mutation in any implementation. MULE spawning happens in `onProductionCommitted` (called even for HANDLED, since MULE costs 0 resources — the HANDLED signal only tells `handleTrain` to skip resource deduction). This keeps all three models symmetric: `canProduce` gates, `onProductionCommitted` acts.
 
 **Why `trainCount` on `RaceModel`, not `SC2Data`:** Zergling's dual-spawn is race-specific production logic, not unit physics. Placing it in the domain-layer `SC2Data` would couple the domain to race production rules and make #74 harder — a plugin cannot override what's in a static class. The default method on `RaceModel` is the correct owner.
 
@@ -171,29 +173,35 @@ private void handleTrain(TrainIntent t, PlayerState state, long absLoop) {
     BuildingType required = SC2Data.trainedBy(t.unitType());
     if (required != BuildingType.UNKNOWN && building.type() != required) return;
 
-    // 2. canProduce — query only, no state mutation
+    // 2. canProduce — pure gate, no state mutation
     ProductionResult pr = playerRaceModel.canProduce(state, buildingTag, t.unitType());
     if (pr == ProductionResult.BLOCKED) return;
-    if (pr == ProductionResult.HANDLED) return;  // MULE: model already spawned it
 
-    // 3. Resource check (unchanged)
-    int mCost = SC2Data.mineralCost(t.unitType());
-    int gCost = SC2Data.gasCost(t.unitType());
-    int sCost = SC2Data.supplyCost(t.unitType());
-    if ((int) state.minerals < mCost || state.vespene < gCost
-            || state.supplyUsed + sCost > state.supply) return;
+    // 3. Resource check — skipped for HANDLED (MULE costs 0, no deduction needed)
+    if (pr == ProductionResult.PROCEED) {
+        int mCost = SC2Data.mineralCost(t.unitType());
+        int gCost = SC2Data.gasCost(t.unitType());
+        int sCost = SC2Data.supplyCost(t.unitType());
+        if ((int) state.minerals < mCost || state.vespene < gCost
+                || state.supplyUsed + sCost > state.supply) return;
 
-    // 4. Resource deduction (unchanged)
-    state.supplyUsed += sCost;
-    state.minerals   -= mCost;
-    state.vespene    -= gCost;
+        // 4. Resource deduction
+        state.supplyUsed += sCost;
+        state.minerals   -= mCost;
+        state.vespene    -= gCost;
+    }
 
-    // 5. onProductionCommitted — larva consume + EGG spawn (Zerg)
+    // 5. onProductionCommitted — always called for PROCEED and HANDLED, never for BLOCKED
+    //    Zerg: consume larva + spawn EGG
+    //    Terran HANDLED (MULE): spawn MULE unit + register expiry
+    //    Protoss / Terran non-MULE: no-op
     playerRaceModel.onProductionCommitted(state, buildingTag, t.unitType(), this::nextTagString);
 
-    // 6. Queue / start training (unchanged)
-    if (!isBusy) startTraining(buildingTag, t.unitType(), state, absLoop);
-    else         state.buildingQueues...add(t.unitType());
+    // 6. Queue / start training — skipped for HANDLED (MULE is not in the train queue)
+    if (pr == ProductionResult.PROCEED) {
+        if (!isBusy) startTraining(buildingTag, t.unitType(), state, absLoop);
+        else         state.buildingQueues...add(t.unitType());
+    }
 }
 ```
 
@@ -262,16 +270,20 @@ state.minerals += muleExpiresAtLoop.size() * SC2Data.muleIncomePerTick();
 ```
 
 **`canProduce(state, buildingTag, unitType)`:**
-- If `unitType == MULE`: spawn MULE unit at OC position, register `muleExpiresAtLoop.put(muleTag, currentGameLoop + SC2Data.MULE_LIFETIME_LOOPS)`, return `HANDLED` (short-circuits handleTrain — no resource deduction, no queue).
-- *Note: `canProduce` needs access to `currentGameLoop`. Thread it via a constructor field or store gameLoop in tickPassive.*
+- If `unitType == MULE`: return `HANDLED` (pure signal — no mutation).
 - All other units: return `PROCEED`.
 
-**`onProductionCommitted`:** no-op.  
+**`onProductionCommitted(state, buildingTag, unitType, tagSupplier)`:**
+- If `unitType == MULE`: spawn MULE unit at OC position using `tagSupplier.get()`, register `muleExpiresAtLoop.put(muleTag, currentGameLoop + SC2Data.MULE_LIFETIME_LOOPS)`. Return immediately — no queue entry.
+- All other units: no-op.
+
+*`currentGameLoop` is stored in `tickPassive` — `onProductionCommitted` reads it. No interface threading needed.*
+
 **`onUnitSpawned`:** no-op.  
 **`workerType()`:** SCV.  
 **`townHallTypes()`:** {COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS}.
 
-**gameLoop threading for MULE:** `TerranRaceModel` stores `long currentGameLoop` updated in `tickPassive`. `canProduce` reads it. This avoids threading gameLoop into the interface.
+**gameLoop threading for MULE:** `TerranRaceModel` stores `long currentGameLoop` updated in `tickPassive`. `onProductionCommitted` reads it for the MULE expiry registration. This avoids threading gameLoop into the interface.
 
 ---
 
@@ -360,7 +372,7 @@ All tests are plain JUnit — no `@QuarkusTest`.
 - `trainMarine_requiresBarracks` — rejected without Barracks
 - `trainMarauder_deductsGas` — 25 gas
 - `muleSpawn_addsIncomePerTick` — MULE appears in snapshot, minerals rise at boosted rate
-- `muleExpires_afterLifetime` — after 65 ticks, MULE unit gone, income normalises
+- `muleExpires_afterLifetime` — after 66 ticks (MULE_LIFETIME_LOOPS=1434 / 22 = 65.2 → expires at start of tick 66), MULE unit gone from snapshot, income normalises
 - `orbitalCommandTownHall_countsForWorkerAssignment` — SCV near OC counted for income
 
 **`ZergEmulatedGameTest`** (new):
@@ -379,11 +391,13 @@ All tests are plain JUnit — no `@QuarkusTest`.
 - `multipleHatcheries_separateLarvaCounters` — independent per-hatchery state
 - `reset_clearsZergRaceModelState` — after a full game (multiple hatcheries, queens, eggs), `reset()` clears `hatcheryLarvaCount`, `queenEnergy`, `eggTagByBuilding`, `hatcheryNextLarvaLoop`
 
-**SC2Data / TechTree tests:**
-- `trainCount_zergling_returns2`
-- `trainCount_others_return1` (spot-check Marine, Drone)
+**`SC2DataTest`** (additions):
 - `trainedBy_queen_isHatchery`
 - `trainedBy_mule_isOrbitalCommand`
+
+**`ZergEmulatedGameTest`** (additional — `trainCount` is on `ZergRaceModel`, not `SC2Data`):
+- `trainCount_zergling_returns2`
+- `trainCount_marine_returns1` (verifies default)
 
 ---
 
