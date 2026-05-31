@@ -5047,6 +5047,69 @@ class VisualizerRenderTest {
     }
 
     /**
+     * Spread test: three probes placed at exactly the same tile must render at distinct
+     * world x/z coordinates. applyUnitSpread() fans them into a ring around the centroid
+     * so they are individually visible on-screen rather than stacked.
+     *
+     * nextTag resets to 200 in reset() (called by startGame()). The initial 12 probes
+     * use hardcoded tags ("probe-0".."probe-11"), so the first spawnFriendlyUnitForTesting()
+     * call produces "friendly-200", second "friendly-201", third "friendly-202".
+     *
+     * Units are spawned BEFORE openPage() so they appear in the initial game state pushed
+     * by the openPage() observe call.
+     */
+    @Test
+    @Tag("browser")
+    void probesAtSamePositionAreSpreadApart() {
+        // Spawn 3 probes at exactly the same tile — simulates probes harvesting the same patch.
+        // nextTag resets to 200 in reset(), so tags are friendly-200, friendly-201, friendly-202.
+        simulatedGame.spawnFriendlyUnitForTesting(UnitType.PROBE, new Point2d(12, 12));
+        simulatedGame.spawnFriendlyUnitForTesting(UnitType.PROBE, new Point2d(12, 12));
+        simulatedGame.spawnFriendlyUnitForTesting(UnitType.PROBE, new Point2d(12, 12));
+
+        Page page = openPage();
+
+        page.waitForFunction(
+            "() => window.__test.unitCount() >= 15",  // 12 initial + 3 spawned
+            null, new Page.WaitForFunctionOptions().setTimeout(5_000));
+
+        // Read raw (unrounded) world x/z positions directly from the sprite objects.
+        // The sprite() test hook returns Math.round() values which may collapse spread
+        // deltas < 0.5 — reading position.x / position.z directly gives float precision.
+        @SuppressWarnings("unchecked")
+        Map<String, Object> pos0 = (Map<String, Object>) page.evaluate(
+            "() => { const sp = unitSprites.get('friendly-200'); return sp ? {x: sp.position.x, y: sp.position.z} : null; }");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> pos1 = (Map<String, Object>) page.evaluate(
+            "() => { const sp = unitSprites.get('friendly-201'); return sp ? {x: sp.position.x, y: sp.position.z} : null; }");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> pos2 = (Map<String, Object>) page.evaluate(
+            "() => { const sp = unitSprites.get('friendly-202'); return sp ? {x: sp.position.x, y: sp.position.z} : null; }");
+
+        assertThat(pos0).as("friendly-200 sprite must exist").isNotNull();
+        assertThat(pos1).as("friendly-201 sprite must exist").isNotNull();
+        assertThat(pos2).as("friendly-202 sprite must exist").isNotNull();
+
+        double x0 = ((Number) pos0.get("x")).doubleValue();
+        double y0 = ((Number) pos0.get("y")).doubleValue();
+        double x1 = ((Number) pos1.get("x")).doubleValue();
+        double y1 = ((Number) pos1.get("y")).doubleValue();
+        double x2 = ((Number) pos2.get("x")).doubleValue();
+        double y2 = ((Number) pos2.get("y")).doubleValue();
+
+        // All three must be distinct — spread must separate every pair
+        boolean p0EqualsP1 = Math.abs(x0 - x1) < 0.001 && Math.abs(y0 - y1) < 0.001;
+        boolean p1EqualsP2 = Math.abs(x1 - x2) < 0.001 && Math.abs(y1 - y2) < 0.001;
+        boolean p0EqualsP2 = Math.abs(x0 - x2) < 0.001 && Math.abs(y0 - y2) < 0.001;
+        assertThat(p0EqualsP1 || p1EqualsP2 || p0EqualsP2)
+            .as("probes at the same position must be spread — all three world positions must be distinct. " +
+                "Got: (%f,%f), (%f,%f), (%f,%f)".formatted(x0, y0, x1, y1, x2, y2))
+            .isFalse();
+
+        page.close();
+    }
+
+    /**
      * Enemy building disappear test: removed from game state must vanish from the scene.
      */
     @Test

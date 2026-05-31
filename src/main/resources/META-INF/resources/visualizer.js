@@ -1015,6 +1015,7 @@ function syncUnits(state) {
   syncUnitLayer(unitSprites,   unit3dMeshes,  state.myUnits          || [], false);
   syncUnitLayer(enemySprites,  enemy3dMeshes, state.enemyUnits        || [], true);
   syncUnitLayer(stagingSprites, stagingMeshes, state.enemyStagingArea  || [], true);
+  applyUnitSpread(unitSprites);   // spread co-located friendly units (2D only)
 }
 
 function syncBuildings(buildings) {
@@ -1220,6 +1221,45 @@ function syncUnitLayer(spriteMap, meshMap, units, isEnemy) {
       }
     }
   });
+}
+
+// Spreads unit sprites that are co-located (within TILE*0.5 on both axes) into a
+// uniform ring. Operates on rendered 2D sprite positions only — does not mutate
+// game state or 3D meshes. Stable within a session (Map insertion order preserved).
+// Note: raycaster clicks land on spread positions, not game-model positions — a
+// minor footgun if future features need to correlate screen clicks to game coords.
+function applyUnitSpread(spriteMap) {
+  const THRESHOLD = TILE * 0.5;
+  const SPREAD    = TILE * 0.32;
+
+  // Collect all current sprite positions
+  const entries = [];
+  spriteMap.forEach((sp, tag) => {
+    entries.push({ tag, sp, bx: sp.position.x, bz: sp.position.z });
+  });
+
+  // Group by proximity: O(n²) over sprites-per-patch — small n in practice
+  const assigned = new Set();
+  for (let i = 0; i < entries.length; i++) {
+    if (assigned.has(entries[i].tag)) continue;
+    const cluster = [entries[i]];
+    for (let j = i + 1; j < entries.length; j++) {
+      if (assigned.has(entries[j].tag)) continue;
+      const dx = Math.abs(entries[i].bx - entries[j].bx);
+      const dz = Math.abs(entries[i].bz - entries[j].bz);
+      if (dx < THRESHOLD && dz < THRESHOLD) cluster.push(entries[j]);
+    }
+    if (cluster.length > 1) {
+      const cx = cluster.reduce((s, e) => s + e.bx, 0) / cluster.length;
+      const cz = cluster.reduce((s, e) => s + e.bz, 0) / cluster.length;
+      cluster.forEach(({ sp }, idx) => {
+        const angle = (idx / cluster.length) * Math.PI * 2;
+        sp.position.x = cx + Math.cos(angle) * SPREAD;
+        sp.position.z = cz + Math.sin(angle) * SPREAD;
+      });
+    }
+    cluster.forEach(e => assigned.add(e.tag));
+  }
 }
 
 // ── Sprite direction system ───────────────────────────────────────────────────
