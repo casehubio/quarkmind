@@ -121,6 +121,7 @@ window.__test = {
     camTarget.set(sp.position.x, 0, sp.position.z);
     tDist = camDist;
     updateCamera();
+    renderer.render(scene, camera); // force synchronous render so samplePixel reads a fresh frame
     const v = sp.position.clone().project(camera);
     const sz = renderer.getSize(new THREE.Vector2());
     return { x: Math.round((v.x+1)/2*sz.width), y: Math.round((-v.y+1)/2*sz.height) };
@@ -141,6 +142,7 @@ window.__test = {
     camTarget.set(sp.position.x, 0, sp.position.z);
     tDist = camDist;
     updateCamera();
+    renderer.render(scene, camera); // force synchronous render so samplePixel reads a fresh frame
     const v = sp.position.clone().project(camera);
     const sz = renderer.getSize(new THREE.Vector2());
     return { x: Math.round((v.x+1)/2*sz.width), y: Math.round((-v.y+1)/2*sz.height) };
@@ -1044,18 +1046,59 @@ function syncBuildings(buildings) {
 // Sprites always face the camera and are never depth-occluded by terrain geometry.
 const RESOURCE_SPRITE_SIZE = () => TILE * 1.2 * Math.max(1, MARKER_SCALE);
 
+function drawGeyser(ctx, S) {
+  const cx = S / 2, cy = S / 2;
+  const grd = ctx.createRadialGradient(cx, cy, S * 0.02, cx, cy, S * 0.4);
+  grd.addColorStop(0, '#00cc88');
+  grd.addColorStop(1, '#007755');
+  ctx.fillStyle = grd;
+  ctx.beginPath(); ctx.ellipse(cx, cy, S * 0.4, S * 0.4, 0, 0, Math.PI * 2); ctx.fill();
+  [0.30, 0.50, 0.70].forEach(frac => {
+    ctx.strokeStyle = 'rgba(180,255,220,0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.ellipse(cx, cy, S * frac * 0.4, S * frac * 0.4, 0, 0, Math.PI * 2); ctx.stroke();
+  });
+}
+
+function drawMineralPatch(ctx, S) {
+  const cx = S / 2, cy = S / 2;
+  const grd = ctx.createRadialGradient(cx, cy, S * 0.02, cx, cy, S * 0.45);
+  grd.addColorStop(0, '#66ccff');
+  grd.addColorStop(1, '#2277aa');
+  ctx.fillStyle = grd;
+  ctx.beginPath(); ctx.ellipse(cx, cy, S * 0.45, S * 0.28, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(180,230,255,0.4)';
+  ctx.lineWidth = 2;
+  [-S * 0.06, S * 0.06].forEach(dy => {
+    ctx.beginPath(); ctx.moveTo(cx - S * 0.3, cy + dy); ctx.lineTo(cx + S * 0.3, cy + dy); ctx.stroke();
+  });
+}
+
+// Creates a canvas-texture SpriteMaterial for a resource type.
+// Called once at startup; result stored as a module-level constant.
+function makeResourceMaterial(type) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const ctx = c.getContext('2d');
+  if (type === 'geyser')  drawGeyser(ctx, 64);
+  else                    drawMineralPatch(ctx, 64);
+  const tex = new THREE.CanvasTexture(c);
+  return new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, alphaTest: 0.05 });
+}
+
+const GEYSER_MAT  = makeResourceMaterial('geyser');
+const MINERAL_MAT = makeResourceMaterial('mineral');
+
 function syncGeysers(geysers) {
   const seen = new Set();
   geysers.forEach(g => {
     seen.add(g.tag);
     if (!geyserMeshes.has(g.tag)) {
       const s = RESOURCE_SPRITE_SIZE();
-      const sp = new THREE.Sprite(
-        new THREE.SpriteMaterial({ color: 0x00dd66, opacity: 0.95 })
-      );
-      sp.scale.set(s, s, 1);
+      const sp = new THREE.Sprite(GEYSER_MAT.clone());
+      sp.scale.set(s * 0.9, s * 1.1, 1);
       const wp = gw(g.position.x, g.position.y);
-      sp.position.set(wp.x, TERRAIN_SURFACE_Y + s * 0.5, wp.z);
+      sp.position.set(wp.x, TERRAIN_SURFACE_Y + s * 0.55, wp.z);
       scene.add(sp);
       geyserMeshes.set(g.tag, sp);
     }
@@ -1071,10 +1114,8 @@ function syncMineralPatches(patches) {
     seen.add(p.tag);
     if (!mineralMeshes.has(p.tag)) {
       const s = RESOURCE_SPRITE_SIZE();
-      const sp = new THREE.Sprite(
-        new THREE.SpriteMaterial({ color: 0x44ccff, opacity: 0.95 })
-      );
-      sp.scale.set(s * 1.4, s * 0.8, 1); // wider than tall — mineral patch shape
+      const sp = new THREE.Sprite(MINERAL_MAT.clone());
+      sp.scale.set(s * 1.4, s * 0.8, 1);
       const wp = gw(p.position.x, p.position.y);
       sp.position.set(wp.x, TERRAIN_SURFACE_Y + s * 0.4, wp.z);
       scene.add(sp);

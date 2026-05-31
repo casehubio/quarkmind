@@ -5110,6 +5110,96 @@ class VisualizerRenderTest {
     }
 
     /**
+     * Pixel test: geyser sprite must render with a teal-green canvas texture.
+     * Geysers are seeded by reset() — geyser-0 at tile (5,11), geyser-1 at (11,5).
+     * focusOnFirstGeyser() aims the camera and returns the sprite's screen position.
+     * samplePixel() reads the rendered WebGL pixel — green channel must dominate.
+     */
+    @Test
+    @Tag("browser")
+    void geyserSpriteRendersGreen() {
+        Page page = openPage();
+
+        // geysers are seeded by reset() — geyser-0 at tile (5,11), geyser-1 at (11,5)
+        page.waitForFunction(
+            "() => window.__test.geyserCount() >= 2",
+            null, new Page.WaitForFunctionOptions().setTimeout(5_000));
+        page.waitForFunction(
+            "() => window.__test.threeReady()",
+            null, new Page.WaitForFunctionOptions().setTimeout(5_000));
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> pos = (Map<String, Object>) page.evaluate(
+            "() => window.__test.focusOnFirstGeyser()");
+        assertThat(pos).as("focusOnFirstGeyser must return a position").isNotNull();
+
+        int sx = ((Number) pos.get("x")).intValue();
+        int sy = ((Number) pos.get("y")).intValue();
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> pixel = (Map<String, Object>) page.evaluate(
+            "() => window.__test.samplePixel(" + sx + ", " + sy + ")");
+        assertThat(pixel).as("pixel sample must not be null").isNotNull();
+
+        int r = ((Number) pixel.get("r")).intValue();
+        int g = ((Number) pixel.get("g")).intValue();
+        int b = ((Number) pixel.get("b")).intValue();
+
+        // Geyser canvas: teal-green radial gradient. Green channel dominates.
+        // (r > 10 || b > 10) confirms a gradient rendered — not a degenerate pixel.
+        assertThat(r).as("geyser pixel: R < G (green dominates)").isLessThan(g);
+        assertThat(b).as("geyser pixel: B < G (green dominates)").isLessThan(g);
+        assertThat(r > 10 || b > 10).as("geyser pixel: gradient has R or B > 10").isTrue();
+
+        page.close();
+    }
+
+    /**
+     * Pixel test: mineral patch sprite must render with a blue canvas texture.
+     * A mineral patch is spawned at tile (10,5) before the page is opened.
+     * focusOnFirstMineral() aims the camera and returns the sprite's screen position.
+     * samplePixel() reads the rendered WebGL pixel — blue channel must dominate.
+     */
+    @Test
+    @Tag("browser")
+    void mineralPatchSpriteRendersBlue() {
+        simulatedGame.spawnMineralPatchForTesting(new Point2d(10, 5), 1500);
+        Page page = openPage();
+
+        page.waitForFunction(
+            "() => window.__test.mineralCount() >= 1",
+            null, new Page.WaitForFunctionOptions().setTimeout(5_000));
+        page.waitForFunction(
+            "() => window.__test.threeReady()",
+            null, new Page.WaitForFunctionOptions().setTimeout(5_000));
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> pos = (Map<String, Object>) page.evaluate(
+            "() => window.__test.focusOnFirstMineral()");
+        assertThat(pos).as("focusOnFirstMineral must return a position").isNotNull();
+
+        int sx = ((Number) pos.get("x")).intValue();
+        int sy = ((Number) pos.get("y")).intValue();
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> pixel = (Map<String, Object>) page.evaluate(
+            "() => window.__test.samplePixel(" + sx + ", " + sy + ")");
+        assertThat(pixel).as("pixel sample must not be null").isNotNull();
+
+        int r = ((Number) pixel.get("r")).intValue();
+        int g = ((Number) pixel.get("g")).intValue();
+        int b = ((Number) pixel.get("b")).intValue();
+
+        // Mineral canvas: blue radial gradient. Blue channel dominates.
+        // (r > 10 || g > 10) confirms gradient rendered — not a degenerate pixel.
+        assertThat(b).as("mineral pixel: B > R (blue dominates)").isGreaterThan(r);
+        assertThat(b).as("mineral pixel: B > G (blue dominates)").isGreaterThan(g);
+        assertThat(r > 10 || g > 10).as("mineral pixel: gradient has R or G > 10").isTrue();
+
+        page.close();
+    }
+
+    /**
      * Enemy building disappear test: removed from game state must vanish from the scene.
      */
     @Test
