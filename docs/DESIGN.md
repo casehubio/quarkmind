@@ -7,7 +7,7 @@ QuarkMind (formerly "starcraft", package root `io.quarkmind`) is a Quarkus appli
 All four plugin seams (Strategy, Economics, Tactics, Scouting) are implemented using different R&D frameworks. The bot can connect to a live SC2 process and issue real game commands. An emulation engine (`EmulatedGame`) provides physics-based game simulation without requiring a live SC2 binary, served with a Three.js live visualizer in an Electron window.
 
 **GitHub:** `mdproctor/quarkmind`
-**Test count:** 690 (unit + integration + Playwright E2E)
+**Test count:** 828 (unit + integration, default surefire run) + 288 Playwright E2E
 
 ---
 
@@ -281,9 +281,9 @@ A Three.js live visualizer renders game state each tick in a 3D orbiting-camera 
 - **Unit tests** (`new`, no CDI): `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `EmulatedGameTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`, `AbilityDiscoveryTest`, `AbilityMappingTest`, `ReplayCommandExtractorTest`, `TerranReplayCommandExtractorTest`, `ReplayValidationTest`, `ReplaySimulatedGameMovementTest`, `IEM10CommandExtractorSelectionDeltaTest` (10 focused tests for `applySelectionDelta` — Mask/SweepToEnd/OneIndice/None variants + packed-tag decoding), `SC2TrainTimeCalibrationTest` (two-source range-bounded modal calibration — pairs GAME_EVENTS abilLink commands with tracker UnitBorn events across 29 AI Arena replays), `SC2BuildTimeCalibrationTest` (UnitInit→UnitDone loop diff per building type across 30 AI Arena replays; addon names filtered to prevent contamination)
 - **Replay divergence report** (`@Tag("report")`, `mvn test -Preport`): `ReplayValidationReportTest` — runs `ReplayValidationHarness` to completion and prints full economic divergence report to stdout; excluded from default surefire run
 - **Integration tests** (`@QuarkusTest`, full CDI): `QaEndpointsTest`, `FullMockPipelineIT` — scheduler disabled, `orchestrator.gameTick()` called directly
-- **Playwright E2E tests**: 251 render tests — sprite counts/positions/health tinting/death; panel inspect (team label, HP text, portrait canvas pixel alpha); pixel-colour sampling for minerals, geysers, creep; fog; use `window.__test` semantic API including `clickUnit(tag,isEnemy)`, `clickBuilding(tag,isEnemy)`, `panelTeam()`, `panelHpText()`, `panelPortraitSample()`, `unitHasTag(tag)`, `buildingHasTag(tag)`
+- **Playwright E2E tests**: 288 render tests — sprite counts/positions/health tinting/death; panel inspect (team label, HP text, portrait canvas pixel alpha); pixel-colour sampling for minerals, geysers, creep; fog; use `window.__test` semantic API including `clickUnit(tag,isEnemy)`, `clickBuilding(tag,isEnemy)`, `panelTeam()`, `panelHpText()`, `panelPortraitSample()`, `unitHasTag(tag)`, `buildingHasTag(tag)`
 - **Benchmark tests** (`@Tag("benchmark")`, `mvn test -Pbenchmark`): excluded from normal runs; `AtomicReference<TickTimings>` in `AgentOrchestrator` exposes last tick's phase breakdown; baseline: 2ms mean plugin time (pre-E2)
-- **Total: ~649 tests**
+- **Total: 828 (unit + integration, default surefire run) + 288 Playwright E2E**
 
 **Rules:**
 - Never use `@QuarkusTest` for tests that can be plain JUnit
@@ -302,13 +302,12 @@ E1–E6 complete. QuarkMind:
 - A* pathfinding with terrain-aware edge costs (RAMP tiles cost 1.5×); `AStarPathfinder.smoothPath()` applies sub-tile LOS greedy string-pulling post-processing; `PathfindingMovement.advance()` applies smoothing after `findPath()`
 - Building collision in emulated physics: `enforceWall()` blocks unit entry into completed building footprints; `SC2Data.buildingRadius(BuildingType)` maps types to circular radii (2.5 for Nexus/Hatchery/CC, 1.5 for 3×3 tech, 1.0 for 2×2 structures); entry-only semantics allow workers already near Nexus to move freely
 - Three.js 3D visualizer (replaced PixiJS in E14): orbiting camera, terrain, directional cartoon sprites for all three races, fog of war, unit/building inspect panel (instant — reads from cached WebSocket state)
-- 629 tests: unit + integration + Playwright E2E
+- 828 tests (unit + integration, default surefire run) + 288 Playwright E2E
 
 ## Next Steps
 
 - **#13 Live SC2 smoke test** — blocked on SC2 availability
 - **#14 GraalVM native image tracing** — blocked on #13
-- **Deferred visualizer work** — probe overlap fix, HTML mineral display, geyser sprite, time-based UI tests
 - **LangChain4j experimental StrategyTask** — LLM-guided strategy as a fifth R&D integration (Phase 4+, Ollama local model); deferred until core emulation is stable
 - **Intent dispatch quality** — no guard against dead unit tags or incomplete buildings; bot commands whatever tag the plugin supplies
 - **#143 Multi-base mining** — ✅ resolved: `EmulatedGame` sums per-base income; `ReplayValidationHarness` assigns probes to nearest nexus from GT; `SC2Data.mineralIncomePerTick` unchanged (per-base function)
@@ -342,6 +341,7 @@ See [docs/adr/INDEX.md](adr/INDEX.md) for the full index.
 | [ADR-0004](adr/0004-flow-single-consume-step.md) | Quarkus Flow single `consume()` step for economics |
 | [ADR-0005](adr/0005-sc2data-in-domain.md) | `SC2Data` shared constants in `domain/` |
 | [ADR-0006](adr/0006-emulatedgame-simulatedgame-separation.md) | `EmulatedGame`/`SimulatedGame` separation |
+| [ADR-0007](adr/0007-racemodel-plugin-seam.md) | `RaceModel` plugin seam for multi-race `EmulatedGame` |
 
 **Deferred:**
 - `HttpSC2Engine` — network bridge; SC2 on one machine, agent on another (Phase 4)
