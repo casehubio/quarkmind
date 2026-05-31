@@ -66,6 +66,9 @@ window.__test = {
   threeReady:    () => !!renderer,
   terrainReady:  () => terrainLoaded,
   wsConnected:   () => wsConnected,
+  // gameFrame in SimulatedGame is the outer tick count (SC2Data.LOOPS_PER_TICK = 22 loops/tick).
+  // Multiply by 22 before dividing by 22.4 (SC2Data.GAME_LOOPS_PER_SECOND — Faster speed).
+  gameTimeSeconds: () => ((lastState?.gameFrame ?? 0) * 22) / 22.4,
   hudText:       () => document.getElementById('hud')?.textContent ?? '',
   unitCount:     () => unitSprites.size,
   enemyCount:    () => enemySprites.size,

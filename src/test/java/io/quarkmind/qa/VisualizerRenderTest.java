@@ -157,6 +157,18 @@ class VisualizerRenderTest {
         return Integer.parseInt(m.group(1).replace(",", ""));
     }
 
+    /**
+     * Advances the engine by enough outer ticks to cover the requested game-time seconds.
+     * One outer tick = SC2Data.LOOPS_PER_TICK (22) game loops.
+     * Calls engine.observe() after the loop so the visualizer receives updated state.
+     */
+    private void tickForSeconds(double seconds) {
+        int ticks = (int) Math.ceil(
+            seconds * SC2Data.GAME_LOOPS_PER_SECOND / SC2Data.LOOPS_PER_TICK);
+        for (int i = 0; i < ticks; i++) engine.tick();
+        engine.observe();
+    }
+
     // -------------------------------------------------------------------------
     // Tests — disabled (PixiJS-specific, not applicable to Three.js renderer)
     // -------------------------------------------------------------------------
@@ -5195,6 +5207,43 @@ class VisualizerRenderTest {
         assertThat(b).as("mineral pixel: B > R (blue dominates)").isGreaterThan(r);
         assertThat(b).as("mineral pixel: B > G (blue dominates)").isGreaterThan(g);
         assertThat(r > 10 || g > 10).as("mineral pixel: gradient has R or G > 10").isTrue();
+
+        page.close();
+    }
+
+    /**
+     * Verifies mineral income expressed in game-time seconds, not tick counts.
+     * gameTimeSeconds = gameFrame * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND.
+     * After 5 game-seconds (6 outer ticks), gameTimeSeconds ≈ 5.89.
+     * SimulatedGame.tick() adds exactly 5 minerals per tick.
+     */
+    @Test
+    @Tag("browser")
+    void mineralIncomeScalesWithGameTime() {
+        Page page = openPage();
+
+        tickForSeconds(5);  // ceil(5 * 22.4 / 22) = 6 ticks → gameFrame=6 → ~5.89s
+
+        // Verify the JS time accessor reports ≥ 4.5 seconds (expected ~5.89)
+        page.waitForFunction(
+            "() => window.__test.gameTimeSeconds() >= 4.5",
+            null, new Page.WaitForFunctionOptions().setTimeout(3_000));
+
+        double reportedSeconds = ((Number) page.evaluate(
+            "() => window.__test.gameTimeSeconds()")).doubleValue();
+        // Expected: 6 ticks × 22 loops / 22.4 loops/sec = 5.893s
+        assertThat(reportedSeconds)
+            .as("gameTimeSeconds after 6 ticks must be ≈ 5.89s")
+            .isCloseTo(5.893, org.assertj.core.data.Offset.offset(0.5));
+
+        // Verify mineral income: 6 ticks × 5 minerals/tick + INITIAL_MINERALS = 80
+        int minerals = parseMinerals((String) page.evaluate("() => window.__test.hudText()"));
+        int ticks = (int) Math.ceil(
+            5 * SC2Data.GAME_LOOPS_PER_SECOND / SC2Data.LOOPS_PER_TICK); // 6
+        int expectedFloor = SC2Data.INITIAL_MINERALS + ticks * 5; // 50 + 30 = 80
+        assertThat(minerals)
+            .as("minerals after 6 ticks must be exactly " + expectedFloor + " (SimulatedGame adds 5/tick, deterministic)")
+            .isEqualTo(expectedFloor);
 
         page.close();
     }
