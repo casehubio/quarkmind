@@ -26,6 +26,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -146,14 +148,13 @@ class VisualizerRenderTest {
     /** Convert a game tile Z to Three.js world Z. */
     private static double worldZ(double tileZ) { return tileZ * TILE - HALF_H; }
 
-    /** Extract minerals integer from "Minerals: 55   Gas: ..." HUD text. */
+    private static final Pattern MINERALS_PATTERN = Pattern.compile("Minerals:\\s*([\\d,]+)");
+
+    /** Extract minerals integer from "Minerals: 1,234   Gas: ..." HUD text. */
     private static int parseMinerals(String hud) {
-        int idx = hud.indexOf("Minerals:");
-        if (idx < 0) throw new AssertionError("HUD text missing 'Minerals:': " + hud);
-        String rest = hud.substring(idx + "Minerals:".length()).trim();
-        int end = 0;
-        while (end < rest.length() && Character.isDigit(rest.charAt(end))) end++;
-        return Integer.parseInt(rest.substring(0, end));
+        Matcher m = MINERALS_PATTERN.matcher(hud);
+        if (!m.find()) throw new AssertionError("HUD text missing 'Minerals:': " + hud);
+        return Integer.parseInt(m.group(1).replace(",", ""));
     }
 
     // -------------------------------------------------------------------------
@@ -412,6 +413,49 @@ class VisualizerRenderTest {
         page.close();
     }
 
+    @Test
+    @Tag("browser")
+    void mineralHudFormatsLargeValues() {
+        Page page = openPage();
+
+        // Tick 190 times: minerals = 50 + 190*5 = 1000 → should render as "1,000"
+        for (int i = 0; i < 190; i++) engine.tick();
+        engine.observe();
+
+        page.waitForFunction(
+            "() => window.__test.hudText().includes('1,000') || " +
+            "      window.__test.hudText().includes('1,0')",
+            null, new Page.WaitForFunctionOptions().setTimeout(5_000));
+
+        String hud = (String) page.evaluate("() => window.__test.hudText()");
+        assertThat(hud).as("minerals 1000 must be formatted with comma").contains("1,000");
+        page.close();
+    }
+
+    @Test
+    @Tag("browser")
+    void mineralHudTierClass() {
+        Page page = openPage();
+
+        // INITIAL_MINERALS = 50 → minerals-low tier (50-149)
+        String tierAtStart = (String) page.evaluate(
+            "() => document.getElementById('minerals-val')?.className ?? 'element-missing'");
+        assertThat(tierAtStart).as("minerals=50 should show minerals-low class").isEqualTo("minerals-low");
+
+        // Tick 20 times: minerals = 50 + 100 = 150 → no tier class
+        for (int i = 0; i < 20; i++) engine.tick();
+        engine.observe();
+        page.waitForFunction(
+            "() => { const el = document.getElementById('minerals-val'); " +
+            "        return el && el.className === ''; }",
+            null, new Page.WaitForFunctionOptions().setTimeout(5_000));
+
+        String tierAt150 = (String) page.evaluate(
+            "() => document.getElementById('minerals-val')?.className ?? 'element-missing'");
+        assertThat(tierAt150).as("minerals=150 should have no tier class").isEmpty();
+        page.close();
+    }
+
     /**
      * HUD update test: the mineral counter must increase after game ticks.
      * MockEngine adds +5 minerals per tick. Uses waitForFunction so no sleep needed.
@@ -431,8 +475,8 @@ class VisualizerRenderTest {
 
         final int threshold = before;
         page.waitForFunction(
-            "() => { const m = window.__test.hudText().match(/Minerals:\\s*(\\d+)/); " +
-            "        return m && parseInt(m[1]) > " + threshold + "; }",
+            "() => { const m = window.__test.hudText().match(/Minerals:\\s*([\\d,]+)/); " +
+            "        return m && parseInt(m[1].replace(/,/g,'')) > " + threshold + "; }",
             null, new Page.WaitForFunctionOptions().setTimeout(5_000));
 
         int after = parseMinerals((String) page.evaluate("() => window.__test.hudText()"));

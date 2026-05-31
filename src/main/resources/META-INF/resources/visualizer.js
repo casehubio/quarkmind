@@ -966,8 +966,13 @@ function autocentreCamera(state) {
 }
 
 function updateHud(state) {
-  document.getElementById('hud').textContent =
-    `Minerals: ${state.minerals}   Gas: ${state.vespene}` +
+  const m = state.minerals ?? 0;
+  const tier = m < 50 ? 'minerals-critical' : m < 150 ? 'minerals-low' : '';
+  // innerHTML is safe here — state.minerals is a server-computed integer through toLocaleString(),
+  // never user-controlled. Do not extend this pattern to user-supplied strings.
+  document.getElementById('hud').innerHTML =
+    `Minerals: <span id="minerals-val" class="${tier}">${m.toLocaleString('en-US')}</span>` +
+    `   Gas: ${state.vespene}` +
     `   Supply: ${state.supplyUsed}/${state.supply}` +
     `   Frame: ${state.gameFrame}`;
 }
