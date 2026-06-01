@@ -90,7 +90,7 @@ class EnemyBehavior implements PlayerBehavior {
     // -------------------------------------------------------------------------
 
     private void accumulateMinerals() {
-        enemy.minerals += strategy.mineralsPerTick();
+        enemy.addMinerals(strategy.mineralsPerTick());
     }
 
     // -------------------------------------------------------------------------
@@ -127,8 +127,8 @@ class EnemyBehavior implements PlayerBehavior {
             techTree.nextRequired(target, built).ifPresent(prereq -> {
                 if (!pendingBuildings.contains(prereq)) {
                     int bCost = SC2Data.mineralCost(prereq);
-                    if (enemy.minerals >= bCost) {
-                        enemy.minerals -= bCost;
+                    if (enemy.minerals() >= bCost) {
+                        enemy.deductMinerals(bCost);
                         String tag = "ebldg-" + nextTag++;
                         Point2d pos = buildingPosition(pendingBuildings.size());
                         queue.add(new BuildIntent(tag, prereq, pos));
@@ -141,12 +141,12 @@ class EnemyBehavior implements PlayerBehavior {
         }
 
         int cost = SC2Data.mineralCost(target);
-        if (enemy.minerals < cost) return;
+        if (enemy.minerals() < cost) return;
 
         // Afford it — issue the intent; handleTrain() does the actual mineral deduction.
         // Do NOT deduct here: double deduction was the bug (EnemyBehavior deducted, then handleTrain deducted again).
         BuildingType needed = SC2Data.trainedBy(target);
-        Optional<Building> trainer = enemy.buildings.stream()
+        Optional<Building> trainer = enemy.buildings().stream()
             .filter(b -> b.isComplete() && b.type() == needed)
             .findFirst();
         if (trainer.isEmpty()) {
@@ -157,12 +157,12 @@ class EnemyBehavior implements PlayerBehavior {
         trainingPending = true;
         currentTarget = Optional.empty();
         log.debugf("[ENEMY] Queued TrainIntent: %s from %s (cost=%d, minerals_left=%.0f)",
-            target, trainer.get().tag(), cost, enemy.minerals);
+            target, trainer.get().tag(), cost, enemy.minerals());
     }
 
     private Set<BuildingType> builtBuildingTypes() {
         Set<BuildingType> built = new HashSet<>();
-        for (Building b : enemy.buildings) built.add(b.type());
+        for (Building b : enemy.buildings()) built.add(b.type());
         return built;
     }
 
@@ -185,20 +185,20 @@ class EnemyBehavior implements PlayerBehavior {
 
     private void tickAttackLaunch(GameState observation, IntentQueue queue) {
         EnemyAttackConfig atk = strategy.attackConfig();
-        int stagingSize = enemy.stagingArea.size();
+        int stagingSize = stagingArea.size();
         if (stagingSize == 0) return;
         boolean thresholdMet = stagingSize >= atk.armyThreshold();
         boolean timerFired   = framesSinceLastAttack >= atk.attackIntervalFrames();
         if (!thresholdMet && !timerFired) return;
 
         initialAttackSize = stagingSize;
-        for (Unit u : enemy.stagingArea) {
-            enemy.units.add(u);
+        for (Unit u : stagingArea) {
+            enemy.addUnit(u);
             queue.add(new AttackIntent(u.tag(), NEXUS_POS));
         }
         log.infof("[ENEMY] Attack launched: %d units (threshold=%b timer=%b)",
             stagingSize, thresholdMet, timerFired);
-        enemy.stagingArea.clear();
+        stagingArea.clear();
         framesSinceLastAttack = 0;
     }
 
@@ -213,7 +213,7 @@ class EnemyBehavior implements PlayerBehavior {
 
         // 1. Per-unit health threshold
         if (atk.retreatHealthPercent() > 0) {
-            for (Unit u : enemy.units) {
+            for (Unit u : enemy.units()) {
                 if (retreating.contains(u.tag())) continue;
                 double totalHp    = u.health() + u.shields();
                 double maxTotalHp = (double) u.maxHealth() + u.maxShields();
@@ -228,15 +228,15 @@ class EnemyBehavior implements PlayerBehavior {
 
         // 2. Army-wide depletion threshold
         if (atk.retreatArmyPercent() > 0) {
-            double survivingPct = (double) enemy.units.size() / initialAttackSize * 100;
+            double survivingPct = (double) enemy.units().size() / initialAttackSize * 100;
             if (survivingPct < atk.retreatArmyPercent()) {
-                for (Unit u : enemy.units) {
+                for (Unit u : enemy.units()) {
                     if (retreating.contains(u.tag())) continue;
                     retreating.add(u.tag());
                     queue.add(new MoveIntent(u.tag(), STAGING_POS));
                 }
                 log.infof("[ENEMY] Army retreat: %.0f%% surviving (%d/%d)",
-                    survivingPct, enemy.units.size(), initialAttackSize);
+                    survivingPct, enemy.units().size(), initialAttackSize);
             }
         }
     }
@@ -290,7 +290,7 @@ class EnemyBehavior implements PlayerBehavior {
             case ZERG    -> BuildingType.HATCHERY;
         };
         int hp = SC2Data.maxBuildingHealth(main);
-        enemy.buildings.add(new Building("enemy-main", main,
+        enemy.addBuilding(new Building("enemy-main", main,
             new Point2d(50, 51), hp, hp, true));
         log.debugf("[ENEMY] Seeded main structure: %s", main);
     }
@@ -303,7 +303,7 @@ class EnemyBehavior implements PlayerBehavior {
         return new EnemyObservation(
             obs.myUnits(),                 // from enemy's POV, "player units" = the friendly units
             Set.of(),                      // enemy buildings not tracked in emulated game
-            (int) enemy.minerals,
+            (int) enemy.minerals(),
             obs.gameFrame()
         );
     }

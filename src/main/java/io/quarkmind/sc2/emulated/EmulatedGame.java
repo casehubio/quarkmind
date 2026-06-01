@@ -22,11 +22,15 @@ public class EmulatedGame {
     final PlayerState friendly = new PlayerState();
     final PlayerState enemy    = new PlayerState();
 
+    // --- Physics state (movement targets, cooldowns, production queues) ---
+    final PhysicsState friendlyPhysics = new PhysicsState();
+    final PhysicsState enemyPhysics    = new PhysicsState();
+
     // --- Race model (plugin seam) ---
     private RaceModel playerRaceModel = new ProtossRaceModel();
 
     // --- Enemy AI ---
-    private EnemyBehavior enemyBehavior;
+    EnemyBehavior enemyBehavior;   // package-private for tests
     private final IntentQueue enemyIntentQueue = new IntentQueue();
 
     // --- Shared / game-level state ---
@@ -48,7 +52,9 @@ public class EmulatedGame {
 
     public void reset() {
         friendly.clear();
+        friendlyPhysics.clear();
         enemy.clear();
+        enemyPhysics.clear();
         nextTag     = 200;
         gameFrame   = 0;
         miningProbesOverridden = false;
@@ -60,12 +66,12 @@ public class EmulatedGame {
 
         // Seed friendly player via race model
         playerRaceModel.seedInitialState(friendly, geysers);
-        miningProbesPerBase = countWorkersPerBase(playerRaceModel, friendly.buildings, friendly.units);
+        miningProbesPerBase = countWorkersPerBase(playerRaceModel, friendly.buildings(), friendly.units());
 
         // Seed enemy player with effectively unlimited supply and gas so TrainIntents are never
         // rejected by resource checks. Minerals are earned each tick via EnemyBehavior.accumulateMinerals().
-        enemy.supply  = 200;
-        enemy.vespene = 9999;
+        enemy.setSupply(200);
+        enemy.setVespene(9999);
 
         // Reset enemy behavior (if set)
         if (enemyBehavior != null) enemyBehavior.reset(enemyBehavior.currentStrategy());
@@ -73,31 +79,31 @@ public class EmulatedGame {
 
     public void tick() {
         if (!miningProbesOverridden) {
-            miningProbesPerBase = countWorkersPerBase(playerRaceModel, friendly.buildings, friendly.units);
+            miningProbesPerBase = countWorkersPerBase(playerRaceModel, friendly.buildings(), friendly.units());
         }
         miningProbesOverridden = false;
         gameFrame++;
         for (final int workersAtBase : miningProbesPerBase) {
-            friendly.minerals += SC2Data.mineralIncomePerTick(workersAtBase);
+            friendly.addMinerals(SC2Data.mineralIncomePerTick(workersAtBase));
         }
         playerRaceModel.tickPassive(friendly, gameFrame * (long) SC2Data.LOOPS_PER_TICK);
         moveFriendlyUnits();
         // Recompute after movement, before combat: a unit that dies this tick still
         // provided vision for this frame — correct SC2 behaviour.
-        visibility.recompute(friendly.units, friendly.buildings, terrainGrid);
+        visibility.recompute(friendly.units(), friendly.buildings(), terrainGrid);
         moveEnemyUnits();
         resolveCombat();
         tickEnemyRetreatTransfer();
-        friendly.fireCompletions(gameFrame);
-        enemy.fireCompletions(gameFrame);
-        drainBuildingQueues(friendly);
-        drainBuildingQueues(enemy);
+        friendlyPhysics.fireCompletions(gameFrame);
+        enemyPhysics.fireCompletions(gameFrame);
+        drainBuildingQueues(friendly, friendlyPhysics);
+        drainBuildingQueues(enemy, enemyPhysics);
         spawnEnemyWaves();
         // Enemy behavior tick
         if (enemyBehavior != null) {
             GameState enemyPov = snapshotForEnemy();
             enemyBehavior.tick(enemyPov, enemyIntentQueue);
-            enemyIntentQueue.drainAll().forEach(intent -> applyIntent(intent, enemy));
+            enemyIntentQueue.drainAll().forEach(intent -> applyIntent(intent, enemy, enemyPhysics));
         }
     }
 
@@ -120,7 +126,7 @@ public class EmulatedGame {
         }
         // Building collision — always active; both sides' completed buildings are solid.
         // Only block entry: units already inside a radius (e.g. workers near Nexus) move freely.
-        for (var bldg : friendly.buildings) {
+        for (var bldg : friendly.buildings()) {
             float r = SC2Data.buildingRadius(bldg.type());
             if (bldg.isComplete()
                     && distance(current, bldg.position()) >= r
@@ -129,7 +135,7 @@ public class EmulatedGame {
                 return current;
             }
         }
-        for (var bldg : enemy.buildings) {
+        for (var bldg : enemy.buildings()) {
             float r = SC2Data.buildingRadius(bldg.type());
             if (bldg.isComplete()
                     && distance(current, bldg.position()) >= r
@@ -142,13 +148,13 @@ public class EmulatedGame {
     }
 
     private void moveFriendlyUnits() {
-        friendly.units.replaceAll(u -> {
-            Point2d target = friendly.unitTargets.get(u.tag());
+        friendly.replaceAllUnits(u -> {
+            Point2d target = friendlyPhysics.unitTargets.get(u.tag());
             if (target == null) return u;
             Point2d newPos = enforceWall(u.tag(),
                 movementStrategy.advance(u.tag(), u.position(), target, unitSpeed),
                 u.position());
-            if (distance(newPos, target) < 0.2) friendly.unitTargets.remove(u.tag());
+            if (distance(newPos, target) < 0.2) friendlyPhysics.unitTargets.remove(u.tag());
             return new Unit(u.tag(), u.type(), newPos, u.health(), u.maxHealth(),
                             u.shields(), u.maxShields(), 0, 0);
         });
@@ -156,8 +162,8 @@ public class EmulatedGame {
 
     private void moveEnemyUnits() {
         Set<String> retreating = enemyBehavior != null ? enemyBehavior.retreatingUnits() : Set.of();
-        enemy.units.replaceAll(u -> {
-            Point2d target = enemy.unitTargets.getOrDefault(u.tag(), EnemyBehavior.NEXUS_POS);
+        enemy.replaceAllUnits(u -> {
+            Point2d target = enemyPhysics.unitTargets.getOrDefault(u.tag(), EnemyBehavior.NEXUS_POS);
             Point2d newPos = enforceWall(u.tag(),
                 movementStrategy.advance(u.tag(), u.position(), target, unitSpeed),
                 u.position());
@@ -182,13 +188,13 @@ public class EmulatedGame {
     private void tickEnemyRetreatTransfer() {
         if (enemyBehavior == null) return;
         Set<String> retreating = enemyBehavior.retreatingUnits();
-        enemy.units.removeIf(u -> {
+        enemy.removeUnitsWhere(u -> {
             if (!retreating.contains(u.tag())) return false;
             if (distance(u.position(), EnemyBehavior.STAGING_POS) >= 0.1) return false;
             enemyBehavior.clearRetreating(u.tag());
-            enemy.unitTargets.remove(u.tag());
+            enemyPhysics.unitTargets.remove(u.tag());
             movementStrategy.clearUnit(u.tag());
-            enemy.stagingArea.add(u);
+            enemyBehavior.stagingArea.add(u);
             log.debugf("[EMULATED] Unit %s arrived at staging (hp=%d shields=%d)",
                 u.tag(), u.health(), u.shields());
             return true;
@@ -204,9 +210,9 @@ public class EmulatedGame {
                                           wave.spawnPosition().y());
                 String tag = "enemy-" + nextTag++;
                 int hp = SC2Data.maxHealth(type);
-                enemy.units.add(new Unit(tag, type, pos, hp, hp,
+                enemy.addUnit(new Unit(tag, type, pos, hp, hp,
                     SC2Data.maxShields(type), SC2Data.maxShields(type), 0, 0));
-                enemy.unitTargets.put(tag, wave.targetPosition());
+                enemyPhysics.unitTargets.put(tag, wave.targetPosition());
             }
             log.infof("[EMULATED] Enemy wave spawned: %dx%s at frame %d",
                 wave.unitTypes().size(), wave.unitTypes().get(0), gameFrame);
@@ -216,45 +222,46 @@ public class EmulatedGame {
 
 
     public void applyIntent(Intent intent) {
-        applyIntent(intent, friendly);
+        applyIntent(intent, friendly, friendlyPhysics);
     }
 
     public void applyIntent(TimedIntent ti) {
         Runnable action = switch (ti.intent()) {
-            case TrainIntent  t -> () -> handleTrain(t, friendly, ti.loop());
-            case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), friendly);
-            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), friendly);
-            case BuildIntent  b -> () -> handleBuild(b, friendly, ti.loop());
-            case BlinkIntent  b -> () -> executeBlink(b.unitTag(), friendly);
+            case TrainIntent  t -> () -> handleTrain(t, friendly, friendlyPhysics, ti.loop());
+            case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), friendly, friendlyPhysics);
+            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), friendly, friendlyPhysics);
+            case BuildIntent  b -> () -> handleBuild(b, friendly, friendlyPhysics, ti.loop());
+            case BlinkIntent  b -> () -> executeBlink(b.unitTag(), friendly, friendlyPhysics);
         };
         action.run();
     }
 
-    void applyIntent(Intent intent, PlayerState state) {
+    void applyIntent(Intent intent, PlayerState state, PhysicsState physics) {
         Runnable action = switch (intent) {
-            case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), state);
-            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), state);
-            case TrainIntent  t -> () -> handleTrain(t, state);
-            case BuildIntent  b -> () -> handleBuild(b, state, gameFrame * SC2Data.LOOPS_PER_TICK);
-            case BlinkIntent  b -> () -> executeBlink(b.unitTag(), state);
+            case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), state, physics);
+            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), state, physics);
+            case TrainIntent  t -> () -> handleTrain(t, state, physics);
+            case BuildIntent  b -> () -> handleBuild(b, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
+            case BlinkIntent  b -> () -> executeBlink(b.unitTag(), state, physics);
         };
         action.run();
     }
 
-    private void setTarget(String tag, Point2d target, PlayerState state) {
-        if (state.units.stream().anyMatch(u -> u.tag().equals(tag))) {
-            state.unitTargets.put(tag, target);
+    private void setTarget(String tag, Point2d target, PlayerState state, PhysicsState physics) {
+        if (state.units().stream().anyMatch(u -> u.tag().equals(tag))) {
+            physics.unitTargets.put(tag, target);
             log.debugf("[EMULATED] %s → (%.1f,%.1f)", tag, target.x(), target.y());
         }
     }
 
-    private void handleTrain(TrainIntent t, PlayerState state) {
-        handleTrain(t, state, 0L);
+    private void handleTrain(TrainIntent t, PlayerState state, PhysicsState physics) {
+        handleTrain(t, state, physics, 0L);
     }
 
-    private void handleTrain(final TrainIntent t, final PlayerState state, final long absLoop) {
+    private void handleTrain(final TrainIntent t, final PlayerState state,
+                              final PhysicsState physics, final long absLoop) {
         final String buildingTag = t.buildingTag();
-        final Building building = state.buildings.stream()
+        final Building building = state.buildings().stream()
             .filter(b -> b.tag().equals(buildingTag) && b.isComplete())
             .findFirst().orElse(null);
         if (building == null) {
@@ -286,15 +293,15 @@ public class EmulatedGame {
         final int mCost = SC2Data.mineralCost(t.unitType());
         final int gCost = SC2Data.gasCost(t.unitType());
         final int sCost = SC2Data.supplyCost(t.unitType());
-        if ((int) state.minerals < mCost || state.vespene < gCost
-                || state.supplyUsed + sCost > state.supply) {
+        if ((int) state.minerals() < mCost || state.vespene() < gCost
+                || state.supplyUsed() + sCost > state.supply()) {
             log.debugf("[EMULATED] Cannot train %s — insufficient resources", t.unitType());
             return;
         }
 
         // Phase 3: queue check
-        final boolean isBusy = state.buildingTrainingUntil.containsKey(buildingTag);
-        final Deque<UnitType> existingQueue = state.buildingQueues.get(buildingTag);
+        final boolean isBusy = physics.buildingTrainingUntil.containsKey(buildingTag);
+        final Deque<UnitType> existingQueue = physics.buildingQueues.get(buildingTag);
         final int total = (isBusy ? 1 : 0) + (existingQueue != null ? existingQueue.size() : 0);
         if (total >= 5) {
             log.debugf("[EMULATED] Train rejected — building %s queue full", buildingTag);
@@ -302,9 +309,9 @@ public class EmulatedGame {
         }
 
         // Phase 4: deduct resources
-        state.supplyUsed += sCost;
-        state.minerals   -= mCost;
-        state.vespene    -= gCost;
+        state.addSupplyUsed(sCost);
+        state.deductMinerals(mCost);
+        state.deductVespene(gCost);
 
         // Phase 5: race-specific post-commit (larva consume, EGG spawn)
         if (model != null) {
@@ -312,9 +319,9 @@ public class EmulatedGame {
         }
 
         if (!isBusy) {
-            startTraining(buildingTag, t.unitType(), state, absLoop);
+            startTraining(buildingTag, t.unitType(), state, physics, absLoop);
         } else {
-            state.buildingQueues.computeIfAbsent(buildingTag, k -> new ArrayDeque<>())
+            physics.buildingQueues.computeIfAbsent(buildingTag, k -> new ArrayDeque<>())
                 .add(t.unitType());
         }
     }
@@ -324,25 +331,26 @@ public class EmulatedGame {
     }
 
     private void startTraining(final String buildingTag, final UnitType unitType,
-                               final PlayerState state, final long absLoop) {
+                                final PlayerState state, final PhysicsState physics,
+                                final long absLoop) {
         final boolean isEnemy  = (state == enemy);
         final RaceModel model  = (state == friendly) ? playerRaceModel : null;
         final int  loopOffset  = (int)(absLoop % SC2Data.LOOPS_PER_TICK);
         final long completesAt = gameFrame
             + (loopOffset + SC2Data.trainTimeInLoops(unitType)) / SC2Data.LOOPS_PER_TICK;
-        state.buildingTrainingUntil.put(buildingTag, completesAt);
-        state.buildingCompletionAtLoop.put(buildingTag,
+        physics.buildingTrainingUntil.put(buildingTag, completesAt);
+        physics.buildingCompletionAtLoop.put(buildingTag,
             absLoop + SC2Data.trainTimeInLoops(unitType));
         final int spawnCount = (model != null) ? model.trainCount(unitType) : 1;
-        state.pendingCompletions.add(new PlayerState.PendingCompletion(completesAt, () -> {
-            state.buildingTrainingUntil.remove(buildingTag);
-            if (!state.buildingQueues.containsKey(buildingTag)) {
-                state.buildingCompletionAtLoop.remove(buildingTag);
+        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
+            physics.buildingTrainingUntil.remove(buildingTag);
+            if (!physics.buildingQueues.containsKey(buildingTag)) {
+                physics.buildingCompletionAtLoop.remove(buildingTag);
             }
             for (int i = 0; i < spawnCount; i++) {
                 final String tag = nextTagString();
                 final int hp = SC2Data.maxHealth(unitType);
-                state.units.add(new Unit(tag, unitType,
+                state.addUnit(new Unit(tag, unitType,
                     new Point2d(9 + i * 0.5f, 9), hp, hp,
                     SC2Data.maxShields(unitType), SC2Data.maxShields(unitType), 0, 0));
                 log.debugf("[EMULATED] Trained %s (tag=%s)", unitType, tag);
@@ -352,65 +360,65 @@ public class EmulatedGame {
         }));
     }
 
-    private void drainBuildingQueues(PlayerState state) {
-        for (String buildingTag : new ArrayList<>(state.buildingQueues.keySet())) {
-            if (state.buildingTrainingUntil.containsKey(buildingTag)) continue;
-            Deque<UnitType> queue = state.buildingQueues.get(buildingTag);
+    private void drainBuildingQueues(PlayerState state, PhysicsState physics) {
+        for (String buildingTag : new ArrayList<>(physics.buildingQueues.keySet())) {
+            if (physics.buildingTrainingUntil.containsKey(buildingTag)) continue;
+            Deque<UnitType> queue = physics.buildingQueues.get(buildingTag);
             if (queue == null || queue.isEmpty()) {
-                state.buildingQueues.remove(buildingTag);
-                state.buildingCompletionAtLoop.remove(buildingTag);
+                physics.buildingQueues.remove(buildingTag);
+                physics.buildingCompletionAtLoop.remove(buildingTag);
                 continue;
             }
             UnitType next = queue.poll();
-            if (queue.isEmpty()) state.buildingQueues.remove(buildingTag);
-            long completionLoop = state.buildingCompletionAtLoop.getOrDefault(buildingTag, 0L);
-            state.buildingCompletionAtLoop.remove(buildingTag);
-            startTraining(buildingTag, next, state, completionLoop);
+            if (queue.isEmpty()) physics.buildingQueues.remove(buildingTag);
+            long completionLoop = physics.buildingCompletionAtLoop.getOrDefault(buildingTag, 0L);
+            physics.buildingCompletionAtLoop.remove(buildingTag);
+            startTraining(buildingTag, next, state, physics, completionLoop);
         }
     }
 
-    private void handleBuild(BuildIntent b, PlayerState state, long absLoop) {
+    private void handleBuild(BuildIntent b, PlayerState state, PhysicsState physics, long absLoop) {
         int mCost = SC2Data.mineralCost(b.buildingType());
-        if ((int) state.minerals < mCost) {
+        if ((int) state.minerals() < mCost) {
             log.debugf("[EMULATED] Cannot build %s — insufficient minerals", b.buildingType());
             return;
         }
-        state.minerals -= mCost;
+        state.deductMinerals(mCost);
         final String tag = "bldg-" + nextTag++;
         final BuildingType bt = b.buildingType();
-        state.buildings.add(new Building(tag, bt, b.location(),
+        state.addBuilding(new Building(tag, bt, b.location(),
             SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), false));
         final int loopOffset = (int)(absLoop % SC2Data.LOOPS_PER_TICK);
         final long completesAt = gameFrame
             + (loopOffset + SC2Data.buildTimeInLoops(bt)) / SC2Data.LOOPS_PER_TICK;
-        state.pendingCompletions.add(new PlayerState.PendingCompletion(completesAt, () -> {
+        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
             markBuildingComplete(tag, state);
-            state.supply += SC2Data.supplyBonus(bt);
+            state.addSupply(SC2Data.supplyBonus(bt));
             log.debugf("[EMULATED] Completed %s (tag=%s)", bt, tag);
         }));
     }
 
     private void markBuildingComplete(String tag, PlayerState state) {
-        state.buildings.replaceAll(b -> b.tag().equals(tag)
+        state.replaceAllBuildings(b -> b.tag().equals(tag)
             ? new Building(b.tag(), b.type(), b.position(), b.health(), b.maxHealth(), true)
             : b);
     }
 
     private void resolveCombat() {
         // Step 1: decrement all cooldowns (floor 0)
-        friendly.unitCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
-        enemy.unitCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
-        friendly.blinkCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
-        enemy.blinkCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
+        friendlyPhysics.unitCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
+        enemyPhysics.unitCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
+        friendlyPhysics.blinkCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
+        enemyPhysics.blinkCooldowns.replaceAll((tag, cd) -> Math.max(0, cd - 1));
 
         Map<String, Integer> pending       = new HashMap<>();
         Set<String>          firedFriendly = new HashSet<>();
         Set<String>          firedEnemy    = new HashSet<>();
 
         // Step 2: collect damage from units where cooldown == 0
-        for (Unit attacker : friendly.units) {
-            if (friendly.unitCooldowns.getOrDefault(attacker.tag(), 0) > 0) continue;
-            nearestInRange(attacker.position(), enemy.units, SC2Data.attackRange(attacker.type()))
+        for (Unit attacker : friendly.units()) {
+            if (friendlyPhysics.unitCooldowns.getOrDefault(attacker.tag(), 0) > 0) continue;
+            nearestInRange(attacker.position(), enemy.units(), SC2Data.attackRange(attacker.type()))
                 .ifPresent(target -> {
                     if (!missesHighGround(attacker.position(), target.position(), attacker.type())) {
                         pending.merge(target.tag(),
@@ -419,9 +427,9 @@ public class EmulatedGame {
                     firedFriendly.add(attacker.tag()); // cooldown resets even on miss
                 });
         }
-        for (Unit attacker : enemy.units) {
-            if (enemy.unitCooldowns.getOrDefault(attacker.tag(), 0) > 0) continue;
-            nearestInRange(attacker.position(), friendly.units, SC2Data.attackRange(attacker.type()))
+        for (Unit attacker : enemy.units()) {
+            if (enemyPhysics.unitCooldowns.getOrDefault(attacker.tag(), 0) > 0) continue;
+            nearestInRange(attacker.position(), friendly.units(), SC2Data.attackRange(attacker.type()))
                 .ifPresent(target -> {
                     if (!missesHighGround(attacker.position(), target.position(), attacker.type())) {
                         pending.merge(target.tag(),
@@ -432,37 +440,33 @@ public class EmulatedGame {
         }
 
         // Step 3: apply damage — two-pass (collect all, then apply)
-        friendly.units.replaceAll(u -> applyDamage(u, pending.getOrDefault(u.tag(), 0)));
-        friendly.units.removeIf(u -> {
-            if (u.health() <= 0) {
-                friendly.unitTargets.remove(u.tag());
-                friendly.unitCooldowns.remove(u.tag());
-                friendly.blinkCooldowns.remove(u.tag());
-                movementStrategy.clearUnit(u.tag());
-                return true;
-            }
-            return false;
+        friendly.replaceAllUnits(u -> applyDamage(u, pending.getOrDefault(u.tag(), 0)));
+        List<Unit> deadFriendly = friendly.removeUnitsWhere(u -> u.health() <= 0);
+        deadFriendly.forEach(u -> {
+            friendlyPhysics.unitTargets.remove(u.tag());
+            friendlyPhysics.unitCooldowns.remove(u.tag());
+            friendlyPhysics.blinkCooldowns.remove(u.tag());
+            movementStrategy.clearUnit(u.tag());
         });
-        enemy.units.replaceAll(u -> applyDamage(u, pending.getOrDefault(u.tag(), 0)));
-        enemy.units.removeIf(u -> {
-            if (u.health() <= 0) {
-                enemy.unitTargets.remove(u.tag());
-                enemy.unitCooldowns.remove(u.tag());
-                if (enemyBehavior != null) enemyBehavior.clearRetreating(u.tag());
-                movementStrategy.clearUnit(u.tag());
-                return true;
-            }
-            return false;
+
+        enemy.replaceAllUnits(u -> applyDamage(u, pending.getOrDefault(u.tag(), 0)));
+        List<Unit> deadEnemy = enemy.removeUnitsWhere(u -> u.health() <= 0);
+        deadEnemy.forEach(u -> {
+            enemyPhysics.unitTargets.remove(u.tag());
+            enemyPhysics.unitCooldowns.remove(u.tag());
+            enemyPhysics.blinkCooldowns.remove(u.tag());
+            movementStrategy.clearUnit(u.tag());
+            if (enemyBehavior != null) enemyBehavior.clearRetreating(u.tag());
         });
 
         // Step 4: reset cooldown for units that fired
-        for (Unit u : friendly.units) {
+        for (Unit u : friendly.units()) {
             if (firedFriendly.contains(u.tag()))
-                friendly.unitCooldowns.put(u.tag(), SC2Data.attackCooldownInTicks(u.type()));
+                friendlyPhysics.unitCooldowns.put(u.tag(), SC2Data.attackCooldownInTicks(u.type()));
         }
-        for (Unit u : enemy.units) {
+        for (Unit u : enemy.units()) {
             if (firedEnemy.contains(u.tag()))
-                enemy.unitCooldowns.put(u.tag(), SC2Data.attackCooldownInTicks(u.type()));
+                enemyPhysics.unitCooldowns.put(u.tag(), SC2Data.attackCooldownInTicks(u.type()));
         }
     }
 
@@ -477,7 +481,7 @@ public class EmulatedGame {
      * Computes blink retreat target for a unit. Uses the opposing player's units as threat source.
      */
     private Point2d blinkRetreatTarget(Unit unit, PlayerState opponents) {
-        Unit nearest = opponents.units.stream()
+        Unit nearest = opponents.units().stream()
             .min(Comparator.comparingDouble(e -> distance(unit.position(), e.position())))
             .orElse(null);
         if (nearest == null) return unit.position();
@@ -501,14 +505,14 @@ public class EmulatedGame {
         return unit.position(); // all directions blocked — stay put
     }
 
-    private void executeBlink(String tag, PlayerState state) {
+    private void executeBlink(String tag, PlayerState state, PhysicsState physics) {
         PlayerState opponents = (state == friendly) ? enemy : friendly;
-        state.units.replaceAll(u -> {
+        state.replaceAllUnits(u -> {
             if (!u.tag().equals(tag)) return u;
             Point2d dest = blinkRetreatTarget(u, opponents);
             int restored = Math.min(u.shields() + SC2Data.blinkShieldRestore(u.type()), u.maxShields());
-            state.unitTargets.put(tag, dest);
-            state.blinkCooldowns.put(tag, SC2Data.blinkCooldownInTicks(u.type()));
+            physics.unitTargets.put(tag, dest);
+            physics.blinkCooldowns.put(tag, SC2Data.blinkCooldownInTicks(u.type()));
             return new Unit(u.tag(), u.type(), dest,
                             u.health(), u.maxHealth(), restored, u.maxShields(), 0, 0);
         });
@@ -563,38 +567,42 @@ public class EmulatedGame {
 
         // Stamp weapon cooldown from unitCooldowns map onto each friendly unit.
         // friendly.units always carries weaponCooldownTicks=0; the true cooldown lives in unitCooldowns.
-        List<Unit> friendlyWithCooldown = friendly.units.stream()
+        List<Unit> friendlyWithCooldown = friendly.units().stream()
             .map(u -> new Unit(u.tag(), u.type(), u.position(),
                                u.health(), u.maxHealth(), u.shields(), u.maxShields(),
-                               friendly.unitCooldowns.getOrDefault(u.tag(), 0),
-                               friendly.blinkCooldowns.getOrDefault(u.tag(), 0)))
+                               friendlyPhysics.unitCooldowns.getOrDefault(u.tag(), 0),
+                               friendlyPhysics.blinkCooldowns.getOrDefault(u.tag(), 0)))
             .toList();
 
+        List<Unit> stagingArea = enemyBehavior != null
+            ? enemyBehavior.stagingArea
+            : List.of();
+
         if (terrainGrid != null) {
-            List<Unit> visibleEnemies = enemy.units.stream()
+            List<Unit> visibleEnemies = enemy.units().stream()
                 .filter(u -> visibility.isVisible(u.position()))
                 .toList();
-            List<Unit> visibleStaging = enemy.stagingArea.stream()
+            List<Unit> visibleStaging = stagingArea.stream()
                 .filter(u -> visibility.isVisible(u.position()))
                 .toList();
             return new GameState(
-                (int) friendly.minerals,
-                friendly.vespene, friendly.supply, friendly.supplyUsed,
-                friendlyWithCooldown, List.copyOf(friendly.buildings),
+                (int) friendly.minerals(),
+                friendly.vespene(), friendly.supply(), friendly.supplyUsed(),
+                friendlyWithCooldown, List.copyOf(friendly.buildings()),
                 visibleEnemies,
-                List.copyOf(enemy.buildings),
+                List.copyOf(enemy.buildings()),
                 visibleStaging,
                 List.copyOf(geysers),
                 List.of(),   // mineralPatches: not modelled in emulated physics
                 gameFrame);
         }
         return new GameState(
-            (int) friendly.minerals, // floor: fractional minerals accumulate silently
-            friendly.vespene, friendly.supply, friendly.supplyUsed,
-            friendlyWithCooldown, List.copyOf(friendly.buildings),
-            List.copyOf(enemy.units),
-            List.copyOf(enemy.buildings),
-            List.copyOf(enemy.stagingArea),
+            (int) friendly.minerals(), // floor: fractional minerals accumulate silently
+            friendly.vespene(), friendly.supply(), friendly.supplyUsed(),
+            friendlyWithCooldown, List.copyOf(friendly.buildings()),
+            List.copyOf(enemy.units()),
+            List.copyOf(enemy.buildings()),
+            List.copyOf(stagingArea),
             List.copyOf(geysers),
             List.of(),   // mineralPatches: not modelled in emulated physics
             gameFrame);
@@ -604,7 +612,7 @@ public class EmulatedGame {
         // Enemy sees friendly units as their "enemies"
         return new GameState(0, 0, 0, 0,
             List.of(), List.of(),
-            List.copyOf(friendly.units), List.of(), List.of(),
+            List.copyOf(friendly.units()), List.of(), List.of(),
             List.of(), List.of(), gameFrame);
     }
 
@@ -700,31 +708,31 @@ public class EmulatedGame {
     /** Sets the player race model. Call before reset(). Default is ProtossRaceModel. */
     void setPlayerRaceModel(RaceModel model) { this.playerRaceModel = model; }
 
-    int  enemyMinerals()  { return (int) enemy.minerals; }
-    int  enemyStagingSize() { return enemy.stagingArea.size(); }
+    int  enemyMinerals()  { return (int) enemy.minerals(); }
+    int  enemyStagingSize() { return enemyBehavior != null ? enemyBehavior.stagingArea.size() : 0; }
 
     /** Direct mineral override for tests — avoids tick-based accumulation. */
-    void setMineralsForTesting(int amount) { friendly.minerals = amount; }
+    void setMineralsForTesting(int amount) { friendly.setMinerals(amount); }
 
     /** Positions an enemy near the base for combat tests. */
     void spawnEnemyForTesting(UnitType type, Point2d position) {
         int hp = SC2Data.maxHealth(type);
         String tag = "test-enemy-" + nextTag++;
-        enemy.units.add(new Unit(tag, type, position, hp, hp,
+        enemy.addUnit(new Unit(tag, type, position, hp, hp,
             SC2Data.maxShields(type), SC2Data.maxShields(type), 0, 0));
-        enemy.unitTargets.put(tag, EnemyBehavior.NEXUS_POS);
+        enemyPhysics.unitTargets.put(tag, EnemyBehavior.NEXUS_POS);
     }
 
     /** Sets a friendly unit's health for combat threshold tests. */
     void setHealthForTesting(String tag, int health) {
-        friendly.units.replaceAll(u -> u.tag().equals(tag)
+        friendly.replaceAllUnits(u -> u.tag().equals(tag)
             ? new Unit(u.tag(), u.type(), u.position(), health, u.maxHealth(), u.shields(), u.maxShields(), 0, 0)
             : u);
     }
 
     /** Sets a friendly unit's shields for shield absorption tests. */
     void setShieldsForTesting(String tag, int shields) {
-        friendly.units.replaceAll(u -> u.tag().equals(tag)
+        friendly.replaceAllUnits(u -> u.tag().equals(tag)
             ? new Unit(u.tag(), u.type(), u.position(), u.health(), u.maxHealth(), shields, u.maxShields(), 0, 0)
             : u);
     }
@@ -733,14 +741,14 @@ public class EmulatedGame {
     String spawnFriendlyForTesting(UnitType type, Point2d position) {
         String tag = "test-unit-" + nextTag++;
         int hp = SC2Data.maxHealth(type);
-        friendly.units.add(new Unit(tag, type, position, hp, hp,
+        friendly.addUnit(new Unit(tag, type, position, hp, hp,
             SC2Data.maxShields(type), SC2Data.maxShields(type), 0, 0));
         return tag;
     }
 
     /** Sets an enemy unit's shields directly — for testing Hardened Shield at 0 shields. */
     void setEnemyShieldsForTesting(String tag, int shields) {
-        enemy.units.replaceAll(u -> u.tag().equals(tag)
+        enemy.replaceAllUnits(u -> u.tag().equals(tag)
             ? new Unit(u.tag(), u.type(), u.position(), u.health(), u.maxHealth(),
                        shields, u.maxShields(), 0, 0)
             : u);
@@ -758,7 +766,7 @@ public class EmulatedGame {
 
     /** Sets an enemy unit's health directly — for retreat health threshold tests. */
     void setEnemyHealthForTesting(String tag, int health) {
-        enemy.units.replaceAll(u -> u.tag().equals(tag)
+        enemy.replaceAllUnits(u -> u.tag().equals(tag)
             ? new Unit(u.tag(), u.type(), u.position(), health, u.maxHealth(),
                        u.shields(), u.maxShields(), 0, 0)
             : u);
@@ -773,9 +781,10 @@ public class EmulatedGame {
 
     /** Adds a unit directly to enemy staging area — for fog-of-war staging visibility tests. */
     void addStagedUnitForTesting(UnitType type, Point2d position) {
+        // Requires enemyBehavior != null — call setEnemyStrategy() first in tests
         String tag = "test-staging-" + nextTag++;
         int hp = SC2Data.maxHealth(type);
-        enemy.stagingArea.add(new Unit(tag, type, position, hp, hp,
+        enemyBehavior.stagingArea.add(new Unit(tag, type, position, hp, hp,
             SC2Data.maxShields(type), SC2Data.maxShields(type), 0, 0));
     }
 
@@ -784,7 +793,7 @@ public class EmulatedGame {
         int hp  = SC2Data.maxHealth(type);
         int sh  = SC2Data.maxShields(type);
         String tag = "test-friendly-" + nextTag++;
-        friendly.units.add(new Unit(tag, type, position, hp, hp, sh, sh, 0, 0));
+        friendly.addUnit(new Unit(tag, type, position, hp, hp, sh, sh, 0, 0));
     }
 
     /** Adds a complete friendly building — for tests that need a specific building to train from. */
@@ -792,7 +801,7 @@ public class EmulatedGame {
         String tag = "bldg-test-" + nextTag++;
         Building b = new Building(tag, type, position,
             SC2Data.maxBuildingHealth(type), SC2Data.maxBuildingHealth(type), true);
-        friendly.buildings.add(b);
+        friendly.addBuilding(b);
         return b;
     }
 
@@ -800,13 +809,13 @@ public class EmulatedGame {
     void spawnEnemyBuildingForTesting(BuildingType type, Point2d position) {
         String tag = "enemy-bldg-test-" + nextTag++;
         int hp = SC2Data.maxBuildingHealth(type);
-        enemy.buildings.add(new Building(tag, type, position, hp, hp, true));
+        enemy.addBuilding(new Building(tag, type, position, hp, hp, true));
     }
 
     /** Sets friendly supply caps — for tests that need more than the 3 default free supply. */
     void setSupplyForTesting(int supply, int supplyUsed) {
-        friendly.supply     = supply;
-        friendly.supplyUsed = supplyUsed;
+        friendly.setSupply(supply);
+        friendly.setSupplyUsed(supplyUsed);
     }
 
     /**
@@ -817,7 +826,7 @@ public class EmulatedGame {
      * Public: called from ReplayValidationHarness in a different package.
      */
     public void setSupplyCapForHarness(int supply) {
-        friendly.supply = supply;
+        friendly.setSupply(supply);
     }
 
     /**
@@ -827,7 +836,7 @@ public class EmulatedGame {
      * Public: called from ReplayValidationHarness in a different package.
      */
     public void setVespeneForHarness(int vespene) {
-        friendly.vespene = vespene;
+        friendly.setVespene(vespene);
     }
 
     /**
@@ -837,7 +846,7 @@ public class EmulatedGame {
      * so no cost deduction is correct.
      */
     public void injectReplayBuilding(Building building) {
-        friendly.buildings.add(building);
+        friendly.addBuilding(building);
     }
 
     /**
@@ -849,8 +858,8 @@ public class EmulatedGame {
      * mineral-constrained period without flooring EM at 0.
      */
     public void injectReplayBuildingWithCost(Building building) {
-        friendly.minerals -= SC2Data.mineralCost(building.type());
-        friendly.buildings.add(building);
+        friendly.deductMinerals(SC2Data.mineralCost(building.type()));
+        friendly.addBuilding(building);
     }
 
     /**
@@ -858,7 +867,7 @@ public class EmulatedGame {
      * Used by ReplayValidationHarness when a building finishes construction in the replay ground truth.
      */
     public void markReplayBuildingComplete(String tag) {
-        friendly.buildings.replaceAll(b -> b.tag().equals(tag)
+        friendly.replaceAllBuildings(b -> b.tag().equals(tag)
             ? new Building(b.tag(), b.type(), b.position(), b.health(), b.maxHealth(), true)
             : b);
     }

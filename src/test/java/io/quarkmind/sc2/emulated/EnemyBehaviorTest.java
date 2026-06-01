@@ -55,17 +55,17 @@ class EnemyBehaviorTest {
 
     @Test
     void tick_accumulatesMinerals() {
-        double before = enemy.minerals;
+        double before = enemy.minerals();
         behavior.tick(emptyState(), queue);
-        assertThat(enemy.minerals).isGreaterThan(before);
+        assertThat(enemy.minerals()).isGreaterThan(before);
     }
 
     // ---- unit training ----
 
     @Test
     void tick_queuesTrainIntent_whenMineralsAvailable() {
-        enemy.minerals = 200;
-        enemy.buildings.add(new Building("gw-test", BuildingType.GATEWAY,
+        enemy.setMinerals(200);
+        enemy.addBuilding(new Building("gw-test", BuildingType.GATEWAY,
             new Point2d(52, 51), 500, 500, true));
         behavior.tick(emptyState(), queue);
         var intents = queue.drainAll();
@@ -75,7 +75,7 @@ class EnemyBehaviorTest {
 
     @Test
     void tick_doesNotQueueTrain_whenInsufficientMinerals() {
-        enemy.minerals = 0;
+        enemy.setMinerals(0);
         behavior.tick(emptyState(), queue);
         var intents = queue.drainAll();
         assertThat(intents).noneMatch(i -> i instanceof TrainIntent);
@@ -83,7 +83,7 @@ class EnemyBehaviorTest {
 
     @Test
     void tick_doesNotQueueTrainTwiceBeforePreviousIsTrained() {
-        enemy.minerals = 500;
+        enemy.setMinerals(500);
         behavior.tick(emptyState(), queue);
         queue.drainAll(); // consume intent but don't "train" the unit
         behavior.tick(emptyState(), queue);
@@ -97,20 +97,20 @@ class EnemyBehaviorTest {
     @Test
     void tick_launchesAttack_whenArmyThresholdMet() {
         for (int i = 0; i < 3; i++) {
-            enemy.stagingArea.add(new Unit("s" + i, UnitType.ZEALOT,
+            behavior.stagingArea.add(new Unit("s" + i, UnitType.ZEALOT,
                 new Point2d(26,26), 100,100,50,50,0,0));
         }
         behavior.tick(emptyState(), queue);
         var intents = queue.drainAll();
         assertThat(intents.stream().filter(i -> i instanceof AttackIntent).count()).isEqualTo(3);
-        assertThat(enemy.stagingArea).isEmpty();
+        assertThat(behavior.stagingArea).isEmpty();
     }
 
     @Test
     void tick_doesNotAttack_belowThreshold_andTimerNotFired() {
         // Seed timer so it hasn't elapsed (interval=200, set to 50)
         behavior.setFramesSinceLastAttackForTesting(50L);
-        enemy.stagingArea.add(new Unit("s0", UnitType.ZEALOT,
+        behavior.stagingArea.add(new Unit("s0", UnitType.ZEALOT,
             new Point2d(26,26), 100,100,50,50,0,0));
         behavior.tick(emptyState(), queue);
         assertThat(queue.drainAll()).noneMatch(i -> i instanceof AttackIntent);
@@ -119,7 +119,7 @@ class EnemyBehaviorTest {
     @Test
     void tick_launchesAttack_whenTimerFires_evenBelowThreshold() {
         // threshold=3, only 1 unit in staging — threshold alone wouldn't fire
-        enemy.stagingArea.add(new Unit("s0", UnitType.ZEALOT,
+        behavior.stagingArea.add(new Unit("s0", UnitType.ZEALOT,
             new Point2d(26,26), 100,100,50,50,0,0));
         // attackIntervalFrames=200 — set counter to exactly the threshold
         behavior.setInitialAttackSizeForTesting(1);
@@ -127,7 +127,7 @@ class EnemyBehaviorTest {
         behavior.tick(emptyState(), queue);
         var intents = queue.drainAll();
         assertThat(intents).anyMatch(i -> i instanceof AttackIntent);
-        assertThat(enemy.stagingArea).isEmpty();
+        assertThat(behavior.stagingArea).isEmpty();
     }
 
     // ---- retreat ----
@@ -135,7 +135,7 @@ class EnemyBehaviorTest {
     @Test
     void lowHealthUnit_isMarkedRetreating() {
         Unit lowHp = new Unit("u0", UnitType.ZEALOT, new Point2d(8,8), 10, 100, 0, 50, 0, 0);
-        enemy.units.add(lowHp);
+        enemy.addUnit(lowHp);
         behavior.setInitialAttackSizeForTesting(4);
         behavior.tick(emptyState(), queue);
         assertThat(behavior.retreatingUnits()).contains("u0");
@@ -144,7 +144,7 @@ class EnemyBehaviorTest {
     @Test
     void retreatingUnit_isMoved_backToStaging() {
         Unit lowHp = new Unit("u0", UnitType.ZEALOT, new Point2d(8,8), 10, 100, 0, 50, 0, 0);
-        enemy.units.add(lowHp);
+        enemy.addUnit(lowHp);
         behavior.setInitialAttackSizeForTesting(4);
         behavior.tick(emptyState(), queue);
         // A MoveIntent toward staging should be in queue
@@ -159,7 +159,7 @@ class EnemyBehaviorTest {
         // Stalker needs GATEWAY + CYBERNETICS_CORE; enemy has neither
         EnemyStrategy stalker = new FixedBuildOrderStrategy("STALK", Race.PROTOSS,
             List.of(UnitType.STALKER), 50, new EnemyAttackConfig(3, 200, 0, 0));
-        enemy.minerals = 500;
+        enemy.setMinerals(500);
         var b = new EnemyBehavior(stalker, enemy, new TechTree());
         b.tick(emptyState(), queue);
         var intents = queue.drainAll();
@@ -172,11 +172,11 @@ class EnemyBehaviorTest {
     void whenPrereqBuilt_trainsProceedsNormally() {
         EnemyStrategy stalker = new FixedBuildOrderStrategy("STALK", Race.PROTOSS,
             List.of(UnitType.STALKER), 50, new EnemyAttackConfig(3, 200, 0, 0));
-        enemy.minerals = 500;
+        enemy.setMinerals(500);
         // Pre-place required buildings
-        enemy.buildings.add(new Building("gw", BuildingType.GATEWAY,
+        enemy.addBuilding(new Building("gw", BuildingType.GATEWAY,
             new Point2d(50, 50), 500, 500, true));
-        enemy.buildings.add(new Building("cc", BuildingType.CYBERNETICS_CORE,
+        enemy.addBuilding(new Building("cc", BuildingType.CYBERNETICS_CORE,
             new Point2d(51, 50), 500, 500, true));
         var b = new EnemyBehavior(stalker, enemy, new TechTree());
         b.tick(emptyState(), queue);
@@ -189,7 +189,7 @@ class EnemyBehaviorTest {
     void doesNotDoubleQueuePendingBuilding() {
         EnemyStrategy stalker = new FixedBuildOrderStrategy("STALK", Race.PROTOSS,
             List.of(UnitType.STALKER), 50, new EnemyAttackConfig(3, 200, 0, 0));
-        enemy.minerals = 500;
+        enemy.setMinerals(500);
         var b = new EnemyBehavior(stalker, enemy, new TechTree());
         b.tick(emptyState(), queue);
         queue.drainAll(); // first tick queues GATEWAY
@@ -204,13 +204,13 @@ class EnemyBehaviorTest {
     void pendingBuilding_prunedOnceBuilt_allowsRetry() {
         EnemyStrategy stalker = new FixedBuildOrderStrategy("STALK", Race.PROTOSS,
             List.of(UnitType.STALKER), 50, new EnemyAttackConfig(3, 200, 0, 0));
-        enemy.minerals = 500;
+        enemy.setMinerals(500);
         var b = new EnemyBehavior(stalker, enemy, new TechTree());
         // First tick — queues GATEWAY (pending)
         b.tick(emptyState(), queue);
         queue.drainAll();
         // Simulate building completing: add it to enemy.buildings
-        enemy.buildings.add(new Building("gw", BuildingType.GATEWAY, new Point2d(50, 50), 500, 500, true));
+        enemy.addBuilding(new Building("gw", BuildingType.GATEWAY, new Point2d(50, 50), 500, 500, true));
         // Second tick — GATEWAY is built, should prune and move to CYBERNETICS_CORE
         b.tick(emptyState(), queue);
         var intents = queue.drainAll();
@@ -224,7 +224,7 @@ class EnemyBehaviorTest {
     void reactiveStrategy_remainsActiveAfterShouldSwitch() {
         // ReactiveStrategy with 10-frame re-eval interval
         ReactiveStrategy reactive = new ReactiveStrategy(10);
-        enemy.minerals = 0;
+        enemy.setMinerals(0);
         var b = new EnemyBehavior(reactive, enemy, permissive());
 
         // Tick frames 1–9 — shouldSwitch returns false (not a multiple of 10)

@@ -400,8 +400,8 @@ class EmulatedGameTest {
         game.applyIntent(new AttackIntent("probe-0", new Point2d(6.0f, 9)));
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(6.0f, 9));
         // Override target so Zealot retreats away from probes — prevents probe-1 drifting into range.
-        String zealotTag = game.enemy.units.get(game.enemy.units.size() - 1).tag();
-        game.enemy.unitTargets.put(zealotTag, new Point2d(3f, 9f));
+        String zealotTag = game.enemy.units().get(game.enemy.units().size() - 1).tag();
+        game.enemyPhysics.unitTargets.put(zealotTag, new Point2d(3f, 9f));
 
         game.tick(); // tick 1: attack (shields 50 -> 46)
         game.tick(); // tick 2: cooldown 1 - no attack; Zealot moving away
@@ -845,7 +845,7 @@ class EmulatedGameTest {
 
         game.tick();
 
-        Unit zealot = game.enemy.units.stream()
+        Unit zealot = game.enemy.units().stream()
             .filter(u -> u.type() == UnitType.ZEALOT)
             .findFirst().orElseThrow();
         Point2d after = zealot.position();
@@ -984,8 +984,8 @@ class EmulatedGameTest {
         game.spawnEnemyForTesting(UnitType.MARINE, new Point2d(1.1f, 0));
         // Override Marine's default target (Nexus) to point toward the Zealot so it stays in range.
         // Access enemy.units directly (same package) — snapshot() filters by fog before any tick.
-        String marineTag = game.enemy.units.get(game.enemy.units.size() - 1).tag();
-        game.enemy.unitTargets.put(marineTag, new Point2d(0.6f, 0f));
+        String marineTag = game.enemy.units().get(game.enemy.units().size() - 1).tag();
+        game.enemyPhysics.unitTargets.put(marineTag, new Point2d(0.6f, 0f));
         game.applyIntent(new AttackIntent(zealotTag, new Point2d(1.1f, 0)));
 
         game.tick();
@@ -1101,6 +1101,8 @@ class EmulatedGameTest {
     @Test
     void stagingAreaEnemiesAreFilteredByVisibility() {
         game.setTerrainGrid(TerrainGrid.emulatedMap());
+        // setEnemyStrategy required — addStagedUnitForTesting writes to enemyBehavior.stagingArea
+        game.setEnemyStrategy(retreatStrategy(new EnemyAttackConfig(4, 100, 0, 0)));
         game.reset();
         // addStagedUnitForTesting places a unit in enemyStagingArea at STAGING_POS (26,26) = HIGH
         game.addStagedUnitForTesting(UnitType.ZEALOT, new Point2d(26, 26));
@@ -1214,8 +1216,8 @@ class EmulatedGameTest {
         // Freeze enemies in place — targets set to own positions to prevent movement.
         // moveEnemyUnits reads unitTargets but does not remove on arrival, so the
         // entry persists across all ticks and stepToward returns the current position unchanged.
-        game.enemy.unitTargets.put(zealotATag, new Point2d(7, 10));
-        game.enemy.unitTargets.put(zealotBTag, new Point2d(20, 10));
+        game.enemyPhysics.unitTargets.put(zealotATag, new Point2d(7, 10));
+        game.enemyPhysics.unitTargets.put(zealotBTag, new Point2d(20, 10));
 
         Point2d zealotAPos = new Point2d(7, 10);
         int ticks = 0;
@@ -1244,8 +1246,8 @@ class EmulatedGameTest {
         List<Unit> initial = game.snapshot().enemyUnits();
         String zealotATag = initial.get(0).tag();
         String zealotBTag = initial.get(1).tag();
-        game.enemy.unitTargets.put(zealotATag, new Point2d(7, 10));
-        game.enemy.unitTargets.put(zealotBTag, new Point2d(20, 10));
+        game.enemyPhysics.unitTargets.put(zealotATag, new Point2d(7, 10));
+        game.enemyPhysics.unitTargets.put(zealotBTag, new Point2d(20, 10));
 
         // No intents: auto-engage — S0 fires at ZA (nearest), S1 fires at ZB (nearest)
         for (int i = 0; i < ticks; i++) game.tick();
@@ -1426,9 +1428,9 @@ class EmulatedGameTest {
         game.setEnemyStrategy(new FixedBuildOrderStrategy("TEST", Race.PROTOSS,
             List.of(UnitType.ZEALOT), 5, new EnemyAttackConfig(3, 200, 0, 0)));
         game.reset();
-        double before = game.enemy.minerals;
+        double before = game.enemy.minerals();
         game.tick();
-        assertThat(game.enemy.minerals).isGreaterThan(before);
+        assertThat(game.enemy.minerals()).isGreaterThan(before);
     }
 
     // --- Building collision ---
@@ -1444,7 +1446,7 @@ class EmulatedGameTest {
         // Enemy Hatchery at (20, 20) — well away from terrain wall
         final var hatcheryPos = new Point2d(20f, 20f);
         final float radius = SC2Data.buildingRadius(BuildingType.HATCHERY);
-        game.enemy.buildings.add(new Building("test-hatchery", BuildingType.HATCHERY,
+        game.enemy.addBuilding(new Building("test-hatchery", BuildingType.HATCHERY,
             hatcheryPos, 1500, 1500, true));
         // Friendly Stalker starts 4 tiles south, heading north through the Hatchery
         String tag = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(20f, 16f));
@@ -1472,9 +1474,9 @@ class EmulatedGameTest {
         // Enemy Zergling starts 5 tiles north of Nexus, heading straight at it.
         // HP=1500 so it survives probe auto-attacks (probes enter range as it crosses y≈9).
         String tag = "test-enemy-bldg-coll";
-        game.enemy.units.add(new Unit(tag, UnitType.ZERGLING, new Point2d(8f, 13f),
+        game.enemy.addUnit(new Unit(tag, UnitType.ZERGLING, new Point2d(8f, 13f),
             1500, 1500, 0, 0, 0, 0));
-        game.enemy.unitTargets.put(tag, nexusPos);
+        game.enemyPhysics.unitTargets.put(tag, nexusPos);
         for (int i = 0; i < 20; i++) game.tick();
 
         Unit unit = game.snapshot().enemyUnits().stream()
@@ -1494,7 +1496,7 @@ class EmulatedGameTest {
         // buildings must not block. Unit at (20,9) heading to (20,17): passes through
         // incomplete Hatchery at (20,13) and reaches past it.
         final var bldgPos = new Point2d(20f, 13f);
-        game.enemy.buildings.add(new Building("wip-hatchery", BuildingType.HATCHERY,
+        game.enemy.addBuilding(new Building("wip-hatchery", BuildingType.HATCHERY,
             bldgPos, 1500, 1500, false)); // isComplete = false
         String tag = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(20f, 9f));
         game.applyIntent(new MoveIntent(tag, new Point2d(20f, 17f)));
@@ -1517,13 +1519,13 @@ class EmulatedGameTest {
         // setEnemyStrategy uses a permissive TechTree so no BuildIntent fires,
         // but trainedBy(ZEALOT)=GATEWAY means we must have one in enemy.buildings.
         game.spawnEnemyBuildingForTesting(BuildingType.GATEWAY, new Point2d(52, 51));
-        game.enemy.minerals = 200;
+        game.enemy.setMinerals(200);
 
         int zealotTrainTime = SC2Data.trainTimeInTicks(UnitType.ZEALOT);
         for (int i = 0; i < zealotTrainTime + 5; i++) game.tick();
 
-        boolean hasZealot = game.enemy.stagingArea.stream().anyMatch(u -> u.type() == UnitType.ZEALOT)
-            || game.enemy.units.stream().anyMatch(u -> u.type() == UnitType.ZEALOT);
+        boolean hasZealot = game.enemyBehavior.stagingArea.stream().anyMatch(u -> u.type() == UnitType.ZEALOT)
+            || game.enemy.units().stream().anyMatch(u -> u.type() == UnitType.ZEALOT);
         assertThat(hasZealot).isTrue();
     }
 
@@ -1671,13 +1673,13 @@ class EmulatedGameTest {
         game.reset();
         // Seed a Gateway so EnemyBehavior can find it via SC2Data.trainedBy(ZEALOT)=GATEWAY
         game.spawnEnemyBuildingForTesting(BuildingType.GATEWAY, new Point2d(52, 51));
-        game.enemy.minerals = 200;
+        game.enemy.setMinerals(200);
 
         int zealotTrainTime = SC2Data.trainTimeInTicks(UnitType.ZEALOT);
         for (int i = 0; i < zealotTrainTime + 5; i++) game.tick();
 
-        boolean hasZealot = game.enemy.stagingArea.stream().anyMatch(u -> u.type() == UnitType.ZEALOT)
-            || game.enemy.units.stream().anyMatch(u -> u.type() == UnitType.ZEALOT);
+        boolean hasZealot = game.enemyBehavior.stagingArea.stream().anyMatch(u -> u.type() == UnitType.ZEALOT)
+            || game.enemy.units().stream().anyMatch(u -> u.type() == UnitType.ZEALOT);
         assertThat(hasZealot).isTrue();
     }
 
@@ -1694,7 +1696,7 @@ class EmulatedGameTest {
 
         game.tick();
 
-        Unit zealot = game.enemy.units.stream()
+        Unit zealot = game.enemy.units().stream()
             .filter(u -> u.type() == UnitType.ZEALOT)
             .findFirst().orElseThrow();
         // Exactly one probe auto-engaged — Zealot shields dropped by exactly one effective hit
