@@ -18,7 +18,7 @@ import java.util.function.UnaryOperator;
  *
  * <p>Not thread-safe — all access is from the single game-tick scheduler thread.
  */
-public class PlayerState {
+public class PlayerState implements PlayerStateView {
 
     private final List<Unit>     units     = new ArrayList<>();
     private final List<Building> buildings = new ArrayList<>();
