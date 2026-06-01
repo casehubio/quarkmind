@@ -242,4 +242,14 @@ class EnemyBehaviorTest {
         // Outer wrapper must still be the same ReactiveStrategy instance
         assertThat(b.currentStrategy()).isSameAs(reactive);
     }
+
+    @Test
+    void reset_clearsStagingArea() {
+        int hp = SC2Data.maxHealth(UnitType.ZEALOT);
+        behavior.stagingArea.add(new Unit("z1", UnitType.ZEALOT, new Point2d(5, 5),
+            hp, hp, SC2Data.maxShields(UnitType.ZEALOT), SC2Data.maxShields(UnitType.ZEALOT), 0, 0));
+        assertThat(behavior.stagingArea).hasSize(1);
+        behavior.reset(zealotSpam());
+        assertThat(behavior.stagingArea).isEmpty();
+    }
 }

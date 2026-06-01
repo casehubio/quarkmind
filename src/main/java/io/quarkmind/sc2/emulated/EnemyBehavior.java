@@ -46,6 +46,9 @@ class EnemyBehavior implements PlayerBehavior {
     // Retreat state — package-private for EmulatedGame.moveEnemyUnits()
     private final Set<String> retreating = new HashSet<>();
 
+    // Staging area — units that have retreated; re-deployed each wave. Package-private for EmulatedGame.
+    final List<Unit> stagingArea = new ArrayList<>();
+
     EnemyBehavior(EnemyStrategy strategy, PlayerState enemy, TechTree techTree) {
         this.strategy  = strategy;
         this.enemy     = enemy;
@@ -276,6 +279,7 @@ class EnemyBehavior implements PlayerBehavior {
         this.initialAttackSize = 0;
         this.retreating.clear();
         this.pendingBuildings.clear();
+        this.stagingArea.clear();
         this.nextTag = 1000;
         newStrategy.reset();
 
