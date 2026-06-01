@@ -20,24 +20,12 @@ import java.util.function.UnaryOperator;
  */
 public class PlayerState {
 
-    // --- Game-state fields (package-private temporarily during migration) ---
-    // These become private in Task 6 once all callers use the typed API.
-    final List<Unit>     units     = new ArrayList<>();
-    final List<Building> buildings = new ArrayList<>();
-    double minerals;
-    int    vespene;
-    int    supply;
-    int    supplyUsed;
-
-    // --- Physics fields: TEMPORARY — will be removed when EmulatedGame migrates in Task 5 ---
-    final List<Unit>               stagingArea              = new ArrayList<>();
-    final List<PendingCompletion>  pendingCompletions       = new ArrayList<>();
-    final Map<String, Deque<UnitType>> buildingQueues       = new HashMap<>();
-    final Map<String, Long>            buildingTrainingUntil = new HashMap<>();
-    final Map<String, Long>            buildingCompletionAtLoop = new HashMap<>();
-    final Map<String, Point2d>         unitTargets    = new HashMap<>();
-    final Map<String, Integer>         unitCooldowns  = new HashMap<>();
-    final Map<String, Integer>         blinkCooldowns = new HashMap<>();
+    private final List<Unit>     units     = new ArrayList<>();
+    private final List<Building> buildings = new ArrayList<>();
+    private double minerals;
+    private int    vespene;
+    private int    supply;
+    private int    supplyUsed;
 
     // --- Public typed API ---
 
@@ -82,28 +70,9 @@ public class PlayerState {
     void clear() {
         units.clear();
         buildings.clear();
-        stagingArea.clear();
-        pendingCompletions.clear();
-        buildingQueues.clear();
-        buildingTrainingUntil.clear();
-        buildingCompletionAtLoop.clear();
-        unitTargets.clear();
-        unitCooldowns.clear();
-        blinkCooldowns.clear();
         minerals   = 0;
         vespene    = 0;
         supply     = 0;
         supplyUsed = 0;
     }
-
-    // Temporary: fireCompletions stays here during transition, moves to PhysicsState in Task 5
-    void fireCompletions(long currentTick) {
-        pendingCompletions.removeIf(item -> {
-            if (item.completesAtTick() > currentTick) return false;
-            item.action().run();
-            return true;
-        });
-    }
-
-    record PendingCompletion(long completesAtTick, Runnable action) {}
 }

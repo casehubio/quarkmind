@@ -6,7 +6,7 @@ import io.quarkmind.domain.Race;
  * Maps Race to a fresh RaceModel instance. Single point of knowledge about all three
  * SC2 race implementations. EmulatedEngine calls this; EmulatedGame holds the result.
  */
-class RaceModelFactory {
+public class RaceModelFactory {
 
     private RaceModelFactory() {}
 

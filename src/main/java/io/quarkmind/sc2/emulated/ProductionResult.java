@@ -10,4 +10,4 @@ package io.quarkmind.sc2.emulated;
  * <p>BLOCKED: production resource unavailable (e.g. no larva); handleTrain exits without
  * touching resources or the queue.
  */
-enum ProductionResult { PROCEED, HANDLED, BLOCKED }
+public enum ProductionResult { PROCEED, HANDLED, BLOCKED }

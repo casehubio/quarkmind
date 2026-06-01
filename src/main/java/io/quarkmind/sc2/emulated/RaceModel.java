@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  *
  * <p>NOT thread-safe — all calls are from the single game-tick thread.
  */
-interface RaceModel {
+public interface RaceModel {
 
     /**
      * Seeds the initial game state for this race. Called by EmulatedGame.reset() after clearing
