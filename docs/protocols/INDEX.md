@@ -7,3 +7,4 @@
 | [sc2data-train-times-require-calibration.md](sc2data-train-times-require-calibration.md) | SC2Data train times must be calibrated from replay ground truth, not seconds × 22.4 | SC2Data.trainTimeInLoops and any unit training duration constant |
 | [replay-tag-prefix-per-source.md](replay-tag-prefix-per-source.md) | Each replay source uses a distinct unit tag prefix (r- binary, j- JSON) | Any class constructing or decoding unit tags from replay events |
 | [extractor-separate-from-simulated-game.md](extractor-separate-from-simulated-game.md) | Command extraction in dedicated extractor classes, not SimulatedGame subclasses | Classes in io.quarkmind.sc2.mock |
+| [emulated-plugin-seam-visibility.md](emulated-plugin-seam-visibility.md) | External plugin seam: interface and API types public; implementations package-private | sc2/emulated/ plugin seam interfaces |
