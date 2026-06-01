@@ -227,22 +227,24 @@ public class EmulatedGame {
 
     public void applyIntent(TimedIntent ti) {
         Runnable action = switch (ti.intent()) {
-            case TrainIntent  t -> () -> handleTrain(t, friendly, friendlyPhysics, ti.loop());
-            case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), friendly, friendlyPhysics);
-            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), friendly, friendlyPhysics);
-            case BuildIntent  b -> () -> handleBuild(b, friendly, friendlyPhysics, ti.loop());
-            case BlinkIntent  b -> () -> executeBlink(b.unitTag(), friendly, friendlyPhysics);
+            case TrainIntent        t -> () -> handleTrain(t, friendly, friendlyPhysics, ti.loop());
+            case MoveIntent         m -> () -> setTarget(m.unitTag(), m.targetLocation(), friendly, friendlyPhysics);
+            case AttackIntent       a -> () -> setTarget(a.unitTag(), a.targetLocation(), friendly, friendlyPhysics);
+            case BuildIntent        b -> () -> handleBuild(b, friendly, friendlyPhysics, ti.loop());
+            case BlinkIntent        b -> () -> executeBlink(b.unitTag(), friendly, friendlyPhysics);
+            case MuleCalldownIntent m -> () -> handleMuleCalldown(m, friendly, friendlyPhysics, ti.loop());
         };
         action.run();
     }
 
     void applyIntent(Intent intent, PlayerState state, PhysicsState physics) {
         Runnable action = switch (intent) {
-            case MoveIntent   m -> () -> setTarget(m.unitTag(), m.targetLocation(), state, physics);
-            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), state, physics);
-            case TrainIntent  t -> () -> handleTrain(t, state, physics);
-            case BuildIntent  b -> () -> handleBuild(b, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
-            case BlinkIntent  b -> () -> executeBlink(b.unitTag(), state, physics);
+            case MoveIntent         m -> () -> setTarget(m.unitTag(), m.targetLocation(), state, physics);
+            case AttackIntent       a -> () -> setTarget(a.unitTag(), a.targetLocation(), state, physics);
+            case TrainIntent        t -> () -> handleTrain(t, state, physics);
+            case BuildIntent        b -> () -> handleBuild(b, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
+            case BlinkIntent        b -> () -> executeBlink(b.unitTag(), state, physics);
+            case MuleCalldownIntent m -> () -> handleMuleCalldown(m, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
         };
         action.run();
     }
@@ -516,6 +518,11 @@ public class EmulatedGame {
             return new Unit(u.tag(), u.type(), dest,
                             u.health(), u.maxHealth(), restored, u.maxShields(), 0, 0);
         });
+    }
+
+    private void handleMuleCalldown(MuleCalldownIntent m, PlayerState state,
+                                    PhysicsState physics, long absLoop) {
+        // implemented in next task
     }
 
     /**

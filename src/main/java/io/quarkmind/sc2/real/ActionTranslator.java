@@ -9,6 +9,7 @@ import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.Intent;
 import io.quarkmind.sc2.intent.MoveIntent;
+import io.quarkmind.sc2.intent.MuleCalldownIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.jboss.logging.Logger;
 
@@ -37,11 +38,12 @@ public final class ActionTranslator {
         for (Intent intent : intents) {
             try {
                 ResolvedCommand cmd = switch (intent) {
-                    case BuildIntent  b -> build(b);
-                    case TrainIntent  t -> train(t);
-                    case AttackIntent a -> attack(a);
-                    case MoveIntent   m -> move(m);
-                    case BlinkIntent  b -> blink(b);
+                    case BuildIntent        b -> build(b);
+                    case TrainIntent        t -> train(t);
+                    case AttackIntent       a -> attack(a);
+                    case MoveIntent         m -> move(m);
+                    case BlinkIntent        b -> blink(b);
+                    case MuleCalldownIntent m -> muleCalldown(m);
                 };
                 if (cmd != null) commands.add(cmd);
             } catch (Exception e) {
@@ -97,6 +99,11 @@ public final class ActionTranslator {
 
     private static ResolvedCommand blink(BlinkIntent intent) {
         log.warnf("[ACTION] Blink not yet implemented for real SC2 — dropping intent for unit %s", intent.unitTag());
+        return null;
+    }
+
+    private static ResolvedCommand muleCalldown(MuleCalldownIntent intent) {
+        log.warnf("[ACTION] MULE calldown not yet wired to real SC2 OC ability — dropping intent for building %s", intent.buildingTag());
         return null;
     }
 
