@@ -520,9 +520,21 @@ public class EmulatedGame {
         });
     }
 
-    private void handleMuleCalldown(MuleCalldownIntent m, PlayerState state,
-                                    PhysicsState physics, long absLoop) {
-        // implemented in next task
+    private void handleMuleCalldown(final MuleCalldownIntent m, final PlayerState state,
+                                     final PhysicsState physics, final long absLoop) {
+        final boolean ocPresent = state.buildings().stream()
+            .anyMatch(b -> b.tag().equals(m.buildingTag()) && b.isComplete()
+                      && b.type() == BuildingType.ORBITAL_COMMAND);
+        if (!ocPresent) {
+            log.debugf("[EMULATED] MULE calldown rejected — OC %s not ready", m.buildingTag());
+            return;
+        }
+        final RaceModel model = (state == friendly) ? playerRaceModel : null;
+        if (model == null) {
+            log.debugf("[EMULATED] MULE calldown skipped — no race model for non-friendly state");
+            return;
+        }
+        model.onCalldown(state, m.buildingTag(), absLoop);
     }
 
     /**

@@ -74,6 +74,19 @@ public interface RaceModel {
     void onUnitSpawned(PlayerState state, UnitType type, String unitTag, String buildingTag);
 
     /**
+     * Handle a direct calldown ability for this race (e.g. MULE calldown from Orbital Command).
+     * Called by EmulatedGame after OC building validation succeeds.
+     * May call addUnit/removeUnit on state and update model-internal state.
+     * Must NOT manipulate resource fields (minerals, vespene, supply, supplyUsed).
+     * Default: no-op.
+     *
+     * @param state     the per-player mutable game state — may call addUnit/removeUnit, must NOT touch resource fields
+     * @param buildingTag the tag of the Orbital Command (or equivalent calldown building)
+     * @param absLoop   absolute game loop (gameFrame × LOOPS_PER_TICK) when calldown was issued
+     */
+    default void onCalldown(PlayerState state, String buildingTag, long absLoop) {}
+
+    /**
      * Number of units spawned from a single TrainIntent for this race.
      * Default is 1. ZergRaceModel overrides for ZERGLING (returns 2).
      */

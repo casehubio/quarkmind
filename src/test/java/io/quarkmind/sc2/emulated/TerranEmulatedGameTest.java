@@ -1,6 +1,7 @@
 package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.*;
+import io.quarkmind.sc2.intent.MuleCalldownIntent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -180,6 +181,36 @@ class TerranEmulatedGameTest {
         final int incomeWithoutMule = game.snapshot().minerals() - mineralsBeforeExpiredTick;
 
         assertThat(incomeWithoutMule).isLessThan(incomeWithMule);
+    }
+
+    @Test
+    void muleCalldown_ocPresent_spawnsMuleImmediately() {
+        final Building oc = game.spawnBuildingForTesting(BuildingType.ORBITAL_COMMAND, new Point2d(12, 8));
+
+        game.applyIntent(new MuleCalldownIntent(oc.tag()));
+
+        final long muleCount = game.snapshot().myUnits().stream()
+            .filter(u -> u.type() == UnitType.MULE).count();
+        assertThat(muleCount).isEqualTo(1);
+
+        // Verify MULE is registered for income — tick with workers suppressed to isolate MULE income
+        final int mineralsAfterSpawn = game.snapshot().minerals();
+        game.setMiningProbesPerBase(0);
+        game.tick();
+        assertThat(game.snapshot().minerals()).isGreaterThan(mineralsAfterSpawn);
+    }
+
+    @Test
+    void muleCalldown_tagNotAnOc_noUnitAdded() {
+        // CC tag — building exists but type is COMMAND_CENTER, not ORBITAL_COMMAND
+        final Building cc = game.snapshot().myBuildings().stream()
+            .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+            .findFirst().orElseThrow();
+
+        final int unitsBefore = game.snapshot().myUnits().size();
+        game.applyIntent(new MuleCalldownIntent(cc.tag()));
+
+        assertThat(game.snapshot().myUnits()).hasSize(unitsBefore);
     }
 
     @Test

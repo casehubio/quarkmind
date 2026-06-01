@@ -81,6 +81,19 @@ class TerranRaceModel implements RaceModel {
     public void onUnitSpawned(final PlayerState state, final UnitType type,
                               final String unitTag, final String buildingTag) {}
 
+    @Override
+    public void onCalldown(final PlayerState state, final String buildingTag, final long absLoop) {
+        final Building oc = state.buildings().stream()
+            .filter(b -> b.tag().equals(buildingTag) && b.isComplete()
+                      && b.type() == BuildingType.ORBITAL_COMMAND)
+            .findFirst().orElse(null);
+        if (oc == null) return;
+        final String muleTag = "mule-" + buildingTag + "-" + absLoop;
+        final int hp = SC2Data.maxHealth(UnitType.MULE);
+        state.addUnit(new Unit(muleTag, UnitType.MULE, oc.position(), hp, hp, 0, 0, 0, 0));
+        muleExpiresAtLoop.put(muleTag, absLoop + SC2Data.MULE_LIFETIME_LOOPS);
+    }
+
     private static final Set<BuildingType> TOWN_HALLS =
         Set.of(BuildingType.COMMAND_CENTER, BuildingType.ORBITAL_COMMAND,
                BuildingType.PLANETARY_FORTRESS);
