@@ -1,7 +1,7 @@
 # 0007 — RaceModel plugin seam for multi-race EmulatedGame
 
 Date: 2026-05-30
-Status: Accepted
+Status: Accepted (§Production check HANDLED variant superseded by [ADR-0008](0008-racemodel-canproduce-readonly-and-mule-intent-extraction.md))
 
 ## Context and Problem Statement
 
