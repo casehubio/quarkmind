@@ -227,4 +227,45 @@ class TerranEmulatedGameTest {
         assertThat(counts[0]).isEqualTo(12);
         assertThat(counts[1]).isEqualTo(0);
     }
+
+    // --- RaceModel isolation tests ---
+
+    @Test
+    void canProduce_alwaysReturnsProceed_forAnyUnitType() {
+        final TerranRaceModel model = new TerranRaceModel();
+        final PlayerState state = new PlayerState();
+        assertThat(model.canProduce(state, "any-tag", UnitType.SCV))
+            .isEqualTo(ProductionDecision.PROCEED);
+        assertThat(model.canProduce(state, "any-tag", UnitType.MARINE))
+            .isEqualTo(ProductionDecision.PROCEED);
+        assertThat(model.canProduce(state, "any-tag", UnitType.MULE))
+            .isEqualTo(ProductionDecision.PROCEED);
+    }
+
+    @Test
+    void onCalldown_spawnsAndRegistersExpiry() {
+        final TerranRaceModel model = new TerranRaceModel();
+        final PlayerState state = new PlayerState();
+        state.addBuilding(new Building("oc-0", BuildingType.ORBITAL_COMMAND,
+            new Point2d(8, 8), 1500, 1500, true));
+
+        model.onCalldown(state, "oc-0", 100L);
+
+        assertThat(state.units()).hasSize(1);
+        assertThat(state.units().get(0).type()).isEqualTo(UnitType.MULE);
+        assertThat(state.units().get(0).tag()).isEqualTo("mule-oc-0-100");
+        assertThat(model.activeMuleCount()).isEqualTo(1);
+    }
+
+    @Test
+    void onCalldown_buildingTagMissing_isNoOp() {
+        final TerranRaceModel model = new TerranRaceModel();
+        final PlayerState state = new PlayerState();
+        // No buildings added — tag won't be found
+
+        model.onCalldown(state, "oc-0", 100L);
+
+        assertThat(state.units()).isEmpty();
+        assertThat(model.activeMuleCount()).isEqualTo(0);
+    }
 }

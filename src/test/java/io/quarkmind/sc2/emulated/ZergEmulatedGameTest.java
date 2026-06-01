@@ -5,6 +5,7 @@ import io.quarkmind.sc2.intent.TrainIntent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -330,6 +331,27 @@ class ZergEmulatedGameTest {
         // State is consistent — hatchery has initial 3 larva
         assertThat(game.snapshot().myUnits().stream()
             .filter(u -> u.type() == UnitType.EGG).count()).isEqualTo(0);
+    }
+
+    // --- canProduce view-enforcement tests ---
+
+    @Test
+    void canProduce_withView_noLarva_returnsBlocked() {
+        final ZergRaceModel model = new ZergRaceModel();
+        final PlayerState state = new PlayerState();
+        // hatcheryLarvaCount is empty — BLOCKED regardless of PlayerStateView content
+        assertThat(model.canProduce(state, "hatch-0", UnitType.DRONE))
+            .isEqualTo(ProductionDecision.BLOCKED);
+    }
+
+    @Test
+    void canProduce_withView_larvaAvailable_returnsProceed() {
+        final ZergRaceModel model = new ZergRaceModel();
+        final PlayerState state = new PlayerState();
+        model.seedInitialState(state, new ArrayList<>());
+
+        assertThat(model.canProduce(state, "hatchery-0", UnitType.DRONE))
+            .isEqualTo(ProductionDecision.PROCEED);
     }
 
     // --- Helpers ---
