@@ -34,9 +34,9 @@ class ProtossRaceModel implements RaceModel {
     public void tickPassive(final PlayerState state, final long gameLoop) {}
 
     @Override
-    public ProductionResult canProduce(final PlayerState state, final String buildingTag,
-                                       final UnitType unitType) {
-        return ProductionResult.PROCEED;
+    public ProductionDecision canProduce(final PlayerStateView view, final String buildingTag,
+                                         final UnitType unitType) {
+        return ProductionDecision.PROCEED;
     }
 
     @Override

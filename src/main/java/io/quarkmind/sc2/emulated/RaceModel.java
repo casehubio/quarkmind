@@ -13,9 +13,9 @@ import java.util.function.Supplier;
  * per-tick passive behaviour (larva regen, MULE expiry, Queen energy), and production
  * resource management. EmulatedGame remains race-agnostic.
  *
- * <p>Lives in {@code sc2.emulated} alongside {@link PlayerState} (package-private) so
- * implementations have direct field access. When #74 (pluggable races) arrives, PlayerState
- * will need a public mutator API and implementations can move to external modules.
+ * <p>Lives in {@code sc2.emulated} alongside {@link PlayerState}. {@code PlayerState} is
+ * public (#164) — implementations outside this package may read and mutate it.
+ * When #74 (pluggable races) arrives, implementations can move to external modules.
  *
  * <p>NOT thread-safe — all calls are from the single game-tick thread.
  */
@@ -43,15 +43,18 @@ public interface RaceModel {
      * Query whether production can proceed for the given unit from the given building.
      * Called after building validation but BEFORE resource deduction.
      *
-     * <p>Must not mutate state when returning PROCEED or BLOCKED. May mutate state
-     * when returning HANDLED — the model fully took over (e.g. MULE calldown spawns
-     * the MULE unit and registers its expiry).
+     * <p>The view is read-only by construction — structural enforcement replaces the
+     * prior doc-only constraint. Return BLOCKED when a race-specific resource is
+     * unavailable (e.g. no larva). Calldown abilities (e.g. MULE) route through
+     * {@link #onCalldown} via {@code MuleCalldownIntent} — never through this method.
      *
+     * @param view      read-only projection of player state — no mutation possible
+     * @param buildingTag the building from which production is being attempted
+     * @param unitType  the unit type to produce
      * @return PROCEED if resources are available (or not applicable for this race/unit),
-     *         HANDLED if the model fully handled the intent (e.g. MULE calldown — no queue needed),
-     *         BLOCKED if a race-specific resource is unavailable (e.g. no larva)
+     *         BLOCKED if a race-specific resource is unavailable
      */
-    ProductionResult canProduce(PlayerState state, String buildingTag, UnitType unitType);
+    ProductionDecision canProduce(PlayerStateView view, String buildingTag, UnitType unitType);
 
     /**
      * Consume the race-specific production resource and perform any pre-spawn setup.
@@ -67,7 +70,7 @@ public interface RaceModel {
     /**
      * Called when a unit has finished training and is placed in state.units.
      * For Zerg: removes the EGG unit for this building, applies Overlord supply bonus.
-     * For Terran: registers MULE expiry (handled in canProduce/HANDLED path instead).
+     * For Terran: no-op (MULE spawning and expiry registration handled in onCalldown).
      *
      * @param buildingTag the building that produced the unit (lambda-captured in startTraining)
      */

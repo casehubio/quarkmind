@@ -18,7 +18,6 @@ class ZergRaceModel implements RaceModel {
     private final Map<String, Long>    hatcheryNextLarvaLoop = new HashMap<>();
     private final Map<String, Deque<String>> eggTagByBuilding = new HashMap<>();
     private final Map<String, Double>  queenEnergyMap        = new HashMap<>();
-    private long currentGameLoop;
 
     @Override
     public void seedInitialState(final PlayerState state, final List<Resource> geysers) {
@@ -26,7 +25,6 @@ class ZergRaceModel implements RaceModel {
         hatcheryNextLarvaLoop.clear();
         eggTagByBuilding.clear();
         queenEnergyMap.clear();
-        currentGameLoop = 0;
 
         state.setMinerals(SC2Data.INITIAL_MINERALS);
         state.setVespene(SC2Data.INITIAL_VESPENE);
@@ -57,8 +55,6 @@ class ZergRaceModel implements RaceModel {
 
     @Override
     public void tickPassive(final PlayerState state, final long gameLoop) {
-        currentGameLoop = gameLoop;
-
         for (final Building b : state.buildings()) {
             if (!townHallTypes().contains(b.type()) || !b.isComplete()) continue;
             final String tag = b.tag();
@@ -105,10 +101,10 @@ class ZergRaceModel implements RaceModel {
     }
 
     @Override
-    public ProductionResult canProduce(final PlayerState state, final String buildingTag,
-                                       final UnitType unitType) {
-        if (hatcheryLarvaCount.getOrDefault(buildingTag, 0) > 0) return ProductionResult.PROCEED;
-        return ProductionResult.BLOCKED;
+    public ProductionDecision canProduce(final PlayerStateView view, final String buildingTag,
+                                         final UnitType unitType) {
+        if (hatcheryLarvaCount.getOrDefault(buildingTag, 0) > 0) return ProductionDecision.PROCEED;
+        return ProductionDecision.BLOCKED;
     }
 
     @Override

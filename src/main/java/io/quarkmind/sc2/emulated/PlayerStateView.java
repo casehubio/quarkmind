@@ -5,6 +5,11 @@ import io.quarkmind.domain.Unit;
 
 import java.util.List;
 
+/**
+ * Read-only projection of {@link PlayerState} for use in {@link RaceModel#canProduce}.
+ * Structural enforcement: callers holding only a {@code PlayerStateView} cannot call
+ * any mutator on the underlying state. {@link PlayerState} implements this interface.
+ */
 public interface PlayerStateView {
     double minerals();
     int vespene();

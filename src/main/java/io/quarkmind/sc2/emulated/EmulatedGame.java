@@ -277,16 +277,12 @@ public class EmulatedGame {
             return;
         }
 
-        // Phase 1: race-specific pre-check (read-only — no state mutation yet)
+        // Phase 1: race-specific pre-check (read-only by construction — view upcast enforces this)
         final RaceModel model = (state == friendly) ? playerRaceModel : null;
         if (model != null) {
-            final ProductionResult pr = model.canProduce(state, buildingTag, t.unitType());
-            if (pr == ProductionResult.BLOCKED) {
+            final PlayerStateView view = state; // upcast: canProduce sees read-only projection
+            if (model.canProduce(view, buildingTag, t.unitType()) == ProductionDecision.BLOCKED) {
                 log.debugf("[EMULATED] Train rejected — production resource unavailable for %s", t.unitType());
-                return;
-            }
-            if (pr == ProductionResult.HANDLED) {
-                log.debugf("[EMULATED] Train handled by race model (MULE) for %s", t.unitType());
                 return;
             }
         }

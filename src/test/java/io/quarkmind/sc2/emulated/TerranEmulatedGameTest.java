@@ -143,7 +143,7 @@ class TerranEmulatedGameTest {
         final Building oc = game.spawnBuildingForTesting(BuildingType.ORBITAL_COMMAND, new Point2d(12, 8));
 
         final int mineralsBefore = game.snapshot().minerals();
-        game.applyIntent(new io.quarkmind.sc2.intent.TrainIntent(oc.tag(), UnitType.MULE));
+        game.applyIntent(new MuleCalldownIntent(oc.tag()));
 
         // MULE appears immediately (no queue)
         final long muleCount = game.snapshot().myUnits().stream()
@@ -160,7 +160,7 @@ class TerranEmulatedGameTest {
     @Test
     void muleExpires_afterLifetime_unitGoneAndNoMoreMuleIncome() {
         final Building oc = game.spawnBuildingForTesting(BuildingType.ORBITAL_COMMAND, new Point2d(12, 8));
-        game.applyIntent(new io.quarkmind.sc2.intent.TrainIntent(oc.tag(), UnitType.MULE));
+        game.applyIntent(new MuleCalldownIntent(oc.tag()));
 
         // Tick once with MULE active — record combined SCV+MULE income
         final int mineralsAtSpawn = game.snapshot().minerals();

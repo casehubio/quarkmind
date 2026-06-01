@@ -9,12 +9,10 @@ class TerranRaceModel implements RaceModel {
     static final int INITIAL_WORKERS = 12;
 
     private final Map<String, Long> muleExpiresAtLoop = new HashMap<>();
-    private long currentGameLoop;
 
     @Override
     public void seedInitialState(final PlayerState state, final List<Resource> geysers) {
         muleExpiresAtLoop.clear();
-        currentGameLoop = 0;
 
         state.setMinerals(SC2Data.INITIAL_MINERALS);
         state.setVespene(SC2Data.INITIAL_VESPENE);
@@ -38,8 +36,6 @@ class TerranRaceModel implements RaceModel {
 
     @Override
     public void tickPassive(final PlayerState state, final long gameLoop) {
-        currentGameLoop = gameLoop;
-
         final List<String> expired = new ArrayList<>();
         muleExpiresAtLoop.forEach((tag, expiresAt) -> {
             if (gameLoop >= expiresAt) expired.add(tag);
@@ -55,22 +51,9 @@ class TerranRaceModel implements RaceModel {
     }
 
     @Override
-    public ProductionResult canProduce(final PlayerState state, final String buildingTag,
-                                       final UnitType unitType) {
-        if (unitType == UnitType.MULE) {
-            final Building oc = state.buildings().stream()
-                .filter(b -> b.tag().equals(buildingTag) && b.isComplete())
-                .findFirst().orElse(null);
-            if (oc == null) return ProductionResult.BLOCKED;
-
-            final String muleTag = "mule-" + buildingTag + "-" + currentGameLoop;
-            final int hp = SC2Data.maxHealth(UnitType.MULE);
-            state.addUnit(new Unit(muleTag, UnitType.MULE, oc.position(),
-                hp, hp, 0, 0, 0, 0));
-            muleExpiresAtLoop.put(muleTag, currentGameLoop + SC2Data.MULE_LIFETIME_LOOPS);
-            return ProductionResult.HANDLED;
-        }
-        return ProductionResult.PROCEED;
+    public ProductionDecision canProduce(final PlayerStateView view, final String buildingTag,
+                                         final UnitType unitType) {
+        return ProductionDecision.PROCEED;
     }
 
     @Override
