@@ -98,7 +98,7 @@ proactively suggest writing a handover before continuing.
 
 **Secondary goal:** Reference implementation for the CaseHub platform — demonstrating the harness pattern at game-loop granularity for cross-domain replication and architectural documentation via `ARC42STORIES.MD`.
 
-**LAYER-LOG.md** (`LAYER-LOG.md` at project root) covers the harness layers only. A layer is not complete until its entry is written. See the AML reference implementation and `docs/protocols/universal/layer-log.md` in casehub-parent for the format.
+**LAYER-LOG.md** (`LAYER-LOG.md` at project root) is the source material being migrated to `ARC42STORIES.MD` (#166). Until migration is complete, new layer completions still require a LAYER-LOG entry.
 
 ---
 
