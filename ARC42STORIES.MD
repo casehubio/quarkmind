@@ -689,7 +689,7 @@ Replicate the casehub-engine blackboard harness in a different domain:
 **Participates in chapters:** C3, C4, C5
 **Completed:** 🔲 pending (#156, blocked on casehubio/ledger#114)
 
-🔲 Full entry at C3 close. Known scope: plugin outcome recording without cryptographic signing; EigenTrust reputation scoring; async non-blocking writes at game-loop granularity; in-memory backend for mock/emulated profiles. Lightweight mode required — tamper-evident guarantees not needed for game agent decisions.
+🔲 Full entry at C3 close. Known scope: plugin outcome recording without cryptographic signing; Bayesian Beta trust scoring per plugin; async non-blocking writes at game-loop granularity; in-memory backend for mock/emulated profiles. Lightweight mode required — tamper-evident guarantees not needed for game agent decisions.
 
 ---
 
