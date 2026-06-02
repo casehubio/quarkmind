@@ -140,7 +140,7 @@ QuarkMind follows the CaseHub harness integration sequence with one deviation: `
 | casehub-qhorus | `casehub-qhorus` | L3 | 🔲 pending (#155) |
 | casehub-ledger | `casehub-ledger` (lightweight mode — casehubio/ledger#114) | L4 | 🔲 pending (#156) |
 | Adaptive plugin selection | `casehub-engine` binding conditions | L5 | 🔲 pending (#157) |
-| Trust routing | `casehub-ledger` (EigenTrust, lightweight) | L6 | 🔲 pending (#158) |
+| Trust routing | `casehub-engine-ledger` (Bayesian Beta CAPABILITY — EigenTrust inert, ADR-0009) | L6 | 🔲 pending (#158) |
 | Comparison baseline | *(none — analysis only)* | L7 | 🔲 pending (#159) |
 
 **Note on reading vs build order:** L2 was built first because the CaseEngine blackboard was the architectural priority. L3–L7 follow the CaseHub integration sequence. Layer ordering above is reading order (learning progression); build order is reflected in the blog entries.
@@ -436,7 +436,7 @@ Known scope: typed COMMAND/RESPONSE between plugin agents; DECLINE recorded stru
 
 🔲 Full Chapter entry at C3 close. Blocked on casehub-ledger lightweight mode (casehubio/ledger#114) and #156.
 
-Known scope: plugin outcome recording (plugin ID, decision, game state context, result); EigenTrust reputation scoring; async non-blocking writes; in-memory backend for mock/emulated profiles.
+Known scope: plugin outcome recording (plugin ID, decision, game state context, result); Bayesian Beta trust scoring per plugin (EigenTrust not activated — ADR-0009); async non-blocking writes; in-memory backend for mock/emulated profiles.
 
 ---
 
@@ -707,7 +707,7 @@ Replicate the casehub-engine blackboard harness in a different domain:
 **Participates in chapters:** C5
 **Completed:** 🔲 pending (#158, blocked on casehubio/ledger#114)
 
-🔲 Full entry at C5 close. Known scope: `TrustWeightedAgentStrategy` selects among competing plugin implementations by EigenTrust score; trust scores accumulate from plugin outcome attestations written in L4; routing quality improves automatically across game sessions.
+🔲 Full entry at C5 close. Known scope: `TrustWeightedAgentStrategy` (via `casehub-engine-ledger`) selects among competing plugin implementations by Bayesian Beta CAPABILITY score; EigenTrust GLOBAL computation runs but is inert — GLOBAL scores are not consumed for capability routing (ADR-0009); trust scores accumulate from plugin outcome attestations written in L4; routing quality improves automatically across game sessions.
 
 ---
 
