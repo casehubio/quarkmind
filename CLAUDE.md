@@ -96,7 +96,7 @@ proactively suggest writing a handover before continuing.
 
 **Primary goal:** Living lab — a working testbed demonstrating that the CaseHub agentic harness pattern holds outside regulated enterprise domains, at millisecond game-loop granularity. The SC2 layer is domain-specific; the harness underneath (CaseFile blackboard, plugin coordination, adaptive agent selection) is the same pattern as AML, clinical, and devtown.
 
-**Secondary goal:** LLM and human tutorial material for the harness layer (not the SC2 layer). The tutorial structure applies to the CaseHub integration, independent of SC2 knowledge.
+**Secondary goal:** Reference implementation for the CaseHub platform — demonstrating the harness pattern at game-loop granularity for cross-domain replication and architectural documentation via `ARC42STORIES.MD`.
 
 **LAYER-LOG.md** (`LAYER-LOG.md` at project root) covers the harness layers only. A layer is not complete until its entry is written. See the AML reference implementation and `docs/protocols/universal/layer-log.md` in casehub-parent for the format.
 
@@ -124,7 +124,7 @@ This is an application, not a framework. If the capability requires SC2 game kno
 
 | Document | What it covers |
 |----------|---------------|
-| `https://raw.githubusercontent.com/casehubio/parent/main/docs/repos/quarkmind.md` | QuarkMind domain ownership, harness layers, tutorial structure, dependencies |
+| `https://raw.githubusercontent.com/casehubio/parent/main/docs/repos/quarkmind.md` | QuarkMind domain ownership, harness layers, dependencies |
 | `https://raw.githubusercontent.com/casehubio/parent/main/docs/AGENTIC-HARNESS-GUIDE.md` | The agentic harness pattern QuarkMind demonstrates — read before any harness-layer design decision |
 | `../parent/docs/repos/casehub-engine.md` | CaseFile blackboard, TaskDefinition, adaptive plugin dispatch |
 
@@ -142,14 +142,6 @@ Read these **before designing**, not after. The concern column tells you when ea
 | Adding a new `Intent` subtype (sealed `Intent permits ...`) | Update `Intent.java` permits clause AND every switch expression over `Intent` in the same commit — GE-20260418-9b272f; sealed-type exhaustiveness breaks across the codebase the moment the permits clause changes |
 | SC2 physics constants (train times, costs, armour, income) | Calibrate from replay data, not from formula — protocol `docs/protocols/sc2data-train-times-require-calibration.md`; run `SC2TrainTimeCalibrationTest` |
 | Plugin seam placement (`agent/plugin/` vs `plugin/`) | Seam *interfaces* in `agent/plugin/`; active *implementations* in `plugin/`. Never add game logic to the seam interfaces. |
-
-### Tutorial layer design
-
-| Concern | Read first |
-|---------|-----------|
-| Deciding which layer a feature belongs in | `quarkmind.md §Tutorial Layers` — layer teaching objectives and what each layer must NOT include |
-| Documenting a completed layer | `LAYER-LOG.md` — write the entry before closing the layer issue. Each entry: What it shows, Key wiring, Gotchas, Pattern to replicate. |
-| Understanding the harness pattern being taught | `AGENTIC-HARNESS-GUIDE.md` in casehub-parent |
 
 ### Foundation integration
 
@@ -173,33 +165,11 @@ Read these **before designing**, not after. The concern column tells you when ea
 
 ---
 
-## Tutorial Structure (harness layer-by-layer, from quarkmind.md)
+## Architecture Record
 
-The tutorial covers the *harness layer only* — `AgentOrchestrator`, `CaseFile`, plugin seams, and foundation integration. The SC2 emulation layer (`EmulatedGame`, `ReplayValidationHarness`, SC2 physics) is domain-specific and not part of the tutorial progression. An LLM or developer studying the harness pattern can follow the layers independent of any SC2 knowledge.
+`ARC42STORIES.MD` (project root) is the permanent architecture record — §1–§13 per the Arc42Stories CaseHub Profile. `LAYER-LOG.md` is the source material; it is retired once migration is complete (#166).
 
-```
-Layer 1: naive game loop — direct plugin calls, no CaseHub blackboard | documented in LAYER-LOG.md (conceptual baseline)
-Layer 2: + casehub-engine blackboard — AgentOrchestrator dispatches plugins via CaseFile per-tick shared state ✅ documented in LAYER-LOG.md
-Layer 3: + casehub-qhorus — typed COMMAND/RESPONSE between plugin agents | #155
-Layer 4: + casehub-ledger — audit trail for agent decisions; trust scoring on plugin outcomes | #156
-Layer 5: adaptive plugin selection — binding conditions in engine, not hardwired dispatch | #157
-Layer 6: trust routing — outcome-history-weighted plugin selection | #158
-Layer 7: comparison vs naive game AI and commercial frameworks | #159
-```
-
-**Note on Layer 1:** QuarkMind's first `AgentOrchestrator` already used `CaseEngine` (Layer 2). Layer 1 is documented in `LAYER-LOG.md` as a conceptual baseline describing the pattern Layer 2 replaced, not a deployed phase.
-
-**No `NaiveXxxService @DefaultBean` displacement:** QuarkMind uses a single-module Quarkus app (no `api/`/`app/` split). There are no downstream JPA consumers. Layers add capability by implementing new CDI beans with the `@CaseType` qualifier that displace prior implementations — this mirrors the AML displacement pattern but at the plugin level, not the service level.
-
-### Foundation Gates
-
-| Capability | Foundation prerequisite |
-|-----------|------------------------|
-| Adaptive plugin selection (binding conditions) | casehub-engine P0 ✅ (engine#186) |
-| Plugin DECLINE vs FAILURE routing | casehub-engine P0 ✅ |
-| Typed inter-plugin messaging | casehub-qhorus — pending integration |
-| Agent decision audit trail | casehub-ledger — pending integration |
-| Trust-weighted plugin routing | casehub-engine P1.3 TrustWeightedSelectionStrategy — pending |
+**Harness/SC2 boundary:** `ARC42STORIES.MD` covers the harness layer only (`AgentOrchestrator`, `CaseFile`, plugin seam interfaces, foundation integration). The SC2 emulation layer (`EmulatedGame`, `ReplayValidationHarness`, SC2 physics) is domain-specific and outside the architecture record scope.
 
 ---
 
