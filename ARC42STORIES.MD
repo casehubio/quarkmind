@@ -139,7 +139,7 @@ QuarkMind follows the CaseHub harness integration sequence with one deviation: `
 | casehub-engine | `casehub-engine` + `casehub-persistence-memory` | L2 | ✅ complete (#28, #139) |
 | casehub-qhorus | `casehub-qhorus` | L3 | 🔲 pending (#155) |
 | casehub-ledger | `casehub-ledger` (lightweight mode — casehubio/ledger#114) | L4 | 🔲 pending (#156) |
-| Adaptive plugin selection | `casehub-engine` binding conditions | L5 | 🔲 pending (#157) |
+| Adaptive plugin selection | `casehub-engine` binding conditions | L5 | ✅ complete (#157) |
 | Trust routing | `casehub-engine-ledger` (Bayesian Beta CAPABILITY — EigenTrust inert, ADR-0009) | L6 | 🔲 pending (#158) |
 | Comparison baseline | *(none — analysis only)* | L7 | 🔲 pending (#159) |
 
@@ -444,7 +444,7 @@ Known scope: plugin outcome recording (plugin ID, decision, game state context, 
 
 **Journey:** Game Agent Coordination | **Sequence:** 4 of 6 | **Status:** 🔲 pending
 
-🔲 Full Chapter entry at C4 close. Blocked on #157.
+🔲 Full Chapter entry at C4 close. L5 (#157) complete — blocked on L3 (#155) and L4 (#156) to tell the full story.
 
 Known scope: `casehub-engine` binding conditions evaluate game state; plugins dispatched only when conditions are satisfied (e.g. `TacticsTask` skips when no enemy units); removes hardwired all-plugins-every-tick dispatch.
 
@@ -696,9 +696,29 @@ Replicate the casehub-engine blackboard harness in a different domain:
 ### Layer — Adaptive Plugin Selection
 
 **Participates in chapters:** C4, C5
-**Completed:** 🔲 pending (#157)
+**Completed:** ✅ 2026-06-03 (#157, commit 2d1dce8)
 
-🔲 Full entry at C4 close. Known scope: `casehub-engine` binding conditions evaluate game state per tick; `TacticsTask` dispatches only when enemy units present; `ScoutingTask` dispatches only when scouting target is incomplete; eliminates hardwired all-plugins-every-tick dispatch.
+`entryCriteria()` on each plugin declares the CaseFile keys that must be present before the plugin activates. The CaseEngine evaluates criteria after each task completes; newly written keys can unlock blocked tasks in the same tick (re-evaluation loop).
+
+Two distinct uses of `entryCriteria()` emerged:
+
+**Ordering dependency** — `ENEMY_ARMY_SIZE` on `StrategyTask`: scouting always writes this key (even as 0), so strategy always runs after scouting. The criterion enforces execution order without causing genuine skipping. C2 (#169) will migrate strategy's Drools data feed to use scouting-derived intel (`ENEMY_POSTURE`, `ENEMY_BUILD_ORDER`), at which point the dependency becomes a genuine data dependency rather than a sequencing constraint.
+
+**Conditional gate** — `NEAREST_THREAT` on `TacticsTask`: scouting writes this key only when `!enemies.isEmpty()`. When no enemies are visible, the key is absent and tactics is skipped entirely. This is the genuinely adaptive behaviour: the platform decides whether tactics has any work to do without the plugin being invoked.
+
+**Dependency graph:**
+```
+Scouting   {READY}                             → writes ENEMY_ARMY_SIZE, NEAREST_THREAT (conditional), ...
+Economics  {READY}                             → independent
+Strategy   {READY, ENEMY_ARMY_SIZE}   [order]  → writes STRATEGY
+Tactics    {READY, STRATEGY, NEAREST_THREAT}   → [order on STRATEGY, gate on NEAREST_THREAT]
+```
+
+**Implementation finding:** `TaskDefinition.canActivate()` in the installed casehub-core snapshot unconditionally returns `true` — it does not evaluate `entryCriteria()`. All four plugin classes now explicitly override `canActivate()` with `entryCriteria().stream().allMatch(caseFile::contains)`. Overrides are documented with a comment referencing the defect; they can be removed once the foundation corrects the default.
+
+**`GameTickExecutor`** was extracted from `AgentOrchestrator.gameTick()` to capture the `CaseFile` returned by `createAndSolve()` (previously discarded) and surface it via `AgentOrchestrator.getLastTickResult()`. Note: `createAndSolve()` returns the pre-solve CaseFile (translator-written keys only); plugin-written keys are absent from the returned reference. Tests for this layer call `canActivate()` directly on the injected CDI beans to verify gate semantics independently of the async solve.
+
+🔲 Full Chapter entry at C4 close (waiting on L3 #155 and L4 #156).
 
 ---
 

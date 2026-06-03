@@ -165,3 +165,97 @@ public class DroolsStrategyTask implements StrategyTask {
 7. Wire `AgentOrchestrator`: tick → translate → `caseEngine.createAndSolve("your-case-type", caseData, timeout)` → dispatch
 8. Add `@Scheduled(concurrentExecution = SKIP)` if your domain has a fixed tick interval
 9. Write `@QuarkusTest` that calls `orchestrator.gameTick()` directly with the scheduler disabled — verifies full plugin dispatch without timing coupling
+
+---
+
+## Layer 5 — Adaptive Plugin Selection (entryCriteria binding conditions)
+
+**Completed:** 2026-06-03 (#157, commit 2d1dce8)
+**Issue:** #157
+
+**Key files:**
+- `agent/AgentOrchestrator.java` — added `TickResult(CaseFile, TickTimings)` nested public record; `getLastTickResult()` exposes post-tick CaseFile; delegates execution to `GameTickExecutor`
+- `agent/GameTickExecutor.java` — new package-private class; captures `CaseFile` returned by `createAndSolve()` (previously discarded); returns `TickResult` to orchestrator
+- `plugin/DroolsTacticsTask.java` — `entryCriteria()` → `{READY, STRATEGY, NEAREST_THREAT}`; explicit `canActivate()` override
+- `plugin/DroolsStrategyTask.java` — `entryCriteria()` → `{READY, ENEMY_ARMY_SIZE}`; C2 stub read; explicit `canActivate()` override
+- `plugin/BasicTacticsTask.java`, `plugin/BasicStrategyTask.java` — same criteria changes for interface parity (non-CDI, direct-instantiation tests only)
+- `sc2/mock/AdaptivePluginSelectionIT.java` — @QuarkusTest: 4 integration tests covering TickResult API, tactics gate (negative + positive), strategy ordering
+
+### What it shows
+
+`entryCriteria()` on each `TaskDefinition` declares CaseFile keys that must be present before the plugin activates. The CaseEngine evaluates criteria in a re-evaluation loop: after each task runs, any keys it wrote may unlock other tasks blocked on those keys. This creates a dependency ordering system within a single `createAndSolve()` call.
+
+Two semantically distinct uses:
+
+**Ordering dependency (`ENEMY_ARMY_SIZE` on StrategyTask):** scouting always writes this key (including 0 when no enemies are visible). Strategy is never actually skipped; it merely waits for scouting to run first in the re-evaluation cycle. The criterion formalises the intended data-flow order and prepares the criteria for C2 (#169), when StrategyTask will be refactored to read scouting-derived intel (`ENEMY_POSTURE`, `ENEMY_BUILD_ORDER`) rather than raw `ENEMY_UNITS`.
+
+**Conditional gate (`NEAREST_THREAT` on TacticsTask):** scouting writes this key only when `!enemies.isEmpty()`. When no enemies are visible, the key is absent and TacticsTask is never scheduled — genuine adaptive skipping. In the early game, tactics never runs.
+
+### Notable finding
+
+`TaskDefinition.canActivate(CaseFile)` in the installed `casehub-core` snapshot unconditionally returns `true` — the default ignores `entryCriteria()`. All four affected plugin classes explicitly override `canActivate()`:
+
+```java
+// casehub-core TaskDefinition.canActivate() defaults to 'return true', ignoring
+// entryCriteria(). Override required until the foundation corrects the default.
+@Override
+public boolean canActivate(CaseFile caseFile) {
+    return entryCriteria().stream().allMatch(caseFile::contains);
+}
+```
+
+Also: `CaseEngine.createAndSolve()` returns the pre-solve CaseFile (translator-written keys only; plugin-written keys are absent). Integration tests call `canActivate()` on injected CDI beans to verify gate semantics without depending on post-solve CaseFile content.
+
+### Key wiring
+
+```java
+// entryCriteria() — what changed from L2
+// Before L5 (all plugins):
+@Override public Set<String> entryCriteria() { return Set.of(QuarkMindCaseFile.READY); }
+
+// After L5 — StrategyTask (ordering dependency):
+@Override public Set<String> entryCriteria() {
+    return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.ENEMY_ARMY_SIZE);
+}
+
+// After L5 — TacticsTask (conditional gate):
+@Override public Set<String> entryCriteria() {
+    return Set.of(QuarkMindCaseFile.READY,
+                  QuarkMindCaseFile.STRATEGY,
+                  QuarkMindCaseFile.NEAREST_THREAT);
+}
+
+// canActivate() override — required on all four plugins (casehub-core default broken)
+@Override
+public boolean canActivate(CaseFile caseFile) {
+    return entryCriteria().stream().allMatch(caseFile::contains);
+}
+```
+
+```java
+// TickResult — new test API surface on AgentOrchestrator
+public record TickResult(CaseFile caseFile, TickTimings timings) {
+    public boolean solveSucceeded() { return caseFile != null; }
+}
+public TickResult getLastTickResult() { return lastTickResult.get(); }
+
+// Integration test pattern
+orchestrator.gameTick();
+AgentOrchestrator.TickResult result = orchestrator.getLastTickResult();
+assertThat(result.caseFile().contains(QuarkMindCaseFile.NEAREST_THREAT)).isFalse();
+assertThat(tacticsTask.canActivate(result.caseFile())).isFalse();
+```
+
+### Gotchas
+
+- **`canActivate()` default is broken in casehub-core snapshot.** The default unconditionally returns `true`. Updating `entryCriteria()` alone has no runtime effect — an explicit `canActivate()` override is required per class. Verified by bytecode (`iconst_1; ireturn`).
+- **`createAndSolve()` returns pre-solve CaseFile.** The returned `CaseFile` reflects translator-written keys only; plugin-written keys (`NEAREST_THREAT`, `STRATEGY`, `ENEMY_ARMY_SIZE`) are absent. Do not assert on post-solve plugin output through the returned CaseFile reference.
+- **`NEAREST_THREAT` write is conditional in scouting.** `producedKeys()` on both scouting implementations declares `NEAREST_THREAT`, but the key is only written inside `if (!enemies.isEmpty())`. The key is absent — not empty — when no enemies are visible. Downstream criteria that gate on this key will genuinely block when the key is absent.
+
+### Pattern to replicate (in another domain)
+
+1. For each plugin, decide: is the gate a conditional (only relevant in some states) or an ordering constraint (always relevant, just sequenced)?
+2. For ordering: add the key produced by the prerequisite plugin to `entryCriteria()`. The re-evaluation loop handles sequencing automatically.
+3. For conditional gating: ensure the prerequisite plugin writes the key *only* when the condition is met — never writes it as a sentinel value. Absence (not a null value) is the gate mechanism.
+4. Override `canActivate()` explicitly until the casehub-core default is fixed.
+5. Extract tick execution into a testable unit (`GameTickExecutor` pattern) to surface the `CaseFile` for test assertions without depending on async plugin output.
