@@ -172,7 +172,13 @@
       "Bash([ -f \"$dir/pom.xml\" ])",
       "Bash(bash /tmp/check_updates.sh)",
       "Bash(bash /tmp/check_playerstate.sh)",
-      "mcp__intellij__search_in_files_by_regex"
+      "mcp__intellij__search_in_files_by_regex",
+      "Bash(curl -s --max-time 5 -X POST http://127.0.0.1:29170/index-mcp/streamable-http -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\",\"params\":{}}')",
+      "Bash(curl -v --max-time 5 http://127.0.0.1:29170/index-mcp/streamable-http)",
+      "Bash(awk -F: '{print $NF}')",
+      "Bash(GIT_SEQUENCE_EDITOR=\"cp /tmp/squash-165.txt\" git *)",
+      "Bash(xargs '-I{}' python3 -c ' *)",
+      "mcp__intellij__search_symbol"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"
