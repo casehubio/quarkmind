@@ -12,7 +12,7 @@ title: Home
   </p>
   <div class="hero-cta">
     <a class="btn btn-primary" href="{{ '/blog/' | relative_url }}">Read the diary →</a>
-    <a class="btn btn-ghost" href="https://github.com/mdproctor/quarkmind" target="_blank" rel="noopener">View on GitHub ↗</a>
+    <a class="btn btn-ghost" href="https://github.com/casehubio/quarkmind" target="_blank" rel="noopener">View on GitHub ↗</a>
   </div>
 </section>
 

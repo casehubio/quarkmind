@@ -287,4 +287,4 @@ Enemy combat units (Marines) already render as sprites via existing `enemyUnits`
 - E3 spec: `docs/superpowers/specs/2026-04-09-sc2-emulation-e3-design.md`
 - Design snapshot: `docs/design-snapshots/2026-04-09-emulation-e3-combat-complete.md`
 - Post-E3 benchmark: `docs/benchmarks/2026-04-09-post-e3-baseline.md`
-- GitHub: mdproctor/quarkmind
+- GitHub: casehubio/quarkmind

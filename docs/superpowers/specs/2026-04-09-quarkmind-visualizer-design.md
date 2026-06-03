@@ -276,4 +276,4 @@ Geyser, Immortal, Colossus, etc. → coloured circle fallback until added to pro
 - Phase E1 design: `docs/superpowers/specs/2026-04-09-sc2-emulation-e1-design.md`
 - SC2 image index: `docs/sc2-image-index.md`
 - QA endpoints pattern: `src/main/java/io/quarkmind/qa/`
-- GitHub: mdproctor/quarkmind
+- GitHub: casehubio/quarkmind

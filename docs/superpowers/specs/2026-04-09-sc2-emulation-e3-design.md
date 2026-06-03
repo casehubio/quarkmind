@@ -317,4 +317,4 @@ Create before implementation begins (issue-workflow skill):
 - E1 spec: `docs/superpowers/specs/2026-04-09-sc2-emulation-e1-design.md`
 - E2 spec: `docs/superpowers/specs/2026-04-09-sc2-emulation-e2-design.md`
 - Visualizer spec: `docs/superpowers/specs/2026-04-09-quarkmind-visualizer-design.md`
-- GitHub: mdproctor/quarkmind
+- GitHub: casehubio/quarkmind

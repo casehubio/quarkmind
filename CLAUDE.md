@@ -48,14 +48,13 @@ git -C /Users/mdproctor/claude/casehub/quarkmind ...    # project artifacts
 ```
 The file path determines the repo: if the file lives under `Workspace`, use the workspace path; if under `Project repo`, use the project path.
 
-## Git workflow — fork model
+## Git workflow
 
 ```
-origin   → personal fork   (git remote get-url origin)
-upstream → casehubio       (git remote get-url upstream)
+origin   → casehubio/quarkmind   (git remote get-url origin)
 ```
 
-Before starting any branch: `git fetch upstream && git rebase upstream/main` to sync local main with casehubio. At work-end: rebase the branch onto local main, push to `origin main`. PRs to `upstream` are created separately, on demand — never automatically at work-end.
+Before starting any branch: `git fetch origin && git rebase origin/main` to sync local main. At work-end: rebase the branch onto local main, push to `origin`. PRs are created on demand — never automatically at work-end.
 
 ## Rules
 
@@ -394,7 +393,7 @@ Two benchmark tests run via `mvn test -Pbenchmark`:
 ## Work Tracking
 
 **Issue tracking:** enabled
-**GitHub repo:** mdproctor/quarkmind
+**GitHub repo:** casehubio/quarkmind
 **Changelog:** GitHub Releases (run `gh release create --generate-notes` at milestones)
 
 **Automatic behaviours (Claude follows these at all times in this project):**

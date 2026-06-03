@@ -1,7 +1,7 @@
 title: QuarkMind
 description: "A Quarkus-based StarCraft II agent platform — a living testbed for Drools, Quarkus Flow, and CaseHub."
 baseurl: "/quarkmind"
-url: "https://mdproctor.github.io"
+url: "https://casehubio.github.io"
 author: Mark Proctor
 
 markdown: kramdown

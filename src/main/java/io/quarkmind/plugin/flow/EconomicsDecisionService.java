@@ -114,7 +114,7 @@ public class EconomicsDecisionService {
      * values on each deserialisation — making multi-step budget arbitration impossible.
      * Running all checks in one step avoids that serialisation boundary.
      *
-     * @see <a href="https://github.com/mdproctor/quarkmind/issues/15">#15 — budget arbitration bug</a>
+     * @see <a href="https://github.com/casehubio/quarkmind/issues/15">#15 — budget arbitration bug</a>
      */
     public void checkAll(GameStateTick tick) {
         checkSupply(tick);

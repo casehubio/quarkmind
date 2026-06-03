@@ -258,4 +258,4 @@ Set<String> retreatingUnitTags() { return Set.copyOf(retreatingUnits); }
 
 - E5 spec: `docs/superpowers/specs/2026-04-15-e5-damage-types-armour-design.md`
 - E4 spec: `docs/superpowers/specs/2026-04-14-sc2-emulation-e4-design.md`
-- GitHub: mdproctor/quarkmind
+- GitHub: casehubio/quarkmind

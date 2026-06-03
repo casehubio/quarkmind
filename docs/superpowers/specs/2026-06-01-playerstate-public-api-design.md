@@ -2,7 +2,7 @@
 
 **Branch:** `issue-164-playerstate-public-api`  
 **Date:** 2026-06-01  
-**Issue:** [#164](https://github.com/mdproctor/quarkmind/issues/164)
+**Issue:** [#164](https://github.com/casehubio/quarkmind/issues/164)
 
 ---
 
@@ -92,7 +92,7 @@ only by EmulatedGame's physics engine.
 **Read-only contract on `canProduce()`:** `RaceModel.canProduce()` must not mutate `PlayerState`
 when returning `PROCEED` or `BLOCKED`. This contract is doc-only — the public API cannot enforce
 it because `seedInitialState()` legitimately needs the same setter methods. API enforcement is
-deferred to #74 (tracked in [#165](https://github.com/mdproctor/quarkmind/issues/165)).
+deferred to #74 (tracked in [#165](https://github.com/casehubio/quarkmind/issues/165)).
 
 ---
 
@@ -326,5 +326,5 @@ state.addSupply(8);
 - Making `ProtossRaceModel`, `TerranRaceModel`, `ZergRaceModel` public — internal SC2 implementations displaced by external plugins at #74.
 - Moving `RaceModel` or `PlayerState` to a different package — `sc2/emulated/` is the correct home.
 - Making `setPlayerRaceModel()` public — #74 owns the external plugin installation seam.
-- API enforcement of `canProduce()` read-only contract — tracked in [#165](https://github.com/mdproctor/quarkmind/issues/165) for #74.
+- API enforcement of `canProduce()` read-only contract — tracked in [#165](https://github.com/casehubio/quarkmind/issues/165) for #74.
 - Any changes to `EmulatedEngine`, `SC2Engine`, or the agent layer.

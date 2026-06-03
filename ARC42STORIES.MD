@@ -16,7 +16,7 @@ QuarkMind is an **agentic harness for StarCraft II game AI** built on the CaseHu
 
 QuarkMind has two distinct layers: the **harness layer** (`AgentOrchestrator`, `CaseFile`, plugin seam interfaces, foundation integration) and the **SC2 emulation layer** (`EmulatedGame`, `ReplayValidationHarness`, SC2 physics). This document covers the harness layer only. The SC2 emulation layer is domain-specific and is documented in `docs/DESIGN.md`.
 
-**GitHub:** `mdproctor/quarkmind`
+**GitHub:** `casehubio/quarkmind`
 
 ### Stakeholders
 
@@ -42,7 +42,7 @@ QuarkMind has two distinct layers: the **harness layer** (`AgentOrchestrator`, `
 | Artifact type | Format | Example | Where it lives |
 |---|---|---|---|
 | Improvement log entry | `QM-NNN` | `QM-042` | `docs/PROGRESS.md` |
-| Issue | `#NNN` or `mdproctor/quarkmind#NNN` | `#155` | GitHub Issues |
+| Issue | `#NNN` or `casehubio/quarkmind#NNN` | `#155` | GitHub Issues |
 | Garden entry | `GE-YYYYMMDD-XXXXXX` | `GE-20260418-9b272f` | `~/.hortora/garden/` |
 | Protocol | `PP-YYYYMMDD-XXXXXX` | `PP-20260601-5fa812` | `casehub-parent/docs/protocols/` |
 | ADR | `ADR-NNNN` | `ADR-0007` | `docs/adr/` |

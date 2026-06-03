@@ -178,7 +178,8 @@
       "Bash(awk -F: '{print $NF}')",
       "Bash(GIT_SEQUENCE_EDITOR=\"cp /tmp/squash-165.txt\" git *)",
       "Bash(xargs '-I{}' python3 -c ' *)",
-      "mcp__intellij__search_symbol"
+      "mcp__intellij__search_symbol",
+      "Bash(GIT_SEQUENCE_EDITOR=true git -C /Users/mdproctor/claude/casehub/quarkmind rebase --continue)"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"

@@ -292,4 +292,4 @@ This catches serialisation regressions at the REST boundary.
 
 - E4 spec: `docs/superpowers/specs/2026-04-14-sc2-emulation-e4-design.md`
 - Library research: `docs/library-research.md`
-- GitHub: mdproctor/quarkmind
+- GitHub: casehubio/quarkmind

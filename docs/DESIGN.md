@@ -6,7 +6,7 @@ QuarkMind (formerly "starcraft", package root `io.quarkmind`) is a Quarkus appli
 
 All four plugin seams (Strategy, Economics, Tactics, Scouting) are implemented using different R&D frameworks. The bot can connect to a live SC2 process and issue real game commands. An emulation engine (`EmulatedGame`) provides physics-based game simulation without requiring a live SC2 binary, served with a Three.js live visualizer in an Electron window.
 
-**GitHub:** `mdproctor/quarkmind`
+**GitHub:** `casehubio/quarkmind`
 **Test count:** 828 (unit + integration, default surefire run) + 288 Playwright E2E
 
 ---

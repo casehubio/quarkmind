@@ -1,7 +1,7 @@
 # Design: Building-Cost Mineral Timing (#146)
 
 **Date:** 2026-05-21
-**Issue:** [#146](https://github.com/mdproctor/quarkmind/issues/146)
+**Issue:** [#146](https://github.com/casehubio/quarkmind/issues/146)
 **Branch:** `issue-146-building-cost-mineral-timing`
 
 ## Problem

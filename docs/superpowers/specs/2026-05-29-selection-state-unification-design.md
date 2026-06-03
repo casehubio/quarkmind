@@ -1,7 +1,7 @@
 # Design: SelectionState Unification — #162
 
 **Date:** 2026-05-29  
-**Issue:** [#162](https://github.com/mdproctor/quarkmind/issues/162) — refactor: extract shared SelectionState
+**Issue:** [#162](https://github.com/casehubio/quarkmind/issues/162) — refactor: extract shared SelectionState
 
 ---
 

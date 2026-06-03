@@ -492,4 +492,4 @@ game.setMovementStrategy(new PathfindingMovement(WalkabilityGrid.emulatedMap()))
 - E6 spec: `docs/superpowers/specs/2026-04-15-e6-enemy-retreat-design.md`
 - Ideas log: `IDEAS.md` (E8: terrain height)
 - Library research §2.2: gdx-ai pathfinding (deferred — JVM-only, no GraalVM)
-- GitHub: mdproctor/quarkmind
+- GitHub: casehubio/quarkmind
