@@ -46,8 +46,17 @@ public class BasicTacticsTask implements TacticsTask {
 
     @Override public String getId()   { return "tactics.basic"; }
     @Override public String getName() { return "Basic Tactics"; }
-    @Override public Set<String> entryCriteria() { return Set.of(QuarkMindCaseFile.READY); }
+    @Override public Set<String> entryCriteria() {
+        return Set.of(QuarkMindCaseFile.READY,
+                      QuarkMindCaseFile.STRATEGY,
+                      QuarkMindCaseFile.NEAREST_THREAT);
+    }
     @Override public Set<String> producedKeys()  { return Set.of(); }
+
+    @Override
+    public boolean canActivate(CaseFile caseFile) {
+        return entryCriteria().stream().allMatch(caseFile::contains);
+    }
 
     @Override
     @SuppressWarnings("unchecked")

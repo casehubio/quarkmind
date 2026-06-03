@@ -109,6 +109,28 @@ class BasicTacticsTaskTest {
         assertThat(intentQueue.pending()).isEmpty();
     }
 
+    // --- Entry criteria ---
+
+    @Test
+    void tacticsTaskRequiresNearestThreatToActivate() {
+        var cf = new InMemoryCaseFileRepository()
+            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
+        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
+        cf.put(QuarkMindCaseFile.STRATEGY, "DEFEND");
+        // NEAREST_THREAT absent → canActivate must return false
+        assertThat(task.canActivate(cf)).isFalse();
+    }
+
+    @Test
+    void tacticsTaskActivatesWhenAllCriteriaPresent() {
+        var cf = new InMemoryCaseFileRepository()
+            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
+        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
+        cf.put(QuarkMindCaseFile.STRATEGY, "DEFEND");
+        cf.put(QuarkMindCaseFile.NEAREST_THREAT, new Point2d(50, 50));
+        assertThat(task.canActivate(cf)).isTrue();
+    }
+
     // --- Helpers ---
 
     private CaseFile caseFile(String strategy, List<Unit> army,
