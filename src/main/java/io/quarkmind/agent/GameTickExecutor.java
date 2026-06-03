@@ -35,6 +35,7 @@ class GameTickExecutor {
         }
         long t2 = System.currentTimeMillis();
 
+        // dispatch() reads IntentQueue (plugin-populated), not CaseFile — safe to call even on failed solve
         engine.dispatch();
         long t3 = System.currentTimeMillis();
 

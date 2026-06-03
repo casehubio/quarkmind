@@ -29,7 +29,7 @@ class AdaptivePluginSelectionIT {
     @Test
     void tickResultReturnsValidCaseFile() {
         orchestrator.gameTick();
-        AgentOrchestrator.TickResult result = orchestrator.getLastTickResult(); // compile error
+        AgentOrchestrator.TickResult result = orchestrator.getLastTickResult();
 
         assertThat(result).isNotNull();
         assertThat(result.solveSucceeded()).isTrue();
