@@ -304,13 +304,12 @@ public class DroolsTacticsTask implements TacticsTask {
                     .filter(u -> unitTags.contains(u.tag())).toList();
                 Map<String, Point2d> targets = focusFireStrategy.assignTargets(attackers, enemies);
                 unitTags.forEach(tag -> {
-                    Point2d target = targets.getOrDefault(tag, threat != null ? threat : MAP_CENTER);
+                    Point2d target = targets.getOrDefault(tag, threat);
                     intentQueue.add(new AttackIntent(tag, target));
                 });
             }
             case "MOVE_TO_ENGAGE" -> {
-                Point2d target = threat != null ? threat : MAP_CENTER;
-                unitTags.forEach(tag -> intentQueue.add(new MoveIntent(tag, target)));
+                unitTags.forEach(tag -> intentQueue.add(new MoveIntent(tag, threat)));
             }
             case "RETREAT" -> {
                 Point2d rally = buildings.stream()
