@@ -173,6 +173,26 @@ class DroolsStrategyTaskTest {
         assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("ATTACK");
     }
 
+    // --- Entry criteria ---
+
+    @Test
+    void droolsStrategyTaskRequiresEnemyArmySizeToActivate() {
+        var cf = new InMemoryCaseFileRepository()
+            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
+        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
+        // ENEMY_ARMY_SIZE absent → canActivate must return false
+        assertThat(strategyTask.canActivate(cf)).isFalse();
+    }
+
+    @Test
+    void droolsStrategyTaskActivatesWhenEnemyArmySizePresent() {
+        var cf = new InMemoryCaseFileRepository()
+            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
+        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
+        cf.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0);
+        assertThat(strategyTask.canActivate(cf)).isTrue();
+    }
+
     // --- Helpers ---
 
     private CaseFile caseFile(int minerals, int vespene,
@@ -188,6 +208,7 @@ class DroolsStrategyTaskTest {
         cf.put(QuarkMindCaseFile.GEYSERS,         List.of());
         cf.put(QuarkMindCaseFile.RESOURCE_BUDGET, new ResourceBudget(minerals, vespene));
         cf.put(QuarkMindCaseFile.READY,           Boolean.TRUE);
+        cf.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, enemies.size());
         return cf;
     }
 
