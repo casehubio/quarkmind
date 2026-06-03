@@ -14,6 +14,7 @@ import io.quarkmind.sc2.ScenarioRunner;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +36,11 @@ class AdaptivePluginSelectionIT {
     void setUp() {
         simulatedGame.reset();
         orchestrator.startGame();
+        intentQueue.drainAll();
+    }
+
+    @AfterEach
+    void tearDown() {
         intentQueue.drainAll();
     }
 
@@ -68,7 +74,7 @@ class AdaptivePluginSelectionIT {
     }
 
     @Test
-    void scoutingRunsBeforeStrategyInOrderedChain() {
+    void strategyRequiresScoutingOutputToActivate() {
         // The tick CaseFile (initial state from translator) contains READY but not ENEMY_ARMY_SIZE.
         // Strategy requires ENEMY_ARMY_SIZE (written by scouting) to activate — proving
         // that scouting must run before strategy in the ordered chain.
@@ -84,6 +90,7 @@ class AdaptivePluginSelectionIT {
         assertThat(strategyTask.canActivate(result.caseFile())).isFalse();
 
         // Positive case: strategy activates once scouting has written ENEMY_ARMY_SIZE
+        // synthetic CaseFile — created out-of-band from CDI to test canActivate() in isolation
         var withScouting = new InMemoryCaseFileRepository()
             .create("starcraft-game", Map.of(), PropagationContext.createRoot());
         withScouting.put(QuarkMindCaseFile.READY, Boolean.TRUE);
@@ -92,7 +99,7 @@ class AdaptivePluginSelectionIT {
     }
 
     @Test
-    void tacticsGateMetWhenEnemyPresent() {
+    void tacticsActivatesWhenNearestThreatAndStrategyPresent() {
         // After spawn-enemy-attack, ENEMY_UNITS is populated by the translator.
         // Scouting (running asynchronously) writes NEAREST_THREAT from ENEMY_UNITS.
         // Prove that tactics canActivate only when NEAREST_THREAT is present.
@@ -108,6 +115,7 @@ class AdaptivePluginSelectionIT {
         assertThat(tacticsTask.canActivate(result.caseFile())).isFalse();
 
         // Simulate scouting + strategy output: tactics gate is met when all entry criteria present
+        // safe: lastTickResult is overwritten on next tick; this CaseFile instance is already orphaned
         result.caseFile().put(QuarkMindCaseFile.NEAREST_THREAT, new Point2d(50, 50));
         result.caseFile().put(QuarkMindCaseFile.STRATEGY, "DEFEND");
         assertThat(tacticsTask.canActivate(result.caseFile())).isTrue();
