@@ -109,6 +109,11 @@ public class DroolsTacticsTask implements TacticsTask {
     }
     @Override public Set<String> producedKeys()  { return Set.of(); }
 
+    /**
+     * Overrides the {@code TaskDefinition} default, which unconditionally returns {@code true}
+     * in the installed casehub-core snapshot — ignoring {@link #entryCriteria()}.
+     * Override required until the foundation corrects the default.
+     */
     @Override
     public boolean canActivate(CaseFile caseFile) {
         return entryCriteria().stream().allMatch(caseFile::contains);

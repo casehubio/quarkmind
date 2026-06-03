@@ -29,6 +29,13 @@ import java.util.Set;
  *
  * <p>Attack target falls back to {@link #MAP_CENTER} when no enemy is visible.
  * This is a conservative approximation — future phases will use proper map data.
+ *
+ * <p>Superseded by {@link DroolsTacticsTask} as the active CDI bean. Retained as
+ * a plain class for direct-instantiation tests.
+ *
+ * <p>This class intentionally carries no CDI annotations ({@code @ApplicationScoped},
+ * {@code @CaseType}) — {@link DroolsTacticsTask} is the permanent active bean.
+ * Direct instantiation only: never injected by the container.
  */
 public class BasicTacticsTask implements TacticsTask {
 
@@ -53,6 +60,11 @@ public class BasicTacticsTask implements TacticsTask {
     }
     @Override public Set<String> producedKeys()  { return Set.of(); }
 
+    /**
+     * Overrides the {@code TaskDefinition} default, which unconditionally returns {@code true}
+     * in the installed casehub-core snapshot — ignoring {@link #entryCriteria()}.
+     * Override required until the foundation corrects the default.
+     */
     @Override
     public boolean canActivate(CaseFile caseFile) {
         return entryCriteria().stream().allMatch(caseFile::contains);
