@@ -158,6 +158,26 @@ class BasicStrategyTaskTest {
         assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("ATTACK");
     }
 
+    // --- Entry criteria ---
+
+    @Test
+    void strategyTaskRequiresEnemyArmySizeToActivate() {
+        var cf = new InMemoryCaseFileRepository()
+            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
+        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
+        // ENEMY_ARMY_SIZE absent → canActivate must return false
+        assertThat(task.canActivate(cf)).isFalse();
+    }
+
+    @Test
+    void strategyTaskActivatesWhenEnemyArmySizePresent() {
+        var cf = new InMemoryCaseFileRepository()
+            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
+        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
+        cf.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0); // scouting wrote 0 (no enemies visible)
+        assertThat(task.canActivate(cf)).isTrue();
+    }
+
     // --- Helpers ---
 
     private CaseFile caseFile(int minerals, int vespene,

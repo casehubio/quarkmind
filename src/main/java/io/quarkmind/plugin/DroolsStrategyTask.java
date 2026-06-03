@@ -53,12 +53,27 @@ public class DroolsStrategyTask implements StrategyTask {
 
     @Override public String getId()   { return "strategy.drools"; }
     @Override public String getName() { return "Drools Strategy"; }
-    @Override public Set<String> entryCriteria() { return Set.of(QuarkMindCaseFile.READY); }
+    @Override public Set<String> entryCriteria() {
+        return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.ENEMY_ARMY_SIZE);
+    }
     @Override public Set<String> producedKeys()  { return Set.of(QuarkMindCaseFile.STRATEGY); }
+
+    /**
+     * Overrides the {@code TaskDefinition} default, which unconditionally returns {@code true}
+     * in the installed casehub-core snapshot — ignoring {@link #entryCriteria()}.
+     * Override required until the foundation corrects the default.
+     */
+    @Override
+    public boolean canActivate(CaseFile caseFile) {
+        return entryCriteria().stream().allMatch(caseFile::contains);
+    }
 
     @Override
     @SuppressWarnings("unchecked")
     public void execute(CaseFile caseFile) {
+        // C2 stub (tracked as #169): ENEMY_ARMY_SIZE establishes scouting → strategy ordering.
+        // When C2 lands: replace enemies DataStore feed with ENEMY_POSTURE + ENEMY_BUILD_ORDER.
+        int enemyCount = caseFile.get(QuarkMindCaseFile.ENEMY_ARMY_SIZE, Integer.class).orElse(0);
         List<Unit>     workers   = (List<Unit>)     caseFile.get(QuarkMindCaseFile.WORKERS,      List.class).orElse(List.of());
         List<Unit>     army      = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ARMY,         List.class).orElse(List.of());
         List<Building> buildings = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
@@ -78,10 +93,10 @@ public class DroolsStrategyTask implements StrategyTask {
         String strategy = data.getStrategyDecisions().stream().findFirst().orElse("MACRO");
         caseFile.put(QuarkMindCaseFile.STRATEGY, strategy);
 
-        log.debugf("[DROOLS-STRATEGY] %s | stalkers=%d | enemies=%d | builds=%s | %s",
+        log.debugf("[DROOLS-STRATEGY] %s | stalkers=%d | enemies(scouted)=%d | builds=%s | %s",
             strategy,
             army.stream().filter(u -> u.type() == UnitType.STALKER).count(),
-            enemies.size(), data.getBuildDecisions(), budget);
+            enemyCount, data.getBuildDecisions(), budget);
     }
 
     private StrategyRuleUnit buildRuleUnit(List<Unit> workers, List<Unit> army,

@@ -39,6 +39,10 @@ import java.util.stream.Collectors;
  *
  * <p><b>Status:</b> superseded by {@link DroolsStrategyTask} as the active CaseHub plugin.
  * Retained as a plain class for direct-instantiation tests and as a reference implementation.
+ *
+ * <p>This class intentionally carries no CDI annotations ({@code @ApplicationScoped},
+ * {@code @CaseType}) — {@link DroolsStrategyTask} is the permanent active bean.
+ * Direct instantiation only: never injected by the container.
  */
 public class BasicStrategyTask implements StrategyTask {
 
@@ -64,12 +68,27 @@ public class BasicStrategyTask implements StrategyTask {
 
     @Override public String getId()   { return "strategy.basic"; }
     @Override public String getName() { return "Basic Strategy"; }
-    @Override public Set<String> entryCriteria() { return Set.of(QuarkMindCaseFile.READY); }
+    @Override public Set<String> entryCriteria() {
+        return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.ENEMY_ARMY_SIZE);
+    }
     @Override public Set<String> producedKeys()  { return Set.of(QuarkMindCaseFile.STRATEGY); }
+
+    /**
+     * Overrides the {@code TaskDefinition} default, which unconditionally returns {@code true}
+     * in the installed casehub-core snapshot — ignoring {@link #entryCriteria()}.
+     * Override required until the foundation corrects the default.
+     */
+    @Override
+    public boolean canActivate(CaseFile caseFile) {
+        return entryCriteria().stream().allMatch(caseFile::contains);
+    }
 
     @Override
     @SuppressWarnings("unchecked")
     public void execute(CaseFile caseFile) {
+        // C2 stub (tracked as #169): ENEMY_ARMY_SIZE establishes scouting → strategy ordering.
+        // When C2 lands: replace enemies DataStore feed with ENEMY_POSTURE + ENEMY_BUILD_ORDER.
+        int enemyCount = caseFile.get(QuarkMindCaseFile.ENEMY_ARMY_SIZE, Integer.class).orElse(0);
         List<Unit>     workers   = (List<Unit>)     caseFile.get(QuarkMindCaseFile.WORKERS,      List.class).orElse(List.of());
         List<Unit>     army      = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ARMY,         List.class).orElse(List.of());
         List<Building> buildings = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
@@ -86,10 +105,10 @@ public class BasicStrategyTask implements StrategyTask {
         String strategy = assessStrategy(army, enemies);
         caseFile.put(QuarkMindCaseFile.STRATEGY, strategy);
 
-        log.debugf("[STRATEGY] %s | stalkers=%d | enemies=%d | %s",
+        log.debugf("[STRATEGY] %s | stalkers=%d | enemies(raw)=%d | enemies(scouted)=%d | %s",
             strategy,
             army.stream().filter(u -> u.type() == UnitType.STALKER).count(),
-            enemies.size(), budget);
+            enemies.size(), enemyCount, budget);
     }
 
     private void maybeBuildGateway(ResourceBudget budget, List<Unit> workers, List<Building> buildings) {
