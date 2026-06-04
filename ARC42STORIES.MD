@@ -4,7 +4,7 @@
 **Profile:** CaseHub — Application tier
 **Profile ref:** `../parent/docs/arc42stories-casehub-profile.md` · fallback: `https://raw.githubusercontent.com/casehubio/parent/main/docs/arc42stories-casehub-profile.md`
 **Prefix:** QM
-**Status:** L1 conceptual + L2 complete. L3–L7 pending (#155–#159).
+**Status:** L1 conceptual + L2, L5 complete. L3, L4, L6, L7 pending (#155, #156, #158, #159).
 
 ---
 
@@ -138,7 +138,7 @@ QuarkMind follows the CaseHub harness integration sequence with one deviation: `
 | Naive Game Loop | *(none — conceptual baseline)* | L1 | Conceptual only — never deployed |
 | casehub-engine | `casehub-engine` + `casehub-persistence-memory` | L2 | ✅ complete (#28, #139) |
 | casehub-qhorus | `casehub-qhorus` | L3 | 🔲 pending (#155) |
-| casehub-ledger | `casehub-ledger` (lightweight mode — casehubio/ledger#114) | L4 | 🔲 pending (#156) |
+| casehub-ledger | `casehub-ledger` (lightweight mode — casehubio/ledger#114) | L4 | 🔲 pending (#156 — unblocked, ledger#114 shipped) |
 | Adaptive plugin selection | `casehub-engine` binding conditions | L5 | ✅ complete (#157) |
 | Trust routing | `casehub-engine-ledger` (Bayesian Beta CAPABILITY — EigenTrust inert, ADR-0009) | L6 | 🔲 pending (#158) |
 | Comparison baseline | *(none — analysis only)* | L7 | 🔲 pending (#159) |
@@ -687,7 +687,7 @@ Replicate the casehub-engine blackboard harness in a different domain:
 ### Layer — casehub-ledger
 
 **Participates in chapters:** C3, C4, C5
-**Completed:** 🔲 pending (#156, blocked on casehubio/ledger#114)
+**Completed:** 🔲 pending (#156 — unblocked, ledger#114 shipped 2026-06-02)
 
 🔲 Full entry at C3 close. Known scope: plugin outcome recording without cryptographic signing; Bayesian Beta trust scoring per plugin; async non-blocking writes at game-loop granularity; in-memory backend for mock/emulated profiles. Lightweight mode required — tamper-evident guarantees not needed for game agent decisions.
 
@@ -702,7 +702,7 @@ Replicate the casehub-engine blackboard harness in a different domain:
 
 Two distinct uses of `entryCriteria()` emerged:
 
-**Ordering dependency** — `ENEMY_ARMY_SIZE` on `StrategyTask`: scouting always writes this key (even as 0), so strategy always runs after scouting. The criterion enforces execution order without causing genuine skipping. C2 (#169) will migrate strategy's Drools data feed to use scouting-derived intel (`ENEMY_POSTURE`, `ENEMY_BUILD_ORDER`), at which point the dependency becomes a genuine data dependency rather than a sequencing constraint.
+**Ordering dependency** — `ENEMY_ARMY_SIZE` on `StrategyTask`: scouting always writes this key (even as 0), so strategy always runs after scouting. The criterion enforces execution order without causing genuine skipping. #169 migrated strategy's Drools data feed to scouting-derived intel (`ENEMY_POSTURE`, `ENEMY_BUILD_ORDER`), making this a genuine data dependency rather than a sequencing constraint.
 
 **Conditional gate** — `NEAREST_THREAT` on `TacticsTask`: scouting writes this key only when `!enemies.isEmpty()`. When no enemies are visible, the key is absent and tactics is skipped entirely. This is the genuinely adaptive behaviour: the platform decides whether tactics has any work to do without the plugin being invoked.
 
@@ -775,7 +775,7 @@ ADR-0001 through ADR-0008 are captured in `docs/adr/`. Only cross-cutting decisi
 
 | Risk / Debt | Severity | Notes |
 |---|---|---|
-| `casehubio/ledger#114` — lightweight ledger mode | High | Blocks C3, C4, C5. No workaround without building a custom outcome log outside the platform. |
+| `casehubio/ledger#114` — lightweight ledger mode | ~~High~~ Resolved | Shipped 2026-06-02. `DefaultOutcomeRecorder @DefaultBean` available; wire with `casehub.ledger.trust-score.routing-enabled=true`. C3, C4, C5 unblocked. |
 | `ocraft-s2client` JVM-only | Medium | Blocks native image target. Tracked in `NATIVE.md`. Requires alternative or native agent at GraalVM 25. |
 | `scelight-mpq` JVM-only | Medium | Replay parsing blocks native. Tracked in `NATIVE.md`. |
 | Single-module — no compile-time dependency enforcement | Low | Package conventions are the only guard against seam-interface contamination. Code review is the enforcement mechanism. |
