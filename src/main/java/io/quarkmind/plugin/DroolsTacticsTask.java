@@ -126,7 +126,13 @@ public class DroolsTacticsTask implements TacticsTask {
         List<Unit> army    = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ARMY,         List.class).orElse(List.of());
         List<Unit> enemies = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ENEMY_UNITS,  List.class).orElse(List.of());
         List<Building> bld = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
-        Point2d threat     = caseFile.get(QuarkMindCaseFile.NEAREST_THREAT, Point2d.class).orElse(null);
+        // Protocol PP-20260603-049dd0: gate guarantees NEAREST_THREAT is present and non-null.
+        // Currently InMemoryCaseFile.get() uses Optional.of() which NPEs for null-valued entries
+        // before this line is reached (#175). Once that is fixed to Optional.ofNullable(),
+        // this orElseThrow() will surface the violation as a meaningful ISE instead of a raw NPE.
+        Point2d threat     = caseFile.get(QuarkMindCaseFile.NEAREST_THREAT, Point2d.class)
+                .orElseThrow(() -> new IllegalStateException(
+                        "NEAREST_THREAT gate passed but get() returned empty — protocol PP-20260603-049dd0 violation"));
 
         if (army.isEmpty()) return;
 

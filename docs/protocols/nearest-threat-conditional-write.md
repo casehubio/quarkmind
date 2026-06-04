@@ -12,3 +12,5 @@ created: 2026-06-03
 ---
 
 The TacticsTask adaptive gate (`entryCriteria = {READY, STRATEGY, NEAREST_THREAT}`) depends on `NEAREST_THREAT` being absent from the CaseFile when no enemies are visible. The CaseEngine gate mechanism uses key presence, not key value — writing `NEAREST_THREAT` unconditionally (even as `null`, `Optional.empty()`, or a sentinel) breaks the gate and causes TacticsTask to activate every tick. All scouting implementations must write `NEAREST_THREAT` only inside an `!enemies.isEmpty()` guard, never outside it.
+
+Additionally, the value written to `NEAREST_THREAT` must be a non-null `Point2d`. Writing `null` is a protocol violation — it causes `InMemoryCaseFile.get()` to throw `NullPointerException` via `Optional.of(null)` (#175), and defeats the `orElseThrow()` guard in `DroolsTacticsTask.execute()` designed to surface contract violations with a meaningful message.
