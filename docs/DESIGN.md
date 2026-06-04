@@ -103,7 +103,7 @@ Each plugin seam (`StrategyTask`, `EconomicsTask`, `TacticsTask`, `ScoutingTask`
 | `TacticsTask` | `DroolsTacticsTask` | Drools + custom Java GOAP | Drools classifies unit groups (rule phase 1); Java A* finds cheapest action plan per group (rule phase 2). First action dispatched as `AttackIntent`/`MoveIntent`. |
 | `ScoutingTask` | `BasicScoutingTask` | Drools CEP + Java-managed buffers | Fresh `RuleUnitInstance` per tick from Java `Deque` buffers. Avoids Drools Fusion STREAM mode incompatibility with drools-quarkus extension. |
 
-`BasicStrategyTask` is retained as a plain (non-CDI) class: reference implementation and direct-instantiation test target.
+`DroolsStrategyTask` is the active strategy implementation — Drools Rule Units with posture-driven strategy assessment. `BasicStrategyTask` was deleted in #169.
 
 Plugins are registered at startup by `QuarkMindTaskRegistrar` — injecting each seam interface keeps Arc from removing the beans as unused (Arc's dead-bean elimination previously silently kept the registry empty).
 

@@ -134,7 +134,7 @@ intentQueue.add(new AttackIntent(unitTag, new Point2d(100, 100)));
 
 ## Replacing a Plugin
 
-To replace the existing `BasicStrategyTask` with your own:
+To replace the existing `DroolsStrategyTask` with your own:
 
 1. Create your class implementing `StrategyTask` with `@ApplicationScoped @CaseType("starcraft-game")`
 2. Delete (or deactivate) the existing implementation — two active beans for the same seam will cause CDI ambiguity
@@ -175,7 +175,7 @@ class MyStrategyTaskTest {
 }
 ```
 
-See `BasicStrategyTaskTest` and `BasicEconomicsTaskTest` for full examples.
+See `DroolsStrategyTaskTest` and `BasicEconomicsTaskTest` for full examples.
 
 **Never use `@QuarkusTest` for unit tests that don't need CDI** — the boot cost is significant. Use `@QuarkusTest` only when you need the full CDI context (e.g., testing REST endpoints or the full pipeline).
 
@@ -226,7 +226,7 @@ Intents queued by multiple plugins in the same tick are all dispatched together 
 
 ## Resource Double-Spend
 
-Two plugins can both queue intents that spend the same minerals in one tick (e.g., `BasicEconomicsTask` queues a Pylon and `BasicStrategyTask` queues a Gateway in the same tick when minerals are just enough for one). 
+Two plugins can both queue intents that spend the same minerals in one tick (e.g., `BasicEconomicsTask` queues a Pylon and `DroolsStrategyTask` queues a Gateway in the same tick when minerals are just enough for one). 
 
 In mock mode, `SimulatedGame` does not enforce mineral costs — both intents are applied. In real SC2 mode, the game engine will reject commands it cannot honour. Arbitration between plugins is a future concern (see `docs/roadmap-sc2-engine.md`).
 

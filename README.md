@@ -81,7 +81,7 @@ Each concern is a CDI interface extending CaseHub's `TaskDefinition`:
 | Seam | Interface | Current implementation |
 |---|---|---|
 | Economics | `EconomicsTask` | `BasicEconomicsTask` — probe production + pylon supply |
-| Strategy | `StrategyTask` | `BasicStrategyTask` — gateway opener, Stalker training, strategy assessment |
+| Strategy | `StrategyTask` | `DroolsStrategyTask` — Drools Rule Units, posture-driven strategy assessment |
 | Tactics | `TacticsTask` | `DroolsTacticsTask` — Drools + custom GOAP planner |
 | Scouting | `ScoutingTask` | `BasicScoutingTask` — Drools CEP + Java-managed buffers |
 
