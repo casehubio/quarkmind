@@ -57,15 +57,32 @@ then
 end
 
 // ---------------------------------------------------------------------------
-// Strategy Assessment Rules (salience 200..150)
-// DEFEND and ATTACK are mutually exclusive via the enemies check.
+// Strategy Assessment Rules (salience 210..150)
+// Driven by scouting-derived intel stored in postureStore and timingStore.
+// eval() + accumulate() does not compile in the current Drools version, so
+// posture and timing are fed as DataStore facts for pattern-matching.
+// Two DEFEND rules used instead of the or-keyword: or fires once per matching
+// alternative, adding "DEFEND" twice when both conditions hold. findFirst()
+// handles that, but two rules with a not-timing guard on the second are cleaner.
+// ATTACK fires when no threat signal — UNKNOWN posture is treated as
+// equivalent to the old "not /enemies" signal (no current enemy contact).
+// See protocol: docs/protocols/strategy-attack-under-unknown-posture.md
 // Default is "MACRO" (empty strategyDecisions list).
 // ---------------------------------------------------------------------------
 
-rule "Strategy: Defend"
+rule "Strategy: Defend — Timing Attack"
+    salience 210
+when
+    /timingStore[ this == true ]
+then
+    strategyDecisions.add("DEFEND");
+end
+
+rule "Strategy: Defend — All-In Posture"
     salience 200
 when
-    /enemies
+    not /timingStore[ this == true ]
+    /postureStore[ this.equals("ALL_IN") ]
 then
     strategyDecisions.add("DEFEND");
 end
@@ -73,7 +90,8 @@ end
 rule "Strategy: Attack"
     salience 150
 when
-    not /enemies
+    not /timingStore[ this == true ]
+    not /postureStore[ this.equals("ALL_IN") ]
     accumulate(
         /army[ this.type() == UnitType.STALKER ];
         $count : count();

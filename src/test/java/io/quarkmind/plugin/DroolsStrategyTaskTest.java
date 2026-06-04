@@ -29,10 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>Requires {@code @QuarkusTest} — {@link DroolsStrategyTask} uses {@code drools-quarkus}
  * whose {@code DataSource.createStore()} factory is initialised at Quarkus build time and is
  * unavailable in plain JUnit (see GE-0053). Tests call {@link StrategyTask#execute(io.casehub.core.CaseFile)}
- * directly with a populated {@link InMemoryCaseFile}.
- *
- * <p>Logic coverage for the same rules is also exercised by {@link BasicStrategyTaskTest}
- * (plain JUnit, no Quarkus boot) since both implementations share identical decisions.
+ * directly with a populated {@link CaseFile}.
  */
 @QuarkusTest
 class DroolsStrategyTaskTest {
@@ -50,7 +47,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void buildsGatewayWhenPylonExistsAndMineralsAvailable() {
-        var cf = caseFile(200, 0, workers(6), List.of(nexus(), completePylon()), List.of());
+        var cf = caseFile(200, 0, workers(6), List.of(nexus(), completePylon()), "UNKNOWN", false);
         strategyTask.execute(cf);
         assertThat(intentQueue.pending().stream()
             .anyMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.GATEWAY))
@@ -59,7 +56,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void doesNotBuildGatewayWithoutPylon() {
-        var cf = caseFile(200, 0, workers(6), List.of(nexus()), List.of());
+        var cf = caseFile(200, 0, workers(6), List.of(nexus()), "UNKNOWN", false);
         strategyTask.execute(cf);
         assertThat(intentQueue.pending().stream()
             .noneMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.GATEWAY))
@@ -68,7 +65,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void doesNotBuildGatewayIfAlreadyExists() {
-        var cf = caseFile(300, 0, workers(6), List.of(nexus(), completePylon(), gateway(false)), List.of());
+        var cf = caseFile(300, 0, workers(6), List.of(nexus(), completePylon(), gateway(false)), "UNKNOWN", false);
         strategyTask.execute(cf);
         assertThat(intentQueue.pending().stream()
             .noneMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.GATEWAY))
@@ -77,7 +74,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void doesNotBuildGatewayWithInsufficientMinerals() {
-        var cf = caseFile(100, 0, workers(6), List.of(nexus(), completePylon()), List.of());
+        var cf = caseFile(100, 0, workers(6), List.of(nexus(), completePylon()), "UNKNOWN", false);
         strategyTask.execute(cf);
         assertThat(intentQueue.pending().stream()
             .noneMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.GATEWAY))
@@ -88,7 +85,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void buildsCyberneticsCoreWhenGatewayCompleteAndMineralsAvailable() {
-        var cf = caseFile(200, 0, workers(6), List.of(nexus(), completePylon(), gateway(true)), List.of());
+        var cf = caseFile(200, 0, workers(6), List.of(nexus(), completePylon(), gateway(true)), "UNKNOWN", false);
         strategyTask.execute(cf);
         assertThat(intentQueue.pending().stream()
             .anyMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.CYBERNETICS_CORE))
@@ -97,7 +94,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void doesNotBuildCyberneticsCorIfGatewayNotComplete() {
-        var cf = caseFile(300, 0, workers(6), List.of(nexus(), completePylon(), gateway(false)), List.of());
+        var cf = caseFile(300, 0, workers(6), List.of(nexus(), completePylon(), gateway(false)), "UNKNOWN", false);
         strategyTask.execute(cf);
         assertThat(intentQueue.pending().stream()
             .noneMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.CYBERNETICS_CORE))
@@ -107,7 +104,7 @@ class DroolsStrategyTaskTest {
     @Test
     void doesNotBuildCyberneticsCoreIfAlreadyExists() {
         var cf = caseFile(300, 0, workers(6),
-            List.of(nexus(), completePylon(), gateway(true), cyberneticsCore(false)), List.of());
+            List.of(nexus(), completePylon(), gateway(true), cyberneticsCore(false)), "UNKNOWN", false);
         strategyTask.execute(cf);
         assertThat(intentQueue.pending().stream()
             .noneMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.CYBERNETICS_CORE))
@@ -119,7 +116,7 @@ class DroolsStrategyTaskTest {
     @Test
     void trainsStalkerWhenCoreAndGatewayCompleteAndGasAvailable() {
         var cf = caseFile(200, 100, workers(6),
-            List.of(nexus(), completePylon(), gateway(true), cyberneticsCore(true)), List.of());
+            List.of(nexus(), completePylon(), gateway(true), cyberneticsCore(true)), "UNKNOWN", false);
         strategyTask.execute(cf);
         assertThat(intentQueue.pending().stream()
             .anyMatch(i -> i instanceof TrainIntent ti && ti.unitType() == UnitType.STALKER))
@@ -129,7 +126,7 @@ class DroolsStrategyTaskTest {
     @Test
     void doesNotTrainStalkerWithoutGas() {
         var cf = caseFile(200, 0, workers(6),
-            List.of(nexus(), completePylon(), gateway(true), cyberneticsCore(true)), List.of());
+            List.of(nexus(), completePylon(), gateway(true), cyberneticsCore(true)), "UNKNOWN", false);
         strategyTask.execute(cf);
         assertThat(intentQueue.pending().stream()
             .noneMatch(i -> i instanceof TrainIntent ti && ti.unitType() == UnitType.STALKER))
@@ -139,78 +136,149 @@ class DroolsStrategyTaskTest {
     @Test
     void doesNotTrainStalkerWithoutCyberneticsCore() {
         var cf = caseFile(200, 100, workers(6),
-            List.of(nexus(), completePylon(), gateway(true)), List.of());
+            List.of(nexus(), completePylon(), gateway(true)), "UNKNOWN", false);
         strategyTask.execute(cf);
         assertThat(intentQueue.pending().stream()
             .noneMatch(i -> i instanceof TrainIntent ti && ti.unitType() == UnitType.STALKER))
             .isTrue();
     }
 
-    // --- Strategy assessment ---
+    // --- Strategy assessment (C2 — posture-driven) ---
 
     @Test
-    void strategyIsMacroWhenNoArmyAndNoEnemies() {
-        var cf = caseFile(50, 0, workers(12), List.of(nexus()), List.of());
-        strategyTask.execute(cf);
-        assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("MACRO");
-    }
-
-    @Test
-    void strategyIsDefendWhenEnemiesVisible() {
-        var cf = caseFile(50, 0, workers(12), List.of(nexus()), List.of(enemyZealot()));
+    void strategyIsDefendWhenAllInPosture() {
+        var cf = caseFile(50, 0, workers(12), List.of(nexus()), "ALL_IN", false);
         strategyTask.execute(cf);
         assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("DEFEND");
     }
 
     @Test
-    void strategyIsAttackWhenEnoughStalkers() {
-        List<Unit> stalkers = IntStream.range(0, 4)
-            .mapToObj(i -> new Unit("s-" + i, UnitType.STALKER, new Point2d(10, 10), 80, 80, 80, 80, 0, 0))
-            .toList();
-        var cf = caseFile(50, 0, workers(12), List.of(nexus()), List.of());
-        cf.put(QuarkMindCaseFile.ARMY, stalkers);
+    void strategyIsDefendWhenTimingAttackIncoming() {
+        var cf = caseFile(50, 0, workers(12), List.of(nexus()), "UNKNOWN", true);
+        strategyTask.execute(cf);
+        assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("DEFEND");
+    }
+
+    @Test
+    void strategyIsDefendWhenTimingAttackIncomingWithStalkers() {
+        var cf = caseFile(50, 0, workers(12), List.of(nexus()), "UNKNOWN", true);
+        cf.put(QuarkMindCaseFile.ARMY, stalkers(4));
+        strategyTask.execute(cf);
+        assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("DEFEND");
+    }
+
+    @Test
+    void strategyIsDefendNotAttackWhenAllInPostureWithStalkers() {
+        var cf = caseFile(50, 0, workers(12), List.of(nexus()), "ALL_IN", false);
+        cf.put(QuarkMindCaseFile.ARMY, stalkers(4));
+        strategyTask.execute(cf);
+        assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("DEFEND");
+    }
+
+    @Test
+    void strategyIsAttackWhenMacroPostureAndEnoughStalkers() {
+        var cf = caseFile(50, 0, workers(12), List.of(nexus()), "MACRO", false);
+        cf.put(QuarkMindCaseFile.ARMY, stalkers(4));
         strategyTask.execute(cf);
         assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("ATTACK");
     }
 
-    // --- Entry criteria ---
+    @Test
+    void strategyIsAttackWhenUnknownPostureAndEnoughStalkers() {
+        var cf = caseFile(50, 0, workers(12), List.of(nexus()), "UNKNOWN", false);
+        cf.put(QuarkMindCaseFile.ARMY, stalkers(4));
+        strategyTask.execute(cf);
+        assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("ATTACK");
+    }
 
     @Test
-    void droolsStrategyTaskRequiresEnemyArmySizeToActivate() {
+    void strategyIsMacroWhenNoIntelAndNoArmy() {
+        var cf = caseFile(50, 0, workers(12), List.of(nexus()), "UNKNOWN", false);
+        strategyTask.execute(cf);
+        assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("MACRO");
+    }
+
+    @Test
+    void strategyIsMacroWhenBelowAttackThresholdWithMacroPosture() {
+        var cf = caseFile(50, 0, workers(12), List.of(nexus()), "MACRO", false);
+        cf.put(QuarkMindCaseFile.ARMY, stalkers(3));
+        strategyTask.execute(cf);
+        assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("MACRO");
+    }
+
+    // --- Entry criteria (C2) ---
+
+    @Test
+    void canActivate_allKeysPresent() {
         var cf = new InMemoryCaseFileRepository()
             .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
-        // ENEMY_ARMY_SIZE absent → canActivate must return false
+        cf.put(QuarkMindCaseFile.READY,                  Boolean.TRUE);
+        cf.put(QuarkMindCaseFile.ENEMY_POSTURE,          "UNKNOWN");
+        cf.put(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, Boolean.FALSE);
+        assertThat(strategyTask.canActivate(cf)).isTrue();
+    }
+
+    @Test
+    void canActivate_readyAbsent() {
+        var cf = new InMemoryCaseFileRepository()
+            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
+        cf.put(QuarkMindCaseFile.ENEMY_POSTURE,          "UNKNOWN");
+        cf.put(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, Boolean.FALSE);
         assertThat(strategyTask.canActivate(cf)).isFalse();
     }
 
     @Test
-    void droolsStrategyTaskActivatesWhenEnemyArmySizePresent() {
+    void canActivate_enemyPostureAbsent() {
         var cf = new InMemoryCaseFileRepository()
             .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
+        cf.put(QuarkMindCaseFile.READY,                  Boolean.TRUE);
+        cf.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE,        0);
+        cf.put(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, Boolean.FALSE);
+        assertThat(strategyTask.canActivate(cf)).isFalse();
+    }
+
+    @Test
+    void canActivate_timingAttackAbsent() {
+        var cf = new InMemoryCaseFileRepository()
+            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
+        cf.put(QuarkMindCaseFile.READY,         Boolean.TRUE);
         cf.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0);
-        assertThat(strategyTask.canActivate(cf)).isTrue();
+        cf.put(QuarkMindCaseFile.ENEMY_POSTURE, "UNKNOWN");
+        assertThat(strategyTask.canActivate(cf)).isFalse();
+    }
+
+    // --- Gateway (coverage migrated from BasicStrategyTaskTest) ---
+
+    @Test
+    void doesNotBuildGatewayWhenPylonIsUnderConstruction() {
+        var cf = caseFile(200, 0, workers(6), List.of(nexus(), incompletePylon()), "UNKNOWN", false);
+        strategyTask.execute(cf);
+        assertThat(intentQueue.pending().stream()
+            .noneMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.GATEWAY))
+            .isTrue();
     }
 
     // --- Helpers ---
 
-    private CaseFile caseFile(int minerals, int vespene,
-                                     List<Unit> workers, List<Building> buildings,
-                                     List<Unit> enemies) {
+    /** Posture-driven CaseFile helper — uses scouting-derived intel, not raw enemies. */
+    private CaseFile caseFile(int minerals, int vespene, List<Unit> workers,
+                               List<Building> buildings,
+                               String enemyPosture, boolean timingAttack) {
         var cf = new InMemoryCaseFileRepository().create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.MINERALS,        minerals);
-        cf.put(QuarkMindCaseFile.VESPENE,         vespene);
-        cf.put(QuarkMindCaseFile.WORKERS,         workers);
-        cf.put(QuarkMindCaseFile.ARMY,            List.of());
-        cf.put(QuarkMindCaseFile.MY_BUILDINGS,    buildings);
-        cf.put(QuarkMindCaseFile.ENEMY_UNITS,     enemies);
-        cf.put(QuarkMindCaseFile.GEYSERS,         List.of());
-        cf.put(QuarkMindCaseFile.RESOURCE_BUDGET, new ResourceBudget(minerals, vespene));
-        cf.put(QuarkMindCaseFile.READY,           Boolean.TRUE);
-        cf.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, enemies.size());
+        cf.put(QuarkMindCaseFile.MINERALS,               minerals);
+        cf.put(QuarkMindCaseFile.VESPENE,                vespene);
+        cf.put(QuarkMindCaseFile.WORKERS,                workers);
+        cf.put(QuarkMindCaseFile.ARMY,                   List.of());
+        cf.put(QuarkMindCaseFile.MY_BUILDINGS,           buildings);
+        cf.put(QuarkMindCaseFile.GEYSERS,                List.of());
+        cf.put(QuarkMindCaseFile.RESOURCE_BUDGET,        new ResourceBudget(minerals, vespene));
+        cf.put(QuarkMindCaseFile.READY,                  Boolean.TRUE);
+        cf.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE,        0);
+        cf.put(QuarkMindCaseFile.ENEMY_POSTURE,          enemyPosture);
+        cf.put(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, timingAttack);
         return cf;
     }
+
 
     private List<Unit> workers(int count) {
         return IntStream.range(0, count)
@@ -218,16 +286,20 @@ class DroolsStrategyTaskTest {
             .toList();
     }
 
-    private Building nexus()           { return bldg("n-0",  BuildingType.NEXUS,            true);  }
-    private Building completePylon()   { return bldg("py-0", BuildingType.PYLON,            true);  }
-    private Building gateway(boolean c)      { return bldg("gw-0", BuildingType.GATEWAY,         c); }
-    private Building cyberneticsCore(boolean c) { return bldg("cc-0", BuildingType.CYBERNETICS_CORE, c); }
+    private List<Unit> stalkers(int count) {
+        return IntStream.range(0, count)
+            .mapToObj(i -> new Unit("s-" + i, UnitType.STALKER, new Point2d(10, 10), 80, 80, 80, 80, 0, 0))
+            .toList();
+    }
+
+    private Building nexus()                     { return bldg("n-0",   BuildingType.NEXUS,             true);  }
+    private Building completePylon()             { return bldg("py-0",  BuildingType.PYLON,             true);  }
+    private Building incompletePylon()           { return bldg("py-inc",BuildingType.PYLON,             false); }
+    private Building gateway(boolean c)          { return bldg("gw-0",  BuildingType.GATEWAY,           c); }
+    private Building cyberneticsCore(boolean c)  { return bldg("cc-0",  BuildingType.CYBERNETICS_CORE,  c); }
 
     private Building bldg(String tag, BuildingType type, boolean complete) {
         return new Building(tag, type, new Point2d(10, 10), 500, 500, complete);
     }
 
-    private Unit enemyZealot() {
-        return new Unit("ez-0", UnitType.ZEALOT, new Point2d(20, 20), 100, 100, 50, 50, 0, 0);
-    }
 }

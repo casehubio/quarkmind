@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * application types ({@link ResourceBudget}, {@link IntentQueue}) must not appear
  * as plain field types in {@link StrategyRuleUnit}.
  *
- * <p>Replaces {@link BasicStrategyTask} as the active CDI bean.
+ * <p>Replaces the earlier hand-coded strategy implementation as the active CDI bean.
  */
 @ApplicationScoped
 @CaseType("starcraft-game")
@@ -54,7 +54,9 @@ public class DroolsStrategyTask implements StrategyTask {
     @Override public String getId()   { return "strategy.drools"; }
     @Override public String getName() { return "Drools Strategy"; }
     @Override public Set<String> entryCriteria() {
-        return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.ENEMY_ARMY_SIZE);
+        return Set.of(QuarkMindCaseFile.READY,
+                      QuarkMindCaseFile.ENEMY_POSTURE,
+                      QuarkMindCaseFile.TIMING_ATTACK_INCOMING);
     }
     @Override public Set<String> producedKeys()  { return Set.of(QuarkMindCaseFile.STRATEGY); }
 
@@ -71,18 +73,17 @@ public class DroolsStrategyTask implements StrategyTask {
     @Override
     @SuppressWarnings("unchecked")
     public void execute(CaseFile caseFile) {
-        // C2 stub (tracked as #169): ENEMY_ARMY_SIZE establishes scouting → strategy ordering.
-        // When C2 lands: replace enemies DataStore feed with ENEMY_POSTURE + ENEMY_BUILD_ORDER.
-        int enemyCount = caseFile.get(QuarkMindCaseFile.ENEMY_ARMY_SIZE, Integer.class).orElse(0);
+        int            armySize  = caseFile.get(QuarkMindCaseFile.ENEMY_ARMY_SIZE,        Integer.class).orElse(0);
+        String         posture   = caseFile.get(QuarkMindCaseFile.ENEMY_POSTURE,          String.class) .orElse("UNKNOWN");
+        boolean        timing    = caseFile.get(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, Boolean.class).orElse(false);
         List<Unit>     workers   = (List<Unit>)     caseFile.get(QuarkMindCaseFile.WORKERS,      List.class).orElse(List.of());
         List<Unit>     army      = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ARMY,         List.class).orElse(List.of());
         List<Building> buildings = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
-        List<Unit>     enemies   = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ENEMY_UNITS,  List.class).orElse(List.of());
         List<Resource> geysers   = (List<Resource>) caseFile.get(QuarkMindCaseFile.GEYSERS,      List.class).orElse(List.of());
         ResourceBudget budget    = caseFile.get(QuarkMindCaseFile.RESOURCE_BUDGET, ResourceBudget.class)
             .orElse(new ResourceBudget(0, 0));
 
-        StrategyRuleUnit data = buildRuleUnit(workers, army, buildings, enemies, geysers);
+        StrategyRuleUnit data = buildRuleUnit(workers, army, buildings, geysers, posture, timing);
 
         try (RuleUnitInstance<StrategyRuleUnit> instance = ruleUnit.createInstance(data)) {
             instance.fire();
@@ -93,21 +94,21 @@ public class DroolsStrategyTask implements StrategyTask {
         String strategy = data.getStrategyDecisions().stream().findFirst().orElse("MACRO");
         caseFile.put(QuarkMindCaseFile.STRATEGY, strategy);
 
-        log.debugf("[DROOLS-STRATEGY] %s | stalkers=%d | enemies(scouted)=%d | builds=%s | %s",
-            strategy,
-            army.stream().filter(u -> u.type() == UnitType.STALKER).count(),
-            enemyCount, data.getBuildDecisions(), budget);
+        log.debugf("[DROOLS-STRATEGY] %s | posture=%s | timing=%b | armySize=%d | builds=%s | %s",
+            strategy, posture, timing, armySize, data.getBuildDecisions(), budget);
     }
 
     private StrategyRuleUnit buildRuleUnit(List<Unit> workers, List<Unit> army,
-                                           List<Building> buildings, List<Unit> enemies,
-                                           List<Resource> geysers) {
+                                           List<Building> buildings, List<Resource> geysers,
+                                           String posture, boolean timing) {
         StrategyRuleUnit data = new StrategyRuleUnit();
+
+        data.getPostureStore().add(posture);
+        data.getTimingStore().add(timing);
 
         workers.stream().findFirst().ifPresent(data.getBuilders()::add);
         army.forEach(data.getArmy()::add);
         buildings.forEach(data.getBuildings()::add);
-        enemies.forEach(data.getEnemies()::add);
 
         Set<Point2d> occupied = buildings.stream()
             .filter(b -> b.type() == BuildingType.ASSIMILATOR)
