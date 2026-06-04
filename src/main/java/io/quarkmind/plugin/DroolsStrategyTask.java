@@ -17,6 +17,7 @@ import org.drools.ruleunits.api.RuleUnitInstance;
 import org.jboss.logging.Logger;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -110,14 +111,7 @@ public class DroolsStrategyTask implements StrategyTask {
         army.forEach(data.getArmy()::add);
         buildings.forEach(data.getBuildings()::add);
 
-        Set<Point2d> occupied = buildings.stream()
-            .filter(b -> b.type() == BuildingType.ASSIMILATOR)
-            .map(Building::position)
-            .collect(Collectors.toSet());
-        geysers.stream()
-            .filter(g -> !occupied.contains(g.position()))
-            .findFirst()
-            .ifPresent(data.getGeysers()::add);
+        firstFreeGeyser(buildings, geysers).ifPresent(data.getGeysers()::add);
 
         return data;
     }
@@ -125,7 +119,7 @@ public class DroolsStrategyTask implements StrategyTask {
     /**
      * Processes Drools build decisions in priority order, enforcing the budget.
      * Rules fire declaratively; budget + intent dispatch happen here in Java.
-     * Handles: GATEWAY, CYBERNETICS_CORE, STALKER.
+     * Handles: GATEWAY, CYBERNETICS_CORE, STALKER, ASSIMILATOR.
      */
     private void dispatchBuildDecisions(List<String> decisions, ResourceBudget budget,
                                         List<Unit> workers, List<Building> buildings,
@@ -139,10 +133,28 @@ public class DroolsStrategyTask implements StrategyTask {
                 workers.stream().findFirst().ifPresent(p ->
                     intentQueue.add(new BuildIntent(p.tag(), BuildingType.CYBERNETICS_CORE, CYBERNETICS_CORE_POS)));
 
+            } else if (decision.equals("ASSIMILATOR")) {
+                firstFreeGeyser(buildings, geysers).ifPresent(g -> {
+                    if (budget.spendMinerals(75)) {
+                        workers.stream().findFirst().ifPresent(p ->
+                            intentQueue.add(new BuildIntent(p.tag(), BuildingType.ASSIMILATOR, g.position())));
+                    }
+                });
+
             } else if (decision.startsWith("STALKER:") && budget.spend(125, 50)) {
                 String gatewayTag = decision.substring("STALKER:".length());
                 intentQueue.add(new TrainIntent(gatewayTag, UnitType.STALKER));
             }
         }
+    }
+
+    static Optional<Resource> firstFreeGeyser(List<Building> buildings, List<Resource> geysers) {
+        Set<Point2d> occupied = buildings.stream()
+            .filter(b -> b.type() == BuildingType.ASSIMILATOR)
+            .map(Building::position)
+            .collect(Collectors.toSet());
+        return geysers.stream()
+            .filter(g -> !occupied.contains(g.position()))
+            .findFirst();
     }
 }

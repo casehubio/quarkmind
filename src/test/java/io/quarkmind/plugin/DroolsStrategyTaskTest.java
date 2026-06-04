@@ -258,6 +258,46 @@ class DroolsStrategyTaskTest {
             .isTrue();
     }
 
+    // --- #173: Assimilator dispatch ---
+
+    @Test
+    void buildsAssimilatorWhenGatewayCompleteAndFreeGeyserAndMineralsAvailable() {
+        var geyserPos = new Point2d(30, 30);
+        var cf = caseFileWithGeysers(75, 0, workers(6),
+            List.of(nexus(), completePylon(), gateway(true)),
+            List.of(geyser(geyserPos)),
+            "UNKNOWN", false);
+        strategyTask.execute(cf);
+        assertThat(intentQueue.pending().stream()
+            .anyMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.ASSIMILATOR))
+            .isTrue();
+    }
+
+    @Test
+    void doesNotBuildAssimilatorWithInsufficientMinerals() {
+        var cf = caseFileWithGeysers(50, 0, workers(6),
+            List.of(nexus(), completePylon(), gateway(true)),
+            List.of(geyser(new Point2d(30, 30))),
+            "UNKNOWN", false);
+        strategyTask.execute(cf);
+        assertThat(intentQueue.pending().stream()
+            .noneMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.ASSIMILATOR))
+            .isTrue();
+    }
+
+    @Test
+    void doesNotBuildAssimilatorWhenNoFreeGeyserExists() {
+        var geyserPos = new Point2d(30, 30);
+        var cf = caseFileWithGeysers(200, 0, workers(6),
+            List.of(nexus(), completePylon(), gateway(true), assimilator(geyserPos)),
+            List.of(geyser(geyserPos)),
+            "UNKNOWN", false);
+        strategyTask.execute(cf);
+        assertThat(intentQueue.pending().stream()
+            .noneMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.ASSIMILATOR))
+            .isTrue();
+    }
+
     // --- Helpers ---
 
     /** Posture-driven CaseFile helper — uses scouting-derived intel, not raw enemies. */
@@ -300,6 +340,22 @@ class DroolsStrategyTaskTest {
 
     private Building bldg(String tag, BuildingType type, boolean complete) {
         return new Building(tag, type, new Point2d(10, 10), 500, 500, complete);
+    }
+
+    private Building assimilator(Point2d pos) {
+        return new Building("as-0", BuildingType.ASSIMILATOR, pos, 400, 400, true);
+    }
+
+    private Resource geyser(Point2d pos) {
+        return new Resource("g-0", pos, 2250);
+    }
+
+    private CaseFile caseFileWithGeysers(int minerals, int vespene, List<Unit> workers,
+                                          List<Building> buildings, List<Resource> geysers,
+                                          String enemyPosture, boolean timingAttack) {
+        var cf = caseFile(minerals, vespene, workers, buildings, enemyPosture, timingAttack);
+        cf.put(QuarkMindCaseFile.GEYSERS, geysers);
+        return cf;
     }
 
 }
