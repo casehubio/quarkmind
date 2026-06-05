@@ -4,7 +4,7 @@
 **Profile:** CaseHub — Application tier
 **Profile ref:** `../parent/docs/arc42stories-casehub-profile.md` · fallback: `https://raw.githubusercontent.com/casehubio/parent/main/docs/arc42stories-casehub-profile.md`
 **Prefix:** QM
-**Status:** L1 conceptual + L2, L5 complete. L3, L4, L6, L7 pending (#155, #156, #158, #159).
+**Status:** L1 conceptual + L2, L4, L5 complete. L3, L6, L7 pending (#155, #158, #159).
 
 ---
 
@@ -138,7 +138,7 @@ QuarkMind follows the CaseHub harness integration sequence with one deviation: `
 | Naive Game Loop | *(none — conceptual baseline)* | L1 | Conceptual only — never deployed |
 | casehub-engine | `casehub-engine` + `casehub-persistence-memory` | L2 | ✅ complete (#28, #139) |
 | casehub-qhorus | `casehub-qhorus` | L3 | 🔲 pending (#155) |
-| casehub-ledger | `casehub-ledger` (lightweight mode — casehubio/ledger#114) | L4 | 🔲 pending (#156 — unblocked, ledger#114 shipped) |
+| casehub-ledger | `casehub-ledger` (lightweight mode — casehubio/ledger#114) | L4 | ✅ complete (#156) |
 | Adaptive plugin selection | `casehub-engine` binding conditions | L5 | ✅ complete (#157) |
 | Trust routing | `casehub-engine-ledger` (Bayesian Beta CAPABILITY — EigenTrust inert, ADR-0009) | L6 | 🔲 pending (#158) |
 | Comparison baseline | *(none — analysis only)* | L7 | 🔲 pending (#159) |
@@ -367,7 +367,7 @@ flowchart LR
 |---|---|---|---|---|---|
 | 1 | Blackboard dispatch | Game Agent Coordination | L1, L2 | Conceptual, High | ✅ complete |
 | 2 | Formal plugin obligation | Game Agent Coordination | + L3 | Low | 🔲 pending (#155) |
-| 3 | Outcome tracking | Game Agent Coordination | + L4 | Medium | 🔲 pending (#156) |
+| 3 | Outcome tracking | Game Agent Coordination | + L4 | Medium | ✅ complete (#156) |
 | 4 | Adaptive plugin selection | Game Agent Coordination | + L5 | Medium | 🔲 pending (#157) |
 | 5 | Trust-weighted routing | Game Agent Coordination | + L6 | Medium | 🔲 pending (#158) |
 | 6 | Comparison baseline | Game Agent Coordination | L7 | Low | 🔲 pending (#159) |
@@ -687,7 +687,7 @@ Replicate the casehub-engine blackboard harness in a different domain:
 ### Layer — casehub-ledger
 
 **Participates in chapters:** C3, C4, C5
-**Completed:** 🔲 pending (#156 — unblocked, ledger#114 shipped 2026-06-02)
+**Completed:** ✅ 2026-06-05 (#156)
 
 🔲 Full entry at C3 close. Known scope: plugin outcome recording without cryptographic signing; Bayesian Beta trust scoring per plugin; async non-blocking writes at game-loop granularity; in-memory backend for mock/emulated profiles. Lightweight mode required — tamper-evident guarantees not needed for game agent decisions.
 
@@ -718,7 +718,7 @@ Tactics    {READY, STRATEGY, NEAREST_THREAT}   → [order on STRATEGY, gate on N
 
 **`GameTickExecutor`** was extracted from `AgentOrchestrator.gameTick()` to capture the `CaseFile` returned by `createAndSolve()` (previously discarded) and surface it via `AgentOrchestrator.getLastTickResult()`. Note: `createAndSolve()` returns the pre-solve CaseFile (translator-written keys only); plugin-written keys are absent from the returned reference. Tests for this layer call `canActivate()` directly on the injected CDI beans to verify gate semantics independently of the async solve.
 
-🔲 Full Chapter entry at C4 close (waiting on L3 #155 and L4 #156).
+🔲 Full Chapter entry at C4 close (waiting on L3 #155).
 
 ---
 

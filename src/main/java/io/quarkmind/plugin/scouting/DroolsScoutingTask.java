@@ -14,9 +14,15 @@ import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitInstance;
 import org.jboss.logging.Logger;
 
+import io.casehub.ledger.api.model.AttestationVerdict;
+import io.quarkmind.agent.GameSession;
+import io.quarkmind.agent.PluginDecisionEvent;
+import io.quarkmind.agent.QuarkMindCapabilityTag;
+import jakarta.enterprise.event.Event;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Drools-backed {@link ScoutingTask} — fourth R&D integration.
@@ -53,6 +59,10 @@ public class DroolsScoutingTask implements ScoutingTask {
     @ConfigProperty(name = "scouting.map.width", defaultValue = "256")
     int mapWidth;
 
+    @Inject Event<PluginDecisionEvent> decisionEvents;
+    @Inject GameSession gameSession;
+    private volatile int prevEnemyHash = 0;
+
     /** Tag of the probe currently assigned to scout. Null when no active scout. */
     private volatile String scoutProbeTag;
     // Single scheduler thread — no synchronisation needed
@@ -86,6 +96,18 @@ public class DroolsScoutingTask implements ScoutingTask {
         List<Building> buildings = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
         List<Unit>     workers   = (List<Unit>)     caseFile.get(QuarkMindCaseFile.WORKERS,      List.class).orElse(List.of());
         long frame = caseFile.get(QuarkMindCaseFile.GAME_FRAME, Long.class).orElse(0L);
+
+        int enemyHash = enemies.stream()
+                .map(Unit::tag)
+                .sorted()
+                .collect(Collectors.joining())
+                .hashCode();
+        if (enemyHash != prevEnemyHash) {
+            prevEnemyHash = enemyHash;
+            decisionEvents.fireAsync(new PluginDecisionEvent(
+                    getId(), QuarkMindCapabilityTag.SCOUTING,
+                    AttestationVerdict.SOUND, gameSession.id(), (int) frame));
+        }
 
         // Detect game restart (mock loop resets frame to 0)
         if (frame < lastFrame) {

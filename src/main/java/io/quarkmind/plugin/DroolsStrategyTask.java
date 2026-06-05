@@ -16,7 +16,13 @@ import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitInstance;
 import org.jboss.logging.Logger;
 
+import io.casehub.ledger.api.model.AttestationVerdict;
+import io.quarkmind.agent.GameSession;
+import io.quarkmind.agent.PluginDecisionEvent;
+import io.quarkmind.agent.QuarkMindCapabilityTag;
+import jakarta.enterprise.event.Event;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,6 +51,10 @@ public class DroolsStrategyTask implements StrategyTask {
 
     private final RuleUnit<StrategyRuleUnit> ruleUnit;
     private final IntentQueue intentQueue;
+
+    @Inject Event<PluginDecisionEvent> decisionEvents;
+    @Inject GameSession gameSession;
+    private volatile String prevStrategy = null;
 
     @Inject
     public DroolsStrategyTask(RuleUnit<StrategyRuleUnit> ruleUnit, IntentQueue intentQueue) {
@@ -97,6 +107,14 @@ public class DroolsStrategyTask implements StrategyTask {
 
         log.debugf("[DROOLS-STRATEGY] %s | posture=%s | timing=%b | armySize=%d | builds=%s | %s",
             strategy, posture, timing, armySize, data.getBuildDecisions(), budget);
+        if (!Objects.equals(strategy, prevStrategy)) {
+            prevStrategy = strategy;
+            int frame = caseFile.get(QuarkMindCaseFile.GAME_FRAME, Long.class)
+                    .map(Long::intValue).orElse(0);
+            decisionEvents.fireAsync(new PluginDecisionEvent(
+                    getId(), QuarkMindCapabilityTag.STRATEGY,
+                    AttestationVerdict.SOUND, gameSession.id(), frame));
+        }
     }
 
     private StrategyRuleUnit buildRuleUnit(List<Unit> workers, List<Unit> army,

@@ -85,6 +85,22 @@
             <artifactId>casehub-persistence-memory</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+        <!-- casehub-ledger: OutcomeRecorder SPI + DefaultOutcomeRecorder + in-memory SPIs -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-ledger-api</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-ledger</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-ledger-memory</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
 
         <!-- SC2 Replay parsing — extracted from Scelight (Apache 2.0) -->
         <!-- Source: /Users/mdproctor/dev/scelight, branch: feature/standalone-modules -->

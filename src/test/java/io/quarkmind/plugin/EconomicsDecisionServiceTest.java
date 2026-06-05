@@ -17,13 +17,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class EconomicsDecisionServiceTest {
 
+    /**
+     * Test subclass that no-ops {@code maybeFireBuildEvent} so plain unit tests
+     * can construct {@link EconomicsDecisionService} without CDI. The CDI-injected
+     * fields ({@code decisionEvents}, {@code gameSession}) are null in plain tests;
+     * overriding the protected method avoids NPE without reinstating the null guard.
+     */
+    static class TestEconomicsDecisionService extends EconomicsDecisionService {
+        TestEconomicsDecisionService(IntentQueue q) { super(q); }
+        @Override protected void maybeFireBuildEvent(String buildType) { /* no-op in unit tests */ }
+    }
+
     IntentQueue intentQueue;
     EconomicsDecisionService svc;
 
     @BeforeEach
     void setUp() {
         intentQueue = new IntentQueue();
-        svc = new EconomicsDecisionService(intentQueue);
+        svc = new TestEconomicsDecisionService(intentQueue);
         intentQueue.drainAll();
     }
 

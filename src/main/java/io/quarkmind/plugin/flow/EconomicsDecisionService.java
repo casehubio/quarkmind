@@ -1,6 +1,11 @@
 package io.quarkmind.plugin.flow;
 
+import io.casehub.ledger.api.model.AttestationVerdict;
+import io.quarkmind.agent.GameSession;
+import io.quarkmind.agent.PluginDecisionEvent;
+import io.quarkmind.agent.QuarkMindCapabilityTag;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import io.quarkmind.domain.*;
 import io.quarkmind.plugin.BasicEconomicsTask;
@@ -40,6 +45,10 @@ public class EconomicsDecisionService {
 
     private final IntentQueue intentQueue;
 
+    @Inject Event<PluginDecisionEvent> decisionEvents;
+    @Inject GameSession gameSession;
+    private volatile String prevBuildType = null;
+
     @Inject
     public EconomicsDecisionService(IntentQueue intentQueue) {
         this.intentQueue = intentQueue;
@@ -57,6 +66,7 @@ public class EconomicsDecisionService {
         tick.workers().stream().findFirst().ifPresent(probe -> {
             Point2d pos = BasicEconomicsTask.pylonPosition(tick.buildings().size());
             intentQueue.add(new BuildIntent(probe.tag(), BuildingType.PYLON, pos));
+            maybeFireBuildEvent("PYLON");
             log.debugf("[FLOW-ECONOMICS] Pylon at %s (supply %d/%d)",
                 pos, tick.supplyUsed(), tick.supplyCap());
         });
@@ -71,6 +81,7 @@ public class EconomicsDecisionService {
             .findFirst()
             .ifPresent(nexus -> {
                 intentQueue.add(new TrainIntent(nexus.tag(), UnitType.PROBE));
+                maybeFireBuildEvent("PROBE");
                 log.debugf("[FLOW-ECONOMICS] Probe (workers=%d/%d)", tick.workers().size(), PROBE_CAP);
             });
     }
@@ -100,6 +111,7 @@ public class EconomicsDecisionService {
                 tick.workers().stream().findFirst().ifPresent(probe -> {
                     intentQueue.add(new BuildIntent(probe.tag(), BuildingType.ASSIMILATOR,
                         geyser.position()));
+                    maybeFireBuildEvent("ASSIMILATOR");
                     log.debugf("[FLOW-ECONOMICS] Assimilator at %s", geyser.position());
                 });
             });
@@ -135,7 +147,17 @@ public class EconomicsDecisionService {
         if (!tick.budget().spendMinerals(NEXUS_COST)) return;
         tick.workers().stream().findFirst().ifPresent(probe -> {
             intentQueue.add(new BuildIntent(probe.tag(), BuildingType.NEXUS, NATURAL_EXPANSION_POS));
+            maybeFireBuildEvent("NEXUS");
             log.infof("[FLOW-ECONOMICS] Expanding to natural at %s", NATURAL_EXPANSION_POS);
         });
+    }
+
+    protected void maybeFireBuildEvent(String buildType) {
+        if (!buildType.equals(prevBuildType)) {
+            prevBuildType = buildType;
+            decisionEvents.fireAsync(new PluginDecisionEvent(
+                    "economics.flow", QuarkMindCapabilityTag.ECONOMICS,
+                    AttestationVerdict.SOUND, gameSession.id(), 0));
+        }
     }
 }

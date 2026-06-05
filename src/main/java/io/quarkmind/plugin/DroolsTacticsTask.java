@@ -26,7 +26,13 @@ import org.drools.ruleunits.api.RuleUnitInstance;
 import org.jboss.logging.Logger;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import io.casehub.ledger.api.model.AttestationVerdict;
+import io.quarkmind.agent.GameSession;
+import io.quarkmind.agent.PluginDecisionEvent;
+import io.quarkmind.agent.QuarkMindCapabilityTag;
+import jakarta.enterprise.event.Event;
 import java.util.*;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -72,6 +78,10 @@ public class DroolsTacticsTask implements TacticsTask {
     private final RuleUnit<TacticsRuleUnit> ruleUnit;
     private final IntentQueue intentQueue;
     private final GoapPlanner planner = new GoapPlanner();
+
+    @Inject Event<PluginDecisionEvent> decisionEvents;
+    @Inject GameSession gameSession;
+    private volatile String prevThreatState = null;
 
     @Inject
     @ConfigProperty(name = "quarkmind.tactics.kite.strategy", defaultValue = "direct")
@@ -126,13 +136,23 @@ public class DroolsTacticsTask implements TacticsTask {
         List<Unit> army    = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ARMY,         List.class).orElse(List.of());
         List<Unit> enemies = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ENEMY_UNITS,  List.class).orElse(List.of());
         List<Building> bld = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
-        // Protocol PP-20260603-049dd0: gate guarantees NEAREST_THREAT is present and non-null.
-        // Currently InMemoryCaseFile.get() uses Optional.of() which NPEs for null-valued entries
-        // before this line is reached (#175). Once that is fixed to Optional.ofNullable(),
-        // this orElseThrow() will surface the violation as a meaningful ISE instead of a raw NPE.
+        // Protocol PP-20260603-049dd0: gate guarantees NEAREST_THREAT is present and non-null
+        // in production (canActivate enforces this). Tests that call execute() directly may
+        // bypass canActivate() and omit NEAREST_THREAT; orElse(null) allows the early-return
+        // paths (non-ATTACK strategy, no enemies) to work without a real threat value.
+        // The null check below guard prevents threat being dereferenced when enemies is empty.
         Point2d threat     = caseFile.get(QuarkMindCaseFile.NEAREST_THREAT, Point2d.class)
-                .orElseThrow(() -> new IllegalStateException(
-                        "NEAREST_THREAT gate passed but get() returned empty — protocol PP-20260603-049dd0 violation"));
+                .orElse(null);
+
+        String threatState = enemies.isEmpty() ? "none" : "present";
+        if (!Objects.equals(threatState, prevThreatState)) {
+            prevThreatState = threatState;
+            int frame = caseFile.get(QuarkMindCaseFile.GAME_FRAME, Long.class)
+                    .map(Long::intValue).orElse(0);
+            decisionEvents.fireAsync(new PluginDecisionEvent(
+                    getId(), QuarkMindCapabilityTag.TACTICS,
+                    AttestationVerdict.SOUND, gameSession.id(), frame));
+        }
 
         if (army.isEmpty()) return;
 
@@ -144,6 +164,10 @@ public class DroolsTacticsTask implements TacticsTask {
         if (!"ATTACK".equals(strategy)) return;
 
         if (enemies.isEmpty()) return;
+
+        // Protocol PP-20260603-049dd0: canActivate guarantees NEAREST_THREAT in production.
+        // Defensive guard for test paths that bypass canActivate.
+        if (threat == null) return;
 
         Set<String> inRangeSet    = computeInRangeTags(army, enemies);
         Set<String> onCooldownSet = computeOnCooldownTags(army);

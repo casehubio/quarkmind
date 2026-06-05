@@ -20,6 +20,7 @@ public class AgentOrchestrator {
     @Inject GameTickExecutor tickExecutor;
     @Inject Event<GameStarted> gameStartedEvent;
     @Inject Event<GameStopped> gameStoppedEvent;
+    @Inject GameSession gameSession;
 
     /**
      * Per-phase timing from the most recent completed tick.
@@ -53,6 +54,7 @@ public class AgentOrchestrator {
     }
 
     public void startGame() {
+        gameSession.reset();            // new game session UUID before any events fire
         engine.connect();
         engine.joinGame();
         gameStartedEvent.fire(new GameStarted());
