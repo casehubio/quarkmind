@@ -97,7 +97,7 @@ proactively suggest writing a handover before continuing.
 
 **Secondary goal:** Reference implementation for the CaseHub platform — demonstrating the harness pattern at game-loop granularity for cross-domain replication and architectural documentation via `ARC42STORIES.MD`.
 
-**LAYER-LOG.md** (`LAYER-LOG.md` at project root) is the source material being migrated to `ARC42STORIES.MD` (#166). Until migration is complete, new layer completions still require a LAYER-LOG entry.
+**ARC42STORIES.MD** (project root) is the sole architecture record — §1–§13 per the Arc42Stories CaseHub Profile. `LAYER-LOG.md` has been retired (#166).
 
 ---
 
@@ -166,7 +166,7 @@ Read these **before designing**, not after. The concern column tells you when ea
 
 ## Architecture Record
 
-`ARC42STORIES.MD` (project root) is the permanent architecture record — §1–§13 per the Arc42Stories CaseHub Profile. `LAYER-LOG.md` is the source material; it is retired once migration is complete (#166).
+`ARC42STORIES.MD` (project root) is the permanent architecture record — §1–§13 per the Arc42Stories CaseHub Profile. Migration from `LAYER-LOG.md` is complete (#166).
 
 **Harness/SC2 boundary:** `ARC42STORIES.MD` covers the harness layer only (`AgentOrchestrator`, `CaseFile`, plugin seam interfaces, foundation integration). The SC2 emulation layer (`EmulatedGame`, `ReplayValidationHarness`, SC2 physics) is domain-specific and outside the architecture record scope.
 
