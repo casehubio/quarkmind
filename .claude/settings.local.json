@@ -179,7 +179,9 @@
       "Bash(GIT_SEQUENCE_EDITOR=\"cp /tmp/squash-165.txt\" git *)",
       "Bash(xargs '-I{}' python3 -c ' *)",
       "mcp__intellij__search_symbol",
-      "Bash(GIT_SEQUENCE_EDITOR=true git -C /Users/mdproctor/claude/casehub/quarkmind rebase --continue)"
+      "Bash(GIT_SEQUENCE_EDITOR=true git -C /Users/mdproctor/claude/casehub/quarkmind rebase --continue)",
+      "Bash(GIT_SEQUENCE_EDITOR=\"cp /tmp/squash-todo.txt\" git *)",
+      "Bash(GIT_SEQUENCE_EDITOR=\"cp /tmp/reword2.txt\" GIT_EDITOR=\"cp /tmp/final-msg.txt\" git *)"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"
