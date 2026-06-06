@@ -368,7 +368,7 @@ flowchart LR
 | 1 | Blackboard dispatch | Game Agent Coordination | L1, L2 | Conceptual, High | ✅ complete |
 | 2 | Formal plugin obligation | Game Agent Coordination | + L3 | Low | 🔲 pending (#155) |
 | 3 | Outcome tracking | Game Agent Coordination | + L4 | Medium | ✅ complete (#156) |
-| 4 | Adaptive plugin selection | Game Agent Coordination | + L5 | Medium | 🔲 pending (#157) |
+| 4 | Adaptive plugin selection | Game Agent Coordination | + L5 | Medium | ✅ complete (#157) |
 | 5 | Trust-weighted routing | Game Agent Coordination | + L6 | Medium | 🔲 pending (#158) |
 | 6 | Comparison baseline | Game Agent Coordination | L7 | Low | 🔲 pending (#159) |
 
@@ -434,7 +434,7 @@ Known scope: typed COMMAND/RESPONSE between plugin agents; DECLINE recorded stru
 
 **Journey:** Game Agent Coordination | **Sequence:** 3 of 6 | **Status:** 🔲 pending
 
-🔲 Full Chapter entry at C3 close. Blocked on casehub-ledger lightweight mode (casehubio/ledger#114) and #156.
+🔲 Full Chapter entry at C3 close. Waiting on L3 (#155) to close.
 
 Known scope: plugin outcome recording (plugin ID, decision, game state context, result); Bayesian Beta trust scoring per plugin (EigenTrust not activated — ADR-0009); async non-blocking writes; in-memory backend for mock/emulated profiles.
 
@@ -444,7 +444,7 @@ Known scope: plugin outcome recording (plugin ID, decision, game state context, 
 
 **Journey:** Game Agent Coordination | **Sequence:** 4 of 6 | **Status:** 🔲 pending
 
-🔲 Full Chapter entry at C4 close. L5 (#157) complete — blocked on L3 (#155) and L4 (#156) to tell the full story.
+🔲 Full Chapter entry at C4 close. L4 (#156) and L5 (#157) complete — waiting on L3 (#155) to close.
 
 Known scope: `casehub-engine` binding conditions evaluate game state; plugins dispatched only when conditions are satisfied (e.g. `TacticsTask` skips when no enemy units); removes hardwired all-plugins-every-tick dispatch.
 
@@ -454,7 +454,7 @@ Known scope: `casehub-engine` binding conditions evaluate game state; plugins di
 
 **Journey:** Game Agent Coordination | **Sequence:** 5 of 6 | **Status:** 🔲 pending
 
-🔲 Full Chapter entry at C5 close. Blocked on casehubio/ledger#114 and #158.
+🔲 Full Chapter entry at C5 close. Waiting on L6 (#158).
 
 Known scope: `TrustWeightedAgentStrategy` (or equivalent) selects among competing plugin implementations by outcome history; routing quality improves as attestations accumulate.
 
@@ -725,7 +725,7 @@ Tactics    {READY, STRATEGY, NEAREST_THREAT}   → [order on STRATEGY, gate on N
 ### Layer — Trust Routing
 
 **Participates in chapters:** C5
-**Completed:** 🔲 pending (#158, blocked on casehubio/ledger#114)
+**Completed:** 🔲 pending (#158)
 
 🔲 Full entry at C5 close. Known scope: `TrustWeightedAgentStrategy` (via `casehub-engine-ledger`) selects among competing plugin implementations by Bayesian Beta CAPABILITY score; EigenTrust GLOBAL computation runs but is inert — GLOBAL scores are not consumed for capability routing (ADR-0009); trust scores accumulate from plugin outcome attestations written in L4; routing quality improves automatically across game sessions.
 
