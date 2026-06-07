@@ -4,7 +4,7 @@
 **Profile:** CaseHub — Application tier
 **Profile ref:** `../parent/docs/arc42stories-casehub-profile.md` · fallback: `https://raw.githubusercontent.com/casehubio/parent/main/docs/arc42stories-casehub-profile.md`
 **Prefix:** QM
-**Status:** L1 conceptual + L2, L4, L5 complete. L3, L6, L7 pending (#155, #158, #159).
+**Status:** L1 conceptual + L2, L3, L4, L5 complete. L6, L7 pending (#158, #159).
 
 ---
 
@@ -137,7 +137,7 @@ QuarkMind follows the CaseHub harness integration sequence with one deviation: `
 |---|---|---|---|
 | Naive Game Loop | *(none — conceptual baseline)* | L1 | Conceptual only — never deployed |
 | casehub-engine | `casehub-engine` + `casehub-persistence-memory` | L2 | ✅ complete (#28, #139) |
-| casehub-qhorus | `casehub-qhorus` | L3 | 🔲 pending (#155) |
+| casehub-qhorus | `casehub-qhorus` | L3 | ✅ complete (#155) |
 | casehub-ledger | `casehub-ledger` (lightweight mode — casehubio/ledger#114) | L4 | ✅ complete (#156) |
 | Adaptive plugin selection | `casehub-engine` binding conditions | L5 | ✅ complete (#157) |
 | Trust routing | `casehub-engine-ledger` (Bayesian Beta CAPABILITY — EigenTrust inert, ADR-0009) | L6 | 🔲 pending (#158) |
@@ -366,7 +366,7 @@ flowchart LR
 | # | Chapter | Journey | Layers touched | Delta | Status |
 |---|---|---|---|---|---|
 | 1 | Blackboard dispatch | Game Agent Coordination | L1, L2 | Conceptual, High | ✅ complete |
-| 2 | Formal plugin obligation | Game Agent Coordination | + L3 | Low | 🔲 pending (#155) |
+| 2 | Formal plugin obligation | Game Agent Coordination | + L3 | Low | ✅ complete (#155) |
 | 3 | Outcome tracking | Game Agent Coordination | + L4 | Medium | ✅ complete (#156) |
 | 4 | Adaptive plugin selection | Game Agent Coordination | + L5 | Medium | ✅ complete (#157) |
 | 5 | Trust-weighted routing | Game Agent Coordination | + L6 | Medium | 🔲 pending (#158) |
@@ -424,7 +424,7 @@ The game agent dispatches all four specialist plugins (strategy, economics, tact
 
 **Journey:** Game Agent Coordination | **Sequence:** 2 of 6 | **Status:** 🔲 pending
 
-🔲 Full Chapter entry at C2 close. Blocked on casehub-qhorus integration (#155).
+🔲 Full Chapter entry at C2 close. casehub-qhorus integration complete (#155).
 
 Known scope: typed COMMAND/RESPONSE between plugin agents; DECLINE recorded structurally when a plugin is out-of-scope; commitment lifecycle per plugin engagement; `MessageLedgerEntry` per speech act.
 
@@ -434,7 +434,7 @@ Known scope: typed COMMAND/RESPONSE between plugin agents; DECLINE recorded stru
 
 **Journey:** Game Agent Coordination | **Sequence:** 3 of 6 | **Status:** 🔲 pending
 
-🔲 Full Chapter entry at C3 close. Waiting on L3 (#155) to close.
+🔲 Full Chapter entry at C3 close. L3 (#155) now complete — C3 unblocked.
 
 Known scope: plugin outcome recording (plugin ID, decision, game state context, result); Bayesian Beta trust scoring per plugin (EigenTrust not activated — ADR-0009); async non-blocking writes; in-memory backend for mock/emulated profiles.
 
@@ -444,7 +444,7 @@ Known scope: plugin outcome recording (plugin ID, decision, game state context, 
 
 **Journey:** Game Agent Coordination | **Sequence:** 4 of 6 | **Status:** 🔲 pending
 
-🔲 Full Chapter entry at C4 close. L4 (#156) and L5 (#157) complete — waiting on L3 (#155) to close.
+🔲 Full Chapter entry at C4 close. L3 (#155), L4 (#156), and L5 (#157) all complete — C4 unblocked.
 
 Known scope: `casehub-engine` binding conditions evaluate game state; plugins dispatched only when conditions are satisfied (e.g. `TacticsTask` skips when no enemy units); removes hardwired all-plugins-every-tick dispatch.
 
@@ -678,9 +678,9 @@ Replicate the casehub-engine blackboard harness in a different domain:
 ### Layer — casehub-qhorus
 
 **Participates in chapters:** C2
-**Completed:** 🔲 pending (#155)
+**Completed:** ✅ complete (#155)
 
-🔲 Full entry at C2 close. Known scope: typed COMMAND/RESPONSE between plugins; DECLINE speech act; commitment lifecycle; `MessageLedgerEntry` per speech act.
+Typed inter-plugin messaging via qhorus STATUS messages; `ScoutingIntelBroker` channel setup; `DroolsTacticsTask` implements `MessageObserver` with `TacticsIntelCache`; `DroolsScoutingTask` broker-gated CEP with preference-backed thresholds; `TacticsMessageBridge` CDI bridge for qualifier visibility. Full Chapter entry at C2 close.
 
 ---
 
