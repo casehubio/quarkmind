@@ -100,6 +100,12 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, Me
 
     final AtomicReference<TacticsIntelCache> intelCache =
         new AtomicReference<>(TacticsIntelCache.empty());
+
+    /** Test accessor — package-private; returns current cache via the CDI proxy. */
+    TacticsIntelCache currentIntelCache() { return intelCache.get(); }
+
+    /** Test mutator — package-private; resets cache via the CDI proxy. */
+    void resetIntelCache() { intelCache.set(TacticsIntelCache.empty()); }
     Set<ScoutingIntelType> subscribedTypes;
     private volatile String prevThreatState = null;
 
