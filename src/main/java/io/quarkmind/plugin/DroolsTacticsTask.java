@@ -1,10 +1,23 @@
 package io.quarkmind.plugin;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.annotation.CaseType;
 import io.casehub.core.CaseFile;
+import io.casehub.platform.api.preferences.PreferenceProvider;
+import io.casehub.platform.api.preferences.Preferences;
+import io.casehub.platform.api.preferences.SettingsScope;
+import io.casehub.qhorus.api.gateway.MessageObserver;
+import io.casehub.qhorus.api.gateway.MessageReceivedEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agent.ScoutingIntelBroker;
+import io.quarkmind.agent.plugin.ScoutingIntelConsumer;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
+import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.TacticsTask;
 import io.quarkmind.domain.*;
 import io.quarkmind.plugin.drools.TacticsRuleUnit;
@@ -33,6 +46,7 @@ import io.quarkmind.agent.QuarkMindCapabilityTag;
 import jakarta.enterprise.event.Event;
 import java.util.*;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -51,7 +65,7 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 @CaseType("starcraft-game")
-public class DroolsTacticsTask implements TacticsTask {
+public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, MessageObserver {
 
     static final Point2d MAP_CENTER   = new Point2d(64, 64);
 
@@ -80,7 +94,13 @@ public class DroolsTacticsTask implements TacticsTask {
     private final GoapPlanner planner = new GoapPlanner();
 
     @Inject Event<PluginDecisionEvent> decisionEvents;
+    @Inject ObjectMapper objectMapper;
+    @Inject PreferenceProvider preferenceProvider;
     @Inject GameSession gameSession;
+
+    final AtomicReference<TacticsIntelCache> intelCache =
+        new AtomicReference<>(TacticsIntelCache.empty());
+    Set<ScoutingIntelType> subscribedTypes;
     private volatile String prevThreatState = null;
 
     @Inject
@@ -102,6 +122,57 @@ public class DroolsTacticsTask implements TacticsTask {
     void init() {
         kiteStrategy      = kiteStrategies.select(NamedLiteral.of(kiteStrategyName)).get();
         focusFireStrategy = focusFireStrategies.select(NamedLiteral.of(focusFireStrategyName)).get();
+        initSubscriptions(preferenceProvider.resolve(SettingsScope.root()));
+    }
+
+    void initSubscriptions(Preferences prefs) {
+        subscribedTypes = Arrays.stream(ScoutingIntelType.values())
+            .filter(t -> prefs.getOrDefault(ScoutingIntelPreferences.consumerKey(getId(), t)).asBoolean())
+            .collect(Collectors.toUnmodifiableSet());
+    }
+
+    @Override
+    public Set<ScoutingIntelType> subscribedIntelTypes() { return subscribedTypes; }
+
+    @Override
+    public Set<String> channels() { return Set.of(ScoutingIntelBroker.CHANNEL_NAME); }
+
+    @Override
+    public void onMessage(MessageReceivedEvent event) {
+        try {
+            JsonNode node = objectMapper.readTree(event.content());
+            String type = node.get("type").asText();
+            JsonNode data = node.get("data");
+            ScoutingIntelPayload payload = switch (type) {
+                case "ThreatPosition" ->
+                    objectMapper.treeToValue(data, ScoutingIntelPayload.ThreatPosition.class);
+                case "PostureUpdate" ->
+                    objectMapper.treeToValue(data, ScoutingIntelPayload.PostureUpdate.class);
+                case "TimingAlert" ->
+                    objectMapper.treeToValue(data, ScoutingIntelPayload.TimingAlert.class);
+                case "ArmySize" ->
+                    objectMapper.treeToValue(data, ScoutingIntelPayload.ArmySize.class);
+                case "BuildOrder" ->
+                    objectMapper.treeToValue(data, ScoutingIntelPayload.BuildOrder.class);
+                default -> throw new IllegalArgumentException("Unknown ScoutingIntelType: " + type);
+            };
+            intelCache.updateAndGet(prev -> merge(prev, payload));
+        } catch (JsonProcessingException | IllegalArgumentException | NullPointerException e) {
+            log.warnf("Failed to deserialise scouting intel: %s", e.getMessage());
+        }
+    }
+
+    static TacticsIntelCache merge(TacticsIntelCache prev, ScoutingIntelPayload payload) {
+        return switch (payload) {
+            case ScoutingIntelPayload.ThreatPosition p ->
+                new TacticsIntelCache(p.position(), prev.posture(), prev.timingAlert());
+            case ScoutingIntelPayload.PostureUpdate p ->
+                new TacticsIntelCache(prev.threatPosition(), p.posture(), prev.timingAlert());
+            case ScoutingIntelPayload.TimingAlert p ->
+                new TacticsIntelCache(prev.threatPosition(), prev.posture(), p.incoming());
+            case ScoutingIntelPayload.ArmySize p -> prev;
+            case ScoutingIntelPayload.BuildOrder p -> prev;
+        };
     }
 
     @Inject
@@ -113,9 +184,7 @@ public class DroolsTacticsTask implements TacticsTask {
     @Override public String getId()   { return "tactics.drools-goap"; }
     @Override public String getName() { return "Drools GOAP Tactics"; }
     @Override public Set<String> entryCriteria() {
-        return Set.of(QuarkMindCaseFile.READY,
-                      QuarkMindCaseFile.STRATEGY,
-                      QuarkMindCaseFile.NEAREST_THREAT);
+        return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.STRATEGY);
     }
     @Override public Set<String> producedKeys()  { return Set.of(); }
 
@@ -123,10 +192,12 @@ public class DroolsTacticsTask implements TacticsTask {
      * Overrides the {@code TaskDefinition} default, which unconditionally returns {@code true}
      * in the installed casehub-core snapshot — ignoring {@link #entryCriteria()}.
      * Override required until the foundation corrects the default.
+     * Also gates on intel cache having a threat position (Layer 3 qhorus channel).
      */
     @Override
     public boolean canActivate(CaseFile caseFile) {
-        return entryCriteria().stream().allMatch(caseFile::contains);
+        return entryCriteria().stream().allMatch(caseFile::contains)
+            && intelCache.get().threatPosition() != null;
     }
 
     @Override
@@ -136,13 +207,8 @@ public class DroolsTacticsTask implements TacticsTask {
         List<Unit> army    = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ARMY,         List.class).orElse(List.of());
         List<Unit> enemies = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ENEMY_UNITS,  List.class).orElse(List.of());
         List<Building> bld = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
-        // Protocol PP-20260603-049dd0: gate guarantees NEAREST_THREAT is present and non-null
-        // in production (canActivate enforces this). Tests that call execute() directly may
-        // bypass canActivate() and omit NEAREST_THREAT; orElse(null) allows the early-return
-        // paths (non-ATTACK strategy, no enemies) to work without a real threat value.
-        // The null check below guard prevents threat being dereferenced when enemies is empty.
-        Point2d threat     = caseFile.get(QuarkMindCaseFile.NEAREST_THREAT, Point2d.class)
-                .orElse(null);
+        // Reads from qhorus intel cache (Layer 3) — no CaseFile key coupling
+        Point2d threat = intelCache.get().threatPosition();
 
         String threatState = enemies.isEmpty() ? "none" : "present";
         if (!Objects.equals(threatState, prevThreatState)) {
@@ -165,7 +231,7 @@ public class DroolsTacticsTask implements TacticsTask {
 
         if (enemies.isEmpty()) return;
 
-        // Protocol PP-20260603-049dd0: canActivate guarantees NEAREST_THREAT in production.
+        // canActivate gates on intelCache.threatPosition() != null.
         // Defensive guard for test paths that bypass canActivate.
         if (threat == null) return;
 

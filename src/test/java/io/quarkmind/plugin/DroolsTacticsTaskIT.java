@@ -227,7 +227,13 @@ class DroolsTacticsTaskIT {
         cf.put(QuarkMindCaseFile.ENEMY_UNITS,   enemies);
         cf.put(QuarkMindCaseFile.MY_BUILDINGS,  List.of());
         cf.put(QuarkMindCaseFile.READY,         Boolean.TRUE);
-        if (nearestThreat != null) cf.put(QuarkMindCaseFile.NEAREST_THREAT, nearestThreat);
+        // Layer 3: populate intelCache directly (replaces CaseFile NEAREST_THREAT coupling)
+        if (nearestThreat != null) {
+            ((DroolsTacticsTask) tacticsTask).intelCache.set(
+                new TacticsIntelCache(nearestThreat, null, null));
+        } else {
+            ((DroolsTacticsTask) tacticsTask).intelCache.set(TacticsIntelCache.empty());
+        }
         return cf;
     }
 

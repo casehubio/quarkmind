@@ -1,12 +1,22 @@
 package io.quarkmind.plugin;
 
+import io.casehub.coordination.PropagationContext;
+import io.casehub.core.CaseFile;
+import io.casehub.persistence.memory.InMemoryCaseFileRepository;
+import io.casehub.qhorus.api.gateway.MessageReceivedEvent;
+import io.casehub.qhorus.api.message.MessageType;
+import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agent.ScoutingIntelBroker;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -105,6 +115,101 @@ class DroolsTacticsTaskTest {
         );
         Set<String> result = DroolsTacticsTask.computeShieldsLowTags(army);
         assertThat(result).containsExactlyInAnyOrder("s-0", "s-2");
+    }
+
+    // ---- TacticsIntelCache merge (new) ----
+
+    @Test
+    void merge_threatPosition_updatesCachePosition() {
+        TacticsIntelCache prev = TacticsIntelCache.empty();
+        var payload = new ScoutingIntelPayload.ThreatPosition(new Point2d(50f, 60f));
+        TacticsIntelCache result = DroolsTacticsTask.merge(prev, payload);
+        assertThat(result.threatPosition()).isEqualTo(new Point2d(50f, 60f));
+        assertThat(result.posture()).isNull();
+        assertThat(result.timingAlert()).isNull();
+    }
+
+    @Test
+    void merge_postureUpdate_preservesThreatPosition() {
+        var prev = new TacticsIntelCache(new Point2d(10f, 10f), null, null);
+        var payload = new ScoutingIntelPayload.PostureUpdate("AGGRESSIVE");
+        TacticsIntelCache result = DroolsTacticsTask.merge(prev, payload);
+        assertThat(result.posture()).isEqualTo("AGGRESSIVE");
+        assertThat(result.threatPosition()).isEqualTo(new Point2d(10f, 10f));
+    }
+
+    @Test
+    void merge_timingAlert_setsFlag() {
+        TacticsIntelCache prev = TacticsIntelCache.empty();
+        var payload = new ScoutingIntelPayload.TimingAlert(true);
+        TacticsIntelCache result = DroolsTacticsTask.merge(prev, payload);
+        assertThat(result.timingAlert()).isTrue();
+    }
+
+    @Test
+    void merge_armySize_returnsUnchangedCache() {
+        var prev = new TacticsIntelCache(new Point2d(5f, 5f), "DEFENSIVE", false);
+        TacticsIntelCache result = DroolsTacticsTask.merge(prev, new ScoutingIntelPayload.ArmySize(42));
+        assertThat(result).isEqualTo(prev);
+    }
+
+    @Test
+    void canActivate_emptyCache_returnsFalse() {
+        DroolsTacticsTask task = new DroolsTacticsTask(null, null);
+        CaseFile caseFile = caseFileWith(QuarkMindCaseFile.READY, "present",
+                                         QuarkMindCaseFile.STRATEGY, "present");
+        assertThat(task.canActivate(caseFile)).isFalse();
+    }
+
+    @Test
+    void canActivate_cacheHasThreatPosition_returnsTrue() throws Exception {
+        DroolsTacticsTask task = new DroolsTacticsTask(null, null);
+        task.objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        task.onMessage(makeThreatPositionEvent(new Point2d(10f, 20f)));
+        CaseFile caseFile = caseFileWith(QuarkMindCaseFile.READY, "present",
+                                         QuarkMindCaseFile.STRATEGY, "present");
+        assertThat(task.canActivate(caseFile)).isTrue();
+    }
+
+    @Test
+    void onMessage_updatesIntelCache() throws Exception {
+        DroolsTacticsTask task = new DroolsTacticsTask(null, null);
+        task.objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        assertThat(task.intelCache.get().threatPosition()).isNull();
+        task.onMessage(makeThreatPositionEvent(new Point2d(30f, 40f)));
+        assertThat(task.intelCache.get().threatPosition()).isEqualTo(new Point2d(30f, 40f));
+    }
+
+    @Test
+    void onMessage_unknownType_logsAndDoesNotThrow() throws Exception {
+        DroolsTacticsTask task = new DroolsTacticsTask(null, null);
+        task.objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        String badJson = "{\"type\":\"UNKNOWN_TYPE\",\"data\":{}}";
+        var event = new MessageReceivedEvent(
+            ScoutingIntelBroker.CHANNEL_NAME, UUID.randomUUID(),
+            MessageType.STATUS, "scouting.drools-cep", null, badJson);
+        task.onMessage(event);
+        assertThat(task.intelCache.get().threatPosition()).isNull();
+    }
+
+    // ---- helpers ----
+
+    private static CaseFile caseFileWith(String key1, Object val1, String key2, Object val2) {
+        var cf = new InMemoryCaseFileRepository()
+            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
+        cf.put(key1, val1);
+        cf.put(key2, val2);
+        return cf;
+    }
+
+    private static MessageReceivedEvent makeThreatPositionEvent(Point2d pos) throws Exception {
+        var payload = new ScoutingIntelPayload.ThreatPosition(pos);
+        var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        String content = mapper.writeValueAsString(
+            java.util.Map.of("type", payload.getClass().getSimpleName(), "data", payload));
+        return new MessageReceivedEvent(
+            ScoutingIntelBroker.CHANNEL_NAME, UUID.randomUUID(),
+            MessageType.STATUS, "scouting.drools-cep", null, content);
     }
 
 }
