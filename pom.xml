@@ -106,6 +106,12 @@
             <artifactId>casehub-platform-api</artifactId>
             <version>0.2-SNAPSHOT</version>
         </dependency>
+        <!-- casehub-platform: MockPreferenceProvider @DefaultBean — needed for test/mock/emulated profiles -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-platform</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-qhorus-api</artifactId>
