@@ -134,7 +134,7 @@ Preferences are read at `@PostConstruct` — subscriptions and thresholds are fi
 @ApplicationScoped
 public class ScoutingIntelBroker {
 
-    public static final String CHANNEL_NAME = "quarkmind.scouting.intel";
+    public static final String CHANNEL_NAME = "quarkmind-scouting-intel";
 
     @Inject Instance<ScoutingIntelConsumer> consumers;
     @Inject ChannelService channelService;

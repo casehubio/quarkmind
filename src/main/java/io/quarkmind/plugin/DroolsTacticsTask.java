@@ -150,23 +150,28 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, Me
     public void onMessage(MessageReceivedEvent event) {
         try {
             JsonNode node = objectMapper.readTree(event.content());
-            String type = node.get("type").asText();
-            JsonNode data = node.get("data");
+            JsonNode typeNode = node == null ? null : node.get("type");
+            JsonNode dataNode = node == null ? null : node.get("data");
+            if (typeNode == null || dataNode == null) {
+                log.warnf("Malformed scouting intel message — missing 'type' or 'data': %s", event.content());
+                return;
+            }
+            String type = typeNode.asText();
             ScoutingIntelPayload payload = switch (type) {
                 case "ThreatPosition" ->
-                    objectMapper.treeToValue(data, ScoutingIntelPayload.ThreatPosition.class);
+                    objectMapper.treeToValue(dataNode, ScoutingIntelPayload.ThreatPosition.class);
                 case "PostureUpdate" ->
-                    objectMapper.treeToValue(data, ScoutingIntelPayload.PostureUpdate.class);
+                    objectMapper.treeToValue(dataNode, ScoutingIntelPayload.PostureUpdate.class);
                 case "TimingAlert" ->
-                    objectMapper.treeToValue(data, ScoutingIntelPayload.TimingAlert.class);
+                    objectMapper.treeToValue(dataNode, ScoutingIntelPayload.TimingAlert.class);
                 case "ArmySize" ->
-                    objectMapper.treeToValue(data, ScoutingIntelPayload.ArmySize.class);
+                    objectMapper.treeToValue(dataNode, ScoutingIntelPayload.ArmySize.class);
                 case "BuildOrder" ->
-                    objectMapper.treeToValue(data, ScoutingIntelPayload.BuildOrder.class);
+                    objectMapper.treeToValue(dataNode, ScoutingIntelPayload.BuildOrder.class);
                 default -> throw new IllegalArgumentException("Unknown ScoutingIntelType: " + type);
             };
             intelCache.updateAndGet(prev -> merge(prev, payload));
-        } catch (JsonProcessingException | IllegalArgumentException | NullPointerException e) {
+        } catch (JsonProcessingException | IllegalArgumentException e) {
             log.warnf("Failed to deserialise scouting intel: %s", e.getMessage());
         }
     }
@@ -179,6 +184,8 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, Me
                 new TacticsIntelCache(prev.threatPosition(), p.posture(), prev.timingAlert());
             case ScoutingIntelPayload.TimingAlert p ->
                 new TacticsIntelCache(prev.threatPosition(), prev.posture(), p.incoming());
+            // ArmySize and BuildOrder are not cached in TacticsIntelCache — tactics doesn't use them.
+            // Future consumers (e.g. StrategyTask via #177) would extend this via their own caches.
             case ScoutingIntelPayload.ArmySize p -> prev;
             case ScoutingIntelPayload.BuildOrder p -> prev;
         };
