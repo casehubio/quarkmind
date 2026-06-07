@@ -14,10 +14,23 @@ import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitInstance;
 import org.jboss.logging.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.ledger.api.model.AttestationVerdict;
+import io.casehub.platform.api.identity.ActorType;
+import io.casehub.platform.api.preferences.PreferenceProvider;
+import io.casehub.platform.api.preferences.SettingsScope;
+import io.casehub.qhorus.api.message.MessageDispatch;
+import io.casehub.qhorus.api.message.MessageType;
+import io.casehub.qhorus.runtime.message.MessageService;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.PluginDecisionEvent;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
+import io.quarkmind.agent.ScoutingIntelBroker;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
+import io.quarkmind.agent.plugin.ScoutingIntelType;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.event.Event;
 import java.util.Comparator;
 import java.util.List;
@@ -61,6 +74,27 @@ public class DroolsScoutingTask implements ScoutingTask {
 
     @Inject Event<PluginDecisionEvent> decisionEvents;
     @Inject GameSession gameSession;
+
+    // --- qhorus Layer 3 fields ---
+    @Inject ScoutingIntelBroker broker;
+    @Inject MessageService messageService;
+    @Inject ObjectMapper objectMapper;
+    @Inject PreferenceProvider preferenceProvider;
+
+    // Per-type previous values for change detection
+    volatile Point2d prevThreatPos   = null;
+    volatile int     prevArmySize    = -1;
+    volatile String  prevPosture     = null;
+    volatile Boolean prevTimingAlert = null;
+    volatile String  prevBuildOrder  = null;
+
+    // Threshold values loaded from preferences at @PostConstruct
+    volatile double  minThreatDistance;
+    volatile int     minArmySizeDelta;
+    volatile boolean postureDispatchEnabled;
+    volatile boolean timingAlertDispatchEnabled;
+    volatile boolean buildOrderDispatchEnabled;
+
     private volatile int prevEnemyHash = 0;
 
     /** Tag of the probe currently assigned to scout. Null when no active scout. */
@@ -75,6 +109,19 @@ public class DroolsScoutingTask implements ScoutingTask {
         this.ruleUnit       = ruleUnit;
         this.sessionManager = sessionManager;
         this.intentQueue    = intentQueue;
+    }
+
+    @PostConstruct
+    void initThresholds() {
+        initThresholds(preferenceProvider.resolve(SettingsScope.root()));
+    }
+
+    void initThresholds(io.casehub.platform.api.preferences.Preferences prefs) {
+        minThreatDistance          = prefs.getOrDefault(ScoutingIntelPreferences.THREAT_POSITION_MIN_DISTANCE).asDouble();
+        minArmySizeDelta           = prefs.getOrDefault(ScoutingIntelPreferences.ARMY_SIZE_MIN_DELTA).asInt();
+        postureDispatchEnabled     = prefs.getOrDefault(ScoutingIntelPreferences.POSTURE_DISPATCH_ENABLED).asBoolean();
+        timingAlertDispatchEnabled = prefs.getOrDefault(ScoutingIntelPreferences.TIMING_ALERT_DISPATCH_ENABLED).asBoolean();
+        buildOrderDispatchEnabled  = prefs.getOrDefault(ScoutingIntelPreferences.BUILD_ORDER_DISPATCH_ENABLED).asBoolean();
     }
 
     @Override public String getId()   { return "scouting.drools-cep"; }
@@ -112,7 +159,13 @@ public class DroolsScoutingTask implements ScoutingTask {
         // Detect game restart (mock loop resets frame to 0)
         if (frame < lastFrame) {
             sessionManager.reset();
-            scoutProbeTag = null;
+            scoutProbeTag    = null;
+            prevEnemyHash    = 0;
+            prevThreatPos    = null;
+            prevArmySize     = -1;
+            prevPosture      = null;
+            prevTimingAlert  = null;
+            prevBuildOrder   = null;
         }
         lastFrame = frame;
 
@@ -121,34 +174,78 @@ public class DroolsScoutingTask implements ScoutingTask {
         Point2d estimatedBase = estimatedEnemyBase(ourNexus, mapWidth);
 
         // --- Passive intel (plain Java, no rules needed) ---
-        caseFile.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, enemies.size());
+        int currentArmySize = enemies.size();
+        caseFile.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, currentArmySize);
+        Point2d nearest = null;
         if (!enemies.isEmpty()) {
-            enemies.stream()
+            nearest = enemies.stream()
                 .min(Comparator.comparingDouble(e -> e.position().distanceTo(ourNexus)))
-                .ifPresent(nearest -> caseFile.put(QuarkMindCaseFile.NEAREST_THREAT, nearest.position()));
+                .map(Unit::position)
+                .orElse(null);
+            if (nearest != null) {
+                caseFile.put(QuarkMindCaseFile.NEAREST_THREAT, nearest);
+            }
         }
 
-        // --- CEP event accumulation ---
-        sessionManager.processFrame(enemies, gameTimeMs, ourNexus, estimatedBase);
-        sessionManager.evict(gameTimeMs);
-
-        // --- Drools rules firing ---
-        ScoutingRuleUnit data = sessionManager.buildRuleUnit();
-        try (RuleUnitInstance<ScoutingRuleUnit> instance = ruleUnit.createInstance(data)) {
-            instance.fire();
+        // --- CEP: gate on broker subscriptions to avoid Drools overhead when not needed ---
+        boolean needsCep = broker.isSubscribed(ScoutingIntelType.BUILD_ORDER)
+                        || broker.isSubscribed(ScoutingIntelType.TIMING_ALERT)
+                        || broker.isSubscribed(ScoutingIntelType.POSTURE);
+        ScoutingRuleUnit data = null;
+        if (needsCep) {
+            sessionManager.processFrame(enemies, gameTimeMs, ourNexus, estimatedBase);
+            sessionManager.evict(gameTimeMs);
+            data = sessionManager.buildRuleUnit();
+            try (RuleUnitInstance<ScoutingRuleUnit> instance = ruleUnit.createInstance(data)) {
+                instance.fire();
+            }
         }
 
         // --- Write CEP intel to CaseFile ---
-        String build = data.getDetectedBuilds().isEmpty() ? "UNKNOWN" : data.getDetectedBuilds().get(0);
+        String build = data != null && !data.getDetectedBuilds().isEmpty()
+            ? data.getDetectedBuilds().get(0) : "UNKNOWN";
         caseFile.put(QuarkMindCaseFile.ENEMY_BUILD_ORDER, build);
-        caseFile.put(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, !data.getTimingAlerts().isEmpty());
-        String posture = data.getPostureDecisions().isEmpty()
-            ? "UNKNOWN"
-            : data.getPostureDecisions().get(0);
+        boolean timing = data != null && !data.getTimingAlerts().isEmpty();
+        caseFile.put(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, timing);
+        String posture = data != null && !data.getPostureDecisions().isEmpty()
+            ? data.getPostureDecisions().get(0) : "UNKNOWN";
         caseFile.put(QuarkMindCaseFile.ENEMY_POSTURE, posture);
 
         log.debugf("[SCOUTING] enemies=%d | build=%s | timing=%b | posture=%s",
-            enemies.size(), build, !data.getTimingAlerts().isEmpty(), posture);
+            currentArmySize, build, timing, posture);
+
+        // --- Layer 3: dispatch changed intel to qhorus subscribers ---
+        if (nearest != null && broker.isSubscribed(ScoutingIntelType.THREAT_POSITION)
+                && shouldDispatchThreatPosition(prevThreatPos, nearest, minThreatDistance)) {
+            prevThreatPos = nearest;
+            dispatch(new ScoutingIntelPayload.ThreatPosition(nearest));
+        }
+
+        if (broker.isSubscribed(ScoutingIntelType.ARMY_SIZE)
+                && shouldDispatchArmySize(prevArmySize, currentArmySize, minArmySizeDelta)) {
+            prevArmySize = currentArmySize;
+            dispatch(new ScoutingIntelPayload.ArmySize(currentArmySize));
+        }
+
+        if (data != null) {
+            if (postureDispatchEnabled && broker.isSubscribed(ScoutingIntelType.POSTURE)
+                    && !posture.equals(prevPosture)) {
+                prevPosture = posture;
+                dispatch(new ScoutingIntelPayload.PostureUpdate(posture));
+            }
+
+            if (timingAlertDispatchEnabled && broker.isSubscribed(ScoutingIntelType.TIMING_ALERT)
+                    && !Boolean.valueOf(timing).equals(prevTimingAlert)) {
+                prevTimingAlert = timing;
+                dispatch(new ScoutingIntelPayload.TimingAlert(timing));
+            }
+
+            if (buildOrderDispatchEnabled && broker.isSubscribed(ScoutingIntelType.BUILD_ORDER)
+                    && !build.equals(prevBuildOrder)) {
+                prevBuildOrder = build;
+                dispatch(new ScoutingIntelPayload.BuildOrder(build));
+            }
+        }
 
         // --- Active scouting (same as BasicScoutingTask) ---
         if (enemies.isEmpty()) {
@@ -182,6 +279,34 @@ public class DroolsScoutingTask implements ScoutingTask {
         float targetX = ourBase.x() < threshold ? farCoord : nearCoord;
         float targetY = ourBase.y() < threshold ? farCoord : nearCoord;
         return new Point2d(targetX, targetY);
+    }
+
+    private void dispatch(ScoutingIntelPayload payload) {
+        try {
+            String content = objectMapper.writeValueAsString(
+                java.util.Map.of("type", payload.getClass().getSimpleName(), "data", payload));
+            messageService.dispatch(MessageDispatch.builder()
+                .channelId(broker.channelId())
+                .sender(getId())
+                .actorType(ActorType.AGENT)   // GE-20260529-e32a4d: required — omitting throws IAE
+                .type(MessageType.STATUS)     // STATUS carries content; EVENT forces null (GE-20260607-d051f2)
+                .content(content)
+                .build());
+        } catch (JsonProcessingException e) {
+            log.warnf("Failed to serialise scouting intel payload: %s", e.getMessage());
+        }
+    }
+
+    static boolean shouldDispatchThreatPosition(Point2d prev, Point2d curr, double threshold) {
+        if (prev == null) return true;
+        if (prev.equals(curr)) return false;
+        double dx = curr.x() - prev.x();
+        double dy = curr.y() - prev.y();
+        return Math.sqrt(dx * dx + dy * dy) > threshold;
+    }
+
+    static boolean shouldDispatchArmySize(int prev, int curr, int minDelta) {
+        return Math.abs(curr - prev) >= minDelta;
     }
 
     private static Point2d nexusPosition(List<Building> buildings) {

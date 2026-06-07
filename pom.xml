@@ -116,6 +116,11 @@
             <artifactId>casehub-qhorus</artifactId>
             <version>0.2-SNAPSHOT</version>
         </dependency>
+        <!-- H2 JDBC driver for the qhorus named datasource (db-kind=h2 in application.properties) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-h2</artifactId>
+        </dependency>
 
         <!-- SC2 Replay parsing — extracted from Scelight (Apache 2.0) -->
         <!-- Source: /Users/mdproctor/dev/scelight, branch: feature/standalone-modules -->

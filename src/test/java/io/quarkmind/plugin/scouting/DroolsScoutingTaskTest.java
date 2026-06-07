@@ -62,4 +62,57 @@ class DroolsScoutingTaskTest {
         assertThat(result).isNotEqualTo(new Point2d(63, 63));
         assertThat(result).isNotEqualTo(new Point2d(224, 224));
     }
+
+    // ---- shouldDispatchThreatPosition ----
+
+    @Test
+    void shouldDispatchThreatPosition_newPosition_exceedsZeroThreshold() {
+        Point2d prev = new Point2d(10f, 10f);
+        Point2d curr = new Point2d(10.1f, 10f);
+        assertThat(DroolsScoutingTask.shouldDispatchThreatPosition(prev, curr, 0.0)).isTrue();
+    }
+
+    @Test
+    void shouldDispatchThreatPosition_samePosition_returnsFalse() {
+        Point2d pos = new Point2d(10f, 10f);
+        assertThat(DroolsScoutingTask.shouldDispatchThreatPosition(pos, pos, 0.0)).isFalse();
+    }
+
+    @Test
+    void shouldDispatchThreatPosition_movesBelowThreshold_returnsFalse() {
+        Point2d prev = new Point2d(10f, 10f);
+        Point2d curr = new Point2d(10.5f, 10f); // distance 0.5
+        assertThat(DroolsScoutingTask.shouldDispatchThreatPosition(prev, curr, 1.0)).isFalse();
+    }
+
+    @Test
+    void shouldDispatchThreatPosition_movesAboveThreshold_returnsTrue() {
+        Point2d prev = new Point2d(10f, 10f);
+        Point2d curr = new Point2d(12f, 10f); // distance 2.0
+        assertThat(DroolsScoutingTask.shouldDispatchThreatPosition(prev, curr, 1.0)).isTrue();
+    }
+
+    @Test
+    void shouldDispatchThreatPosition_firstSighting_prevNull_returnsTrue() {
+        assertThat(DroolsScoutingTask.shouldDispatchThreatPosition(null, new Point2d(5f, 5f), 0.0))
+            .isTrue();
+    }
+
+    // ---- shouldDispatchArmySize ----
+
+    @Test
+    void shouldDispatchArmySize_deltaExceedsThreshold_returnsTrue() {
+        assertThat(DroolsScoutingTask.shouldDispatchArmySize(5, 10, 1)).isTrue();
+    }
+
+    @Test
+    void shouldDispatchArmySize_deltaBelowThreshold_returnsFalse() {
+        assertThat(DroolsScoutingTask.shouldDispatchArmySize(5, 5, 1)).isFalse();
+    }
+
+    @Test
+    void shouldDispatchArmySize_deltaEqualsThreshold_returnsTrue() {
+        // >= semantics: delta of exactly 1 with minDelta=1 should dispatch
+        assertThat(DroolsScoutingTask.shouldDispatchArmySize(5, 6, 1)).isTrue();
+    }
 }
