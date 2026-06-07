@@ -93,9 +93,9 @@ public sealed interface ScoutingIntelPayload
 }
 ```
 
-Qhorus message content is JSON-encoded with a `type` discriminator matching the simple class name:
+Qhorus message content is JSON-encoded with a `type` discriminator matching the simple class name. `data` is the full serialized record — field-wrapped, not the inner value:
 ```json
-{"type": "ThreatPosition", "data": {"x": 45.0, "y": 120.0}}
+{"type": "ThreatPosition", "data": {"position": {"x": 45.0, "y": 120.0}}}
 ```
 
 `Point2d` is a plain Java domain record — serialises to `{x: float, y: float}`.
@@ -134,7 +134,7 @@ Preferences are read at `@PostConstruct` — subscriptions and thresholds are fi
 @ApplicationScoped
 public class ScoutingIntelBroker {
 
-    static final String CHANNEL_NAME = "quarkmind.scouting.intel";
+    public static final String CHANNEL_NAME = "quarkmind.scouting.intel";
 
     @Inject Instance<ScoutingIntelConsumer> consumers;
     @Inject ChannelService channelService;
@@ -196,6 +196,8 @@ public class ScoutingIntelBroker {
 ```
 
 **`dispatch()` helper — uses `MessageType.STATUS`, not EVENT:**
+
+STATUS is used because `MessageObserverDispatcher` forces null content for EVENT per PP-20260508-90428f — EVENT observers never see the payload. Semantically EVENT would be correct (no obligation, pure telemetry); STATUS is the pragmatic substitute until Qhorus supports EVENT content for application-tier observers. The channel `allowedTypes="STATUS"` makes this constraint visible at the channel level.
 
 ```java
 // GE-20260607-d051f2: EVENT content is null in MessageReceivedEvent — use STATUS
@@ -309,6 +311,10 @@ Point2d threat = intel.threatPosition();
 ```xml
 <dependency>
     <groupId>io.casehub</groupId>
+    <artifactId>casehub-platform-api</artifactId>  <!-- PreferenceProvider, SettingsScope, ActorType — explicit, not transitive -->
+</dependency>
+<dependency>
+    <groupId>io.casehub</groupId>
     <artifactId>casehub-qhorus-api</artifactId>
 </dependency>
 <dependency>
@@ -381,3 +387,7 @@ casehub-qhorus       quarkmind   src/main/   runtime — named qhorus datasource
 | 8 | Medium | Broker injection removed from `DroolsTacticsTask` — `channels()` uses static constant |
 | 9 | Medium | Removed redundant null check — `intelCache` initialised to `TacticsIntelCache.empty()`, never null |
 | 10 | Architectural | `MessageObserver` vs `ChannelBackend` rationale made explicit — platform gap in qhorus#254 |
+| 11 | Bug | `CHANNEL_NAME` made `public` — package-private inaccessible from `io.quarkmind.plugin` |
+| 12 | Minor | JSON example corrected — `data` is the full record, not the inner `Point2d` value |
+| 13 | Minor | STATUS semantic rationale added — workaround for PP-20260508-90428f EVENT content null |
+| 14 | Minor | `casehub-platform-api` added to pom.xml explicitly (was transitive only) |
