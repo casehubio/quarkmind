@@ -160,6 +160,7 @@ public class DroolsScoutingTask implements ScoutingTask {
         if (frame < lastFrame) {
             sessionManager.reset();
             scoutProbeTag    = null;
+            prevEnemyHash    = 0;
             prevThreatPos    = null;
             prevArmySize     = -1;
             prevPosture      = null;

@@ -109,4 +109,10 @@ class DroolsScoutingTaskTest {
     void shouldDispatchArmySize_deltaBelowThreshold_returnsFalse() {
         assertThat(DroolsScoutingTask.shouldDispatchArmySize(5, 5, 1)).isFalse();
     }
+
+    @Test
+    void shouldDispatchArmySize_deltaEqualsThreshold_returnsTrue() {
+        // >= semantics: delta of exactly 1 with minDelta=1 should dispatch
+        assertThat(DroolsScoutingTask.shouldDispatchArmySize(5, 6, 1)).isTrue();
+    }
 }
