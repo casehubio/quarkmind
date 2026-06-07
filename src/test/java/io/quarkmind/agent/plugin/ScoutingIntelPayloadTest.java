@@ -65,4 +65,24 @@ class ScoutingIntelPayloadTest {
         JsonNode node = mapper.readTree(json);
         assertThat(node.get("data").get("incoming").asBoolean()).isTrue();
     }
+
+    @Test
+    void armySize_roundTrips() throws Exception {
+        var payload = new ScoutingIntelPayload.ArmySize(12);
+        String json = mapper.writeValueAsString(
+            java.util.Map.of("type", payload.getClass().getSimpleName(), "data", payload));
+        JsonNode node = mapper.readTree(json);
+        assertThat(node.get("type").asText()).isEqualTo("ArmySize");
+        assertThat(node.get("data").get("count").asInt()).isEqualTo(12);
+    }
+
+    @Test
+    void buildOrder_roundTrips() throws Exception {
+        var payload = new ScoutingIntelPayload.BuildOrder("4-GATE");
+        String json = mapper.writeValueAsString(
+            java.util.Map.of("type", payload.getClass().getSimpleName(), "data", payload));
+        JsonNode node = mapper.readTree(json);
+        assertThat(node.get("type").asText()).isEqualTo("BuildOrder");
+        assertThat(node.get("data").get("detected").asText()).isEqualTo("4-GATE");
+    }
 }

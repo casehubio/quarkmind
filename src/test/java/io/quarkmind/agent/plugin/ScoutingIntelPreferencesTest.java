@@ -43,4 +43,21 @@ class ScoutingIntelPreferencesTest {
     void armySizeMinDeltaKey_defaultIsOne() {
         assertThat(ScoutingIntelPreferences.ARMY_SIZE_MIN_DELTA.defaultValue().asInt()).isEqualTo(1);
     }
+
+    @Test
+    void threatPositionMinDistanceKey_parsesStringDouble() {
+        assertThat(ScoutingIntelPreferences.THREAT_POSITION_MIN_DISTANCE.parse("2.5").asDouble())
+            .isEqualTo(2.5);
+    }
+
+    @Test
+    void armySizeMinDeltaKey_parsesStringInt() {
+        assertThat(ScoutingIntelPreferences.ARMY_SIZE_MIN_DELTA.parse("3").asInt()).isEqualTo(3);
+    }
+
+    @Test
+    void postureDispatchEnabledKey_parsesStringBoolean() {
+        assertThat(ScoutingIntelPreferences.POSTURE_DISPATCH_ENABLED.parse("false").asBoolean())
+            .isFalse();
+    }
 }

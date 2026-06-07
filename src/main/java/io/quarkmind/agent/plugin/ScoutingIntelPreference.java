@@ -4,9 +4,23 @@ import io.casehub.platform.api.preferences.SingleValuePreference;
 
 public record ScoutingIntelPreference(Object value) implements SingleValuePreference {
 
-    public boolean asBoolean() { return (Boolean) value; }
-    public double  asDouble()  { return ((Number) value).doubleValue(); }
-    public int     asInt()     { return ((Number) value).intValue(); }
+    public boolean asBoolean() {
+        if (!(value instanceof Boolean b)) throw new IllegalStateException(
+            "Expected Boolean, got " + value.getClass().getSimpleName());
+        return b;
+    }
+
+    public double asDouble() {
+        if (!(value instanceof Number n)) throw new IllegalStateException(
+            "Expected Number, got " + value.getClass().getSimpleName());
+        return n.doubleValue();
+    }
+
+    public int asInt() {
+        if (!(value instanceof Number n)) throw new IllegalStateException(
+            "Expected Number, got " + value.getClass().getSimpleName());
+        return n.intValue();
+    }
 
     public static ScoutingIntelPreference ofBoolean(boolean v) { return new ScoutingIntelPreference(v); }
     public static ScoutingIntelPreference ofDouble(double v)   { return new ScoutingIntelPreference(v); }
