@@ -9,7 +9,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -45,13 +44,13 @@ public class ScoutingIntelBroker {
         activeTypes = computeActiveTypes(consumers);
     }
 
-    // Package-private for unit testing — accepts Iterable to avoid CDI Instance in tests
+    // Extracted as package-private static to test subscription union logic without CDI Instance<>
     static Set<ScoutingIntelType> computeActiveTypes(Iterable<ScoutingIntelConsumer> consumers) {
         Set<ScoutingIntelType> result = new HashSet<>();
         for (ScoutingIntelConsumer c : consumers) {
             result.addAll(c.subscribedIntelTypes());
         }
-        return Collections.unmodifiableSet(result);
+        return Set.copyOf(result);
     }
 
     public UUID channelId()                          { return channelId; }
