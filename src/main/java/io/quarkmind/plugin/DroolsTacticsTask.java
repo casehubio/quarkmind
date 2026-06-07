@@ -32,6 +32,7 @@ import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.literal.NamedLiteral;
 import org.drools.ruleunits.api.RuleUnit;
@@ -42,6 +43,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.PluginDecisionEvent;
+import io.quarkmind.sc2.GameStarted;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import jakarta.enterprise.event.Event;
 import java.util.*;
@@ -104,8 +106,9 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, Me
     /** Test accessor — package-private; returns current cache via the CDI proxy. */
     TacticsIntelCache currentIntelCache() { return intelCache.get(); }
 
-    /** Test mutator — package-private; resets cache via the CDI proxy. */
-    void resetIntelCache() { intelCache.set(TacticsIntelCache.empty()); }
+    /** Clears the intel cache when a new game starts — ensures no cross-game state bleed. */
+    void onGameStarted(@Observes GameStarted event) { intelCache.set(TacticsIntelCache.empty()); }
+
     Set<ScoutingIntelType> subscribedTypes;
     private volatile String prevThreatState = null;
 

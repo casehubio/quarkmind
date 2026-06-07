@@ -34,9 +34,8 @@ class QhorusScoutingIntelIT {
     void setUp() {
         simulatedGame.reset();
         orchestrator.startGame();
-        // Reset the intel cache to empty — previous tests may have populated it.
-        // Uses method accessor because CDI proxy field access goes to the proxy, not the bean.
-        tacticsTask.resetIntelCache();
+        // Intel cache is cleared by DroolsTacticsTask.onGameStarted(@Observes GameStarted)
+        // which fires synchronously during orchestrator.startGame(). No explicit reset needed.
     }
 
     @Test
