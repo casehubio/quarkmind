@@ -3,6 +3,7 @@
 **Issue:** #155
 **Branch:** issue-155-qhorus-layer3
 **Date:** 2026-06-06
+**Review applied:** 2026-06-07 — 10 findings from source-level code review
 
 ## Purpose
 
@@ -21,11 +22,7 @@ agent/plugin/
   ScoutingIntelPreferences   class  — all PreferenceKey<?> constants
 
 agent/
-  ScoutingIntelBroker        @ApplicationScoped
-    ├─ collects all ScoutingIntelConsumer CDI beans at @PostConstruct
-    ├─ builds union of subscribed types → activeTypes()
-    ├─ creates / finds "quarkmind.scouting.intel" observe channel → channelId()
-    └─ exposes isSubscribed(ScoutingIntelType) to producer
+  ScoutingIntelBroker        @ApplicationScoped CDI bean
 
 plugin/scouting/
   DroolsScoutingTask         (modified)
@@ -40,19 +37,21 @@ plugin/
 DroolsScoutingTask.execute()
   → always computes THREAT_POSITION, ARMY_SIZE (cheap — stream min/count)
   → runs Drools CEP only if BUILD_ORDER, TIMING_ALERT, or POSTURE is in activeTypes()
-  → for each subscribed type: dispatches via MessageService(EVENT) if value changed
+  → for each subscribed type: dispatches via MessageService(STATUS) if value changed
     beyond its preference-configured threshold
-  → still writes CaseFile keys (unchanged — harness and other code may read them)
+  → still writes CaseFile keys (harness observability — see NEAREST_THREAT note below)
 
-(synchronous, via InProcessMessageBus — within the same dispatch() call)
-  qhorus → DroolsTacticsTask.notify() → AtomicReference<TacticsIntelCache> updated
+(post-commit, after dispatch() transaction commits)
+  qhorus InProcessMessageBus → DroolsTacticsTask.onMessage() → AtomicReference<TacticsIntelCache> updated
 
 DroolsTacticsTask.execute()
   → reads TacticsIntelCache from AtomicReference (no CaseFile key coupling)
   → canActivate() gates on READY + STRATEGY in CaseFile + cache.threatPosition() non-null
 ```
 
-Note: `MessageObserver.notify()` is called synchronously by `InProcessMessageBus` during `MessageService.dispatch()`. The cache is updated before `dispatch()` returns, so `DroolsTacticsTask` reads fresh intel in the same tick that scouting dispatched it.
+**Delivery timing:** `MessageObserver.onMessage()` is called post-commit by `MessageObserverDispatcher` — when dispatching inside a JTA transaction (always true for `@Transactional MessageService.dispatch()`), observer calls are deferred to `afterCompletion(STATUS_COMMITTED)`. `DroolsTacticsTask` sees the cache update in the tick **after** scouting dispatched. The `Thread.sleep(300)` in `QhorusScoutingIntelIT` is correct and necessary.
+
+**`NEAREST_THREAT` retention:** Scouting still writes this CaseFile key for harness observability (QA endpoints, visualizer, benchmark output). Tactics no longer reads it — the key is now observability-only. Issue #179 tracks eventual deprecation once no other code reads it.
 
 ## New Types
 
@@ -76,8 +75,6 @@ public interface ScoutingIntelConsumer {
 }
 ```
 
-Any plugin that wants typed scouting intel implements this interface. `ScoutingIntelBroker` discovers all implementations via CDI `Instance<ScoutingIntelConsumer>` at startup.
-
 ### `ScoutingIntelPayload` (sealed)
 
 ```java
@@ -96,12 +93,12 @@ public sealed interface ScoutingIntelPayload
 }
 ```
 
-Sealed so dispatch sites and observer switch branches are exhaustive. `Point2d` is a plain Java domain record — serialises to `{x: float, y: float}` without framework leakage.
-
-Qhorus message content is JSON-encoded with a `type` discriminator matching `ScoutingIntelType.name()`:
+Qhorus message content is JSON-encoded with a `type` discriminator matching the simple class name:
 ```json
 {"type": "ThreatPosition", "data": {"x": 45.0, "y": 120.0}}
 ```
+
+`Point2d` is a plain Java domain record — serialises to `{x: float, y: float}`.
 
 ### `ScoutingIntelPreferences`
 
@@ -127,7 +124,7 @@ Holds all `PreferenceKey<?>` constants. Requires a `ScoutingIntelPreference impl
 | `scouting.intel.consumer.tactics.army-size` | `Boolean` | `false` |
 | `scouting.intel.consumer.tactics.build-order` | `Boolean` | `false` |
 
-Consumer key naming convention: `scouting.intel.consumer.{plugin-id}.{type-name-kebab}`. Future consumers (strategy, economics — see #177) declare their own keys following the same pattern. `ScoutingIntelPreferences` provides a `consumerKey(String pluginId, ScoutingIntelType)` factory method. Kebab-case mapping: `THREAT_POSITION` → `threat-position`, `TIMING_ALERT` → `timing-alert`, `BUILD_ORDER` → `build-order`, `ARMY_SIZE` → `army-size`, `POSTURE` → `posture`.
+Consumer key naming convention: `scouting.intel.consumer.{plugin-id}.{type-name-kebab}`. Kebab-case mapping: `THREAT_POSITION` → `threat-position`, `TIMING_ALERT` → `timing-alert`, `BUILD_ORDER` → `build-order`, `ARMY_SIZE` → `army-size`, `POSTURE` → `posture`. `ScoutingIntelPreferences` provides a `consumerKey(String pluginId, ScoutingIntelType)` factory method. Future consumers (strategy, economics — see #177) declare their own keys following the same pattern.
 
 Preferences are read at `@PostConstruct` — subscriptions and thresholds are fixed at boot. Dynamic hot-reload is deferred to #178.
 
@@ -150,9 +147,17 @@ public class ScoutingIntelBroker {
         // GE-20260529-88b7b6: ChannelService.create() not idempotent — findByName() first
         channelId = channelService.findByName(CHANNEL_NAME)
             .map(Channel::id)
-            .orElseGet(() -> channelService.create(CHANNEL_NAME, ChannelType.OBSERVE).id());
-        // GE-20260526-5247f2: create() does not register in ChannelGateway.
-        // MessageObserver (global broadcast) is used — no fanOut() registration needed.
+            .orElseGet(() -> channelService.create(
+                CHANNEL_NAME,
+                "Scouting intel for agent plugins",
+                ChannelSemantic.APPEND,
+                null, null, null, null, null,
+                "STATUS"    // allowedTypes — restricts channel to STATUS-only dispatch
+            ).id());
+
+        // qhorus/254: ChannelService.create() does NOT call channelGateway.initChannel() —
+        // ChannelBackend registration never fires for runtime-created channels.
+        // MessageObserver with channels() filter is the correct delivery path here.
 
         activeTypes = consumers.stream()
             .flatMap(c -> c.subscribedIntelTypes().stream())
@@ -165,13 +170,17 @@ public class ScoutingIntelBroker {
 }
 ```
 
+**Why `MessageObserver` over `ChannelBackend`:** PLATFORM.md recommends `ChannelBackend` for per-channel consumers. However, `ChannelService.create()` never calls `channelGateway.initChannel()` — `ChannelInitialisedEvent` only fires for channels created at startup recovery or via the MCP `create_channel` tool. Runtime-created channels (like ours at `@PostConstruct`) never trigger `ChannelBackend` registration. `fanOut()` would silently do nothing. `MessageObserver` with a `channels()` filter is the correct and only working path for runtime-created channels. Tracked in casehubio/qhorus#254.
+
+`activeTypes` is immutable after startup — subscriptions are fixed at boot.
+
 ## `DroolsScoutingTask` Changes
 
 **New injections:**
 - `ScoutingIntelBroker broker`
 - `MessageService messageService`
 - `ObjectMapper objectMapper`
-- `Preferences preferences`
+- `Preferences preferences` (via `PreferenceProvider` — inject `PreferenceProvider` and call `resolve()`)
 
 **New fields:**
 - `double minThreatDistance`, `int minArmySizeDelta` — loaded from preferences at `@PostConstruct`
@@ -183,21 +192,27 @@ public class ScoutingIntelBroker {
 1. Compute THREAT_POSITION and ARMY_SIZE always (cheap)
 2. if broker.isSubscribed(BUILD_ORDER || TIMING_ALERT || POSTURE): run Drools CEP
 3. For each subscribed type, check threshold/change, dispatch if exceeded
-4. Existing CaseFile writes unchanged
+4. Existing CaseFile writes unchanged (observability)
 ```
 
-**`dispatch()` helper:**
+**`dispatch()` helper — uses `MessageType.STATUS`, not EVENT:**
+
 ```java
+// GE-20260607-d051f2: EVENT content is null in MessageReceivedEvent — use STATUS
 private void dispatch(ScoutingIntelPayload payload) {
-    String content = objectMapper.writeValueAsString(
-        Map.of("type", payload.getClass().getSimpleName(), "data", payload));
-    messageService.dispatch(MessageDispatch.builder()
-        .channelId(broker.channelId())
-        .sender(getId())
-        .actorType(ActorType.AGENT)   // GE-20260529-e32a4d: required — omitting throws IAE
-        .messageType(MessageType.EVENT)
-        .content(content)
-        .build());
+    try {
+        String content = objectMapper.writeValueAsString(
+            Map.of("type", payload.getClass().getSimpleName(), "data", payload));
+        messageService.dispatch(MessageDispatch.builder()
+            .channelId(broker.channelId())
+            .sender(getId())
+            .actorType(ActorType.AGENT)   // GE-20260529-e32a4d: required — omitting throws IAE
+            .messageType(MessageType.STATUS)   // STATUS carries content; EVENT forces null
+            .content(content)
+            .build());
+    } catch (JsonProcessingException e) {
+        log.warnf("Failed to serialise scouting intel payload: %s", e.getMessage());
+    }
 }
 ```
 
@@ -210,10 +225,12 @@ The existing `prevEnemyHash` / `PluginDecisionEvent` path is unchanged — that 
 public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, MessageObserver
 ```
 
+`ScoutingIntelBroker` is NOT injected into `DroolsTacticsTask` — channel filtering uses the static `CHANNEL_NAME` constant via the `channels()` override (see below). This reduces coupling.
+
 **New fields:**
-- `AtomicReference<TacticsIntelCache> intelCache` — thread-safe cache updated by notify()
+- `AtomicReference<TacticsIntelCache> intelCache = new AtomicReference<>(TacticsIntelCache.empty())` — initialised to empty, never null
 - `Set<ScoutingIntelType> subscribedTypes` — built from preferences at @PostConstruct
-- `ScoutingIntelBroker broker`, `ObjectMapper objectMapper` — new injections
+- `ObjectMapper objectMapper` — new injection
 
 **`TacticsIntelCache` record:**
 ```java
@@ -225,25 +242,63 @@ record TacticsIntelCache(Point2d threatPosition, String posture, Boolean timingA
 
 **`subscribedIntelTypes()`** — reads consumer preference keys at `@PostConstruct`, returns immutable set.
 
-**`MessageObserver.notify()`:**
+**`channels()` override — built-in dispatcher filter, eliminates broker injection:**
 ```java
-public void notify(Message message) {
-    if (!message.channelId().equals(broker.channelId())) return; // filter: own channel only
-    ScoutingIntelPayload payload = objectMapper.readValue(message.content(), ScoutingIntelPayload.class);
-    intelCache.updateAndGet(prev -> merge(prev, payload));
+@Override
+public Set<String> channels() {
+    return Set.of(ScoutingIntelBroker.CHANNEL_NAME);
+}
+```
+`MessageObserverDispatcher` applies this filter before calling `onMessage()`. No manual channel check needed inside the method.
+
+**`MessageObserver.onMessage()` — correct method name and event type:**
+```java
+@Override
+public void onMessage(MessageReceivedEvent event) {
+    // channel filter already applied by MessageObserverDispatcher via channels()
+    try {
+        JsonNode node = objectMapper.readTree(event.content());
+        String type = node.get("type").asText();
+        JsonNode data = node.get("data");
+        // Sealed interface cannot be deserialized directly — manual type-switch required
+        ScoutingIntelPayload payload = switch (type) {
+            case "ThreatPosition" -> objectMapper.treeToValue(data, ScoutingIntelPayload.ThreatPosition.class);
+            case "PostureUpdate"  -> objectMapper.treeToValue(data, ScoutingIntelPayload.PostureUpdate.class);
+            case "TimingAlert"    -> objectMapper.treeToValue(data, ScoutingIntelPayload.TimingAlert.class);
+            case "ArmySize"       -> objectMapper.treeToValue(data, ScoutingIntelPayload.ArmySize.class);
+            case "BuildOrder"     -> objectMapper.treeToValue(data, ScoutingIntelPayload.BuildOrder.class);
+            default -> throw new IllegalArgumentException("Unknown ScoutingIntelType: " + type);
+        };
+        intelCache.updateAndGet(prev -> merge(prev, payload));
+    } catch (JsonProcessingException e) {
+        log.warnf("Failed to deserialise scouting intel: %s", e.getMessage());
+    }
 }
 ```
 
 **`entryCriteria()` and `canActivate()` changes:**
 - Remove `NEAREST_THREAT` from `entryCriteria()` — tactics no longer reads this key
-- `canActivate()` adds: `&& intelCache.get() != null && intelCache.get().threatPosition() != null`
+- `intelCache` is initialised to `TacticsIntelCache.empty()` — never null; no null check needed
+
+```java
+@Override
+public Set<String> entryCriteria() {
+    return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.STRATEGY);
+}
+
+@Override
+public boolean canActivate(CaseFile caseFile) {
+    return entryCriteria().stream().allMatch(caseFile::contains)
+        && intelCache.get().threatPosition() != null;  // non-null = scouting has sent at least one threat
+}
+```
 
 **`execute()` change:**
 ```java
 // Before: caseFile.get(QuarkMindCaseFile.NEAREST_THREAT, Point2d.class).orElse(null)
 // After:
 TacticsIntelCache intel = intelCache.get();
-Point2d threat = intel != null ? intel.threatPosition() : null;
+Point2d threat = intel.threatPosition();
 ```
 
 `STRATEGY`, `ARMY`, `ENEMY_UNITS`, `MY_BUILDINGS` continue to be read from CaseFile — those are not scouting's concern.
@@ -274,6 +329,8 @@ quarkus.flyway."qhorus".locations=classpath:db/qhorus/migration,classpath:db/led
 
 `casehub-platform` mock scope: already on classpath via `casehub-persistence-memory` — `MockPreferenceProvider @DefaultBean` satisfies qhorus's `PreferenceProvider` injection point. Verify during implementation.
 
+**Note on `Preferences` injection:** `Preferences` is not a CDI bean (GE-20260607-3611a2). Inject `PreferenceProvider` and call `preferenceProvider.resolve(SettingsScope.root())` to obtain a `Preferences` instance. Do not `@Inject Preferences` directly.
+
 ## Testing
 
 ### Unit Tests (plain JUnit, no CDI)
@@ -281,24 +338,26 @@ quarkus.flyway."qhorus".locations=classpath:db/qhorus/migration,classpath:db/led
 | Test | What it validates |
 |------|------------------|
 | `ScoutingIntelBrokerTest` | `activeTypes()` is union of consumer declarations; `isSubscribed()` correct; mock `ChannelService` |
-| `DroolsScoutingTaskTest` (additions) | CEP skipped when expensive types not subscribed; dispatch called only when threshold exceeded; dispatch not called when value unchanged |
-| `DroolsTacticsTaskTest` (additions) | `notify()` updates cache; `canActivate()` false before first message; `execute()` reads from cache not CaseFile |
+| `DroolsScoutingTaskTest` (additions) | CEP skipped when expensive types not subscribed; dispatch called only when threshold exceeded; dispatch not called when value unchanged; `MessageType.STATUS` used (not EVENT) |
+| `DroolsTacticsTaskTest` (additions) | `onMessage()` updates cache; `canActivate()` false before first message (threatPosition null), true after; `execute()` reads from cache not CaseFile |
 
 ### Integration Tests (`@QuarkusTest`)
 
 | Test | What it validates |
 |------|------------------|
-| `QhorusScoutingIntelIT` (new) | Full dispatch → MessageObserver → cache path; `gameTick()` with enemies present; `Thread.sleep(300)`; asserts cache populated |
-| `FullMockPipelineIT` (existing) | Boots cleanly with qhorus datasource config; no logic changes — just confirming CDI wiring resolves |
+| `QhorusScoutingIntelIT` (new) | Full dispatch → post-commit → MessageObserver → cache path; `gameTick()` with enemies present; `Thread.sleep(300)` required (post-commit delivery); asserts cache populated |
+| `FullMockPipelineIT` (existing) | Boots cleanly with qhorus datasource config; no logic changes |
 
-Preference permutations (different subscription combinations) are unit-testable with `Preferences` stubs — no CDI boot needed.
+Preference permutations (different subscription combinations) are unit-testable with `PreferenceProvider` stubs — no CDI boot needed.
 
 ## Deferred Issues
 
-| Issue | Description |
-|-------|-------------|
-| #177 | Strategy and Economics plugins subscribe to `ScoutingIntelConsumer` |
-| #178 | Dynamic preference hot-reload for subscriptions and thresholds |
+| Issue | Repo | Description |
+|-------|------|-------------|
+| #177 | quarkmind | Strategy and Economics plugins subscribe to `ScoutingIntelConsumer` |
+| #178 | quarkmind | Dynamic preference hot-reload for subscriptions and thresholds |
+| #179 | quarkmind | Deprecate and remove `NEAREST_THREAT` CaseFile key once no readers remain |
+| qhorus#254 | casehub-qhorus | `ChannelService.create()` should call `channelGateway.initChannel()` |
 
 ## PLATFORM.md Updates Required at Close
 
@@ -307,3 +366,18 @@ Add to cross-repo dependency map:
 casehub-qhorus-api   quarkmind   src/main/   MessageService, ChannelService, MessageObserver SPIs
 casehub-qhorus       quarkmind   src/main/   runtime — named qhorus datasource
 ```
+
+## Review Findings Applied (2026-06-07)
+
+| # | Severity | Change |
+|---|----------|--------|
+| 1 | Critical | `MessageType.EVENT` → `MessageType.STATUS` — EVENT forces null content in `MessageObserverDispatcher` (GE-20260607-d051f2) |
+| 2 | Critical | `notify(Message)` → `onMessage(MessageReceivedEvent)` — correct `MessageObserver` method signature |
+| 3 | Critical | `ChannelService.create()` signature corrected — `ChannelType.OBSERVE` does not exist; use `ChannelSemantic.APPEND` with full 9-arg signature |
+| 4 | Significant | Removed "same-tick synchronous delivery" claim — observers fire post-commit; delivery is next tick |
+| 5 | Significant | Replaced manual `channelId` UUID check with `channels()` override — `MessageObserverDispatcher` applies name-based filter; broker not injected into tactics |
+| 6 | Significant | Jackson sealed interface deserialization — manual `readTree()` / `treeToValue()` type-switch; direct `readValue(ScoutingIntelPayload.class)` cannot work |
+| 7 | Medium | `NEAREST_THREAT` documented as observability key with #179 tracking eventual deprecation |
+| 8 | Medium | Broker injection removed from `DroolsTacticsTask` — `channels()` uses static constant |
+| 9 | Medium | Removed redundant null check — `intelCache` initialised to `TacticsIntelCache.empty()`, never null |
+| 10 | Architectural | `MessageObserver` vs `ChannelBackend` rationale made explicit — platform gap in qhorus#254 |
