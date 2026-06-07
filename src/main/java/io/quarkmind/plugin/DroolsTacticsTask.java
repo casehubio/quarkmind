@@ -45,7 +45,6 @@ import io.quarkmind.agent.PluginDecisionEvent;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import jakarta.enterprise.event.Event;
 import java.util.*;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -158,7 +157,7 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, Me
                 default -> throw new IllegalArgumentException("Unknown ScoutingIntelType: " + type);
             };
             intelCache.updateAndGet(prev -> merge(prev, payload));
-        } catch (JsonProcessingException | IllegalArgumentException e) {
+        } catch (JsonProcessingException | IllegalArgumentException | NullPointerException e) {
             log.warnf("Failed to deserialise scouting intel: %s", e.getMessage());
         }
     }
