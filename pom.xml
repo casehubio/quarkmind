@@ -101,6 +101,21 @@
             <artifactId>casehub-ledger-memory</artifactId>
             <version>0.2-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-platform-api</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-qhorus-api</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-qhorus</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
 
         <!-- SC2 Replay parsing — extracted from Scelight (Apache 2.0) -->
         <!-- Source: /Users/mdproctor/dev/scelight, branch: feature/standalone-modules -->
