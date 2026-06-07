@@ -3,8 +3,6 @@ package io.quarkmind.plugin;
 import io.casehub.annotation.CaseType;
 import io.casehub.qhorus.api.gateway.MessageObserver;
 import io.casehub.qhorus.api.gateway.MessageReceivedEvent;
-import io.quarkmind.agent.ScoutingIntelBroker;
-import io.quarkmind.agent.plugin.TacticsTask;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -28,16 +26,15 @@ import java.util.Set;
 public class TacticsMessageBridge implements MessageObserver {
 
     @Inject @CaseType("starcraft-game")
-    TacticsTask tacticsTask;
+    DroolsTacticsTask tacticsTask;
 
     @Override
     public Set<String> channels() {
-        return Set.of(ScoutingIntelBroker.CHANNEL_NAME);
+        return tacticsTask.channels();
     }
 
     @Override
     public void onMessage(MessageReceivedEvent event) {
-        // DroolsTacticsTask implements MessageObserver; delegate directly.
-        ((MessageObserver) tacticsTask).onMessage(event);
+        tacticsTask.onMessage(event);
     }
 }
