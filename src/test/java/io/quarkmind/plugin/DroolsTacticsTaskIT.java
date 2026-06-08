@@ -7,6 +7,8 @@ import io.casehub.persistence.memory.InMemoryCaseFileRepository;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agent.ScoutingIntelBroker;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.TacticsTask;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
@@ -32,9 +34,13 @@ class DroolsTacticsTaskIT {
 
     @Inject @CaseType("starcraft-game") TacticsTask tacticsTask;
     @Inject IntentQueue intentQueue;
+    @Inject ScoutingIntelBroker broker;
 
     @BeforeEach @AfterEach
-    void drainQueue() { intentQueue.drainAll(); }
+    void drainQueue() {
+        intentQueue.drainAll();
+        broker.clearLatest();
+    }
 
     @Test
     void attackAllUnitsInRangeEmitsAttackIntents() {
@@ -227,13 +233,11 @@ class DroolsTacticsTaskIT {
         cf.put(QuarkMindCaseFile.ENEMY_UNITS,   enemies);
         cf.put(QuarkMindCaseFile.MY_BUILDINGS,  List.of());
         cf.put(QuarkMindCaseFile.READY,         Boolean.TRUE);
-        // Layer 3: populate intelCache directly (replaces CaseFile NEAREST_THREAT coupling)
+        // Stack 1: populate broker directly (replaces intelCache in the redesigned architecture)
         if (nearestThreat != null) {
-            ((DroolsTacticsTask) tacticsTask).intelCache.set(
-                new TacticsIntelCache(nearestThreat, null, null));
-        } else {
-            ((DroolsTacticsTask) tacticsTask).intelCache.set(TacticsIntelCache.empty());
+            broker.update(new ScoutingIntelPayload.ThreatPosition(nearestThreat));
         }
+        // null case: broker.clearLatest() is called by @BeforeEach drainQueue()
         return cf;
     }
 

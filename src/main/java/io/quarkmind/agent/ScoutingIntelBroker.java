@@ -86,8 +86,8 @@ public class ScoutingIntelBroker {
     /** Clears all stored intel on game restart. */
     void onGameStarted(@Observes GameStarted event) { latest.clear(); }
 
-    /** Package-private reset for @QuarkusTest isolation — same pattern as computeActiveTypes(). */
-    void clearLatest() { latest.clear(); }
+    /** Test isolation — clears all stored intel. Called from @BeforeEach in @QuarkusTest classes. */
+    public void clearLatest() { latest.clear(); }
 
     // Extracted as package-private static to test subscription union logic without CDI Instance<>
     static Set<ScoutingIntelType> computeActiveTypes(Iterable<ScoutingIntelConsumer> consumers) {

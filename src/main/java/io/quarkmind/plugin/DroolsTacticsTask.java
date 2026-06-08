@@ -1,15 +1,10 @@
 package io.quarkmind.plugin;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.annotation.CaseType;
 import io.casehub.core.CaseFile;
 import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
 import io.casehub.platform.api.preferences.SettingsScope;
-import io.casehub.qhorus.api.gateway.MessageObserver;
-import io.casehub.qhorus.api.gateway.MessageReceivedEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import io.quarkmind.agent.QuarkMindCaseFile;
@@ -32,7 +27,6 @@ import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
 import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.literal.NamedLiteral;
 import org.drools.ruleunits.api.RuleUnit;
@@ -43,12 +37,10 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.PluginDecisionEvent;
-import io.quarkmind.sc2.GameStarted;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import jakarta.enterprise.event.Event;
 import java.util.*;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -67,7 +59,7 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 @CaseType("starcraft-game")
-public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, MessageObserver {
+public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer {
 
     static final Point2d MAP_CENTER   = new Point2d(64, 64);
 
@@ -93,23 +85,15 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, Me
 
     private final RuleUnit<TacticsRuleUnit> ruleUnit;
     private final IntentQueue intentQueue;
+    private final ScoutingIntelBroker broker;
     private final GoapPlanner planner = new GoapPlanner();
 
     @Inject Event<PluginDecisionEvent> decisionEvents;
-    @Inject ObjectMapper objectMapper;
     @Inject PreferenceProvider preferenceProvider;
     @Inject GameSession gameSession;
 
-    final AtomicReference<TacticsIntelCache> intelCache =
-        new AtomicReference<>(TacticsIntelCache.empty());
-
-    /** Test accessor — package-private; returns current cache via the CDI proxy. */
-    TacticsIntelCache currentIntelCache() { return intelCache.get(); }
-
-    /** Clears the intel cache when a new game starts — ensures no cross-game state bleed. */
-    void onGameStarted(@Observes GameStarted event) { intelCache.set(TacticsIntelCache.empty()); }
-
-    Set<ScoutingIntelType> subscribedTypes;
+    // Safe default before @PostConstruct fires
+    Set<ScoutingIntelType> subscribedTypes = Set.of();
     private volatile String prevThreatState = null;
 
     @Inject
@@ -131,10 +115,11 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, Me
     void init() {
         kiteStrategy      = kiteStrategies.select(NamedLiteral.of(kiteStrategyName)).get();
         focusFireStrategy = focusFireStrategies.select(NamedLiteral.of(focusFireStrategyName)).get();
-        initSubscriptions(preferenceProvider.resolve(SettingsScope.root()));
+        refreshSubscriptions(preferenceProvider.resolve(SettingsScope.root()));
     }
 
-    void initSubscriptions(Preferences prefs) {
+    @Override
+    public void refreshSubscriptions(Preferences prefs) {
         subscribedTypes = Arrays.stream(ScoutingIntelType.values())
             .filter(t -> prefs.getOrDefault(ScoutingIntelPreferences.consumerKey(getId(), t)).asBoolean())
             .collect(Collectors.toUnmodifiableSet());
@@ -143,58 +128,12 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, Me
     @Override
     public Set<ScoutingIntelType> subscribedIntelTypes() { return subscribedTypes; }
 
-    @Override
-    public Set<String> channels() { return Set.of(ScoutingIntelBroker.CHANNEL_NAME); }
-
-    @Override
-    public void onMessage(MessageReceivedEvent event) {
-        try {
-            JsonNode node = objectMapper.readTree(event.content());
-            JsonNode typeNode = node == null ? null : node.get("type");
-            JsonNode dataNode = node == null ? null : node.get("data");
-            if (typeNode == null || dataNode == null) {
-                log.warnf("Malformed scouting intel message — missing 'type' or 'data': %s", event.content());
-                return;
-            }
-            String type = typeNode.asText();
-            ScoutingIntelPayload payload = switch (type) {
-                case "ThreatPosition" ->
-                    objectMapper.treeToValue(dataNode, ScoutingIntelPayload.ThreatPosition.class);
-                case "PostureUpdate" ->
-                    objectMapper.treeToValue(dataNode, ScoutingIntelPayload.PostureUpdate.class);
-                case "TimingAlert" ->
-                    objectMapper.treeToValue(dataNode, ScoutingIntelPayload.TimingAlert.class);
-                case "ArmySize" ->
-                    objectMapper.treeToValue(dataNode, ScoutingIntelPayload.ArmySize.class);
-                case "BuildOrder" ->
-                    objectMapper.treeToValue(dataNode, ScoutingIntelPayload.BuildOrder.class);
-                default -> throw new IllegalArgumentException("Unknown ScoutingIntelType: " + type);
-            };
-            intelCache.updateAndGet(prev -> merge(prev, payload));
-        } catch (JsonProcessingException | IllegalArgumentException e) {
-            log.warnf("Failed to deserialise scouting intel: %s", e.getMessage());
-        }
-    }
-
-    static TacticsIntelCache merge(TacticsIntelCache prev, ScoutingIntelPayload payload) {
-        return switch (payload) {
-            case ScoutingIntelPayload.ThreatPosition p ->
-                new TacticsIntelCache(p.position(), prev.posture(), prev.timingAlert());
-            case ScoutingIntelPayload.PostureUpdate p ->
-                new TacticsIntelCache(prev.threatPosition(), p.posture(), prev.timingAlert());
-            case ScoutingIntelPayload.TimingAlert p ->
-                new TacticsIntelCache(prev.threatPosition(), prev.posture(), p.incoming());
-            // ArmySize and BuildOrder are not cached in TacticsIntelCache — tactics doesn't use them.
-            // Future consumers (e.g. StrategyTask via #177) would extend this via their own caches.
-            case ScoutingIntelPayload.ArmySize p -> prev;
-            case ScoutingIntelPayload.BuildOrder p -> prev;
-        };
-    }
-
     @Inject
-    public DroolsTacticsTask(RuleUnit<TacticsRuleUnit> ruleUnit, IntentQueue intentQueue) {
+    public DroolsTacticsTask(RuleUnit<TacticsRuleUnit> ruleUnit, IntentQueue intentQueue,
+                             ScoutingIntelBroker broker) {
         this.ruleUnit    = ruleUnit;
         this.intentQueue = intentQueue;
+        this.broker      = broker;
     }
 
     @Override public String getId()   { return "tactics.drools-goap"; }
@@ -208,12 +147,12 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, Me
      * Overrides the {@code TaskDefinition} default, which unconditionally returns {@code true}
      * in the installed casehub-core snapshot — ignoring {@link #entryCriteria()}.
      * Override required until the foundation corrects the default.
-     * Also gates on intel cache having a threat position (Layer 3 qhorus channel).
+     * Also gates on the broker having a threat position (Stack 1 in-memory delivery).
      */
     @Override
     public boolean canActivate(CaseFile caseFile) {
         return entryCriteria().stream().allMatch(caseFile::contains)
-            && intelCache.get().threatPosition() != null;
+            && broker.current(ScoutingIntelType.THREAT_POSITION).isPresent();
     }
 
     @Override
@@ -223,8 +162,11 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, Me
         List<Unit> army    = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ARMY,         List.class).orElse(List.of());
         List<Unit> enemies = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ENEMY_UNITS,  List.class).orElse(List.of());
         List<Building> bld = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
-        // Reads from qhorus intel cache (Layer 3) — no CaseFile key coupling
-        Point2d threat = intelCache.get().threatPosition();
+        // Reads from in-memory broker (Stack 1 — synchronous, zero-lag delivery)
+        Point2d threat = broker.current(ScoutingIntelType.THREAT_POSITION,
+                ScoutingIntelPayload.ThreatPosition.class)
+            .map(ScoutingIntelPayload.ThreatPosition::position)
+            .orElse(null);
 
         String threatState = enemies.isEmpty() ? "none" : "present";
         if (!Objects.equals(threatState, prevThreatState)) {
@@ -247,7 +189,7 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer, Me
 
         if (enemies.isEmpty()) return;
 
-        // canActivate gates on intelCache.threatPosition() != null.
+        // canActivate gates on broker.current(THREAT_POSITION).isPresent().
         // Defensive guard for test paths that bypass canActivate.
         if (threat == null) return;
 
