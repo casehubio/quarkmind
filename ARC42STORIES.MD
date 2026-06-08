@@ -680,7 +680,7 @@ Replicate the casehub-engine blackboard harness in a different domain:
 **Participates in chapters:** C2
 **Completed:** ✅ complete (#155)
 
-Typed inter-plugin messaging via qhorus STATUS messages; `ScoutingIntelBroker` channel setup; `DroolsTacticsTask` implements `MessageObserver` with `TacticsIntelCache`; `DroolsScoutingTask` broker-gated CEP with preference-backed thresholds; `TacticsMessageBridge` CDI bridge for qualifier visibility. Full Chapter entry at C2 close.
+Dual-stack intel delivery: `ScoutingIntelBroker` serves as both typed in-memory store (Stack 1 — synchronous, for plugin consumers) and Qhorus channel coordinator (Stack 2 — async, for LLM advisory consumers). `DroolsTacticsTask` no longer implements `MessageObserver` — reads threat position from broker via constructor-injected `ScoutingIntelBroker`. `TacticsIntelCache` removed. New consumers: `DroolsStrategyTask` and `FlowEconomicsTask` implement `ScoutingIntelConsumer` and read from broker. `ScoutingIntelBroker.refreshAll()` hot-reloads subscription union (#178). Qhorus channel (`quarkmind-scouting-intel`) is the advisory surface for LLM advisors (#180) and Commentator/Coach (#181). `TacticsMessageBridge` deleted. Full Chapter entry at C2 close.
 
 ---
 
@@ -702,16 +702,19 @@ Typed inter-plugin messaging via qhorus STATUS messages; `ScoutingIntelBroker` c
 
 Two distinct uses of `entryCriteria()` emerged:
 
-**Ordering dependency** — `ENEMY_ARMY_SIZE` on `StrategyTask`: scouting always writes this key (even as 0), so strategy always runs after scouting. The criterion enforces execution order without causing genuine skipping. #169 migrated strategy's Drools data feed to scouting-derived intel (`ENEMY_POSTURE`, `ENEMY_BUILD_ORDER`), making this a genuine data dependency rather than a sequencing constraint.
+**Ordering dependency** — `ENEMY_ARMY_SIZE` on `StrategyTask`: scouting always writes this key (even as 0), so strategy always runs after scouting. The criterion enforces execution order without causing genuine skipping.
 
-**Conditional gate** — `NEAREST_THREAT` on `TacticsTask`: scouting writes this key only when `!enemies.isEmpty()`. When no enemies are visible, the key is absent and tactics is skipped entirely. This is the genuinely adaptive behaviour: the platform decides whether tactics has any work to do without the plugin being invoked.
+**Note on code/ARC alignment:** After #169, the code diverged from this documented graph by adding `ENEMY_POSTURE` and `TIMING_ATTACK_INCOMING` to `DroolsStrategyTask.entryCriteria()`. The dual-stack redesign (#177) restored alignment: strategy's `entryCriteria()` is `{READY, ENEMY_ARMY_SIZE}` and posture/timing are now read from the `ScoutingIntelBroker`. The code again matches this documented dependency graph.
 
-**Dependency graph:**
+**Conditional gate** — `broker.current(THREAT_POSITION).isPresent()` on `TacticsTask`: `DroolsScoutingTask` calls `broker.update(ThreatPosition)` only when enemies are visible. When no enemies are visible, the broker is empty and `DroolsTacticsTask.canActivate()` returns false. This replaced the former `NEAREST_THREAT` CaseFile key gate (#177, #179). `NEAREST_THREAT` constant and CaseFile write removed; intel flows via `ScoutingIntelBroker` only.
+
+**Dependency graph (updated #177, #179):**
 ```
-Scouting   {READY}                             → writes ENEMY_ARMY_SIZE, NEAREST_THREAT (conditional), ...
-Economics  {READY}                             → independent
-Strategy   {READY, ENEMY_ARMY_SIZE}   [order]  → writes STRATEGY
-Tactics    {READY, STRATEGY, NEAREST_THREAT}   → [order on STRATEGY, gate on NEAREST_THREAT]
+Scouting   {READY}                           → writes ENEMY_ARMY_SIZE; publishes to broker
+Economics  {READY}                           → reads broker for ARMY_SIZE
+Strategy   {READY, ENEMY_ARMY_SIZE} [order]  → writes STRATEGY; reads broker for POSTURE/TIMING
+Tactics    {READY, STRATEGY}        [order]  → canActivate() also gates on
+                                               broker.current(THREAT_POSITION).isPresent()
 ```
 
 **Implementation finding:** `TaskDefinition.canActivate()` in the installed casehub-core snapshot unconditionally returns `true` — it does not evaluate `entryCriteria()`. All four plugin classes now explicitly override `canActivate()` with `entryCriteria().stream().allMatch(caseFile::contains)`. Overrides are documented with a comment referencing the defect; they can be removed once the foundation corrects the default.
