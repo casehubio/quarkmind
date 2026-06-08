@@ -75,11 +75,16 @@ public class DroolsScoutingTask implements ScoutingTask {
     @Inject Event<PluginDecisionEvent> decisionEvents;
     @Inject GameSession gameSession;
 
-    // --- qhorus Layer 3 fields ---
+    // --- dual-stack delivery fields ---
     @Inject ScoutingIntelBroker broker;
     @Inject MessageService messageService;
     @Inject ObjectMapper objectMapper;
     @Inject PreferenceProvider preferenceProvider;
+
+    @Inject
+    @org.eclipse.microprofile.config.inject.ConfigProperty(
+        name = "quarkmind.scouting.advisory.enabled", defaultValue = "true")
+    boolean advisoryEnabled;
 
     // Per-type previous values for change detection
     volatile Point2d prevThreatPos   = null;
@@ -187,10 +192,11 @@ public class DroolsScoutingTask implements ScoutingTask {
             }
         }
 
-        // --- CEP: gate on broker subscriptions to avoid Drools overhead when not needed ---
+        // --- CEP gate: run Drools when any plugin subscribes or advisory channel is active ---
         boolean needsCep = broker.isSubscribed(ScoutingIntelType.BUILD_ORDER)
                         || broker.isSubscribed(ScoutingIntelType.TIMING_ALERT)
-                        || broker.isSubscribed(ScoutingIntelType.POSTURE);
+                        || broker.isSubscribed(ScoutingIntelType.POSTURE)
+                        || advisoryEnabled;
         ScoutingRuleUnit data = null;
         if (needsCep) {
             sessionManager.processFrame(enemies, gameTimeMs, ourNexus, estimatedBase);
@@ -214,36 +220,39 @@ public class DroolsScoutingTask implements ScoutingTask {
         log.debugf("[SCOUTING] enemies=%d | build=%s | timing=%b | posture=%s",
             currentArmySize, build, timing, posture);
 
-        // --- Layer 3: dispatch changed intel to qhorus subscribers ---
-        if (nearest != null && broker.isSubscribed(ScoutingIntelType.THREAT_POSITION)
+        // --- Dual-stack intel delivery ---
+        // Stack 1: broker.update() (in-process, for plugins)
+        // Stack 2: dispatchToAdvisory() (Qhorus, for LLM advisors — always when gate fires)
+        if (nearest != null
+                && (broker.isSubscribed(ScoutingIntelType.THREAT_POSITION) || advisoryEnabled)
                 && shouldDispatchThreatPosition(prevThreatPos, nearest, minThreatDistance)) {
             prevThreatPos = nearest;
-            dispatch(new ScoutingIntelPayload.ThreatPosition(nearest));
+            publishIntel(new ScoutingIntelPayload.ThreatPosition(nearest));
         }
 
-        if (broker.isSubscribed(ScoutingIntelType.ARMY_SIZE)
+        if ((broker.isSubscribed(ScoutingIntelType.ARMY_SIZE) || advisoryEnabled)
                 && shouldDispatchArmySize(prevArmySize, currentArmySize, minArmySizeDelta)) {
             prevArmySize = currentArmySize;
-            dispatch(new ScoutingIntelPayload.ArmySize(currentArmySize));
+            publishIntel(new ScoutingIntelPayload.ArmySize(currentArmySize));
         }
 
         if (data != null) {
             if (postureDispatchEnabled && broker.isSubscribed(ScoutingIntelType.POSTURE)
                     && !posture.equals(prevPosture)) {
                 prevPosture = posture;
-                dispatch(new ScoutingIntelPayload.PostureUpdate(posture));
+                publishIntel(new ScoutingIntelPayload.PostureUpdate(posture));
             }
 
             if (timingAlertDispatchEnabled && broker.isSubscribed(ScoutingIntelType.TIMING_ALERT)
                     && !Boolean.valueOf(timing).equals(prevTimingAlert)) {
                 prevTimingAlert = timing;
-                dispatch(new ScoutingIntelPayload.TimingAlert(timing));
+                publishIntel(new ScoutingIntelPayload.TimingAlert(timing));
             }
 
             if (buildOrderDispatchEnabled && broker.isSubscribed(ScoutingIntelType.BUILD_ORDER)
                     && !build.equals(prevBuildOrder)) {
                 prevBuildOrder = build;
-                dispatch(new ScoutingIntelPayload.BuildOrder(build));
+                publishIntel(new ScoutingIntelPayload.BuildOrder(build));
             }
         }
 
@@ -281,7 +290,14 @@ public class DroolsScoutingTask implements ScoutingTask {
         return new Point2d(targetX, targetY);
     }
 
-    private void dispatch(ScoutingIntelPayload payload) {
+    private void publishIntel(ScoutingIntelPayload payload) {
+        if (broker.isSubscribed(payload.type())) {
+            broker.update(payload);             // Stack 1: in-memory, for plugin consumers
+        }
+        dispatchToAdvisory(payload);            // Stack 2: Qhorus, for LLM advisors (always)
+    }
+
+    private void dispatchToAdvisory(ScoutingIntelPayload payload) {
         try {
             String content = objectMapper.writeValueAsString(
                 java.util.Map.of("type", payload.getClass().getSimpleName(), "data", payload));

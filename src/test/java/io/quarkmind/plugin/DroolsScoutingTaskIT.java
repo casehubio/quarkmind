@@ -4,9 +4,13 @@ import io.casehub.annotation.CaseType;
 import io.casehub.coordination.PropagationContext;
 import io.casehub.core.CaseFile;
 import io.casehub.persistence.memory.InMemoryCaseFileRepository;
+import io.casehub.qhorus.runtime.store.MessageStore;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agent.ScoutingIntelBroker;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.ScoutingTask;
 import io.quarkmind.domain.*;
 import io.quarkmind.plugin.scouting.DroolsScoutingTask;
@@ -31,11 +35,14 @@ class DroolsScoutingTaskIT {
     @Inject @CaseType("starcraft-game") ScoutingTask scoutingTask;
     @Inject IntentQueue intentQueue;
     @Inject ScoutingSessionManager sessionManager;
+    @Inject ScoutingIntelBroker broker;
+    @Inject MessageStore messageStore;
 
     @BeforeEach @AfterEach
     void reset() {
         intentQueue.drainAll();
-        sessionManager.reset(); // clear persistent buffers between tests
+        sessionManager.reset();
+        broker.clearLatest();
     }
 
     // ---- Passive intel ----
@@ -118,6 +125,43 @@ class DroolsScoutingTaskIT {
         assertThat(intentQueue.pending()).hasSize(1);
         MoveIntent move = (MoveIntent) intentQueue.pending().get(0);
         assertThat(move.targetLocation()).isEqualTo(new Point2d(224, 224));
+    }
+
+    // ---- Stack 1: broker population ----
+
+    @Test
+    void execute_populatesBrokerThreatPosition_whenEnemiesPresent() {
+        var cf = caseFile(List.of(enemy(10, 10)), List.of(), 100L);
+        scoutingTask.execute(cf);
+        assertThat(broker.current(ScoutingIntelType.THREAT_POSITION,
+                ScoutingIntelPayload.ThreatPosition.class))
+            .isPresent();
+    }
+
+    @Test
+    void execute_brokerThreatPositionEmpty_whenNoEnemies() {
+        var cf = caseFile(List.of(), List.of(), 100L);
+        scoutingTask.execute(cf);
+        assertThat(broker.current(ScoutingIntelType.THREAT_POSITION)).isEmpty();
+    }
+
+    // ---- Stack 2: Qhorus advisory channel ----
+
+    @Test
+    void execute_publishesBothBrokerAndAdvisoryChannel_whenThreatsPresent() {
+        // Verify Stack 1 (broker) AND Stack 2 (Qhorus advisory) both receive the intel
+        int messagesBefore = messageStore.countByChannel(broker.channelId());
+        var cf = caseFile(List.of(enemy(10, 10)), List.of(), 100L);
+        scoutingTask.execute(cf);
+
+        // Stack 1: broker has the threat position
+        assertThat(broker.current(ScoutingIntelType.THREAT_POSITION,
+                ScoutingIntelPayload.ThreatPosition.class))
+            .isPresent();
+
+        // Stack 2: Qhorus advisory channel received at least one STATUS message
+        assertThat(messageStore.countByChannel(broker.channelId()))
+            .isGreaterThan(messagesBefore);
     }
 
     // ---- Helpers ----
