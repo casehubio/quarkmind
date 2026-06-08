@@ -55,4 +55,22 @@ class QaEndpointsTest {
             .then()
             .statusCode(400);
     }
+
+    // ---- Hot-reload endpoints (#178) ----
+
+    @Test
+    void postScoutingSubscriptionsReloadReturns204() {
+        given()
+            .when().post("/qa/scouting/subscriptions/reload")
+            .then()
+            .statusCode(204);
+    }
+
+    @Test
+    void postScoutingThresholdsReloadReturns204() {
+        given()
+            .when().post("/qa/scouting/thresholds/reload")
+            .then()
+            .statusCode(204);
+    }
 }

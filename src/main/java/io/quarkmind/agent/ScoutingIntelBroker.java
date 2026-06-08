@@ -1,5 +1,8 @@
 package io.quarkmind.agent;
 
+import io.casehub.platform.api.preferences.PreferenceProvider;
+import io.casehub.platform.api.preferences.Preferences;
+import io.casehub.platform.api.preferences.SettingsScope;
 import io.casehub.qhorus.api.channel.ChannelSemantic;
 import io.casehub.qhorus.runtime.channel.ChannelService;
 import io.quarkmind.agent.plugin.ScoutingIntelConsumer;
@@ -30,6 +33,7 @@ public class ScoutingIntelBroker {
     // Without @Any, CDI Instance<> only discovers @Default beans and misses qualified ones.
     @Inject @Any Instance<ScoutingIntelConsumer> consumers;
     @Inject ChannelService channelService;
+    @Inject PreferenceProvider preferenceProvider;
 
     // Typed in-memory store — synchronous game-loop writes; ConcurrentHashMap for QA endpoint reads
     private final Map<ScoutingIntelType, ScoutingIntelPayload> latest = new ConcurrentHashMap<>();
@@ -88,6 +92,13 @@ public class ScoutingIntelBroker {
 
     /** Test isolation — clears all stored intel. Called from @BeforeEach in @QuarkusTest classes. */
     public void clearLatest() { latest.clear(); }
+
+    /** Hot-reload subscription union (#178) — called from QA endpoint on HTTP thread. */
+    public void refreshAll() {
+        Preferences prefs = preferenceProvider.resolve(SettingsScope.root());
+        consumers.forEach(c -> c.refreshSubscriptions(prefs));
+        activeTypes = computeActiveTypes(consumers);
+    }
 
     // Extracted as package-private static to test subscription union logic without CDI Instance<>
     static Set<ScoutingIntelType> computeActiveTypes(Iterable<ScoutingIntelConsumer> consumers) {

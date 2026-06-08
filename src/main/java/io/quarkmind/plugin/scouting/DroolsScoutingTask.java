@@ -121,6 +121,11 @@ public class DroolsScoutingTask implements ScoutingTask {
         initThresholds(preferenceProvider.resolve(SettingsScope.root()));
     }
 
+    /** Hot-reload of dispatch thresholds (#178) — called from POST /qa/scouting/thresholds/reload. */
+    public void refreshThresholds() {
+        initThresholds(preferenceProvider.resolve(SettingsScope.root()));
+    }
+
     void initThresholds(io.casehub.platform.api.preferences.Preferences prefs) {
         minThreatDistance          = prefs.getOrDefault(ScoutingIntelPreferences.THREAT_POSITION_MIN_DISTANCE).asDouble();
         minArmySizeDelta           = prefs.getOrDefault(ScoutingIntelPreferences.ARMY_SIZE_MIN_DELTA).asInt();
