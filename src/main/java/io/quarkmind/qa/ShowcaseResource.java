@@ -1,6 +1,6 @@
 package io.quarkmind.qa;
 
-import io.quarkus.arc.profile.UnlessBuildProfile;
+import io.quarkus.arc.profile.IfBuildProfile;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -21,7 +21,7 @@ import java.util.Map;
  * Two more at (6,22),(14,22) cover the building row (z=22).
  * Dev/test only.
  */
-@UnlessBuildProfile("prod")
+@IfBuildProfile(anyOf = {"mock", "emulated", "replay"})
 @Path("/sc2/showcase")
 @Produces(MediaType.APPLICATION_JSON)
 public class ShowcaseResource {
