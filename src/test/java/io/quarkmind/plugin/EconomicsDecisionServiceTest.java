@@ -202,7 +202,7 @@ class EconomicsDecisionServiceTest {
                                List<Resource> geysers) {
         return new GameStateTick(minerals, 0, supplyUsed, supplyCap,
             workers, buildings, geysers,
-            new ResourceBudget(minerals, 0), "MACRO", false);
+            new ResourceBudget(minerals, 0), "MACRO", false, 0);
     }
 
     /** tick with gasReady=true (gateway exists) */
@@ -211,7 +211,7 @@ class EconomicsDecisionServiceTest {
                                       List<Resource> geysers) {
         return new GameStateTick(minerals, 0, supplyUsed, supplyCap,
             workers, buildings, geysers,
-            new ResourceBudget(minerals, 0), "MACRO", true);
+            new ResourceBudget(minerals, 0), "MACRO", true, 0);
     }
 
     private List<Unit> workers(int count) {

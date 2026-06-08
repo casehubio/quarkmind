@@ -27,5 +27,6 @@ public record GameStateTick(
         List<Resource> geysers,
         ResourceBudget budget,
         String strategy,
-        boolean gasReady
+        boolean gasReady,
+        int enemyArmySize
 ) {}

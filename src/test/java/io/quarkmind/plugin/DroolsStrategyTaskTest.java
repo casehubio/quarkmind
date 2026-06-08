@@ -6,8 +6,11 @@ import io.casehub.core.CaseFile;
 import io.casehub.persistence.memory.InMemoryCaseFileRepository;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import io.quarkmind.agent.ResourceBudget;
 import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agent.ResourceBudget;
+import io.quarkmind.agent.ScoutingIntelBroker;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
@@ -36,11 +39,13 @@ class DroolsStrategyTaskTest {
 
     @Inject @CaseType("starcraft-game") StrategyTask strategyTask;
     @Inject IntentQueue intentQueue;
+    @Inject ScoutingIntelBroker broker;
 
     @BeforeEach
     @AfterEach
     void drainQueue() {
         intentQueue.drainAll();
+        broker.clearLatest();
     }
 
     // --- Gateway ---
@@ -147,6 +152,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void strategyIsDefendWhenAllInPosture() {
+        broker.update(new ScoutingIntelPayload.PostureUpdate("ALL_IN"));
         var cf = caseFile(50, 0, workers(12), List.of(nexus()), "ALL_IN", false);
         strategyTask.execute(cf);
         assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("DEFEND");
@@ -154,6 +160,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void strategyIsDefendWhenTimingAttackIncoming() {
+        broker.update(new ScoutingIntelPayload.TimingAlert(true));
         var cf = caseFile(50, 0, workers(12), List.of(nexus()), "UNKNOWN", true);
         strategyTask.execute(cf);
         assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("DEFEND");
@@ -161,6 +168,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void strategyIsDefendWhenTimingAttackIncomingWithStalkers() {
+        broker.update(new ScoutingIntelPayload.TimingAlert(true));
         var cf = caseFile(50, 0, workers(12), List.of(nexus()), "UNKNOWN", true);
         cf.put(QuarkMindCaseFile.ARMY, stalkers(4));
         strategyTask.execute(cf);
@@ -169,6 +177,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void strategyIsDefendNotAttackWhenAllInPostureWithStalkers() {
+        broker.update(new ScoutingIntelPayload.PostureUpdate("ALL_IN"));
         var cf = caseFile(50, 0, workers(12), List.of(nexus()), "ALL_IN", false);
         cf.put(QuarkMindCaseFile.ARMY, stalkers(4));
         strategyTask.execute(cf);
@@ -177,6 +186,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void strategyIsAttackWhenMacroPostureAndEnoughStalkers() {
+        broker.update(new ScoutingIntelPayload.PostureUpdate("MACRO"));
         var cf = caseFile(50, 0, workers(12), List.of(nexus()), "MACRO", false);
         cf.put(QuarkMindCaseFile.ARMY, stalkers(4));
         strategyTask.execute(cf);
@@ -185,6 +195,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void strategyIsAttackWhenUnknownPostureAndEnoughStalkers() {
+        // UNKNOWN is the default when broker is empty — no broker.update() needed
         var cf = caseFile(50, 0, workers(12), List.of(nexus()), "UNKNOWN", false);
         cf.put(QuarkMindCaseFile.ARMY, stalkers(4));
         strategyTask.execute(cf);
@@ -193,6 +204,7 @@ class DroolsStrategyTaskTest {
 
     @Test
     void strategyIsMacroWhenNoIntelAndNoArmy() {
+        // Empty broker → posture defaults to "UNKNOWN", timing to false
         var cf = caseFile(50, 0, workers(12), List.of(nexus()), "UNKNOWN", false);
         strategyTask.execute(cf);
         assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("MACRO");
@@ -200,50 +212,52 @@ class DroolsStrategyTaskTest {
 
     @Test
     void strategyIsMacroWhenBelowAttackThresholdWithMacroPosture() {
+        broker.update(new ScoutingIntelPayload.PostureUpdate("MACRO"));
         var cf = caseFile(50, 0, workers(12), List.of(nexus()), "MACRO", false);
         cf.put(QuarkMindCaseFile.ARMY, stalkers(3));
         strategyTask.execute(cf);
         assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("MACRO");
     }
 
-    // --- Entry criteria (C2) ---
+    // --- Entry criteria — two-gate model: {READY, ENEMY_ARMY_SIZE} + broker.current(POSTURE) ---
 
     @Test
-    void canActivate_allKeysPresent() {
+    void canActivate_true_whenBothGatesSatisfied() {
+        // Gate 1: CaseFile has {READY, ENEMY_ARMY_SIZE}; Gate 2: broker has POSTURE
+        broker.update(new ScoutingIntelPayload.PostureUpdate("UNKNOWN"));
         var cf = new InMemoryCaseFileRepository()
             .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.READY,                  Boolean.TRUE);
-        cf.put(QuarkMindCaseFile.ENEMY_POSTURE,          "UNKNOWN");
-        cf.put(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, Boolean.FALSE);
+        cf.put(QuarkMindCaseFile.READY,           Boolean.TRUE);
+        cf.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0);
         assertThat(strategyTask.canActivate(cf)).isTrue();
     }
 
     @Test
-    void canActivate_readyAbsent() {
+    void canActivate_false_whenReadyAbsent() {
+        broker.update(new ScoutingIntelPayload.PostureUpdate("UNKNOWN"));
         var cf = new InMemoryCaseFileRepository()
             .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.ENEMY_POSTURE,          "UNKNOWN");
-        cf.put(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, Boolean.FALSE);
+        cf.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0);  // READY is missing
         assertThat(strategyTask.canActivate(cf)).isFalse();
     }
 
     @Test
-    void canActivate_enemyPostureAbsent() {
+    void canActivate_false_whenEnemyArmySizeAbsent() {
+        // ENEMY_ARMY_SIZE is the ordering dependency — strategy can't run until scouting has
+        broker.update(new ScoutingIntelPayload.PostureUpdate("UNKNOWN"));
         var cf = new InMemoryCaseFileRepository()
             .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.READY,                  Boolean.TRUE);
-        cf.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE,        0);
-        cf.put(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, Boolean.FALSE);
+        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);  // ENEMY_ARMY_SIZE is missing
         assertThat(strategyTask.canActivate(cf)).isFalse();
     }
 
     @Test
-    void canActivate_timingAttackAbsent() {
+    void canActivate_false_whenBrokerHasNoPosture() {
+        // CaseFile gates satisfied but broker is empty — intel gate fails
         var cf = new InMemoryCaseFileRepository()
             .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.READY,         Boolean.TRUE);
+        cf.put(QuarkMindCaseFile.READY,           Boolean.TRUE);
         cf.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0);
-        cf.put(QuarkMindCaseFile.ENEMY_POSTURE, "UNKNOWN");
         assertThat(strategyTask.canActivate(cf)).isFalse();
     }
 

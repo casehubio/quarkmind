@@ -32,6 +32,16 @@ public final class ScoutingIntelPreferences {
             ScoutingIntelPreference::parseBoolean);
     }
 
+    /** Overload for consumers whose default differs from the global defaultEnabled(type). */
+    public static PreferenceKey<ScoutingIntelPreference> consumerKey(String pluginId,
+            ScoutingIntelType type, boolean defaultEnabled) {
+        return new PreferenceKey<>(
+            "scouting.intel.consumer." + pluginId,
+            toKebab(type),
+            ScoutingIntelPreference.ofBoolean(defaultEnabled),
+            ScoutingIntelPreference::parseBoolean);
+    }
+
     static String toKebab(ScoutingIntelType type) {
         return type.name().toLowerCase().replace('_', '-');
     }

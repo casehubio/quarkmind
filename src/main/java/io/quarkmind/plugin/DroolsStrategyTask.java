@@ -2,10 +2,19 @@ package io.quarkmind.plugin;
 
 import io.casehub.annotation.CaseType;
 import io.casehub.core.CaseFile;
+import io.casehub.platform.api.preferences.PreferenceProvider;
+import io.casehub.platform.api.preferences.Preferences;
+import io.casehub.platform.api.preferences.SettingsScope;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import io.quarkmind.agent.ResourceBudget;
 import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agent.ResourceBudget;
+import io.quarkmind.agent.ScoutingIntelBroker;
+import io.quarkmind.agent.plugin.ScoutingIntelConsumer;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
+import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
 import io.quarkmind.domain.*;
 import io.quarkmind.plugin.drools.StrategyRuleUnit;
@@ -21,6 +30,7 @@ import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.PluginDecisionEvent;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import jakarta.enterprise.event.Event;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,7 +52,7 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 @CaseType("starcraft-game")
-public class DroolsStrategyTask implements StrategyTask {
+public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
 
     static final Point2d GATEWAY_POS          = new Point2d(17, 18);
     static final Point2d CYBERNETICS_CORE_POS = new Point2d(20, 18);
@@ -51,23 +61,48 @@ public class DroolsStrategyTask implements StrategyTask {
 
     private final RuleUnit<StrategyRuleUnit> ruleUnit;
     private final IntentQueue intentQueue;
+    private final ScoutingIntelBroker broker;
 
     @Inject Event<PluginDecisionEvent> decisionEvents;
     @Inject GameSession gameSession;
+    @Inject PreferenceProvider preferenceProvider;
     private volatile String prevStrategy = null;
 
+    // Safe default before @PostConstruct fires
+    Set<ScoutingIntelType> subscribedTypes = Set.of();
+
+    @PostConstruct
+    void init() {
+        refreshSubscriptions(preferenceProvider.resolve(SettingsScope.root()));
+    }
+
+    @Override
+    public void refreshSubscriptions(Preferences prefs) {
+        // Strategy subscribes to POSTURE and TIMING_ALERT; BUILD_ORDER deferred until rules use it
+        subscribedTypes = Arrays.stream(new ScoutingIntelType[]{
+                ScoutingIntelType.POSTURE,
+                ScoutingIntelType.TIMING_ALERT})
+            .filter(t -> prefs.getOrDefault(ScoutingIntelPreferences.consumerKey(getId(), t)).asBoolean())
+            .collect(Collectors.toUnmodifiableSet());
+    }
+
+    @Override
+    public Set<ScoutingIntelType> subscribedIntelTypes() { return subscribedTypes; }
+
     @Inject
-    public DroolsStrategyTask(RuleUnit<StrategyRuleUnit> ruleUnit, IntentQueue intentQueue) {
-        this.ruleUnit = ruleUnit;
+    public DroolsStrategyTask(RuleUnit<StrategyRuleUnit> ruleUnit, IntentQueue intentQueue,
+                               ScoutingIntelBroker broker) {
+        this.ruleUnit    = ruleUnit;
         this.intentQueue = intentQueue;
+        this.broker      = broker;
     }
 
     @Override public String getId()   { return "strategy.drools"; }
     @Override public String getName() { return "Drools Strategy"; }
     @Override public Set<String> entryCriteria() {
-        return Set.of(QuarkMindCaseFile.READY,
-                      QuarkMindCaseFile.ENEMY_POSTURE,
-                      QuarkMindCaseFile.TIMING_ATTACK_INCOMING);
+        // ENEMY_ARMY_SIZE: ordering dependency — scouting always writes this (even as 0),
+        // ensuring strategy runs after scouting in the CaseEngine re-evaluation loop (L5 invariant)
+        return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.ENEMY_ARMY_SIZE);
     }
     @Override public Set<String> producedKeys()  { return Set.of(QuarkMindCaseFile.STRATEGY); }
 
@@ -75,18 +110,27 @@ public class DroolsStrategyTask implements StrategyTask {
      * Overrides the {@code TaskDefinition} default, which unconditionally returns {@code true}
      * in the installed casehub-core snapshot — ignoring {@link #entryCriteria()}.
      * Override required until the foundation corrects the default.
+     * Also gates on broker having a posture value (Stack 1 in-memory delivery).
      */
     @Override
     public boolean canActivate(CaseFile caseFile) {
-        return entryCriteria().stream().allMatch(caseFile::contains);
+        return entryCriteria().stream().allMatch(caseFile::contains)
+            && broker.current(ScoutingIntelType.POSTURE).isPresent();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void execute(CaseFile caseFile) {
-        int            armySize  = caseFile.get(QuarkMindCaseFile.ENEMY_ARMY_SIZE,        Integer.class).orElse(0);
-        String         posture   = caseFile.get(QuarkMindCaseFile.ENEMY_POSTURE,          String.class) .orElse("UNKNOWN");
-        boolean        timing    = caseFile.get(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, Boolean.class).orElse(false);
+        int armySize = caseFile.get(QuarkMindCaseFile.ENEMY_ARMY_SIZE, Integer.class).orElse(0);
+        // Read posture and timing from broker (Stack 1) — CaseFile writes are observability only
+        String posture = broker.current(ScoutingIntelType.POSTURE,
+                ScoutingIntelPayload.PostureUpdate.class)
+            .map(ScoutingIntelPayload.PostureUpdate::posture)
+            .orElse("UNKNOWN");
+        boolean timing = broker.current(ScoutingIntelType.TIMING_ALERT,
+                ScoutingIntelPayload.TimingAlert.class)
+            .map(ScoutingIntelPayload.TimingAlert::incoming)
+            .orElse(false);
         List<Unit>     workers   = (List<Unit>)     caseFile.get(QuarkMindCaseFile.WORKERS,      List.class).orElse(List.of());
         List<Unit>     army      = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ARMY,         List.class).orElse(List.of());
         List<Building> buildings = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());

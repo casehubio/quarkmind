@@ -2,12 +2,21 @@ package io.quarkmind.plugin.flow;
 
 import io.casehub.annotation.CaseType;
 import io.casehub.core.CaseFile;
+import io.casehub.platform.api.preferences.PreferenceProvider;
+import io.casehub.platform.api.preferences.Preferences;
+import io.casehub.platform.api.preferences.SettingsScope;
 import io.smallrye.reactive.messaging.MutinyEmitter;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import io.quarkmind.agent.ResourceBudget;
 import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agent.ResourceBudget;
+import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.EconomicsTask;
+import io.quarkmind.agent.plugin.ScoutingIntelConsumer;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
+import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.domain.*;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.jboss.logging.Logger;
@@ -29,13 +38,36 @@ import java.util.Set;
  */
 @ApplicationScoped
 @CaseType("starcraft-game")
-public class FlowEconomicsTask implements EconomicsTask {
+public class FlowEconomicsTask implements EconomicsTask, ScoutingIntelConsumer {
 
     private static final Logger log = Logger.getLogger(FlowEconomicsTask.class);
 
     @Inject
     @Channel("economics-ticks")
     MutinyEmitter<GameStateTick> emitter;
+
+    @Inject ScoutingIntelBroker broker;
+    @Inject PreferenceProvider preferenceProvider;
+
+    // Safe default before @PostConstruct fires
+    Set<ScoutingIntelType> subscribedTypes = Set.of();
+
+    @PostConstruct
+    void init() {
+        refreshSubscriptions(preferenceProvider.resolve(SettingsScope.root()));
+    }
+
+    @Override
+    public void refreshSubscriptions(Preferences prefs) {
+        // Economics subscribes to ARMY_SIZE; default true (override — global default is false)
+        boolean wantsArmySize = prefs.getOrDefault(
+            ScoutingIntelPreferences.consumerKey(getId(), ScoutingIntelType.ARMY_SIZE, true)
+        ).asBoolean();
+        subscribedTypes = wantsArmySize ? Set.of(ScoutingIntelType.ARMY_SIZE) : Set.of();
+    }
+
+    @Override
+    public Set<ScoutingIntelType> subscribedIntelTypes() { return subscribedTypes; }
 
     @Override public String getId()   { return "economics.flow"; }
     @Override public String getName() { return "Flow Economics"; }
@@ -58,11 +90,16 @@ public class FlowEconomicsTask implements EconomicsTask {
 
         // Snapshot copy — flow processes this one tick later; shared budget already consumed
         ResourceBudget snapshot = new ResourceBudget(shared.minerals(), shared.vespene());
-
         boolean gasReady = buildings.stream().anyMatch(b -> b.type() == BuildingType.GATEWAY);
 
+        // Read army size from broker (Stack 1) — used by EconomicsDecisionService for probe balance
+        int armySize = broker.current(ScoutingIntelType.ARMY_SIZE,
+                ScoutingIntelPayload.ArmySize.class)
+            .map(ScoutingIntelPayload.ArmySize::count)
+            .orElse(0);
+
         GameStateTick tick = new GameStateTick(minerals, vespene, supplyUsed, supplyCap,
-            workers, buildings, geysers, snapshot, strategy, gasReady);
+            workers, buildings, geysers, snapshot, strategy, gasReady, armySize);
 
         emitter.sendAndForget(tick);
         log.debugf("[FLOW-ECONOMICS] Tick emitted: workers=%d supply=%d/%d gasReady=%b",
