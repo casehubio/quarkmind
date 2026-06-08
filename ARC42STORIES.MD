@@ -721,7 +721,7 @@ Tactics    {READY, STRATEGY}        [order]  → canActivate() also gates on
 
 **`GameTickExecutor`** was extracted from `AgentOrchestrator.gameTick()` to capture the `CaseFile` returned by `createAndSolve()` (previously discarded) and surface it via `AgentOrchestrator.getLastTickResult()`. Note: `createAndSolve()` returns the pre-solve CaseFile (translator-written keys only); plugin-written keys are absent from the returned reference. Tests for this layer call `canActivate()` directly on the injected CDI beans to verify gate semantics independently of the async solve.
 
-🔲 Full Chapter entry at C4 close (waiting on L3 #155).
+🔲 Full Chapter entry at C4 close. L3 (#155, redesigned #177) now complete — C4 unblocked.
 
 ---
 
