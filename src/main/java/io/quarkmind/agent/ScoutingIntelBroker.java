@@ -3,17 +3,23 @@ package io.quarkmind.agent;
 import io.casehub.qhorus.api.channel.ChannelSemantic;
 import io.casehub.qhorus.runtime.channel.ChannelService;
 import io.quarkmind.agent.plugin.ScoutingIntelConsumer;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import io.quarkmind.sc2.GameStarted;
 
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
 public class ScoutingIntelBroker {
@@ -25,8 +31,14 @@ public class ScoutingIntelBroker {
     @Inject @Any Instance<ScoutingIntelConsumer> consumers;
     @Inject ChannelService channelService;
 
+    // Typed in-memory store — synchronous game-loop writes; ConcurrentHashMap for QA endpoint reads
+    private final Map<ScoutingIntelType, ScoutingIntelPayload> latest = new ConcurrentHashMap<>();
+
     private UUID channelId;
-    private Set<ScoutingIntelType> activeTypes;
+
+    // Initialized to empty set so isSubscribed() is safe before @PostConstruct fires.
+    // @PostConstruct overwrites with the real subscription union from CDI consumers.
+    private volatile Set<ScoutingIntelType> activeTypes = Set.of();
 
     @PostConstruct
     void init() {
@@ -52,6 +64,30 @@ public class ScoutingIntelBroker {
 
         activeTypes = computeActiveTypes(consumers);
     }
+
+    /** Called by DroolsScoutingTask when a value changes (subscribed types only). */
+    public void update(ScoutingIntelPayload payload) {
+        latest.put(payload.type(), payload);
+    }
+
+    /** Untyped read — returns the latest payload for the given type, or empty. */
+    public Optional<ScoutingIntelPayload> current(ScoutingIntelType type) {
+        return Optional.ofNullable(latest.get(type));
+    }
+
+    /** Typed read — compile-safe; no cast at call sites. */
+    @SuppressWarnings("unchecked")
+    public <T extends ScoutingIntelPayload> Optional<T> current(ScoutingIntelType type, Class<T> clazz) {
+        return Optional.ofNullable(latest.get(type))
+            .filter(clazz::isInstance)
+            .map(clazz::cast);
+    }
+
+    /** Clears all stored intel on game restart. */
+    void onGameStarted(@Observes GameStarted event) { latest.clear(); }
+
+    /** Package-private reset for @QuarkusTest isolation — same pattern as computeActiveTypes(). */
+    void clearLatest() { latest.clear(); }
 
     // Extracted as package-private static to test subscription union logic without CDI Instance<>
     static Set<ScoutingIntelType> computeActiveTypes(Iterable<ScoutingIntelConsumer> consumers) {

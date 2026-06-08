@@ -6,6 +6,7 @@ import io.quarkmind.domain.Point2d;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static io.quarkmind.agent.plugin.ScoutingIntelType.*;
 
 class ScoutingIntelPayloadTest {
 
@@ -84,5 +85,37 @@ class ScoutingIntelPayloadTest {
         JsonNode node = mapper.readTree(json);
         assertThat(node.get("type").asText()).isEqualTo("BuildOrder");
         assertThat(node.get("data").get("detected").asText()).isEqualTo("4-GATE");
+    }
+
+    // ---- type() — each record returns the matching ScoutingIntelType ----
+
+    @Test
+    void threatPosition_type_returnsThreatPosition() {
+        assertThat(new ScoutingIntelPayload.ThreatPosition(new Point2d(0, 0)).type())
+            .isEqualTo(ScoutingIntelType.THREAT_POSITION);
+    }
+
+    @Test
+    void postureUpdate_type_returnsPosture() {
+        assertThat(new ScoutingIntelPayload.PostureUpdate("X").type())
+            .isEqualTo(ScoutingIntelType.POSTURE);
+    }
+
+    @Test
+    void timingAlert_type_returnsTimingAlert() {
+        assertThat(new ScoutingIntelPayload.TimingAlert(false).type())
+            .isEqualTo(ScoutingIntelType.TIMING_ALERT);
+    }
+
+    @Test
+    void armySize_type_returnsArmySize() {
+        assertThat(new ScoutingIntelPayload.ArmySize(0).type())
+            .isEqualTo(ScoutingIntelType.ARMY_SIZE);
+    }
+
+    @Test
+    void buildOrder_type_returnsBuildOrder() {
+        assertThat(new ScoutingIntelPayload.BuildOrder("X").type())
+            .isEqualTo(ScoutingIntelType.BUILD_ORDER);
     }
 }

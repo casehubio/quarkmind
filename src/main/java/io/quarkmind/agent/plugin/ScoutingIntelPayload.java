@@ -9,9 +9,21 @@ public sealed interface ScoutingIntelPayload
                 ScoutingIntelPayload.ArmySize,
                 ScoutingIntelPayload.BuildOrder {
 
-    record ThreatPosition(Point2d position) implements ScoutingIntelPayload {}
-    record PostureUpdate(String posture)    implements ScoutingIntelPayload {}
-    record TimingAlert(boolean incoming)    implements ScoutingIntelPayload {}
-    record ArmySize(int count)              implements ScoutingIntelPayload {}
-    record BuildOrder(String detected)      implements ScoutingIntelPayload {}
+    ScoutingIntelType type();
+
+    record ThreatPosition(Point2d position) implements ScoutingIntelPayload {
+        public ScoutingIntelType type() { return ScoutingIntelType.THREAT_POSITION; }
+    }
+    record PostureUpdate(String posture) implements ScoutingIntelPayload {
+        public ScoutingIntelType type() { return ScoutingIntelType.POSTURE; }
+    }
+    record TimingAlert(boolean incoming) implements ScoutingIntelPayload {
+        public ScoutingIntelType type() { return ScoutingIntelType.TIMING_ALERT; }
+    }
+    record ArmySize(int count) implements ScoutingIntelPayload {
+        public ScoutingIntelType type() { return ScoutingIntelType.ARMY_SIZE; }
+    }
+    record BuildOrder(String detected) implements ScoutingIntelPayload {
+        public ScoutingIntelType type() { return ScoutingIntelType.BUILD_ORDER; }
+    }
 }
