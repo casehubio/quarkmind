@@ -219,6 +219,19 @@ class DroolsStrategyTaskTest {
         assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("MACRO");
     }
 
+    // --- Subscription hot-reload ---
+
+    @Test
+    void refreshSubscriptions_updatesSubscribedTypes() {
+        // DroolsStrategyTask implements ScoutingIntelConsumer — cast to verify subscription state
+        // @PostConstruct ran; defaults: POSTURE and TIMING_ALERT (BUILD_ORDER deferred)
+        var consumer = (io.quarkmind.agent.plugin.ScoutingIntelConsumer) strategyTask;
+        assertThat(consumer.subscribedIntelTypes())
+            .containsExactlyInAnyOrder(
+                ScoutingIntelType.POSTURE,
+                ScoutingIntelType.TIMING_ALERT);
+    }
+
     // --- Entry criteria — two-gate model: {READY, ENEMY_ARMY_SIZE} + broker.current(POSTURE) ---
 
     @Test

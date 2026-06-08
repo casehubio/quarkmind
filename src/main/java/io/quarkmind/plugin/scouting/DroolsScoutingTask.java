@@ -239,19 +239,22 @@ public class DroolsScoutingTask implements ScoutingTask {
         }
 
         if (data != null) {
-            if (postureDispatchEnabled && broker.isSubscribed(ScoutingIntelType.POSTURE)
+            if (postureDispatchEnabled
+                    && (broker.isSubscribed(ScoutingIntelType.POSTURE) || advisoryEnabled)
                     && !posture.equals(prevPosture)) {
                 prevPosture = posture;
                 publishIntel(new ScoutingIntelPayload.PostureUpdate(posture));
             }
 
-            if (timingAlertDispatchEnabled && broker.isSubscribed(ScoutingIntelType.TIMING_ALERT)
+            if (timingAlertDispatchEnabled
+                    && (broker.isSubscribed(ScoutingIntelType.TIMING_ALERT) || advisoryEnabled)
                     && !Boolean.valueOf(timing).equals(prevTimingAlert)) {
                 prevTimingAlert = timing;
                 publishIntel(new ScoutingIntelPayload.TimingAlert(timing));
             }
 
-            if (buildOrderDispatchEnabled && broker.isSubscribed(ScoutingIntelType.BUILD_ORDER)
+            if (buildOrderDispatchEnabled
+                    && (broker.isSubscribed(ScoutingIntelType.BUILD_ORDER) || advisoryEnabled)
                     && !build.equals(prevBuildOrder)) {
                 prevBuildOrder = build;
                 publishIntel(new ScoutingIntelPayload.BuildOrder(build));
