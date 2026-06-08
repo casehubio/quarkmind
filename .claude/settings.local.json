@@ -181,7 +181,19 @@
       "mcp__intellij__search_symbol",
       "Bash(GIT_SEQUENCE_EDITOR=true git -C /Users/mdproctor/claude/casehub/quarkmind rebase --continue)",
       "Bash(GIT_SEQUENCE_EDITOR=\"cp /tmp/squash-todo.txt\" git *)",
-      "Bash(GIT_SEQUENCE_EDITOR=\"cp /tmp/reword2.txt\" GIT_EDITOR=\"cp /tmp/final-msg.txt\" git *)"
+      "Bash(GIT_SEQUENCE_EDITOR=\"cp /tmp/reword2.txt\" GIT_EDITOR=\"cp /tmp/final-msg.txt\" git *)",
+      "Bash(jstack 45354)",
+      "Bash(jstack 45397)",
+      "Bash(pkill -f \"quarkus:dev.*quarkmind\")",
+      "Bash(pkill SC2)",
+      "Bash(kill -9 25295 30481)",
+      "Bash(pkill -9 SC2)",
+      "Bash(curl -s http://localhost:8080/q/health/live)",
+      "Bash(curl -s -X POST http://localhost:8080/qa/scenario/spawn-enemy-attack)",
+      "Bash(curl -sv http://localhost:8080/qa/scenario/spawn-enemy-attack)",
+      "Bash(curl -s http://localhost:8080/q/openapi)",
+      "Bash(curl -sv -X POST \"http://localhost:8080/sc2/debug/scenario/spawn-enemy-attack\")",
+      "Bash(curl -s -X POST http://localhost:8080/sc2/stop)"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"
