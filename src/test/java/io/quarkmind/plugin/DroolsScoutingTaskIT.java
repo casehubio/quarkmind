@@ -55,11 +55,11 @@ class DroolsScoutingTaskIT {
     }
 
     @Test
-    void writesNearestThreat() {
+    void doesNotWriteNearestThreatToCaseFile() {
+        // NEAREST_THREAT removed (#179) — intel now flows via broker (Stack 1)
         var cf = caseFile(List.of(enemy(10, 10), enemy(100, 100)), List.of(), 100L);
         scoutingTask.execute(cf);
-        assertThat(cf.get(QuarkMindCaseFile.NEAREST_THREAT, Point2d.class))
-            .contains(new Point2d(10, 10));
+        assertThat(broker.current(io.quarkmind.agent.plugin.ScoutingIntelType.THREAT_POSITION)).isPresent();
     }
 
     // ---- CEP keys written each tick ----

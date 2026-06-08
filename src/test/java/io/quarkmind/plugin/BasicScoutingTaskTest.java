@@ -43,27 +43,11 @@ class BasicScoutingTaskTest {
     }
 
     @Test
-    void writesNearestThreatPositionWhenEnemiesVisible() {
-        var cf = caseFile(List.of(enemy(10, 10), enemy(100, 100)), List.of(nexus()), List.of(), 0L);
+    void writesArmySizeEvenWithEnemiesPresent() {
+        // NEAREST_THREAT removed (#179); verify army size is still written
+        var cf = caseFile(List.of(enemy(10, 10), enemy(20, 20)), List.of(nexus()), List.of(), 0L);
         task.execute(cf);
-        assertThat(cf.get(QuarkMindCaseFile.NEAREST_THREAT, Point2d.class))
-            .contains(new Point2d(10, 10));
-    }
-
-    @Test
-    void doesNotWriteNearestThreatWhenNoEnemies() {
-        var cf = caseFile(List.of(), List.of(nexus()), List.of(probe("p-0")), 0L);
-        task.execute(cf);
-        assertThat(cf.get(QuarkMindCaseFile.NEAREST_THREAT, Point2d.class)).isEmpty();
-    }
-
-    @Test
-    void usesNexusAsHomeForDistanceCalculation() {
-        Building farNexus = new Building("n-0", BuildingType.NEXUS, new Point2d(50, 50), 1500, 1500, true);
-        var cf = caseFile(List.of(enemy(51, 51), enemy(0, 0)), List.of(farNexus), List.of(), 0L);
-        task.execute(cf);
-        assertThat(cf.get(QuarkMindCaseFile.NEAREST_THREAT, Point2d.class))
-            .contains(new Point2d(51, 51));
+        assertThat(cf.get(QuarkMindCaseFile.ENEMY_ARMY_SIZE, Integer.class)).contains(2);
     }
 
     // --- Active scouting ---

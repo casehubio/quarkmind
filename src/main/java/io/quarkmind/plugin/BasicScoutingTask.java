@@ -57,7 +57,7 @@ public class BasicScoutingTask implements ScoutingTask {
     @Override public String getName() { return "Basic Scouting"; }
     @Override public Set<String> entryCriteria() { return Set.of(QuarkMindCaseFile.READY); }
     @Override public Set<String> producedKeys() {
-        return Set.of(QuarkMindCaseFile.ENEMY_ARMY_SIZE, QuarkMindCaseFile.NEAREST_THREAT);
+        return Set.of(QuarkMindCaseFile.ENEMY_ARMY_SIZE);
     }
 
     @Override
@@ -72,14 +72,6 @@ public class BasicScoutingTask implements ScoutingTask {
         caseFile.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, enemies.size());
 
         if (!enemies.isEmpty()) {
-            Point2d home = nexusPosition(buildings);
-            enemies.stream()
-                .min(Comparator.comparingDouble(e -> e.position().distanceTo(home)))
-                .ifPresent(nearest -> {
-                    caseFile.put(QuarkMindCaseFile.NEAREST_THREAT, nearest.position());
-                    log.debugf("[SCOUTING] Nearest threat: %s at %s",
-                        nearest.type(), nearest.position());
-                });
             scoutProbeTag = null; // enemies found — mission complete, release scout
         } else {
             // --- Active scouting ---

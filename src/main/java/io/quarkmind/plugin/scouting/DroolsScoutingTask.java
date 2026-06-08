@@ -140,7 +140,6 @@ public class DroolsScoutingTask implements ScoutingTask {
     @Override public Set<String> producedKeys()  {
         return Set.of(
             QuarkMindCaseFile.ENEMY_ARMY_SIZE,
-            QuarkMindCaseFile.NEAREST_THREAT,
             QuarkMindCaseFile.ENEMY_BUILD_ORDER,
             QuarkMindCaseFile.TIMING_ATTACK_INCOMING,
             QuarkMindCaseFile.ENEMY_POSTURE);
@@ -186,15 +185,13 @@ public class DroolsScoutingTask implements ScoutingTask {
         // --- Passive intel (plain Java, no rules needed) ---
         int currentArmySize = enemies.size();
         caseFile.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, currentArmySize);
+        // Nearest enemy position used for threat intel dispatch — no longer written to CaseFile
         Point2d nearest = null;
         if (!enemies.isEmpty()) {
             nearest = enemies.stream()
                 .min(Comparator.comparingDouble(e -> e.position().distanceTo(ourNexus)))
                 .map(Unit::position)
                 .orElse(null);
-            if (nearest != null) {
-                caseFile.put(QuarkMindCaseFile.NEAREST_THREAT, nearest);
-            }
         }
 
         // --- CEP gate: run Drools when any plugin subscribes or advisory channel is active ---

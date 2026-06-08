@@ -20,15 +20,11 @@ import java.util.Set;
  *
  * <ul>
  *   <li><b>ATTACK</b> — queue {@link AttackIntent} for each army unit toward
- *       {@link QuarkMindCaseFile#NEAREST_THREAT} (from scouting), or toward
- *       {@link #MAP_CENTER} when no visible threat is known.</li>
+ *       {@link #MAP_CENTER}. No directed movement — superseded implementation.</li>
  *   <li><b>DEFEND</b> — queue {@link MoveIntent} for each army unit to rally
  *       near our Nexus.</li>
  *   <li><b>MACRO</b> — no-op; army holds position.</li>
  * </ul>
- *
- * <p>Attack target falls back to {@link #MAP_CENTER} when no enemy is visible.
- * This is a conservative approximation — future phases will use proper map data.
  *
  * <p>Superseded by {@link DroolsTacticsTask} as the active CDI bean. Retained as
  * a plain class for direct-instantiation tests.
@@ -54,9 +50,7 @@ public class BasicTacticsTask implements TacticsTask {
     @Override public String getId()   { return "tactics.basic"; }
     @Override public String getName() { return "Basic Tactics"; }
     @Override public Set<String> entryCriteria() {
-        return Set.of(QuarkMindCaseFile.READY,
-                      QuarkMindCaseFile.STRATEGY,
-                      QuarkMindCaseFile.NEAREST_THREAT);
+        return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.STRATEGY);
     }
     @Override public Set<String> producedKeys()  { return Set.of(); }
 
@@ -76,23 +70,21 @@ public class BasicTacticsTask implements TacticsTask {
         String strategy = caseFile.get(QuarkMindCaseFile.STRATEGY, String.class).orElse("MACRO");
         List<Unit>     army      = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ARMY,         List.class).orElse(List.of());
         List<Building> buildings = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
-        Point2d nearestThreat = caseFile.get(QuarkMindCaseFile.NEAREST_THREAT, Point2d.class).orElse(null);
 
         if (army.isEmpty()) return;
 
         switch (strategy) {
-            case "ATTACK" -> executeAttack(army, nearestThreat);
+            case "ATTACK" -> executeAttack(army);
             case "DEFEND" -> executeDefend(army, buildings);
             // MACRO: hold position
         }
 
-        log.debugf("[TACTICS] %s | army=%d | target=%s",
-            strategy, army.size(), nearestThreat != null ? nearestThreat : MAP_CENTER);
+        log.debugf("[TACTICS] %s | army=%d", strategy, army.size());
     }
 
-    private void executeAttack(List<Unit> army, Point2d nearestThreat) {
-        Point2d target = nearestThreat != null ? nearestThreat : MAP_CENTER;
-        army.forEach(unit -> intentQueue.add(new AttackIntent(unit.tag(), target)));
+    private void executeAttack(List<Unit> army) {
+        // BasicTacticsTask always attacks MAP_CENTER — superseded by DroolsTacticsTask
+        army.forEach(unit -> intentQueue.add(new AttackIntent(unit.tag(), MAP_CENTER)));
     }
 
     private void executeDefend(List<Unit> army, List<Building> buildings) {

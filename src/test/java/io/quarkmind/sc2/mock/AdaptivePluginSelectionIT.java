@@ -7,6 +7,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import io.quarkmind.agent.AgentOrchestrator;
 import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agent.ScoutingIntelBroker;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
 import io.quarkmind.agent.plugin.TacticsTask;
 import io.quarkmind.sc2.IntentQueue;
@@ -31,12 +34,14 @@ class AdaptivePluginSelectionIT {
     @Inject ScenarioRunner    scenarioRunner;
     @Inject @CaseType("starcraft-game") TacticsTask tacticsTask;
     @Inject @CaseType("starcraft-game") StrategyTask strategyTask;
+    @Inject ScoutingIntelBroker broker;
 
     @BeforeEach
     void setUp() {
         simulatedGame.reset();
-        orchestrator.startGame();
+        orchestrator.startGame();   // fires GameStarted → broker.onGameStarted() clears latest
         intentQueue.drainAll();
+        broker.clearLatest();       // defensive reset — independent of event chain
     }
 
     @AfterEach
@@ -64,9 +69,9 @@ class AdaptivePluginSelectionIT {
         assertThat(result.solveSucceeded()).isTrue();
         // Translator wrote ENEMY_UNITS but it is empty — no enemies observed
         assertThat(result.caseFile().contains(QuarkMindCaseFile.ENEMY_UNITS)).isTrue();
-        // NEAREST_THREAT is absent: scouting gate produces it only when enemies are visible
-        assertThat(result.caseFile().contains(QuarkMindCaseFile.NEAREST_THREAT)).isFalse();
-        // canActivate returns false when the gate key is absent
+        // NEAREST_THREAT removed (#179) — broker THREAT_POSITION is empty when no enemies
+        assertThat(broker.current(ScoutingIntelType.THREAT_POSITION)).isEmpty();
+        // canActivate returns false because broker has no threat position
         assertThat(tacticsTask.canActivate(result.caseFile())).isFalse();
         // No tactical intents dispatched
         assertThat(intentQueue.drainAll())
@@ -95,6 +100,7 @@ class AdaptivePluginSelectionIT {
             .create("starcraft-game", Map.of(), PropagationContext.createRoot());
         withScouting.put(QuarkMindCaseFile.READY, Boolean.TRUE);
         withScouting.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0);
+        broker.update(new ScoutingIntelPayload.PostureUpdate("UNKNOWN")); // satisfy broker gate
         assertThat(strategyTask.canActivate(withScouting)).isTrue();
     }
 
@@ -111,12 +117,12 @@ class AdaptivePluginSelectionIT {
         // Translator observed enemies — ENEMY_UNITS is populated
         assertThat(result.caseFile().contains(QuarkMindCaseFile.ENEMY_UNITS)).isTrue();
 
-        // Prove tactics gate: canActivate is false when NEAREST_THREAT absent (initial state)
+        // Prove tactics gate: canActivate is false when broker has no threat position
+        assertThat(broker.current(ScoutingIntelType.THREAT_POSITION)).isEmpty();
         assertThat(tacticsTask.canActivate(result.caseFile())).isFalse();
 
-        // Simulate scouting + strategy output: tactics gate is met when all entry criteria present
-        // safe: lastTickResult is overwritten on next tick; this CaseFile instance is already orphaned
-        result.caseFile().put(QuarkMindCaseFile.NEAREST_THREAT, new Point2d(50, 50));
+        // Simulate scouting + strategy output: tactics gate is met when both gates satisfied
+        broker.update(new ScoutingIntelPayload.ThreatPosition(new Point2d(50, 50)));
         result.caseFile().put(QuarkMindCaseFile.STRATEGY, "DEFEND");
         assertThat(tacticsTask.canActivate(result.caseFile())).isTrue();
     }

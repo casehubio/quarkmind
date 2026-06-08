@@ -31,7 +31,7 @@ class BasicTacticsTaskTest {
 
     @Test
     void attackQueuesAttackIntentForEachArmyUnit() {
-        var cf = caseFile("ATTACK", List.of(stalker("s-0"), stalker("s-1")), List.of(nexus()), null);
+        var cf = caseFile("ATTACK", List.of(stalker("s-0"), stalker("s-1")), List.of(nexus()));
         task.execute(cf);
         assertThat(intentQueue.pending())
             .hasSize(2)
@@ -39,16 +39,17 @@ class BasicTacticsTaskTest {
     }
 
     @Test
-    void attackTargetsNearestThreatWhenAvailable() {
-        Point2d threat = new Point2d(50, 50);
-        var cf = caseFile("ATTACK", List.of(stalker("s-0")), List.of(nexus()), threat);
+    void attackTargetsMapCenterAlways() {
+        // BasicTacticsTask no longer reads NEAREST_THREAT — always uses MAP_CENTER
+        var cf = caseFile("ATTACK", List.of(stalker("s-0")), List.of(nexus()));
         task.execute(cf);
-        assertThat(((AttackIntent) intentQueue.pending().get(0)).targetLocation()).isEqualTo(threat);
+        assertThat(((AttackIntent) intentQueue.pending().get(0)).targetLocation())
+            .isEqualTo(BasicTacticsTask.MAP_CENTER);
     }
 
     @Test
     void attackTargetsMapCenterWhenNoThreatKnown() {
-        var cf = caseFile("ATTACK", List.of(stalker("s-0")), List.of(nexus()), null);
+        var cf = caseFile("ATTACK", List.of(stalker("s-0")), List.of(nexus()));
         task.execute(cf);
         assertThat(((AttackIntent) intentQueue.pending().get(0)).targetLocation())
             .isEqualTo(BasicTacticsTask.MAP_CENTER);
@@ -58,7 +59,7 @@ class BasicTacticsTaskTest {
 
     @Test
     void defendQueuesMoveIntentForEachArmyUnit() {
-        var cf = caseFile("DEFEND", List.of(stalker("s-0"), stalker("s-1")), List.of(nexus()), null);
+        var cf = caseFile("DEFEND", List.of(stalker("s-0"), stalker("s-1")), List.of(nexus()));
         task.execute(cf);
         assertThat(intentQueue.pending())
             .hasSize(2)
@@ -68,14 +69,14 @@ class BasicTacticsTaskTest {
     @Test
     void defendRalliesToNexusPosition() {
         Point2d nexusPos = new Point2d(8, 8);
-        var cf = caseFile("DEFEND", List.of(stalker("s-0")), List.of(nexus()), null);
+        var cf = caseFile("DEFEND", List.of(stalker("s-0")), List.of(nexus()));
         task.execute(cf);
         assertThat(((MoveIntent) intentQueue.pending().get(0)).targetLocation()).isEqualTo(nexusPos);
     }
 
     @Test
     void defendFallsBackToMapCenterWhenNoNexus() {
-        var cf = caseFile("DEFEND", List.of(stalker("s-0")), List.of(), null);
+        var cf = caseFile("DEFEND", List.of(stalker("s-0")), List.of());
         task.execute(cf);
         assertThat(((MoveIntent) intentQueue.pending().get(0)).targetLocation())
             .isEqualTo(BasicTacticsTask.MAP_CENTER);
@@ -85,7 +86,7 @@ class BasicTacticsTaskTest {
 
     @Test
     void macroProducesNoIntents() {
-        var cf = caseFile("MACRO", List.of(stalker("s-0")), List.of(nexus()), null);
+        var cf = caseFile("MACRO", List.of(stalker("s-0")), List.of(nexus()));
         task.execute(cf);
         assertThat(intentQueue.pending()).isEmpty();
     }
@@ -94,7 +95,7 @@ class BasicTacticsTaskTest {
 
     @Test
     void emptyArmyProducesNoIntents() {
-        var cf = caseFile("ATTACK", List.of(), List.of(nexus()), null);
+        var cf = caseFile("ATTACK", List.of(), List.of(nexus()));
         task.execute(cf);
         assertThat(intentQueue.pending()).isEmpty();
     }
@@ -109,38 +110,34 @@ class BasicTacticsTaskTest {
         assertThat(intentQueue.pending()).isEmpty();
     }
 
-    // --- Entry criteria ---
+    // --- Entry criteria — {READY, STRATEGY} ---
 
     @Test
-    void tacticsTaskRequiresNearestThreatToActivate() {
+    void canActivate_false_withoutStrategy() {
         var cf = new InMemoryCaseFileRepository()
             .create("starcraft-game", Map.of(), PropagationContext.createRoot());
         cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
-        cf.put(QuarkMindCaseFile.STRATEGY, "DEFEND");
-        // NEAREST_THREAT absent → canActivate must return false
+        // STRATEGY absent → canActivate must return false
         assertThat(task.canActivate(cf)).isFalse();
     }
 
     @Test
-    void tacticsTaskActivatesWhenAllCriteriaPresent() {
+    void canActivate_true_withReadyAndStrategy() {
         var cf = new InMemoryCaseFileRepository()
             .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
+        cf.put(QuarkMindCaseFile.READY,    Boolean.TRUE);
         cf.put(QuarkMindCaseFile.STRATEGY, "DEFEND");
-        cf.put(QuarkMindCaseFile.NEAREST_THREAT, new Point2d(50, 50));
         assertThat(task.canActivate(cf)).isTrue();
     }
 
     // --- Helpers ---
 
-    private CaseFile caseFile(String strategy, List<Unit> army,
-                                     List<Building> buildings, Point2d nearestThreat) {
+    private CaseFile caseFile(String strategy, List<Unit> army, List<Building> buildings) {
         var cf = new InMemoryCaseFileRepository().create("starcraft-game", Map.of(), PropagationContext.createRoot());
         cf.put(QuarkMindCaseFile.STRATEGY,     strategy);
         cf.put(QuarkMindCaseFile.ARMY,         army);
         cf.put(QuarkMindCaseFile.MY_BUILDINGS, buildings);
         cf.put(QuarkMindCaseFile.READY,        Boolean.TRUE);
-        if (nearestThreat != null) cf.put(QuarkMindCaseFile.NEAREST_THREAT, nearestThreat);
         return cf;
     }
 
