@@ -1,7 +1,9 @@
 package io.quarkmind.sc2.real;
 
-import com.github.ocraft.s2client.bot.S2Agent;
+import SC2APIProtocol.Sc2Api;
+import com.github.ocraft.s2client.protocol.observation.Observation;
 import com.github.ocraft.s2client.protocol.observation.spatial.ImageData;
+import com.github.ocraft.s2client.protocol.response.ResponseGameInfo;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.TerrainGrid;
@@ -17,27 +19,33 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * ocraft S2Agent bridge. CDI-managed — Quarkus creates the instance; ocraft calls the callbacks.
+ * SC2 frame callback implementation. CDI-managed; called from the game loop virtual thread.
  *
- * @ApplicationScoped is always-active in Quarkus: no ContextNotActiveException risk from
- * ocraft's background game-loop thread. onGameStart() is guaranteed to fire before onStep().
+ * <p>No longer extends S2Agent (ocraft-s2client-bot removed). Implements
+ * {@link SC2FrameCallback} and injects {@link QuarkusSC2Transport} to dispatch
+ * actions and debug commands from within {@link #onStep}.
+ *
+ * <p>{@link #pendingDebugCommands}: only {@link SC2DebugScenarioRunner} (any thread)
+ * enqueues, and the game loop virtual thread drains. ConcurrentLinkedQueue is safe
+ * for this single-producer / single-consumer pattern.
  */
 @IfBuildProfile("sc2")
 @ApplicationScoped
-public class SC2BotAgent extends S2Agent {
+public class SC2BotAgent implements SC2FrameCallback {
 
     private static final Logger log = Logger.getLogger(SC2BotAgent.class);
 
-    @Inject IntentQueue     intentQueue;
-    @Inject TerrainProvider terrainProvider;
+    @Inject IntentQueue         intentQueue;
+    @Inject TerrainProvider     terrainProvider;
+    @Inject QuarkusSC2Transport transport;
 
     private final AtomicReference<GameState> latestGameState = new AtomicReference<>(null);
-    private final Queue<Runnable> pendingDebugCommands = new ConcurrentLinkedQueue<>();
+    private final Queue<Sc2Api.RequestDebug> pendingDebugCommands = new ConcurrentLinkedQueue<>();
 
     @Override
-    public void onGameStart() {
-        observation().getGameInfo().getStartRaw().ifPresent(raw -> {
-            ImageData pg = raw.getPathingGrid();
+    public void onGameStart(ResponseGameInfo gameInfo) {
+        gameInfo.getStartRaw().ifPresent(startRaw -> {
+            ImageData pg = startRaw.getPathingGrid();
             TerrainGrid terrain = TerrainGrid.fromPathingGrid(
                 pg.getData(), pg.getSize().getX(), pg.getSize().getY());
             terrainProvider.setTerrain(terrain);
@@ -48,26 +56,27 @@ public class SC2BotAgent extends S2Agent {
     }
 
     @Override
-    public void onStep() {
+    public void onStep(Observation obs) {
         try {
-            GameState state = ObservationTranslator.translate(observation());
+            GameState state = ObservationTranslator.translate(obs);
             latestGameState.set(state);
         } catch (Exception e) {
             log.warnf("[SC2] Observation translation failed: %s", e.getMessage());
         }
 
         List<ResolvedCommand> commands = ActionTranslator.translate(intentQueue.drainAll());
-        commands.forEach(cmd ->
-            cmd.target().ifPresentOrElse(
-                pos -> actions().unitCommand(cmd.tag(), cmd.ability(), pos, false),
-                ()  -> actions().unitCommand(cmd.tag(), cmd.ability(), false)
-            )
-        );
+        if (!commands.isEmpty()) {
+            transport.sendActions(commands);
+        }
 
         if (!pendingDebugCommands.isEmpty()) {
-            Runnable cmd;
-            while ((cmd = pendingDebugCommands.poll()) != null) cmd.run();
-            debug().sendDebug();
+            // Batch all pending debug commands into a single RequestDebug (one round-trip)
+            Sc2Api.RequestDebug.Builder batch = Sc2Api.RequestDebug.newBuilder();
+            Sc2Api.RequestDebug req;
+            while ((req = pendingDebugCommands.poll()) != null) {
+                batch.addAllDebug(req.getDebugList());
+            }
+            transport.sendDebug(batch.build());
         }
     }
 
@@ -78,5 +87,8 @@ public class SC2BotAgent extends S2Agent {
 
     public GameState getLatestGameState() { return latestGameState.get(); }
 
-    public void enqueueDebugCommand(Runnable command) { pendingDebugCommands.add(command); }
+    /** Enqueue a debug command to be sent on the next game step. Thread-safe. */
+    public void enqueueDebugCommand(Sc2Api.RequestDebug request) {
+        pendingDebugCommands.add(request);
+    }
 }

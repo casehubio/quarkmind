@@ -1,8 +1,9 @@
 package io.quarkmind.sc2.real;
 
-import com.github.ocraft.s2client.bot.gateway.ObservationInterface;
-import com.github.ocraft.s2client.bot.gateway.UnitInPool;
 import com.github.ocraft.s2client.protocol.data.Units;
+import com.github.ocraft.s2client.protocol.observation.Observation;
+import com.github.ocraft.s2client.protocol.observation.PlayerCommon;
+import com.github.ocraft.s2client.protocol.observation.raw.ObservationRaw;
 import com.github.ocraft.s2client.protocol.unit.Alliance;
 import io.quarkmind.domain.*;
 
@@ -10,12 +11,16 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Pure function — translates an ocraft ObservationInterface snapshot into our GameState.
- * No CDI, no framework dependencies. Unit-testable without a live SC2 connection.
+ * Pure function — translates an ocraft-protocol {@link Observation} snapshot into our
+ * {@link GameState}. No CDI, no framework dependencies. Unit-testable without SC2.
+ *
+ * <p>Naming note: both {@code io.quarkmind.domain.Unit} and
+ * {@code com.github.ocraft.s2client.protocol.unit.Unit} are in scope. The protocol
+ * type is always fully-qualified to avoid ambiguity.
  */
 public final class ObservationTranslator {
 
-    // All building types across all races — used to distinguish units from structures
+    // All building types across all races — used to distinguish units from structures.
     private static final Set<Units> ALL_BUILDINGS = Set.of(
         // Protoss
         Units.PROTOSS_NEXUS, Units.PROTOSS_PYLON,
@@ -54,13 +59,28 @@ public final class ObservationTranslator {
 
     private ObservationTranslator() {}
 
-    public static GameState translate(ObservationInterface obs) {
-        var allUnits   = obs.getUnits();
-        var selfUnits  = allUnits.stream()
-            .filter(u -> u.unit() != null && u.unit().getAlliance() == Alliance.SELF)
+    /**
+     * Translates an ocraft-protocol {@link Observation} to a {@link GameState}.
+     *
+     * <p>{@code obs.getRaw().orElseThrow()} is safe because {@code InterfaceOptions.raw=true}
+     * in {@code RequestJoinGame} guarantees ObservationRaw is always populated.
+     *
+     * <p>ObservationRaw.getUnits() returns {@code Set<Unit>} built with
+     * {@code .filter(Raw.Unit::hasTag).map(Unit::from)} — every element is non-null.
+     * The {@code u.unit() != null} guard from the old {@code UnitInPool} path is absent.
+     *
+     * <p>Observation.getGameLoop() returns {@code int}; GameState.gameFrame is {@code long} —
+     * widening from int to long is implicit in the constructor call.
+     */
+    public static GameState translate(Observation obs) {
+        ObservationRaw raw = obs.getRaw().orElseThrow();
+        Set<com.github.ocraft.s2client.protocol.unit.Unit> allUnits = raw.getUnits();
+
+        var selfUnits = allUnits.stream()
+            .filter(u -> u.getAlliance() == Alliance.SELF)
             .toList();
         var enemyUnits = allUnits.stream()
-            .filter(u -> u.unit() != null && u.unit().getAlliance() == Alliance.ENEMY)
+            .filter(u -> u.getAlliance() == Alliance.ENEMY)
             .toList();
 
         List<Unit> myUnits = selfUnits.stream()
@@ -77,19 +97,20 @@ public final class ObservationTranslator {
             .map(ObservationTranslator::toUnit)
             .toList();
 
+        PlayerCommon common = obs.getPlayerCommon();
         return new GameState(
-            obs.getMinerals(),
-            obs.getVespene(),
-            obs.getFoodCap(),
-            obs.getFoodUsed(),
+            common.getMinerals(),
+            common.getVespene(),
+            common.getFoodCap(),
+            common.getFoodUsed(),
             myUnits,
             myBuildings,
             enemies,
-            List.of(),   // enemyStagingArea — not applicable for real SC2
             List.of(),   // enemyBuildings: real SC2 neutral/enemy detection deferred
+            List.of(),   // enemyStagingArea: not applicable for real SC2
             List.of(),   // geysers: neutral unit detection deferred to Phase 3+
             List.of(),   // mineralPatches: neutral unit detection deferred to Phase 3+
-            obs.getGameLoop()
+            obs.getGameLoop()   // int widened to long at GameState.gameFrame
         );
     }
 
@@ -179,33 +200,32 @@ public final class ObservationTranslator {
         };
     }
 
-    private static Units toUnitsEnum(UnitInPool uip) {
-        var rawType = uip.unit().getType();
-        return rawType instanceof Units u ? u : Units.INVALID;
+    // Protocol Unit is fully-qualified to distinguish from domain Unit.
+    private static Units toUnitsEnum(com.github.ocraft.s2client.protocol.unit.Unit u) {
+        var rawType = u.getType();
+        return rawType instanceof Units enumVal ? enumVal : Units.INVALID;
     }
 
-    private static Unit toUnit(UnitInPool uip) {
-        var u = uip.unit();
-        var pos = u.getPosition();
+    private static Unit toUnit(com.github.ocraft.s2client.protocol.unit.Unit u) {
+        var pos = u.getPosition();  // com.github.ocraft.s2client.protocol.spatial.Point (3D)
         return new Unit(
             String.valueOf(u.getTag().getValue()),
-            mapUnitType(toUnitsEnum(uip)),
+            mapUnitType(toUnitsEnum(u)),
             new Point2d(pos.getX(), pos.getY()),
             u.getHealth().map(Float::intValue).orElse(0),
             u.getHealthMax().map(Float::intValue).orElse(0),
             u.getShield().map(Float::intValue).orElse(0),
             u.getShieldMax().map(Float::intValue).orElse(0),
-            0,  // TODO #70: map (int)(u.getWeaponCooldown().orElse(0f) / 0.5f) when real SC2 mode is exercised
+            0,  // TODO #70: weapon cooldown — not yet tracked in real SC2 mode
             0   // blinkCooldownTicks — not yet tracked in real SC2 mode
         );
     }
 
-    private static Building toBuilding(UnitInPool uip) {
-        var u = uip.unit();
+    private static Building toBuilding(com.github.ocraft.s2client.protocol.unit.Unit u) {
         var pos = u.getPosition();
         return new Building(
             String.valueOf(u.getTag().getValue()),
-            mapBuildingType(toUnitsEnum(uip)),
+            mapBuildingType(toUnitsEnum(u)),
             new Point2d(pos.getX(), pos.getY()),
             u.getHealth().map(Float::intValue).orElse(0),
             u.getHealthMax().map(Float::intValue).orElse(0),

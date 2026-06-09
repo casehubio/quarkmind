@@ -80,7 +80,7 @@ JAVA_HOME=$(/usr/libexec/java_home -v 26) mvn clean install
 | `casehub-core` + `casehub-persistence-memory` | Local Maven install; no GitHub Packages |
 | `drools-quarkus` + `drools-ruleunits-api/impl` 10.1.0 | ✅ Native-compatible (Executable Model) |
 | `quarkus-flow` | ✅ Quarkus-native |
-| `ocraft-s2client` | ❌ JVM-only — tracked in `NATIVE.md` |
+| `ocraft-s2client-protocol` | 🔲 Not verified — protobuf-java + jackson only; no Vert.x/RxJava2 (#185 removed transport layer). Tracked in `NATIVE.md`. |
 | `scelight-mpq` + `scelight-s2protocol` | ❌ JVM-only — tracked in `NATIVE.md` |
 
 ---
@@ -282,8 +282,9 @@ Quarkus profiles:
   %prod            — QA endpoints stripped (@UnlessBuildProfile("prod"))
 
 Native image target:
-  GraalVM 25; non-native deps (ocraft, scelight) tracked in NATIVE.md
-  Build: mvn package -Dnative (ocraft/scelight block native until alternatives found)
+  GraalVM 25; non-native deps (scelight) tracked in NATIVE.md
+  ocraft-s2client-bot/api removed (#185); ocraft-s2client-protocol (protobuf + jackson) needs native verification
+  Build: mvn package -Dnative (scelight blocks native; ocraft transport blocker eliminated by #185)
 
 Electron wrapper (optional):
   electron-app/main.js spawns Quarkus as subprocess; health-polls; opens OS window
@@ -779,7 +780,7 @@ ADR-0001 through ADR-0008 are captured in `docs/adr/`. Only cross-cutting decisi
 | Risk / Debt | Severity | Notes |
 |---|---|---|
 | `casehubio/ledger#114` — lightweight ledger mode | ~~High~~ Resolved | Shipped 2026-06-02. `DefaultOutcomeRecorder @DefaultBean` available; wire with `casehub.ledger.trust-score.routing-enabled=true`. C3, C4, C5 unblocked. |
-| `ocraft-s2client` JVM-only | Medium | Blocks native image target. Tracked in `NATIVE.md`. Requires alternative or native agent at GraalVM 25. |
+| ~~`ocraft-s2client-bot`~~ transport removed (#185) | ~~Medium~~ Low | Vert.x 3.x / RxJava2 transport replaced by `QuarkusSC2Transport`. `ocraft-s2client-protocol` (data types only) remains — needs GraalVM 25 native verification. Tracked in `NATIVE.md`. |
 | `scelight-mpq` JVM-only | Medium | Replay parsing blocks native. Tracked in `NATIVE.md`. |
 | Single-module — no compile-time dependency enforcement | Low | Package conventions are the only guard against seam-interface contamination. Code review is the enforcement mechanism. |
 | `DroolsStrategyTask` requires `@QuarkusTest` | Low | `DataSource.createStore()` initialised by Quarkus extension at build time; plain JUnit cannot instantiate it. Documented exception to the no-`@QuarkusTest`-for-unit-tests rule. |
