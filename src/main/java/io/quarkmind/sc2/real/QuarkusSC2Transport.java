@@ -442,6 +442,8 @@ public class QuarkusSC2Transport {
         throw new RuntimeException("[SC2] Port " + port + " did not open after " + connectRetryCount + " attempts");
     }
 
+    // macOS-only: reads ~/Library/Application Support/Blizzard/StarCraft II/ExecuteInfo.txt.
+    // Linux/Wine path resolution is not implemented — tracked in #14 (GraalVM native).
     private static SC2Executable resolveSC2Executable() {
         Path info = Path.of(System.getProperty("user.home"),
             "Library", "Application Support", "Blizzard", "StarCraft II", "ExecuteInfo.txt");
