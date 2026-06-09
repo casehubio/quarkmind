@@ -6,6 +6,7 @@ import io.casehub.core.CaseFile;
 import io.casehub.persistence.memory.InMemoryCaseFileRepository;
 import io.casehub.ledger.runtime.model.LedgerEntry;
 import io.casehub.ledger.runtime.repository.LedgerEntryRepository;
+import io.casehub.platform.api.identity.TenancyConstants;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ResourceBudget;
@@ -55,7 +56,7 @@ class LedgerAuditIT {
         CaseFile cf = caseFile(200, 0, workers(4), List.of(nexus()), "UNKNOWN", false);
         strategyTask.execute(cf);
         Thread.sleep(500);
-        List<LedgerEntry> entries = ledgerRepo.findBySubjectId(gameSession.id());
+        List<LedgerEntry> entries = ledgerRepo.findBySubjectId(gameSession.id(), TenancyConstants.DEFAULT_TENANT_ID);
         assertThat(entries)
                 .as("Expected at least one ledger entry from DroolsStrategyTask")
                 .isNotEmpty();
