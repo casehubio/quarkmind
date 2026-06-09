@@ -256,7 +256,7 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 
 **Unit tests** (no Quarkus, fast):
 - Instantiate classes directly via `new` — no CDI
-- Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `IEM10CommandExtractorTest`, `IEM10CommandExtractorSelectionDeltaTest`, `SelectionStateTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `DroolsStrategyTaskStaticTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TerranEmulatedGameTest`, `ZergEmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `PhysicsStateTest`, `PlayerStateTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`, `AbilityDiscoveryTest`, `AbilityMappingTest`, `ReplayCommandExtractorTest`, `TerranReplayCommandExtractorTest`, `ReplayValidationTest`, `ReplayValidationHarnessTest`, `ReplaySimulatedGameMovementTest`, `SC2DataTest`, `SC2TrainTimeCalibrationTest`, `SC2BuildTimeCalibrationTest`, `GameEventStreamTest`, `UnitOrderTrackerTest`
+- Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `IEM10CommandExtractorTest`, `IEM10CommandExtractorSelectionDeltaTest`, `SelectionStateTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `DroolsStrategyTaskStaticTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TerranEmulatedGameTest`, `ZergEmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `PhysicsStateTest`, `PlayerStateTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`, `ObservationTranslatorIntegrationTest`, `QuarkusSC2TransportTest`, `AbilityDiscoveryTest`, `AbilityMappingTest`, `ReplayCommandExtractorTest`, `TerranReplayCommandExtractorTest`, `ReplayValidationTest`, `ReplayValidationHarnessTest`, `ReplaySimulatedGameMovementTest`, `SC2DataTest`, `SC2TrainTimeCalibrationTest`, `SC2BuildTimeCalibrationTest`, `GameEventStreamTest`, `UnitOrderTrackerTest`
 - Package-private static methods on CDI beans are tested from the same package without CDI — make them `static` (not `private`) to enable this.
 
 **Integration tests** (`@QuarkusTest`, full CDI context):
@@ -308,7 +308,7 @@ See `NATIVE.md` for the per-dependency compatibility tracker.
 src/main/java/io/quarkmind/
   domain/              Plain Java records — no framework deps, always native-safe
   sc2/                 SC2Engine seam — IntentQueue, GameStarted/GameStopped events, sealed Intent interface
-  sc2/real/            Live SC2 implementation — RealSC2Engine, SC2BotAgent, ObservationTranslator, ActionTranslator
+  sc2/real/            Live SC2 implementation — QuarkusSC2Transport (raw Socket WebSocket), SC2FrameCallback, RealSC2Engine, SC2BotAgent, ObservationTranslator, ActionTranslator
   sc2/mock/            Mock SC2 implementation — SimulatedGame, MockGameObserver, MockCommandDispatcher
   sc2/mock/scenario/   ScenarioLibrary — living specification of SC2 behaviour
   agent/               CaseHub intelligence layer — QuarkMindCaseFile keys, GameStateTranslator, AgentOrchestrator
