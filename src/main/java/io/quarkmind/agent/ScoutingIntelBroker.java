@@ -80,7 +80,6 @@ public class ScoutingIntelBroker {
     }
 
     /** Typed read — compile-safe; no cast at call sites. */
-    @SuppressWarnings("unchecked")
     public <T extends ScoutingIntelPayload> Optional<T> current(ScoutingIntelType type, Class<T> clazz) {
         return Optional.ofNullable(latest.get(type))
             .filter(clazz::isInstance)

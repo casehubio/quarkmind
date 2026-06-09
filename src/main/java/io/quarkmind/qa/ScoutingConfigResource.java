@@ -14,6 +14,7 @@ import io.quarkmind.plugin.scouting.DroolsScoutingTask;
 public class ScoutingConfigResource {
 
     @Inject ScoutingIntelBroker broker;
+    // Concrete type injection: refreshThresholds() is not on the ScoutingTask seam interface.
     @Inject @CaseType("starcraft-game") DroolsScoutingTask scoutingTask;
 
     /** Reloads the subscription union from preferences — next tick's CEP gate reflects changes. */

@@ -62,7 +62,7 @@ class AdaptivePluginSelectionIT {
     @Test
     void tacticsSkippedWhenNoEnemiesVisible() {
         // Default reset state: no enemies → ENEMY_UNITS is empty in the translator output,
-        // and NEAREST_THREAT is never written (scouting only writes it when enemies are present).
+        // and broker THREAT_POSITION is empty (scouting only dispatches it when enemies are present).
         orchestrator.gameTick();
         AgentOrchestrator.TickResult result = orchestrator.getLastTickResult();
 
@@ -105,10 +105,10 @@ class AdaptivePluginSelectionIT {
     }
 
     @Test
-    void tacticsActivatesWhenNearestThreatAndStrategyPresent() {
+    void tacticsActivatesWhenThreatPositionAndStrategyPresent() {
         // After spawn-enemy-attack, ENEMY_UNITS is populated by the translator.
-        // Scouting (running asynchronously) writes NEAREST_THREAT from ENEMY_UNITS.
-        // Prove that tactics canActivate only when NEAREST_THREAT is present.
+        // Scouting dispatches THREAT_POSITION via broker when enemies are visible.
+        // Prove that tactics canActivate only when broker has a threat position.
         scenarioRunner.run("spawn-enemy-attack");
         orchestrator.gameTick();
         AgentOrchestrator.TickResult result = orchestrator.getLastTickResult();

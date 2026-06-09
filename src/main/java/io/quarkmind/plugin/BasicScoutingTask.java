@@ -22,7 +22,6 @@ import java.util.Set;
  * <p><b>Passive intel</b> (every tick):
  * <ul>
  *   <li>{@link QuarkMindCaseFile#ENEMY_ARMY_SIZE} — count of visible enemy units</li>
- *   <li>{@link QuarkMindCaseFile#NEAREST_THREAT} — position of enemy closest to our Nexus</li>
  * </ul>
  *
  * <p><b>Active scouting</b>: after {@link #SCOUT_DELAY_TICKS} ticks with no visible enemies,

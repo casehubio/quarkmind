@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  * <p>Each tick:
  * <ol>
  *   <li>Detects game restarts (frame going backwards) and resets buffers.</li>
- *   <li>Computes passive intel: {@code ENEMY_ARMY_SIZE} and {@code NEAREST_THREAT}.</li>
+ *   <li>Computes passive intel: {@code ENEMY_ARMY_SIZE}. Nearest enemy position is computed locally for dual-stack dispatch but no longer written to CaseFile.</li>
  *   <li>Updates Java event buffers via {@link ScoutingSessionManager}; evicts expired events.</li>
  *   <li>Fires a fresh {@link RuleUnitInstance} from the current buffer state.</li>
  *   <li>Writes {@code ENEMY_BUILD_ORDER}, {@code TIMING_ATTACK_INCOMING}, {@code ENEMY_POSTURE}.</li>
@@ -114,6 +114,18 @@ public class DroolsScoutingTask implements ScoutingTask {
         this.ruleUnit       = ruleUnit;
         this.sessionManager = sessionManager;
         this.intentQueue    = intentQueue;
+    }
+
+    /** Resets per-game dispatch-deduplication state. Called between @QuarkusTest runs to prevent state leakage. */
+    public void resetDispatchState() {
+        prevThreatPos   = null;
+        prevArmySize    = -1;
+        prevPosture     = null;
+        prevTimingAlert = null;
+        prevBuildOrder  = null;
+        prevEnemyHash   = 0;
+        scoutProbeTag   = null;
+        lastFrame       = -1;
     }
 
     @PostConstruct

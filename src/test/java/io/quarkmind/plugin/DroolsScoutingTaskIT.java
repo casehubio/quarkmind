@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DroolsScoutingTaskIT {
 
     @Inject @CaseType("starcraft-game") ScoutingTask scoutingTask;
+    @Inject @CaseType("starcraft-game") DroolsScoutingTask droolsTask;
     @Inject IntentQueue intentQueue;
     @Inject ScoutingSessionManager sessionManager;
     @Inject ScoutingIntelBroker broker;
@@ -40,6 +41,7 @@ class DroolsScoutingTaskIT {
 
     @BeforeEach @AfterEach
     void reset() {
+        droolsTask.resetDispatchState();
         intentQueue.drainAll();
         sessionManager.reset();
         broker.clearLatest();
