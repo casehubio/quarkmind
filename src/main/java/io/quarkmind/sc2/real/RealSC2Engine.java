@@ -45,7 +45,9 @@ public class RealSC2Engine implements SC2Engine {
     }
 
     public void connectFallback() {
-        log.error("[SC2] Failed to connect after retries — bot will run without SC2");
+        // Throw so that joinGame() is never reached on a failed connection.
+        // Returning normally would let subsequent lifecycle calls hit a null socket.
+        throw new IllegalStateException("[SC2] Failed to connect after retries — game cannot start");
     }
 
     @Override
