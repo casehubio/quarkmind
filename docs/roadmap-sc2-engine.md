@@ -28,7 +28,7 @@ how to produce one and consume the other. Changing engines is a one-bean swap.
 
 Established the three-seam model (`SC2Client` / `GameObserver` / `CommandDispatcher`)
 and two working engine stacks: `MockEngine` → `SimulatedGame` and `RealSC2Engine`
-→ ocraft-s2client.
+→ ocraft-s2client (ocraft transport replaced by `QuarkusSC2Transport` in #185).
 
 ---
 

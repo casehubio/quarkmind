@@ -10,7 +10,7 @@ import java.util.function.Consumer;
  * <p>Implementations:
  * <ul>
  *   <li>{@code MockEngine} — SimulatedGame-backed; clock owned by this interface</li>
- *   <li>{@code RealSC2Engine} — ocraft-s2client; clock owned by ocraft (tick is no-op)</li>
+ *   <li>{@code RealSC2Engine} — QuarkusSC2Transport virtual-thread loop; clock owned by transport (tick is no-op)</li>
  * </ul>
  *
  * <p>Future implementations: {@code ReplayEngine}, {@code HttpSC2Engine}, or others.
