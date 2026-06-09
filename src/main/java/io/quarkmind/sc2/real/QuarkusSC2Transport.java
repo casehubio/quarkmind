@@ -220,7 +220,7 @@ public class QuarkusSC2Transport {
     // Called from SC2BotAgent.onStep() — game loop thread only
     // ---------------------------------------------------------------------------
 
-    public void sendActions(List<ResolvedCommand> commands) {
+    public void sendActions(List<ResolvedCommand> commands) throws InterruptedException {
         Sc2Api.RequestAction.Builder actionReq = Sc2Api.RequestAction.newBuilder();
         for (ResolvedCommand cmd : commands) {
             Raw.ActionRawUnitCommand.Builder unitCmd = Raw.ActionRawUnitCommand.newBuilder()
@@ -235,14 +235,20 @@ public class QuarkusSC2Transport {
         try {
             sendSync(Sc2Api.Request.newBuilder().setAction(actionReq.build()).build(),
                 Duration.ofSeconds(5));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("[SC2] sendActions() failed: " + e.getMessage(), e);
         }
     }
 
-    public void sendDebug(Sc2Api.RequestDebug req) {
+    public void sendDebug(Sc2Api.RequestDebug req) throws InterruptedException {
         try {
             sendSync(Sc2Api.Request.newBuilder().setDebug(req).build(), Duration.ofSeconds(5));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("[SC2] sendDebug() failed: " + e.getMessage(), e);
         }

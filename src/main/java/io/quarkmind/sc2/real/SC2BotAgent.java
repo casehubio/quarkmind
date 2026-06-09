@@ -56,7 +56,7 @@ public class SC2BotAgent implements SC2FrameCallback {
     }
 
     @Override
-    public void onStep(Observation obs) {
+    public void onStep(Observation obs) throws InterruptedException {
         try {
             GameState state = ObservationTranslator.translate(obs);
             latestGameState.set(state);

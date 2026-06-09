@@ -15,8 +15,12 @@ public interface SC2FrameCallback {
     /** Called once after RequestGameInfo succeeds — before the observation loop starts. */
     void onGameStart(ResponseGameInfo gameInfo);
 
-    /** Called each game frame with the current observation. May dispatch actions via transport. */
-    void onStep(Observation obs);
+    /**
+     * Called each game frame with the current observation. May dispatch actions via transport.
+     * Implementations may throw {@link InterruptedException} — the game loop catches it on the
+     * quit path and terminates cleanly without logging a spurious error.
+     */
+    void onStep(Observation obs) throws InterruptedException;
 
     /** Called from the game loop finally block — fires unconditionally on all exit paths. */
     void onGameEnd();

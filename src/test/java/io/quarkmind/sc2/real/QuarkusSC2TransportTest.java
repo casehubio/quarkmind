@@ -350,7 +350,7 @@ class QuarkusSC2TransportTest {
 
         transport.runGameLoop(new SC2FrameCallback() {
             @Override public void onGameStart(ResponseGameInfo info) { gameStarted.countDown(); }
-            @Override public void onStep(Observation obs)           { stepObs.add(obs); stepFired.countDown(); }
+            @Override public void onStep(Observation obs) throws InterruptedException { stepObs.add(obs); stepFired.countDown(); }
             @Override public void onGameEnd()                       { gameEnded.countDown(); }
         });
 
@@ -372,7 +372,7 @@ class QuarkusSC2TransportTest {
         CountDownLatch gameEnded = new CountDownLatch(1);
         transport.runGameLoop(new SC2FrameCallback() {
             @Override public void onGameStart(ResponseGameInfo i) {}
-            @Override public void onStep(Observation obs) {}
+            @Override public void onStep(Observation obs) throws InterruptedException {}
             @Override public void onGameEnd() { gameEnded.countDown(); }
         });
 
@@ -397,10 +397,9 @@ class QuarkusSC2TransportTest {
         CountDownLatch ended         = new CountDownLatch(1);
         transport.runGameLoop(new SC2FrameCallback() {
             @Override public void onGameStart(ResponseGameInfo i) {}
-            @Override public void onStep(Observation obs) {
+            @Override public void onStep(Observation obs) throws InterruptedException {
                 stepStarted.countDown();
-                try { stepCanFinish.await(5, java.util.concurrent.TimeUnit.SECONDS); }
-                catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                stepCanFinish.await(5, java.util.concurrent.TimeUnit.SECONDS);
             }
             @Override public void onGameEnd() { ended.countDown(); }
         });
@@ -428,7 +427,7 @@ class QuarkusSC2TransportTest {
         CountDownLatch ended   = new CountDownLatch(1);
         transport.runGameLoop(new SC2FrameCallback() {
             @Override public void onGameStart(ResponseGameInfo i) {}
-            @Override public void onStep(Observation obs) { stepped.countDown(); }
+            @Override public void onStep(Observation obs) throws InterruptedException { stepped.countDown(); }
             @Override public void onGameEnd() { ended.countDown(); }
         });
 
@@ -437,6 +436,35 @@ class QuarkusSC2TransportTest {
         transport.quit();
         assertThat(ended.await(5, java.util.concurrent.TimeUnit.SECONDS))
             .as("onGameEnd fires after quit()").isTrue();
+    }
+
+    @Test @Timeout(10)
+    void quit_duringOnStep_terminatesCleanly_withoutErrorState() throws Exception {
+        // Verifies that InterruptedException propagates cleanly through sendActions() → onStep() →
+        // game loop, so quit() during a pending send hits the interrupt catch path, not the
+        // generic exception path (which would leave isRunning() in an ambiguous state).
+        server.observationsBeforeEnd = Integer.MAX_VALUE;
+        transport = connectedTransport(server);
+        transport.createGame();
+        transport.joinGame();
+
+        CountDownLatch stepStarted = new CountDownLatch(1);
+        CountDownLatch ended       = new CountDownLatch(1);
+        transport.runGameLoop(new SC2FrameCallback() {
+            @Override public void onGameStart(ResponseGameInfo i) {}
+            @Override public void onStep(Observation obs) throws InterruptedException {
+                stepStarted.countDown();
+                // Block here so quit() interrupts us while inside onStep
+                Thread.sleep(Long.MAX_VALUE);
+            }
+            @Override public void onGameEnd() { ended.countDown(); }
+        });
+
+        assertThat(stepStarted.await(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
+        transport.quit();
+        assertThat(ended.await(5, java.util.concurrent.TimeUnit.SECONDS))
+            .as("onGameEnd fires after quit() interrupts onStep").isTrue();
+        assertThat(transport.isRunning()).as("not running after clean termination").isFalse();
     }
 
     @Test @Timeout(10)
@@ -472,7 +500,7 @@ class QuarkusSC2TransportTest {
         CountDownLatch ended      = new CountDownLatch(1);
         transport.runGameLoop(new SC2FrameCallback() {
             @Override public void onGameStart(ResponseGameInfo i) {}
-            @Override public void onStep(Observation obs) {
+            @Override public void onStep(Observation obs) throws InterruptedException {
                 // Build a command and send it via transport.sendActions()
                 com.github.ocraft.s2client.protocol.unit.Tag tag =
                     com.github.ocraft.s2client.protocol.unit.Tag.of(42L);
