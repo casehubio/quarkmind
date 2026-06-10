@@ -4,7 +4,7 @@
 **Profile:** CaseHub — Application tier
 **Profile ref:** `../parent/docs/arc42stories-casehub-profile.md` · fallback: `https://raw.githubusercontent.com/casehubio/parent/main/docs/arc42stories-casehub-profile.md`
 **Prefix:** QM
-**Status:** L1 conceptual + L2, L3, L4, L5 complete. L6, L7 pending (#158, #159).
+**Status:** L1 conceptual + L2, L3, L4, L5, L6 complete. L7 pending (#159).
 
 ---
 
@@ -140,7 +140,7 @@ QuarkMind follows the CaseHub harness integration sequence with one deviation: `
 | casehub-qhorus | `casehub-qhorus` | L3 | ✅ complete (#155) |
 | casehub-ledger | `casehub-ledger` (lightweight mode — casehubio/ledger#114) | L4 | ✅ complete (#156) |
 | Adaptive plugin selection | `casehub-engine` binding conditions | L5 | ✅ complete (#157) |
-| Trust routing | `casehub-engine-ledger` (Bayesian Beta CAPABILITY — EigenTrust inert, ADR-0009) | L6 | 🔲 pending (#158) |
+| Trust routing | `casehub-ledger` + QuarkMind-native `StrategyTrustRouter` (Bayesian Beta CAPABILITY per opponent context; `casehub-engine-ledger` not used — no `casehub-engine` integration; EigenTrust inert, ADR-0009) | L6 | ✅ complete (#158) |
 | Comparison baseline | *(none — analysis only)* | L7 | 🔲 pending (#159) |
 
 **Note on reading vs build order:** L2 was built first because the CaseEngine blackboard was the architectural priority. L3–L7 follow the CaseHub integration sequence. Layer ordering above is reading order (learning progression); build order is reflected in the blog entries.
@@ -370,7 +370,7 @@ flowchart LR
 | 2 | Formal plugin obligation | Game Agent Coordination | + L3 | Low | ✅ complete (#155) |
 | 3 | Outcome tracking | Game Agent Coordination | + L4 | Medium | ✅ complete (#156) |
 | 4 | Adaptive plugin selection | Game Agent Coordination | + L5 | Medium | ✅ complete (#157) |
-| 5 | Trust-weighted routing | Game Agent Coordination | + L6 | Medium | 🔲 pending (#158) |
+| 5 | Trust-weighted routing | Game Agent Coordination | + L6 | Medium | ✅ complete (#158) |
 | 6 | Comparison baseline | Game Agent Coordination | L7 | Low | 🔲 pending (#159) |
 
 **Layer × Chapter matrix**
@@ -455,9 +455,9 @@ Known scope: `casehub-engine` binding conditions evaluate game state; plugins di
 
 **Journey:** Game Agent Coordination | **Sequence:** 5 of 6 | **Status:** 🔲 pending
 
-🔲 Full Chapter entry at C5 close. Waiting on L6 (#158).
+🔲 Full Chapter entry at C5 close. L6 (#158) now complete — C5 unblocked.
 
-Known scope: `TrustWeightedAgentStrategy` (or equivalent) selects among competing plugin implementations by outcome history; routing quality improves as attestations accumulate.
+Known scope: `StrategyTrustRouter` (QuarkMind-native, using `casehub-ledger` trust scores) selects among three competing `StrategyTask` implementations (`DroolsStrategyTask`, `EarlyPressureStrategyTask`, `EconomicExpansionStrategyTask`) based on opponent-context-keyed Bayesian Beta scores; one checkpoint pivot per game; routing quality improves automatically as game outcomes accumulate. `LedgerLifecycleAdapter` removed — was clearing the in-memory ledger between games, preventing cross-game trust accumulation. Win/loss detection deferred (#189) — currently records SOUND for all games.
 
 ---
 
@@ -729,9 +729,17 @@ Tactics    {READY, STRATEGY}        [order]  → canActivate() also gates on
 ### Layer — Trust Routing
 
 **Participates in chapters:** C5
-**Completed:** 🔲 pending (#158)
+**Completed:** ✅ 2026-06-10 (#158)
 
-🔲 Full entry at C5 close. Known scope: `TrustWeightedAgentStrategy` (via `casehub-engine-ledger`) selects among competing plugin implementations by Bayesian Beta CAPABILITY score; EigenTrust GLOBAL computation runs but is inert — GLOBAL scores are not consumed for capability routing (ADR-0009); trust scores accumulate from plugin outcome attestations written in L4; routing quality improves automatically across game sessions.
+Three competing `StrategyTask` implementations now exist. At game start, `StrategyTrustObserver` fires `StrategyTrustRouter.select()` against all CDI-discovered strategy candidates for the `STRATEGY_VS_UNKNOWN` context. At the first mid-game checkpoint (when `DroolsScoutingTask` fires `EnemyPostureClassifiedEvent` on the first confident `ENEMY_POSTURE` value), the router re-selects for the classified opponent context (`vs.aggressive`, `vs.economic`, `vs.defensive`). `StrategySelector` holds the selection; each strategy's `canActivate()` gates on it — enforcing that exactly one fires per tick.
+
+`StrategyTrustRouter` implements the four-phase trust maturity model using `casehub-ledger`'s `TrustGateService` (not `casehub-engine-ledger` — QuarkMind uses `casehub-core`, not `casehub-engine`). `BOOTSTRAP` phase (phaseScore=0.5, below minimum QUALIFIED phaseScore of 0.838) ensures any qualified candidate beats any unproven one. The designated fallback (`strategy.drools`) wins all ties and is exempt from BORDERLINE exclusion.
+
+`GameOutcomeRecorder` observes `GameStopped` synchronously — records the completed game's strategy and opponent context via `OutcomeRecorder.record()`; trust scores materialise via `IncrementalTrustUpdateObserver` at `TransactionPhase.AFTER_SUCCESS`. `LedgerLifecycleAdapter` was removed — it was clearing the in-memory ledger between games, capping `decisionCount` permanently at 1.
+
+**Known limitation:** `GameOutcomeRecorder` records `SOUND` for all games until real win/loss detection ships (#189). With uniform SOUND verdicts, trust routing produces no strategic learning.
+
+🔲 Full Chapter entry at C5 close.
 
 ---
 
