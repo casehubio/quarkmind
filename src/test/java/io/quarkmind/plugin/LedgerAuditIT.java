@@ -10,7 +10,8 @@ import io.casehub.platform.api.identity.TenancyConstants;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ResourceBudget;
-import io.quarkmind.agent.plugin.StrategyTask;
+import io.quarkmind.agent.StrategySelector;
+import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkus.test.junit.QuarkusTest;
@@ -28,7 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @QuarkusTest
 class LedgerAuditIT {
 
-    @Inject @CaseType("starcraft-game") StrategyTask strategyTask;
+    // Concrete injection: L6 introduced competing StrategyTask implementations; DroolsStrategyTask
+    // is the specific subject of this ledger audit test.
+    @Inject @CaseType("starcraft-game") DroolsStrategyTask strategyTask;
+    @Inject StrategySelector strategySelector;
     @Inject LedgerEntryRepository ledgerRepo;
     @Inject GameSession gameSession;
     @Inject IntentQueue intentQueue;
@@ -37,6 +41,8 @@ class LedgerAuditIT {
     void setup() {
         gameSession.reset();
         intentQueue.drainAll();
+        strategySelector.selectForGame("strategy.drools", QuarkMindCapabilityTag.STRATEGY_VS_UNKNOWN);
+        strategyTask.resetPrevStrategy(); // prevents prevStrategy leakage from earlier @QuarkusTest runs
     }
 
     @AfterEach

@@ -192,7 +192,10 @@ for each candidateId in candidates:
     score = trustGateService.currentScore(candidateId, opponentContext)  // OptionalDouble
 
     if count < minimumObservations OR score.isEmpty():
-        phase = BOOTSTRAP; phaseScore = 1.0
+        phase = BOOTSTRAP; phaseScore = 0.5
+        # 0.5 is strictly below the minimum QUALIFIED phaseScore of ~0.838
+        # (threshold+margin+ε)*blendFactor + 1.0*(1-blendFactor) ≥ 0.838
+        # so any QUALIFIED candidate correctly outranks any BOOTSTRAP candidate
 
     elif policy.isBorderline(score.getAsDouble()):
         phase = BORDERLINE; phaseScore = 0.0
@@ -209,7 +212,7 @@ if all candidates BORDERLINE or EXCLUDED: winner = DESIGNATED_FALLBACK (exempt f
 return winner
 ```
 
-**Tiebreaker:** When multiple candidates have equal `phaseScore` (including all-BOOTSTRAP at 1.0), the designated fallback `"strategy.drools"` wins explicitly. Do not rely on CDI iteration order — with CDI-discovered candidates, order is non-deterministic.
+**Tiebreaker:** When multiple candidates have equal `phaseScore` (including all-BOOTSTRAP at 0.5), the designated fallback `"strategy.drools"` wins explicitly. Do not rely on CDI iteration order — with CDI-discovered candidates, order is non-deterministic.
 
 **BORDERLINE exemption for designated fallback:** `"strategy.drools"` is never excluded, even when BORDERLINE. Its role is to guarantee a strategy always runs.
 

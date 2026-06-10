@@ -23,6 +23,7 @@ import io.casehub.platform.api.preferences.SettingsScope;
 import io.casehub.qhorus.api.message.MessageDispatch;
 import io.casehub.qhorus.api.message.MessageType;
 import io.casehub.qhorus.runtime.message.MessageService;
+import io.quarkmind.agent.EnemyPostureClassifiedEvent;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.PluginDecisionEvent;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
@@ -73,6 +74,7 @@ public class DroolsScoutingTask implements ScoutingTask {
     int mapWidth;
 
     @Inject Event<PluginDecisionEvent> decisionEvents;
+    @Inject Event<EnemyPostureClassifiedEvent> postureClassified;
     @Inject GameSession gameSession;
 
     // --- dual-stack delivery fields ---
@@ -251,11 +253,19 @@ public class DroolsScoutingTask implements ScoutingTask {
         }
 
         if (data != null) {
-            if (postureDispatchEnabled
-                    && (broker.isSubscribed(ScoutingIntelType.POSTURE) || advisoryEnabled)
-                    && !posture.equals(prevPosture)) {
+            if (!posture.equals(prevPosture)) {
                 prevPosture = posture;
-                publishIntel(new ScoutingIntelPayload.PostureUpdate(posture));
+                // Broker/advisory dispatch — gated by postureDispatchEnabled preference
+                if (postureDispatchEnabled
+                        && (broker.isSubscribed(ScoutingIntelType.POSTURE) || advisoryEnabled)) {
+                    publishIntel(new ScoutingIntelPayload.PostureUpdate(posture));
+                }
+                // Trust routing checkpoint — always fires, independent of dispatch preference.
+                // Synchronous fire: StrategyTrustObserver.onPostureClassified() runs inline
+                // within this execute() call, so the pivot is effective in the same tick.
+                if (!"UNKNOWN".equals(posture)) {
+                    postureClassified.fire(new EnemyPostureClassifiedEvent(posture));
+                }
             }
 
             if (timingAlertDispatchEnabled

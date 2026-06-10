@@ -10,7 +10,9 @@ import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
-import io.quarkmind.agent.plugin.StrategyTask;
+import io.quarkmind.agent.StrategySelector;
+import io.quarkmind.agent.QuarkMindCapabilityTag;
+import io.quarkmind.plugin.DroolsStrategyTask;
 import io.quarkmind.agent.plugin.TacticsTask;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.ScenarioRunner;
@@ -33,7 +35,10 @@ class AdaptivePluginSelectionIT {
     @Inject IntentQueue       intentQueue;
     @Inject ScenarioRunner    scenarioRunner;
     @Inject @CaseType("starcraft-game") TacticsTask tacticsTask;
-    @Inject @CaseType("starcraft-game") StrategyTask strategyTask;
+    // Concrete injection: L6 makes @CaseType StrategyTask ambiguous; DroolsStrategyTask is the
+    // adaptive strategy whose canActivate() behaviour this test exercises.
+    @Inject @CaseType("starcraft-game") DroolsStrategyTask strategyTask;
+    @Inject StrategySelector strategySelector;
     @Inject ScoutingIntelBroker broker;
 
     @BeforeEach

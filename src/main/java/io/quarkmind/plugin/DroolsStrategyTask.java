@@ -29,6 +29,7 @@ import io.casehub.ledger.api.model.AttestationVerdict;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.PluginDecisionEvent;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
+import io.quarkmind.agent.StrategySelector;
 import jakarta.enterprise.event.Event;
 import java.util.Arrays;
 import java.util.List;
@@ -63,6 +64,7 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
     private final IntentQueue intentQueue;
     private final ScoutingIntelBroker broker;
 
+    @Inject StrategySelector strategySelector;
     @Inject Event<PluginDecisionEvent> decisionEvents;
     @Inject GameSession gameSession;
     @Inject PreferenceProvider preferenceProvider;
@@ -97,6 +99,11 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
         this.broker      = broker;
     }
 
+    /** Resets transition-detection state. Called from @QuarkusTest @BeforeEach to prevent leakage. */
+    public void resetPrevStrategy() {
+        prevStrategy = null;
+    }
+
     @Override public String getId()   { return "strategy.drools"; }
     @Override public String getName() { return "Drools Strategy"; }
     @Override public Set<String> entryCriteria() {
@@ -110,11 +117,15 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
      * Overrides the {@code TaskDefinition} default, which unconditionally returns {@code true}
      * in the installed casehub-core snapshot — ignoring {@link #entryCriteria()}.
      * Override required until the foundation corrects the default.
-     * Also gates on broker having a posture value (Stack 1 in-memory delivery).
+     *
+     * <p>L6: also gates on {@link StrategySelector} — only the trust-selected strategy runs per tick.
+     * Also gates on broker having a posture value (Stack 1 in-memory delivery); Drools reads posture
+     * to make decisions and should not run without it.
      */
     @Override
     public boolean canActivate(CaseFile caseFile) {
-        return entryCriteria().stream().allMatch(caseFile::contains)
+        return strategySelector.isSelected(getId())
+            && entryCriteria().stream().allMatch(caseFile::contains)
             && broker.current(ScoutingIntelType.POSTURE).isPresent();
     }
 

@@ -11,7 +11,8 @@ import io.quarkmind.agent.ResourceBudget;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
-import io.quarkmind.agent.plugin.StrategyTask;
+import io.quarkmind.agent.StrategySelector;
+import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.BuildIntent;
@@ -37,7 +38,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @QuarkusTest
 class DroolsStrategyTaskTest {
 
-    @Inject @CaseType("starcraft-game") StrategyTask strategyTask;
+    // Concrete injection: L6 introduced competing StrategyTask implementations, making
+    // @CaseType("starcraft-game") StrategyTask ambiguous. DroolsStrategyTask is the
+    // specific subject under test here.
+    @Inject @CaseType("starcraft-game") DroolsStrategyTask strategyTask;
+    @Inject StrategySelector strategySelector;
     @Inject IntentQueue intentQueue;
     @Inject ScoutingIntelBroker broker;
 
@@ -46,6 +51,8 @@ class DroolsStrategyTaskTest {
     void drainQueue() {
         intentQueue.drainAll();
         broker.clearLatest();
+        strategySelector.selectForGame("strategy.drools", QuarkMindCapabilityTag.STRATEGY_VS_UNKNOWN);
+        strategyTask.resetPrevStrategy(); // prevStrategy leaks across @Test methods on the same CDI bean
     }
 
     // --- Gateway ---

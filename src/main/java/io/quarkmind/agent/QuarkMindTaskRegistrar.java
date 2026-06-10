@@ -14,6 +14,8 @@ import io.quarkmind.agent.plugin.StrategyTask;
 import io.quarkmind.agent.plugin.TacticsTask;
 import org.jboss.logging.Logger;
 
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Instance;
 import java.util.List;
 
 /**
@@ -35,26 +37,33 @@ public class QuarkMindTaskRegistrar {
 
     @Inject @CaseType("starcraft-game") EconomicsTask economicsTask;
     @Inject @CaseType("starcraft-game") ScoutingTask  scoutingTask;
-    @Inject @CaseType("starcraft-game") StrategyTask  strategyTask;
+    // L6: all three StrategyTask implementations compete; trust routing selects one per game
+    @Inject @Any Instance<StrategyTask> strategyTasks;
     @Inject @CaseType("starcraft-game") TacticsTask   tacticsTask;
 
     @Inject TaskDefinitionRegistry registry;
 
     void onStart(@Observes StartupEvent ev) {
-        List<TaskDefinition> tasks = List.of(
+        // Non-strategy plugins: single implementation each
+        List<TaskDefinition> singletons = List.of(
             (TaskDefinition) economicsTask,
             (TaskDefinition) scoutingTask,
-            (TaskDefinition) strategyTask,
             (TaskDefinition) tacticsTask
         );
-        for (TaskDefinition td : tasks) {
-            try {
-                registry.register(td, java.util.Set.of(CASE_TYPE));
-                log.infof("[REGISTRAR] Registered %s (%s)", td.getName(), td.getId());
-            } catch (CircularDependencyException e) {
-                log.errorf("[REGISTRAR] Circular dependency detected for %s: %s", td.getId(), e.getMessage());
-                throw new RuntimeException("CaseHub task registration failed", e);
-            }
+        for (TaskDefinition td : singletons) {
+            registerTask(td);
+        }
+        // Strategy plugins: all CDI-discovered implementations registered; one activates per game
+        strategyTasks.forEach(t -> registerTask((TaskDefinition) t));
+    }
+
+    private void registerTask(TaskDefinition td) {
+        try {
+            registry.register(td, java.util.Set.of(CASE_TYPE));
+            log.infof("[REGISTRAR] Registered %s (%s)", td.getName(), td.getId());
+        } catch (CircularDependencyException e) {
+            log.errorf("[REGISTRAR] Circular dependency detected for %s: %s", td.getId(), e.getMessage());
+            throw new RuntimeException("CaseHub task registration failed", e);
         }
     }
 }
