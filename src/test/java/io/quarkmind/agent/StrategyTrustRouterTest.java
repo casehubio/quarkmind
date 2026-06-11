@@ -122,12 +122,12 @@ class StrategyTrustRouterTest {
         when(trustGateService.decisionCount("strategy.early-pressure", CTX_AGGRESSIVE)).thenReturn(12);
         when(trustGateService.currentScore("strategy.early-pressure", CTX_AGGRESSIVE))
             .thenReturn(OptionalDouble.of(0.40));
-        // others: bootstrap → phase=BOOTSTRAP → phaseScore=1.0
+        // others: bootstrap → phase=BOOTSTRAP → phaseScore=0.5
         for (String id : List.of("strategy.drools", "strategy.economic-expansion")) {
             when(trustGateService.decisionCount(id, CTX_AGGRESSIVE)).thenReturn(0);
             when(trustGateService.currentScore(id, CTX_AGGRESSIVE)).thenReturn(OptionalDouble.empty());
         }
-        // drools and economic are both BOOTSTRAP (phaseScore=1.0) → tie → drools wins
+        // drools and economic are both BOOTSTRAP (phaseScore=0.5) → tie → drools wins
         assertThat(router.select(ALL_CANDIDATES, CTX_AGGRESSIVE)).isEqualTo("strategy.drools");
     }
 
