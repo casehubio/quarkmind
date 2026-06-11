@@ -74,9 +74,9 @@ static int extractLocalPlayerId(ResponseGameInfo gameInfo) {
 }
 ```
 
-Note: `ResponseGameInfo.getPlayersInfo()` returns `Set<PlayerInfo>` (unordered);
-`PlayerInfo.getPlayerType()` returns `Optional<PlayerType>`. The bot is the
-`PARTICIPANT` entry; the AI is `COMPUTER`.
+Note: `ResponseGameInfo.getPlayersInfo()` returns `Set<PlayerInfo>` (unordered, backed by
+`collectingAndThen(toSet(), unmodifiableSet)`); `PlayerInfo.getPlayerType()` returns
+`Optional<PlayerType>`. The bot is the `PARTICIPANT` entry; the AI is `COMPUTER`.
 
 `SC2BotAgent` is not involved in player ID detection. Its `onGameStart()` remains
 responsible for terrain extraction only.
@@ -133,9 +133,11 @@ static GameResult extractResult(Sc2Api.Response obsResp, int localPlayerId) {
 }
 ```
 
+`PlayerResult.getResult()` returns `com.github.ocraft.s2client.protocol.observation.Result`
+directly (required field, never null). The switch is exhaustive over all four enum values.
 The try-catch guards against the edge case where the final frame cannot be parsed
-(e.g., observation field absent at game end — unlikely but possible). For the
-interrupt/exception exit path (manual quit or crash), `gameResult` stays `UNKNOWN`.
+(e.g., `sc2ApiResponse.hasObservation()` is false). For the interrupt/exception exit path
+(manual quit or crash), `gameResult` stays `UNKNOWN`.
 
 **`SC2FrameCallback.onGameEnd()`** signature changes to `onGameEnd(GameResult result)`.
 
@@ -214,6 +216,14 @@ private final AtomicBoolean gameActive      = new AtomicBoolean(false);
 private volatile boolean    engineWasConnected = false;
 ```
 
+**Threading model:**
+- `gameActive` — armed in `startGame()` (game lifecycle begins); CAS'd to false exactly once
+  per game by `fireGameStoppedOnce()`. Written by both scheduler thread (`gameTick()` does
+  NOT write it) and calling thread (`stopGame()`). AtomicBoolean required.
+- `engineWasConnected` — written and read exclusively by the scheduler thread (Quarkus SKIP
+  concurrent execution guarantees single-active `gameTick()`), except that `stopGame()` also
+  writes it to block the natural-end detection path. volatile provides cross-thread visibility.
+
 Private helper that fires exactly once per game:
 
 ```java
@@ -224,13 +234,27 @@ private void fireGameStoppedOnce(GameResult result) {
 }
 ```
 
-**`startGame()`** — no longer sets `gameActive`. `gameActive` is set only once the engine
-is first observed as connected (see `gameTick()` below). This removes the race where
-`gameActive = true` is set speculatively during the connection phase (up to 90s under
-configured retry timeouts), which would cause `gameTick()` to fire `GameStopped(UNKNOWN)`
-as soon as it sees `!isConnected()` — before the game ever ran.
+**`startGame()`** — arms `gameActive` and resets `engineWasConnected`:
 
-**`gameTick()`** — revised to track the connected→disconnected transition:
+```java
+public void startGame() {
+    gameActive.set(true);       // game lifecycle begins
+    engineWasConnected = false; // ensure clean state
+    gameSession.reset();
+    engine.connect();
+    engine.joinGame();
+    gameStartedEvent.fire(new GameStarted());
+    log.info("Game started");
+}
+```
+
+Note: `gameActive = true` is set here (not in `gameTick()`) because the game lifecycle
+begins when `startGame()` is called. The connect-window race (where `gameTick()` could
+detect `!isConnected()` during the up-to-90s connect/createGame/joinGame phase and fire
+`GameStopped(UNKNOWN)`) is prevented by `engineWasConnected = false`, which blocks the
+`else if` branch in `gameTick()` until the engine is actually observed as connected.
+
+**`gameTick()`** — tracks the connected→disconnected transition; does NOT write `gameActive`:
 
 ```java
 @Scheduled(every = "${starcraft.tick.interval:500ms}", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
@@ -238,7 +262,6 @@ public void gameTick() {
     if (schedulerPaused) return;
     if (engine.isConnected()) {
         engineWasConnected = true;
-        gameActive.set(true);                            // game is actually running
         lastTickResult.set(tickExecutor.execute());
     } else if (engineWasConnected) {
         engineWasConnected = false;
@@ -247,33 +270,42 @@ public void gameTick() {
 }
 ```
 
-`engineWasConnected` is only written and read by the scheduler thread (Quarkus SKIP
-concurrent execution guarantees single-active gameTick); `volatile` provides cross-thread
-visibility without synchronisation overhead. `gameActive` is an `AtomicBoolean` because
-`stopGame()` reads/writes it from a different thread.
+`gameActive` is NOT written in `gameTick()`. If it were, a concurrent `stopGame()` that
+CAS'd `gameActive` to false could be undone by a `gameTick()` tick that still observes
+`isConnected() = true` (valid during the window between `transport.quit()` being called and
+`running = false` propagating). That would re-arm the guard and allow a second `GameStopped`
+to fire. By keeping `gameActive` writes strictly in `startGame()` and `fireGameStoppedOnce()`,
+the CAS guard is never re-armed mid-game.
 
 **`stopGame()`**:
 
 ```java
 public void stopGame() {
+    engineWasConnected = false; // block natural-end path — prevents double-fire if gameTick()
+                                // observes !isConnected() after this call
     engine.leaveGame();
-    fireGameStoppedOnce(GameResult.UNKNOWN);   // manual stop — outcome unresolved
+    fireGameStoppedOnce(GameResult.UNKNOWN);
     log.info("Game stopped");
 }
 ```
 
+`engineWasConnected = false` is written before `engine.leaveGame()` to close the natural-end
+detection window in `gameTick()`. If `gameTick()` reads `engineWasConnected = true` before
+this write (race), its subsequent `fireGameStoppedOnce()` CAS will fail because `stopGame()`'s
+CAS wins first (or vice versa). The volatile write and AtomicBoolean CAS together guarantee
+exactly one `GameStopped` fires regardless of ordering.
+
 Manual stop always passes `UNKNOWN` — the game loop is being interrupted, no resolved
-outcome is available. `gameActive.compareAndSet` prevents double-fire if `gameTick()` also
-fires (or vice versa).
+outcome is available.
 
 **Continuous loop (training mode):** after `fireGameStoppedOnce()`, `gameActive = false`
-and `engineWasConnected = false`. The next `startGame()` eventually connects → next
-`gameTick()` sees `isConnected() = true` → sets both fields → loop restarts cleanly.
+and `engineWasConnected = false`. The next `startGame()` call sets `gameActive = true` and
+resets `engineWasConnected = false`. Clean state for the next game.
 
-**Edge case — stopGame() before first connected tick:** `gameActive` is still `false`
-(set in `gameTick()`, not `startGame()`). `fireGameStoppedOnce(UNKNOWN)` CAS fails →
-`GameStopped` not fired. This is correct: if no game tick ran, no strategy was selected
-and no ledger entry should be written.
+**Edge case — stopGame() before first connected tick:** `engineWasConnected = false`,
+`gameActive = true` (set in `startGame()`). `stopGame()` fires `GameStopped(UNKNOWN)` via
+CAS. `GameOutcomeRecorder` receives `UNKNOWN` and skips ledger write (§7). This is correct:
+if no game tick ran, no trust signal should be recorded.
 
 ---
 
@@ -317,7 +349,7 @@ void onGameStopped(@Observes GameStopped event) {
 ### 8. EconomicsLifecycle — impact analysis
 
 `EconomicsLifecycle.onGameStop(@Observes GameStopped event)` observes the event as a
-lifecycle signal to log economics workflow state. It never calls `event.result()`. The
+lifecycle signal to manage economics workflow state. It never calls `event.result()`. The
 enriched record compiles and behaves identically — no change needed.
 
 ---
@@ -341,9 +373,9 @@ returns.
 | `sc2/SC2Engine.java` | Add `default GameResult lastOutcome()` |
 | `sc2/real/SC2FrameCallback.java` | `onGameEnd()` → `onGameEnd(GameResult)` |
 | `sc2/real/SC2BotAgent.java` | Reset `lastOutcome` in `onGameStart()`; implement `onGameEnd(GameResult)` |
-| `sc2/real/QuarkusSC2Transport.java` | `extractLocalPlayerId()`; `extractResult()`; reverse `onGameEnd`/`running=false` order; local `gameResult` in `gameLoop()` |
+| `sc2/real/QuarkusSC2Transport.java` | `extractLocalPlayerId()`; `extractResult()`; inline `gameResult` extraction before break; reverse `onGameEnd`/`running=false` order |
 | `sc2/real/RealSC2Engine.java` | Override `lastOutcome()` |
-| `agent/AgentOrchestrator.java` | Add `gameActive` + `engineWasConnected`; `fireGameStoppedOnce()`; transition-tracking `gameTick()`; remove `gameActive.set(true)` from `startGame()` |
+| `agent/AgentOrchestrator.java` | Add `gameActive` + `engineWasConnected`; `fireGameStoppedOnce()`; `startGame()` arms `gameActive` + resets `engineWasConnected`; `stopGame()` resets `engineWasConnected` + fires once; transition-tracking `gameTick()` (no `gameActive` write) |
 | `agent/GameOutcomeRecorder.java` | Map `GameResult` to `AttestationVerdict`; skip UNKNOWN |
 | `plugin/flow/EconomicsLifecycle.java` | No change — observes signal only, never accesses `result()` |
 | `sc2/mock/StrategyOutcomeRecordIT.java` | Update four `new GameStopped()` → `new GameStopped(GameResult.WIN)`; add WIN/LOSS/UNKNOWN assertion cases |
@@ -354,13 +386,13 @@ returns.
 
 | Test | Type | What it verifies |
 |------|------|-----------------|
-| `QuarkusSC2TransportTest.extractLocalPlayerId` (extend) | Unit — package-private static | Mocked `ResponseGameInfo` with PARTICIPANT + COMPUTER entries → returns PARTICIPANT's player ID |
+| `QuarkusSC2TransportTest.extractLocalPlayerId` (extend) | Unit — package-private static | Mocked `ResponseGameInfo` with PARTICIPANT (id=2) + COMPUTER (id=1) entries → returns 2; PARTICIPANT-only → returns that id; no PARTICIPANT → returns fallback 1 |
 | `QuarkusSC2TransportTest.naturalGameEnd_parsesPlayerResult` (extend) | Unit — `FakeSC2Server` | Set `observationsBeforeEnd=2` and `playerResultForGameEnd=Victory`; assert `callback.onGameEnd(WIN)` called |
-| `RealSC2EngineTest` (extend) | Unit | `lastOutcome()` returns `UNKNOWN` before game; returns stored value after `onGameEnd(WIN)` |
+| `RealSC2EngineTest` (extend) | Unit | `lastOutcome()` returns `UNKNOWN` before game; returns `WIN` after `botAgent.onGameEnd(WIN)` called directly |
 | `StrategyOutcomeRecordIT` (extend) | `@QuarkusTest` | `fire(WIN)` → `ENDORSED` in ledger + `decisionCount=1`; `fire(LOSS)` → `CHALLENGED`; `fire(UNKNOWN)` → no ledger write, `decisionCount` unchanged |
 
 **`FakeSC2Server` extension:** add `Sc2Api.Result playerResultForGameEnd = null` field.
-When `status = ended`, append `addPlayerResult(Sc2Api.PlayerResult.newBuilder().setPlayerId(1).setResult(playerResultForGameEnd))` to the `ResponseObservation` if non-null.
+When `status = ended`, append `addPlayerResult(Sc2Api.PlayerResult.newBuilder().setPlayerId(1).setResult(playerResultForGameEnd))` to the `ResponseObservation` if non-null. Uses raw `Sc2Api.Result` (protobuf enum) since `buildResponse()` works at the protobuf layer.
 
 ---
 
