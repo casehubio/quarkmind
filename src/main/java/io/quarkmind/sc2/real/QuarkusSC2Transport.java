@@ -3,10 +3,13 @@ package io.quarkmind.sc2.real;
 import SC2APIProtocol.Raw;
 import SC2APIProtocol.Sc2Api;
 import com.github.ocraft.s2client.protocol.game.Difficulty;
+import com.github.ocraft.s2client.protocol.game.PlayerType;
 import com.github.ocraft.s2client.protocol.game.Race;
 import com.github.ocraft.s2client.protocol.observation.Observation;
+import com.github.ocraft.s2client.protocol.observation.Result;
 import com.github.ocraft.s2client.protocol.response.ResponseGameInfo;
 import com.github.ocraft.s2client.protocol.response.ResponseObservation;
+import io.quarkmind.sc2.GameResult;
 import io.quarkus.arc.profile.IfBuildProfile;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -173,11 +176,13 @@ public class QuarkusSC2Transport {
     private void gameLoop(SC2FrameCallback callback) {
         running = true;
         boolean gameStarted = false;
+        GameResult gameResult = GameResult.UNKNOWN;
         try {
             Sc2Api.Response infoResp = sendSync(
                 Sc2Api.Request.newBuilder().setGameInfo(Sc2Api.RequestGameInfo.getDefaultInstance()).build(),
                 Duration.ofSeconds(60));
             ResponseGameInfo gameInfo = ResponseGameInfo.from(infoResp);
+            int localPlayerId = extractLocalPlayerId(gameInfo);
             callback.onGameStart(gameInfo);
             gameStarted = true;
 
@@ -187,7 +192,11 @@ public class QuarkusSC2Transport {
                         .setObservation(Sc2Api.RequestObservation.getDefaultInstance()).build(),
                     Duration.ofSeconds(5));
 
-                if (obsResp.getStatus() != Sc2Api.Status.in_game) break;
+                if (obsResp.getStatus() != Sc2Api.Status.in_game) {
+                    // Natural game end — extract player result from final response
+                    gameResult = extractResult(obsResp, localPlayerId);
+                    break;
+                }
 
                 ResponseObservation ro = ResponseObservation.from(obsResp);
                 Observation obs = ro.getObservation();
@@ -202,6 +211,11 @@ public class QuarkusSC2Transport {
         } catch (Exception e) {
             log.errorf("[SC2] Game loop error: %s", e.getMessage());
         } finally {
+            // onGameEnd before running=false: within this thread, program order guarantees
+            // lastOutcome is set before running=false. The volatile write to running establishes
+            // happens-before with gameTick()'s volatile read of running, so lastOutcome is
+            // visible to gameTick() by the time it observes !isConnected().
+            if (gameStarted) callback.onGameEnd(gameResult);
             running = false;
             if (quitting.get()) {
                 try {
@@ -211,8 +225,50 @@ public class QuarkusSC2Transport {
                 } catch (Exception ignored) {}
             }
             closeSocket();
-            if (gameStarted) callback.onGameEnd();
             gameLoopThread = null;
+        }
+    }
+
+    /**
+     * Finds the local player's ID from game info — the entry with type PARTICIPANT.
+     *
+     * <p>Assumes exactly one PARTICIPANT entry (single bot vs AI). In that case
+     * {@code getPlayersInfo()} always yields exactly one PARTICIPANT; {@code findFirst()}
+     * on an unordered {@code Set} is deterministic.
+     *
+     * <p>Falls back to 1 if no PARTICIPANT entry is found. The fallback silently produces
+     * a wrong result for multi-participant games (e.g. bot-vs-bot). That use case is outside
+     * current project scope but should be revisited if it ever becomes relevant.
+     */
+    static int extractLocalPlayerId(ResponseGameInfo gameInfo) {
+        return gameInfo.getPlayersInfo().stream()
+            .filter(pi -> pi.getPlayerType().map(t -> t == PlayerType.PARTICIPANT).orElse(false))
+            .mapToInt(com.github.ocraft.s2client.protocol.game.PlayerInfo::getPlayerId)
+            .findFirst()
+            .orElse(1);
+    }
+
+    /**
+     * Extracts the game result for the local player from the final observation response.
+     * Returns {@link GameResult#UNKNOWN} if the response cannot be parsed or contains no
+     * player result for the given player ID.
+     */
+    static GameResult extractResult(Sc2Api.Response obsResp, int localPlayerId) {
+        try {
+            ResponseObservation ro = ResponseObservation.from(obsResp);
+            return ro.getPlayerResults().stream()
+                .filter(pr -> pr.getPlayerId() == localPlayerId)
+                .map(pr -> switch (pr.getResult()) {
+                    case VICTORY   -> GameResult.WIN;
+                    case DEFEAT    -> GameResult.LOSS;
+                    case TIE       -> GameResult.TIE;
+                    case UNDECIDED -> GameResult.UNKNOWN;
+                })
+                .findFirst()
+                .orElse(GameResult.UNKNOWN);
+        } catch (Exception e) {
+            log.warnf("[SC2] Could not parse player result from final observation: %s", e.getMessage());
+            return GameResult.UNKNOWN;
         }
     }
 

@@ -1,13 +1,15 @@
 package io.quarkmind.sc2.mock;
 
-import io.casehub.ledger.memory.InMemoryActorTrustScoreRepository;
+import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.ledger.memory.InMemoryLedgerEntryRepository;
+import io.casehub.ledger.memory.InMemoryActorTrustScoreRepository;
 import io.casehub.ledger.runtime.service.TrustGateService;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.agent.StrategySelector;
+import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.GameStarted;
 import io.quarkmind.sc2.GameStopped;
 import io.casehub.platform.api.identity.TenancyConstants;
@@ -37,14 +39,17 @@ class StrategyOutcomeRecordIT {
     @BeforeEach
     void setUp() {
         ledgerRepo.clear();
-        trustScoreRepo.clear(); // resets accumulated decisionCount between test methods
+        trustScoreRepo.clear();
         strategySelector.reset();
         gameSession.reset();
     }
 
+    // -----------------------------------------------------------------------
+    // Existing accumulation behaviour — fires WIN (ENDORSED writes an entry)
+    // -----------------------------------------------------------------------
+
     @Test
     void gameStopped_writesOutcomeRecord_andMaterializesDecisionCount() {
-        // Given: a game was started with drools as default
         gameStartedEvent.fire(new GameStarted());
         String selectedId = strategySelector.getSelectedId();
         String context    = strategySelector.getOpponentContext();
@@ -52,17 +57,12 @@ class StrategyOutcomeRecordIT {
         assertThat(selectedId).isEqualTo("strategy.drools");
         assertThat(context).isEqualTo(QuarkMindCapabilityTag.STRATEGY_VS_UNKNOWN);
 
-        // When: game stops (sync observer — records before reset can fire)
-        gameStoppedEvent.fire(new GameStopped());
+        gameStoppedEvent.fire(new GameStopped(GameResult.WIN));
 
-        // Then: ledger has an entry for this game session
         assertThat(ledgerRepo.findBySubjectId(gameSession.id(), TenancyConstants.DEFAULT_TENANT_ID))
             .as("ledger should have at least one entry after game stop")
             .isNotEmpty();
-
-        // And: trust score pipeline materialized decisionCount=1
-        int count = trustGateService.decisionCount(selectedId, context);
-        assertThat(count)
+        assertThat(trustGateService.decisionCount(selectedId, context))
             .as("decisionCount should be 1 after one recorded game outcome")
             .isEqualTo(1);
     }
@@ -73,27 +73,91 @@ class StrategyOutcomeRecordIT {
         String selectedId = strategySelector.getSelectedId();
         String context    = strategySelector.getOpponentContext();
 
-        gameStoppedEvent.fire(new GameStopped());
+        gameStoppedEvent.fire(new GameStopped(GameResult.WIN));
 
-        // decisionCount accumulates for the correct (strategy, context) key
         assertThat(trustGateService.decisionCount(selectedId, context)).isEqualTo(1);
-        // Other (strategy, context) pairs are not affected
         assertThat(trustGateService.decisionCount("strategy.early-pressure",
             QuarkMindCapabilityTag.STRATEGY_VS_AGGRESSIVE)).isZero();
     }
 
     @Test
     void gameStopped_acrossMultipleGames_accumulatesDecisionCount() {
-        // Play two games with the same strategy/context
         gameStartedEvent.fire(new GameStarted());
-        gameStoppedEvent.fire(new GameStopped());
+        gameStoppedEvent.fire(new GameStopped(GameResult.WIN));
 
         gameSession.reset();
         gameStartedEvent.fire(new GameStarted());
-        gameStoppedEvent.fire(new GameStopped());
+        gameStoppedEvent.fire(new GameStopped(GameResult.WIN));
 
-        // decisionCount should be 2 — verifies cross-game accumulation (no LedgerLifecycleAdapter clear)
         assertThat(trustGateService.decisionCount(
             "strategy.drools", QuarkMindCapabilityTag.STRATEGY_VS_UNKNOWN)).isEqualTo(2);
+    }
+
+    // -----------------------------------------------------------------------
+    // Verdict mapping: WIN → ENDORSED, LOSS → CHALLENGED, TIE → SOUND
+    // -----------------------------------------------------------------------
+
+    @Test
+    void gameStopped_withWin_writesEndorsedVerdict() {
+        gameStartedEvent.fire(new GameStarted());
+
+        gameStoppedEvent.fire(new GameStopped(GameResult.WIN));
+
+        var entries = ledgerRepo.findBySubjectId(gameSession.id(), TenancyConstants.DEFAULT_TENANT_ID);
+        assertThat(entries).isNotEmpty();
+        var attestations = ledgerRepo.findAttestationsByEntryId(
+            entries.get(0).id, TenancyConstants.DEFAULT_TENANT_ID);
+        assertThat(attestations).isNotEmpty();
+        assertThat(attestations.get(0).verdict)
+            .as("WIN must produce ENDORSED verdict")
+            .isEqualTo(AttestationVerdict.ENDORSED);
+    }
+
+    @Test
+    void gameStopped_withLoss_writesChallengedVerdict() {
+        gameStartedEvent.fire(new GameStarted());
+
+        gameStoppedEvent.fire(new GameStopped(GameResult.LOSS));
+
+        var entries = ledgerRepo.findBySubjectId(gameSession.id(), TenancyConstants.DEFAULT_TENANT_ID);
+        assertThat(entries).isNotEmpty();
+        var attestations = ledgerRepo.findAttestationsByEntryId(
+            entries.get(0).id, TenancyConstants.DEFAULT_TENANT_ID);
+        assertThat(attestations).isNotEmpty();
+        assertThat(attestations.get(0).verdict)
+            .as("LOSS must produce CHALLENGED verdict")
+            .isEqualTo(AttestationVerdict.CHALLENGED);
+    }
+
+    @Test
+    void gameStopped_withTie_writesSoundVerdict() {
+        gameStartedEvent.fire(new GameStarted());
+
+        gameStoppedEvent.fire(new GameStopped(GameResult.TIE));
+
+        var entries = ledgerRepo.findBySubjectId(gameSession.id(), TenancyConstants.DEFAULT_TENANT_ID);
+        assertThat(entries).isNotEmpty();
+        var attestations = ledgerRepo.findAttestationsByEntryId(
+            entries.get(0).id, TenancyConstants.DEFAULT_TENANT_ID);
+        assertThat(attestations).isNotEmpty();
+        assertThat(attestations.get(0).verdict)
+            .as("TIE must produce SOUND verdict")
+            .isEqualTo(AttestationVerdict.SOUND);
+    }
+
+    @Test
+    void gameStopped_withUnknown_writesNoLedgerEntry_andDoesNotChangeTrustCount() {
+        gameStartedEvent.fire(new GameStarted());
+        String selectedId = strategySelector.getSelectedId();
+        String context    = strategySelector.getOpponentContext();
+
+        gameStoppedEvent.fire(new GameStopped(GameResult.UNKNOWN));
+
+        assertThat(ledgerRepo.findBySubjectId(gameSession.id(), TenancyConstants.DEFAULT_TENANT_ID))
+            .as("UNKNOWN must not write any ledger entry")
+            .isEmpty();
+        assertThat(trustGateService.decisionCount(selectedId, context))
+            .as("UNKNOWN must not affect decisionCount")
+            .isZero();
     }
 }

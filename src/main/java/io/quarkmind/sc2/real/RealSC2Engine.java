@@ -4,6 +4,7 @@ import io.quarkus.arc.profile.IfBuildProfile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.SC2Engine;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.jboss.logging.Logger;
@@ -91,6 +92,11 @@ public class RealSC2Engine implements SC2Engine {
     /** No-op — {@link SC2BotAgent#onStep} dispatches actions from within the game loop. */
     @Override
     public void dispatch() {}
+
+    @Override
+    public GameResult lastOutcome() {
+        return botAgent != null ? botAgent.getLastOutcome() : GameResult.UNKNOWN;
+    }
 
     // --- Extension point for SC2DebugScenarioRunner ---
 

@@ -2,6 +2,7 @@ package io.quarkmind.sc2.real;
 
 import com.github.ocraft.s2client.protocol.observation.Observation;
 import com.github.ocraft.s2client.protocol.response.ResponseGameInfo;
+import io.quarkmind.sc2.GameResult;
 
 /**
  * Callback interface between QuarkusSC2Transport and SC2BotAgent.
@@ -22,6 +23,10 @@ public interface SC2FrameCallback {
      */
     void onStep(Observation obs) throws InterruptedException;
 
-    /** Called from the game loop finally block — fires unconditionally on all exit paths. */
-    void onGameEnd();
+    /**
+     * Called from the game loop finally block — fires unconditionally on all exit paths.
+     * {@code result} is {@link GameResult#UNKNOWN} when the game was interrupted or crashed;
+     * otherwise reflects the player result from the final SC2 observation response.
+     */
+    void onGameEnd(GameResult result);
 }
