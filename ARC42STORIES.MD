@@ -737,7 +737,7 @@ Three competing `StrategyTask` implementations now exist. At game start, `Strate
 
 `GameOutcomeRecorder` observes `GameStopped` synchronously — records the completed game's strategy and opponent context via `OutcomeRecorder.record()`; trust scores materialise via `IncrementalTrustUpdateObserver` at `TransactionPhase.AFTER_SUCCESS`. `LedgerLifecycleAdapter` was removed — it was clearing the in-memory ledger between games, capping `decisionCount` permanently at 1.
 
-**Known limitation:** `GameOutcomeRecorder` records `SOUND` for all games until real win/loss detection ships (#189). With uniform SOUND verdicts, trust routing produces no strategic learning.
+`GameStopped` carries a `GameResult` (WIN/LOSS/TIE/UNKNOWN) derived from the SC2 API `playerResult` at game end (#189). `GameOutcomeRecorder` maps WIN→ENDORSED (trust increases), LOSS→CHALLENGED (trust decreases), TIE→SOUND (neutral), UNKNOWN→skipped. Trust routing now receives directional signals from real games; Bayesian Beta scores evolve based on actual outcomes.
 
 🔲 Full Chapter entry at C5 close.
 
