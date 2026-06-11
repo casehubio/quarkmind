@@ -37,6 +37,15 @@ public interface SC2Engine {
     /** Flush pending intents to the game. No-op when the engine drains intents in its own callback (real SC2). */
     void dispatch();
 
+    // --- Game outcome ---
+
+    /**
+     * Returns the outcome of the most recently completed game.
+     * {@link GameResult#UNKNOWN} until a game ends naturally with a player result from the SC2 API,
+     * and for all non-sc2 engine implementations (mock, emulated, replay).
+     */
+    default GameResult lastOutcome() { return GameResult.UNKNOWN; }
+
     // --- Optional hooks ---
 
     /** Register a listener called on every {@link #observe()} invocation. Default: no-op. */

@@ -38,6 +38,8 @@ class QuarkusSC2TransportTest {
 
         // Configurable: how many in_game observation responses before returning ended
         volatile int observationsBeforeEnd = Integer.MAX_VALUE;
+        // Configurable: if non-null, included in the ended ResponseObservation as a PlayerResult
+        volatile Sc2Api.Result playerResultForGameEnd = null;
         private final AtomicInteger obsCount = new AtomicInteger();
 
         FakeSC2Server() throws IOException {
@@ -157,8 +159,8 @@ class QuarkusSC2TransportTest {
             }
             if (req.hasObservation()) {
                 int n = obsCount.incrementAndGet();
-                Sc2Api.Status status = n > observationsBeforeEnd
-                        ? Sc2Api.Status.ended : Sc2Api.Status.in_game;
+                boolean isEnded = n > observationsBeforeEnd;
+                Sc2Api.Status status = isEnded ? Sc2Api.Status.ended : Sc2Api.Status.in_game;
                 // Minimal observation — avoids HEIGHT_MAP image data which makes frames
                 // large enough to trigger the 2-byte frame length encoding.
                 // All fields required by ocraft's ResponseObservation.from() are present.
@@ -168,7 +170,7 @@ class QuarkusSC2TransportTest {
                     .setSize(SC2APIProtocol.Common.Size2DI.newBuilder().setX(1).setY(1).build())
                     .setData(com.google.protobuf.ByteString.copyFrom(new byte[]{0}))
                     .build();
-                return b.setObservation(Sc2Api.ResponseObservation.newBuilder()
+                Sc2Api.ResponseObservation.Builder obsBuilder = Sc2Api.ResponseObservation.newBuilder()
                         .setObservation(Sc2Api.Observation.newBuilder()
                             .setGameLoop(n)
                             .setPlayerCommon(Sc2Api.PlayerCommon.newBuilder()
@@ -186,9 +188,14 @@ class QuarkusSC2TransportTest {
                                     .setCreep(emptyImg)
                                     .build())
                                 .build())
-                            .build())
-                        .build())
-                    .setStatus(status).build();
+                            .build());
+                if (isEnded && playerResultForGameEnd != null) {
+                    obsBuilder.addPlayerResult(Sc2Api.PlayerResult.newBuilder()
+                        .setPlayerId(1)
+                        .setResult(playerResultForGameEnd)
+                        .build());
+                }
+                return b.setObservation(obsBuilder.build()).setStatus(status).build();
             }
             if (req.hasStep())
                 return b.setStep(Sc2Api.ResponseStep.getDefaultInstance())
@@ -351,7 +358,7 @@ class QuarkusSC2TransportTest {
         transport.runGameLoop(new SC2FrameCallback() {
             @Override public void onGameStart(ResponseGameInfo info) { gameStarted.countDown(); }
             @Override public void onStep(Observation obs) throws InterruptedException { stepObs.add(obs); stepFired.countDown(); }
-            @Override public void onGameEnd()                       { gameEnded.countDown(); }
+            @Override public void onGameEnd(io.quarkmind.sc2.GameResult result) { gameEnded.countDown(); }
         });
 
         assertThat(gameStarted.await(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
@@ -373,7 +380,7 @@ class QuarkusSC2TransportTest {
         transport.runGameLoop(new SC2FrameCallback() {
             @Override public void onGameStart(ResponseGameInfo i) {}
             @Override public void onStep(Observation obs) throws InterruptedException {}
-            @Override public void onGameEnd() { gameEnded.countDown(); }
+            @Override public void onGameEnd(io.quarkmind.sc2.GameResult result) { gameEnded.countDown(); }
         });
 
         assertThat(gameEnded.await(8, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
@@ -401,7 +408,7 @@ class QuarkusSC2TransportTest {
                 stepStarted.countDown();
                 stepCanFinish.await(5, java.util.concurrent.TimeUnit.SECONDS);
             }
-            @Override public void onGameEnd() { ended.countDown(); }
+            @Override public void onGameEnd(io.quarkmind.sc2.GameResult result) { ended.countDown(); }
         });
 
         assertThat(stepStarted.await(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
@@ -428,7 +435,7 @@ class QuarkusSC2TransportTest {
         transport.runGameLoop(new SC2FrameCallback() {
             @Override public void onGameStart(ResponseGameInfo i) {}
             @Override public void onStep(Observation obs) throws InterruptedException { stepped.countDown(); }
-            @Override public void onGameEnd() { ended.countDown(); }
+            @Override public void onGameEnd(io.quarkmind.sc2.GameResult result) { ended.countDown(); }
         });
 
         assertThat(stepped.await(5, java.util.concurrent.TimeUnit.SECONDS))
@@ -457,7 +464,7 @@ class QuarkusSC2TransportTest {
                 // Block here so quit() interrupts us while inside onStep
                 Thread.sleep(Long.MAX_VALUE);
             }
-            @Override public void onGameEnd() { ended.countDown(); }
+            @Override public void onGameEnd(io.quarkmind.sc2.GameResult result) { ended.countDown(); }
         });
 
         assertThat(stepStarted.await(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
@@ -510,7 +517,7 @@ class QuarkusSC2TransportTest {
                 actionSent.countDown();
                 transport.quit();
             }
-            @Override public void onGameEnd() { ended.countDown(); }
+            @Override public void onGameEnd(io.quarkmind.sc2.GameResult result) { ended.countDown(); }
         });
 
         assertThat(actionSent.await(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
@@ -629,5 +636,182 @@ class QuarkusSC2TransportTest {
         transport = connectedTransport(server);
         assertThat(transport.isRunning()).isFalse();
         assertThat(server.received().stream().anyMatch(Sc2Api.Request::hasPing)).isTrue();
+    }
+
+    // ---------------------------------------------------------------------------
+    // extractLocalPlayerId() — player ID from ResponseGameInfo
+    // ---------------------------------------------------------------------------
+
+    @Test
+    void extractLocalPlayerId_returnsParticipantId_whenParticipantAndComputerPresent() {
+        // PARTICIPANT with id=2, COMPUTER with id=1 — must return 2
+        SC2APIProtocol.Sc2Api.ResponseGameInfo proto = SC2APIProtocol.Sc2Api.ResponseGameInfo.newBuilder()
+            .setMapName("test")
+            .addPlayerInfo(SC2APIProtocol.Sc2Api.PlayerInfo.newBuilder()
+                .setPlayerId(1)
+                .setType(SC2APIProtocol.Sc2Api.PlayerType.Computer)
+                .setRaceRequested(SC2APIProtocol.Common.Race.Terran)
+                .build())
+            .addPlayerInfo(SC2APIProtocol.Sc2Api.PlayerInfo.newBuilder()
+                .setPlayerId(2)
+                .setType(SC2APIProtocol.Sc2Api.PlayerType.Participant)
+                .setRaceRequested(SC2APIProtocol.Common.Race.Protoss)
+                .build())
+            .setOptions(SC2APIProtocol.Sc2Api.InterfaceOptions.newBuilder().setRaw(true).build())
+            .build();
+        Sc2Api.Response resp = Sc2Api.Response.newBuilder()
+            .setGameInfo(proto).setStatus(Sc2Api.Status.in_game).build();
+        com.github.ocraft.s2client.protocol.response.ResponseGameInfo gameInfo =
+            com.github.ocraft.s2client.protocol.response.ResponseGameInfo.from(resp);
+
+        assertThat(QuarkusSC2Transport.extractLocalPlayerId(gameInfo)).isEqualTo(2);
+    }
+
+    @Test
+    void extractLocalPlayerId_returnsFallback_whenNoParticipantPresent() {
+        // Only COMPUTER entries — no PARTICIPANT → fallback to 1
+        SC2APIProtocol.Sc2Api.ResponseGameInfo proto = SC2APIProtocol.Sc2Api.ResponseGameInfo.newBuilder()
+            .setMapName("test")
+            .addPlayerInfo(SC2APIProtocol.Sc2Api.PlayerInfo.newBuilder()
+                .setPlayerId(3)
+                .setType(SC2APIProtocol.Sc2Api.PlayerType.Computer)
+                .setRaceRequested(SC2APIProtocol.Common.Race.Zerg)
+                .build())
+            .setOptions(SC2APIProtocol.Sc2Api.InterfaceOptions.newBuilder().setRaw(true).build())
+            .build();
+        Sc2Api.Response resp = Sc2Api.Response.newBuilder()
+            .setGameInfo(proto).setStatus(Sc2Api.Status.in_game).build();
+        com.github.ocraft.s2client.protocol.response.ResponseGameInfo gameInfo =
+            com.github.ocraft.s2client.protocol.response.ResponseGameInfo.from(resp);
+
+        assertThat(QuarkusSC2Transport.extractLocalPlayerId(gameInfo)).isEqualTo(1);
+    }
+
+    @Test
+    void extractLocalPlayerId_returnsSingleParticipantId() {
+        // Single PARTICIPANT — standard case (bot vs AI, bot is player 1)
+        SC2APIProtocol.Sc2Api.ResponseGameInfo proto = SC2APIProtocol.Sc2Api.ResponseGameInfo.newBuilder()
+            .setMapName("test")
+            .addPlayerInfo(SC2APIProtocol.Sc2Api.PlayerInfo.newBuilder()
+                .setPlayerId(1)
+                .setType(SC2APIProtocol.Sc2Api.PlayerType.Participant)
+                .setRaceRequested(SC2APIProtocol.Common.Race.Protoss)
+                .build())
+            .setOptions(SC2APIProtocol.Sc2Api.InterfaceOptions.newBuilder().setRaw(true).build())
+            .build();
+        Sc2Api.Response resp = Sc2Api.Response.newBuilder()
+            .setGameInfo(proto).setStatus(Sc2Api.Status.in_game).build();
+        com.github.ocraft.s2client.protocol.response.ResponseGameInfo gameInfo =
+            com.github.ocraft.s2client.protocol.response.ResponseGameInfo.from(resp);
+
+        assertThat(QuarkusSC2Transport.extractLocalPlayerId(gameInfo)).isEqualTo(1);
+    }
+
+    // ---------------------------------------------------------------------------
+    // naturalGameEnd — onGameEnd(GameResult) receives correct result
+    // ---------------------------------------------------------------------------
+
+    @Test @Timeout(10)
+    void naturalGameEnd_callsOnGameEnd_withWin_whenPlayerResultIsVictory() throws Exception {
+        server.observationsBeforeEnd = 1;
+        server.playerResultForGameEnd = Sc2Api.Result.Victory;
+        transport = connectedTransport(server);
+        transport.createGame();
+        transport.joinGame();
+
+        java.util.concurrent.atomic.AtomicReference<io.quarkmind.sc2.GameResult> capturedResult =
+            new java.util.concurrent.atomic.AtomicReference<>();
+        CountDownLatch gameEnded = new CountDownLatch(1);
+
+        transport.runGameLoop(new SC2FrameCallback() {
+            @Override public void onGameStart(com.github.ocraft.s2client.protocol.response.ResponseGameInfo i) {}
+            @Override public void onStep(com.github.ocraft.s2client.protocol.observation.Observation obs) throws InterruptedException {}
+            @Override public void onGameEnd(io.quarkmind.sc2.GameResult result) {
+                capturedResult.set(result);
+                gameEnded.countDown();
+            }
+        });
+
+        assertThat(gameEnded.await(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
+        assertThat(capturedResult.get()).isEqualTo(io.quarkmind.sc2.GameResult.WIN);
+    }
+
+    @Test @Timeout(10)
+    void naturalGameEnd_callsOnGameEnd_withLoss_whenPlayerResultIsDefeat() throws Exception {
+        server.observationsBeforeEnd = 1;
+        server.playerResultForGameEnd = Sc2Api.Result.Defeat;
+        transport = connectedTransport(server);
+        transport.createGame();
+        transport.joinGame();
+
+        java.util.concurrent.atomic.AtomicReference<io.quarkmind.sc2.GameResult> capturedResult =
+            new java.util.concurrent.atomic.AtomicReference<>();
+        CountDownLatch gameEnded = new CountDownLatch(1);
+
+        transport.runGameLoop(new SC2FrameCallback() {
+            @Override public void onGameStart(com.github.ocraft.s2client.protocol.response.ResponseGameInfo i) {}
+            @Override public void onStep(com.github.ocraft.s2client.protocol.observation.Observation obs) throws InterruptedException {}
+            @Override public void onGameEnd(io.quarkmind.sc2.GameResult result) {
+                capturedResult.set(result);
+                gameEnded.countDown();
+            }
+        });
+
+        assertThat(gameEnded.await(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
+        assertThat(capturedResult.get()).isEqualTo(io.quarkmind.sc2.GameResult.LOSS);
+    }
+
+    @Test @Timeout(10)
+    void naturalGameEnd_callsOnGameEnd_withUnknown_whenNoPlayerResult() throws Exception {
+        server.observationsBeforeEnd = 1;
+        server.playerResultForGameEnd = null; // no playerResult in response
+        transport = connectedTransport(server);
+        transport.createGame();
+        transport.joinGame();
+
+        java.util.concurrent.atomic.AtomicReference<io.quarkmind.sc2.GameResult> capturedResult =
+            new java.util.concurrent.atomic.AtomicReference<>();
+        CountDownLatch gameEnded = new CountDownLatch(1);
+
+        transport.runGameLoop(new SC2FrameCallback() {
+            @Override public void onGameStart(com.github.ocraft.s2client.protocol.response.ResponseGameInfo i) {}
+            @Override public void onStep(com.github.ocraft.s2client.protocol.observation.Observation obs) throws InterruptedException {}
+            @Override public void onGameEnd(io.quarkmind.sc2.GameResult result) {
+                capturedResult.set(result);
+                gameEnded.countDown();
+            }
+        });
+
+        assertThat(gameEnded.await(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
+        assertThat(capturedResult.get()).isEqualTo(io.quarkmind.sc2.GameResult.UNKNOWN);
+    }
+
+    @Test @Timeout(10)
+    void quit_callsOnGameEnd_withUnknown_whenGameInterrupted() throws Exception {
+        server.observationsBeforeEnd = Integer.MAX_VALUE;
+        transport = connectedTransport(server);
+        transport.createGame();
+        transport.joinGame();
+
+        java.util.concurrent.atomic.AtomicReference<io.quarkmind.sc2.GameResult> capturedResult =
+            new java.util.concurrent.atomic.AtomicReference<>();
+        CountDownLatch stepped   = new CountDownLatch(1);
+        CountDownLatch gameEnded = new CountDownLatch(1);
+
+        transport.runGameLoop(new SC2FrameCallback() {
+            @Override public void onGameStart(com.github.ocraft.s2client.protocol.response.ResponseGameInfo i) {}
+            @Override public void onStep(com.github.ocraft.s2client.protocol.observation.Observation obs) throws InterruptedException {
+                stepped.countDown();
+            }
+            @Override public void onGameEnd(io.quarkmind.sc2.GameResult result) {
+                capturedResult.set(result);
+                gameEnded.countDown();
+            }
+        });
+
+        assertThat(stepped.await(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
+        transport.quit();
+        assertThat(gameEnded.await(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
+        assertThat(capturedResult.get()).isEqualTo(io.quarkmind.sc2.GameResult.UNKNOWN);
     }
 }

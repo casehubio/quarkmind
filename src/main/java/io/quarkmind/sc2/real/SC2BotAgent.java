@@ -7,6 +7,7 @@ import com.github.ocraft.s2client.protocol.response.ResponseGameInfo;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.TerrainGrid;
+import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.TerrainProvider;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -39,11 +40,13 @@ public class SC2BotAgent implements SC2FrameCallback {
     @Inject TerrainProvider     terrainProvider;
     @Inject QuarkusSC2Transport transport;
 
-    private final AtomicReference<GameState> latestGameState = new AtomicReference<>(null);
-    private final Queue<Sc2Api.RequestDebug> pendingDebugCommands = new ConcurrentLinkedQueue<>();
+    private final AtomicReference<GameState>   latestGameState    = new AtomicReference<>(null);
+    private final AtomicReference<GameResult>  lastOutcome        = new AtomicReference<>(GameResult.UNKNOWN);
+    private final Queue<Sc2Api.RequestDebug>   pendingDebugCommands = new ConcurrentLinkedQueue<>();
 
     @Override
     public void onGameStart(ResponseGameInfo gameInfo) {
+        lastOutcome.set(GameResult.UNKNOWN); // reset before new game
         gameInfo.getStartRaw().ifPresent(startRaw -> {
             ImageData pg = startRaw.getPathingGrid();
             TerrainGrid terrain = TerrainGrid.fromPathingGrid(
@@ -81,11 +84,13 @@ public class SC2BotAgent implements SC2FrameCallback {
     }
 
     @Override
-    public void onGameEnd() {
-        log.info("[SC2] Game ended");
+    public void onGameEnd(GameResult result) {
+        lastOutcome.set(result);
+        log.infof("[SC2] Game ended — result=%s", result);
     }
 
-    public GameState getLatestGameState() { return latestGameState.get(); }
+    public GameResult  getLastOutcome()    { return lastOutcome.get(); }
+    public GameState   getLatestGameState() { return latestGameState.get(); }
 
     /** Enqueue a debug command to be sent on the next game step. Thread-safe. */
     public void enqueueDebugCommand(Sc2Api.RequestDebug request) {

@@ -3,6 +3,7 @@ package io.quarkmind.agent;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.ledger.api.model.OutcomeRecord;
 import io.casehub.ledger.api.spi.OutcomeRecorder;
+import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.GameStopped;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -16,9 +17,8 @@ import org.jboss.logging.Logger;
  * before it can be reset by the next {@code startGame()} call — identical rationale
  * to {@link GameSession} not resetting in {@code stopGame()}.
  *
- * <p>Records {@link AttestationVerdict#SOUND} for all games in L6 (real win/loss detection
- * deferred — see open issue in spec). With uniform SOUND verdicts, trust routing learns
- * nothing useful until real outcome signals are wired.
+ * <p>WIN → ENDORSED (trust increases), LOSS → CHALLENGED (trust decreases),
+ * TIE → SOUND (neutral). UNKNOWN is skipped — no ledger write.
  *
  * <p><b>Transactional dependency:</b> {@code OutcomeRecordSaveService.save()} is
  * {@code @Transactional}. {@code IncrementalTrustUpdateObserver} fires at
@@ -38,16 +38,27 @@ public class GameOutcomeRecorder {
     @Inject GameSession      gameSession;
 
     void onGameStopped(@Observes GameStopped event) {
+        if (event.result() == GameResult.UNKNOWN) {
+            log.infof("[OUTCOME] Game ended with unknown result — skipped (strategy=%s context=%s)",
+                strategySelector.getSelectedId(), strategySelector.getOpponentContext());
+            return;
+        }
         String strategyId = strategySelector.getSelectedId();
         String context    = strategySelector.getOpponentContext();
+        AttestationVerdict verdict = switch (event.result()) {
+            case WIN     -> AttestationVerdict.ENDORSED;
+            case LOSS    -> AttestationVerdict.CHALLENGED;
+            case TIE     -> AttestationVerdict.SOUND;
+            case UNKNOWN -> throw new AssertionError("unreachable — guarded above");
+        };
         outcomeRecorder.record(OutcomeRecord.of(
             strategyId,
             gameSession.id(),
             context,
-            AttestationVerdict.SOUND,
+            verdict,
             1.0
         ));
-        log.infof("[OUTCOME] Recorded: strategy=%s context=%s verdict=SOUND",
-            strategyId, context);
+        log.infof("[OUTCOME] Recorded: strategy=%s context=%s result=%s verdict=%s",
+            strategyId, context, event.result(), verdict);
     }
 }
