@@ -1,6 +1,6 @@
 # StarCraft II Quarkus Agent
 
-[![Open PRs](https://img.shields.io/github/issues-pr/casehubio/quarkmind)](https://github.com/casehubio/quarkmind/pulls)
+[![Build](https://github.com/casehubio/quarkmind/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/casehubio/quarkmind/actions/workflows/ci.yml) [![Open PRs](https://img.shields.io/github/issues-pr/casehubio/quarkmind)](https://github.com/casehubio/quarkmind/pulls)
 
 > **Legal:** This is an independent fan research project. StarCraft II® is a trademark of Blizzard Entertainment, Inc. See [LEGAL.md](LEGAL.md) for full notices.
 
