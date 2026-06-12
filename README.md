@@ -1,5 +1,7 @@
 # StarCraft II Quarkus Agent
 
+[![Open PRs](https://img.shields.io/github/issues-pr/casehubio/quarkmind)](https://github.com/casehubio/quarkmind/pulls)
+
 > **Legal:** This is an independent fan research project. StarCraft II® is a trademark of Blizzard Entertainment, Inc. See [LEGAL.md](LEGAL.md) for full notices.
 
 A Quarkus application that plays StarCraft II (Protoss) as a **plugin platform**.
