@@ -195,7 +195,8 @@
       "Bash(curl -sv -X POST \"http://localhost:8080/sc2/debug/scenario/spawn-enemy-attack\")",
       "Bash(curl -s -X POST http://localhost:8080/sc2/stop)",
       "Bash(GIT_SEQUENCE_EDITOR=\"cp /tmp/squash-13.txt\" git -C /Users/mdproctor/claude/casehub/quarkmind rebase -i origin/main)",
-      "Bash(gh search *)"
+      "Bash(gh search *)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"
