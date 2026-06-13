@@ -116,11 +116,14 @@ public interface TaskDefinition {
 | File | Pattern | Replacement |
 |---|---|---|
 | `QuarkMindTaskRegistrar` | `@CaseType` qualified injection × 4 | **Deleted** — replaced by `QuarkMindCaseHub.getDefinition()` |
-| `DroolsTacticsTaskIT` | `@Inject @CaseType TacticsTask` | Inject concrete type `DroolsTacticsTask` |
-| `DroolsScoutingTaskIT` | `@Inject @CaseType ScoutingTask`, `DroolsScoutingTask` | Inject concrete types |
-| `ScoutingConfigResource` | `@Inject @CaseType DroolsScoutingTask` | Inject `DroolsScoutingTask` directly (no qualifier) |
-| `TrustWeightedStrategyIT` and related | `@Inject @CaseType StrategyTask` | Inject `DroolsStrategyTask` directly (specific impl is the subject under test — CLAUDE.md already documents this for L6 tests) |
-| `AdaptivePluginSelectionIT` | `@CaseType` injection | Inject concrete types |
+| `DroolsTacticsTaskIT` | `@Inject @CaseType("starcraft-game") TacticsTask` | Inject concrete type `DroolsTacticsTask` |
+| `DroolsScoutingTaskIT` | `@Inject @CaseType ScoutingTask`, `@Inject @CaseType DroolsScoutingTask` | Inject concrete types (no qualifier) |
+| `ScoutingConfigResource` | `@Inject @CaseType DroolsScoutingTask` | Inject `DroolsScoutingTask` directly |
+| `LedgerAuditIT` | `@Inject @CaseType("starcraft-game") DroolsStrategyTask` | Inject `DroolsStrategyTask` directly |
+| `DroolsStrategyTaskTest` | `@Inject @CaseType("starcraft-game") DroolsStrategyTask` | Inject `DroolsStrategyTask` directly |
+| `FlowEconomicsTaskIT` | `@Inject @CaseType("starcraft-game") EconomicsTask` | Inject concrete type `FlowEconomicsTask` |
+| `TrustWeightedStrategyIT` and related | `@Inject @CaseType StrategyTask` | Inject `DroolsStrategyTask` directly (CLAUDE.md documents this for L6 tests) |
+| `AdaptivePluginSelectionIT` | `@Inject @CaseType TacticsTask`, `@Inject @CaseType DroolsStrategyTask` | Inject concrete types |
 
 All plugin implementations retain `@CaseType("starcraft-game")` as a plain metadata annotation (for `QuarkMindCaseHub` discovery). They lose CDI qualifier semantics — the annotation is no longer interpreted by Arc.
 
@@ -152,10 +155,13 @@ public class QuarkMindCaseHub extends CaseHub {
         return CaseDefinition.builder()
             .namespace("quarkmind").name("starcraft-game").version("1.0")
             .workers(tickDecision)
-            .binding(Binding.builder()
+            // Binding target syntax: engine#484 must define how a SequenceWorker exposes
+            // a CapabilityTarget. Exact form TBD; conceptually: fire tickDecision on every
+            // game-frame change.
+            .bindings(Binding.builder()
                 .name("tick-decision")
                 .on(new ContextChangeTrigger(".[\\"game.frame\\"] | . != null"))
-                .target(new CapabilityTarget(tickDecision.getCapabilities().get(0)))
+                .capability(/* SequenceWorker capability — engine#484 */ tickDecision.getCapabilities().get(0))
                 .build())
             .build();
     }
@@ -172,7 +178,7 @@ public class QuarkMindCaseHub extends CaseHub {
 
 Mechanical changes, implementable now against existing engine API:
 
-1. Replace `io.casehub.core.CaseFile` with `io.casehub.api.context.CaseContext` in all plugin execute methods and test helpers. Use `MapCaseFile` (the engine's existing migration shim in `casehub-engine-blackboard`) in tests where poc-compatible `put(key, value)` semantics are needed — it is already available in the engine jar.
+1. Replace `io.casehub.core.CaseFile` with `io.casehub.api.context.CaseContext` in all plugin execute methods and test helpers. The API is functionally equivalent but the return type for reads changed: the poc's `CaseFile.get(key, Class<T>)` returned `Optional<T>`; the engine's `CaseContext.getAs(key, Class<T>)` returns nullable `T`. Every plugin call like `caseFile.get(MINERALS, Integer.class).orElse(0)` becomes `ctx.getOrDefault(MINERALS, 0)`. For writes: `caseFile.put(key, value)` → `ctx.set(key, value)`. For test construction: `casehub-engine-testing` has no `CaseContext` factory (it contains only repository test stubs). Use `new CaseContextImpl(Map<String,Object> initial)` from `io.casehub.engine.internal.context` — this is in the engine runtime module and accessible from tests. If a public factory is needed, file an issue against `casehub-engine-testing`.
 2. Replace `entryCriteria()` with `requires()` on `TaskDefinition`
 3. Replace `canActivate(CaseFile)` with `activateIf()` returning `Predicate<CaseContext>`
 4. Replace `PropagationContext` import from `io.casehub.coordination` → `io.casehub.api.context` (same semantics, API superset)
@@ -189,7 +195,7 @@ Mechanical changes, implementable now against existing engine API:
 
 **Phase 2 dependencies:** engine#483 must include the bulk `signalAndAwaitSync(UUID, Map, Duration)` variant AND the generation-counter settlement mechanism. Engine#484 must include skip-and-continue step semantics. Without both, Phase 2 cannot complete.
 
-Phase 2 does NOT require engine#482 (Repeatable Stage). The plan item lifecycle already supports per-tick re-firing via `addPlanItemIfAbsent` (COMPLETED items do not block re-addition).
+Phase 2 does NOT require engine#482 (Repeatable Stage). `DefaultCasePlanModel.addPlanItemIfAbsent()` (`blackboard/src/main/java/io/casehub/blackboard/plan/DefaultCasePlanModel.java`) explicitly permits re-addition when the existing plan item is COMPLETED — the `activeByBinding.compute()` block only rejects PENDING, RUNNING, and DELEGATED statuses; COMPLETED falls through to add a new PENDING plan item. `getPlanItemByBindingName()` returns `Optional.empty()` for COMPLETED items, so `filterToDispatchable`'s `orElse(true)` passes the new PENDING item through. Per-tick re-firing is structurally supported. The only re-entry risk is a tick signal arriving while the previous tick's plan items are still RUNNING — addressed by `@Scheduled(concurrentExecution = SKIP)` on `AgentOrchestrator.gameTick()`.
 
 ---
 
