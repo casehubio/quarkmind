@@ -17,14 +17,7 @@ This migration removes the poc dependency entirely and re-integrates QuarkMind a
 
 ## What casehub-poc actually did in QuarkMind
 
-Before designing the migration it is worth being precise about what the poc was actually used for. `CaseEngine.createAndSolve()` was called every 500ms (game tick). Each call:
-
-1. Created a fresh `CaseFile` with the current tick's game state as initial data
-2. Ran scouting → strategy → tactics → economics in dependency order (via `entryCriteria()` chaining)
-3. Returned the populated `CaseFile` with plugin results (intents, strategy decisions, scouting intel)
-4. Discarded the `CaseFile` — no state carried across ticks
-
-The poc was used purely as a **dependency-ordered task executor**. Stages, Milestones, child CaseFiles, and the PoisonPill/DLQ resilience stack were never used. The architecture supported far more; QuarkMind used almost none of it.
+`CaseEngine.createAndSolve()` was called every 500ms (game tick). Each call created a fresh `CaseFile` with the current tick's game state, ran scouting → strategy → tactics → economics in dependency order, returned the populated `CaseFile`, then discarded it. No state carried across ticks. The poc was used purely as a **dependency-ordered task executor**. Stages, Milestones, child CaseFiles, and the resilience stack were never used.
 
 ---
 
@@ -36,92 +29,104 @@ The poc was used purely as a **dependency-ordered task executor**. Stages, Miles
 
 ```java
 // At game start (AgentOrchestrator.startGame):
-UUID gameSessionId = quarkMindCaseHub.startCase(initialGameData).toCompletableFuture().get();
+UUID gameSessionId = quarkMindCaseHub.startCase(initialData)
+    .toCompletableFuture().get(5, SECONDS);
 
 // At game end (AgentOrchestrator.stopGame):
 quarkMindCaseHub.cancelCase(gameSessionId);
 ```
 
-The game session case is persistent in-memory across ticks. The `CaseContext` IS the game blackboard — plugin results written in tick N are visible in tick N+1 without re-injection.
+The `CaseContext` is the persistent blackboard — it accumulates state across ticks (agent intel, strategy state, scouting output) without re-injection each tick.
 
-**Per-tick execution via `signalAndAwait()` (engine#483).** `GameTickExecutor` changes from:
+**Per-tick execution via bulk `signalAndAwait()` (engine#483).** The `signal(UUID, String, Object)` API sets a single path. QuarkMind needs to update ~12 flat keys each tick and trigger evaluation exactly once. Engine#483 must therefore include a bulk variant:
 
 ```java
-// Before (casehub-poc)
-CaseFile caseFile = caseEngine.createAndSolve("rts-game", caseData, Duration.ofSeconds(5));
-
-// After (casehub-engine)
-CaseContext ctx = quarkMindCaseHub.signalAndAwaitSync(
-    gameSessionId, "game.state", gameState, Duration.ofSeconds(5));
-engine.dispatch(ctx.getAs(QuarkMindCaseFile.INTENT_QUEUE, IntentQueue.class));
+// New API on CaseHubRuntime:
+CaseContext signalAndAwaitSync(UUID caseId, Map<String,Object> updates, Duration timeout);
 ```
 
-`signalAndAwait()` signals the context change and blocks until all workers triggered by that signal have settled (quiescence), then returns the updated `CaseContext`.
+This atomically applies `ctx.setAll(updates)` (writing all flat keys) then fires exactly one `CaseContextChangedEvent`, blocks until settlement, and returns the updated context. `GameTickExecutor` becomes:
 
-**Persistent blackboard benefit.** Scouting intel, trust scores, and strategy state accumulate in `CaseContext` across ticks. The `ENEMY_ARMY_SIZE` ordering hack that existed because there was no cross-tick memory is no longer needed.
+```java
+// Each tick:
+Map<String, Object> updates = translator.toMap(gameState);   // flat key map
+caseHub.signalAndAwaitSync(gameSessionId, updates, Duration.ofSeconds(5));
+engine.dispatch();  // drains CDI-injected IntentQueue directly
+```
 
-### 2. Per-tick plugin ordering via `SequenceWorker` (engine#484)
+`GameStateTranslator` is **unchanged**. `QuarkMindCaseFile` constants (`"game.resources.minerals"` etc.) are **unchanged** — `CaseContext.getAs(key, Class)` accesses flat string keys at the top level, compatible with the existing dotted naming convention. `IntentQueue` remains a CDI bean and is drained directly by `engine.dispatch()` — it is never stored in `CaseContext`.
 
-Plugin ordering previously relied on `entryCriteria()` dependency chains (the `ENEMY_ARMY_SIZE` hack). In the new model, ordering is explicit via `SequenceWorker`:
+**Settlement detection in engine#483.** `signalAndAwait()` cannot simply fire a signal and wait for quiescence — the worker execution is async and there is no built-in correlation between a signal invocation and the plan items it creates. Engine#483 must introduce a generation counter: each `CaseContextChangedEvent` carries a generation tag; plan items created during that evaluation carry the same tag; `signalAndAwait()` resolves when all plan items of the triggered generation have completed. This must be specified in engine#483.
+
+**Concurrent-tick safety.** If tick N's plan items are still RUNNING when tick N+1 fires, `addPlanItemIfAbsent` rejects the new plan item (RUNNING blocks re-addition; COMPLETED does not). At 500ms intervals with in-process lambda workers this should not occur. `AgentOrchestrator.gameTick()` carries `@Scheduled(concurrentExecution = SKIP)` which prevents concurrent invocation — this is the structural guard. The spec notes this constraint: `signalAndAwait()` must complete before the next tick signal is sent.
+
+**ContextChangeTrigger expression.** The `ContextChangeTrigger(String filter)` constructor takes a JQ expression, not a key name. The expression `"game.state"` selects the value at that path — truthy when non-null, which means it fires on every context write after tick 1, not just per-tick signals. The correct expression for the per-tick binding is:
+
+```
+.["game.frame"] | . != null
+```
+
+`game.frame` is always included in the update map and increments every tick. `applyAndDiff` detects the change → fires `CaseContextChangedEvent`. Agent writes (scouting intel, strategy keys) do not change `game.frame` → do not re-trigger the binding.
+
+### 2. Plugin ordering via `SequenceWorker` (engine#484)
+
+Plugin ordering previously relied on the `ENEMY_ARMY_SIZE` entryCriteria hack. In the new model, ordering is explicit via `SequenceWorker`. The sequence must include **all three** strategy implementations (trust-weighted selection), with `StrategyTrustRouter` promoted to an explicit sequence step that runs before them:
 
 ```java
 Worker tickDecision = SequenceWorker.of(
-    scoutingWorker,    // DroolsScoutingTask
-    strategyWorker,    // DroolsStrategyTask
-    tacticsWorker,     // DroolsTacticsTask
-    economicsWorker    // FlowEconomicsTask
+    scoutingWorker,                     // DroolsScoutingTask
+    trustRoutingWorker,                 // StrategyTrustRouter — writes selected strategy to context
+    earlyPressureStrategyWorker,        // activateIf() checks selected strategy id
+    economicExpansionStrategyWorker,    // activateIf() checks selected strategy id
+    droolsStrategyWorker,               // activateIf() checks selected strategy id (default)
+    tacticsWorker,                      // DroolsTacticsTask
+    economicsWorker                     // FlowEconomicsTask
 );
 ```
 
-The `QuarkMindCaseHub.getDefinition()` binds this sequence to `ContextChangeTrigger("game.state")`:
+**SequenceWorker skip-and-continue semantics (required in engine#484).** Before calling `execute()` on each step, SequenceWorker evaluates `activateIf()`. If the predicate returns false, the step is skipped and execution continues to the next step. It does NOT halt. This is the mechanism by which exactly one strategy implementation runs per tick: `StrategyTrustRouter` writes the selected strategy ID to context, then each strategy plugin's `activateIf()` returns true only for the selected ID.
 
-```java
-CaseDefinition.builder()
-    .namespace("quarkmind").name("rts-game").version("1.0")
-    .workers(tickDecision)
-    .binding(Binding.on(new ContextChangeTrigger("game.state")).target(tickDecision))
-    .build();
-```
+This replaces the implicit CDI observer pattern (`StrategyTrustObserver`) with an explicit, ordered, event-log-visible step. Trust routing becomes structural, not hidden.
 
-Each tick's `signalAndAwait("game.state", ...)` activates the sequence. The sequence runs inline — scouting always precedes strategy, strategy precedes tactics. Clean, structural, no hacks.
+**CDI injection in workers.** `TaskDefinition.toWorker()` creates a lambda `(ctx) -> { this.execute(ctx); return Map.of(); }` where `this` is the CDI proxy obtained via `Instance<TaskDefinition>`. When the engine invokes this lambda, the CDI proxy dispatches to the `@ApplicationScoped` scoped instance with all `@Inject` fields populated (StrategySelector, ScoutingIntelBroker, Event<PluginDecisionEvent>, etc.). CDI context is intact because the lambda closure captures the proxy, not the raw bean instance.
+
+The returned `Map.of()` is empty — correct for void-returning plugins that write their output to `CaseContext` directly via `ctx.set()` during `execute()`. The engine's `WorkflowExecutionCompletedHandler` applies the returned map to context; an empty map produces an empty diff and no additional write.
 
 ### 3. `TaskDefinition` sugar and `@CaseType`
 
-The engine gains a `TaskDefinition` interface in `casehub-engine-api` as migration sugar (and a permanent ergonomic API for Java-native plugin authors):
+`TaskDefinition` lives in **QuarkMind**, not `casehub-engine-api`. The engine's `Worker(name, caps, Function<CaseContext, Map>)` is already Java-native and sufficient for engine consumers. `TaskDefinition` is a QuarkMind migration convenience; it lacks the cross-domain evidence needed to be a platform API. If AML, clinical, or devtown find it useful, it is promoted then.
 
 ```java
+// In io.quarkmind.agent — QuarkMind's own interface
 public interface TaskDefinition {
     String getId();
-    default Set<String> requires() { return Set.of(); }              // entry conditions
-    default Predicate<CaseContext> activateIf() { return ctx -> true; } // additional gate
+    default Set<String> requires() { return Set.of(); }
+    default Predicate<CaseContext> activateIf() { return ctx -> true; }
     void execute(CaseContext ctx);
-    default Set<String> produces() { return Set.of(); }              // documentation only
-
-    default Worker toWorker() { ... }
-    default Binding toBinding(String trigger) { ... }
+    default Set<String> produces() { return Set.of(); }       // documentation only
+    default Worker toWorker() { /* lambda over execute() */ }
+    default Binding toBinding(String triggerExpression) { /* wraps requires() + activateIf() */ }
 }
 ```
 
-QuarkMind plugin seam interfaces (`StrategyTask`, `ScoutingTask`, etc.) extend `TaskDefinition`. Existing plugin implementations change minimally:
+`@CaseType` similarly stays in QuarkMind as a plain (non-CDI-qualifier) metadata annotation. `QuarkMindCaseHub` collects plugins via `Instance<TaskDefinition>` and assembles the `CaseDefinition` programmatically.
 
-| Old | New |
-|-----|-----|
-| `implements StrategyTask` | unchanged |
-| `CaseFile` parameter | `CaseContext` parameter |
-| `entryCriteria()` | `requires()` |
-| `canActivate(CaseFile)` | `activateIf()` returning `Predicate<CaseContext>` |
-| `execute(CaseFile)` | `execute(CaseContext)` |
+**Complete @CaseType CDI qualifier removal.** Every injection point `@Inject @CaseType("starcraft-game") X x` must be updated. The full list:
 
-The redundant `entryCriteria().stream().allMatch(caseFile::contains)` re-check inside `canActivate()` is deleted — the engine evaluates `requires()` and `activateIf()` as separate clean gates.
+| File | Pattern | Replacement |
+|---|---|---|
+| `QuarkMindTaskRegistrar` | `@CaseType` qualified injection × 4 | **Deleted** — replaced by `QuarkMindCaseHub.getDefinition()` |
+| `DroolsTacticsTaskIT` | `@Inject @CaseType TacticsTask` | Inject concrete type `DroolsTacticsTask` |
+| `DroolsScoutingTaskIT` | `@Inject @CaseType ScoutingTask`, `DroolsScoutingTask` | Inject concrete types |
+| `ScoutingConfigResource` | `@Inject @CaseType DroolsScoutingTask` | Inject `DroolsScoutingTask` directly (no qualifier) |
+| `TrustWeightedStrategyIT` and related | `@Inject @CaseType StrategyTask` | Inject `DroolsStrategyTask` directly (specific impl is the subject under test — CLAUDE.md already documents this for L6 tests) |
+| `AdaptivePluginSelectionIT` | `@CaseType` injection | Inject concrete types |
 
-`@CaseType` becomes a plain metadata annotation (not a CDI qualifier — that was the poc's approach):
+All plugin implementations retain `@CaseType("starcraft-game")` as a plain metadata annotation (for `QuarkMindCaseHub` discovery). They lose CDI qualifier semantics — the annotation is no longer interpreted by Arc.
 
-```java
-@Target(TYPE) @Retention(RUNTIME)
-public @interface CaseType { String value(); }
-```
+Arc bean pruning note (from LAYER-LOG.md): Arc removes unused `@ApplicationScoped` beans. `QuarkMindTaskRegistrar` existed to keep plugin beans alive via injection. Its replacement: `QuarkMindCaseHub.getDefinition()` iterates `Instance<TaskDefinition>` which activates all discovered beans, preventing pruning.
 
-Plugin implementations keep their `@CaseType("rts-game")` annotation. `QuarkMindCaseHub` uses CDI `Instance<TaskDefinition>` to collect them:
+### 4. Key structural changes to QuarkMindCaseHub
 
 ```java
 @ApplicationScoped
@@ -130,16 +135,28 @@ public class QuarkMindCaseHub extends CaseHub {
 
     @Override
     public CaseDefinition getDefinition() {
-        var plugins = allTaskDefs.stream()
-            .filter(td -> hasAnnotation(td, "rts-game"))
+        List<TaskDefinition> plugins = allTaskDefs.stream()
+            .filter(td -> hasAnnotation(td, "starcraft-game"))
             .toList();
+
         Worker tickDecision = SequenceWorker.of(
-            find(plugins, "scouting"), find(plugins, "strategy"),
-            find(plugins, "tactics"),  find(plugins, "economics"));
+            find(plugins, "scouting"),
+            find(plugins, "trust-routing"),
+            find(plugins, "strategy-early-pressure"),
+            find(plugins, "strategy-economic-expansion"),
+            find(plugins, "strategy-drools"),
+            find(plugins, "tactics"),
+            find(plugins, "economics")
+        );
+
         return CaseDefinition.builder()
-            .namespace("quarkmind").name("rts-game").version("1.0")
+            .namespace("quarkmind").name("starcraft-game").version("1.0")
             .workers(tickDecision)
-            .binding(Binding.on(new ContextChangeTrigger("game.state")).target(tickDecision))
+            .binding(Binding.builder()
+                .name("tick-decision")
+                .on(new ContextChangeTrigger(".[\\"game.frame\\"] | . != null"))
+                .target(new CapabilityTarget(tickDecision.getCapabilities().get(0)))
+                .build())
             .build();
     }
 }
@@ -147,82 +164,56 @@ public class QuarkMindCaseHub extends CaseHub {
 
 `QuarkMindTaskRegistrar` is deleted. `TaskDefinitionRegistry` and `CircularDependencyException` are deleted.
 
-### 4. Multi-tick objectives as sub-cases
-
-Workers that commit to a strategic objective spawn sub-cases via `WorkerRuntime` (engine#485):
-
-```java
-// Inside a strategy worker that decides to expand:
-void execute(CaseContext ctx, WorkerRuntime runtime) {
-    if (shouldExpand(ctx)) {
-        runtime.spawn("economy-expansion", ctx.getData());
-        ctx.set("agent.objective", "economy-expansion");
-    }
-}
-```
-
-The sub-case runs asynchronously across ticks. When it completes, `SubCaseCompletionService` merges its result into the root `CaseContext` atomically (`PlanItemCompletionApplier`, `@Transactional`). The next tick's SequenceWorker sees the result without explicit wiring.
-
-Multi-step objectives use `SequenceWorker` at the sub-case level:
-
-```java
-Worker expansionPlan = SequenceWorker.of(
-    Step.worker(buildPylonWorker),
-    Step.subCase("nexus-construction"),   // spawns sub-case, awaits completion
-    Step.worker(economicRampWorker)
-);
-```
-
-This is the lightweight alternative to Quarkus Flow for linear plans that do not require durability, compensation, or branching.
-
-**CBR anchor.** Sub-case UUIDs are linked to the root game session case via the parent-child graph. At game end, `GameOutcomeRecorder` writes a ledger attestation on the root case. CBR retrieval can walk the case hierarchy to reconstruct which objectives were pursued in past games with similar feature vectors (casehubio/quarkmind#192).
-
-### 5. Repeatable Stage (engine#482)
-
-Per-tick execution via `signalAndAwait()` (Section 1) is the immediate migration target. Once engine#482 lands, each tick can optionally be a **repeatable Stage** — a named, observable Stage instance in the event log, re-activated on each `ContextChangeTrigger("game.state")`:
-
-```java
-Stage.builder()
-    .name("tick-decision")
-    .on(new ContextChangeTrigger("game.state"))
-    .repeatable(true)
-    .autocomplete(true)
-    .workers(tickDecision)
-    .build()
-```
-
-Each tick then appears in the event log as `STAGE_ACTIVATED(tick-decision, instance=N)` → `STAGE_COMPLETED(tick-decision, instance=N)`. This is the CBR anchor for per-tick state retrieval. Adopt this once engine#482 is available; `signalAndAwait()` alone is sufficient for initial migration.
-
 ---
 
 ## Migration path
 
 ### Phase 1 — Plugin API migration (independent of engine#490)
 
-Plugin implementations can be migrated before the engine issues land. The changes are mechanical:
+Mechanical changes, implementable now against existing engine API:
 
-1. Replace `CaseFile` with `CaseContext` in all plugin execute methods and test helpers
-2. Replace `entryCriteria()` with `requires()`
-3. Replace `canActivate(CaseFile)` with `activateIf()`
-4. Replace `PropagationContext` import from `io.casehub.coordination` → `io.casehub.api.context`
-5. Update test helpers: `new InMemoryCaseFile(...)` → engine's in-memory `CaseContext` test factory
+1. Replace `io.casehub.core.CaseFile` with `io.casehub.api.context.CaseContext` in all plugin execute methods and test helpers. Use `MapCaseFile` (the engine's existing migration shim in `casehub-engine-blackboard`) in tests where poc-compatible `put(key, value)` semantics are needed — it is already available in the engine jar.
+2. Replace `entryCriteria()` with `requires()` on `TaskDefinition`
+3. Replace `canActivate(CaseFile)` with `activateIf()` returning `Predicate<CaseContext>`
+4. Replace `PropagationContext` import from `io.casehub.coordination` → `io.casehub.api.context` (same semantics, API superset)
+5. `StrategyTrustRouter` becomes a `TaskDefinition` implementation with `getId()` = `"trust-routing"`, `execute()` writing the selected strategy ID to context
 
-### Phase 2 — Wire `QuarkMindCaseHub` (requires engine#483, #484)
+### Phase 2 — Wire QuarkMindCaseHub (requires engine#483 bulk variant + engine#484 skip-and-continue)
 
-1. Implement `QuarkMindCaseHub extends CaseHub`
-2. Replace `QuarkMindTaskRegistrar` with `QuarkMindCaseHub.getDefinition()`
-3. Replace `caseEngine.createAndSolve()` in `GameTickExecutor` with `signalAndAwaitSync()`
+1. Implement `QuarkMindCaseHub extends CaseHub` with `getDefinition()` as above
+2. Delete `QuarkMindTaskRegistrar`
+3. Replace `GameTickExecutor.caseEngine.createAndSolve()` with `caseHub.signalAndAwaitSync(gameSessionId, translator.toMap(gameState), timeout)`
 4. Add `startCase()` to `AgentOrchestrator.startGame()`, `cancelCase()` to `stopGame()`
+5. Update all `@Inject @CaseType(...)` injection points per the table in Section 3
+6. Update tests: inject concrete types rather than using CDI qualifier
 
-### Phase 3 — Sub-case objectives (requires engine#485)
+**Phase 2 dependencies:** engine#483 must include the bulk `signalAndAwaitSync(UUID, Map, Duration)` variant AND the generation-counter settlement mechanism. Engine#484 must include skip-and-continue step semantics. Without both, Phase 2 cannot complete.
 
-1. Wire `WorkerRuntime` into strategy worker for objective spawning
-2. Implement first sub-case type: `economy-expansion`
-3. Verify `SubCaseCompletionService` merge back into root context
+Phase 2 does NOT require engine#482 (Repeatable Stage). The plan item lifecycle already supports per-tick re-firing via `addPlanItemIfAbsent` (COMPLETED items do not block re-addition).
 
-### Phase 4 — Repeatable Stage (requires engine#482, optional)
+---
 
-Upgrade per-tick binding to use repeatable Stage for full event log observability. Not a migration blocker — Phase 2 is fully functional without it.
+## Future architecture (pending separate design specs)
+
+The following capabilities are architecturally sound but depend on engine issues that have no concrete API yet. They are NOT part of this migration. Each requires its own design spec once the engine API is settled.
+
+### Future Phase A — Sub-case objectives (pending engine#485)
+
+Workers that commit to a strategic objective (expand, timing attack) spawn a sub-case via `WorkerRuntime`. The sub-case runs asynchronously across ticks. When complete, its result is merged back into the root CaseContext via `SubCaseCompletionService` (already `@Transactional`). Multi-step objectives use `SequenceWorker` at the sub-case level:
+
+```java
+Worker expansionPlan = SequenceWorker.of(
+    Step.worker(buildPylonWorker),
+    Step.subCase("nexus-construction"),   // spawns sub-case, awaits
+    Step.worker(economicRampWorker)
+);
+```
+
+Design spec required once engine#485 has a concrete API surface.
+
+### Future Phase B — Repeatable Stage event log anchoring (pending engine#482)
+
+Per-tick execution via bulk `signalAndAwait()` (Phase 2) is fully functional without Repeatable Stage. Once engine#482 lands, each tick can optionally be a named Stage instance in the event log — valuable for CBR retrieval of similar past game states. Not a migration blocker.
 
 ---
 
@@ -237,29 +228,21 @@ Upgrade per-tick binding to use repeatable Stage for full event log observabilit
 | Artifact | Replaced by |
 |---|---|
 | `casehub-core:1.0.0-SNAPSHOT` | `casehub-engine-api`, `casehub-engine-blackboard` |
-| `casehub-persistence-memory:1.0.0-SNAPSHOT` | Engine's in-memory persistence (included transitively) |
+| `casehub-persistence-memory:1.0.0-SNAPSHOT` | Engine's in-memory persistence (transitively included) |
 
-## Engine issues required
+## Engine issues required for Phase 2
 
-| Issue | Needed for |
+| Issue | Required capability |
 |---|---|
-| engine#483 `signalAndAwait()` | Phase 2 — `GameTickExecutor` |
-| engine#484 `SequenceWorker` | Phase 2 — tick ordering |
-| engine#485 `WorkerRuntime` | Phase 3 — sub-case objective spawning |
-| engine#482 Repeatable Stage | Phase 4 — full event log observability (optional) |
+| engine#483 | Bulk `signalAndAwaitSync(UUID, Map, Duration)` + generation-counter settlement |
+| engine#484 | `SequenceWorker` + skip-and-continue step evaluation |
 
-All four are children of engine#490.
-
----
-
-## Case type string
-
-The spec uses `"rts-game"` as the case type name throughout. The current codebase uses `"starcraft-game"`. Renaming the string is **deferred to quarkmind#74** (genericise unit/building definitions — trademark removal). This migration keeps `"starcraft-game"` as-is; quarkmind#74 renames it as part of the broader trademark cleanup.
+engine#482 and engine#485 are future architecture, not Phase 2 blockers.
 
 ---
 
 ## What is not in scope
 
-- Genericising `UnitType` enum and SC2-specific types (including case type string rename) → quarkmind#74
+- Genericising `UnitType` enum, `SC2Data` switches, and the `"starcraft-game"` case type string → quarkmind#74 (trademark removal)
 - CBR reference implementation (`CaseMemoryStore`, `CaseRetriever`) → quarkmind#192
 - LLM advisory team, Commentator/Coach → quarkmind#180–183
