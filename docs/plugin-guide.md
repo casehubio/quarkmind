@@ -156,7 +156,7 @@ If you want both to coexist temporarily, use `@io.quarkus.arc.Priority` to prefe
 
 ## Testing a Plugin
 
-Use `CaseContextImpl` (from `casehub-engine-blackboard`, test scope) to build a context without CDI:
+Use `CaseFileContext` (already on the test classpath via the poc) to build a context without CDI:
 
 ```java
 class MyStrategyTaskTest {
@@ -170,22 +170,27 @@ class MyStrategyTaskTest {
         task = new MyStrategyTask(intentQueue);
     }
 
+    private CaseContext ctx(Map<String, Object> data) {
+        var cf = new InMemoryCaseFileRepository()
+            .create("starcraft-game", data, PropagationContext.createRoot());
+        return new CaseFileContext(cf);
+    }
+
     @Test
     void activateIf_falseWhenReadyAbsent() {
-        var ctx = new CaseContextImpl(Map.of());
-        assertThat(task.activateIf().test(ctx)).isFalse();
+        assertThat(task.activateIf().test(ctx(Map.of()))).isFalse();
     }
 
     @Test
     void buildsGatewayWhenReady() {
-        var ctx = new CaseContextImpl(Map.of(
+        CaseContext context = ctx(Map.of(
             QuarkMindCaseFile.MINERALS,     200,
             QuarkMindCaseFile.WORKERS,      List.of(probe("p-0")),
             QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus(), completePylon()),
             QuarkMindCaseFile.READY,        Boolean.TRUE
         ));
 
-        task.execute(ctx);
+        task.execute(context);
 
         assertThat(intentQueue.pending())
             .anyMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.GATEWAY);

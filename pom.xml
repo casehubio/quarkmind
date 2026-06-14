@@ -118,13 +118,10 @@
             <artifactId>casehub-engine-api</artifactId>
             <version>0.2-SNAPSHOT</version>
         </dependency>
-        <!-- casehub-engine-blackboard: CaseContextImpl for test context construction (test scope only) -->
-        <dependency>
-            <groupId>io.casehub</groupId>
-            <artifactId>casehub-engine-blackboard</artifactId>
-            <version>0.2-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
+        <!-- casehub-engine-blackboard excluded: its CDI beans inject engine SPIs (EventLogRepository,
+             JobScheduler etc.) that are not on the classpath — 34 deployment failures in @QuarkusTest.
+             CaseContextImpl for tests is constructed via CaseFileContext (already on classpath) instead.
+             When casehub-engine-persistence-memory is added in Phase 2, this can be revisited. -->
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-qhorus-api</artifactId>

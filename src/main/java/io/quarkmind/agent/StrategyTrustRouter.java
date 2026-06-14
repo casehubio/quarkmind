@@ -1,6 +1,5 @@
 package io.quarkmind.agent;
 
-import io.casehub.annotation.CaseType;
 import io.casehub.api.context.CaseContext;
 import io.casehub.ledger.runtime.service.TrustGateService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -30,7 +29,9 @@ import java.util.Set;
  * all non-fallback candidates are BORDERLINE or EXCLUDED.
  */
 @ApplicationScoped
-@CaseType("starcraft-game")
+// Note: @CaseType("starcraft-game") will be added in Phase 2 once @CaseType is plain metadata.
+// Adding it now (while it is a CDI qualifier from the poc) would remove @Default, breaking
+// StrategyTrustObserver's unqualified @Inject StrategyTrustRouter injection point.
 public class StrategyTrustRouter implements TaskDefinition {
 
     static final String DESIGNATED_FALLBACK = "strategy.drools";

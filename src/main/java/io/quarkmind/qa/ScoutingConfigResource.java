@@ -1,5 +1,6 @@
 package io.quarkmind.qa;
 
+import io.casehub.annotation.CaseType;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
@@ -14,7 +15,9 @@ public class ScoutingConfigResource {
 
     @Inject ScoutingIntelBroker broker;
     // Concrete type injection: refreshThresholds() is not on the ScoutingTask seam interface.
-    @Inject DroolsScoutingTask scoutingTask;
+    // @CaseType qualifier required in Phase 1 — @CaseType is still a CDI qualifier; omitting it
+    // removes @Default from DroolsScoutingTask causing an unsatisfied dependency.
+    @Inject @CaseType("starcraft-game") DroolsScoutingTask scoutingTask;
 
     /** Reloads the subscription union from preferences — next tick's CEP gate reflects changes. */
     @POST
