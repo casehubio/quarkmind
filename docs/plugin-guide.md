@@ -15,7 +15,7 @@ A plugin is a CDI bean that implements one of four task seam interfaces:
 | `TacticsTask` | `agent.plugin.TacticsTask` | Army execution — how and where to fight |
 | `ScoutingTask` | `agent.plugin.ScoutingTask` | Information gathering — where is the enemy |
 
-Each interface extends CaseHub's `TaskDefinition`. The platform finds and calls your plugin automatically via CDI — no registration or wiring needed.
+Each seam interface extends `io.quarkmind.agent.TaskDefinition`. The platform finds and calls your plugin automatically via CDI — no registration or wiring needed.
 
 ---
 
@@ -23,39 +23,41 @@ Each interface extends CaseHub's `TaskDefinition`. The platform finds and calls 
 
 ```java
 @ApplicationScoped          // CDI singleton
-@CaseType("starcraft-game") // CaseHub routing key — must be exactly this
+@CaseType("starcraft-game") // routing key — must be exactly this
 public class MyStrategyTask implements StrategyTask {
 
     @Inject IntentQueue intentQueue;  // inject to queue game commands
 
-    @Override
-    public String getId()   { return "strategy.mine"; }    // unique ID
-    @Override
-    public String getName() { return "My Strategy"; }      // human-readable
+    @Override public String getId()   { return "strategy.mine"; }
+    @Override public String getName() { return "My Strategy"; }
 
-    // When this task fires — READY is set by GameStateTranslator each tick
+    // Keys that must be present before this plugin activates
     @Override
-    public Set<String> entryCriteria() { return Set.of(QuarkMindCaseFile.READY); }
+    public Set<String> requires() { return Set.of(QuarkMindCaseFile.READY); }
 
-    // CaseFile keys this task writes (empty if you only queue intents)
+    // Additional gate beyond key presence (CDI beans available here)
     @Override
-    public Set<String> producedKeys() { return Set.of(QuarkMindCaseFile.STRATEGY); }
+    public Predicate<CaseContext> activateIf() {
+        return ctx -> ctx.contains(QuarkMindCaseFile.READY);
+    }
+
+    // Keys this plugin writes to context (documentation only, not enforced)
+    @Override
+    public Set<String> produces() { return Set.of(QuarkMindCaseFile.STRATEGY); }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void execute(CaseFile caseFile) {
-        // 1. Read game state from the CaseFile
-        int minerals = caseFile.get(QuarkMindCaseFile.MINERALS, Integer.class).orElse(0);
-        List<Unit> workers = (List<Unit>) caseFile.get(QuarkMindCaseFile.WORKERS, List.class)
-            .orElse(List.of());
+    public void execute(CaseContext ctx) {
+        // 1. Read game state from the context
+        int minerals = ctx.getOrDefault(QuarkMindCaseFile.MINERALS, 0);
+        List<Unit> workers = ctx.getList(QuarkMindCaseFile.WORKERS, Unit.class);
 
         // 2. Make decisions and queue intents
-        if (minerals >= 150 && hasGateway(caseFile)) {
+        if (minerals >= 150 && hasGateway(ctx)) {
             intentQueue.add(new TrainIntent(nexusTag, UnitType.PROBE));
         }
 
-        // 3. Optionally write reasoning state back to the CaseFile
-        caseFile.put(QuarkMindCaseFile.STRATEGY, "MACRO");
+        // 3. Write reasoning state back to context
+        ctx.set(QuarkMindCaseFile.STRATEGY, "MACRO");
     }
 }
 ```
@@ -64,7 +66,7 @@ public class MyStrategyTask implements StrategyTask {
 
 ## Reading Game State
 
-Game state is available in the `CaseFile` via typed `get()` calls. All keys are defined in `QuarkMindCaseFile`.
+Game state is available in the `CaseContext` via typed accessor methods. All keys are defined in `QuarkMindCaseFile`.
 
 ### Resource keys
 
@@ -92,15 +94,24 @@ Game state is available in the `CaseFile` via typed `get()` calls. All keys are 
 | `STRATEGY` | `String` | `StrategyTask` — e.g. `"MACRO"`, `"ATTACK"`, `"DEFEND"` |
 | `CRISIS` | `String` | Any plugin — signals an emergency condition |
 
-### Reading a typed list
+### Reading values
 
 ```java
-@SuppressWarnings("unchecked")
-List<Unit> workers = (List<Unit>) caseFile.get(QuarkMindCaseFile.WORKERS, List.class)
-    .orElse(List.of());
-```
+// Scalar — getOrDefault returns the value or a default if absent
+int minerals = ctx.getOrDefault(QuarkMindCaseFile.MINERALS, 0);
+String strategy = ctx.getOrDefault(QuarkMindCaseFile.STRATEGY, "MACRO");
 
-The `@SuppressWarnings` is required because of Java type erasure on `List.class`. The cast is safe — `GameStateTranslator` always puts the right type.
+// Typed list — no cast or @SuppressWarnings needed
+List<Unit>     workers   = ctx.getList(QuarkMindCaseFile.WORKERS,      Unit.class);
+List<Building> buildings = ctx.getList(QuarkMindCaseFile.MY_BUILDINGS, Building.class);
+
+// Nullable — use getAs() when you need to distinguish absent from zero
+Long frame = ctx.getAs(QuarkMindCaseFile.GAME_FRAME, Long.class);
+int f = frame != null ? frame.intValue() : 0;
+
+// Presence check
+boolean ready = ctx.contains(QuarkMindCaseFile.READY);
+```
 
 ---
 
@@ -145,7 +156,7 @@ If you want both to coexist temporarily, use `@io.quarkus.arc.Priority` to prefe
 
 ## Testing a Plugin
 
-Use `DefaultCaseFile` (from `casehub-core`) to build a test CaseFile without CDI:
+Use `CaseContextImpl` (from `casehub-engine-blackboard`, test scope) to build a context without CDI:
 
 ```java
 class MyStrategyTaskTest {
@@ -160,14 +171,21 @@ class MyStrategyTaskTest {
     }
 
     @Test
-    void buildsGatewayWhenReady() {
-        var cf = new DefaultCaseFile("test", "starcraft-game", null, null);
-        cf.put(QuarkMindCaseFile.MINERALS,    200);
-        cf.put(QuarkMindCaseFile.WORKERS,     List.of(probe("p-0")));
-        cf.put(QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus(), completePylon()));
-        cf.put(QuarkMindCaseFile.READY,       Boolean.TRUE);
+    void activateIf_falseWhenReadyAbsent() {
+        var ctx = new CaseContextImpl(Map.of());
+        assertThat(task.activateIf().test(ctx)).isFalse();
+    }
 
-        task.execute(cf);
+    @Test
+    void buildsGatewayWhenReady() {
+        var ctx = new CaseContextImpl(Map.of(
+            QuarkMindCaseFile.MINERALS,     200,
+            QuarkMindCaseFile.WORKERS,      List.of(probe("p-0")),
+            QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus(), completePylon()),
+            QuarkMindCaseFile.READY,        Boolean.TRUE
+        ));
+
+        task.execute(ctx);
 
         assertThat(intentQueue.pending())
             .anyMatch(i -> i instanceof BuildIntent bi && bi.buildingType() == BuildingType.GATEWAY);
@@ -175,7 +193,7 @@ class MyStrategyTaskTest {
 }
 ```
 
-See `DroolsStrategyTaskTest` and `BasicEconomicsTaskTest` for full examples.
+See `EarlyPressureStrategyTaskMigrationTest` and `BasicEconomicsTaskTest` for full examples.
 
 **Never use `@QuarkusTest` for unit tests that don't need CDI** — the boot cost is significant. Use `@QuarkusTest` only when you need the full CDI context (e.g., testing REST endpoints or the full pipeline).
 
@@ -218,7 +236,7 @@ record Building(String tag, BuildingType type, Point2d position,
 
 ## Execution Order
 
-Plugins all run in the same CaseEngine cycle triggered by `AgentOrchestrator.gameTick()`. The order within a cycle is not guaranteed — do not assume one plugin's writes are visible to another in the same tick.
+Plugins all run in the same CaseEngine cycle triggered by `AgentOrchestrator.gameTick()`. The order within a cycle is determined by `requires()` dependency chaining — scouting writes `ENEMY_ARMY_SIZE`, which strategy requires, so scouting always precedes strategy. Do not write to a key that another plugin also writes in the same tick.
 
 Intents queued by multiple plugins in the same tick are all dispatched together at the end of the tick.
 
@@ -226,8 +244,6 @@ Intents queued by multiple plugins in the same tick are all dispatched together 
 
 ## Resource Double-Spend
 
-Two plugins can both queue intents that spend the same minerals in one tick (e.g., `BasicEconomicsTask` queues a Pylon and `DroolsStrategyTask` queues a Gateway in the same tick when minerals are just enough for one). 
+Two plugins can both queue intents that spend the same minerals in one tick (e.g., `BasicEconomicsTask` queues a Pylon and `DroolsStrategyTask` queues a Gateway in the same tick when minerals are just enough for one).
 
-In mock mode, `SimulatedGame` does not enforce mineral costs — both intents are applied. In real SC2 mode, the game engine will reject commands it cannot honour. Arbitration between plugins is a future concern (see `docs/roadmap-sc2-engine.md`).
-
-For now, budget conservatively: check `minerals >= cost` and leave headroom.
+In mock mode, `SimulatedGame` does not enforce mineral costs — both intents are applied. In real SC2 mode, the game engine will reject commands it cannot honour. Budget conservatively: check `minerals >= cost` and leave headroom.
