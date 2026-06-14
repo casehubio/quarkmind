@@ -1,12 +1,14 @@
 package io.quarkmind.plugin.scouting;
 
 import io.casehub.annotation.CaseType;
+import io.casehub.api.context.CaseContext;
 import io.casehub.core.CaseFile;
+import io.quarkmind.agent.CaseFileContext;
+import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agent.plugin.ScoutingTask;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import io.quarkmind.agent.QuarkMindCaseFile;
-import io.quarkmind.agent.plugin.ScoutingTask;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.MoveIntent;
@@ -36,6 +38,7 @@ import jakarta.enterprise.event.Event;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -150,22 +153,24 @@ public class DroolsScoutingTask implements ScoutingTask {
 
     @Override public String getId()   { return "scouting.drools-cep"; }
     @Override public String getName() { return "Drools CEP Scouting"; }
-    @Override public Set<String> entryCriteria() { return Set.of(QuarkMindCaseFile.READY); }
-    @Override public Set<String> producedKeys()  {
-        return Set.of(
-            QuarkMindCaseFile.ENEMY_ARMY_SIZE,
-            QuarkMindCaseFile.ENEMY_BUILD_ORDER,
-            QuarkMindCaseFile.TIMING_ATTACK_INCOMING,
-            QuarkMindCaseFile.ENEMY_POSTURE);
+
+    // ── New engine API ───────────────────────────────────────────────────────
+
+    @Override
+    public Set<String> requires() { return Set.of(QuarkMindCaseFile.READY); }
+
+    @Override
+    public Predicate<CaseContext> activateIf() {
+        return ctx -> ctx.contains(QuarkMindCaseFile.READY);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void execute(CaseFile caseFile) {
-        List<Unit>     enemies   = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ENEMY_UNITS,  List.class).orElse(List.of());
-        List<Building> buildings = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
-        List<Unit>     workers   = (List<Unit>)     caseFile.get(QuarkMindCaseFile.WORKERS,      List.class).orElse(List.of());
-        long frame = caseFile.get(QuarkMindCaseFile.GAME_FRAME, Long.class).orElse(0L);
+    public void execute(final CaseContext ctx) {
+        List<Unit>     enemies   = ctx.getList(QuarkMindCaseFile.ENEMY_UNITS,  Unit.class);
+        List<Building> buildings = ctx.getList(QuarkMindCaseFile.MY_BUILDINGS, Building.class);
+        List<Unit>     workers   = ctx.getList(QuarkMindCaseFile.WORKERS,      Unit.class);
+        Long frameL = ctx.getAs(QuarkMindCaseFile.GAME_FRAME, Long.class);
+        long frame = frameL != null ? frameL : 0L;
 
         int enemyHash = enemies.stream()
                 .map(Unit::tag)
@@ -198,7 +203,7 @@ public class DroolsScoutingTask implements ScoutingTask {
 
         // --- Passive intel (plain Java, no rules needed) ---
         int currentArmySize = enemies.size();
-        caseFile.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, currentArmySize);
+        ctx.set(QuarkMindCaseFile.ENEMY_ARMY_SIZE, currentArmySize);
         // Nearest enemy position used for threat intel dispatch — no longer written to CaseFile
         Point2d nearest = null;
         if (!enemies.isEmpty()) {
@@ -223,15 +228,15 @@ public class DroolsScoutingTask implements ScoutingTask {
             }
         }
 
-        // --- Write CEP intel to CaseFile ---
+        // --- Write CEP intel to context ---
         String build = data != null && !data.getDetectedBuilds().isEmpty()
             ? data.getDetectedBuilds().get(0) : "UNKNOWN";
-        caseFile.put(QuarkMindCaseFile.ENEMY_BUILD_ORDER, build);
+        ctx.set(QuarkMindCaseFile.ENEMY_BUILD_ORDER, build);
         boolean timing = data != null && !data.getTimingAlerts().isEmpty();
-        caseFile.put(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, timing);
+        ctx.set(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, timing);
         String posture = data != null && !data.getPostureDecisions().isEmpty()
             ? data.getPostureDecisions().get(0) : "UNKNOWN";
-        caseFile.put(QuarkMindCaseFile.ENEMY_POSTURE, posture);
+        ctx.set(QuarkMindCaseFile.ENEMY_POSTURE, posture);
 
         log.debugf("[SCOUTING] enemies=%d | build=%s | timing=%b | posture=%s",
             currentArmySize, build, timing, posture);
@@ -290,6 +295,34 @@ public class DroolsScoutingTask implements ScoutingTask {
             scoutProbeTag = null; // enemies found — release scout
         }
     }
+
+    @Override
+    public Set<String> produces() {
+        return Set.of(
+            QuarkMindCaseFile.ENEMY_ARMY_SIZE,
+            QuarkMindCaseFile.ENEMY_BUILD_ORDER,
+            QuarkMindCaseFile.TIMING_ATTACK_INCOMING,
+            QuarkMindCaseFile.ENEMY_POSTURE);
+    }
+
+    // ── Phase 1 bridges — removed when poc CaseFile is dropped in Phase 2 ──
+
+    @Override public Set<String> entryCriteria() { return requires(); }
+    @Override public Set<String> producedKeys()  { return produces(); }
+
+    @Override
+    public boolean canActivate(final CaseFile caseFile) {
+        return activateIf().test(new CaseFileContext(caseFile));
+    }
+
+    @Override
+    public void execute(final CaseFile caseFile) {
+        var ctx = new CaseFileContext(caseFile);
+        execute(ctx);
+        produces().forEach(k -> { Object v = ctx.get(k); if (v != null) caseFile.put(k, v); });
+    }
+
+    // ── Private helpers ──────────────────────────────────────────────────────
 
     private void maybeSendScout(long frame, List<Unit> workers, Point2d target) {
         if (frame < SCOUT_DELAY_TICKS) return;

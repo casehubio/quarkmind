@@ -112,6 +112,19 @@
             <artifactId>casehub-platform</artifactId>
             <version>0.2-SNAPSHOT</version>
         </dependency>
+        <!-- casehub-engine-api: CaseContext interface — Phase 1 migration (casehub-core stays until Phase 2) -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-engine-api</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
+        <!-- casehub-engine-blackboard: CaseContextImpl for test context construction (test scope only) -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-engine-blackboard</artifactId>
+            <version>0.2-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-qhorus-api</artifactId>

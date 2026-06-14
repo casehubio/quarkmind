@@ -196,7 +196,11 @@
       "Bash(curl -s -X POST http://localhost:8080/sc2/stop)",
       "Bash(GIT_SEQUENCE_EDITOR=\"cp /tmp/squash-13.txt\" git -C /Users/mdproctor/claude/casehub/quarkmind rebase -i origin/main)",
       "Bash(gh search *)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(xargs -I {} sh -c 'head -1 {} | grep package')",
+      "Bash(/tmp/check_imports.sh)",
+      "mcp__intellij-index__ide_find_symbol",
+      "mcp__intellij__get_run_configurations"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"

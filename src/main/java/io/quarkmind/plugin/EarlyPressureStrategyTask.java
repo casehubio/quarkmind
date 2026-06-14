@@ -1,15 +1,18 @@
 package io.quarkmind.plugin;
 
 import io.casehub.annotation.CaseType;
+import io.casehub.api.context.CaseContext;
 import io.casehub.core.CaseFile;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import io.quarkmind.agent.CaseFileContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.StrategySelector;
 import io.quarkmind.agent.plugin.StrategyTask;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Committed aggressive strategy — early military build from tick 1 (L6).
@@ -38,25 +41,46 @@ public class EarlyPressureStrategyTask implements StrategyTask {
     @Override public String getId()   { return "strategy.early-pressure"; }
     @Override public String getName() { return "Early Pressure Strategy"; }
 
+    // ── New engine API ───────────────────────────────────────────────────────
+
     @Override
-    public Set<String> entryCriteria() {
+    public Set<String> requires() {
         // No ENEMY_ARMY_SIZE dependency — committed strategy fires from tick 1.
-        // May execute before scouting in the same CaseEngine tick; intentional.
         return Set.of(QuarkMindCaseFile.READY);
     }
 
     @Override
-    public Set<String> producedKeys() { return Set.of(QuarkMindCaseFile.STRATEGY); }
-
-    @Override
-    public boolean canActivate(CaseFile caseFile) {
-        return strategySelector.isSelected(getId())
-            && entryCriteria().stream().allMatch(caseFile::contains);
+    public Predicate<CaseContext> activateIf() {
+        return ctx -> strategySelector.isSelected(getId())
+            && ctx.contains(QuarkMindCaseFile.READY);
     }
 
     @Override
-    public void execute(CaseFile caseFile) {
-        caseFile.put(QuarkMindCaseFile.STRATEGY, "ATTACK");
+    public void execute(final CaseContext ctx) {
+        ctx.set(QuarkMindCaseFile.STRATEGY, "ATTACK");
         log.debugf("[EARLY-PRESSURE] STRATEGY=ATTACK");
+    }
+
+    @Override
+    public Set<String> produces() { return Set.of(QuarkMindCaseFile.STRATEGY); }
+
+    // ── Phase 1 bridges — removed when poc CaseFile is dropped in Phase 2 ──
+
+    @Override
+    public Set<String> entryCriteria() { return requires(); }
+
+    @Override
+    public Set<String> producedKeys() { return produces(); }
+
+    @Override
+    public boolean canActivate(final CaseFile caseFile) {
+        return activateIf().test(new CaseFileContext(caseFile));
+    }
+
+    @Override
+    public void execute(final CaseFile caseFile) {
+        var ctx = new CaseFileContext(caseFile);
+        execute(ctx);
+        produces().forEach(k -> { Object v = ctx.get(k); if (v != null) caseFile.put(k, v); });
     }
 }

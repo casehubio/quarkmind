@@ -1,37 +1,32 @@
 package io.quarkmind.plugin;
 
-import io.casehub.annotation.CaseType;
+import io.casehub.api.context.CaseContext;
 import io.casehub.core.CaseFile;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import io.quarkmind.agent.CaseFileContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.plugin.TacticsTask;
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Unit;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
+import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Basic tactics: act on the {@link QuarkMindCaseFile#STRATEGY} key each tick.
- *
- * <ul>
- *   <li><b>ATTACK</b> — queue {@link AttackIntent} for each army unit toward
- *       {@link #MAP_CENTER}. No directed movement — superseded implementation.</li>
- *   <li><b>DEFEND</b> — queue {@link MoveIntent} for each army unit to rally
- *       near our Nexus.</li>
- *   <li><b>MACRO</b> — no-op; army holds position.</li>
- * </ul>
  *
  * <p>Superseded by {@link DroolsTacticsTask} as the active CDI bean. Retained as
  * a plain class for direct-instantiation tests.
  *
  * <p>This class intentionally carries no CDI annotations ({@code @ApplicationScoped},
  * {@code @CaseType}) — {@link DroolsTacticsTask} is the permanent active bean.
- * Direct instantiation only: never injected by the container.
  */
 public class BasicTacticsTask implements TacticsTask {
 
@@ -49,50 +44,50 @@ public class BasicTacticsTask implements TacticsTask {
 
     @Override public String getId()   { return "tactics.basic"; }
     @Override public String getName() { return "Basic Tactics"; }
-    @Override public Set<String> entryCriteria() {
-        return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.STRATEGY);
-    }
-    @Override public Set<String> producedKeys()  { return Set.of(); }
 
-    /**
-     * Overrides the {@code TaskDefinition} default, which unconditionally returns {@code true}
-     * in the installed casehub-core snapshot — ignoring {@link #entryCriteria()}.
-     * Override required until the foundation corrects the default.
-     */
+    // ── New engine API ───────────────────────────────────────────────────────
+
     @Override
-    public boolean canActivate(CaseFile caseFile) {
-        return entryCriteria().stream().allMatch(caseFile::contains);
+    public Set<String> requires() { return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.STRATEGY); }
+
+    @Override
+    public Predicate<CaseContext> activateIf() {
+        return ctx -> ctx.contains(QuarkMindCaseFile.READY) && ctx.contains(QuarkMindCaseFile.STRATEGY);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void execute(CaseFile caseFile) {
-        String strategy = caseFile.get(QuarkMindCaseFile.STRATEGY, String.class).orElse("MACRO");
-        List<Unit>     army      = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ARMY,         List.class).orElse(List.of());
-        List<Building> buildings = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
-
+    public void execute(final CaseContext ctx) {
+        String strategy = ctx.getOrDefault(QuarkMindCaseFile.STRATEGY, "MACRO");
+        List<Unit>     army      = ctx.getList(QuarkMindCaseFile.ARMY,         Unit.class);
+        List<Building> buildings = ctx.getList(QuarkMindCaseFile.MY_BUILDINGS, Building.class);
         if (army.isEmpty()) return;
-
         switch (strategy) {
-            case "ATTACK" -> executeAttack(army);
-            case "DEFEND" -> executeDefend(army, buildings);
-            // MACRO: hold position
+            case "ATTACK" -> army.forEach(unit -> intentQueue.add(new AttackIntent(unit.tag(), MAP_CENTER)));
+            case "DEFEND" -> {
+                Point2d rally = buildings.stream()
+                    .filter(b -> b.type() == BuildingType.NEXUS).findFirst()
+                    .map(Building::position).orElse(MAP_CENTER);
+                army.forEach(unit -> intentQueue.add(new MoveIntent(unit.tag(), rally)));
+            }
         }
-
         log.debugf("[TACTICS] %s | army=%d", strategy, army.size());
     }
 
-    private void executeAttack(List<Unit> army) {
-        // BasicTacticsTask always attacks MAP_CENTER — superseded by DroolsTacticsTask
-        army.forEach(unit -> intentQueue.add(new AttackIntent(unit.tag(), MAP_CENTER)));
+    @Override public Set<String> produces() { return Set.of(); }
+
+    // ── Phase 1 bridges ──────────────────────────────────────────────────────
+
+    @Override public Set<String> entryCriteria() { return requires(); }
+    @Override public Set<String> producedKeys()  { return produces(); }
+
+    @Override
+    public boolean canActivate(final CaseFile caseFile) {
+        return activateIf().test(new CaseFileContext(caseFile));
     }
 
-    private void executeDefend(List<Unit> army, List<Building> buildings) {
-        Point2d rallyPoint = buildings.stream()
-            .filter(b -> b.type() == BuildingType.NEXUS)
-            .findFirst()
-            .map(Building::position)
-            .orElse(MAP_CENTER);
-        army.forEach(unit -> intentQueue.add(new MoveIntent(unit.tag(), rallyPoint)));
+    @Override
+    public void execute(final CaseFile caseFile) {
+        execute(new CaseFileContext(caseFile));
+        // No outputs to sync back — produces() is empty
     }
 }

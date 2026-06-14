@@ -1,47 +1,54 @@
 package io.quarkmind.plugin;
 
 import io.casehub.annotation.CaseType;
+import io.casehub.api.context.CaseContext;
 import io.casehub.core.CaseFile;
+import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
 import io.casehub.platform.api.preferences.SettingsScope;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import io.quarkmind.agent.CaseFileContext;
+import io.quarkmind.agent.GameSession;
+import io.quarkmind.agent.PluginDecisionEvent;
+import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ResourceBudget;
 import io.quarkmind.agent.ScoutingIntelBroker;
+import io.quarkmind.agent.StrategySelector;
 import io.quarkmind.agent.plugin.ScoutingIntelConsumer;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Resource;
+import io.quarkmind.domain.Unit;
 import io.quarkmind.plugin.drools.StrategyRuleUnit;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitInstance;
 import org.jboss.logging.Logger;
 
-import io.casehub.ledger.api.model.AttestationVerdict;
-import io.quarkmind.agent.GameSession;
-import io.quarkmind.agent.PluginDecisionEvent;
-import io.quarkmind.agent.QuarkMindCapabilityTag;
-import io.quarkmind.agent.StrategySelector;
-import jakarta.enterprise.event.Event;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
  * Drools-backed {@link StrategyTask} — first real R&D integration.
  *
- * <p>Each tick, game state from the CaseFile is loaded into a {@link StrategyRuleUnit}
+ * <p>Each tick, game state from the CaseContext is loaded into a {@link StrategyRuleUnit}
  * and a fresh Drools session is fired. Rules decide what to build and the strategic
  * posture; this class enforces the budget and dispatches intents.
  *
@@ -106,34 +113,31 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
 
     @Override public String getId()   { return "strategy.drools"; }
     @Override public String getName() { return "Drools Strategy"; }
-    @Override public Set<String> entryCriteria() {
+
+    // ── New engine API ───────────────────────────────────────────────────────
+
+    @Override
+    public Set<String> requires() {
         // ENEMY_ARMY_SIZE: ordering dependency — scouting always writes this (even as 0),
         // ensuring strategy runs after scouting in the CaseEngine re-evaluation loop (L5 invariant)
         return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.ENEMY_ARMY_SIZE);
     }
-    @Override public Set<String> producedKeys()  { return Set.of(QuarkMindCaseFile.STRATEGY); }
 
-    /**
-     * Overrides the {@code TaskDefinition} default, which unconditionally returns {@code true}
-     * in the installed casehub-core snapshot — ignoring {@link #entryCriteria()}.
-     * Override required until the foundation corrects the default.
-     *
-     * <p>L6: also gates on {@link StrategySelector} — only the trust-selected strategy runs per tick.
-     * Also gates on broker having a posture value (Stack 1 in-memory delivery); Drools reads posture
-     * to make decisions and should not run without it.
-     */
     @Override
-    public boolean canActivate(CaseFile caseFile) {
-        return strategySelector.isSelected(getId())
-            && entryCriteria().stream().allMatch(caseFile::contains)
+    public Predicate<CaseContext> activateIf() {
+        // PP-20260603-cefed9: explicit override required — poc default unconditionally returns true
+        // L6: also gates on StrategySelector and broker posture availability
+        return ctx -> strategySelector.isSelected(getId())
+            && ctx.contains(QuarkMindCaseFile.READY)
+            && ctx.contains(QuarkMindCaseFile.ENEMY_ARMY_SIZE)
             && broker.current(ScoutingIntelType.POSTURE).isPresent();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void execute(CaseFile caseFile) {
-        int armySize = caseFile.get(QuarkMindCaseFile.ENEMY_ARMY_SIZE, Integer.class).orElse(0);
-        // Read posture and timing from broker (Stack 1) — CaseFile writes are observability only
+    public void execute(final CaseContext ctx) {
+        int armySize = ctx.getOrDefault(QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0);
+        // Read posture and timing from broker (Stack 1) — context writes are observability only
         String posture = broker.current(ScoutingIntelType.POSTURE,
                 ScoutingIntelPayload.PostureUpdate.class)
             .map(ScoutingIntelPayload.PostureUpdate::posture)
@@ -142,12 +146,11 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
                 ScoutingIntelPayload.TimingAlert.class)
             .map(ScoutingIntelPayload.TimingAlert::incoming)
             .orElse(false);
-        List<Unit>     workers   = (List<Unit>)     caseFile.get(QuarkMindCaseFile.WORKERS,      List.class).orElse(List.of());
-        List<Unit>     army      = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ARMY,         List.class).orElse(List.of());
-        List<Building> buildings = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
-        List<Resource> geysers   = (List<Resource>) caseFile.get(QuarkMindCaseFile.GEYSERS,      List.class).orElse(List.of());
-        ResourceBudget budget    = caseFile.get(QuarkMindCaseFile.RESOURCE_BUDGET, ResourceBudget.class)
-            .orElse(new ResourceBudget(0, 0));
+        List<Unit>     workers   = ctx.getList(QuarkMindCaseFile.WORKERS,      Unit.class);
+        List<Unit>     army      = ctx.getList(QuarkMindCaseFile.ARMY,         Unit.class);
+        List<Building> buildings = ctx.getList(QuarkMindCaseFile.MY_BUILDINGS, Building.class);
+        List<Resource> geysers   = ctx.getList(QuarkMindCaseFile.GEYSERS,      Resource.class);
+        ResourceBudget budget    = ctx.getOrDefault(QuarkMindCaseFile.RESOURCE_BUDGET, new ResourceBudget(0, 0));
 
         StrategyRuleUnit data = buildRuleUnit(workers, army, buildings, geysers, posture, timing);
 
@@ -158,42 +161,58 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
         dispatchBuildDecisions(data.getBuildDecisions(), budget, workers, buildings, geysers);
 
         String strategy = data.getStrategyDecisions().stream().findFirst().orElse("MACRO");
-        caseFile.put(QuarkMindCaseFile.STRATEGY, strategy);
+        ctx.set(QuarkMindCaseFile.STRATEGY, strategy);
 
         log.debugf("[DROOLS-STRATEGY] %s | posture=%s | timing=%b | armySize=%d | builds=%s | %s",
             strategy, posture, timing, armySize, data.getBuildDecisions(), budget);
         if (!Objects.equals(strategy, prevStrategy)) {
             prevStrategy = strategy;
-            int frame = caseFile.get(QuarkMindCaseFile.GAME_FRAME, Long.class)
-                    .map(Long::intValue).orElse(0);
+            Long frame = ctx.getAs(QuarkMindCaseFile.GAME_FRAME, Long.class);
             decisionEvents.fireAsync(new PluginDecisionEvent(
                     getId(), QuarkMindCapabilityTag.STRATEGY,
-                    AttestationVerdict.SOUND, gameSession.id(), frame));
+                    AttestationVerdict.SOUND, gameSession.id(),
+                    frame != null ? frame.intValue() : 0));
         }
     }
+
+    @Override
+    public Set<String> produces() { return Set.of(QuarkMindCaseFile.STRATEGY); }
+
+    // ── Phase 1 bridges — removed when poc CaseFile is dropped in Phase 2 ──
+
+    @Override
+    public Set<String> entryCriteria() { return requires(); }
+
+    @Override
+    public Set<String> producedKeys() { return produces(); }
+
+    @Override
+    public boolean canActivate(final CaseFile caseFile) {
+        return activateIf().test(new CaseFileContext(caseFile));
+    }
+
+    @Override
+    public void execute(final CaseFile caseFile) {
+        var ctx = new CaseFileContext(caseFile);
+        execute(ctx);
+        produces().forEach(k -> { Object v = ctx.get(k); if (v != null) caseFile.put(k, v); });
+    }
+
+    // ── Private helpers ──────────────────────────────────────────────────────
 
     private StrategyRuleUnit buildRuleUnit(List<Unit> workers, List<Unit> army,
                                            List<Building> buildings, List<Resource> geysers,
                                            String posture, boolean timing) {
         StrategyRuleUnit data = new StrategyRuleUnit();
-
         data.getPostureStore().add(posture);
         data.getTimingStore().add(timing);
-
         workers.stream().findFirst().ifPresent(data.getBuilders()::add);
         army.forEach(data.getArmy()::add);
         buildings.forEach(data.getBuildings()::add);
-
         firstFreeGeyser(buildings, geysers).ifPresent(data.getGeysers()::add);
-
         return data;
     }
 
-    /**
-     * Processes Drools build decisions in priority order, enforcing the budget.
-     * Rules fire declaratively; budget + intent dispatch happen here in Java.
-     * Handles: GATEWAY, CYBERNETICS_CORE, STALKER, ASSIMILATOR.
-     */
     private void dispatchBuildDecisions(List<String> decisions, ResourceBudget budget,
                                         List<Unit> workers, List<Building> buildings,
                                         List<Resource> geysers) {
@@ -201,11 +220,9 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
             if (decision.equals("GATEWAY") && budget.spendMinerals(150)) {
                 workers.stream().findFirst().ifPresent(p ->
                     intentQueue.add(new BuildIntent(p.tag(), BuildingType.GATEWAY, GATEWAY_POS)));
-
             } else if (decision.equals("CYBERNETICS_CORE") && budget.spendMinerals(150)) {
                 workers.stream().findFirst().ifPresent(p ->
                     intentQueue.add(new BuildIntent(p.tag(), BuildingType.CYBERNETICS_CORE, CYBERNETICS_CORE_POS)));
-
             } else if (decision.equals("ASSIMILATOR")) {
                 firstFreeGeyser(buildings, geysers).ifPresent(g -> {
                     if (budget.spendMinerals(75)) {
@@ -213,10 +230,8 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
                             intentQueue.add(new BuildIntent(p.tag(), BuildingType.ASSIMILATOR, g.position())));
                     }
                 });
-
             } else if (decision.startsWith("STALKER:") && budget.spend(125, 50)) {
-                String gatewayTag = decision.substring("STALKER:".length());
-                intentQueue.add(new TrainIntent(gatewayTag, UnitType.STALKER));
+                intentQueue.add(new TrainIntent(decision.substring("STALKER:".length()), io.quarkmind.domain.UnitType.STALKER));
             }
         }
     }

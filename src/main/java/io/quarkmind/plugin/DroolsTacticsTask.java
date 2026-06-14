@@ -1,8 +1,10 @@
 package io.quarkmind.plugin;
 
 import io.casehub.annotation.CaseType;
+import io.casehub.api.context.CaseContext;
 import io.casehub.core.CaseFile;
 import io.casehub.platform.api.preferences.PreferenceProvider;
+import io.quarkmind.agent.CaseFileContext;
 import io.casehub.platform.api.preferences.Preferences;
 import io.casehub.platform.api.preferences.SettingsScope;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -41,6 +43,7 @@ import io.quarkmind.agent.QuarkMindCapabilityTag;
 import jakarta.enterprise.event.Event;
 import java.util.*;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -138,31 +141,26 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer {
 
     @Override public String getId()   { return "tactics.drools-goap"; }
     @Override public String getName() { return "Drools GOAP Tactics"; }
-    @Override public Set<String> entryCriteria() {
-        return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.STRATEGY);
-    }
-    @Override public Set<String> producedKeys()  { return Set.of(); }
 
-    /**
-     * Overrides the {@code TaskDefinition} default, which unconditionally returns {@code true}
-     * in the installed casehub-core snapshot — ignoring {@link #entryCriteria()}.
-     * Override required until the foundation corrects the default.
-     * Also gates on the broker having a threat position (Stack 1 in-memory delivery).
-     */
+    // ── New engine API ───────────────────────────────────────────────────────
+
     @Override
-    public boolean canActivate(CaseFile caseFile) {
-        return entryCriteria().stream().allMatch(caseFile::contains)
+    public Set<String> requires() { return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.STRATEGY); }
+
+    @Override
+    public Predicate<CaseContext> activateIf() {
+        // PP-20260603-cefed9: explicit override required
+        return ctx -> ctx.contains(QuarkMindCaseFile.READY)
+            && ctx.contains(QuarkMindCaseFile.STRATEGY)
             && broker.current(ScoutingIntelType.THREAT_POSITION).isPresent();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void execute(CaseFile caseFile) {
-        String strategy    = caseFile.get(QuarkMindCaseFile.STRATEGY,      String.class).orElse("MACRO");
-        List<Unit> army    = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ARMY,         List.class).orElse(List.of());
-        List<Unit> enemies = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ENEMY_UNITS,  List.class).orElse(List.of());
-        List<Building> bld = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
-        // Reads from in-memory broker (Stack 1 — synchronous, zero-lag delivery)
+    public void execute(final CaseContext ctx) {
+        String strategy    = ctx.getOrDefault(QuarkMindCaseFile.STRATEGY, "MACRO");
+        List<Unit> army    = ctx.getList(QuarkMindCaseFile.ARMY,         Unit.class);
+        List<Unit> enemies = ctx.getList(QuarkMindCaseFile.ENEMY_UNITS,  Unit.class);
+        List<Building> bld = ctx.getList(QuarkMindCaseFile.MY_BUILDINGS, Building.class);
         Point2d threat = broker.current(ScoutingIntelType.THREAT_POSITION,
                 ScoutingIntelPayload.ThreatPosition.class)
             .map(ScoutingIntelPayload.ThreatPosition::position)
@@ -171,11 +169,11 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer {
         String threatState = enemies.isEmpty() ? "none" : "present";
         if (!Objects.equals(threatState, prevThreatState)) {
             prevThreatState = threatState;
-            int frame = caseFile.get(QuarkMindCaseFile.GAME_FRAME, Long.class)
-                    .map(Long::intValue).orElse(0);
+            Long frame = ctx.getAs(QuarkMindCaseFile.GAME_FRAME, Long.class);
             decisionEvents.fireAsync(new PluginDecisionEvent(
                     getId(), QuarkMindCapabilityTag.TACTICS,
-                    AttestationVerdict.SOUND, gameSession.id(), frame));
+                    AttestationVerdict.SOUND, gameSession.id(),
+                    frame != null ? frame.intValue() : 0));
         }
 
         if (army.isEmpty()) return;
@@ -224,6 +222,26 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer {
                 groupInfo.unitTags().size());
         }
     }
+
+    @Override public Set<String> produces() { return Set.of(); }
+
+    // ── Phase 1 bridges — removed when poc CaseFile is dropped in Phase 2 ──
+
+    @Override public Set<String> entryCriteria() { return requires(); }
+    @Override public Set<String> producedKeys()  { return produces(); }
+
+    @Override
+    public boolean canActivate(final CaseFile caseFile) {
+        return activateIf().test(new CaseFileContext(caseFile));
+    }
+
+    @Override
+    public void execute(final CaseFile caseFile) {
+        execute(new CaseFileContext(caseFile));
+        // No outputs to sync back — produces() is empty
+    }
+
+    // ── Private helpers ──────────────────────────────────────────────────────
 
     static Set<String> computeInRangeTags(List<Unit> army, List<Unit> enemies) {
         Set<String> result = new HashSet<>();

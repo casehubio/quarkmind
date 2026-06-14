@@ -1,33 +1,28 @@
 package io.quarkmind.plugin;
 
 import io.casehub.annotation.CaseType;
+import io.casehub.api.context.CaseContext;
 import io.casehub.core.CaseFile;
+import io.quarkmind.agent.CaseFileContext;
+import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agent.plugin.ScoutingTask;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.sc2.IntentQueue;
+import io.quarkmind.sc2.intent.MoveIntent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Alternative;
 import jakarta.inject.Inject;
-import io.quarkmind.agent.QuarkMindCaseFile;
-import io.quarkmind.agent.plugin.ScoutingTask;
-import io.quarkmind.domain.*;
-import io.quarkmind.sc2.IntentQueue;
-import io.quarkmind.sc2.intent.MoveIntent;
 import org.jboss.logging.Logger;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Basic scouting: passive intel from visible units + active probe scout.
- *
- * <p><b>Passive intel</b> (every tick):
- * <ul>
- *   <li>{@link QuarkMindCaseFile#ENEMY_ARMY_SIZE} — count of visible enemy units</li>
- * </ul>
- *
- * <p><b>Active scouting</b>: after {@link #SCOUT_DELAY_TICKS} ticks with no visible enemies,
- * dispatches one Probe toward the estimated enemy base (derived from our Nexus position
- * on a typical symmetric 2-player map). The assigned probe is tracked by tag; if it dies,
- * a new one is assigned.
  *
  * <p>Deactivated in favour of {@link io.quarkmind.plugin.scouting.DroolsScoutingTask}.
  * Marked {@code @Alternative} so Quarkus Arc does not register it as a CDI bean.
@@ -37,14 +32,12 @@ import java.util.Set;
 @CaseType("starcraft-game")
 public class BasicScoutingTask implements ScoutingTask {
 
-    /** Delay before sending a scout — let the economy stabilise first. */
     static final int SCOUT_DELAY_TICKS = 20;
 
     private static final Logger log = Logger.getLogger(BasicScoutingTask.class);
 
     private final IntentQueue intentQueue;
 
-    /** Tag of the probe currently assigned to scout. Null when no active scout. */
     private volatile String scoutProbeTag;
 
     @Inject
@@ -54,69 +47,81 @@ public class BasicScoutingTask implements ScoutingTask {
 
     @Override public String getId()   { return "scouting.basic"; }
     @Override public String getName() { return "Basic Scouting"; }
-    @Override public Set<String> entryCriteria() { return Set.of(QuarkMindCaseFile.READY); }
-    @Override public Set<String> producedKeys() {
-        return Set.of(QuarkMindCaseFile.ENEMY_ARMY_SIZE);
+
+    // ── New engine API ───────────────────────────────────────────────────────
+
+    @Override
+    public Set<String> requires() { return Set.of(QuarkMindCaseFile.READY); }
+
+    @Override
+    public Predicate<CaseContext> activateIf() {
+        return ctx -> ctx.contains(QuarkMindCaseFile.READY);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void execute(CaseFile caseFile) {
-        List<Unit>     enemies   = (List<Unit>)     caseFile.get(QuarkMindCaseFile.ENEMY_UNITS,  List.class).orElse(List.of());
-        List<Building> buildings = (List<Building>) caseFile.get(QuarkMindCaseFile.MY_BUILDINGS, List.class).orElse(List.of());
-        List<Unit>     workers   = (List<Unit>)     caseFile.get(QuarkMindCaseFile.WORKERS,      List.class).orElse(List.of());
-        long frame = caseFile.get(QuarkMindCaseFile.GAME_FRAME, Long.class).orElse(0L);
+    public void execute(final CaseContext ctx) {
+        List<Unit>     enemies   = ctx.getList(QuarkMindCaseFile.ENEMY_UNITS,  Unit.class);
+        List<Building> buildings = ctx.getList(QuarkMindCaseFile.MY_BUILDINGS, Building.class);
+        List<Unit>     workers   = ctx.getList(QuarkMindCaseFile.WORKERS,      Unit.class);
+        Long frameL = ctx.getAs(QuarkMindCaseFile.GAME_FRAME, Long.class);
+        long frame = frameL != null ? frameL : 0L;
 
-        // --- Passive intel ---
-        caseFile.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, enemies.size());
+        ctx.set(QuarkMindCaseFile.ENEMY_ARMY_SIZE, enemies.size());
 
         if (!enemies.isEmpty()) {
-            scoutProbeTag = null; // enemies found — mission complete, release scout
+            scoutProbeTag = null;
         } else {
-            // --- Active scouting ---
             maybeSendScout(frame, buildings, workers);
         }
-
         log.debugf("[SCOUTING] visible enemies=%d | scout=%s", enemies.size(), scoutProbeTag);
     }
+
+    @Override
+    public Set<String> produces() { return Set.of(QuarkMindCaseFile.ENEMY_ARMY_SIZE); }
+
+    // ── Phase 1 bridges ──────────────────────────────────────────────────────
+
+    @Override public Set<String> entryCriteria() { return requires(); }
+    @Override public Set<String> producedKeys()  { return produces(); }
+
+    @Override
+    public boolean canActivate(final CaseFile caseFile) {
+        return activateIf().test(new CaseFileContext(caseFile));
+    }
+
+    @Override
+    public void execute(final CaseFile caseFile) {
+        var ctx = new CaseFileContext(caseFile);
+        execute(ctx);
+        produces().forEach(k -> { Object v = ctx.get(k); if (v != null) caseFile.put(k, v); });
+    }
+
+    // ── Private helpers ──────────────────────────────────────────────────────
 
     private void maybeSendScout(long frame, List<Building> buildings, List<Unit> workers) {
         if (frame < SCOUT_DELAY_TICKS) return;
         if (workers.isEmpty()) return;
-
-        // Check if assigned scout is still alive
         if (scoutProbeTag != null) {
-            boolean alive = workers.stream().anyMatch(w -> w.tag().equals(scoutProbeTag));
-            if (alive) return; // scout is still out
-            scoutProbeTag = null; // probe died — assign a new one
+            if (workers.stream().anyMatch(w -> w.tag().equals(scoutProbeTag))) return;
+            scoutProbeTag = null;
         }
-
-        // Assign the last probe in the list (least likely to be actively mining)
         Unit scout = workers.get(workers.size() - 1);
         scoutProbeTag = scout.tag();
-
         Point2d home   = nexusPosition(buildings);
         Point2d target = estimatedEnemyBase(home);
         intentQueue.add(new MoveIntent(scout.tag(), target));
         log.infof("[SCOUTING] Scout probe %s dispatched toward estimated enemy base %s", scoutProbeTag, target);
     }
 
-    /**
-     * Estimates enemy base on a symmetric 2-player map.
-     * If our Nexus is in the lower-left quadrant, enemy is upper-right, and vice versa.
-     */
     static Point2d estimatedEnemyBase(Point2d ourBase) {
         float targetX = ourBase.x() < 64 ? 224 : 32;
         float targetY = ourBase.y() < 64 ? 224 : 32;
         return new Point2d(targetX, targetY);
     }
 
-    /** Returns the position of our first Nexus, or map origin if none exists yet. */
     private static Point2d nexusPosition(List<Building> buildings) {
         return buildings.stream()
-            .filter(b -> b.type() == BuildingType.NEXUS)
-            .findFirst()
-            .map(Building::position)
-            .orElse(new Point2d(0, 0));
+            .filter(b -> b.type() == BuildingType.NEXUS).findFirst()
+            .map(Building::position).orElse(new Point2d(0, 0));
     }
 }

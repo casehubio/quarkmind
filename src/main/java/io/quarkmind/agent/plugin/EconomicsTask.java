@@ -1,5 +1,5 @@
 package io.quarkmind.agent.plugin;
 
-import io.casehub.core.TaskDefinition;
-
-public interface EconomicsTask extends TaskDefinition {}
+public interface EconomicsTask
+        extends io.casehub.core.TaskDefinition,
+                io.quarkmind.agent.TaskDefinition {}

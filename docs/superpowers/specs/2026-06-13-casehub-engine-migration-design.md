@@ -60,13 +60,15 @@ engine.dispatch();  // drains CDI-injected IntentQueue directly
 
 **Concurrent-tick safety.** If tick N's plan items are still RUNNING when tick N+1 fires, `addPlanItemIfAbsent` rejects the new plan item (RUNNING blocks re-addition; COMPLETED does not). At 500ms intervals with in-process lambda workers this should not occur. `AgentOrchestrator.gameTick()` carries `@Scheduled(concurrentExecution = SKIP)` which prevents concurrent invocation — this is the structural guard. The spec notes this constraint: `signalAndAwait()` must complete before the next tick signal is sent.
 
-**ContextChangeTrigger expression.** The `ContextChangeTrigger(String filter)` constructor takes a JQ expression, not a key name. The expression `"game.state"` selects the value at that path — truthy when non-null, which means it fires on every context write after tick 1, not just per-tick signals. The correct expression for the per-tick binding is:
+**ContextChangeTrigger expression.** The `ContextChangeTrigger(String filter)` constructor takes a JQ expression. JQ always evaluates against the **full panel document** — the JSON produced by `CaseContext.asJsonNode()` is structured as `{"working": {"game.frame": 42, ...}, "semantic": {...}, "episodic": {...}}`. Flat game-state keys live inside the `working` panel object. The key `"game.frame"` contains a literal dot, so JQ bracket notation is required to avoid treating it as nested path access. The correct per-tick binding trigger expression is:
 
 ```
-.["game.frame"] | . != null
+.working["game.frame"] | . != null
 ```
 
-`game.frame` is always included in the update map and increments every tick. `applyAndDiff` detects the change → fires `CaseContextChangedEvent`. Agent writes (scouting intel, strategy keys) do not change `game.frame` → do not re-trigger the binding.
+`game.frame` is always included in the update map and increments every tick. `applyAndDiff` detects the change in the working panel → fires `CaseContextChangedEvent`. Agent writes (scouting intel, strategy keys) do not change `game.frame` → do not re-trigger the binding.
+
+**Optionally**: use the two-arg `ContextChangeTrigger(filter, listenPanel)` constructor with `listenPanel = "working"` to additionally gate the binding to working-panel-only changes (ignoring semantic/episodic events). The JQ expression remains `.working["game.frame"] | . != null` regardless — `listenPanel` is a binding-skipping filter, not a JQ input scope change.
 
 ### 2. Plugin ordering via `SequenceWorker` (engine#484)
 
@@ -88,9 +90,19 @@ Worker tickDecision = SequenceWorker.of(
 
 This replaces the implicit CDI observer pattern (`StrategyTrustObserver`) with an explicit, ordered, event-log-visible step. Trust routing becomes structural, not hidden.
 
-**CDI injection in workers.** `TaskDefinition.toWorker()` creates a lambda `(ctx) -> { this.execute(ctx); return Map.of(); }` where `this` is the CDI proxy obtained via `Instance<TaskDefinition>`. When the engine invokes this lambda, the CDI proxy dispatches to the `@ApplicationScoped` scoped instance with all `@Inject` fields populated (StrategySelector, ScoutingIntelBroker, Event<PluginDecisionEvent>, etc.). CDI context is intact because the lambda closure captures the proxy, not the raw bean instance.
+**CDI injection in workers.** `TaskDefinition.toWorker()` wraps `execute(CaseContext)` using the `Worker` constructor that accepts `Function<CaseContext, Map<String,Object>>`:
 
-The returned `Map.of()` is empty — correct for void-returning plugins that write their output to `CaseContext` directly via `ctx.set()` during `execute()`. The engine's `WorkflowExecutionCompletedHandler` applies the returned map to context; an empty map produces an empty diff and no additional write.
+```java
+default Worker toWorker(List<Capability> caps) {
+    return new Worker(getId(), caps, ctx -> { this.execute(ctx); return Map.of(); });
+}
+```
+
+Note: `Worker.Builder.function()` takes `Function<Map<String,Object>, WorkerResult>` (input-data map → WorkerResult) — the builder form does NOT give plugins access to the full `CaseContext`. QuarkMind plugins must use the constructor form so that `execute(CaseContext ctx)` receives the live context for both reading game state and writing agent state.
+
+The lambda's `this` is the CDI proxy obtained via `Instance<TaskDefinition>`. When the engine invokes the lambda, the CDI proxy dispatches to the `@ApplicationScoped` instance with all `@Inject` fields populated (StrategySelector, ScoutingIntelBroker, Event<PluginDecisionEvent>, etc.). CDI context is intact because the lambda closure captures the proxy, not the raw bean instance.
+
+The returned `Map.of()` is empty — plugins write their output to `CaseContext` directly via `ctx.set()`. The engine's `WorkflowExecutionCompletedHandler` applies the returned map to context; an empty map produces an empty diff and no additional write.
 
 ### 3. `TaskDefinition` sugar and `@CaseType`
 
@@ -104,7 +116,9 @@ public interface TaskDefinition {
     default Predicate<CaseContext> activateIf() { return ctx -> true; }
     void execute(CaseContext ctx);
     default Set<String> produces() { return Set.of(); }       // documentation only
-    default Worker toWorker() { /* lambda over execute() */ }
+    default Worker toWorker(List<Capability> caps) {          // uses Worker constructor, not Builder
+        return new Worker(getId(), caps, ctx -> { this.execute(ctx); return Map.of(); });
+    }
     default Binding toBinding(String triggerExpression) { /* wraps requires() + activateIf() */ }
 }
 ```
@@ -160,7 +174,7 @@ public class QuarkMindCaseHub extends CaseHub {
             // game-frame change.
             .bindings(Binding.builder()
                 .name("tick-decision")
-                .on(new ContextChangeTrigger(".[\\"game.frame\\"] | . != null"))
+                .on(new ContextChangeTrigger(".working[\\"game.frame\\"] | . != null"))
                 .capability(/* SequenceWorker capability — engine#484 */ tickDecision.getCapabilities().get(0))
                 .build())
             .build();
@@ -178,7 +192,7 @@ public class QuarkMindCaseHub extends CaseHub {
 
 Mechanical changes, implementable now against existing engine API:
 
-1. Replace `io.casehub.core.CaseFile` with `io.casehub.api.context.CaseContext` in all plugin execute methods and test helpers. The API is functionally equivalent but the return type for reads changed: the poc's `CaseFile.get(key, Class<T>)` returned `Optional<T>`; the engine's `CaseContext.getAs(key, Class<T>)` returns nullable `T`. Every plugin call like `caseFile.get(MINERALS, Integer.class).orElse(0)` becomes `ctx.getOrDefault(MINERALS, 0)`. For writes: `caseFile.put(key, value)` → `ctx.set(key, value)`. For test construction: `casehub-engine-testing` has no `CaseContext` factory (it contains only repository test stubs). Use `new CaseContextImpl(Map<String,Object> initial)` from `io.casehub.engine.internal.context` — this is in the engine runtime module and accessible from tests. If a public factory is needed, file an issue against `casehub-engine-testing`.
+1. Replace `io.casehub.core.CaseFile` with `io.casehub.api.context.CaseContext` in all plugin execute methods and test helpers. **API difference:** the poc's `CaseFile.get(key, Class<T>)` returned `Optional<T>`; the engine's `CaseContext.getAs(key, Class<T>)` returns nullable `T`. Every plugin call like `caseFile.get(MINERALS, Integer.class).orElse(0)` becomes `ctx.getOrDefault(MINERALS, 0)`. For writes: `caseFile.put(key, value)` → `ctx.set(key, value)`. For test construction: `casehub-engine-testing` has no `CaseContext` factory (confirmed — it contains only repository test stubs). Use `new CaseContextImpl(Map<String,Object> initial)` from `io.casehub.engine.internal.context` — internal package but publicly constructable. Note: `MapCaseFile` (at `runtime/src/main/java/io/casehub/engine/internal/context/MapCaseFile.java`) also exists and bridges the poc `put/get` names, but its Javadoc explicitly labels it a "stepping-stone shim" — do not use it. Migrate directly to `CaseContext` public API to avoid carrying the shim as a permanent dependency.
 2. Replace `entryCriteria()` with `requires()` on `TaskDefinition`
 3. Replace `canActivate(CaseFile)` with `activateIf()` returning `Predicate<CaseContext>`
 4. Replace `PropagationContext` import from `io.casehub.coordination` → `io.casehub.api.context` (same semantics, API superset)

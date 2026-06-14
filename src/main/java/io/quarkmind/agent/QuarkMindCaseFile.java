@@ -1,5 +1,7 @@
 package io.quarkmind.agent;
 
+import java.util.List;
+
 public final class QuarkMindCaseFile {
     // Observation state — written by GameStateTranslator
     public static final String MINERALS        = "game.resources.minerals";
@@ -18,12 +20,23 @@ public final class QuarkMindCaseFile {
     public static final String RESOURCE_BUDGET = "agent.resources.budget";
 
     // Agent state — written by plugins
-    public static final String STRATEGY        = "agent.strategy.current";
+    public static final String STRATEGY             = "agent.strategy.current";
+    /** Written by StrategyTrustRouter; read by SequenceWorker step activateIf() in Phase 2. */
+    public static final String STRATEGY_SELECTED_ID = "agent.strategy.selected.id";
     public static final String CRISIS          = "agent.intent.crisis";
     public static final String ENEMY_ARMY_SIZE = "agent.intel.enemy.army.size";
     public static final String ENEMY_BUILD_ORDER       = "agent.intel.enemy.build";
     public static final String TIMING_ATTACK_INCOMING  = "agent.intel.enemy.timing";
     public static final String ENEMY_POSTURE           = "agent.intel.enemy.posture";
+
+    /** All known CaseFile/CaseContext keys — used by CaseFileContext bridge (Phase 1). */
+    public static final List<String> ALL_KEYS = List.of(
+        MINERALS, VESPENE, SUPPLY_USED, SUPPLY_CAP,
+        WORKERS, ARMY, MY_BUILDINGS, GEYSERS, ENEMY_UNITS, GAME_FRAME, READY,
+        RESOURCE_BUDGET, STRATEGY, CRISIS, ENEMY_ARMY_SIZE,
+        ENEMY_BUILD_ORDER, TIMING_ATTACK_INCOMING, ENEMY_POSTURE,
+        STRATEGY_SELECTED_ID
+    );
 
     private QuarkMindCaseFile() {}
 }

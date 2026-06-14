@@ -54,11 +54,16 @@ public class ScoutingIntelBroker {
             channelService.findByName(CHANNEL_NAME)
                 .map(c -> c.id)
                 .orElseGet(() -> channelService.create(
-                    CHANNEL_NAME,
-                    "Scouting intel for agent plugins",
-                    ChannelSemantic.APPEND,
-                    null, null, null, null, null,
-                    "STATUS"   // allowedTypes — STATUS carries content; EVENT forces null (GE-20260607-d051f2)
+                    // Closes #194: ChannelService API updated — allowedTypes is now Set<MessageType>
+                    new io.casehub.qhorus.runtime.channel.ChannelCreateRequest(
+                        CHANNEL_NAME,
+                        "Scouting intel for agent plugins",
+                        ChannelSemantic.APPEND,
+                        null, null, null, null, null,
+                        // allowedTypes — STATUS carries content; EVENT forces null (GE-20260607-d051f2)
+                        java.util.Set.of(io.casehub.qhorus.api.message.MessageType.STATUS),
+                        null, null, null, null, null
+                    )
                 ).id)
         );
 
