@@ -323,7 +323,7 @@ src/main/java/io/quarkmind/
 
 ## Plugin Architecture
 
-Each plugin seam (`StrategyTask`, `EconomicsTask`, `TacticsTask`, `ScoutingTask`) is a CDI interface extending both the poc's `io.casehub.core.TaskDefinition` (Phase 1 bridge) and QuarkMind's own `io.quarkmind.agent.TaskDefinition` (new engine API). Implementations provide `execute(CaseContext)`, `activateIf()`, `requires()`, `produces()` alongside Phase 1 bridge methods that delegate to them. Swap an implementation by providing a new `@ApplicationScoped @CaseType("starcraft-game")` bean — no wiring changes elsewhere. For unit tests, construct a `CaseContext` via `new CaseContextImpl(Map<String,Object>)` from `io.casehub.engine.internal.context` (test-scope dep `casehub-engine-blackboard`).
+Each plugin seam (`StrategyTask`, `EconomicsTask`, `TacticsTask`, `ScoutingTask`) is a CDI interface extending both the poc's `io.casehub.core.TaskDefinition` (Phase 1 bridge) and QuarkMind's own `io.quarkmind.agent.TaskDefinition` (new engine API). Implementations provide `execute(CaseContext)`, `activateIf()`, `requires()`, `produces()` alongside Phase 1 bridge methods that delegate to them. Swap an implementation by providing a new `@ApplicationScoped @CaseType("starcraft-game")` bean — no wiring changes elsewhere. For unit tests, construct a `CaseContext` via `new CaseFileContext(pocCaseFile)` — wrap a poc `InMemoryCaseFileRepository` CaseFile with `CaseFileContext` from `io.quarkmind.agent`. `activateIf()` must only declare CDI-injected gates (selector, broker); key-presence gates belong in `requires()`. See protocol PP-20260603-cefed9.
 
 ## CaseHub Dependency
 

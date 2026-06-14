@@ -35,10 +35,14 @@ public class MyStrategyTask implements StrategyTask {
     @Override
     public Set<String> requires() { return Set.of(QuarkMindCaseFile.READY); }
 
-    // Additional gate beyond key presence (CDI beans available here)
+    // Additional gate beyond key presence — CDI beans are available here.
+    // Do NOT re-check keys declared in requires() — that is redundant and
+    // misrepresents the Phase 2 contract (requires() is evaluated first by the engine).
+    // Return ctx -> true when requires() alone is the full gate; override only when
+    // a CDI-injected condition (selector, broker state) must also be checked.
     @Override
     public Predicate<CaseContext> activateIf() {
-        return ctx -> ctx.contains(QuarkMindCaseFile.READY);
+        return ctx -> true;   // requires() already gates on READY
     }
 
     // Keys this plugin writes to context (documentation only, not enforced)
