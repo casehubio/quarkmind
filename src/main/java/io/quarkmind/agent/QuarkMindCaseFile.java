@@ -23,6 +23,7 @@ public final class QuarkMindCaseFile {
     public static final String STRATEGY             = "agent.strategy.current";
     /** Written by StrategyTrustRouter; read by SequenceWorker step activateIf() in Phase 2. */
     public static final String STRATEGY_SELECTED_ID = "agent.strategy.selected.id";
+    /** Reserved — no plugin currently writes this key. Placeholder for emergency override signals. */
     public static final String CRISIS          = "agent.intent.crisis";
     public static final String ENEMY_ARMY_SIZE = "agent.intel.enemy.army.size";
     public static final String ENEMY_BUILD_ORDER       = "agent.intel.enemy.build";

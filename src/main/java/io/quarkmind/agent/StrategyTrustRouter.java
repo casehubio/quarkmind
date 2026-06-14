@@ -86,6 +86,11 @@ public class StrategyTrustRouter implements TaskDefinition {
         // In Phase 1, StrategyTrustObserver (CDI event observer) drives selection at game start
         // and mid-game checkpoint. This execute() writes the current selection to context so
         // Phase 2's SequenceWorker can read it — and will fully replace the observer in Phase 2.
+        //
+        // Pre-condition (Phase 2): StrategyTrustObserver.onGameStarted must have fired before
+        // this is called as a SequenceWorker step, or equivalent initialization must have run.
+        // In Phase 1 the scheduler calls startGame() before the first gameTick(), guaranteeing
+        // this is satisfied. In Phase 2 the SequenceWorker ordering must preserve this invariant.
         ctx.set(QuarkMindCaseFile.STRATEGY_SELECTED_ID, strategySelector.getSelectedId());
     }
 

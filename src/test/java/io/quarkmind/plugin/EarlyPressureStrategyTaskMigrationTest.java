@@ -2,6 +2,7 @@ package io.quarkmind.plugin;
 
 import io.casehub.api.context.CaseContext;
 import io.casehub.coordination.PropagationContext;
+import io.casehub.core.CaseFile;
 import io.casehub.persistence.memory.InMemoryCaseFileRepository;
 import io.quarkmind.agent.CaseFileContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
@@ -70,5 +71,19 @@ class EarlyPressureStrategyTaskMigrationTest {
         CaseContext ctx = readyCtx();
         task.execute(ctx);
         assertThat(ctx.getAs(QuarkMindCaseFile.STRATEGY, String.class)).isEqualTo("ATTACK");
+    }
+
+    @Test
+    void executeCaseFile_bridge_syncsOutputBackToCaseFile() {
+        // Exercises the Phase 1 bridge: execute(CaseFile) → CaseFileContext → execute(CaseContext) → sync
+        CaseFile cf = new InMemoryCaseFileRepository()
+            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
+        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
+        selector.selectForGame("strategy.early-pressure", "vs.unknown");
+
+        task.execute(cf);  // calls the bridge
+
+        assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class))
+            .contains("ATTACK");
     }
 }

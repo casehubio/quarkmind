@@ -28,7 +28,6 @@ import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * CaseHub plugin shim for the Flow-backed economics implementation.
@@ -83,10 +82,8 @@ public class FlowEconomicsTask implements EconomicsTask, ScoutingIntelConsumer {
     @Override
     public Set<String> requires() { return Set.of(QuarkMindCaseFile.READY); }
 
-    @Override
-    public Predicate<CaseContext> activateIf() {
-        return ctx -> ctx.contains(QuarkMindCaseFile.READY);
-    }
+    // activateIf() not overridden — default ctx -> true is correct;
+    // requires() already gates on READY.
 
     @Override
     public void execute(final CaseContext ctx) {
@@ -127,7 +124,7 @@ public class FlowEconomicsTask implements EconomicsTask, ScoutingIntelConsumer {
 
     @Override
     public boolean canActivate(final CaseFile caseFile) {
-        return activateIf().test(new CaseFileContext(caseFile));
+        return testActivation(new CaseFileContext(caseFile));
     }
 
     @Override

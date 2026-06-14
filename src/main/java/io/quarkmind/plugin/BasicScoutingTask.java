@@ -19,7 +19,6 @@ import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * Basic scouting: passive intel from visible units + active probe scout.
@@ -53,10 +52,8 @@ public class BasicScoutingTask implements ScoutingTask {
     @Override
     public Set<String> requires() { return Set.of(QuarkMindCaseFile.READY); }
 
-    @Override
-    public Predicate<CaseContext> activateIf() {
-        return ctx -> ctx.contains(QuarkMindCaseFile.READY);
-    }
+    // activateIf() not overridden — default ctx -> true is correct;
+    // requires() already gates on READY.
 
     @Override
     public void execute(final CaseContext ctx) {
@@ -86,7 +83,7 @@ public class BasicScoutingTask implements ScoutingTask {
 
     @Override
     public boolean canActivate(final CaseFile caseFile) {
-        return activateIf().test(new CaseFileContext(caseFile));
+        return testActivation(new CaseFileContext(caseFile));
     }
 
     @Override

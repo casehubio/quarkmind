@@ -4,6 +4,8 @@ import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
 import io.casehub.platform.api.preferences.SettingsScope;
 import io.casehub.qhorus.api.channel.ChannelSemantic;
+import io.casehub.qhorus.api.message.MessageType;
+import io.casehub.qhorus.runtime.channel.ChannelCreateRequest;
 import io.casehub.qhorus.runtime.channel.ChannelService;
 import io.quarkmind.agent.plugin.ScoutingIntelConsumer;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
@@ -55,13 +57,13 @@ public class ScoutingIntelBroker {
                 .map(c -> c.id)
                 .orElseGet(() -> channelService.create(
                     // Closes #194: ChannelService API updated — allowedTypes is now Set<MessageType>
-                    new io.casehub.qhorus.runtime.channel.ChannelCreateRequest(
+                    new ChannelCreateRequest(
                         CHANNEL_NAME,
                         "Scouting intel for agent plugins",
                         ChannelSemantic.APPEND,
                         null, null, null, null, null,
                         // allowedTypes — STATUS carries content; EVENT forces null (GE-20260607-d051f2)
-                        java.util.Set.of(io.casehub.qhorus.api.message.MessageType.STATUS),
+                        Set.of(MessageType.STATUS),
                         null, null, null, null, null
                     )
                 ).id)

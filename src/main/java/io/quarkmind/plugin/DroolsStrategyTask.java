@@ -25,6 +25,7 @@ import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Resource;
 import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.plugin.drools.StrategyRuleUnit;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.BuildIntent;
@@ -125,11 +126,10 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
 
     @Override
     public Predicate<CaseContext> activateIf() {
-        // PP-20260603-cefed9: explicit override required — poc default unconditionally returns true
-        // L6: also gates on StrategySelector and broker posture availability
+        // PP-20260603-cefed9: explicit override required — poc default unconditionally returns true.
+        // requires() already gates on READY and ENEMY_ARMY_SIZE; only the selector and broker
+        // checks are extra (CDI-injected state, not derivable from context key presence).
         return ctx -> strategySelector.isSelected(getId())
-            && ctx.contains(QuarkMindCaseFile.READY)
-            && ctx.contains(QuarkMindCaseFile.ENEMY_ARMY_SIZE)
             && broker.current(ScoutingIntelType.POSTURE).isPresent();
     }
 
@@ -188,7 +188,7 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
 
     @Override
     public boolean canActivate(final CaseFile caseFile) {
-        return activateIf().test(new CaseFileContext(caseFile));
+        return testActivation(new CaseFileContext(caseFile));
     }
 
     @Override
@@ -231,7 +231,7 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
                     }
                 });
             } else if (decision.startsWith("STALKER:") && budget.spend(125, 50)) {
-                intentQueue.add(new TrainIntent(decision.substring("STALKER:".length()), io.quarkmind.domain.UnitType.STALKER));
+                intentQueue.add(new TrainIntent(decision.substring("STALKER:".length()), UnitType.STALKER));
             }
         }
     }

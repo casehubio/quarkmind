@@ -30,4 +30,16 @@ public interface TaskDefinition {
 
     /** Keys this plugin writes to the context. Documentation only — not enforced. */
     default Set<String> produces() { return Set.of(); }
+
+    /**
+     * Phase 1 bridge helper — evaluates the full activation contract against a {@link CaseContext}.
+     *
+     * <p>Mirrors what Phase 2's SequenceWorker will do: {@link #requires()} key-presence check
+     * first, then {@link #activateIf()} extra gates. The {@code canActivate(CaseFile)} bridge in
+     * each plugin delegates here so that the Phase 1 poc dispatch path is semantically equivalent
+     * to the Phase 2 path.
+     */
+    default boolean testActivation(CaseContext ctx) {
+        return requires().stream().allMatch(ctx::contains) && activateIf().test(ctx);
+    }
 }

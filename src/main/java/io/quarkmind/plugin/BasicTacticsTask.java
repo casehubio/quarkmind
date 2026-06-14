@@ -17,7 +17,6 @@ import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * Basic tactics: act on the {@link QuarkMindCaseFile#STRATEGY} key each tick.
@@ -50,10 +49,8 @@ public class BasicTacticsTask implements TacticsTask {
     @Override
     public Set<String> requires() { return Set.of(QuarkMindCaseFile.READY, QuarkMindCaseFile.STRATEGY); }
 
-    @Override
-    public Predicate<CaseContext> activateIf() {
-        return ctx -> ctx.contains(QuarkMindCaseFile.READY) && ctx.contains(QuarkMindCaseFile.STRATEGY);
-    }
+    // activateIf() not overridden — default ctx -> true is correct;
+    // requires() already gates on READY and STRATEGY.
 
     @Override
     public void execute(final CaseContext ctx) {
@@ -82,7 +79,7 @@ public class BasicTacticsTask implements TacticsTask {
 
     @Override
     public boolean canActivate(final CaseFile caseFile) {
-        return activateIf().test(new CaseFileContext(caseFile));
+        return testActivation(new CaseFileContext(caseFile));
     }
 
     @Override

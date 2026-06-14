@@ -98,8 +98,8 @@ public final class CaseFileContext implements CaseContext {
     @Override public String getPathAsString(String path) { throw new UnsupportedOperationException(); }
     @Override public CaseContext setPath(String path, Object value) { throw new UnsupportedOperationException(); }
     @Override public java.util.Optional<JsonNode> applyAndDiff(String path, Object value) { throw new UnsupportedOperationException(); }
-    @Override public CaseContext remove(String key) { data.remove(key); return this; }
-    @Override public CaseContext clear() { data.clear(); return this; }
+    @Override public CaseContext remove(String key) { throw new UnsupportedOperationException("CaseFileContext.remove() — Phase 1 bridge only; use produces() sync for output, not removal"); }
+    @Override public CaseContext clear() { throw new UnsupportedOperationException("CaseFileContext.clear() — Phase 1 bridge only"); }
     @Override public JsonNode asJsonNode() { throw new UnsupportedOperationException(); }
     @Override public CaseContext merge(CaseContext other) { throw new UnsupportedOperationException(); }
     @Override public CaseContext snapshot() { throw new UnsupportedOperationException("CaseFileContext.snapshot() not supported"); }

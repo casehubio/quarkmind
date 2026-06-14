@@ -312,7 +312,7 @@ public class DroolsScoutingTask implements ScoutingTask {
 
     @Override
     public boolean canActivate(final CaseFile caseFile) {
-        return activateIf().test(new CaseFileContext(caseFile));
+        return testActivation(new CaseFileContext(caseFile));
     }
 
     @Override

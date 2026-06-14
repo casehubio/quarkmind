@@ -51,8 +51,8 @@ public class EarlyPressureStrategyTask implements StrategyTask {
 
     @Override
     public Predicate<CaseContext> activateIf() {
-        return ctx -> strategySelector.isSelected(getId())
-            && ctx.contains(QuarkMindCaseFile.READY);
+        // requires() already gates on READY; only the selector check is extra
+        return ctx -> strategySelector.isSelected(getId());
     }
 
     @Override
@@ -74,7 +74,7 @@ public class EarlyPressureStrategyTask implements StrategyTask {
 
     @Override
     public boolean canActivate(final CaseFile caseFile) {
-        return activateIf().test(new CaseFileContext(caseFile));
+        return testActivation(new CaseFileContext(caseFile));
     }
 
     @Override

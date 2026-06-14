@@ -18,7 +18,6 @@ import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * Basic Protoss economics: probe production and pylon supply management.
@@ -50,10 +49,8 @@ public class BasicEconomicsTask implements EconomicsTask {
     @Override
     public Set<String> requires() { return Set.of(QuarkMindCaseFile.READY); }
 
-    @Override
-    public Predicate<CaseContext> activateIf() {
-        return ctx -> ctx.contains(QuarkMindCaseFile.READY);
-    }
+    // activateIf() not overridden — default ctx -> true is correct;
+    // requires() already gates on READY.
 
     @Override
     public void execute(final CaseContext ctx) {
@@ -79,7 +76,7 @@ public class BasicEconomicsTask implements EconomicsTask {
 
     @Override
     public boolean canActivate(final CaseFile caseFile) {
-        return activateIf().test(new CaseFileContext(caseFile));
+        return testActivation(new CaseFileContext(caseFile));
     }
 
     @Override

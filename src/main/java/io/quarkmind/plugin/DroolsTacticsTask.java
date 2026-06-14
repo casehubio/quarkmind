@@ -149,10 +149,9 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer {
 
     @Override
     public Predicate<CaseContext> activateIf() {
-        // PP-20260603-cefed9: explicit override required
-        return ctx -> ctx.contains(QuarkMindCaseFile.READY)
-            && ctx.contains(QuarkMindCaseFile.STRATEGY)
-            && broker.current(ScoutingIntelType.THREAT_POSITION).isPresent();
+        // PP-20260603-cefed9: explicit override required — poc default unconditionally returns true.
+        // requires() already gates on READY and STRATEGY; only the broker check is extra.
+        return ctx -> broker.current(ScoutingIntelType.THREAT_POSITION).isPresent();
     }
 
     @Override
@@ -232,7 +231,7 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer {
 
     @Override
     public boolean canActivate(final CaseFile caseFile) {
-        return activateIf().test(new CaseFileContext(caseFile));
+        return testActivation(new CaseFileContext(caseFile));
     }
 
     @Override
