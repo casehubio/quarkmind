@@ -674,6 +674,10 @@ Replicate the casehub-engine blackboard harness in a different domain:
 8. Add `@Scheduled(concurrentExecution = SKIP)` if your domain has a fixed tick interval with latency requirements.
 9. Write a `@QuarkusTest` that calls `orchestrator.tick()` directly with the scheduler disabled — verifies full plugin dispatch without timing coupling.
 
+#### Phase 1 engine migration (#193)
+
+All four seam interfaces (`StrategyTask`, `TacticsTask`, `EconomicsTask`, `ScoutingTask`) now extend both `io.casehub.core.TaskDefinition` (poc, retained for Phase 1 bridge compatibility) and `io.quarkmind.agent.TaskDefinition` (QuarkMind's own interface). Every plugin implementation adds `execute(CaseContext)`, `activateIf()`, `requires()`, and `produces()` — the canonical API for Phase 2. Bridge methods (`execute(CaseFile)`, `canActivate(CaseFile)`, `entryCriteria()`) delegate to the new implementations so the existing poc `CaseEngine.createAndSolve()` path continues to work unchanged until Phase 2. `CaseFileContext` adapter wraps a poc `CaseFile` as `CaseContext` for bridge use (Phase 1 shim, deleted in Phase 2). This migration is purely additive: no plugin behaviour changes, no poc dependency removal.
+
 ---
 
 ### Layer — casehub-qhorus
@@ -739,6 +743,8 @@ Three competing `StrategyTask` implementations now exist. At game start, `Strate
 
 `GameStopped` carries a `GameResult` (WIN/LOSS/TIE/UNKNOWN) derived from the SC2 API `playerResult` at game end (#189). `GameOutcomeRecorder` maps WIN→ENDORSED (trust increases), LOSS→CHALLENGED (trust decreases), TIE→SOUND (neutral), UNKNOWN→skipped. Trust routing now receives directional signals from real games; Bayesian Beta scores evolve based on actual outcomes.
 
+**Phase 1 migration (#193):** `StrategyTrustRouter` now implements `io.quarkmind.agent.TaskDefinition` with `getId() = "trust-routing"` and `execute(CaseContext ctx)` that writes the selected strategy ID to `agent.strategy.selected.id`. In Phase 1, `StrategyTrustObserver` (CDI event observer) still drives selection at game start and mid-game checkpoint; `execute()` writes the result to context for observability. In Phase 2, when `SequenceWorker` (engine#484) is available, the observer is deleted and the sequence step takes over entirely, making trust routing structural and event-log-visible.
+
 🔲 Full Chapter entry at C5 close.
 
 ---
@@ -762,6 +768,20 @@ ADR-0001 through ADR-0008 are captured in `docs/adr/`. Only cross-cutting decisi
 **Context:** CaseHub harness apps typically integrate `casehub-work` for human task lifecycle (WorkItem, SLA, escalation). QuarkMind coordinates machine plugins only — no human reviewers, no human task gates.
 **Decision:** `casehub-work` is not integrated. QuarkMind skips L2 of the standard CaseHub taxonomy (casehub-work) and integrates casehub-qhorus as L3 instead.
 **Consequences:** The layer taxonomy deviates from the CaseHub profile default. Plugin obligations are tracked via casehub-qhorus commitment lifecycle rather than WorkItem SLA. No `SlaBreachPolicy`, no `claimDeadline`, no escalation chain.
+
+### QuarkMind's own TaskDefinition — not promoted to engine API
+
+**Date:** 2026-06-14
+**Context:** Phase 1 migration introduced `io.quarkmind.agent.TaskDefinition` as the plugin contract for the production `casehub-engine` API. This interface could have been placed in `casehub-engine-api` as a platform-level Java-native worker definition helper.
+**Decision:** `TaskDefinition` stays in QuarkMind. The engine's `Worker(name, caps, Function<CaseContext, Map>)` is already Java-native and sufficient for engine consumers. `TaskDefinition` lacks the cross-domain evidence required for a platform API. If AML, clinical, or devtown find it useful, promotion is the right path then.
+**Consequences:** Plugin authors in other domains do not get `TaskDefinition` as a convenience layer. QuarkMind retains ownership. The interface is deleted if Phase 2 shows it was never needed beyond the migration period.
+
+### CaseFileContext as Phase 1 migration shim
+
+**Date:** 2026-06-14
+**Context:** Phase 1 adds `execute(CaseContext)` to all plugins while keeping the poc `CaseEngine.createAndSolve()` path working. A bridge is needed to convert a poc `CaseFile` to `CaseContext` for the new method signatures.
+**Decision:** `CaseFileContext` wraps a poc `CaseFile` as `CaseContext` by pre-extracting all 18 `QuarkMindCaseFile.ALL_KEYS` values at construction. It is explicitly labelled a Phase 1 shim (Javadoc says "removed in Phase 2"). Only bridge methods use it; the new `execute(CaseContext)` implementations receive a real `CaseContextImpl` in tests.
+**Consequences:** The bridge is transparent — behavior is identical through both paths. `STRATEGY_SELECTED_ID = "agent.strategy.selected.id"` was added to `QuarkMindCaseFile` as a constant (not a raw literal) so Phase 2's `SequenceWorker` predicates can reference it compile-safely.
 
 ### Single-module architecture
 
