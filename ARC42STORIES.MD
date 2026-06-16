@@ -463,11 +463,25 @@ Known scope: `StrategyTrustRouter` (QuarkMind-native, using `casehub-ledger` tru
 
 #### Chapter 6 — Comparison Baseline
 
-**Journey:** Game Agent Coordination | **Sequence:** 6 of 6 | **Status:** 🔲 pending
+**Journey:** Game Agent Coordination | **Sequence:** 6 of 6 | **Status:** ✅ complete
+**Delivered:** 2026-06-16 | **Issues:** #159 | **Blog:** none
 
-🔲 Full Chapter entry at C6 close. Blocked on #159.
+**What this delivers**
+Analytical validation that the L1–L7 layer sequence delivered its stated capabilities. No new harness capability is added. Harness dispatch overhead is benchmarked against the 400ms P99 quality requirement (§11); EmulatedGame full-tick throughput establishes the physics layer baseline. Win-rate comparison is deferred — L1 has no production code (intentional conceptual baseline) and the SC2 game corpus is insufficient for meaningful Bayesian Beta deltas; see §9.4 Layer — Comparison Baseline for full rationale.
 
-Known scope: benchmark QuarkMind harness agent against the naive game loop baseline (L1) and available commercial SC2 frameworks; document win-rate delta and latency delta attributable to each layer.
+**Accountability gaps closed**
+None. All accountability gaps were closed by L2–L6. C6 validates the closures; it does not introduce new ones.
+
+**Layer Impact**
+| Layer | Delta |
+|---|---|
+| L7 Comparison Baseline | Low — documentation and benchmarks only; no production code |
+
+**Known limitations carried forward:**
+- Phase 2 dispatch pending: poc CaseEngine in use; SequenceWorker (engine#484) and `signalAndAwaitSync` (engine#483) not yet wired; benchmark numbers are Phase 1 transitional
+- C2–C5 §9.3 chapter entries are stubs (layers complete; entries pending — #198)
+
+**Refs:** §9.4 Layer — Comparison Baseline; `docs/benchmarks/2026-06-16-l7-harness.md`; `docs/benchmarks/2026-06-16-l7-emulated.md`
 
 ---
 
