@@ -353,8 +353,9 @@ Run this when setting up a new environment or after any change to the `feature/s
 
 ## Performance Benchmarking
 
-Two benchmark tests run via `mvn test -Pbenchmark`:
-- `GameLoopBenchmarkTest` — per-phase tick timings across the full plugin chain. Run before/after any change that could affect game loop latency; paste results into `docs/benchmarks/`.
+Three benchmark tests run via `mvn test -Pbenchmark`:
+- `GameLoopBenchmarkTest` — per-phase tick timings across the full plugin chain (MockEngine, %test profile). Run before/after any change that could affect game loop latency; paste results into `docs/benchmarks/`.
+- `EmulatedGameBenchmarkTest` — EmulatedGame full-tick throughput with realistic combat load (PROTOSS_4GATE, A* pathfinding active). Plain JUnit — measures physics tick rate, not harness dispatch. Package: `io.quarkmind.sc2.emulated`. Run via `mvn test -Pbenchmark -Dtest=EmulatedGameBenchmarkTest`.
 - `ScoutingCalibrationTest` — runs all replay datasets to 3-min mark and prints enemy unit count statistics per matchup.
 
 **When to run `GameLoopBenchmarkTest`:**
