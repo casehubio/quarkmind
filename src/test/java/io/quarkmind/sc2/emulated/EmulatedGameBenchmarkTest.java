@@ -38,7 +38,7 @@ class EmulatedGameBenchmarkTest {
 
     @Test
     void emulatedGameThroughput() throws IOException {
-        // Mirror EmulatedEngine.joinGame() exactly
+        // Mirror EmulatedEngine.joinGame() for all EmulatedGame-affecting calls
         EmulatedGame game = new EmulatedGame();
         TerrainGrid grid = TerrainGrid.emulatedMap();
         game.setMovementStrategy(new PathfindingMovement(grid));
@@ -78,7 +78,6 @@ class EmulatedGameBenchmarkTest {
         long meanUs   = mean(tickUs);
         long p95Us    = p95(tickUs);
         long maxUs    = max(tickUs);
-        long totalUs  = LongStream.of(tickUs).sum();
         long totalNs  = LongStream.of(tickNs).sum();
         double tps    = totalNs > 0 ? (MEASURE_TICKS * 1_000_000_000.0 / totalNs) : Double.POSITIVE_INFINITY;
 
