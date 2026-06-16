@@ -4,7 +4,7 @@
 **Profile:** CaseHub — Application tier
 **Profile ref:** `../parent/docs/arc42stories-casehub-profile.md` · fallback: `https://raw.githubusercontent.com/casehubio/parent/main/docs/arc42stories-casehub-profile.md`
 **Prefix:** QM
-**Status:** L1 conceptual + L2, L3, L4, L5, L6 complete. L7 pending (#159).
+**Status:** L1 conceptual + L2, L3, L4, L5, L6, L7 complete.
 
 ---
 
@@ -141,7 +141,7 @@ QuarkMind follows the CaseHub harness integration sequence with one deviation: `
 | casehub-ledger | `casehub-ledger` (lightweight mode — casehubio/ledger#114) | L4 | ✅ complete (#156) |
 | Adaptive plugin selection | `casehub-engine` binding conditions | L5 | ✅ complete (#157) |
 | Trust routing | `casehub-ledger` + QuarkMind-native `StrategyTrustRouter` (Bayesian Beta CAPABILITY per opponent context; `casehub-engine-ledger` not used — no `casehub-engine` integration; EigenTrust inert, ADR-0009) | L6 | ✅ complete (#158) |
-| Comparison baseline | *(none — analysis only)* | L7 | 🔲 pending (#159) |
+| Comparison baseline | *(none — analysis only)* | L7 | ✅ complete (#159) |
 
 **Note on reading vs build order:** L2 was built first because the CaseEngine blackboard was the architectural priority. L3–L7 follow the CaseHub integration sequence. Layer ordering above is reading order (learning progression); build order is reflected in the blog entries.
 
@@ -766,9 +766,49 @@ Three competing `StrategyTask` implementations now exist. At game start, `Strate
 ### Layer — Comparison Baseline
 
 **Participates in chapters:** C6
-**Completed:** 🔲 pending (#159)
+**Completed:** ✅ 2026-06-16 (#159)
 
-🔲 Full entry at C6 close. Known scope: benchmark QuarkMind harness agent against L1 naive loop and available commercial SC2 frameworks; document win-rate and latency delta per layer.
+#### Column definitions
+
+- **L1 Naive** — the conceptual baseline documented in §9.4 Naive Game Loop: a hypothetical SC2 bot calling plugins directly per tick, no CaseHub harness. No production code exists or was intended; its purpose is to name the accountability gaps L2–L6 close.
+- **SC2 API bot (no coordination layer)** — any SC2 bot using the SC2 API without a coordination layer, regardless of client library. An analytical characterisation of the coordination-free pattern. QuarkMind removed ocraft-s2client-bot transport in #185 (replaced by `QuarkusSC2Transport`); "ocraft raw" would misrepresent both ocraft's callback model and QuarkMind's actual architecture.
+- **QuarkMind L7** — full harness as built; Phase 1 bridge configuration (poc CaseEngine dispatch).
+
+#### Capability comparison
+
+| Dimension | L1 Naive | SC2 API bot (no coordination) | QuarkMind L7 |
+|---|---|---|---|
+| Plugin dispatch | Direct method calls per tick | Direct calls or callbacks | CaseEngine blackboard (`createAndSolve()`) |
+| Inter-plugin state within tick | None | None | CaseFile pre-populated by GameStateTranslator; DroolsStrategyTask writes decision key back; downstream plugins (tactics, economics) read it in the same tick |
+| Typed comms between plugins | None | None | casehub-qhorus channels |
+| Formal out-of-scope signal | Silent no-op or throws | Silent no-op or throws | Typed inter-plugin channels (L3); DECLINE speech act is platform-defined, not yet wired in QuarkMind's game-loop dispatch (pending C2 chapter entry — #198) |
+| Audit trail | None | None | casehub-ledger attestation per plugin decision |
+| Adaptive plugin selection | Fixed | Fixed | Binding-condition dispatch (L5) |
+| Trust-weighted routing | None | None | Bayesian Beta strategy selection per opponent context (L6) |
+| Outcome tracking | None | None | WIN→ENDORSED, LOSS→CHALLENGED, TIE→SOUND; UNKNOWN→skipped. Real SC2 games produce directional trust signals; mock/emulated/replay produce UNKNOWN and are skipped — correct, no meaningful win/loss in emulation |
+| Observability | None | None | CaseFile key trace per tick; casehub-ledger attestation per decision; trust scores per strategy per opponent context; real-time GameState via WebSocket `/ws/gamestate` (dev/QA only — `@UnlessBuildProfile("prod")`) |
+
+#### Latency
+
+- **Configured agent tick interval:** 500ms (`starcraft.tick.interval=500ms`)
+- **Quality requirement (§11):** P99 < 400ms (100ms headroom for SC2 I/O)
+- **Harness dispatch overhead:** see `docs/benchmarks/2026-06-16-l7-harness.md` — Phase 1 bridge configuration; re-run at Phase 2 close
+- **EmulatedGame full-tick throughput:** see `docs/benchmarks/2026-06-16-l7-emulated.md` — confirms physics tick rate is not a constraint on plain JUnit tests driving EmulatedGame directly
+- **Aspirational 22Hz (45ms/tick):** Benchmark 1 answers this for the dispatch layer; Benchmark 2 answers it for the physics layer. Combined overhead not directly measured but can be inferred if both fit comfortably within 45ms individually.
+
+#### Win-rate disposition
+
+Win-rate comparison is explicitly deferred — not tractable at this time:
+
+- **L1 has no production code** — intentional; L1 is a conceptual baseline naming accountability gaps, not a deployable harness.
+- **Comparing to a different SC2 bot** measures strategy quality, not harness contribution. The coordination layer and strategy quality are orthogonal.
+- **Insufficient SC2 game corpus** — L6 trust routing needs sufficient real-SC2 games for meaningful Bayesian Beta deltas; emulated games produce UNKNOWN outcomes (skipped by design).
+
+Win-rate comparison remains a future item contingent on a sufficient real-SC2 game corpus and a baseline bot with comparable strategy quality.
+
+#### Current state
+
+Phase 1 migration complete (#193) — all plugins implement `io.quarkmind.agent.TaskDefinition` (`execute(CaseContext)`, `activateIf()`, `requires()`, `produces()`). Dispatch still runs through poc `CaseEngine.createAndSolve()` via bridges. Phase 2 (engine#483 + engine#484) replaces poc engine — harness capabilities unchanged, benchmark numbers change.
 
 ---
 
