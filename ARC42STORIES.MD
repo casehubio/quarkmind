@@ -361,7 +361,7 @@ flowchart LR
   style C3 fill:#D3D3D3,color:#000
   style C4 fill:#D3D3D3,color:#000
   style C5 fill:#D3D3D3,color:#000
-  style C6 fill:#D3D3D3,color:#000
+  style C6 fill:#90EE90,color:#000
 ```
 
 | # | Chapter | Journey | Layers touched | Delta | Status |
@@ -371,11 +371,11 @@ flowchart LR
 | 3 | Outcome tracking | Game Agent Coordination | + L4 | Medium | ✅ complete (#156) |
 | 4 | Adaptive plugin selection | Game Agent Coordination | + L5 | Medium | ✅ complete (#157) |
 | 5 | Trust-weighted routing | Game Agent Coordination | + L6 | Medium | ✅ complete (#158) |
-| 6 | Comparison baseline | Game Agent Coordination | L7 | Low | 🔲 pending (#159) |
+| 6 | Comparison baseline | Game Agent Coordination | L7 | Low | ✅ complete |
 
 **Layer × Chapter matrix**
 
-| Layer | C1 ✅ | C2 🔲 | C3 🔲 | C4 🔲 | C5 🔲 | C6 🔲 |
+| Layer | C1 ✅ | C2 🔲 | C3 🔲 | C4 🔲 | C5 🔲 | C6 ✅ |
 |---|---|---|---|---|---|---|
 | L1 Naive Game Loop | High | — | — | — | — | — |
 | L2 casehub-engine | High | Low | Low | Low | Low | Low |
