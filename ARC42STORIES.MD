@@ -421,13 +421,25 @@ The game agent dispatches all four specialist plugins (strategy, economics, tact
 
 ---
 
-#### Chapter 2 — Formal Plugin Obligation
+#### Chapter 2 — Plugin Intel Channels
 
-**Journey:** Game Agent Coordination | **Sequence:** 2 of 6 | **Status:** 🔲 pending
+**Journey:** Game Agent Coordination | **Sequence:** 2 of 6 | **Status:** ✅ complete
+**Delivered:** 2026-06-01, formalised 2026-06-04 (#177) | **Issues:** #155, #177 | **Blog:** `blog/2026-06-01-mdp01-phase5-complete.md`; `blog/2026-06-04-mdp01-three-cleanups-strategy-upgrade.md`
 
-🔲 Full Chapter entry at C2 close. casehub-qhorus integration complete (#155).
+**What this delivers**
+`ScoutingIntelBroker` dual-stack delivers typed scouting intel via two independent paths: a synchronous in-memory store (Stack 1) for plugin-to-plugin delivery, and a Qhorus channel (Stack 2, `quarkmind-scouting-intel`) for external advisory consumers (LLM advisors, Commentator). Plugins — `DroolsTacticsTask`, `DroolsStrategyTask`, `FlowEconomicsTask` — implement `ScoutingIntelConsumer` and read via `broker.current()` on Stack 1. `TacticsIntelCache` and `TacticsMessageBridge` removed; `MessageObserver` wiring eliminated.
 
-Known scope: typed COMMAND/RESPONSE between plugin agents; DECLINE recorded structurally when a plugin is out-of-scope; commitment lifecycle per plugin engagement; `MessageLedgerEntry` per speech act.
+**Accountability gaps closed**
+- No typed inter-plugin intel delivery (L1 gap) → `ScoutingIntelBroker` Stack 1 synchronous in-memory delivery to plugin consumers
+
+**Layer Impact**
+| Layer | Delta |
+|---|---|
+| L3 casehub-qhorus | High — `ScoutingIntelBroker` dual-stack; `ScoutingIntelConsumer` interface; `quarkmind-scouting-intel` Qhorus channel (advisory); `TacticsIntelCache`, `TacticsMessageBridge` removed |
+| L2 casehub-engine | Low — dispatch unchanged; plugin intel flows via broker alongside CaseFile |
+
+**Known limitations / open gaps**
+- Quality Goal 2 (Formal DECLINE) not closed: DECLINE speech act is platform-defined in casehub-qhorus but not wired in QuarkMind game-loop dispatch (#199)
 
 ---
 
