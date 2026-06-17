@@ -35,14 +35,12 @@ public class MyStrategyTask implements StrategyTask {
     @Override
     public Set<String> requires() { return Set.of(QuarkMindCaseFile.READY); }
 
-    // Additional gate beyond key presence — CDI beans are available here.
-    // Do NOT re-check keys declared in requires() — that is redundant and
-    // misrepresents the Phase 2 contract (requires() is evaluated first by the engine).
-    // Return ctx -> true when requires() alone is the full gate; override only when
-    // a CDI-injected condition (selector, broker state) must also be checked.
+    // Most plugins: requires() alone is the gate — activateIf() returns true unconditionally.
+    // Override only when a CDI-injected runtime condition must also gate activation;
+    // never re-check keys already declared in requires() here.
     @Override
     public Predicate<CaseContext> activateIf() {
-        return ctx -> true;   // requires() already gates on READY
+        return ctx -> true;
     }
 
     // Keys this plugin writes to context (documentation only, not enforced)
@@ -65,6 +63,30 @@ public class MyStrategyTask implements StrategyTask {
     }
 }
 ```
+
+**When to use a non-trivial `activateIf()`:** inject a CDI bean whose runtime state determines whether this plugin should fire this tick. Two real cases in the platform:
+
+```java
+// StrategyTask competing with other strategies — only fire when selected:
+@Inject StrategySelector strategySelector;
+
+@Override
+public Predicate<CaseContext> activateIf() {
+    return ctx -> strategySelector.isSelected(getId());
+}
+```
+
+```java
+// TacticsTask — skip if no threat position has been observed yet:
+@Inject ScoutingIntelBroker broker;
+
+@Override
+public Predicate<CaseContext> activateIf() {
+    return ctx -> broker.current(QuarkMindCaseFile.THREAT_POSITION).isPresent();
+}
+```
+
+The engine evaluates `requires()` first (key-presence check), then `activateIf()`. Declare CaseFile key prerequisites in `requires()`; declare CDI-injected runtime conditions in `activateIf()`.
 
 ---
 
@@ -181,8 +203,10 @@ class MyStrategyTaskTest {
     }
 
     @Test
-    void activateIf_falseWhenReadyAbsent() {
-        assertThat(task.activateIf().test(ctx(Map.of()))).isFalse();
+    void doesNotActivateWhenReadyAbsent() {
+        // requires() declares READY — the engine skips execute() when the key is absent.
+        // Test that requires() declares the key, not that activateIf() checks it.
+        assertThat(task.requires()).contains(QuarkMindCaseFile.READY);
     }
 
     @Test
