@@ -375,14 +375,14 @@ flowchart LR
 
 **Layer × Chapter matrix**
 
-| Layer | C1 ✅ | C2 🔲 | C3 🔲 | C4 🔲 | C5 🔲 | C6 ✅ |
+| Layer | C1 ✅ | C2 🔲 | C3 🔲 | C4 🔲 | C5 ✅ | C6 ✅ |
 |---|---|---|---|---|---|---|
 | L1 Naive Game Loop | High | — | — | — | — | — |
 | L2 casehub-engine | High | Low | Low | Medium | Low | Low |
 | L3 casehub-qhorus | — | Low | — | — | — | — |
-| L4 casehub-ledger | — | — | Medium | Low | Low | — |
+| L4 casehub-ledger | — | — | Medium | Low | Medium | — |
 | L5 Adaptive selection | — | — | — | Medium | Low | — |
-| L6 Trust routing | — | — | — | — | Medium | — |
+| L6 Trust routing | — | — | — | — | High | — |
 | L7 Comparison | — | — | — | — | — | Low |
 
 L2 participates in every Chapter — it is the foundational dispatch layer. L3 and L5 are each additive (one Chapter at Low/Medium, stable thereafter). L4 participates in three Chapters — it provides both the audit record (C3) and the trust data that C4 and C5 read.
@@ -487,11 +487,27 @@ Two structurally distinct gate mechanisms replace hardwired all-plugins-every-ti
 
 #### Chapter 5 — Trust-weighted Routing
 
-**Journey:** Game Agent Coordination | **Sequence:** 5 of 6 | **Status:** 🔲 pending
+**Journey:** Game Agent Coordination | **Sequence:** 5 of 6 | **Status:** ✅ complete
+**Delivered:** 2026-06-10 | **Issues:** #158 | **Blog:** `blog/2026-06-12-mdp01-wiring-playerresult-to-trust.md`; `blog/2026-06-12-mdp02-trust-routing-is-degenerate-cbr.md`; `blog/2026-06-15-mdp01-casehub-engine-phase1.md`
 
-🔲 Full Chapter entry at C5 close. L6 (#158) now complete — C5 unblocked.
+**What this delivers**
+Among three competing `StrategyTask` implementations (`DroolsStrategyTask`, `EarlyPressureStrategyTask`, `EconomicExpansionStrategyTask`), `StrategyTrustRouter` selects using opponent-context-keyed Bayesian Beta scores from casehub-ledger. A four-phase trust maturity model (BOOTSTRAP phaseScore=0.5, QUALIFIED threshold 0.838) ensures any candidate that has accumulated qualified outcomes beats any unproven one — correct cold-start behaviour without requiring prior game data. `strategy.drools` is the designated fallback, winning all ties and exempt from BORDERLINE exclusion. At game start, routing uses `STRATEGY_VS_UNKNOWN`; at the first mid-game checkpoint (when `DroolsScoutingTask` fires `EnemyPostureClassifiedEvent`), the router re-selects for the classified opponent context. `LedgerLifecycleAdapter` removed — it was clearing the in-memory ledger between games, capping trust accumulation at one decision.
 
-Known scope: `StrategyTrustRouter` (QuarkMind-native, using `casehub-ledger` trust scores) selects among three competing `StrategyTask` implementations (`DroolsStrategyTask`, `EarlyPressureStrategyTask`, `EconomicExpansionStrategyTask`) based on opponent-context-keyed Bayesian Beta scores; one checkpoint pivot per game; routing quality improves automatically as game outcomes accumulate. `LedgerLifecycleAdapter` removed — was clearing the in-memory ledger between games, preventing cross-game trust accumulation. Win/loss detection deferred (#189) — currently records SOUND for all games.
+**Accountability gaps closed**
+- No per-outcome trust signal → `GameStopped` carries `GameResult`; WIN→ENDORSED, LOSS→CHALLENGED, TIE→SOUND, UNKNOWN→skipped; Bayesian Beta scores evolve from real game outcomes
+
+C5 introduces a new architectural capability — opponent-context-keyed strategy selection — enabled by L4 trust data; this is not closure of an L1 gap.
+
+**Layer Impact**
+| Layer | Delta |
+|---|---|
+| L6 Trust Routing | High — `StrategyTrustRouter`, `StrategyTrustObserver`, `StrategySelector`, `GameOutcomeRecorder`; `EarlyPressureStrategyTask` and `EconomicExpansionStrategyTask` introduced; `DroolsStrategyTask.activateIf()` extended to add `strategySelector.isSelected(getId())` alongside the existing #177 POSTURE broker gate — enforces exactly one strategy fires per tick; four-phase trust maturity model; `strategy.drools` designated fallback |
+| L4 casehub-ledger | Medium — `TrustGateService` drives routing decisions; trust scores read per opponent context |
+| L2 casehub-engine | Low — Phase 1 migration (#193): `StrategyTrustRouter` implements `io.quarkmind.agent.TaskDefinition`; `execute(CaseContext)` writes selected strategy ID to `agent.strategy.selected.id` |
+
+**Known limitations / open gaps**
+- Phase 1 configuration: `StrategyTrustObserver` (CDI event observer) still drives selection; Phase 2 migration to `SequenceWorker` (engine#484) will make trust routing structural and event-log-visible
+- Win/loss detection: mock, emulated, and replay profiles produce `UNKNOWN` and are skipped — correct, no meaningful win/loss signal outside real SC2. Trust scores only evolve from real SC2 games.
 
 ---
 
