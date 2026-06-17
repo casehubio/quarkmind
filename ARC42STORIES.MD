@@ -165,8 +165,8 @@ This differs from devtown's `@DefaultBean` pattern: there is no baseline bean th
 
 - C1 before C2: blackboard (L2) is the runtime substrate; qhorus inter-plugin messaging depends on it
 - C2 before C3: layer sequence — L3 (typed inter-plugin channels) precedes L4 (ledger) in delivery order; no runtime dependency between the broker and the auditor
-- C3 before C4: ledger entries for plugin decisions depend on the commitment chain qhorus produces
-- C4 before C5: adaptive binding selection and trust routing both read ledger attestation data
+- C3 before C4: layer sequence — L4 (ledger/outcome tracking) precedes L5 (adaptive plugin selection) in delivery order; no runtime dependency between `PluginOutcomeAuditor` and the requires()/activateIf() dispatch gates
+- C4 before C5: C5 extends C4's `activateIf()` gate mechanism — `DroolsStrategyTask` gains `strategySelector.isSelected()` to enforce exactly-one-strategy-per-tick across competing implementations; the gate framework must exist before trust routing can add to it
 - L2 built before L3–L7 in actual delivery: Chapter ordering is reading order, not build order
 
 ---
@@ -385,13 +385,13 @@ flowchart LR
 | L6 Trust routing | — | — | — | — | High | — |
 | L7 Comparison | — | — | — | — | — | Low |
 
-L2 participates in every Chapter — it is the foundational dispatch layer. L3 and L5 are each additive (one Chapter at Low/Medium, stable thereafter). L4 participates in three Chapters — it provides both the audit record (C3) and the trust data that C4 and C5 read.
+L2 participates in every Chapter — it is the foundational dispatch layer. L3 and L5 are each additive (one Chapter at Low/Medium, stable thereafter). L4 participates in three Chapters — it provides the audit record (C3) and the trust data that C5 reads; C4's conditional dispatch gates depend on CaseFile key presence and broker state, not L4 attestations.
 
 **Sequencing rationale:**
 - C1 before C2: `caseEngine.createAndSolve()` (L2) is the runtime substrate; qhorus inter-plugin channels run on top of it
 - C2 before C3: layer sequence — L3 (typed inter-plugin channels) precedes L4 (ledger) in the delivery sequence; no runtime dependency exists between the broker and `PluginOutcomeAuditor`
-- C3 before C4: adaptive binding selection reads ledger attestations to decide which plugin to dispatch
-- C4 before C5: trust-weighted routing reads the trust scores accumulated from L4 attestations
+- C3 before C4: layer sequence — L4 (ledger) precedes L5 (adaptive plugin selection) in the delivery sequence; no runtime dependency exists between outcome tracking and the conditional dispatch gates
+- C4 before C5: C5 extends C4's `activateIf()` gate mechanism — `DroolsStrategyTask` gains `strategySelector.isSelected()` in C5, enforcing exactly-one-strategy-per-tick when three implementations compete; the gate framework must exist before trust routing can add to it
 - L2 built before L3–L7 in actual delivery: C1 completed first because the CaseEngine blackboard was the architectural priority
 
 ---
