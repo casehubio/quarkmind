@@ -445,11 +445,21 @@ The game agent dispatches all four specialist plugins (strategy, economics, tact
 
 #### Chapter 3 — Outcome Tracking
 
-**Journey:** Game Agent Coordination | **Sequence:** 3 of 6 | **Status:** 🔲 pending
+**Journey:** Game Agent Coordination | **Sequence:** 3 of 6 | **Status:** ✅ complete
+**Delivered:** 2026-06-05 | **Issues:** #156 | **Blog:** `blog/2026-06-02-mdp03-eigentrust-inert-single-attestor.md`; `blog/2026-06-06-mdp01-layer4-ledger-integration.md`
 
-🔲 Full Chapter entry at C3 close. L3 (#155) now complete — C3 unblocked.
+**What this delivers**
+Every plugin decision is recorded via casehub-ledger: plugins fire `PluginDecisionEvent` when their decision state changes, and `PluginOutcomeAuditor` observes asynchronously (`@ObservesAsync`) to write a ledger entry via `outcomeRecorder.record()`. Bayesian Beta trust scores accumulate per plugin over time. Writes are async non-blocking — game-loop latency is unaffected. In-memory backend used for mock and emulated profiles (lightweight mode — tamper-evident guarantees not needed for game agent decisions). EigenTrust inert; single-attestor mode is correct for this domain (ADR-0009).
 
-Known scope: plugin outcome recording (plugin ID, decision, game state context, result); Bayesian Beta trust scoring per plugin (EigenTrust not activated — ADR-0009); async non-blocking writes; in-memory backend for mock/emulated profiles.
+**Accountability gaps closed**
+- No audit trail (L1 gap) → casehub-ledger attestation per plugin decision via `PluginOutcomeAuditor`
+- No outcome tracking (L1 gap) → Bayesian Beta trust scores accumulated per plugin via casehub-ledger
+
+**Layer Impact**
+| Layer | Delta |
+|---|---|
+| L4 casehub-ledger | High — `PluginOutcomeAuditor` (@ObservesAsync `PluginDecisionEvent`) writes ledger entries; Bayesian Beta trust scoring; async non-blocking writes; in-memory backend for dev profiles |
+| L2 casehub-engine | Low — dispatch unchanged; L2 is the substrate whose plugin execution triggers `PluginDecisionEvent`, enabling async ledger recording |
 
 ---
 
