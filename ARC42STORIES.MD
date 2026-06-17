@@ -411,7 +411,7 @@ The game agent dispatches all four specialist plugins (strategy, economics, tact
 **Accountability gaps closed**
 - No inter-plugin communication (L1 gap) → `CaseFile` blackboard via L2
 - No formal plugin dispatch (L1 gap) → `caseEngine.createAndSolve()` manages task lifecycle via L2
-- No outcome tracking → 🔲 C3
+- No outcome tracking → ✅ C3
 
 **Layer Impact**
 | Layer | Delta |
@@ -529,7 +529,7 @@ None. All accountability gaps were closed by L2–L6. C6 validates the closures;
 
 **Known limitations carried forward:**
 - Phase 2 dispatch pending: poc CaseEngine in use; SequenceWorker (engine#484) and `signalAndAwaitSync` (engine#483) not yet wired; benchmark numbers are Phase 1 transitional
-- C2–C5 §9.3 chapter entries are stubs (layers complete; entries pending — #198)
+- C2–C5 §9.3 chapter entries: complete (#198)
 
 **Refs:** §9.4 Layer — Comparison Baseline; `docs/benchmarks/2026-06-16-l7-harness.md`; `docs/benchmarks/2026-06-16-l7-emulated.md`
 
@@ -790,7 +790,7 @@ Tactics    {READY, STRATEGY}        [order]  → canActivate() also gates on
 
 **`GameTickExecutor`** was extracted from `AgentOrchestrator.gameTick()` to capture the `CaseFile` returned by `createAndSolve()` (previously discarded) and surface it via `AgentOrchestrator.getLastTickResult()`. Note: `createAndSolve()` returns the pre-solve CaseFile (translator-written keys only); plugin-written keys are absent from the returned reference. Tests for this layer call `canActivate()` directly on the injected CDI beans to verify gate semantics independently of the async solve.
 
-🔲 Full Chapter entry at C4 close. L3 (#155, redesigned #177) now complete — C4 unblocked.
+Chapter entry: ✅ C4 (#198)
 
 ---
 
@@ -809,7 +809,7 @@ Three competing `StrategyTask` implementations now exist. At game start, `Strate
 
 **Phase 1 migration (#193):** `StrategyTrustRouter` now implements `io.quarkmind.agent.TaskDefinition` with `getId() = "trust-routing"` and `execute(CaseContext ctx)` that writes the selected strategy ID to `agent.strategy.selected.id`. In Phase 1, `StrategyTrustObserver` (CDI event observer) still drives selection at game start and mid-game checkpoint; `execute()` writes the result to context for observability. In Phase 2, when `SequenceWorker` (engine#484) is available, the observer is deleted and the sequence step takes over entirely, making trust routing structural and event-log-visible.
 
-🔲 Full Chapter entry at C5 close.
+Chapter entry: ✅ C5 (#198)
 
 ---
 
