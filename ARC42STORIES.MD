@@ -164,7 +164,7 @@ This differs from devtown's `@DefaultBean` pattern: there is no baseline bean th
 ### Chapter Sequencing Rationale (summary — full rationale in §9.2)
 
 - C1 before C2: blackboard (L2) is the runtime substrate; qhorus inter-plugin messaging depends on it
-- C2 before C3: formal plugin obligation tracking is meaningful only when inter-plugin channels exist
+- C2 before C3: layer sequence — L3 (typed inter-plugin channels) precedes L4 (ledger) in delivery order; no runtime dependency between the broker and the auditor
 - C3 before C4: ledger entries for plugin decisions depend on the commitment chain qhorus produces
 - C4 before C5: adaptive binding selection and trust routing both read ledger attestation data
 - L2 built before L3–L7 in actual delivery: Chapter ordering is reading order, not build order
@@ -348,7 +348,7 @@ These have occurred in QuarkMind or are the most likely mistakes when extending 
 ```mermaid
 flowchart LR
   C1["C1: Blackboard Dispatch\nL1 + L2"]
-  C2["C2: Formal Plugin Obligation\n+ L3"]
+  C2["C2: Plugin Intel Channels\n+ L3"]
   C3["C3: Outcome Tracking\n+ L4"]
   C4["C4: Adaptive Plugin Selection\n+ L5"]
   C5["C5: Trust-weighted Routing\n+ L6"]
@@ -357,17 +357,17 @@ flowchart LR
   C1 --> C2 --> C3 --> C4 --> C5 --> C6
 
   style C1 fill:#90EE90,color:#000
-  style C2 fill:#D3D3D3,color:#000
-  style C3 fill:#D3D3D3,color:#000
-  style C4 fill:#D3D3D3,color:#000
-  style C5 fill:#D3D3D3,color:#000
+  style C2 fill:#90EE90,color:#000
+  style C3 fill:#90EE90,color:#000
+  style C4 fill:#90EE90,color:#000
+  style C5 fill:#90EE90,color:#000
   style C6 fill:#90EE90,color:#000
 ```
 
 | # | Chapter | Journey | Layers touched | Delta | Status |
 |---|---|---|---|---|---|
 | 1 | Blackboard dispatch | Game Agent Coordination | L1, L2 | Conceptual, High | ✅ complete |
-| 2 | Formal plugin obligation | Game Agent Coordination | + L3 | Low | ✅ complete (#155) |
+| 2 | Plugin Intel Channels | Game Agent Coordination | + L3 | Low | ✅ complete (#155, #177) |
 | 3 | Outcome tracking | Game Agent Coordination | + L4 | Medium | ✅ complete (#156) |
 | 4 | Adaptive plugin selection | Game Agent Coordination | + L5 | Medium | ✅ complete (#157) |
 | 5 | Trust-weighted routing | Game Agent Coordination | + L6 | Medium | ✅ complete (#158) |
@@ -375,7 +375,7 @@ flowchart LR
 
 **Layer × Chapter matrix**
 
-| Layer | C1 ✅ | C2 🔲 | C3 🔲 | C4 🔲 | C5 ✅ | C6 ✅ |
+| Layer | C1 ✅ | C2 ✅ | C3 ✅ | C4 ✅ | C5 ✅ | C6 ✅ |
 |---|---|---|---|---|---|---|
 | L1 Naive Game Loop | High | — | — | — | — | — |
 | L2 casehub-engine | High | Low | Low | Medium | Low | Low |
@@ -389,7 +389,7 @@ L2 participates in every Chapter — it is the foundational dispatch layer. L3 a
 
 **Sequencing rationale:**
 - C1 before C2: `caseEngine.createAndSolve()` (L2) is the runtime substrate; qhorus inter-plugin channels run on top of it
-- C2 before C3: plugin obligation records (L3 commitment chain) are the ledger entries that make outcome tracking meaningful in C3
+- C2 before C3: layer sequence — L3 (typed inter-plugin channels) precedes L4 (ledger) in the delivery sequence; no runtime dependency exists between the broker and `PluginOutcomeAuditor`
 - C3 before C4: adaptive binding selection reads ledger attestations to decide which plugin to dispatch
 - C4 before C5: trust-weighted routing reads the trust scores accumulated from L4 attestations
 - L2 built before L3–L7 in actual delivery: C1 completed first because the CaseEngine blackboard was the architectural priority
@@ -831,7 +831,7 @@ Three competing `StrategyTask` implementations now exist. At game start, `Strate
 | Plugin dispatch | Direct method calls per tick | Direct calls or callbacks | CaseEngine blackboard (`createAndSolve()`) |
 | Inter-plugin state within tick | None | None | CaseFile pre-populated by GameStateTranslator; DroolsStrategyTask writes decision key back; downstream plugins (tactics, economics) read it in the same tick |
 | Typed comms between plugins | None | None | casehub-qhorus channels |
-| Formal out-of-scope signal | Silent no-op or throws | Silent no-op or throws | Typed inter-plugin channels (L3); DECLINE speech act is platform-defined, not yet wired in QuarkMind's game-loop dispatch (pending C2 chapter entry — #198) |
+| Formal out-of-scope signal | Silent no-op or throws | Silent no-op or throws | Typed inter-plugin channels (L3); DECLINE speech act is platform-defined, not yet wired in QuarkMind's game-loop dispatch (#199) |
 | Audit trail | None | None | casehub-ledger attestation per plugin decision |
 | Adaptive plugin selection | Fixed | Fixed | Binding-condition dispatch (L5) |
 | Trust-weighted routing | None | None | Bayesian Beta strategy selection per opponent context (L6) |
