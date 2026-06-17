@@ -58,12 +58,15 @@ public final class CaseFileContext implements CaseContext {
     @Override
     public boolean contains(String key) { return data.containsKey(key); }
 
+    /** Null values are silently ignored — the key is left unchanged. There is no erasure
+     *  path in Phase 1: {@link #remove} throws {@link UnsupportedOperationException}. */
     @Override
     public CaseContext set(String key, Object value) {
         if (value != null) data.put(key, value);
         return this;
     }
 
+    /** Null values in the map are silently skipped — matching {@link #set} semantics. */
     @Override
     public CaseContext setAll(Map<String, Object> values) {
         values.forEach((k, v) -> { if (v != null) data.put(k, v); });
