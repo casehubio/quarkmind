@@ -378,7 +378,7 @@ flowchart LR
 | Layer | C1 ✅ | C2 🔲 | C3 🔲 | C4 🔲 | C5 🔲 | C6 ✅ |
 |---|---|---|---|---|---|---|
 | L1 Naive Game Loop | High | — | — | — | — | — |
-| L2 casehub-engine | High | Low | Low | Low | Low | Low |
+| L2 casehub-engine | High | Low | Low | Medium | Low | Low |
 | L3 casehub-qhorus | — | Low | — | — | — | — |
 | L4 casehub-ledger | — | — | Medium | Low | Low | — |
 | L5 Adaptive selection | — | — | — | Medium | Low | — |
@@ -465,11 +465,23 @@ Every plugin decision is recorded via casehub-ledger: plugins fire `PluginDecisi
 
 #### Chapter 4 — Adaptive Plugin Selection
 
-**Journey:** Game Agent Coordination | **Sequence:** 4 of 6 | **Status:** 🔲 pending
+**Journey:** Game Agent Coordination | **Sequence:** 4 of 6 | **Status:** ✅ complete
+**Delivered:** 2026-06-03 | **Issues:** #157 | **Blog:** `blog/2026-06-03-mdp01-layer5-adaptive-plugin-selection.md`; `blog/2026-06-04-mdp01-three-cleanups-strategy-upgrade.md`
 
-🔲 Full Chapter entry at C4 close. L3 (#155), L4 (#156), and L5 (#157) all complete — C4 unblocked.
+**What this delivers**
+Two structurally distinct gate mechanisms replace hardwired all-plugins-every-tick dispatch. (1) `requires()` — CaseFile key-presence ordering dependency: `ENEMY_ARMY_SIZE` on `DroolsStrategyTask` ensures scouting always runs before strategy in the CaseEngine re-evaluation loop. (2) `activateIf()` broker state gate — `broker.current(THREAT_POSITION).isPresent()` on `DroolsTacticsTask` skips tactics when no threat position is known; `broker.current(POSTURE).isPresent()` on `DroolsStrategyTask` suppresses strategy in early game until scouting has classified the enemy posture. The Pattern 2 broker gates were introduced by the #177 dual-stack redesign (delivered under C2), replacing the earlier CaseFile `NEAREST_THREAT` key gate from the initial #157 commit; they belong to the L5 story as the final form of the conditional skip pattern. `canActivate(CaseFile)` combines `requires()` and `activateIf()` via `testActivation()`. `GameTickExecutor` extracted from `AgentOrchestrator.gameTick()` to surface `CaseFile` state for testing.
 
-Known scope: `casehub-engine` binding conditions evaluate game state; plugins dispatched only when conditions are satisfied (e.g. `TacticsTask` skips when no enemy units); removes hardwired all-plugins-every-tick dispatch.
+**Accountability gaps closed**
+- Fixed all-plugins-every-tick dispatch (L1 gap) → binding-condition dispatch via `requires()` + `activateIf()`
+
+**Layer Impact**
+| Layer | Delta |
+|---|---|
+| L5 Adaptive Plugin Selection | High — `requires()` ordering gates and `activateIf()` broker-state gates on all plugins; `GameTickExecutor` extraction |
+| L2 casehub-engine | Medium — `AgentOrchestrator.gameTick()` refactored; `testActivation()` override pattern established across all plugins |
+
+**Known limitations / open gaps**
+- `canActivate(CaseFile)` in the installed poc casehub-core snapshot returns `true` unconditionally — does not call `testActivation()`. All four plugin classes explicitly override `canActivate()` with `testActivation(new CaseFileContext(caseFile))`, which evaluates both `requires()` and `activateIf()`. Overrides can be removed once the foundation corrects the default.
 
 ---
 
