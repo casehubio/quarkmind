@@ -116,7 +116,7 @@ volatile long lastDispatchedId = 0L
 ```
 `ConcurrentHashMap` required: `recordTick()` runs on the scheduler thread; `onGameStarted()` fires via CDI sync event from the REST/test thread. These can race during game initialisation.
 
-`lastDispatchedId`: message ID of the last DONE/DECLINE dispatch. Updated at the end of each `sendCommitmentSignal()` call. Used by tests as a cursor for `pollAfter()` to isolate only the current test's messages. `volatile` because test threads read it concurrently with the scheduler writing it.
+`lastDispatchedId`: message ID of the last DONE/DECLINE dispatch. Updated in the collect-then-apply block of `recordTick()` after all dispatches succeed — never inside `sendCommitmentSignal()`, which returns the ID to the caller. Used by tests as a cursor for `pollAfter()` to isolate only the current test's messages. `volatile` because test threads read it concurrently with the scheduler writing it.
 
 **Exposed accessors:**
 ```java

@@ -190,9 +190,13 @@ class PluginDispatchBrokerTest {
         var broker = brokerWith(plugin);
 
         broker.recordTick(Map.of("READY", true));
+        long idAfterFirstGame = broker.lastDispatchedId();
         captured.clear();
 
         broker.onGameStarted(new GameStarted());
+
+        // lastDispatchedId must NOT reset on GameStarted — it is a monotonic DB cursor
+        assertThat(broker.lastDispatchedId()).isEqualTo(idAfterFirstGame);
 
         broker.recordTick(Map.of("READY", true));
 
