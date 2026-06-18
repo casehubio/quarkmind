@@ -59,6 +59,12 @@ class AdaptivePluginSelectionIT {
     @AfterEach
     void tearDown() {
         intentQueue.drainAll();
+        // DroolsScoutingTask runs on the CaseEngine worker thread and may update the broker
+        // after gameTick() returns. Brief settle gives the async operation time to complete
+        // before the next @BeforeEach clears broker state. Pre-existing ordering hazard —
+        // see broker.clearLatest() in @BeforeEach; this @AfterEach clear eliminates the race.
+        try { Thread.sleep(50); } catch (InterruptedException ignored) {}
+        broker.clearLatest();
     }
 
     @Test
