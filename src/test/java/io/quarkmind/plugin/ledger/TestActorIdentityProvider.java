@@ -1,6 +1,6 @@
 package io.quarkmind.plugin.ledger;
 
-import io.casehub.ledger.runtime.privacy.ActorIdentityProvider;
+import io.casehub.ledger.api.spi.ActorIdentityProvider;
 import io.casehub.platform.api.identity.ActorType;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Optional;
@@ -20,8 +20,8 @@ public class TestActorIdentityProvider implements ActorIdentityProvider {
     }
 
     @Override
-    public String tokeniseForQuery(String rawActorId) {
-        return rawActorId;
+    public Optional<String> tokeniseForQuery(String rawActorId) {
+        return Optional.ofNullable(rawActorId);
     }
 
     @Override
