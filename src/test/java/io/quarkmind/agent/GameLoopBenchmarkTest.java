@@ -57,6 +57,7 @@ class GameLoopBenchmarkTest {
 
         // Measure
         long[] physicsMs  = new long[MEASURE_TICKS];
+        long[] brokerMs   = new long[MEASURE_TICKS];
         long[] pluginsMs  = new long[MEASURE_TICKS];
         long[] dispatchMs = new long[MEASURE_TICKS];
         long[] totalMs    = new long[MEASURE_TICKS];
@@ -65,12 +66,13 @@ class GameLoopBenchmarkTest {
             orchestrator.gameTick();
             AgentOrchestrator.TickTimings t = orchestrator.getLastTickTimings();
             physicsMs [i] = t.physicsMs();
+            brokerMs  [i] = t.brokerMs();
             pluginsMs [i] = t.pluginsMs();
             dispatchMs[i] = t.dispatchMs();
             totalMs   [i] = t.totalMs();
         }
 
-        String report = formatReport(physicsMs, pluginsMs, dispatchMs, totalMs);
+        String report = formatReport(physicsMs, brokerMs, pluginsMs, dispatchMs, totalMs);
         System.out.println(report);
 
         // Write to file for easy copy-paste into docs/benchmarks/
@@ -86,8 +88,8 @@ class GameLoopBenchmarkTest {
         assertThat(maxTotal) .as("Max tick time guard") .isLessThan(GUARD_MAX_MS);
     }
 
-    private static String formatReport(long[] physics, long[] plugins,
-                                        long[] dispatch, long[] total) {
+    private static String formatReport(long[] physics, long[] broker,
+                                        long[] plugins, long[] dispatch, long[] total) {
         String ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         return String.format("""
                 QuarkMind Game Loop Benchmark
@@ -98,6 +100,7 @@ class GameLoopBenchmarkTest {
                 Phase               mean     p95      max
                 engine.tick()      %4dms   %4dms   %4dms
                 engine.observe()   (included in physics above)
+                commit signals     %4dms   %4dms   %4dms
                 caseEngine plugins %4dms   %4dms   %4dms
                 engine.dispatch()  %4dms   %4dms   %4dms
                 ────────────────────────────────────────
@@ -111,6 +114,7 @@ class GameLoopBenchmarkTest {
             ts,
             WARMUP_TICKS, MEASURE_TICKS,
             mean(physics),   p95(physics),   max(physics),
+            mean(broker),    p95(broker),    max(broker),
             mean(plugins),   p95(plugins),   max(plugins),
             mean(dispatch),  p95(dispatch),  max(dispatch),
             mean(total),     p95(total),     max(total),
