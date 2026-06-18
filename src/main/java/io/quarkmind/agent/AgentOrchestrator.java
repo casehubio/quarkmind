@@ -28,8 +28,8 @@ public class AgentOrchestrator {
      * Per-phase timing from the most recent completed tick.
      * Written after every gameTick(); read by GameLoopBenchmarkTest.
      */
-    public record TickTimings(long physicsMs, long pluginsMs, long dispatchMs) {
-        public long totalMs() { return physicsMs + pluginsMs + dispatchMs; }
+    public record TickTimings(long physicsMs, long pluginsMs, long dispatchMs, long brokerMs) {
+        public long totalMs() { return physicsMs + pluginsMs + dispatchMs + brokerMs; }
     }
 
     public record TickResult(CaseFile caseFile, AgentOrchestrator.TickTimings timings) {
