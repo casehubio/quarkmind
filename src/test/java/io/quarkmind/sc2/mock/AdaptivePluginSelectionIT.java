@@ -3,9 +3,11 @@ package io.quarkmind.sc2.mock;
 import io.casehub.annotation.CaseType;
 import io.casehub.coordination.PropagationContext;
 import io.casehub.persistence.memory.InMemoryCaseFileRepository;
+import io.casehub.qhorus.runtime.message.MessageService;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import io.quarkmind.agent.AgentOrchestrator;
+import io.quarkmind.agent.PluginDispatchBroker;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
@@ -23,6 +25,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +43,9 @@ class AdaptivePluginSelectionIT {
     @Inject @CaseType("starcraft-game") DroolsStrategyTask strategyTask;
     @Inject StrategySelector strategySelector;
     @Inject ScoutingIntelBroker broker;
+    @Inject PluginDispatchBroker dispatchBroker;
+    @Inject MessageService        messageService;
+    private long afterId;
 
     @BeforeEach
     void setUp() {
@@ -47,6 +53,7 @@ class AdaptivePluginSelectionIT {
         orchestrator.startGame();   // fires GameStarted → broker.onGameStarted() clears latest
         intentQueue.drainAll();
         broker.clearLatest();       // defensive reset — independent of event chain
+        afterId = dispatchBroker.lastDispatchedId();   // cursor: ignore messages from prior tests
     }
 
     @AfterEach
@@ -130,5 +137,41 @@ class AdaptivePluginSelectionIT {
         broker.update(new ScoutingIntelPayload.ThreatPosition(new Point2d(50, 50)));
         result.caseFile().put(QuarkMindCaseFile.STRATEGY, "DEFEND");
         assertThat(tacticsTask.canActivate(result.caseFile())).isTrue();
+    }
+
+    @Test
+    void firstTickEmitsCorrectDeclineSignals() {
+        orchestrator.gameTick();
+
+        // pollAfter returns messages with id > afterId, excluding EVENTs.
+        // afterId == 0 on first run → null means "get all"; afterId > 0 → get only delta.
+        List<io.casehub.qhorus.runtime.message.Message> delta = messageService.pollAfter(
+            dispatchBroker.channelId(),
+            afterId > 0 ? afterId : null,
+            20);
+
+        List<io.casehub.qhorus.runtime.message.Message> commands =
+            delta.stream().filter(m -> m.messageType == io.casehub.qhorus.api.message.MessageType.COMMAND).toList();
+        List<io.casehub.qhorus.runtime.message.Message> dones =
+            delta.stream().filter(m -> m.messageType == io.casehub.qhorus.api.message.MessageType.DONE).toList();
+        List<io.casehub.qhorus.runtime.message.Message> declines =
+            delta.stream().filter(m -> m.messageType == io.casehub.qhorus.api.message.MessageType.DECLINE).toList();
+
+        // First-tick plugin activation state (from spec first-tick table):
+        // - scouting.drools-cep: DONE  (READY present, activateIf ctx.contains(READY) → true)
+        // - economics.flow:      DONE  (READY present, activateIf default → true)
+        // - tactics.drools:      OUT OF SCOPE (STRATEGY absent from translator output)
+        // - strategy.drools:     OUT OF SCOPE (ENEMY_ARMY_SIZE absent from translator output)
+        // - strategy.early-pressure:     DECLINE (READY present, isSelected → false)
+        // - strategy.economic-expansion: DECLINE (READY present, isSelected → false)
+        assertThat(commands).hasSize(4);
+        assertThat(dones).hasSize(2);
+        assertThat(declines).hasSize(2);
+
+        assertThat(dones.stream().map(m -> m.sender).toList())
+            .containsExactlyInAnyOrder("plugin:scouting.drools-cep", "plugin:economics.flow");
+
+        assertThat(declines.stream().map(m -> m.sender).toList())
+            .containsExactlyInAnyOrder("plugin:strategy.early-pressure", "plugin:strategy.economic-expansion");
     }
 }
