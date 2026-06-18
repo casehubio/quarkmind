@@ -200,7 +200,15 @@
       "Bash(xargs -I {} sh -c 'head -1 {} | grep package')",
       "Bash(/tmp/check_imports.sh)",
       "mcp__intellij-index__ide_find_symbol",
-      "mcp__intellij__get_run_configurations"
+      "mcp__intellij__get_run_configurations",
+      "mcp__intellij-index__ide_read_file",
+      "mcp__intellij-index__ide_file_structure",
+      "Bash(awk '/#### Chapter 4 — Adaptive Plugin Selection/,/#### Chapter 5 — Trust-weighted Routing/' /Users/mdproctor/claude/casehub/quarkmind/ARC42STORIES.MD)",
+      "Bash(jar xf *)",
+      "Bash(javap -p io/casehub/ledger/runtime/privacy/PassThroughActorIdentityProvider.class)",
+      "Bash(rm -rf io/)",
+      "Bash(javap -p io/casehub/ledger/api/spi/ActorIdentityProvider.class)",
+      "Bash(xargs -I{} git -C /Users/mdproctor/claude/casehub/quarkmind log --format=\"%H\" {}^)"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"
