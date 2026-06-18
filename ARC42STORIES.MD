@@ -439,7 +439,7 @@ The game agent dispatches all four specialist plugins (strategy, economics, tact
 | L2 casehub-engine | Low — dispatch unchanged; plugin intel flows via broker alongside CaseFile |
 
 **Known limitations / open gaps**
-- Quality Goal 2 (Formal DECLINE) not closed: DECLINE speech act is platform-defined in casehub-qhorus but not wired in QuarkMind game-loop dispatch (#199)
+- Quality Goal 2 (Formal DECLINE) closed (#199): `PluginDispatchBroker` emits COMMAND+DECLINE on `quarkmind-plugin-dispatch` when a plugin's `activateIf()` gate returns false (requires() keys present); COMMAND+DONE when active. Phase 1: DONE is pre-execution; Phase 2 `SequenceWorker` (engine#484) corrects this.
 
 ---
 
@@ -831,7 +831,7 @@ Chapter entry: ✅ C5 (#198)
 | Plugin dispatch | Direct method calls per tick | Direct calls or callbacks | CaseEngine blackboard (`createAndSolve()`) |
 | Inter-plugin state within tick | None | None | CaseFile pre-populated by GameStateTranslator; DroolsStrategyTask writes decision key back; downstream plugins (tactics, economics) read it in the same tick |
 | Typed comms between plugins | None | None | casehub-qhorus channels |
-| Formal out-of-scope signal | Silent no-op or throws | Silent no-op or throws | Typed inter-plugin channels (L3); DECLINE speech act is platform-defined, not yet wired in QuarkMind's game-loop dispatch (#199) |
+| Formal out-of-scope signal | Silent no-op or throws | Silent no-op or throws | Typed inter-plugin channels (L3); DECLINE speech act wired via `PluginDispatchBroker` on `quarkmind-plugin-dispatch` channel (#199) |
 | Audit trail | None | None | casehub-ledger attestation per plugin decision |
 | Adaptive plugin selection | Fixed | Fixed | Binding-condition dispatch (L5) |
 | Trust-weighted routing | None | None | Bayesian Beta strategy selection per opponent context (L6) |
