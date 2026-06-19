@@ -325,24 +325,6 @@ src/main/java/io/quarkmind/
 
 Each plugin seam (`StrategyTask`, `EconomicsTask`, `TacticsTask`, `ScoutingTask`) is a CDI interface extending both the poc's `io.casehub.core.TaskDefinition` (Phase 1 bridge) and QuarkMind's own `io.quarkmind.agent.TaskDefinition` (new engine API). Implementations provide `execute(CaseContext)`, `activateIf()`, `requires()`, `produces()` alongside Phase 1 bridge methods that delegate to them. Swap an implementation by providing a new `@ApplicationScoped @CaseType("starcraft-game")` bean — no wiring changes elsewhere. The Phase 1 bridge `canActivate(CaseFile)` delegates to `testActivation(new CaseFileContext(caseFile))` — a default method on `TaskDefinition` that combines `requires()` key-presence and `activateIf()` extra gates, mirroring Phase 2 SequenceWorker semantics. For unit tests, construct a `CaseContext` via `new MapCaseContext(Map.of(...))` — a plain read-only `CaseContext` backed by a map, no database or CaseFile needed. For tests that need full CaseFile lifecycle: `new CaseFileContext(new InMemoryCaseFileRepository().create("starcraft-game", data, PropagationContext.createRoot()))`. `activateIf()` must only declare CDI-injected gates (selector, broker); key-presence gates belong in `requires()`. See protocol PP-20260603-cefed9.
 
-## CaseHub Dependency
-
-CaseHub (`io.casehub:casehub-core:1.0.0-SNAPSHOT` + `casehub-persistence-memory`) must be installed to the local Maven repo before building:
-
-```bash
-cd /Users/mdproctor/claude/casehub && mvn install -DskipTests -Dquarkus.build.skip=true
-```
-
-## Replay Library Dependency
-
-The SC2 replay parser (`scelight-mpq` + `scelight-s2protocol`) is built from the Scelight fork:
-
-```bash
-cd /Users/mdproctor/dev/scelight && ./scripts/publish-replay-libs.sh
-```
-
-Run this when setting up a new environment or after any change to the `feature/standalone-modules` branch.
-
 ## Writing Style Guide
 
 **The writing style guide at `~/claude-workspace/writing-styles/blog-technical.md` is mandatory for all blog and diary entries.** Load it in full before drafting. Complete the pre-draft voice classification (I / we / Claude-named) before generating any prose.

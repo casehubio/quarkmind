@@ -74,17 +74,6 @@
             <version>1.49.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>io.casehub</groupId>
-            <artifactId>casehub-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <!-- In-memory TaskRepository + CaseFileRepository — required by CaseEngine/TaskBroker -->
-        <dependency>
-            <groupId>io.casehub</groupId>
-            <artifactId>casehub-persistence-memory</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
         <!-- casehub-ledger: OutcomeRecorder SPI + DefaultOutcomeRecorder + in-memory SPIs -->
         <dependency>
             <groupId>io.casehub</groupId>
@@ -136,20 +125,6 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jdbc-h2</artifactId>
-        </dependency>
-
-        <!-- SC2 Replay parsing — extracted from Scelight (Apache 2.0) -->
-        <!-- Source: /Users/mdproctor/dev/scelight, branch: feature/standalone-modules -->
-        <!-- Rebuild: cd /Users/mdproctor/dev/scelight && ./scripts/publish-replay-libs.sh -->
-        <dependency>
-            <groupId>hu.scelight</groupId>
-            <artifactId>scelight-mpq</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>hu.scelight</groupId>
-            <artifactId>scelight-s2protocol</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <!-- SC2 protocol types (Units, Abilities, Observation wrappers, SC2APIProtocol protos) -->
@@ -226,7 +201,26 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>casehubio GitHub Packages</name>
+            <url>https://maven.pkg.github.com/casehubio/*</url>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories>
+
     <build>
+        <!-- Include .dat protocol files (scelight-s2protocol, inlined) from src/main/java -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <excludes><exclude>**/*.java</exclude></excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>${quarkus.platform.group-id}</groupId>

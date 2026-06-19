@@ -208,7 +208,13 @@
       "Bash(javap -p io/casehub/ledger/runtime/privacy/PassThroughActorIdentityProvider.class)",
       "Bash(rm -rf io/)",
       "Bash(javap -p io/casehub/ledger/api/spi/ActorIdentityProvider.class)",
-      "Bash(xargs -I{} git -C /Users/mdproctor/claude/casehub/quarkmind log --format=\"%H\" {}^)"
+      "Bash(xargs -I{} git -C /Users/mdproctor/claude/casehub/quarkmind log --format=\"%H\" {}^)",
+      "Bash(gh run *)",
+      "Bash(cp -r /Users/mdproctor/dev/scelight/scelight-mpq/src/main/java/ /Users/mdproctor/claude/casehub/quarkmind/src/main/java/)",
+      "Bash(cp -r /Users/mdproctor/dev/scelight/scelight-s2protocol/src/main/java/ /Users/mdproctor/claude/casehub/quarkmind/src/main/java/)",
+      "Bash(gh workflow *)",
+      "Bash(cp -r ~/claude/casehub-poc/casehub-core/src/main/java/ /Users/mdproctor/claude/casehub/quarkmind/src/main/java/)",
+      "Bash(cp -r ~/claude/casehub-poc/casehub-persistence-memory/src/main/java/ /Users/mdproctor/claude/casehub/quarkmind/src/main/java/)"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"
