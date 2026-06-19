@@ -333,16 +333,6 @@ CaseHub (`io.casehub:casehub-core:1.0.0-SNAPSHOT` + `casehub-persistence-memory`
 cd /Users/mdproctor/claude/casehub && mvn install -DskipTests -Dquarkus.build.skip=true
 ```
 
-## Replay Library Dependency
-
-The SC2 replay parser (`scelight-mpq` + `scelight-s2protocol`) is built from the Scelight fork:
-
-```bash
-cd /Users/mdproctor/dev/scelight && ./scripts/publish-replay-libs.sh
-```
-
-Run this when setting up a new environment or after any change to the `feature/standalone-modules` branch.
-
 ## Writing Style Guide
 
 **The writing style guide at `~/claude-workspace/writing-styles/blog-technical.md` is mandatory for all blog and diary entries.** Load it in full before drafting. Complete the pre-draft voice classification (I / we / Claude-named) before generating any prose.
