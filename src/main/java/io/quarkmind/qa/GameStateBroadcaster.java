@@ -29,6 +29,14 @@ public class GameStateBroadcaster {
 
     public void setSuppressed(boolean s) { this.suppressed = s; }
 
+    /** Blocks until at least one WebSocket session is registered, or the timeout expires. */
+    public void waitForSession(long maxWaitMs) throws InterruptedException {
+        long deadline = System.currentTimeMillis() + maxWaitMs;
+        while (sessions.isEmpty() && System.currentTimeMillis() < deadline) {
+            Thread.sleep(10);
+        }
+    }
+
     @PostConstruct
     void init() {
         engine.addFrameListener(this::onFrame);

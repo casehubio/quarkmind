@@ -36,6 +36,7 @@ class GameStateWebSocketTest {
 
     @Inject AgentOrchestrator orchestrator;
     @Inject SC2Engine engine;
+    @Inject GameStateBroadcaster broadcaster;
 
     @BeforeEach
     void setUp() {
@@ -46,13 +47,15 @@ class GameStateWebSocketTest {
     // Helpers
     // -------------------------------------------------------------------------
 
-    /** Connect to the WS endpoint and return a queue that receives each text message. */
-    private WebSocket connect(LinkedBlockingQueue<String> queue) {
+    /** Connect to the WS endpoint and block until the server-side session is registered. */
+    private WebSocket connect(LinkedBlockingQueue<String> queue) throws InterruptedException {
         URI ws = URI.create(wsUri.toString().replace("http://", "ws://"));
-        return HttpClient.newHttpClient()
+        WebSocket result = HttpClient.newHttpClient()
             .newWebSocketBuilder()
             .buildAsync(ws, new MessageCollector(queue))
             .join();
+        broadcaster.waitForSession(2000);
+        return result;
     }
 
     private static class MessageCollector implements WebSocket.Listener {
@@ -74,7 +77,7 @@ class GameStateWebSocketTest {
     }
 
     private static String poll(LinkedBlockingQueue<String> queue) throws InterruptedException {
-        return queue.poll(10, TimeUnit.SECONDS);
+        return queue.poll(3, TimeUnit.SECONDS);
     }
 
     // -------------------------------------------------------------------------
