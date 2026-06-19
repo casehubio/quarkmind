@@ -74,17 +74,6 @@
             <version>1.49.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>io.casehub</groupId>
-            <artifactId>casehub-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <!-- In-memory TaskRepository + CaseFileRepository — required by CaseEngine/TaskBroker -->
-        <dependency>
-            <groupId>io.casehub</groupId>
-            <artifactId>casehub-persistence-memory</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
         <!-- casehub-ledger: OutcomeRecorder SPI + DefaultOutcomeRecorder + in-memory SPIs -->
         <dependency>
             <groupId>io.casehub</groupId>
