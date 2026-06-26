@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * Mock engine — drives the full agent loop against {@link SimulatedGame}.
  * Active in all profiles except {@code %sc2}.
  */
-@UnlessBuildProfile(anyOf = {"sc2", "replay", "emulated"})
+@UnlessBuildProfile(anyOf = {"sc2", "emulated-sc2", "replay", "emulated"})
 @ApplicationScoped
 public class MockEngine implements SC2Engine {
 

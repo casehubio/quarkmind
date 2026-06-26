@@ -20,7 +20,7 @@ public class EmulatedGame {
 
     // --- Per-player state ---
     final PlayerState friendly = new PlayerState();
-    final PlayerState enemy    = new PlayerState();
+    public final PlayerState enemy    = new PlayerState();
 
     // --- Physics state (movement targets, cooldowns, production queues) ---
     final PhysicsState friendlyPhysics = new PhysicsState();
@@ -718,10 +718,10 @@ public class EmulatedGame {
     }
 
     /** Sets the EnemyBehavior directly — for tests that need full control. */
-    void setEnemyBehavior(EnemyBehavior b) { this.enemyBehavior = b; }
+    public void setEnemyBehavior(EnemyBehavior b) { this.enemyBehavior = b; }
 
     /** Sets the player race model. Call before reset(). Default is ProtossRaceModel. */
-    void setPlayerRaceModel(RaceModel model) { this.playerRaceModel = model; }
+    public void setPlayerRaceModel(RaceModel model) { this.playerRaceModel = model; }
 
     int  enemyMinerals()  { return (int) enemy.minerals(); }
     int  enemyStagingSize() { return enemyBehavior != null ? enemyBehavior.stagingArea.size() : 0; }
@@ -788,8 +788,8 @@ public class EmulatedGame {
     }
 
     /** Swap movement strategy — used by pathfinding tests. Default is DirectMovement. */
-    void setMovementStrategy(MovementStrategy s) { this.movementStrategy = s; }
-    void setTerrainGrid(TerrainGrid g) { this.terrainGrid = g; }
+    public void setMovementStrategy(MovementStrategy s) { this.movementStrategy = s; }
+    public void setTerrainGrid(TerrainGrid g) { this.terrainGrid = g; }
 
     /** Injects a predictable Random for miss-chance tests. */
     void setRandomForTesting(Random r) { this.random = r; }

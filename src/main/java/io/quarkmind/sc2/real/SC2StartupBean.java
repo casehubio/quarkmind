@@ -12,7 +12,7 @@ import org.jboss.logging.Logger;
  * Auto-starts the SC2 game on application startup in the %sc2 profile only.
  * Not present in %mock or %test profiles — mock tests call startGame() explicitly.
  */
-@IfBuildProfile("sc2")
+@IfBuildProfile(anyOf = {"sc2", "emulated-sc2"})
 @ApplicationScoped
 public class SC2StartupBean {
     private static final Logger log = Logger.getLogger(SC2StartupBean.class);

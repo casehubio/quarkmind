@@ -7,8 +7,6 @@ import org.junit.jupiter.api.*;
 
 import java.io.*;
 import java.net.*;
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -73,59 +71,23 @@ class QuarkusSC2TransportTest {
         }
 
         private void doHandshake(Socket s) throws Exception {
-            // Read HTTP headers byte-by-byte — avoids BufferedReader consuming
-            // WebSocket frame data that serveFrames() needs to read later.
-            InputStream rawIn = s.getInputStream();
-            StringBuilder sb = new StringBuilder();
-            int b;
-            while ((b = rawIn.read()) >= 0) {
-                sb.append((char) b);
-                int len = sb.length();
-                if (len >= 4
-                        && sb.charAt(len - 4) == '\r' && sb.charAt(len - 3) == '\n'
-                        && sb.charAt(len - 2) == '\r' && sb.charAt(len - 1) == '\n') {
-                    break; // end of HTTP headers (\r\n\r\n)
-                }
-            }
-            String key = null;
-            for (String line : sb.toString().split("\r\n")) {
-                if (line.startsWith("Sec-WebSocket-Key:"))
-                    key = line.substring("Sec-WebSocket-Key:".length()).trim();
-            }
-            String accept = Base64.getEncoder().encodeToString(
-                MessageDigest.getInstance("SHA-1")
-                    .digest((key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11").getBytes()));
-            OutputStream out = s.getOutputStream();
-            out.write(("HTTP/1.1 101 Switching Protocols\r\n"
-                + "Upgrade: websocket\r\n"
-                + "Connection: Upgrade\r\n"
-                + "Sec-WebSocket-Accept: " + accept + "\r\n"
-                + "\r\n").getBytes());
-            out.flush();
+            io.quarkmind.sc2.SC2WebSocketCodec.performServerHandshake(
+                s.getInputStream(), s.getOutputStream());
         }
 
         private void serveFrames(Socket s) throws Exception {
             var raw = s.getInputStream();
             var out = s.getOutputStream();
             while (!s.isClosed()) {
-                int b0 = raw.read(); if (b0 < 0) break;
-                int b1 = raw.read(); if (b1 < 0) break;
-                boolean masked = (b1 & 0x80) != 0;
-                int len = b1 & 0x7F;
-                if (len == 126) len = (raw.read() << 8) | raw.read();
-                byte[] mask  = masked ? raw.readNBytes(4) : new byte[0];
-                byte[] payload = raw.readNBytes(len);
-                if (masked) for (int i = 0; i < payload.length; i++) payload[i] ^= mask[i % 4];
+                byte[] payload = io.quarkmind.sc2.SC2WebSocketCodec.readFrame(raw);
+                if (payload == null) break;
 
                 Sc2Api.Request req = Sc2Api.Request.parseFrom(payload);
                 received.add(req);
 
                 Sc2Api.Response resp = buildResponse(req);
                 byte[] respBytes = resp.toByteArray();
-                out.write(0x82); // FIN + binary
-                if (respBytes.length < 126) out.write(respBytes.length);
-                else { out.write(126); out.write((respBytes.length >> 8) & 0xFF); out.write(respBytes.length & 0xFF); }
-                out.write(respBytes);
+                out.write(io.quarkmind.sc2.SC2WebSocketCodec.encodeServerFrame(respBytes));
                 out.flush();
             }
         }
@@ -563,35 +525,13 @@ class QuarkusSC2TransportTest {
         }
 
         private void handle(Socket s) throws Exception {
-            // Handshake (same as FakeSC2Server.doHandshake)
-            InputStream rawIn = s.getInputStream();
-            StringBuilder sb = new StringBuilder();
-            int b;
-            while ((b = rawIn.read()) >= 0) {
-                sb.append((char) b);
-                int len = sb.length();
-                if (len >= 4 && sb.charAt(len-4)=='\r' && sb.charAt(len-3)=='\n'
-                        && sb.charAt(len-2)=='\r' && sb.charAt(len-1)=='\n') break;
-            }
-            String key = null;
-            for (String line : sb.toString().split("\r\n"))
-                if (line.startsWith("Sec-WebSocket-Key:"))
-                    key = line.substring("Sec-WebSocket-Key:".length()).trim();
-            String accept = Base64.getEncoder().encodeToString(
-                MessageDigest.getInstance("SHA-1")
-                    .digest((key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11").getBytes()));
-            OutputStream out = s.getOutputStream();
-            out.write(("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\n"
-                + "Connection: Upgrade\r\nSec-WebSocket-Accept: " + accept + "\r\n\r\n").getBytes());
-            out.flush();
+            // Handshake
+            io.quarkmind.sc2.SC2WebSocketCodec.performServerHandshake(
+                s.getInputStream(), s.getOutputStream());
 
             // Read ping frame
-            int b0 = rawIn.read(); int b1 = rawIn.read();
-            boolean masked = (b1 & 0x80) != 0;
-            int len = b1 & 0x7F;
-            byte[] mask = masked ? rawIn.readNBytes(4) : new byte[0];
-            byte[] payload = rawIn.readNBytes(len);
-            if (masked) for (int i = 0; i < payload.length; i++) payload[i] ^= mask[i % 4];
+            InputStream rawIn = s.getInputStream();
+            byte[] payload = io.quarkmind.sc2.SC2WebSocketCodec.readFrame(rawIn);
 
             // Build ping response
             Sc2Api.Response resp = Sc2Api.Response.newBuilder()
@@ -600,6 +540,7 @@ class QuarkusSC2TransportTest {
             byte[] respBytes = resp.toByteArray();
 
             // Send as TWO fragments: FIN=0 binary (part1) + FIN=1 continuation (part2)
+            OutputStream out = s.getOutputStream();
             int half = Math.max(1, respBytes.length / 2);
             byte[] part1 = java.util.Arrays.copyOfRange(respBytes, 0, half);
             byte[] part2 = java.util.Arrays.copyOfRange(respBytes, half, respBytes.length);

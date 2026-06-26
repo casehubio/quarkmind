@@ -10,7 +10,7 @@ public class RaceModelFactory {
 
     private RaceModelFactory() {}
 
-    static RaceModel forRace(final Race race) {
+    public static RaceModel forRace(final Race race) {
         return switch (race) {
             case PROTOSS -> new ProtossRaceModel();
             case TERRAN  -> new TerranRaceModel();

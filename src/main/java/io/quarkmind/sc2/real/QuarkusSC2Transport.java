@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.*;
  * loop virtual thread. {@link #quit()} is safe from any thread — it sets a flag
  * and interrupts.
  */
-@IfBuildProfile("sc2")
+@IfBuildProfile(anyOf = {"sc2", "emulated-sc2"})
 @ApplicationScoped
 public class QuarkusSC2Transport {
 
@@ -48,25 +48,25 @@ public class QuarkusSC2Transport {
     // ---------------------------------------------------------------------------
 
     @ConfigProperty(name = "starcraft.sc2.port",                     defaultValue = "8168")
-    int sc2Port;
+    public int sc2Port;
 
     @ConfigProperty(name = "starcraft.sc2.map",                      defaultValue = "TorchesAIE_v4")
-    String mapName;
+    public String mapName;
 
     @ConfigProperty(name = "starcraft.sc2.difficulty",               defaultValue = "VERY_EASY")
-    String difficultyStr;
+    public String difficultyStr;
 
     @ConfigProperty(name = "starcraft.sc2.ai.race",                  defaultValue = "RANDOM")
-    String aiRaceStr;
+    public String aiRaceStr;
 
     @ConfigProperty(name = "starcraft.sc2.race",                     defaultValue = "PROTOSS")
-    String botRaceStr;
+    public String botRaceStr;
 
     @ConfigProperty(name = "starcraft.sc2.connect.retry",            defaultValue = "60")
-    int connectRetryCount;
+    public int connectRetryCount;
 
     @ConfigProperty(name = "starcraft.sc2.connect.retry-interval-ms", defaultValue = "5000")
-    int connectRetryIntervalMs;
+    public int connectRetryIntervalMs;
 
     // ---------------------------------------------------------------------------
     // Thread / lifecycle state
@@ -76,8 +76,8 @@ public class QuarkusSC2Transport {
     private volatile boolean running = false;
     private final AtomicBoolean quitting = new AtomicBoolean(false);
 
-    /** Package-private for testing — skip SC2 process launch when true. */
-    boolean skipProcessLaunch = false;
+    @ConfigProperty(name = "starcraft.sc2.skip-launch", defaultValue = "false")
+    public boolean skipProcessLaunch;
 
     // ---------------------------------------------------------------------------
     // Socket / I/O state (owned by game loop virtual thread after connect())
@@ -101,7 +101,8 @@ public class QuarkusSC2Transport {
             if (!skipProcessLaunch) launchSC2();
             tcpProbe(sc2Port);
             openSocket(sc2Port);
-            performWebSocketHandshake(sc2Port);
+            io.quarkmind.sc2.SC2WebSocketCodec.performClientHandshake(
+                socketOut, socket.getInputStream(), sc2Port);
             startFrameReader();
             Sc2Api.Response pong = sendSync(
                 Sc2Api.Request.newBuilder().setPing(Sc2Api.RequestPing.getDefaultInstance()).build(),
@@ -329,7 +330,7 @@ public class QuarkusSC2Transport {
             throws IOException, InterruptedException, TimeoutException {
         byte[] payload = request.toByteArray();
         synchronized (socketOut) {
-            socketOut.write(encodeClientFrame(payload));
+            socketOut.write(io.quarkmind.sc2.SC2WebSocketCodec.encodeClientFrame(payload));
             socketOut.flush();
         }
         byte[] responseBytes = responseQueue.poll(timeout.toMillis(), TimeUnit.MILLISECONDS);
@@ -341,35 +342,6 @@ public class QuarkusSC2Transport {
         return response;
     }
 
-    private static final java.security.SecureRandom SECURE_RANDOM = new java.security.SecureRandom();
-
-    /**
-     * Encode a WebSocket binary frame with masking (client→server, RFC 6455 §5.3).
-     * Handles all three length encodings: 1-byte (0–125), 2-byte (126–65535), 8-byte (65536+).
-     */
-    private static byte[] encodeClientFrame(byte[] payload) {
-        byte[] mask = new byte[4];
-        SECURE_RANDOM.nextBytes(mask); // RFC 6455 §10.3: mask must be unpredictable
-        byte[] masked = payload.clone();
-        for (int i = 0; i < masked.length; i++) masked[i] ^= mask[i % 4];
-
-        ByteArrayOutputStream frame = new ByteArrayOutputStream(10 + payload.length);
-        frame.write(0x82); // FIN=1, opcode=2 (binary)
-        if (payload.length < 126) {
-            frame.write(0x80 | payload.length);
-        } else if (payload.length <= 65535) {
-            frame.write(0x80 | 126);
-            frame.write((payload.length >> 8) & 0xFF);
-            frame.write(payload.length & 0xFF);
-        } else {
-            frame.write(0x80 | 127);
-            long l = payload.length;
-            for (int i = 7; i >= 0; i--) frame.write((int) ((l >> (8 * i)) & 0xFF));
-        }
-        frame.write(mask, 0, 4);
-        frame.write(masked, 0, masked.length);
-        return frame.toByteArray();
-    }
 
     // ---------------------------------------------------------------------------
     // Background frame reader (separate virtual thread)
@@ -380,42 +352,15 @@ public class QuarkusSC2Transport {
         try { in = socket.getInputStream(); } catch (IOException e) { return; }
 
         readerThread = Thread.ofVirtual().name("sc2-frame-reader").start(() -> {
-            ByteArrayOutputStream msgBuf = new ByteArrayOutputStream();
             try {
                 while (!socket.isClosed()) {
-                    int b0 = in.read(); if (b0 < 0) break;
-                    int b1 = in.read(); if (b1 < 0) break;
-                    boolean masked = (b1 & 0x80) != 0;
-                    int len = b1 & 0x7F;
-                    if (len == 126) {
-                        int h = in.read(), l = in.read();
-                        if (h < 0 || l < 0) break;
-                        len = (h << 8) | l;
-                    } else if (len == 127) {
-                        long llen = 0;
-                        for (int i = 0; i < 8; i++) {
-                            int b = in.read();
-                            if (b < 0) { llen = -1; break; }
-                            llen = (llen << 8) | b;
-                        }
-                        if (llen < 0) break;
-                        len = (int) llen; // SC2 frames fit in int range
-                    }
-                    byte[] maskBytes = masked ? in.readNBytes(4) : new byte[0];
-                    byte[] chunk = in.readNBytes(len);
-                    if (masked) for (int i = 0; i < chunk.length; i++) chunk[i] ^= maskBytes[i % 4];
-
-                    msgBuf.write(chunk);
-                    boolean fin = (b0 & 0x80) != 0;
-                    if (fin) {
-                        byte[] complete = msgBuf.toByteArray();
-                        msgBuf.reset();
-                        try {
-                            responseQueue.put(complete);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            break;
-                        }
+                    byte[] frame = io.quarkmind.sc2.SC2WebSocketCodec.readFrame(in);
+                    if (frame == null) break; // EOF
+                    try {
+                        responseQueue.put(frame);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
                     }
                 }
             } catch (IOException e) {
@@ -434,36 +379,6 @@ public class QuarkusSC2Transport {
         socketOut = socket.getOutputStream();
     }
 
-    private void performWebSocketHandshake(int port) throws Exception {
-        byte[] keyBytes = new byte[16];
-        new java.util.Random().nextBytes(keyBytes);
-        String wsKey = Base64.getEncoder().encodeToString(keyBytes);
-
-        String request = "GET /sc2api HTTP/1.1\r\n"
-            + "Host: 127.0.0.1:" + port + "\r\n"
-            + "Upgrade: websocket\r\n"
-            + "Connection: Upgrade\r\n"
-            + "Sec-WebSocket-Key: " + wsKey + "\r\n"
-            + "Sec-WebSocket-Version: 13\r\n"
-            + "\r\n";
-        socketOut.write(request.getBytes());
-        socketOut.flush();
-
-        // Read HTTP 101 response — byte-by-byte to avoid consuming WebSocket frame data
-        InputStream in = socket.getInputStream();
-        StringBuilder sb = new StringBuilder();
-        int b;
-        while ((b = in.read()) >= 0) {
-            sb.append((char) b);
-            int len = sb.length();
-            if (len >= 4
-                    && sb.charAt(len - 4) == '\r' && sb.charAt(len - 3) == '\n'
-                    && sb.charAt(len - 2) == '\r' && sb.charAt(len - 1) == '\n') break;
-        }
-        if (!sb.toString().contains("101")) {
-            throw new IOException("[SC2] WebSocket upgrade failed: " + sb.toString().split("\r\n")[0]);
-        }
-    }
 
     private void closeSocket() {
         if (readerThread != null) readerThread.interrupt();

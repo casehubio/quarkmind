@@ -247,6 +247,7 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 |---|---|---|
 | `%mock` (default) | No | Development and unit testing against SimulatedGame |
 | `%emulated` | No | Physics simulation — EmulatedGame with real mechanics (movement, combat, enemy active AI) |
+| `%emulated-sc2` | No | Full-stack testing — SC2 protocol over EmulatedGame physics |
 | `%replay` | No | Agent loop against a real `.SC2Replay` — observe-only |
 | `%sc2` | Yes | Real SC2 integration |
 | `%test` | No | @QuarkusTest — scheduler disabled |

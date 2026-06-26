@@ -26,7 +26,7 @@ import java.util.List;
  * <p>Config properties (sc2.port, map, difficulty, ai.race, race, retry) are owned by the
  * transport. {@code RealSC2Engine} is a thin lifecycle coordinator.
  */
-@IfBuildProfile("sc2")
+@IfBuildProfile(anyOf = {"sc2", "emulated-sc2"})
 @ApplicationScoped
 public class RealSC2Engine implements SC2Engine {
 

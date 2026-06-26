@@ -19,9 +19,9 @@ import java.util.*;
  * deduplicated via {@code pendingBuildings} — a prereq that is already pending or
  * already built is never re-queued.
  *
- * <p>Package-private: wired by {@link EmulatedGame} which is in the same package.
+ * <p>Public visibility: wired by {@link EmulatedGame} and {@link io.quarkmind.sc2.emulated.server.EmulatedSC2Server}.
  */
-class EnemyBehavior implements PlayerBehavior {
+public class EnemyBehavior implements PlayerBehavior {
 
     private static final Logger log = Logger.getLogger(EnemyBehavior.class);
 
@@ -49,7 +49,7 @@ class EnemyBehavior implements PlayerBehavior {
     // Staging area — units that have retreated; re-deployed each wave. Package-private for EmulatedGame.
     final List<Unit> stagingArea = new ArrayList<>();
 
-    EnemyBehavior(EnemyStrategy strategy, PlayerState enemy, TechTree techTree) {
+    public EnemyBehavior(EnemyStrategy strategy, PlayerState enemy, TechTree techTree) {
         this.strategy  = strategy;
         this.enemy     = enemy;
         this.techTree  = techTree;

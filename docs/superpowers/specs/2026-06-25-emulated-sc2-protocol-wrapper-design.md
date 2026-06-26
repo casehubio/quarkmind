@@ -273,11 +273,14 @@ mvn quarkus:dev -Dquarkus.profile=emulated-sc2
 | `SC2StartupBean.java` | Profile gate |
 | `MockStartupBean.java` | Add `"emulated-sc2"` to exclusion |
 | `TerrainGrid.java` | Add `toPathingGrid()` instance method |
+| `EmulatedGame.java` | Visibility widened for cross-package access from EmulatedSC2Server |
+| `EnemyBehavior.java` | Visibility widened for cross-package access from EmulatedSC2Server |
+| `RaceModelFactory.java` | Visibility widened for cross-package access from EmulatedSC2Server |
 | `application.properties` | `%emulated-sc2.*` properties |
 
 ### Unchanged
 
-`EmulatedGame`, `EmulatedEngine`, `ObservationTranslator`, `ActionTranslator`, `SC2FrameCallback`, `AgentOrchestrator`, all plugins.
+`EmulatedEngine`, `ObservationTranslator`, `ActionTranslator`, `SC2FrameCallback`, `AgentOrchestrator`, all plugins.
 
 ## 6. Testing
 

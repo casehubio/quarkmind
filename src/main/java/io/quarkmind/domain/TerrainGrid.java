@@ -74,4 +74,24 @@ public final class TerrainGrid {
         }
         return new TerrainGrid(width, height, grid);
     }
+
+    /**
+     * Encodes this grid's walkability into SC2's bit-packed pathing grid format.
+     * Inverse of {@link #fromPathingGrid(byte[], int, int)}.
+     * Walkable tiles (LOW, RAMP, HIGH) encode as 1; WALL encodes as 0.
+     * Bit encoding: index = x + y*width; bit = (data[index/8] >> (7 - index%8)) & 1
+     */
+    public byte[] toPathingGrid() {
+        int totalBits = width * height;
+        byte[] data = new byte[(totalBits + 7) / 8];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (isWalkable(x, y)) {
+                    int index = x + y * width;
+                    data[index / 8] |= (byte) (1 << (7 - index % 8));
+                }
+            }
+        }
+        return data;
+    }
 }

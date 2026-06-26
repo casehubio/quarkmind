@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * enqueues, and the game loop virtual thread drains. ConcurrentLinkedQueue is safe
  * for this single-producer / single-consumer pattern.
  */
-@IfBuildProfile("sc2")
+@IfBuildProfile(anyOf = {"sc2", "emulated-sc2"})
 @ApplicationScoped
 public class SC2BotAgent implements SC2FrameCallback {
 

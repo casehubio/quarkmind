@@ -95,6 +95,47 @@ class TerrainGridTest {
         assertThat(g.isWalkable(7, 0)).isFalse();  // bit 0 = 0
     }
 
+    // ---- toPathingGrid ----
+
+    @Test
+    void toPathingGrid_roundTripsWithFromPathingGrid() {
+        TerrainGrid original = TerrainGrid.emulatedMap();
+        byte[] encoded = original.toPathingGrid();
+
+        // 64×64 at 1 bpp = 64*64/8 = 512 bytes
+        assertThat(encoded).hasSize(512);
+
+        TerrainGrid roundTripped = TerrainGrid.fromPathingGrid(encoded, 64, 64);
+        for (int x = 0; x < 64; x++) {
+            for (int y = 0; y < 64; y++) {
+                assertThat(roundTripped.isWalkable(x, y))
+                    .as("walkability at (%d,%d)", x, y)
+                    .isEqualTo(original.isWalkable(x, y));
+            }
+        }
+    }
+
+    @Test
+    void toPathingGrid_wallTilesEncodeAsZero_walkableTilesEncodeAsOne() {
+        TerrainGrid grid = TerrainGrid.emulatedMap();
+        byte[] encoded = grid.toPathingGrid();
+
+        // y=18, x=5 is WALL → bit should be 0
+        int wallIndex = 5 + 18 * 64;
+        int wallBit = (encoded[wallIndex / 8] >> (7 - wallIndex % 8)) & 1;
+        assertThat(wallBit).as("wall tile (5,18)").isEqualTo(0);
+
+        // y=18, x=12 is RAMP → bit should be 1
+        int rampIndex = 12 + 18 * 64;
+        int rampBit = (encoded[rampIndex / 8] >> (7 - rampIndex % 8)) & 1;
+        assertThat(rampBit).as("ramp tile (12,18)").isEqualTo(1);
+
+        // y=10, x=30 is LOW → bit should be 1
+        int lowIndex = 30 + 10 * 64;
+        int lowBit = (encoded[lowIndex / 8] >> (7 - lowIndex % 8)) & 1;
+        assertThat(lowBit).as("low tile (30,10)").isEqualTo(1);
+    }
+
     // ---- movementCost ----
 
     private TerrainGrid single(TerrainGrid.Height h) {

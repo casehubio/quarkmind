@@ -15,7 +15,7 @@ import org.jboss.logging.Logger;
  * it injects {@link AgentOrchestrator}, not a specific engine, so the active profile's engine
  * bean is resolved by CDI automatically.
  */
-@UnlessBuildProfile(anyOf = {"sc2", "replay", "test", "prod"})
+@UnlessBuildProfile(anyOf = {"sc2", "emulated-sc2", "replay", "test", "prod"})
 @ApplicationScoped
 public class MockStartupBean {
     private static final Logger log = Logger.getLogger(MockStartupBean.class);
