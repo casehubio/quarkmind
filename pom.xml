@@ -8,7 +8,6 @@
         <version>0.2-SNAPSHOT</version>
     </parent>
 
-    <groupId>io.casehub</groupId>
     <artifactId>quarkmind-agent</artifactId>
     <version>0.2-SNAPSHOT</version>
 
@@ -17,7 +16,13 @@
              contacting GitHub Packages for casehub-parent — prevents a Bearer
              token from leaking into the Maven Central request and causing 403.
              Must be kept in sync with casehub-parent's quarkus.platform.version. -->
-        <quarkus.platform.version>3.32.2</quarkus.platform.version>
+        <java.version>21</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.quarkus.platform>3.32.2</version.quarkus.platform>
+        <version.io.casehub>0.2-SNAPSHOT</version.io.casehub>
+        <jandex-maven-plugin.version>3.3.1</jandex-maven-plugin.version>
+
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <drools.version>10.1.0</drools.version>
