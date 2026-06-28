@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.quarkmind</groupId>
+
+    <parent>
+        <groupId>io.casehub</groupId>
+        <artifactId>casehub-parent</artifactId>
+        <version>0.2-SNAPSHOT</version>
+    </parent>
+
+    <groupId>io.casehub</groupId>
     <artifactId>quarkmind-agent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
 
     <properties>
-        <compiler-plugin.version>3.15.0</compiler-plugin.version>
-        <maven.compiler.release>21</maven.compiler.release>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Pinned locally so Maven resolves quarkus-bom from central before
+             contacting GitHub Packages for casehub-parent — prevents a Bearer
+             token from leaking into the Maven Central request and causing 403.
+             Must be kept in sync with casehub-parent's quarkus.platform.version. -->
+        <quarkus.platform.version>3.32.2</quarkus.platform.version>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.34.2</quarkus.platform.version>
         <drools.version>10.1.0</drools.version>
         <skipITs>true</skipITs>
-        <surefire-plugin.version>3.5.4</surefire-plugin.version>
-        <assertj.version>3.26.3</assertj.version>
     </properties>
 
     <dependencyManagement>
@@ -78,34 +83,29 @@
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-ledger-api</artifactId>
-            <version>0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-ledger</artifactId>
-            <version>0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-ledger-memory</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <version>${casehub.version}</version>
         </dependency>
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-platform-api</artifactId>
-            <version>0.2-SNAPSHOT</version>
         </dependency>
         <!-- casehub-platform: MockPreferenceProvider @DefaultBean — needed for test/mock/emulated profiles -->
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-platform</artifactId>
-            <version>0.2-SNAPSHOT</version>
         </dependency>
         <!-- casehub-engine-api: CaseContext interface — Phase 1 migration (casehub-core stays until Phase 2) -->
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-engine-api</artifactId>
-            <version>0.2-SNAPSHOT</version>
         </dependency>
         <!-- casehub-engine-blackboard excluded: its CDI beans inject engine SPIs (EventLogRepository,
              JobScheduler etc.) that are not on the classpath — 34 deployment failures in @QuarkusTest.
@@ -114,12 +114,11 @@
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-qhorus-api</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <version>${casehub.version}</version>
         </dependency>
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-qhorus</artifactId>
-            <version>0.2-SNAPSHOT</version>
         </dependency>
         <!-- H2 JDBC driver for the qhorus named datasource (db-kind=h2 in application.properties) -->
         <dependency>
@@ -175,7 +174,6 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -239,14 +237,12 @@
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${compiler-plugin.version}</version>
                 <configuration>
                     <parameters>true</parameters>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire-plugin.version}</version>
                 <configuration>
                     <argLine>@{argLine}</argLine>
                     <excludedGroups>benchmark,browser,report,diagnostic</excludedGroups>
@@ -258,7 +254,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${surefire-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
