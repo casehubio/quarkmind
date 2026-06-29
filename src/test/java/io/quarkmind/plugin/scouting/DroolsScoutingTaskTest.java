@@ -1,15 +1,93 @@
 package io.quarkmind.plugin.scouting;
 
+import io.casehub.blocks.summarisation.EventStreamBus;
+import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.coordination.PropagationContext;
+import io.casehub.core.CaseFile;
+import io.casehub.persistence.memory.InMemoryCaseFileRepository;
+import io.quarkmind.agent.CaseFileContext;
+import io.quarkmind.agent.GameSession;
+import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agent.ScoutingIntelBroker;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelType;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
+import io.quarkmind.sc2.IntentQueue;
+import org.drools.ruleunits.api.RuleUnit;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import jakarta.enterprise.inject.Vetoed;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for DroolsScoutingTask pure-logic methods.
  * Same package as production class to access package-private static helpers.
  */
 class DroolsScoutingTaskTest {
+
+    private DroolsScoutingTask task;
+    private TestBroker broker;
+    private IntentQueue intentQueue;
+    private GameSession gameSession;
+
+    @BeforeEach
+    void setup() {
+        // Construct dependencies manually (no CDI)
+        RuleUnit<ScoutingRuleUnit> ruleUnit = mock(RuleUnit.class);
+        ScoutingSessionManager sessionManager = new ScoutingSessionManager();
+        intentQueue = new IntentQueue();
+        gameSession = mock(GameSession.class);
+        when(gameSession.id()).thenReturn(UUID.randomUUID());
+
+        // Test broker with real EventStreamBus
+        broker = new TestBroker();
+
+        task = new DroolsScoutingTask(ruleUnit, sessionManager, intentQueue);
+        task.gameSession = gameSession;
+        task.broker = broker;
+        task.decisionEvents = mock(jakarta.enterprise.event.Event.class);
+        task.postureClassified = mock(jakarta.enterprise.event.Event.class);
+        task.objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        task.messageService = mock(io.casehub.qhorus.runtime.message.MessageService.class);
+        task.advisoryEnabled = false; // Disable advisory to avoid CEP gate
+    }
+
+    /** Test-friendly broker that has a real EventStreamBus but minimal other state. Not a CDI bean. */
+    @Vetoed
+    private static class TestBroker extends ScoutingIntelBroker {
+        private final EventStreamBus<ScoutingIntelPayload> testBus = new EventStreamBus<>();
+
+        @Override
+        public EventStreamBus<ScoutingIntelPayload> level1Bus() {
+            return testBus;
+        }
+
+        @Override
+        public boolean isSubscribed(ScoutingIntelType t) {
+            // Subscribe only to passive intel (not CEP) to avoid triggering Drools rules
+            return t == ScoutingIntelType.THREAT_POSITION || t == ScoutingIntelType.ARMY_SIZE;
+        }
+
+        @Override
+        public UUID channelId() {
+            return UUID.randomUUID();
+        }
+    }
 
     // ---- estimatedEnemyBase: SC2 map (256x256) ----
 
@@ -114,5 +192,70 @@ class DroolsScoutingTaskTest {
     void shouldDispatchArmySize_deltaEqualsThreshold_returnsTrue() {
         // >= semantics: delta of exactly 1 with minDelta=1 should dispatch
         assertThat(DroolsScoutingTask.shouldDispatchArmySize(5, 6, 1)).isTrue();
+    }
+
+    // ---- L1 event stream publishing ----
+
+    @Test
+    void publishIntel_publishesToLevel1Bus() {
+        List<LevelEvent<ScoutingIntelPayload>> received = new ArrayList<>();
+        broker.level1Bus().subscribe(p -> true, received::add);
+
+        // Create a game state with enemy units to trigger threat position intel
+        CaseFile cf = caseFile(List.of(enemy(10, 10)), List.of(), 100L);
+        task.execute(cf);
+
+        // Verify L1 events were published
+        assertThat(received).isNotEmpty();
+        assertThat(received.get(0).payload()).isInstanceOf(ScoutingIntelPayload.class);
+        assertThat(received.get(0).level().name()).isEqualTo("intel");
+        assertThat(received.get(0).level().ordinal()).isEqualTo(1);
+        assertThat(received.get(0).timestamp()).isEqualTo(100L);
+    }
+
+    @Test
+    void publishIntel_publishesMultipleTransitions() {
+        List<LevelEvent<ScoutingIntelPayload>> received = new ArrayList<>();
+        broker.level1Bus().subscribe(p -> true, received::add);
+
+        // First tick: 2 enemies
+        CaseFile cf1 = caseFile(List.of(enemy(10, 10), enemy(20, 20)), List.of(), 100L);
+        task.execute(cf1);
+
+        int firstBatch = received.size();
+        assertThat(firstBatch).isGreaterThan(0);
+
+        // Second tick: 5 enemies (army size change)
+        CaseFile cf2 = caseFile(
+            List.of(enemy(10, 10), enemy(20, 20), enemy(30, 30), enemy(40, 40), enemy(50, 50)),
+            List.of(),
+            200L);
+        task.execute(cf2);
+
+        // Should have received additional events
+        assertThat(received.size()).isGreaterThan(firstBatch);
+
+        // All events should have level "intel" level 1
+        assertThat(received).allMatch(e -> e.level().name().equals("intel") && e.level().ordinal() == 1);
+    }
+
+    // ---- Test helpers ----
+
+    private CaseFile caseFile(List<Unit> enemies, List<Unit> workers, long frame) {
+        var cf = new InMemoryCaseFileRepository().create("starcraft-game", Map.of(), PropagationContext.createRoot());
+        cf.put(QuarkMindCaseFile.ENEMY_UNITS,  enemies);
+        cf.put(QuarkMindCaseFile.WORKERS,      workers);
+        cf.put(QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus()));
+        cf.put(QuarkMindCaseFile.GAME_FRAME,   frame);
+        cf.put(QuarkMindCaseFile.READY,        Boolean.TRUE);
+        return cf;
+    }
+
+    private Unit enemy(float x, float y) {
+        return new Unit("e-" + System.nanoTime(), UnitType.ZEALOT, new Point2d(x, y), 100, 100, 50, 50, 0, 0);
+    }
+
+    private Building nexus() {
+        return new Building("n-0", BuildingType.NEXUS, new Point2d(8, 8), 1500, 1500, true);
     }
 }

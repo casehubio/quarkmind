@@ -2,6 +2,7 @@ package io.quarkmind.agent;
 
 import io.casehub.coordination.CaseEngine;
 import io.casehub.core.CaseFile;
+import io.quarkmind.agent.plugin.SummarisationTickable;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import io.quarkmind.sc2.SC2Engine;
@@ -15,10 +16,11 @@ class GameTickExecutor {
 
     private static final Logger log = Logger.getLogger(GameTickExecutor.class);
 
-    @Inject SC2Engine            engine;
-    @Inject GameStateTranslator  translator;
-    @Inject CaseEngine           caseEngine;
-    @Inject PluginDispatchBroker pluginDispatchBroker;
+    @Inject SC2Engine              engine;
+    @Inject GameStateTranslator    translator;
+    @Inject CaseEngine             caseEngine;
+    @Inject PluginDispatchBroker   pluginDispatchBroker;
+    @Inject SummarisationTickable  summarisationLifecycle;
 
     AgentOrchestrator.TickResult execute() {
         long t0 = System.currentTimeMillis();
@@ -38,6 +40,9 @@ class GameTickExecutor {
                        gameState.gameFrame(), e.getMessage());
         }
         long t2 = System.currentTimeMillis();        // plugins end: createAndSolve
+
+        // Summarisation: tick L2→L3 and L3→L4 runners (after CaseEngine, before dispatch)
+        summarisationLifecycle.tick(gameState.gameFrame());
 
         // dispatch() reads IntentQueue (plugin-populated), not CaseFile — safe even on failed solve
         engine.dispatch();

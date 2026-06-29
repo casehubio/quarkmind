@@ -9,6 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import io.quarkmind.agent.plugin.EconomicsTask;
+import io.quarkmind.agent.plugin.MomentDetectionSeam;
 import io.quarkmind.agent.plugin.ScoutingTask;
 import io.quarkmind.agent.plugin.StrategyTask;
 import io.quarkmind.agent.plugin.TacticsTask;
@@ -40,6 +41,7 @@ public class QuarkMindTaskRegistrar {
     // L6: all three StrategyTask implementations compete; trust routing selects one per game
     @Inject @Any Instance<StrategyTask> strategyTasks;
     @Inject @CaseType("starcraft-game") TacticsTask   tacticsTask;
+    @Inject @CaseType("starcraft-game") MomentDetectionSeam momentDetectionTask;
 
     @Inject TaskDefinitionRegistry registry;
 
@@ -48,7 +50,8 @@ public class QuarkMindTaskRegistrar {
         List<TaskDefinition> singletons = List.of(
             (TaskDefinition) economicsTask,
             (TaskDefinition) scoutingTask,
-            (TaskDefinition) tacticsTask
+            (TaskDefinition) tacticsTask,
+            (TaskDefinition) momentDetectionTask
         );
         for (TaskDefinition td : singletons) {
             registerTask(td);

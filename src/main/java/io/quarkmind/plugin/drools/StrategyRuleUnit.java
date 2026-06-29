@@ -6,6 +6,8 @@ import org.drools.ruleunits.api.RuleUnitData;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.Resource;
 import io.quarkmind.domain.Unit;
+import io.quarkmind.plugin.summarisation.GameMoment;
+import io.quarkmind.plugin.summarisation.GamePhase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +65,18 @@ public class StrategyRuleUnit implements RuleUnitData {
     private final DataStore<Boolean> timingStore  = DataSource.createStore();
 
     /**
+     * Level 2 game moments from MomentDetectionTask.
+     * Populated by DroolsStrategyTask from accumulated moment events.
+     */
+    private final DataStore<GameMoment> momentStore = DataSource.createStore();
+
+    /**
+     * Level 3 game phase from SummarisationLifecycle.
+     * Single-element store (current phase only).
+     */
+    private final DataStore<GamePhase>  phaseStore  = DataSource.createStore();
+
+    /**
      * Build decisions written by rules. Strings from the set
      * {@code "GATEWAY", "ASSIMILATOR", "CYBERNETICS_CORE", "STALKER:<gatewayTag>"}.
      * Java handles budget enforcement and intent dispatch after fire().
@@ -75,12 +89,14 @@ public class StrategyRuleUnit implements RuleUnitData {
      */
     private final List<String> strategyDecisions = new ArrayList<>();
 
-    public DataStore<Unit>     getBuilders()         { return builders; }
-    public DataStore<Building> getBuildings()        { return buildings; }
-    public DataStore<Unit>     getArmy()             { return army; }
-    public DataStore<Resource> getGeysers()          { return geysers; }
-    public DataStore<String>   getPostureStore()     { return postureStore; }
-    public DataStore<Boolean>  getTimingStore()      { return timingStore; }
-    public List<String>        getBuildDecisions()   { return buildDecisions; }
-    public List<String>        getStrategyDecisions(){ return strategyDecisions; }
+    public DataStore<Unit>       getBuilders()         { return builders; }
+    public DataStore<Building>   getBuildings()        { return buildings; }
+    public DataStore<Unit>       getArmy()             { return army; }
+    public DataStore<Resource>   getGeysers()          { return geysers; }
+    public DataStore<String>     getPostureStore()     { return postureStore; }
+    public DataStore<Boolean>    getTimingStore()      { return timingStore; }
+    public DataStore<GameMoment> getMomentStore()      { return momentStore; }
+    public DataStore<GamePhase>  getPhaseStore()       { return phaseStore; }
+    public List<String>          getBuildDecisions()   { return buildDecisions; }
+    public List<String>          getStrategyDecisions(){ return strategyDecisions; }
 }

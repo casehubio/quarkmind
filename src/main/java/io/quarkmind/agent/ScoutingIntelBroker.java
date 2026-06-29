@@ -1,5 +1,6 @@
 package io.quarkmind.agent;
 
+import io.casehub.blocks.summarisation.EventStreamBus;
 import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
 import io.casehub.platform.api.preferences.SettingsScope;
@@ -39,6 +40,8 @@ public class ScoutingIntelBroker {
 
     // Typed in-memory store — synchronous game-loop writes; ConcurrentHashMap for QA endpoint reads
     private final Map<ScoutingIntelType, ScoutingIntelPayload> latest = new ConcurrentHashMap<>();
+
+    private final EventStreamBus<ScoutingIntelPayload> level1Bus = new EventStreamBus<>();
 
     private UUID channelId;
 
@@ -93,11 +96,27 @@ public class ScoutingIntelBroker {
             .map(clazz::cast);
     }
 
-    /** Clears all stored intel on game restart. */
-    void onGameStarted(@Observes GameStarted event) { latest.clear(); }
+    /**
+     * Clears all stored intel on game restart.
+     *
+     * <p>NOTE: Does NOT clear {@code level1Bus} subscriptions — they are application-scoped
+     * and persist across games. {@link io.quarkmind.plugin.summarisation.MomentDetectionTask}
+     * subscribes in {@code @PostConstruct}; clearing subscriptions would orphan the L1→L2 pipeline.
+     */
+    void onGameStarted(@Observes GameStarted event) {
+        latest.clear();
+    }
 
-    /** Test isolation — clears all stored intel. Called from @BeforeEach in @QuarkusTest classes. */
-    public void clearLatest() { latest.clear(); }
+    /**
+     * Test isolation — clears all stored intel.
+     * Called from {@code @BeforeEach} in {@code @QuarkusTest} classes.
+     *
+     * <p>NOTE: Does NOT clear {@code level1Bus} subscriptions for the same reason as
+     * {@link #onGameStarted} — subscriptions are tied to CDI lifecycle, not game lifecycle.
+     */
+    public void clearLatest() {
+        latest.clear();
+    }
 
     /** Hot-reload subscription union (#178) — called from QA endpoint on HTTP thread. */
     public void refreshAll() {
@@ -115,7 +134,8 @@ public class ScoutingIntelBroker {
         return Set.copyOf(result);
     }
 
-    public UUID channelId()                          { return channelId; }
-    public boolean isSubscribed(ScoutingIntelType t) { return activeTypes.contains(t); }
-    public Set<ScoutingIntelType> activeTypes()      { return activeTypes; }
+    public UUID channelId()                                 { return channelId; }
+    public boolean isSubscribed(ScoutingIntelType t)        { return activeTypes.contains(t); }
+    public Set<ScoutingIntelType> activeTypes()             { return activeTypes; }
+    public EventStreamBus<ScoutingIntelPayload> level1Bus() { return level1Bus; }
 }

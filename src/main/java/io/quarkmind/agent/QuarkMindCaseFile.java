@@ -29,13 +29,14 @@ public final class QuarkMindCaseFile {
     public static final String ENEMY_BUILD_ORDER       = "agent.intel.enemy.build";
     public static final String TIMING_ATTACK_INCOMING  = "agent.intel.enemy.timing";
     public static final String ENEMY_POSTURE           = "agent.intel.enemy.posture";
+    public static final String MOMENTS_LATEST          = "agent.intel.moments.latest";
 
     /** All known CaseFile/CaseContext keys — used by CaseFileContext bridge (Phase 1). */
     public static final List<String> ALL_KEYS = List.of(
         MINERALS, VESPENE, SUPPLY_USED, SUPPLY_CAP,
         WORKERS, ARMY, MY_BUILDINGS, GEYSERS, ENEMY_UNITS, GAME_FRAME, READY,
         RESOURCE_BUDGET, STRATEGY, CRISIS, ENEMY_ARMY_SIZE,
-        ENEMY_BUILD_ORDER, TIMING_ATTACK_INCOMING, ENEMY_POSTURE,
+        ENEMY_BUILD_ORDER, TIMING_ATTACK_INCOMING, ENEMY_POSTURE, MOMENTS_LATEST,
         STRATEGY_SELECTED_ID
     );
 

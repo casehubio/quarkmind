@@ -20,6 +20,12 @@ import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
+import io.quarkmind.plugin.summarisation.GameMoment;
+import io.quarkmind.plugin.summarisation.GameMomentType;
+import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkmind.plugin.summarisation.MomentBroker;
+import io.quarkmind.plugin.summarisation.MomentConsumer;
+import io.quarkmind.plugin.summarisation.SummarisationLifecycle;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.Point2d;
@@ -33,11 +39,13 @@ import io.quarkmind.sc2.intent.TrainIntent;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitInstance;
 import org.jboss.logging.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -61,7 +69,7 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 @CaseType("starcraft-game")
-public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
+public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, MomentConsumer {
 
     static final Point2d GATEWAY_POS          = new Point2d(17, 18);
     static final Point2d CYBERNETICS_CORE_POS = new Point2d(20, 18);
@@ -76,14 +84,50 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
     @Inject Event<PluginDecisionEvent> decisionEvents;
     @Inject GameSession gameSession;
     @Inject PreferenceProvider preferenceProvider;
+    @Inject Instance<MomentBroker> momentBroker;
+    @Inject Instance<SummarisationLifecycle> summarisationLifecycle;
+
     private volatile String prevStrategy = null;
 
     // Safe default before @PostConstruct fires
     Set<ScoutingIntelType> subscribedTypes = Set.of();
 
+    // Level 2/3 state
+    private final List<GameMoment> pendingMoments = new ArrayList<>();
+    private volatile GamePhase currentPhase = null;
+    private volatile boolean summarisationInitialized = false;
+
     @PostConstruct
     void init() {
         refreshSubscriptions(preferenceProvider.resolve(SettingsScope.root()));
+        // Don't initialize summarisation subscriptions here — causes circular dependency
+        // with MomentBroker. Initialize lazily on first execute() call.
+    }
+
+    private void ensureSummarisationInitialized() {
+        if (!summarisationInitialized) {
+            synchronized (this) {
+                if (!summarisationInitialized) {
+                    // Subscribe to Level 2 moments — auto-discovered by MomentBroker's CDI bridge,
+                    // but we need to capture them for execute() feeding.
+                    // Use Instance<> to break circular dependency: MomentBroker injects consumers,
+                    // consumers inject MomentBroker — lazy resolution via .get() defers until
+                    // both beans are created. Called from execute(), not @PostConstruct.
+                    momentBroker.get().momentBus().subscribe(eventFilter(), e -> {
+                        synchronized (pendingMoments) {
+                            pendingMoments.add(e.payload());
+                        }
+                    });
+
+                    // Subscribe to Level 3 phases
+                    summarisationLifecycle.get().phaseBus().subscribe(p -> true, e -> {
+                        currentPhase = e.payload();
+                    });
+
+                    summarisationInitialized = true;
+                }
+            }
+        }
     }
 
     @Override
@@ -99,6 +143,15 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
     @Override
     public Set<ScoutingIntelType> subscribedIntelTypes() { return subscribedTypes; }
 
+    @Override
+    public Set<GameMomentType> subscribedMomentTypes() {
+        return Set.of(
+            GameMomentType.BATTLE_STARTED,
+            GameMomentType.BATTLE_ENDED,
+            GameMomentType.ECONOMIC_CRISIS,
+            GameMomentType.NEXUS_UNDER_ATTACK);
+    }
+
     @Inject
     public DroolsStrategyTask(RuleUnit<StrategyRuleUnit> ruleUnit, IntentQueue intentQueue,
                                ScoutingIntelBroker broker) {
@@ -110,6 +163,10 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
     /** Resets transition-detection state. Called from @QuarkusTest @BeforeEach to prevent leakage. */
     public void resetPrevStrategy() {
         prevStrategy = null;
+        synchronized (pendingMoments) {
+            pendingMoments.clear();
+        }
+        currentPhase = null;
     }
 
     @Override public String getId()   { return "strategy.drools"; }
@@ -136,6 +193,8 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
     @Override
     @SuppressWarnings("unchecked")
     public void execute(final CaseContext ctx) {
+        ensureSummarisationInitialized();
+
         int armySize = ctx.getOrDefault(QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0);
         // Read posture and timing from broker (Stack 1) — context writes are observability only
         String posture = broker.current(ScoutingIntelType.POSTURE,
@@ -210,6 +269,18 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer {
         army.forEach(data.getArmy()::add);
         buildings.forEach(data.getBuildings()::add);
         firstFreeGeyser(buildings, geysers).ifPresent(data.getGeysers()::add);
+
+        // Feed Level 2 moments
+        synchronized (pendingMoments) {
+            pendingMoments.forEach(data.getMomentStore()::add);
+            pendingMoments.clear();
+        }
+
+        // Feed Level 3 phase (single-element store)
+        if (currentPhase != null) {
+            data.getPhaseStore().add(currentPhase);
+        }
+
         return data;
     }
 

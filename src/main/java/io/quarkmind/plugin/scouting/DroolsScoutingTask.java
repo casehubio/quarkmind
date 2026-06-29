@@ -2,6 +2,8 @@ package io.quarkmind.plugin.scouting;
 
 import io.casehub.annotation.CaseType;
 import io.casehub.api.context.CaseContext;
+import io.casehub.blocks.summarisation.EventLevel;
+import io.casehub.blocks.summarisation.LevelEvent;
 import io.casehub.core.CaseFile;
 import io.quarkmind.agent.CaseFileContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
@@ -66,6 +68,8 @@ public class DroolsScoutingTask implements ScoutingTask {
 
     /** Delay before sending a scout — let the economy stabilise first. */
     public static final int SCOUT_DELAY_TICKS = 20;
+
+    static final EventLevel LEVEL_1 = new EventLevel("intel", 1);
 
     private static final Logger log = Logger.getLogger(DroolsScoutingTask.class);
 
@@ -354,6 +358,7 @@ public class DroolsScoutingTask implements ScoutingTask {
         if (broker.isSubscribed(payload.type())) {
             broker.update(payload);             // Stack 1: in-memory, for plugin consumers
         }
+        broker.level1Bus().publish(new LevelEvent<>(payload, lastFrame, LEVEL_1));
         dispatchToAdvisory(payload);            // Stack 2: Qhorus, for LLM advisors (always)
     }
 

@@ -3,6 +3,9 @@ unit StrategyRuleUnit;
 
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.plugin.summarisation.GameMoment;
+import io.quarkmind.plugin.summarisation.GameMomentType;
+import io.quarkmind.plugin.summarisation.GamePhase;
 
 // ---------------------------------------------------------------------------
 // Build Order Rules (salience 100..70)
@@ -94,6 +97,34 @@ when
     not /postureStore[ this.equals("ALL_IN") ]
     accumulate(
         /army[ this.type() == UnitType.STALKER ];
+        $count : count();
+        $count >= 4
+    )
+then
+    strategyDecisions.add("ATTACK");
+end
+
+// ---------------------------------------------------------------------------
+// Level 2/3 Integration — Moment and Phase-Aware Strategy (salience 220..180)
+// Consumes GameMoment (Level 2) and GamePhase (Level 3) events.
+// Higher salience than existing posture rules to prioritize urgent moments.
+// ---------------------------------------------------------------------------
+
+rule "Strategy: Defend — Nexus Under Attack Moment"
+    salience 220
+when
+    /momentStore[ this.type() == GameMomentType.NEXUS_UNDER_ATTACK ]
+then
+    strategyDecisions.add("DEFEND");
+end
+
+rule "Strategy: Accelerate — Economic Dominance in Skirmish"
+    salience 180
+when
+    /phaseStore[ this.phase().equals("MID_SKIRMISH") ]
+    not /momentStore[ this.type() == GameMomentType.NEXUS_UNDER_ATTACK ]
+    accumulate(
+        /army;
         $count : count();
         $count >= 4
     )

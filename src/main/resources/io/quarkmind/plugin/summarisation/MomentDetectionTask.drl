@@ -1,0 +1,57 @@
+package io.quarkmind.plugin.summarisation;
+unit MomentDetectionRuleUnit;
+
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.ThreatPosition;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.TimingAlert;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.ArmySize;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.PostureUpdate;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.BuildOrder;
+import java.util.Map;
+
+rule "First Contact"
+    salience 200
+when
+    $threat : /intelEvents[this instanceof ThreatPosition]
+then
+    detectedMoments.add(new GameMoment(
+        GameMomentType.FIRST_CONTACT, currentFrame, Map.of()));
+end
+
+rule "Nexus Under Attack"
+    salience 190
+when
+    $timing : /intelEvents[this instanceof TimingAlert, ((TimingAlert)this).incoming() == true]
+    exists /intelEvents[this instanceof ArmySize]
+then
+    detectedMoments.add(new GameMoment(
+        GameMomentType.NEXUS_UNDER_ATTACK, currentFrame, Map.of()));
+end
+
+rule "Battle Started"
+    salience 180
+when
+    /intelEvents[this instanceof TimingAlert, ((TimingAlert)this).incoming() == true]
+then
+    detectedMoments.add(new GameMoment(
+        GameMomentType.BATTLE_STARTED, currentFrame, Map.of()));
+end
+
+rule "Economic Crisis"
+    salience 170
+when
+    /intelEvents[this instanceof PostureUpdate, ((PostureUpdate)this).posture() == "ALL_IN"]
+then
+    detectedMoments.add(new GameMoment(
+        GameMomentType.ECONOMIC_CRISIS, currentFrame, Map.of()));
+end
+
+rule "Tech Transition Detected"
+    salience 160
+when
+    $build : /intelEvents[this instanceof BuildOrder, ((BuildOrder)this).detected() != "UNKNOWN"]
+then
+    detectedMoments.add(new GameMoment(
+        GameMomentType.TECH_TRANSITION_DETECTED, currentFrame,
+        Map.of("build", ((BuildOrder) $build).detected())));
+end
