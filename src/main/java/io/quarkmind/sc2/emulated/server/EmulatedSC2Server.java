@@ -1,6 +1,7 @@
 package io.quarkmind.sc2.emulated.server;
 
 import SC2APIProtocol.Common;
+import SC2APIProtocol.Debug;
 import SC2APIProtocol.Raw;
 import SC2APIProtocol.Sc2Api;
 import com.google.protobuf.ByteString;
@@ -10,7 +11,10 @@ import io.quarkmind.domain.TechTree;
 import io.quarkmind.domain.TerrainGrid;
 import io.quarkmind.qa.EmulatedConfig;
 import io.quarkmind.sc2.SC2WebSocketCodec;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.emulated.*;
+import io.quarkmind.sc2.real.ObservationTranslator;
 import io.quarkmind.sc2.intent.Intent;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.Startup;
@@ -142,6 +146,11 @@ public class EmulatedSC2Server {
             return b.setAction(Sc2Api.ResponseAction.getDefaultInstance())
                     .setStatus(Sc2Api.Status.in_game).build();
         }
+        if (req.hasDebug()) {
+            handleDebug(req.getDebug());
+            return b.setDebug(Sc2Api.ResponseDebug.getDefaultInstance())
+                    .setStatus(Sc2Api.Status.in_game).build();
+        }
         if (req.hasStep()) {
             game.tick();
             return b.setStep(Sc2Api.ResponseStep.getDefaultInstance())
@@ -226,6 +235,26 @@ public class EmulatedSC2Server {
             case TERRAN -> Common.Race.Terran;
             case ZERG -> Common.Race.Zerg;
         };
+    }
+
+    private void handleDebug(Sc2Api.RequestDebug debugReq) {
+        for (Debug.DebugCommand cmd : debugReq.getDebugList()) {
+            if (cmd.hasCreateUnit()) {
+                Debug.DebugCreateUnit create = cmd.getCreateUnit();
+                UnitType type = ObservationTranslator.fromSc2Id(create.getUnitType());
+                Point2d pos = new Point2d(create.getPos().getX(), create.getPos().getY());
+                for (int i = 0; i < create.getQuantity(); i++) {
+                    game.spawnUnit(create.getOwner(), type, pos);
+                }
+                log.infof("[EMULATED-SC2] Debug: spawned %dx %s at (%.0f,%.0f) for player %d",
+                    create.getQuantity(), type, pos.x(), pos.y(), create.getOwner());
+            } else if (cmd.hasGameState()
+                       && cmd.getGameState() == Debug.DebugGameState.all_resources) {
+                game.setMinerals(10000);
+                game.setVespeneForHarness(10000);
+                log.info("[EMULATED-SC2] Debug: set minerals and vespene to 10000");
+            }
+        }
     }
 
     private void handleActions(Sc2Api.RequestAction actionReq) {

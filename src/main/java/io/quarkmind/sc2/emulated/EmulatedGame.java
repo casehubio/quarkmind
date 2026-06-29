@@ -887,4 +887,17 @@ public class EmulatedGame {
             : b);
     }
 
+    public void spawnUnit(int owner, UnitType type, Point2d position) {
+        String tag = nextTagString();
+        int hp = SC2Data.maxHealth(type);
+        int shields = SC2Data.maxShields(type);
+        PlayerState state = (owner == 1) ? friendly : enemy;
+        PhysicsState physics = (owner == 1) ? friendlyPhysics : enemyPhysics;
+        state.addUnit(new Unit(tag, type, position, hp, hp, shields, shields, 0, 0));
+        physics.unitTargets.put(tag, position);
+    }
+
+    public void setMinerals(int amount) {
+        friendly.setMinerals(amount);
+    }
 }

@@ -1,8 +1,11 @@
 package io.quarkmind.sc2.emulated.server;
 
+import SC2APIProtocol.Debug;
 import SC2APIProtocol.Sc2Api;
+import com.github.ocraft.s2client.protocol.data.Units;
 import com.github.ocraft.s2client.protocol.observation.Observation;
 import com.github.ocraft.s2client.protocol.response.ResponseGameInfo;
+import com.github.ocraft.s2client.protocol.spatial.Point2d;
 import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.real.QuarkusSC2Transport;
 import io.quarkmind.sc2.real.SC2FrameCallback;
@@ -141,5 +144,86 @@ class EmulatedSC2ServerTest {
         Observation obs = capturedObs.get();
         assertThat(obs.getPlayerCommon().getMinerals()).isGreaterThanOrEqualTo(0);
         assertThat(obs.getRaw()).isPresent();
+    }
+
+    @Test @Timeout(10)
+    void debugCreateUnit_spawnsUnitsVisibleInObservation() throws Exception {
+        transport = connectedTransport();
+        transport.createGame();
+        transport.joinGame();
+
+        AtomicReference<Observation> capturedObs = new AtomicReference<>();
+        CountDownLatch stepped = new CountDownLatch(1);
+        CountDownLatch ended = new CountDownLatch(1);
+        AtomicInteger stepCount = new AtomicInteger();
+
+        transport.runGameLoop(new SC2FrameCallback() {
+            @Override public void onGameStart(ResponseGameInfo info) {}
+            @Override public void onStep(Observation obs) throws InterruptedException {
+                if (stepCount.incrementAndGet() == 1) {
+                    transport.sendDebug(Sc2Api.RequestDebug.newBuilder()
+                        .addDebug(Debug.DebugCommand.newBuilder()
+                            .setCreateUnit(Debug.DebugCreateUnit.newBuilder()
+                                .setUnitType(Units.PROTOSS_ZEALOT.getUnitTypeId())
+                                .setOwner(2)
+                                .setPos(Point2d.of(12f, 12f).toSc2Api())
+                                .setQuantity(2)
+                                .build())
+                            .build())
+                        .build());
+                } else if (stepCount.get() == 2) {
+                    capturedObs.set(obs);
+                    stepped.countDown();
+                    transport.quit();
+                }
+            }
+            @Override public void onGameEnd(GameResult result) { ended.countDown(); }
+        });
+
+        assertThat(stepped.await(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(ended.await(5, TimeUnit.SECONDS)).isTrue();
+
+        Observation obs = capturedObs.get();
+        long enemyUnitCount = obs.getRaw().get().getUnits().stream()
+            .filter(u -> u.getAlliance() == com.github.ocraft.s2client.protocol.unit.Alliance.ENEMY)
+            .count();
+        assertThat(enemyUnitCount).isGreaterThanOrEqualTo(2);
+    }
+
+    @Test @Timeout(10)
+    void debugAllResources_setsMineralsAndVespene() throws Exception {
+        transport = connectedTransport();
+        transport.createGame();
+        transport.joinGame();
+
+        AtomicReference<Observation> capturedObs = new AtomicReference<>();
+        CountDownLatch stepped = new CountDownLatch(1);
+        CountDownLatch ended = new CountDownLatch(1);
+        AtomicInteger stepCount = new AtomicInteger();
+
+        transport.runGameLoop(new SC2FrameCallback() {
+            @Override public void onGameStart(ResponseGameInfo info) {}
+            @Override public void onStep(Observation obs) throws InterruptedException {
+                if (stepCount.incrementAndGet() == 1) {
+                    transport.sendDebug(Sc2Api.RequestDebug.newBuilder()
+                        .addDebug(Debug.DebugCommand.newBuilder()
+                            .setGameState(Debug.DebugGameState.all_resources)
+                            .build())
+                        .build());
+                } else if (stepCount.get() == 2) {
+                    capturedObs.set(obs);
+                    stepped.countDown();
+                    transport.quit();
+                }
+            }
+            @Override public void onGameEnd(GameResult result) { ended.countDown(); }
+        });
+
+        assertThat(stepped.await(5, TimeUnit.SECONDS)).isTrue();
+        assertThat(ended.await(5, TimeUnit.SECONDS)).isTrue();
+
+        Observation obs = capturedObs.get();
+        assertThat(obs.getPlayerCommon().getMinerals()).isGreaterThanOrEqualTo(10000);
+        assertThat(obs.getPlayerCommon().getVespene()).isGreaterThanOrEqualTo(10000);
     }
 }

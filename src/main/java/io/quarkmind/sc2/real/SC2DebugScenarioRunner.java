@@ -23,7 +23,7 @@ import java.util.Set;
  * There is no threading constraint on when enqueueDebugCommand() may be called —
  * the queue is thread-safe.
  */
-@IfBuildProfile("sc2")
+@IfBuildProfile(anyOf = {"sc2", "emulated-sc2"})
 @ApplicationScoped
 public class SC2DebugScenarioRunner implements ScenarioRunner {
     private static final Logger log = Logger.getLogger(SC2DebugScenarioRunner.class);

@@ -118,7 +118,14 @@ public final class ObservationTranslator {
         return ALL_BUILDINGS.contains(type);
     }
 
-    static UnitType mapUnitType(Units type) {
+    public static UnitType fromSc2Id(int sc2UnitTypeId) {
+        for (Units u : Units.values()) {
+            if (u.getUnitTypeId() == sc2UnitTypeId) return mapUnitType(u);
+        }
+        return UnitType.UNKNOWN;
+    }
+
+    public static UnitType mapUnitType(Units type) {
         return switch (type) {
             case PROTOSS_PROBE        -> UnitType.PROBE;
             case PROTOSS_ZEALOT       -> UnitType.ZEALOT;
