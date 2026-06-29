@@ -1,7 +1,11 @@
 package io.quarkmind.sc2.real;
 
+import io.quarkmind.domain.GameState;
 import io.quarkmind.sc2.GameResult;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -37,6 +41,61 @@ class RealSC2EngineTest {
         botAgent.onGameEnd(GameResult.WIN);
 
         assertThat(engine.lastOutcome()).isEqualTo(GameResult.WIN);
+    }
+
+    @Test
+    void observe_firesFrameListeners_withGameState() {
+        var botAgent = new SC2BotAgent();
+        var engine   = new RealSC2Engine();
+        engine.botAgent = botAgent;
+
+        GameState state = new GameState(100, 50, 12, 0,
+            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 42L);
+        botAgent.latestGameState.set(state);
+
+        List<GameState> captured = new ArrayList<>();
+        engine.addFrameListener(captured::add);
+
+        GameState observed = engine.observe();
+
+        assertThat(observed).isSameAs(state);
+        assertThat(captured).containsExactly(state);
+    }
+
+    @Test
+    void observe_firesFrameListeners_withEmptyState_whenBotAgentReturnsNull() {
+        var botAgent = new SC2BotAgent();
+        var engine   = new RealSC2Engine();
+        engine.botAgent = botAgent;
+
+        List<GameState> captured = new ArrayList<>();
+        engine.addFrameListener(captured::add);
+
+        engine.observe();
+
+        assertThat(captured).hasSize(1);
+        assertThat(captured.get(0).gameFrame()).isEqualTo(0);
+    }
+
+    @Test
+    void addFrameListener_supportsMultipleListeners() {
+        var botAgent = new SC2BotAgent();
+        var engine   = new RealSC2Engine();
+        engine.botAgent = botAgent;
+
+        GameState state = new GameState(100, 50, 12, 0,
+            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 1L);
+        botAgent.latestGameState.set(state);
+
+        List<GameState> captured1 = new ArrayList<>();
+        List<GameState> captured2 = new ArrayList<>();
+        engine.addFrameListener(captured1::add);
+        engine.addFrameListener(captured2::add);
+
+        engine.observe();
+
+        assertThat(captured1).containsExactly(state);
+        assertThat(captured2).containsExactly(state);
     }
 
     @Test

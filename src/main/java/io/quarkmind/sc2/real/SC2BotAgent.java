@@ -40,7 +40,7 @@ public class SC2BotAgent implements SC2FrameCallback {
     @Inject TerrainProvider     terrainProvider;
     @Inject QuarkusSC2Transport transport;
 
-    private final AtomicReference<GameState>   latestGameState    = new AtomicReference<>(null);
+    final AtomicReference<GameState>   latestGameState    = new AtomicReference<>(null);
     private final AtomicReference<GameResult>  lastOutcome        = new AtomicReference<>(GameResult.UNKNOWN);
     private final Queue<Sc2Api.RequestDebug>   pendingDebugCommands = new ConcurrentLinkedQueue<>();
 

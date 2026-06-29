@@ -10,6 +10,8 @@ import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.jboss.logging.Logger;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 /**
  * Real SC2 engine — delegates to {@link QuarkusSC2Transport} for all game lifecycle
@@ -34,6 +36,8 @@ public class RealSC2Engine implements SC2Engine {
 
     @Inject QuarkusSC2Transport transport;
     @Inject SC2BotAgent         botAgent;
+
+    private final List<Consumer<GameState>> frameListeners = new CopyOnWriteArrayList<>();
 
     // --- Lifecycle ---
 
@@ -81,12 +85,18 @@ public class RealSC2Engine implements SC2Engine {
     /** Polls the GameState stored by the most recent {@link SC2BotAgent#onStep} call. */
     @Override
     public GameState observe() {
-        GameState state = botAgent.getLatestGameState();
-        if (state == null) {
+        GameState raw = botAgent.getLatestGameState();
+        if (raw == null) {
             log.debug("[SC2] No observation yet — first frame pending");
-            return emptyState();
         }
+        GameState state = raw != null ? raw : emptyState();
+        frameListeners.forEach(l -> l.accept(state));
         return state;
+    }
+
+    @Override
+    public void addFrameListener(Consumer<GameState> listener) {
+        frameListeners.add(listener);
     }
 
     /** No-op — {@link SC2BotAgent#onStep} dispatches actions from within the game loop. */
