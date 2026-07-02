@@ -2,11 +2,8 @@ package io.quarkmind.plugin.scouting;
 
 import io.casehub.blocks.summarisation.EventStreamBus;
 import io.casehub.blocks.summarisation.LevelEvent;
-import io.casehub.coordination.PropagationContext;
-import io.casehub.core.CaseFile;
-import io.casehub.persistence.memory.InMemoryCaseFileRepository;
-import io.quarkmind.agent.CaseFileContext;
 import io.quarkmind.agent.GameSession;
+import io.quarkmind.agent.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
@@ -202,8 +199,8 @@ class DroolsScoutingTaskTest {
         broker.level1Bus().subscribe(p -> true, received::add);
 
         // Create a game state with enemy units to trigger threat position intel
-        CaseFile cf = caseFile(List.of(enemy(10, 10)), List.of(), 100L);
-        task.execute(cf);
+        var ctx = caseContext(List.of(enemy(10, 10)), List.of(), 100L);
+        task.execute(ctx);
 
         // Verify L1 events were published
         assertThat(received).isNotEmpty();
@@ -219,18 +216,18 @@ class DroolsScoutingTaskTest {
         broker.level1Bus().subscribe(p -> true, received::add);
 
         // First tick: 2 enemies
-        CaseFile cf1 = caseFile(List.of(enemy(10, 10), enemy(20, 20)), List.of(), 100L);
-        task.execute(cf1);
+        var ctx1 = caseContext(List.of(enemy(10, 10), enemy(20, 20)), List.of(), 100L);
+        task.execute(ctx1);
 
         int firstBatch = received.size();
         assertThat(firstBatch).isGreaterThan(0);
 
         // Second tick: 5 enemies (army size change)
-        CaseFile cf2 = caseFile(
+        var ctx2 = caseContext(
             List.of(enemy(10, 10), enemy(20, 20), enemy(30, 30), enemy(40, 40), enemy(50, 50)),
             List.of(),
             200L);
-        task.execute(cf2);
+        task.execute(ctx2);
 
         // Should have received additional events
         assertThat(received.size()).isGreaterThan(firstBatch);
@@ -241,14 +238,13 @@ class DroolsScoutingTaskTest {
 
     // ---- Test helpers ----
 
-    private CaseFile caseFile(List<Unit> enemies, List<Unit> workers, long frame) {
-        var cf = new InMemoryCaseFileRepository().create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.ENEMY_UNITS,  enemies);
-        cf.put(QuarkMindCaseFile.WORKERS,      workers);
-        cf.put(QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus()));
-        cf.put(QuarkMindCaseFile.GAME_FRAME,   frame);
-        cf.put(QuarkMindCaseFile.READY,        Boolean.TRUE);
-        return cf;
+    private MutableMapCaseContext caseContext(List<Unit> enemies, List<Unit> workers, long frame) {
+        return new MutableMapCaseContext(Map.of(
+            QuarkMindCaseFile.ENEMY_UNITS,  enemies,
+            QuarkMindCaseFile.WORKERS,      workers,
+            QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus()),
+            QuarkMindCaseFile.GAME_FRAME,   frame,
+            QuarkMindCaseFile.READY,        Boolean.TRUE));
     }
 
     private Unit enemy(float x, float y) {

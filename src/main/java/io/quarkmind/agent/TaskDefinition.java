@@ -8,9 +8,9 @@ import java.util.function.Predicate;
 /**
  * QuarkMind's plugin contract for casehub-engine API.
  *
- * <p>Replaces the poc's {@code io.casehub.core.TaskDefinition} in plugin implementations.
- * Seam interfaces extend both this and the poc's {@code TaskDefinition} during Phase 1
- * (bridge period); the poc interface is dropped entirely in Phase 2.
+ * <p>Each plugin seam interface ({@code StrategyTask}, {@code EconomicsTask}, etc.) extends
+ * this interface. Implementations provide {@link #execute(CaseContext)}, activation gates,
+ * and key declarations.
  *
  * <p>Refs #193
  */
@@ -32,12 +32,10 @@ public interface TaskDefinition {
     default Set<String> produces() { return Set.of(); }
 
     /**
-     * Phase 1 bridge helper — evaluates the full activation contract against a {@link CaseContext}.
+     * Evaluates the full activation contract against a {@link CaseContext}.
      *
-     * <p>Mirrors what Phase 2's SequenceWorker will do: {@link #requires()} key-presence check
-     * first, then {@link #activateIf()} extra gates. The {@code canActivate(CaseFile)} bridge in
-     * each plugin delegates here so that the Phase 1 poc dispatch path is semantically equivalent
-     * to the Phase 2 path.
+     * <p>Checks {@link #requires()} key-presence first, then {@link #activateIf()} extra gates.
+     * Used by PluginDispatchBroker for pre-engine activation evaluation.
      */
     default boolean testActivation(CaseContext ctx) {
         return requires().stream().allMatch(ctx::contains) && activateIf().test(ctx);

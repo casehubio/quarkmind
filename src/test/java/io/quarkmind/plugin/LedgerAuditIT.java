@@ -1,13 +1,10 @@
 package io.quarkmind.plugin;
 
-import io.casehub.annotation.CaseType;
-import io.casehub.coordination.PropagationContext;
-import io.casehub.core.CaseFile;
-import io.casehub.persistence.memory.InMemoryCaseFileRepository;
 import io.casehub.ledger.runtime.model.LedgerEntry;
 import io.casehub.ledger.runtime.repository.LedgerEntryRepository;
 import io.casehub.platform.api.identity.TenancyConstants;
 import io.quarkmind.agent.GameSession;
+import io.quarkmind.agent.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ResourceBudget;
 import io.quarkmind.agent.StrategySelector;
@@ -29,9 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @QuarkusTest
 class LedgerAuditIT {
 
-    // Concrete injection: L6 introduced competing StrategyTask implementations; DroolsStrategyTask
-    // is the specific subject of this ledger audit test.
-    @Inject @CaseType("starcraft-game") DroolsStrategyTask strategyTask;
+    @Inject DroolsStrategyTask strategyTask;
     @Inject StrategySelector strategySelector;
     @Inject LedgerEntryRepository ledgerRepo;
     @Inject GameSession gameSession;
@@ -59,8 +54,8 @@ class LedgerAuditIT {
      */
     @Test
     void strategyTransitionWritesLedgerEntry() throws InterruptedException {
-        CaseFile cf = caseFile(200, 0, workers(4), List.of(nexus()), "UNKNOWN", false);
-        strategyTask.execute(cf);
+        var ctx = caseContext(200, 0, workers(4), List.of(nexus()), "UNKNOWN", false);
+        strategyTask.execute(ctx);
         Thread.sleep(500);
         List<LedgerEntry> entries = ledgerRepo.findBySubjectId(gameSession.id(), TenancyConstants.DEFAULT_TENANT_ID);
         assertThat(entries)
@@ -72,22 +67,22 @@ class LedgerAuditIT {
 
     // --- Helpers matching DroolsStrategyTaskTest pattern ---
 
-    private CaseFile caseFile(int minerals, int vespene, List<Unit> workers,
+    private MutableMapCaseContext caseContext(int minerals, int vespene, List<Unit> workers,
                                List<Building> buildings,
                                String enemyPosture, boolean timingAttack) {
-        var cf = new InMemoryCaseFileRepository().create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.MINERALS,               minerals);
-        cf.put(QuarkMindCaseFile.VESPENE,                vespene);
-        cf.put(QuarkMindCaseFile.WORKERS,                workers);
-        cf.put(QuarkMindCaseFile.ARMY,                   List.of());
-        cf.put(QuarkMindCaseFile.MY_BUILDINGS,           buildings);
-        cf.put(QuarkMindCaseFile.GEYSERS,                List.of());
-        cf.put(QuarkMindCaseFile.RESOURCE_BUDGET,        new ResourceBudget(minerals, vespene));
-        cf.put(QuarkMindCaseFile.READY,                  Boolean.TRUE);
-        cf.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE,        0);
-        cf.put(QuarkMindCaseFile.ENEMY_POSTURE,          enemyPosture);
-        cf.put(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, timingAttack);
-        return cf;
+        return new MutableMapCaseContext(Map.ofEntries(
+            Map.entry(QuarkMindCaseFile.MINERALS,               minerals),
+            Map.entry(QuarkMindCaseFile.VESPENE,                vespene),
+            Map.entry(QuarkMindCaseFile.WORKERS,                workers),
+            Map.entry(QuarkMindCaseFile.ARMY,                   List.of()),
+            Map.entry(QuarkMindCaseFile.MY_BUILDINGS,           buildings),
+            Map.entry(QuarkMindCaseFile.GEYSERS,                List.of()),
+            Map.entry(QuarkMindCaseFile.RESOURCE_BUDGET,        new ResourceBudget(minerals, vespene)),
+            Map.entry(QuarkMindCaseFile.READY,                  Boolean.TRUE),
+            Map.entry(QuarkMindCaseFile.ENEMY_ARMY_SIZE,        0),
+            Map.entry(QuarkMindCaseFile.ENEMY_POSTURE,          enemyPosture),
+            Map.entry(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, timingAttack)
+        ));
     }
 
     private List<Unit> workers(int count) {

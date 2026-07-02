@@ -77,6 +77,13 @@ public class StrategyRuleUnit implements RuleUnitData {
     private final DataStore<GamePhase>  phaseStore  = DataSource.createStore();
 
     /**
+     * Advisory facts from LLM advisory Workers.
+     * Populated by DroolsStrategyTask from CaseContext advisory keys.
+     * Contains only non-stale advisories (age < STALENESS_THRESHOLD).
+     */
+    private final DataStore<AdvisoryFact> advisoryStore = DataSource.createStore();
+
+    /**
      * Build decisions written by rules. Strings from the set
      * {@code "GATEWAY", "ASSIMILATOR", "CYBERNETICS_CORE", "STALKER:<gatewayTag>"}.
      * Java handles budget enforcement and intent dispatch after fire().
@@ -97,6 +104,7 @@ public class StrategyRuleUnit implements RuleUnitData {
     public DataStore<Boolean>    getTimingStore()      { return timingStore; }
     public DataStore<GameMoment> getMomentStore()      { return momentStore; }
     public DataStore<GamePhase>  getPhaseStore()       { return phaseStore; }
+    public DataStore<AdvisoryFact> getAdvisoryStore() { return advisoryStore; }
     public List<String>          getBuildDecisions()   { return buildDecisions; }
     public List<String>          getStrategyDecisions(){ return strategyDecisions; }
 }

@@ -1,14 +1,14 @@
 package io.casehub.annotation;
 
-import jakarta.inject.Qualifier;
 import java.lang.annotation.*;
 
 /**
- * CDI qualifier annotation that binds TaskDefinitions and PlanningStrategies to specific
- * case types. Used during auto-registration at startup to determine which TaskDefinitions
- * apply to which case types.
+ * Plain metadata annotation that marks TaskDefinition implementations as belonging to
+ * a specific case type. Used by {@code QuarkMindCaseHub} for plugin discovery.
+ *
+ * <p>Not a CDI qualifier — all annotated beans are {@code @Default} and can be injected
+ * without specifying this annotation at the injection point.
  */
-@Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 public @interface CaseType {

@@ -31,7 +31,7 @@ public final class QuarkMindCaseFile {
     public static final String ENEMY_POSTURE           = "agent.intel.enemy.posture";
     public static final String MOMENTS_LATEST          = "agent.intel.moments.latest";
 
-    /** All known CaseFile/CaseContext keys — used by CaseFileContext bridge (Phase 1). */
+    /** All known CaseContext keys — used by GameStateTranslator and plugin activation. */
     public static final List<String> ALL_KEYS = List.of(
         MINERALS, VESPENE, SUPPLY_USED, SUPPLY_CAP,
         WORKERS, ARMY, MY_BUILDINGS, GEYSERS, ENEMY_UNITS, GAME_FRAME, READY,

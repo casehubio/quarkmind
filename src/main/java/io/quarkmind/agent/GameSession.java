@@ -17,4 +17,11 @@ public class GameSession {
     // public — required for CDI proxy access in @QuarkusTest; package-private is unreachable
     // through @ApplicationScoped proxies even from the same package.
     public void reset() { id = UUID.randomUUID(); }
+
+    /**
+     * Sets the session ID to the engine case ID returned by {@code CaseHub.startCase()}.
+     * Called by {@link AgentOrchestrator#startGame()} after case creation so that ledger
+     * attestations scope to the engine case, not a locally-generated UUID.
+     */
+    public void setCaseId(UUID caseId) { id = caseId; }
 }

@@ -1,8 +1,6 @@
 package io.quarkmind.plugin;
 
-import io.casehub.coordination.PropagationContext;
-import io.casehub.core.CaseFile;
-import io.casehub.persistence.memory.InMemoryCaseFileRepository;
+import io.quarkmind.agent.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
@@ -30,40 +28,40 @@ class BasicScoutingTaskTest {
 
     @Test
     void writesZeroArmySizeWhenNoEnemiesVisible() {
-        var cf = caseFile(List.of(), List.of(nexus()), List.of(probe("p-0")), 0L);
-        task.execute(cf);
-        assertThat(cf.get(QuarkMindCaseFile.ENEMY_ARMY_SIZE, Integer.class)).contains(0);
+        var ctx = caseContext(List.of(), List.of(nexus()), List.of(probe("p-0")), 0L);
+        task.execute(ctx);
+        assertThat(ctx.getAs(QuarkMindCaseFile.ENEMY_ARMY_SIZE, Integer.class)).isEqualTo(0);
     }
 
     @Test
     void writesCorrectArmySizeWhenEnemiesPresent() {
-        var cf = caseFile(List.of(enemy(10, 10), enemy(20, 20)), List.of(nexus()), List.of(), 0L);
-        task.execute(cf);
-        assertThat(cf.get(QuarkMindCaseFile.ENEMY_ARMY_SIZE, Integer.class)).contains(2);
+        var ctx = caseContext(List.of(enemy(10, 10), enemy(20, 20)), List.of(nexus()), List.of(), 0L);
+        task.execute(ctx);
+        assertThat(ctx.getAs(QuarkMindCaseFile.ENEMY_ARMY_SIZE, Integer.class)).isEqualTo(2);
     }
 
     @Test
     void writesArmySizeEvenWithEnemiesPresent() {
         // NEAREST_THREAT removed (#179); verify army size is still written
-        var cf = caseFile(List.of(enemy(10, 10), enemy(20, 20)), List.of(nexus()), List.of(), 0L);
-        task.execute(cf);
-        assertThat(cf.get(QuarkMindCaseFile.ENEMY_ARMY_SIZE, Integer.class)).contains(2);
+        var ctx = caseContext(List.of(enemy(10, 10), enemy(20, 20)), List.of(nexus()), List.of(), 0L);
+        task.execute(ctx);
+        assertThat(ctx.getAs(QuarkMindCaseFile.ENEMY_ARMY_SIZE, Integer.class)).isEqualTo(2);
     }
 
     // --- Active scouting ---
 
     @Test
     void doesNotSendScoutBeforeDelay() {
-        var cf = caseFile(List.of(), List.of(nexus()), List.of(probe("p-0")), 0L);
-        task.execute(cf);
+        var ctx = caseContext(List.of(), List.of(nexus()), List.of(probe("p-0")), 0L);
+        task.execute(ctx);
         assertThat(intentQueue.pending()).isEmpty();
     }
 
     @Test
     void sendsScoutAfterDelayWhenNoEnemiesVisible() {
-        var cf = caseFile(List.of(), List.of(nexus()), List.of(probe("p-0")),
+        var ctx = caseContext(List.of(), List.of(nexus()), List.of(probe("p-0")),
             (long) BasicScoutingTask.SCOUT_DELAY_TICKS);
-        task.execute(cf);
+        task.execute(ctx);
         assertThat(intentQueue.pending())
             .hasSize(1)
             .first().isInstanceOf(MoveIntent.class);
@@ -71,9 +69,9 @@ class BasicScoutingTaskTest {
 
     @Test
     void scoutTargetsEstimatedEnemyBase() {
-        var cf = caseFile(List.of(), List.of(nexus()), List.of(probe("p-0")),
+        var ctx = caseContext(List.of(), List.of(nexus()), List.of(probe("p-0")),
             (long) BasicScoutingTask.SCOUT_DELAY_TICKS);
-        task.execute(cf);
+        task.execute(ctx);
         MoveIntent move = (MoveIntent) intentQueue.pending().get(0);
         // Nexus at (8,8) → enemy estimated at (224,224)
         assertThat(move.targetLocation()).isEqualTo(new Point2d(224, 224));
@@ -81,45 +79,45 @@ class BasicScoutingTaskTest {
 
     @Test
     void doesNotSendSecondScoutIfFirstStillAlive() {
-        var cf = caseFile(List.of(), List.of(nexus()), List.of(probe("p-0")),
+        var ctx = caseContext(List.of(), List.of(nexus()), List.of(probe("p-0")),
             (long) BasicScoutingTask.SCOUT_DELAY_TICKS);
-        task.execute(cf); // assigns scout
+        task.execute(ctx); // assigns scout
         intentQueue.drainAll();
 
-        task.execute(cf); // same probe still alive — no new intent
+        task.execute(ctx); // same probe still alive — no new intent
         assertThat(intentQueue.pending()).isEmpty();
     }
 
     @Test
     void assignsNewScoutIfPreviousDied() {
-        var cf = caseFile(List.of(), List.of(nexus()), List.of(probe("p-0")),
+        var ctx = caseContext(List.of(), List.of(nexus()), List.of(probe("p-0")),
             (long) BasicScoutingTask.SCOUT_DELAY_TICKS);
-        task.execute(cf); // assigns p-0 as scout
+        task.execute(ctx); // assigns p-0 as scout
         intentQueue.drainAll();
 
         // p-0 is gone — only p-1 remains
-        var cf2 = caseFile(List.of(), List.of(nexus()), List.of(probe("p-1")),
+        var ctx2 = caseContext(List.of(), List.of(nexus()), List.of(probe("p-1")),
             (long) BasicScoutingTask.SCOUT_DELAY_TICKS + 1);
-        task.execute(cf2);
+        task.execute(ctx2);
         assertThat(intentQueue.pending()).hasSize(1);
         assertThat(((MoveIntent) intentQueue.pending().get(0)).unitTag()).isEqualTo("p-1");
     }
 
     @Test
     void releasesScoutWhenEnemiesFound() {
-        var cf = caseFile(List.of(), List.of(nexus()), List.of(probe("p-0")),
+        var ctx = caseContext(List.of(), List.of(nexus()), List.of(probe("p-0")),
             (long) BasicScoutingTask.SCOUT_DELAY_TICKS);
-        task.execute(cf); // assigns scout
+        task.execute(ctx); // assigns scout
         intentQueue.drainAll();
 
         // Enemies appear → scout released
-        var cf2 = caseFile(List.of(enemy(20, 20)), List.of(nexus()), List.of(probe("p-0")),
+        var ctx2 = caseContext(List.of(enemy(20, 20)), List.of(nexus()), List.of(probe("p-0")),
             (long) BasicScoutingTask.SCOUT_DELAY_TICKS + 1);
-        task.execute(cf2);
+        task.execute(ctx2);
         intentQueue.drainAll();
 
         // No enemies again → should assign a fresh scout
-        task.execute(cf);
+        task.execute(ctx);
         assertThat(intentQueue.pending()).hasSize(1);
     }
 
@@ -139,15 +137,14 @@ class BasicScoutingTaskTest {
 
     // --- Helpers ---
 
-    private CaseFile caseFile(List<Unit> enemies, List<Building> buildings,
+    private MutableMapCaseContext caseContext(List<Unit> enemies, List<Building> buildings,
                                      List<Unit> workers, long frame) {
-        var cf = new InMemoryCaseFileRepository().create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.ENEMY_UNITS,  enemies);
-        cf.put(QuarkMindCaseFile.MY_BUILDINGS, buildings);
-        cf.put(QuarkMindCaseFile.WORKERS,      workers);
-        cf.put(QuarkMindCaseFile.GAME_FRAME,   frame);
-        cf.put(QuarkMindCaseFile.READY,        Boolean.TRUE);
-        return cf;
+        return new MutableMapCaseContext(Map.of(
+            QuarkMindCaseFile.ENEMY_UNITS,  enemies,
+            QuarkMindCaseFile.MY_BUILDINGS, buildings,
+            QuarkMindCaseFile.WORKERS,      workers,
+            QuarkMindCaseFile.GAME_FRAME,   frame,
+            QuarkMindCaseFile.READY,        Boolean.TRUE));
     }
 
     private Building nexus() {

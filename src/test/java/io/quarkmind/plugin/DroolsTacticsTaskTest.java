@@ -1,8 +1,6 @@
 package io.quarkmind.plugin;
 
-import io.casehub.coordination.PropagationContext;
-import io.casehub.core.CaseFile;
-import io.casehub.persistence.memory.InMemoryCaseFileRepository;
+import io.quarkmind.agent.MapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
@@ -115,38 +113,39 @@ class DroolsTacticsTaskTest {
         assertThat(result).containsExactlyInAnyOrder("s-0", "s-2");
     }
 
-    // ---- canActivate — broker-based gate ----
+    // ---- testActivation — broker-based gate ----
 
     @Test
-    void canActivate_brokerEmpty_returnsFalse() {
+    void testActivation_brokerEmpty_returnsFalse() {
         // new ScoutingIntelBroker() skips @PostConstruct; activeTypes=Set.of(), latest empty
         var broker = new ScoutingIntelBroker();
         var task = new DroolsTacticsTask(null, null, broker);
-        CaseFile caseFile = caseFileWith(QuarkMindCaseFile.READY, "present",
-                                         QuarkMindCaseFile.STRATEGY, "present");
-        assertThat(task.canActivate(caseFile)).isFalse();
+        var ctx = new MapCaseContext(Map.of(
+            QuarkMindCaseFile.READY, "present",
+            QuarkMindCaseFile.STRATEGY, "present"));
+        assertThat(task.testActivation(ctx)).isFalse();
     }
 
     @Test
-    void canActivate_brokerHasThreatPosition_returnsTrue() {
+    void testActivation_brokerHasThreatPosition_returnsTrue() {
         var broker = new ScoutingIntelBroker();
         broker.update(new ScoutingIntelPayload.ThreatPosition(new Point2d(10f, 20f)));
         var task = new DroolsTacticsTask(null, null, broker);
-        CaseFile caseFile = caseFileWith(QuarkMindCaseFile.READY, "present",
-                                         QuarkMindCaseFile.STRATEGY, "present");
-        assertThat(task.canActivate(caseFile)).isTrue();
+        var ctx = new MapCaseContext(Map.of(
+            QuarkMindCaseFile.READY, "present",
+            QuarkMindCaseFile.STRATEGY, "present"));
+        assertThat(task.testActivation(ctx)).isTrue();
     }
 
     @Test
-    void canActivate_missingReadyKey_returnsFalse() {
+    void testActivation_missingReadyKey_returnsFalse() {
         var broker = new ScoutingIntelBroker();
         broker.update(new ScoutingIntelPayload.ThreatPosition(new Point2d(10f, 20f)));
         var task = new DroolsTacticsTask(null, null, broker);
-        // CaseFile only has STRATEGY — READY is missing from entryCriteria
-        var cf = new InMemoryCaseFileRepository()
-            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.STRATEGY, "ATTACK");
-        assertThat(task.canActivate(cf)).isFalse();
+        // Context only has STRATEGY — READY is missing from requires
+        var ctx = new MapCaseContext(Map.of(
+            QuarkMindCaseFile.STRATEGY, "ATTACK"));
+        assertThat(task.testActivation(ctx)).isFalse();
     }
 
     // ---- refreshSubscriptions ----
@@ -166,16 +165,6 @@ class DroolsTacticsTaskTest {
                 ScoutingIntelType.THREAT_POSITION,
                 ScoutingIntelType.POSTURE,
                 ScoutingIntelType.TIMING_ALERT);
-    }
-
-    // ---- helpers ----
-
-    private static CaseFile caseFileWith(String key1, Object val1, String key2, Object val2) {
-        var cf = new InMemoryCaseFileRepository()
-            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(key1, val1);
-        cf.put(key2, val2);
-        return cf;
     }
 
 }

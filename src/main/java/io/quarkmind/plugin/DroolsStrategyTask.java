@@ -2,12 +2,10 @@ package io.quarkmind.plugin;
 
 import io.casehub.annotation.CaseType;
 import io.casehub.api.context.CaseContext;
-import io.casehub.core.CaseFile;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
 import io.casehub.platform.api.preferences.SettingsScope;
-import io.quarkmind.agent.CaseFileContext;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.PluginDecisionEvent;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
@@ -32,6 +30,7 @@ import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Resource;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.plugin.drools.AdvisoryFact;
 import io.quarkmind.plugin.drools.StrategyRuleUnit;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.BuildIntent;
@@ -73,6 +72,9 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
 
     static final Point2d GATEWAY_POS          = new Point2d(17, 18);
     static final Point2d CYBERNETICS_CORE_POS = new Point2d(20, 18);
+
+    /** Advisory staleness threshold — 400 frames ≈ 33 seconds at 12 frames/sec. */
+    private static final long STALENESS_THRESHOLD = 400L;
 
     private static final Logger log = Logger.getLogger(DroolsStrategyTask.class);
 
@@ -210,8 +212,9 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
         List<Building> buildings = ctx.getList(QuarkMindCaseFile.MY_BUILDINGS, Building.class);
         List<Resource> geysers   = ctx.getList(QuarkMindCaseFile.GEYSERS,      Resource.class);
         ResourceBudget budget    = ctx.getOrDefault(QuarkMindCaseFile.RESOURCE_BUDGET, new ResourceBudget(0, 0));
+        long currentFrame        = ctx.getAs(QuarkMindCaseFile.GAME_FRAME, Long.class);
 
-        StrategyRuleUnit data = buildRuleUnit(workers, army, buildings, geysers, posture, timing);
+        StrategyRuleUnit data = buildRuleUnit(workers, army, buildings, geysers, posture, timing, ctx, currentFrame);
 
         try (RuleUnitInstance<StrategyRuleUnit> instance = ruleUnit.createInstance(data)) {
             instance.fire();
@@ -237,31 +240,11 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
     @Override
     public Set<String> produces() { return Set.of(QuarkMindCaseFile.STRATEGY); }
 
-    // ── Phase 1 bridges — removed when poc CaseFile is dropped in Phase 2 ──
-
-    @Override
-    public Set<String> entryCriteria() { return requires(); }
-
-    @Override
-    public Set<String> producedKeys() { return produces(); }
-
-    @Override
-    public boolean canActivate(final CaseFile caseFile) {
-        return testActivation(new CaseFileContext(caseFile));
-    }
-
-    @Override
-    public void execute(final CaseFile caseFile) {
-        var ctx = new CaseFileContext(caseFile);
-        execute(ctx);
-        produces().forEach(k -> { Object v = ctx.get(k); if (v != null) caseFile.put(k, v); });
-    }
-
     // ── Private helpers ──────────────────────────────────────────────────────
 
     private StrategyRuleUnit buildRuleUnit(List<Unit> workers, List<Unit> army,
                                            List<Building> buildings, List<Resource> geysers,
-                                           String posture, boolean timing) {
+                                           String posture, boolean timing, CaseContext ctx, long currentFrame) {
         StrategyRuleUnit data = new StrategyRuleUnit();
         data.getPostureStore().add(posture);
         data.getTimingStore().add(timing);
@@ -280,6 +263,9 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
         if (currentPhase != null) {
             data.getPhaseStore().add(currentPhase);
         }
+
+        // Feed advisory facts (non-stale only)
+        feedAdvisoryFacts(ctx, currentFrame, data);
 
         return data;
     }
@@ -304,6 +290,46 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
             } else if (decision.startsWith("STALKER:") && budget.spend(125, 50)) {
                 intentQueue.add(new TrainIntent(decision.substring("STALKER:".length()), UnitType.STALKER));
             }
+        }
+    }
+
+    /**
+     * Reads advisory output from CaseContext and adds non-stale facts to the rule unit.
+     *
+     * <p>Checks all known advisory roles (crisis, strategic, economic) and adds facts
+     * for any that are present and not stale (age < STALENESS_THRESHOLD).
+     */
+    private void feedAdvisoryFacts(CaseContext ctx, long currentFrame, StrategyRuleUnit data) {
+        String[] roles = {"crisis", "strategic", "economic"};
+        for (String role : roles) {
+            String keyPrefix = "agent.advisory." + role + ".";
+            String recommendation = ctx.getAs(keyPrefix + "recommendation", String.class);
+            Long timestamp = ctx.getAs(keyPrefix + "timestamp", Long.class);
+            String agentId = ctx.getAs(keyPrefix + "agent_id", String.class);
+            String confidenceStr = ctx.getAs(keyPrefix + "confidence", String.class);
+
+            if (recommendation != null && timestamp != null) {
+                long age = currentFrame - timestamp;
+                if (age < STALENESS_THRESHOLD) {
+                    double confidence = parseConfidence(confidenceStr);
+                    AdvisoryFact fact = new AdvisoryFact(role, recommendation, confidence, agentId, age);
+                    data.getAdvisoryStore().add(fact);
+                    log.debugf("[STRATEGY] Consuming %s advisory: %s (age %d frames, confidence %.2f)",
+                        role, recommendation, age, confidence);
+                } else {
+                    log.debugf("[STRATEGY] Ignoring stale %s advisory (age %d frames)", role, age);
+                }
+            }
+        }
+    }
+
+    /** Parses confidence string to double — handles null and malformed values. */
+    private static double parseConfidence(String confidenceStr) {
+        if (confidenceStr == null) return 0.0;
+        try {
+            return Double.parseDouble(confidenceStr);
+        } catch (NumberFormatException e) {
+            return 0.0;
         }
     }
 

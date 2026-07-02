@@ -5,8 +5,6 @@ import io.casehub.api.context.CaseContext;
 import io.casehub.blocks.summarisation.EventLevel;
 import io.casehub.blocks.summarisation.EventStreamBus;
 import io.casehub.blocks.summarisation.LevelEvent;
-import io.casehub.core.CaseFile;
-import io.quarkmind.agent.CaseFileContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.MomentDetectionSeam;
@@ -130,19 +128,4 @@ public class MomentDetectionTask implements MomentDetectionSeam {
         firstContactFired = false;
     }
 
-    // Phase 1 bridges
-    @Override public Set<String> entryCriteria() { return requires(); }
-    @Override public Set<String> producedKeys()  { return produces(); }
-
-    @Override
-    public boolean canActivate(CaseFile caseFile) {
-        return testActivation(new CaseFileContext(caseFile));
-    }
-
-    @Override
-    public void execute(CaseFile caseFile) {
-        var ctx = new CaseFileContext(caseFile);
-        execute(ctx);
-        produces().forEach(k -> { Object v = ctx.get(k); if (v != null) caseFile.put(k, v); });
-    }
 }

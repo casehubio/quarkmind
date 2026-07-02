@@ -1,16 +1,8 @@
 package io.quarkmind.sc2.mock;
 
-import io.casehub.coordination.PropagationContext;
-import io.casehub.core.CaseFile;
-import io.casehub.persistence.memory.InMemoryCaseFileRepository;
-import io.quarkmind.agent.AgentOrchestrator;
-import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Unit;
-import io.quarkmind.sc2.IntentQueue;
-import io.quarkmind.sc2.intent.BuildIntent;
-import io.quarkmind.sc2.intent.TrainIntent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

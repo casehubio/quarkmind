@@ -87,15 +87,67 @@
             <groupId>io.casehub</groupId>
             <artifactId>casehub-platform</artifactId>
         </dependency>
-        <!-- casehub-engine-api: CaseContext interface — Phase 1 migration (casehub-core stays until Phase 2) -->
+        <!-- casehub-engine-api: CaseContext, CaseHub, CaseHubRuntime, CaseDefinition -->
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-engine-api</artifactId>
         </dependency>
-        <!-- casehub-engine-blackboard excluded: its CDI beans inject engine SPIs (EventLogRepository,
-             JobScheduler etc.) that are not on the classpath — 34 deployment failures in @QuarkusTest.
-             CaseContextImpl for tests is constructed via CaseFileContext (already on classpath) instead.
-             When casehub-engine-persistence-memory is added in Phase 2, this can be revisited. -->
+        <!-- casehub-engine: full runtime — CaseHubRuntimeImpl, SyncAgentWorkerFunctionHandler,
+             Worker dispatch, settlement. Required for signalAndAwaitSync() per-tick dispatch.
+             Replaces the poc CaseEngine.createAndSolve() path (Phase 2 migration). -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-engine</artifactId>
+        </dependency>
+        <!-- casehub-engine-ledger: TrustCandidateClassifier, TrustWeightedAgentStrategy —
+             trust-based agent routing. DispositionAwareRoutingStrategy composes trust
+             classification with game-context disposition scoring (#180). -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-engine-ledger</artifactId>
+        </dependency>
+        <!-- casehub-engine-blackboard: WritablePanelImpl, CaseContextImpl — CDI beans for
+             the blackboard layer. Engine runtime satisfies the SPI dependencies (EventLogRepository,
+             JobScheduler etc.) that previously blocked this dependency. -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-engine-blackboard</artifactId>
+        </dependency>
+        <!-- casehub-engine-persistence-memory: in-memory SPIs — @Alternative impls of
+             CaseInstanceRepository, EventLogRepository, CaseMetaModelRepository, SubCaseGroupRepository.
+             Compile scope (not test) because engine runtime CDI beans inject these at augmentation time. -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-engine-persistence-memory</artifactId>
+        </dependency>
+        <!-- casehub-engine-scheduler-quartz: provides JobScheduler SPI — required by engine runtime
+             (SchedulerService, MilestoneActivatedEventHandler, MilestoneCompletedEventHandler).
+             Brings quarkus-quartz transitively (superset of quarkus-scheduler). -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-engine-scheduler-quartz</artifactId>
+        </dependency>
+        <!-- casehub-eidos-api: AgentDescriptor, AgentCapability, AgentDisposition, AgentDescriptorRegistrar SPI -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-eidos-api</artifactId>
+        </dependency>
+        <!-- casehub-eidos-vocab: ConscientiousnessTerm vocabulary for disposition traits -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-eidos-vocab</artifactId>
+        </dependency>
+        <!-- casehub-eidos: runtime — AgentDescriptorBootstrap, SystemPromptRenderer, AgentRegistry -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-eidos</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- casehub-eidos-memory: in-memory stubs for eidos SPIs (AgentRegistry, AgentStateStore) -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-eidos-memory</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-qhorus-api</artifactId>

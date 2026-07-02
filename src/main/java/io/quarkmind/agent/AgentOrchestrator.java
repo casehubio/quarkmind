@@ -1,6 +1,6 @@
 package io.quarkmind.agent;
 
-import io.casehub.core.CaseFile;
+import io.casehub.api.context.CaseContext;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
@@ -11,6 +11,9 @@ import io.quarkmind.sc2.GameStopped;
 import io.quarkmind.sc2.SC2Engine;
 import org.jboss.logging.Logger;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -20,6 +23,8 @@ public class AgentOrchestrator {
 
     @Inject SC2Engine engine;
     @Inject GameTickExecutor tickExecutor;
+    @Inject QuarkMindCaseHub caseHub;
+    @Inject GameStateTranslator translator;
     @Inject Event<GameStarted> gameStartedEvent;
     @Inject Event<GameStopped> gameStoppedEvent;
     @Inject GameSession gameSession;
@@ -32,8 +37,8 @@ public class AgentOrchestrator {
         public long totalMs() { return physicsMs + pluginsMs + dispatchMs + brokerMs; }
     }
 
-    public record TickResult(CaseFile caseFile, AgentOrchestrator.TickTimings timings) {
-        public boolean solveSucceeded() { return caseFile != null; }
+    public record TickResult(CaseContext caseContext, AgentOrchestrator.TickTimings timings) {
+        public boolean solveSucceeded() { return caseContext != null; }
     }
 
     private final AtomicReference<TickResult> lastTickResult = new AtomicReference<>();
@@ -71,6 +76,20 @@ public class AgentOrchestrator {
         gameSession.reset();
         engine.connect();
         engine.joinGame();
+
+        // Create a durable engine case for this game — the case ID becomes the game session ID.
+        // Called after connect/joinGame so observe() returns the initial game state.
+        try {
+            Map<String, Object> initialData = translator.toMap(engine.observe());
+            UUID caseId = caseHub.startCase(initialData).toCompletableFuture()
+                .get(5, TimeUnit.SECONDS);
+            gameSession.setCaseId(caseId);
+            log.infof("Engine case started: %s", caseId);
+        } catch (Exception e) {
+            log.errorf(e, "Failed to start engine case — falling back to local session ID");
+            // Game continues with the locally-generated session ID from reset()
+        }
+
         gameStartedEvent.fire(new GameStarted());
         log.info("Game started");
     }
@@ -78,6 +97,15 @@ public class AgentOrchestrator {
     public void stopGame() {
         engineWasConnected = false;                   // close natural-end detection window first
         engine.leaveGame();                           // interrupt the game loop
+
+        // Cancel the engine case — safe even if startCase failed (gameSession.id is still valid)
+        try {
+            caseHub.cancelCase(gameSession.id());
+            log.infof("Engine case cancelled: %s", gameSession.id());
+        } catch (Exception e) {
+            log.warnf("Engine case cancel failed for %s: %s", gameSession.id(), e.getMessage());
+        }
+
         fireGameStoppedOnce(GameResult.UNKNOWN);      // manual stop — outcome unresolved
         log.info("Game stopped");
     }

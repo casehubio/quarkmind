@@ -4,8 +4,6 @@ import io.casehub.annotation.CaseType;
 import io.casehub.api.context.CaseContext;
 import io.casehub.blocks.summarisation.EventLevel;
 import io.casehub.blocks.summarisation.LevelEvent;
-import io.casehub.core.CaseFile;
-import io.quarkmind.agent.CaseFileContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.plugin.ScoutingTask;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -307,23 +305,6 @@ public class DroolsScoutingTask implements ScoutingTask {
             QuarkMindCaseFile.ENEMY_BUILD_ORDER,
             QuarkMindCaseFile.TIMING_ATTACK_INCOMING,
             QuarkMindCaseFile.ENEMY_POSTURE);
-    }
-
-    // ── Phase 1 bridges — removed when poc CaseFile is dropped in Phase 2 ──
-
-    @Override public Set<String> entryCriteria() { return requires(); }
-    @Override public Set<String> producedKeys()  { return produces(); }
-
-    @Override
-    public boolean canActivate(final CaseFile caseFile) {
-        return testActivation(new CaseFileContext(caseFile));
-    }
-
-    @Override
-    public void execute(final CaseFile caseFile) {
-        var ctx = new CaseFileContext(caseFile);
-        execute(ctx);
-        produces().forEach(k -> { Object v = ctx.get(k); if (v != null) caseFile.put(k, v); });
     }
 
     // ── Private helpers ──────────────────────────────────────────────────────

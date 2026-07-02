@@ -6,13 +6,12 @@ import io.casehub.platform.api.identity.ActorType;
 import io.casehub.qhorus.api.channel.ChannelSemantic;
 import io.casehub.qhorus.api.message.MessageDispatch;
 import io.casehub.qhorus.api.message.MessageType;
-import io.casehub.qhorus.runtime.channel.ChannelCreateRequest;
+import io.casehub.qhorus.api.channel.ChannelCreateRequest;
 import io.casehub.qhorus.runtime.channel.ChannelService;
 import io.casehub.qhorus.runtime.message.MessageService;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkmind.sc2.GameStarted;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.casehub.annotation.CaseType;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -53,7 +52,7 @@ public class MomentBroker {
     @Inject MessageService messageService;
     @Inject ObjectMapper objectMapper;
     @Inject @Any Instance<MomentConsumer> consumers;
-    @Inject @CaseType("starcraft-game") MomentDetectionTask momentDetectionTask;
+    @Inject MomentDetectionTask momentDetectionTask;
     @Inject SummarisationLifecycle summarisationLifecycle;
 
     private UUID channelId;
@@ -65,7 +64,7 @@ public class MomentBroker {
         // GE-20260529-88b7b6: ChannelService.create() not idempotent — findByName() first
         channelId = QuarkusTransaction.requiringNew().call(() ->
             channelService.findByName(CHANNEL_NAME)
-                .map(c -> c.id)
+                .map(c -> c.id())
                 .orElseGet(() -> channelService.create(
                     new ChannelCreateRequest(
                         CHANNEL_NAME,
@@ -74,7 +73,7 @@ public class MomentBroker {
                         null, null, null, null, null,
                         Set.of(MessageType.STATUS),
                         null, null, null, null, null)
-                ).id)
+                ).id())
         );
 
         // Wire MomentDetectionTask's output to our bus

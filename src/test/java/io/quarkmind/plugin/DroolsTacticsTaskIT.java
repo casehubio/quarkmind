@@ -1,15 +1,11 @@
 package io.quarkmind.plugin;
 
-import io.casehub.annotation.CaseType;
-import io.casehub.coordination.PropagationContext;
-import io.casehub.core.CaseFile;
-import io.casehub.persistence.memory.InMemoryCaseFileRepository;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import io.quarkmind.agent.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
-import io.quarkmind.agent.plugin.TacticsTask;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.AttackIntent;
@@ -26,13 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * End-to-end integration tests for DroolsTacticsTask.
  *
- * <p>Each test documents one complete pipeline scenario: CaseFile state → Drools
+ * <p>Each test documents one complete pipeline scenario: context state → Drools
  * group classification → A* planning → Intent emission.
  */
 @QuarkusTest
 class DroolsTacticsTaskIT {
 
-    @Inject @CaseType("starcraft-game") TacticsTask tacticsTask;
+    @Inject DroolsTacticsTask tacticsTask;
     @Inject IntentQueue intentQueue;
     @Inject ScoutingIntelBroker broker;
 
@@ -44,12 +40,12 @@ class DroolsTacticsTaskIT {
 
     @Test
     void attackAllUnitsInRangeEmitsAttackIntents() {
-        var cf = caseFile("ATTACK",
+        var ctx = caseContext("ATTACK",
             List.of(stalker("s-0", new Point2d(10, 10), 80, 80),
                     stalker("s-1", new Point2d(11, 10), 80, 80)),
             List.of(enemy(new Point2d(14, 10))),
             new Point2d(14, 10));
-        tacticsTask.execute(cf);
+        tacticsTask.execute(ctx);
         assertThat(intentQueue.pending())
             .hasSize(2)
             .allMatch(i -> i instanceof AttackIntent);
@@ -57,11 +53,11 @@ class DroolsTacticsTaskIT {
 
     @Test
     void attackAllUnitsOutOfRangeEmitsMoveIntents() {
-        var cf = caseFile("ATTACK",
+        var ctx = caseContext("ATTACK",
             List.of(stalker("s-0", new Point2d(10, 10), 80, 80)),
             List.of(enemy(new Point2d(30, 30))),
             new Point2d(30, 30));
-        tacticsTask.execute(cf);
+        tacticsTask.execute(ctx);
         assertThat(intentQueue.pending())
             .hasSize(1)
             .allMatch(i -> i instanceof MoveIntent);
@@ -72,12 +68,12 @@ class DroolsTacticsTaskIT {
     @Test
     void attackLowHealthUnitsRetreatsToNexus() {
         Point2d nexusPos = new Point2d(8, 8);
-        var cf = caseFile("ATTACK",
+        var ctx = caseContext("ATTACK",
             List.of(stalker("s-0", new Point2d(10, 10), 20, 100)),
             List.of(enemy(new Point2d(30, 30))),
             new Point2d(30, 30));
-        cf.put(QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus(nexusPos)));
-        tacticsTask.execute(cf);
+        ctx.set(QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus(nexusPos)));
+        tacticsTask.execute(ctx);
         assertThat(intentQueue.pending())
             .hasSize(1)
             .allMatch(i -> i instanceof MoveIntent);
@@ -90,13 +86,13 @@ class DroolsTacticsTaskIT {
         // s-low: low health → retreat (MoveIntent)
         // s-near: healthy + in range (distance ~4 ≤ 5.0) → attack (AttackIntent)
         // s-far: healthy + out of range → move-to-engage (MoveIntent)
-        var cf = caseFile("ATTACK",
+        var ctx = caseContext("ATTACK",
             List.of(stalker("s-low",  new Point2d(10, 10), 20, 100),
                     stalker("s-near", new Point2d(10, 10), 80, 80),
                     stalker("s-far",  new Point2d(50, 50), 80, 80)),
             List.of(enemy(new Point2d(14, 10))),
             new Point2d(14, 10));
-        tacticsTask.execute(cf);
+        tacticsTask.execute(ctx);
         assertThat(intentQueue.pending()).hasSize(3);
         assertThat(intentQueue.pending().stream()
             .filter(i -> i instanceof MoveIntent mi && mi.unitTag().equals("s-low")))
@@ -112,13 +108,13 @@ class DroolsTacticsTaskIT {
     @Test
     void defendAllUnitsMovesToNexus() {
         Point2d nexusPos = new Point2d(8, 8);
-        var cf = caseFile("DEFEND",
+        var ctx = caseContext("DEFEND",
             List.of(stalker("s-0", new Point2d(10, 10), 80, 80),
                     stalker("s-1", new Point2d(20, 20), 80, 80)),
             List.of(enemy(new Point2d(12, 12))),
             new Point2d(12, 12));
-        cf.put(QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus(nexusPos)));
-        tacticsTask.execute(cf);
+        ctx.set(QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus(nexusPos)));
+        tacticsTask.execute(ctx);
         assertThat(intentQueue.pending())
             .hasSize(2)
             .allMatch(i -> i instanceof MoveIntent mi && mi.targetLocation().equals(nexusPos));
@@ -126,27 +122,27 @@ class DroolsTacticsTaskIT {
 
     @Test
     void macroProducesNoIntents() {
-        var cf = caseFile("MACRO",
+        var ctx = caseContext("MACRO",
             List.of(stalker("s-0", new Point2d(10, 10), 80, 80)),
             List.of(enemy(new Point2d(12, 12))),
             null);
-        tacticsTask.execute(cf);
+        tacticsTask.execute(ctx);
         assertThat(intentQueue.pending()).isEmpty();
     }
 
     @Test
     void noArmyProducesNoIntents() {
-        var cf = caseFile("ATTACK", List.of(), List.of(enemy(new Point2d(12, 12))), new Point2d(12, 12));
-        tacticsTask.execute(cf);
+        var ctx = caseContext("ATTACK", List.of(), List.of(enemy(new Point2d(12, 12))), new Point2d(12, 12));
+        tacticsTask.execute(ctx);
         assertThat(intentQueue.pending()).isEmpty();
     }
 
     @Test
     void noEnemiesProducesNoIntents() {
-        var cf = caseFile("ATTACK",
+        var ctx = caseContext("ATTACK",
             List.of(stalker("s-0", new Point2d(10, 10), 80, 80)),
             List.of(), null);
-        tacticsTask.execute(cf);
+        tacticsTask.execute(ctx);
         assertThat(intentQueue.pending()).isEmpty();
     }
 
@@ -155,13 +151,13 @@ class DroolsTacticsTaskIT {
         // Arrange: two Stalkers in range (distance ~4 ≤ 5.0), two enemies at different HP
         Unit weakEnemy   = new Unit("e-weak",   UnitType.ZEALOT, new Point2d(14, 10), 10, 100,  0, 50, 0, 0);
         Unit strongEnemy = new Unit("e-strong", UnitType.ZEALOT, new Point2d(14, 11), 100, 100, 50, 50, 0, 0);
-        var cf = caseFile("ATTACK",
+        var ctx = caseContext("ATTACK",
             List.of(stalker("s-0", new Point2d(10, 10), 80, 80, 0),
                     stalker("s-1", new Point2d(10, 10), 80, 80, 0)),
             List.of(weakEnemy, strongEnemy),
             weakEnemy.position());
         // Act
-        tacticsTask.execute(cf);
+        tacticsTask.execute(ctx);
         // Assert: both Stalkers attack the weak enemy's position (focus-fire)
         assertThat(intentQueue.pending()).hasSize(2)
             .allMatch(i -> i instanceof AttackIntent ai &&
@@ -172,11 +168,11 @@ class DroolsTacticsTaskIT {
     void kitingUnit_onCooldown_getsMoveIntentAwayFromEnemy() {
         Point2d stalkerPos = new Point2d(10, 10);
         Point2d enemyPos   = new Point2d(10, 14); // enemy is 4 tiles away (within Stalker range 5.0)
-        var cf = caseFile("ATTACK",
+        var ctx = caseContext("ATTACK",
             List.of(stalker("s-kite", stalkerPos, 80, 80, 3)), // cooldown = 3
             List.of(new Unit("e-0", UnitType.ZEALOT, enemyPos, 100, 100, 50, 50, 0, 0)),
             enemyPos);
-        tacticsTask.execute(cf);
+        tacticsTask.execute(ctx);
         assertThat(intentQueue.pending()).hasSize(1);
         assertThat(intentQueue.pending().get(0)).isInstanceOf(MoveIntent.class);
         MoveIntent move = (MoveIntent) intentQueue.pending().get(0);
@@ -190,12 +186,12 @@ class DroolsTacticsTaskIT {
         // s-ready: off cooldown → in-range → AttackIntent
         // s-kiting: on cooldown → kiting → MoveIntent backward
         Point2d enemyPos = new Point2d(14, 10); // 4 tiles from (10,10), within Stalker range
-        var cf = caseFile("ATTACK",
+        var ctx = caseContext("ATTACK",
             List.of(stalker("s-ready",  new Point2d(10, 10), 80, 80, 0),
                     stalker("s-kiting", new Point2d(10, 10), 80, 80, 3)),
             List.of(new Unit("e-0", UnitType.ZEALOT, enemyPos, 100, 100, 50, 50, 0, 0)),
             enemyPos);
-        tacticsTask.execute(cf);
+        tacticsTask.execute(ctx);
         assertThat(intentQueue.pending()).hasSize(2);
         assertThat(intentQueue.pending())
             .anyMatch(i -> i instanceof AttackIntent ai && ai.unitTag().equals("s-ready"));
@@ -209,13 +205,13 @@ class DroolsTacticsTaskIT {
         // All three should target the weakest enemy
         Unit weak   = new Unit("e-weak",   UnitType.ZEALOT, new Point2d(14, 10),  5, 100,  0, 50, 0, 0);
         Unit strong = new Unit("e-strong", UnitType.ZEALOT, new Point2d(14, 11), 100, 100, 50, 50, 0, 0);
-        var cf = caseFile("ATTACK",
+        var ctx = caseContext("ATTACK",
             List.of(stalker("s-0", new Point2d(10, 10), 80, 80, 0),
                     stalker("s-1", new Point2d(10, 10), 80, 80, 0),
                     stalker("s-2", new Point2d(10, 10), 80, 80, 0)),
             List.of(weak, strong),
             weak.position());
-        tacticsTask.execute(cf);
+        tacticsTask.execute(ctx);
         long focusCount = intentQueue.pending().stream()
             .filter(i -> i instanceof AttackIntent ai &&
                          ai.targetLocation().equals(weak.position()))
@@ -225,20 +221,21 @@ class DroolsTacticsTaskIT {
 
     // ---- Helpers ----
 
-    private CaseFile caseFile(String strategy, List<Unit> army,
+    private MutableMapCaseContext caseContext(String strategy, List<Unit> army,
                                      List<Unit> enemies, Point2d nearestThreat) {
-        var cf = new InMemoryCaseFileRepository().create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.STRATEGY,      strategy);
-        cf.put(QuarkMindCaseFile.ARMY,          army);
-        cf.put(QuarkMindCaseFile.ENEMY_UNITS,   enemies);
-        cf.put(QuarkMindCaseFile.MY_BUILDINGS,  List.of());
-        cf.put(QuarkMindCaseFile.READY,         Boolean.TRUE);
+        var ctx = new MutableMapCaseContext(Map.of(
+            QuarkMindCaseFile.STRATEGY,      strategy,
+            QuarkMindCaseFile.ARMY,          army,
+            QuarkMindCaseFile.ENEMY_UNITS,   enemies,
+            QuarkMindCaseFile.MY_BUILDINGS,  List.of(),
+            QuarkMindCaseFile.READY,         Boolean.TRUE
+        ));
         // Stack 1: populate broker directly (replaces intelCache in the redesigned architecture)
         if (nearestThreat != null) {
             broker.update(new ScoutingIntelPayload.ThreatPosition(nearestThreat));
         }
         // null case: broker.clearLatest() is called by @BeforeEach drainQueue()
-        return cf;
+        return ctx;
     }
 
     private Unit stalker(String tag, Point2d pos, int health, int maxHealth) {

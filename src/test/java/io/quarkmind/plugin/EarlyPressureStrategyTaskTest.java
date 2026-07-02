@@ -1,8 +1,7 @@
 package io.quarkmind.plugin;
 
-import io.casehub.coordination.PropagationContext;
-import io.casehub.core.CaseFile;
-import io.casehub.persistence.memory.InMemoryCaseFileRepository;
+import io.quarkmind.agent.MapCaseContext;
+import io.quarkmind.agent.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.StrategySelector;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,11 +22,9 @@ class EarlyPressureStrategyTaskTest {
         task = new EarlyPressureStrategyTask(selector);
     }
 
-    private CaseFile readyCaseFile() {
-        var cf = new InMemoryCaseFileRepository()
-            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
-        return cf;
+    private MutableMapCaseContext readyContext() {
+        return new MutableMapCaseContext(Map.of(
+            QuarkMindCaseFile.READY, Boolean.TRUE));
     }
 
     @Test
@@ -36,40 +33,39 @@ class EarlyPressureStrategyTaskTest {
     }
 
     @Test
-    void entryCriteria_containsOnlyReady() {
-        assertThat(task.entryCriteria()).containsExactly(QuarkMindCaseFile.READY);
+    void requires_containsOnlyReady() {
+        assertThat(task.requires()).containsExactly(QuarkMindCaseFile.READY);
     }
 
     @Test
-    void canActivate_falseWhenNotSelected() {
+    void testActivation_falseWhenNotSelected() {
         // selector defaults to "strategy.drools" — not early-pressure
-        assertThat(task.canActivate(readyCaseFile())).isFalse();
+        assertThat(task.testActivation(readyContext())).isFalse();
     }
 
     @Test
-    void canActivate_trueWhenSelectedAndReadyPresent() {
+    void testActivation_trueWhenSelectedAndReadyPresent() {
         selector.selectForGame("strategy.early-pressure", "vs.unknown");
-        assertThat(task.canActivate(readyCaseFile())).isTrue();
+        assertThat(task.testActivation(readyContext())).isTrue();
     }
 
     @Test
-    void canActivate_falseWhenSelectedButReadyAbsent() {
+    void testActivation_falseWhenSelectedButReadyAbsent() {
         selector.selectForGame("strategy.early-pressure", "vs.unknown");
-        var cf = new InMemoryCaseFileRepository()
-            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
+        var ctx = new MapCaseContext(Map.of());
         // READY not present
-        assertThat(task.canActivate(cf)).isFalse();
+        assertThat(task.testActivation(ctx)).isFalse();
     }
 
     @Test
     void execute_writesAttackStrategy() {
-        CaseFile cf = readyCaseFile();
-        task.execute(cf);
-        assertThat(cf.get(QuarkMindCaseFile.STRATEGY, String.class)).contains("ATTACK");
+        var ctx = readyContext();
+        task.execute(ctx);
+        assertThat(ctx.getAs(QuarkMindCaseFile.STRATEGY, String.class)).isEqualTo("ATTACK");
     }
 
     @Test
-    void producedKeys_containsStrategy() {
-        assertThat(task.producedKeys()).contains(QuarkMindCaseFile.STRATEGY);
+    void produces_containsStrategy() {
+        assertThat(task.produces()).contains(QuarkMindCaseFile.STRATEGY);
     }
 }

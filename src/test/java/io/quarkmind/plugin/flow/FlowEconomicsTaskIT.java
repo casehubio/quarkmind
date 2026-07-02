@@ -1,10 +1,8 @@
 package io.quarkmind.plugin.flow;
 
-import io.casehub.annotation.CaseType;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import io.quarkmind.agent.ScoutingIntelBroker;
-import io.quarkmind.agent.plugin.EconomicsTask;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import org.junit.jupiter.api.AfterEach;
@@ -22,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @QuarkusTest
 class FlowEconomicsTaskIT {
 
-    @Inject @CaseType("starcraft-game") EconomicsTask economicsTask;
+    @Inject FlowEconomicsTask economicsTask;
     @Inject ScoutingIntelBroker broker;
 
     @BeforeEach @AfterEach

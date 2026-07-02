@@ -2,11 +2,9 @@ package io.quarkmind.plugin.flow;
 
 import io.casehub.annotation.CaseType;
 import io.casehub.api.context.CaseContext;
-import io.casehub.core.CaseFile;
 import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
 import io.casehub.platform.api.preferences.SettingsScope;
-import io.quarkmind.agent.CaseFileContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ResourceBudget;
 import io.quarkmind.agent.ScoutingIntelBroker;
@@ -117,19 +115,4 @@ public class FlowEconomicsTask implements EconomicsTask, ScoutingIntelConsumer {
 
     @Override public Set<String> produces() { return Set.of(); }
 
-    // ── Phase 1 bridges — removed when poc CaseFile is dropped in Phase 2 ──
-
-    @Override public Set<String> entryCriteria() { return requires(); }
-    @Override public Set<String> producedKeys()  { return produces(); }
-
-    @Override
-    public boolean canActivate(final CaseFile caseFile) {
-        return testActivation(new CaseFileContext(caseFile));
-    }
-
-    @Override
-    public void execute(final CaseFile caseFile) {
-        execute(new CaseFileContext(caseFile));
-        // No outputs to sync back — produces() is empty
-    }
 }

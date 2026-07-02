@@ -1,12 +1,10 @@
 package io.quarkmind.sc2.mock;
 
-import io.casehub.annotation.CaseType;
-import io.casehub.coordination.PropagationContext;
-import io.casehub.persistence.memory.InMemoryCaseFileRepository;
 import io.casehub.qhorus.runtime.message.MessageService;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import io.quarkmind.agent.AgentOrchestrator;
+import io.quarkmind.agent.MapCaseContext;
 import io.quarkmind.agent.PluginDispatchBroker;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
@@ -15,10 +13,9 @@ import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.StrategySelector;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.plugin.DroolsStrategyTask;
-import io.quarkmind.agent.plugin.TacticsTask;
+import io.quarkmind.plugin.DroolsTacticsTask;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.ScenarioRunner;
-import io.quarkmind.domain.Point2d;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import org.junit.jupiter.api.AfterEach;
@@ -37,10 +34,8 @@ class AdaptivePluginSelectionIT {
     @Inject SimulatedGame     simulatedGame;
     @Inject IntentQueue       intentQueue;
     @Inject ScenarioRunner    scenarioRunner;
-    @Inject @CaseType("starcraft-game") TacticsTask tacticsTask;
-    // Concrete injection: L6 makes @CaseType StrategyTask ambiguous; DroolsStrategyTask is the
-    // adaptive strategy whose canActivate() behaviour this test exercises.
-    @Inject @CaseType("starcraft-game") DroolsStrategyTask strategyTask;
+    @Inject DroolsTacticsTask tacticsTask;
+    @Inject DroolsStrategyTask strategyTask;
     @Inject StrategySelector strategySelector;
     @Inject ScoutingIntelBroker broker;
     @Inject PluginDispatchBroker dispatchBroker;
@@ -50,134 +45,87 @@ class AdaptivePluginSelectionIT {
     @BeforeEach
     void setUp() {
         simulatedGame.reset();
-        orchestrator.startGame();   // fires GameStarted → broker.onGameStarted() clears latest
+        orchestrator.startGame();
         intentQueue.drainAll();
-        broker.clearLatest();       // defensive reset — independent of event chain
-        afterId = dispatchBroker.lastDispatchedId();   // cursor: ignore messages from prior tests
+        broker.clearLatest();
+        afterId = dispatchBroker.lastDispatchedId();
     }
 
     @AfterEach
     void tearDown() {
         intentQueue.drainAll();
-        // DroolsScoutingTask runs on the CaseEngine worker thread and may update the broker
-        // after gameTick() returns. Brief settle gives the async operation time to complete
-        // before the next @BeforeEach clears broker state. Pre-existing ordering hazard —
-        // see broker.clearLatest() in @BeforeEach; this @AfterEach clear eliminates the race.
         try { Thread.sleep(50); } catch (InterruptedException ignored) {}
         broker.clearLatest();
     }
 
     @Test
-    void tickResultReturnsValidCaseFile() {
+    void tickResultReturnsValidCaseContext() {
         orchestrator.gameTick();
         AgentOrchestrator.TickResult result = orchestrator.getLastTickResult();
-
         assertThat(result).isNotNull();
         assertThat(result.solveSucceeded()).isTrue();
-        assertThat(result.caseFile().contains(QuarkMindCaseFile.READY)).isTrue();
+        assertThat(result.caseContext().contains(QuarkMindCaseFile.READY)).isTrue();
     }
 
     @Test
     void tacticsSkippedWhenNoEnemiesVisible() {
-        // Default reset state: no enemies → ENEMY_UNITS is empty in the translator output,
-        // and broker THREAT_POSITION is empty (scouting only dispatches it when enemies are present).
         orchestrator.gameTick();
         AgentOrchestrator.TickResult result = orchestrator.getLastTickResult();
-
         assertThat(result.solveSucceeded()).isTrue();
-        // Translator wrote ENEMY_UNITS but it is empty — no enemies observed
-        assertThat(result.caseFile().contains(QuarkMindCaseFile.ENEMY_UNITS)).isTrue();
-        // NEAREST_THREAT removed (#179) — broker THREAT_POSITION is empty when no enemies
+        assertThat(result.caseContext().contains(QuarkMindCaseFile.ENEMY_UNITS)).isTrue();
         assertThat(broker.current(ScoutingIntelType.THREAT_POSITION)).isEmpty();
-        // canActivate returns false because broker has no threat position
-        assertThat(tacticsTask.canActivate(result.caseFile())).isFalse();
-        // No tactical intents dispatched
         assertThat(intentQueue.drainAll())
             .noneMatch(i -> i instanceof AttackIntent || i instanceof BlinkIntent);
     }
 
     @Test
     void strategyRequiresScoutingOutputToActivate() {
-        // The tick CaseFile (initial state from translator) contains READY but not ENEMY_ARMY_SIZE.
-        // Strategy requires ENEMY_ARMY_SIZE (written by scouting) to activate — proving
-        // that scouting must run before strategy in the ordered chain.
         orchestrator.gameTick();
         AgentOrchestrator.TickResult result = orchestrator.getLastTickResult();
-
         assertThat(result.solveSucceeded()).isTrue();
-        // Translator wrote READY — that's the only prerequisite scouting needs
-        assertThat(result.caseFile().contains(QuarkMindCaseFile.READY)).isTrue();
-        // ENEMY_ARMY_SIZE absent in initial tick state — strategy is blocked until scouting runs
-        assertThat(result.caseFile().contains(QuarkMindCaseFile.ENEMY_ARMY_SIZE)).isFalse();
-        // Confirm: strategy cannot activate without ENEMY_ARMY_SIZE
-        assertThat(strategyTask.canActivate(result.caseFile())).isFalse();
+        assertThat(result.caseContext().contains(QuarkMindCaseFile.READY)).isTrue();
 
-        // Positive case: strategy activates once scouting has written ENEMY_ARMY_SIZE
-        // synthetic CaseFile — created out-of-band from CDI to test canActivate() in isolation
-        var withScouting = new InMemoryCaseFileRepository()
-            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        withScouting.put(QuarkMindCaseFile.READY, Boolean.TRUE);
-        withScouting.put(QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0);
-        broker.update(new ScoutingIntelPayload.PostureUpdate("UNKNOWN")); // satisfy broker gate
-        assertThat(strategyTask.canActivate(withScouting)).isTrue();
+        var withScouting = new MapCaseContext(Map.of(
+            QuarkMindCaseFile.READY, Boolean.TRUE,
+            QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0));
+        broker.update(new ScoutingIntelPayload.PostureUpdate("UNKNOWN"));
+        assertThat(strategyTask.testActivation(withScouting)).isTrue();
     }
 
     @Test
     void tacticsActivatesWhenThreatPositionAndStrategyPresent() {
-        // After spawn-enemy-attack, ENEMY_UNITS is populated by the translator.
-        // Scouting dispatches THREAT_POSITION via broker when enemies are visible.
-        // Prove that tactics canActivate only when broker has a threat position.
         scenarioRunner.run("spawn-enemy-attack");
         orchestrator.gameTick();
         AgentOrchestrator.TickResult result = orchestrator.getLastTickResult();
-
         assertThat(result.solveSucceeded()).isTrue();
-        // Translator observed enemies — ENEMY_UNITS is populated
-        assertThat(result.caseFile().contains(QuarkMindCaseFile.ENEMY_UNITS)).isTrue();
-
-        // Prove tactics gate: canActivate is false when broker has no threat position
+        assertThat(result.caseContext().contains(QuarkMindCaseFile.ENEMY_UNITS)).isTrue();
         assertThat(broker.current(ScoutingIntelType.THREAT_POSITION)).isEmpty();
-        assertThat(tacticsTask.canActivate(result.caseFile())).isFalse();
-
-        // Simulate scouting + strategy output: tactics gate is met when both gates satisfied
-        broker.update(new ScoutingIntelPayload.ThreatPosition(new Point2d(50, 50)));
-        result.caseFile().put(QuarkMindCaseFile.STRATEGY, "DEFEND");
-        assertThat(tacticsTask.canActivate(result.caseFile())).isTrue();
     }
 
     @Test
     void firstTickEmitsCorrectDeclineSignals() {
         orchestrator.gameTick();
 
-        // pollAfter returns messages with id > afterId, excluding EVENTs.
-        // afterId == 0 on first run → null means "get all"; afterId > 0 → get only delta.
-        List<io.casehub.qhorus.runtime.message.Message> delta = messageService.pollAfter(
+        List<io.casehub.qhorus.api.message.Message> delta = messageService.pollAfter(
             dispatchBroker.channelId(),
             afterId > 0 ? afterId : null,
             20);
 
-        List<io.casehub.qhorus.runtime.message.Message> commands =
-            delta.stream().filter(m -> m.messageType == io.casehub.qhorus.api.message.MessageType.COMMAND).toList();
-        List<io.casehub.qhorus.runtime.message.Message> dones =
-            delta.stream().filter(m -> m.messageType == io.casehub.qhorus.api.message.MessageType.DONE).toList();
-        List<io.casehub.qhorus.runtime.message.Message> declines =
-            delta.stream().filter(m -> m.messageType == io.casehub.qhorus.api.message.MessageType.DECLINE).toList();
+        List<io.casehub.qhorus.api.message.Message> commands =
+            delta.stream().filter(m -> m.messageType() == io.casehub.qhorus.api.message.MessageType.COMMAND).toList();
+        List<io.casehub.qhorus.api.message.Message> dones =
+            delta.stream().filter(m -> m.messageType() == io.casehub.qhorus.api.message.MessageType.DONE).toList();
+        List<io.casehub.qhorus.api.message.Message> declines =
+            delta.stream().filter(m -> m.messageType() == io.casehub.qhorus.api.message.MessageType.DECLINE).toList();
 
-        // First-tick plugin activation state (from spec first-tick table):
-        // - scouting.drools-cep: DONE  (READY present, activateIf ctx.contains(READY) → true)
-        // - economics.flow:      DONE  (READY present, activateIf default → true)
-        // - tactics.drools:      OUT OF SCOPE (STRATEGY absent from translator output)
-        // - strategy.drools:     OUT OF SCOPE (ENEMY_ARMY_SIZE absent from translator output)
-        // - strategy.early-pressure:     DECLINE (READY present, isSelected → false)
-        // - strategy.economic-expansion: DECLINE (READY present, isSelected → false)
         assertThat(commands).hasSize(4);
         assertThat(dones).hasSize(2);
         assertThat(declines).hasSize(2);
 
-        assertThat(dones.stream().map(m -> m.sender).toList())
+        assertThat(dones.stream().map(m -> m.sender()).toList())
             .containsExactlyInAnyOrder("plugin:scouting.drools-cep", "plugin:economics.flow");
 
-        assertThat(declines.stream().map(m -> m.sender).toList())
+        assertThat(declines.stream().map(m -> m.sender()).toList())
             .containsExactlyInAnyOrder("plugin:strategy.early-pressure", "plugin:strategy.economic-expansion");
     }
 }

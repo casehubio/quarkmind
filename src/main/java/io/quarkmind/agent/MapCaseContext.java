@@ -16,8 +16,8 @@ import java.util.function.Function;
  *
  * <p>Used for pre-engine activation evaluation in PluginDispatchBroker — wraps the
  * immutable caseData map produced by GameStateTranslator without touching the database.
- * Also simplifies unit tests: replaces the CaseFileContext + InMemoryCaseFileRepository
- * construction pattern with {@code new MapCaseContext(Map.of(...))}.
+ * Also simplifies unit tests: {@code new MapCaseContext(Map.of(...))} gives a
+ * lightweight read-only context without any database or repository setup.
  *
  * <p>Only read operations are implemented; write operations throw
  * {@link UnsupportedOperationException}. activateIf() predicates must use only

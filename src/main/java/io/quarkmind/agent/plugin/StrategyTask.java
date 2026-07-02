@@ -1,5 +1,3 @@
 package io.quarkmind.agent.plugin;
 
-public interface StrategyTask
-        extends io.casehub.core.TaskDefinition,
-                io.quarkmind.agent.TaskDefinition {}
+public interface StrategyTask extends io.quarkmind.agent.TaskDefinition {}

@@ -1,8 +1,5 @@
 package io.quarkmind.agent;
 
-import io.casehub.core.CaseFile;
-import io.casehub.core.TaskDefinition;
-import io.casehub.core.TaskDefinitionRegistry;
 import io.casehub.platform.api.identity.ActorType;
 import io.casehub.qhorus.api.message.DispatchResult;
 import io.casehub.qhorus.api.message.MessageDispatch;
@@ -26,8 +23,8 @@ class PluginDispatchBrokerTest {
 
     private static final UUID CHANNEL_ID = UUID.randomUUID();
 
-    /** Stub plugin implementing both poc and new engine interfaces. */
-    static class StubPlugin implements TaskDefinition, io.quarkmind.agent.TaskDefinition {
+    /** Stub plugin implementing the quarkmind TaskDefinition interface. */
+    static class StubPlugin implements TaskDefinition {
         private final String id;
         private final Set<String> requiresKeys;
         private boolean activateResult;
@@ -48,11 +45,6 @@ class PluginDispatchBrokerTest {
         }
         @Override public void execute(io.casehub.api.context.CaseContext ctx) {}
         @Override public Set<String> produces() { return Set.of(); }
-
-        @Override public Set<String> entryCriteria() { return requiresKeys; }
-        @Override public Set<String> producedKeys()  { return Set.of(); }
-        @Override public boolean canActivate(CaseFile caseFile) { return activateResult; }
-        @Override public void execute(CaseFile caseFile) {}
     }
 
     private final List<MessageDispatch>  captured  = new ArrayList<>();
@@ -74,16 +66,8 @@ class PluginDispatchBrokerTest {
         }
     };
 
-    private TaskDefinitionRegistry registryWith(TaskDefinition... plugins) {
-        var registry = new TaskDefinitionRegistry();
-        for (TaskDefinition p : plugins) {
-            registry.register(p, Set.of("starcraft-game"));
-        }
-        return registry;
-    }
-
     private PluginDispatchBroker brokerWith(TaskDefinition... plugins) {
-        return new PluginDispatchBroker(registryWith(plugins), stubMessageService, CHANNEL_ID);
+        return new PluginDispatchBroker(List.of(plugins), stubMessageService, CHANNEL_ID);
     }
 
     @BeforeEach

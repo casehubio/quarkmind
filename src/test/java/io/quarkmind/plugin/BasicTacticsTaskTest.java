@@ -1,8 +1,7 @@
 package io.quarkmind.plugin;
 
-import io.casehub.coordination.PropagationContext;
-import io.casehub.core.CaseFile;
-import io.casehub.persistence.memory.InMemoryCaseFileRepository;
+import io.quarkmind.agent.MapCaseContext;
+import io.quarkmind.agent.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
@@ -31,8 +30,8 @@ class BasicTacticsTaskTest {
 
     @Test
     void attackQueuesAttackIntentForEachArmyUnit() {
-        var cf = caseFile("ATTACK", List.of(stalker("s-0"), stalker("s-1")), List.of(nexus()));
-        task.execute(cf);
+        var ctx = caseContext("ATTACK", List.of(stalker("s-0"), stalker("s-1")), List.of(nexus()));
+        task.execute(ctx);
         assertThat(intentQueue.pending())
             .hasSize(2)
             .allMatch(i -> i instanceof AttackIntent);
@@ -41,16 +40,16 @@ class BasicTacticsTaskTest {
     @Test
     void attackTargetsMapCenterAlways() {
         // BasicTacticsTask no longer reads NEAREST_THREAT — always uses MAP_CENTER
-        var cf = caseFile("ATTACK", List.of(stalker("s-0")), List.of(nexus()));
-        task.execute(cf);
+        var ctx = caseContext("ATTACK", List.of(stalker("s-0")), List.of(nexus()));
+        task.execute(ctx);
         assertThat(((AttackIntent) intentQueue.pending().get(0)).targetLocation())
             .isEqualTo(BasicTacticsTask.MAP_CENTER);
     }
 
     @Test
     void attackTargetsMapCenterWhenNoThreatKnown() {
-        var cf = caseFile("ATTACK", List.of(stalker("s-0")), List.of(nexus()));
-        task.execute(cf);
+        var ctx = caseContext("ATTACK", List.of(stalker("s-0")), List.of(nexus()));
+        task.execute(ctx);
         assertThat(((AttackIntent) intentQueue.pending().get(0)).targetLocation())
             .isEqualTo(BasicTacticsTask.MAP_CENTER);
     }
@@ -59,8 +58,8 @@ class BasicTacticsTaskTest {
 
     @Test
     void defendQueuesMoveIntentForEachArmyUnit() {
-        var cf = caseFile("DEFEND", List.of(stalker("s-0"), stalker("s-1")), List.of(nexus()));
-        task.execute(cf);
+        var ctx = caseContext("DEFEND", List.of(stalker("s-0"), stalker("s-1")), List.of(nexus()));
+        task.execute(ctx);
         assertThat(intentQueue.pending())
             .hasSize(2)
             .allMatch(i -> i instanceof MoveIntent);
@@ -69,15 +68,15 @@ class BasicTacticsTaskTest {
     @Test
     void defendRalliesToNexusPosition() {
         Point2d nexusPos = new Point2d(8, 8);
-        var cf = caseFile("DEFEND", List.of(stalker("s-0")), List.of(nexus()));
-        task.execute(cf);
+        var ctx = caseContext("DEFEND", List.of(stalker("s-0")), List.of(nexus()));
+        task.execute(ctx);
         assertThat(((MoveIntent) intentQueue.pending().get(0)).targetLocation()).isEqualTo(nexusPos);
     }
 
     @Test
     void defendFallsBackToMapCenterWhenNoNexus() {
-        var cf = caseFile("DEFEND", List.of(stalker("s-0")), List.of());
-        task.execute(cf);
+        var ctx = caseContext("DEFEND", List.of(stalker("s-0")), List.of());
+        task.execute(ctx);
         assertThat(((MoveIntent) intentQueue.pending().get(0)).targetLocation())
             .isEqualTo(BasicTacticsTask.MAP_CENTER);
     }
@@ -86,8 +85,8 @@ class BasicTacticsTaskTest {
 
     @Test
     void macroProducesNoIntents() {
-        var cf = caseFile("MACRO", List.of(stalker("s-0")), List.of(nexus()));
-        task.execute(cf);
+        var ctx = caseContext("MACRO", List.of(stalker("s-0")), List.of(nexus()));
+        task.execute(ctx);
         assertThat(intentQueue.pending()).isEmpty();
     }
 
@@ -95,50 +94,47 @@ class BasicTacticsTaskTest {
 
     @Test
     void emptyArmyProducesNoIntents() {
-        var cf = caseFile("ATTACK", List.of(), List.of(nexus()));
-        task.execute(cf);
+        var ctx = caseContext("ATTACK", List.of(), List.of(nexus()));
+        task.execute(ctx);
         assertThat(intentQueue.pending()).isEmpty();
     }
 
     @Test
     void noStrategyDefaultsToMacro() {
-        var cf = new InMemoryCaseFileRepository().create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.ARMY,         List.of(stalker("s-0")));
-        cf.put(QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus()));
-        cf.put(QuarkMindCaseFile.READY,        Boolean.TRUE);
-        task.execute(cf);
+        var ctx = new MutableMapCaseContext(Map.of(
+            QuarkMindCaseFile.ARMY,         List.of(stalker("s-0")),
+            QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus()),
+            QuarkMindCaseFile.READY,        Boolean.TRUE));
+        task.execute(ctx);
         assertThat(intentQueue.pending()).isEmpty();
     }
 
     // --- Entry criteria — {READY, STRATEGY} ---
 
     @Test
-    void canActivate_false_withoutStrategy() {
-        var cf = new InMemoryCaseFileRepository()
-            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.READY, Boolean.TRUE);
-        // STRATEGY absent → canActivate must return false
-        assertThat(task.canActivate(cf)).isFalse();
+    void testActivation_false_withoutStrategy() {
+        var ctx = new MapCaseContext(Map.of(
+            QuarkMindCaseFile.READY, Boolean.TRUE));
+        // STRATEGY absent → testActivation must return false
+        assertThat(task.testActivation(ctx)).isFalse();
     }
 
     @Test
-    void canActivate_true_withReadyAndStrategy() {
-        var cf = new InMemoryCaseFileRepository()
-            .create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.READY,    Boolean.TRUE);
-        cf.put(QuarkMindCaseFile.STRATEGY, "DEFEND");
-        assertThat(task.canActivate(cf)).isTrue();
+    void testActivation_true_withReadyAndStrategy() {
+        var ctx = new MapCaseContext(Map.of(
+            QuarkMindCaseFile.READY,    Boolean.TRUE,
+            QuarkMindCaseFile.STRATEGY, "DEFEND"));
+        assertThat(task.testActivation(ctx)).isTrue();
     }
 
     // --- Helpers ---
 
-    private CaseFile caseFile(String strategy, List<Unit> army, List<Building> buildings) {
-        var cf = new InMemoryCaseFileRepository().create("starcraft-game", Map.of(), PropagationContext.createRoot());
-        cf.put(QuarkMindCaseFile.STRATEGY,     strategy);
-        cf.put(QuarkMindCaseFile.ARMY,         army);
-        cf.put(QuarkMindCaseFile.MY_BUILDINGS, buildings);
-        cf.put(QuarkMindCaseFile.READY,        Boolean.TRUE);
-        return cf;
+    private MutableMapCaseContext caseContext(String strategy, List<Unit> army, List<Building> buildings) {
+        return new MutableMapCaseContext(Map.of(
+            QuarkMindCaseFile.STRATEGY,     strategy,
+            QuarkMindCaseFile.ARMY,         army,
+            QuarkMindCaseFile.MY_BUILDINGS, buildings,
+            QuarkMindCaseFile.READY,        Boolean.TRUE));
     }
 
     private Unit stalker(String tag) {

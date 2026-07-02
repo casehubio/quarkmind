@@ -1,8 +1,6 @@
 package io.quarkmind.plugin;
 
 import io.casehub.api.context.CaseContext;
-import io.casehub.core.CaseFile;
-import io.quarkmind.agent.CaseFileContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.plugin.TacticsTask;
 import io.quarkmind.domain.Building;
@@ -72,19 +70,4 @@ public class BasicTacticsTask implements TacticsTask {
 
     @Override public Set<String> produces() { return Set.of(); }
 
-    // ── Phase 1 bridges ──────────────────────────────────────────────────────
-
-    @Override public Set<String> entryCriteria() { return requires(); }
-    @Override public Set<String> producedKeys()  { return produces(); }
-
-    @Override
-    public boolean canActivate(final CaseFile caseFile) {
-        return testActivation(new CaseFileContext(caseFile));
-    }
-
-    @Override
-    public void execute(final CaseFile caseFile) {
-        execute(new CaseFileContext(caseFile));
-        // No outputs to sync back — produces() is empty
-    }
 }

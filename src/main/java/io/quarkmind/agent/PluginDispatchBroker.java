@@ -1,12 +1,11 @@
 package io.quarkmind.agent;
 
-import io.casehub.core.TaskDefinitionRegistry;
 import io.casehub.platform.api.identity.ActorType;
 import io.casehub.qhorus.api.channel.ChannelSemantic;
 import io.casehub.qhorus.api.message.DispatchResult;
 import io.casehub.qhorus.api.message.MessageDispatch;
 import io.casehub.qhorus.api.message.MessageType;
-import io.casehub.qhorus.runtime.channel.ChannelCreateRequest;
+import io.casehub.qhorus.api.channel.ChannelCreateRequest;
 import io.casehub.qhorus.runtime.channel.ChannelService;
 import io.casehub.qhorus.runtime.message.MessageService;
 import io.quarkmind.sc2.GameStarted;
@@ -14,12 +13,15 @@ import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.jboss.logging.Logger;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -46,7 +48,7 @@ public class PluginDispatchBroker {
 
     private static final Logger log = Logger.getLogger(PluginDispatchBroker.class);
 
-    private final TaskDefinitionRegistry registry;
+    private final List<TaskDefinition>    plugins;
     private final MessageService         messageService;
     private final ChannelService         channelService;
 
@@ -56,17 +58,17 @@ public class PluginDispatchBroker {
     private UUID channelId;
 
     @Inject
-    public PluginDispatchBroker(TaskDefinitionRegistry registry,
+    public PluginDispatchBroker(@Any Instance<TaskDefinition> allTaskDefs,
                                  MessageService messageService,
                                  ChannelService channelService) {
-        this.registry       = registry;
+        this.plugins        = allTaskDefs.stream().toList();
         this.messageService = messageService;
         this.channelService = channelService;
     }
 
     /** Package-private — unit tests; bypasses @PostConstruct channel setup. channelId must be non-null. */
-    PluginDispatchBroker(TaskDefinitionRegistry registry, MessageService messageService, UUID channelId) {
-        this.registry       = registry;
+    PluginDispatchBroker(List<TaskDefinition> plugins, MessageService messageService, UUID channelId) {
+        this.plugins        = plugins;
         this.messageService = messageService;
         this.channelService = null;   // only used in @PostConstruct
         this.channelId      = channelId;
@@ -78,7 +80,7 @@ public class PluginDispatchBroker {
         // ChannelService.create() is not idempotent — findByName() first.
         channelId = QuarkusTransaction.requiringNew().call(() ->
             channelService.findByName(CHANNEL_NAME)
-                .map(c -> c.id)
+                .map(c -> c.id())
                 .orElseGet(() -> channelService.create(
                     new ChannelCreateRequest(
                         CHANNEL_NAME,
@@ -88,7 +90,7 @@ public class PluginDispatchBroker {
                         Set.of(MessageType.COMMAND, MessageType.DONE, MessageType.DECLINE),
                         null, null, null, null, null
                     )
-                ).id)
+                ).id())
         );
         log.infof("[DISPATCH-BROKER] Channel ready: %s", channelId);
     }
@@ -118,22 +120,20 @@ public class PluginDispatchBroker {
         var toUpdate   = new LinkedHashMap<String, Boolean>();
         Long lastReplyId = null;
 
-        for (var td : registry.getForCaseType("starcraft-game")) {
-            if (!(td instanceof io.quarkmind.agent.TaskDefinition qmTd)) continue;
-
-            boolean inScope = qmTd.requires().stream().allMatch(caseData::containsKey);
+        for (var td : plugins) {
+            boolean inScope = td.requires().stream().allMatch(caseData::containsKey);
             if (!inScope) {
-                toRemove.add(qmTd.getId());
+                toRemove.add(td.getId());
                 continue;
             }
 
-            boolean nowActive = qmTd.activateIf().test(evalCtx);
-            Boolean wasActive = priorActivation.get(qmTd.getId());
+            boolean nowActive = td.activateIf().test(evalCtx);
+            Boolean wasActive = priorActivation.get(td.getId());
 
             if (wasActive == null || wasActive != nowActive) {
-                lastReplyId = sendCommitmentSignal(qmTd.getId(), nowActive);
-                toUpdate.put(qmTd.getId(), nowActive);
-                log.debugf("[DISPATCH-BROKER] %s → %s", qmTd.getId(),
+                lastReplyId = sendCommitmentSignal(td.getId(), nowActive);
+                toUpdate.put(td.getId(), nowActive);
+                log.debugf("[DISPATCH-BROKER] %s → %s", td.getId(),
                     nowActive ? "DONE" : "DECLINE");
             }
         }
