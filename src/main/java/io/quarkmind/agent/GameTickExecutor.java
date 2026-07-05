@@ -23,6 +23,7 @@ class GameTickExecutor {
     @Inject PluginDispatchBroker   pluginDispatchBroker;
     @Inject SummarisationTickable  summarisationLifecycle;
     @Inject DeferredAdvisoryEvaluator deferredAdvisoryEvaluator;
+    @Inject MilestoneOutcomeRecorder milestoneOutcomeRecorder;
 
     AgentOrchestrator.TickResult execute() {
         long t0 = System.currentTimeMillis();
@@ -45,6 +46,9 @@ class GameTickExecutor {
 
         // Summarisation: tick L2→L3 and L3→L4 runners (after engine settle, before dispatch)
         summarisationLifecycle.tick(gameState.gameFrame());
+
+        // Milestone evaluation: assess strategy dominance at game-time checkpoints
+        milestoneOutcomeRecorder.evaluateMilestones(gameState);
 
         // Deferred advisory evaluation: compare mature advisories against current game state
         if (ctx != null) {

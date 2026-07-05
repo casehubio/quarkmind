@@ -46,6 +46,7 @@ class GameTickExecutorMigrationTest {
     private PluginDispatchBroker dispatchBroker;
     private SummarisationTickable summarisation;
     private DeferredAdvisoryEvaluator deferredAdvisoryEvaluator;
+    private MilestoneOutcomeRecorder milestoneOutcomeRecorder;
     private GameTickExecutor executor;
     private UUID sessionId;
 
@@ -58,6 +59,7 @@ class GameTickExecutorMigrationTest {
         dispatchBroker = mock(PluginDispatchBroker.class);
         summarisation = mock(SummarisationTickable.class);
         deferredAdvisoryEvaluator = mock(DeferredAdvisoryEvaluator.class);
+        milestoneOutcomeRecorder = mock(MilestoneOutcomeRecorder.class);
 
         sessionId = UUID.randomUUID();
         gameSession.setCaseId(sessionId);
@@ -70,6 +72,7 @@ class GameTickExecutorMigrationTest {
         executor.pluginDispatchBroker = dispatchBroker;
         executor.summarisationLifecycle = summarisation;
         executor.deferredAdvisoryEvaluator = deferredAdvisoryEvaluator;
+        executor.milestoneOutcomeRecorder = milestoneOutcomeRecorder;
     }
 
     @Test
@@ -180,6 +183,22 @@ class GameTickExecutorMigrationTest {
         // The test passes by construction: GameTickExecutor no longer has a CaseEngine field.
         // This test documents the migration intent explicitly.
         verify(caseHub).signalAndAwaitSync(eq(sessionId), any(), eq(Duration.ofSeconds(5)));
+    }
+
+    @Test
+    void execute_callsMilestoneEvaluationAfterSummarisationBeforeDispatch() {
+        GameState state = stubGameState(5000L, 200, 100);
+        when(engine.observe()).thenReturn(state);
+        when(caseHub.signalAndAwaitSync(any(), any(), any())).thenReturn(mock(CaseContext.class));
+
+        executor.execute();
+
+        verify(milestoneOutcomeRecorder).evaluateMilestones(state);
+        // Verify ordering: summarisation before milestone, milestone before dispatch
+        var inOrder = org.mockito.Mockito.inOrder(summarisation, milestoneOutcomeRecorder, engine);
+        inOrder.verify(summarisation).tick(5000L);
+        inOrder.verify(milestoneOutcomeRecorder).evaluateMilestones(state);
+        inOrder.verify(engine).dispatch();
     }
 
     // ------------------------------------------------------------------

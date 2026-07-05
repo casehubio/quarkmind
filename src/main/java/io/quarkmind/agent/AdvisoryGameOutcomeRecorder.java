@@ -17,7 +17,7 @@ import java.util.Set;
  *
  * <p>Uses {@code @Observes} (synchronous) to capture {@link AdvisoryInvocationCounter} state
  * before it can be reset by the next {@code GameStarted} event — matching the same lifecycle
- * rationale as {@link GameOutcomeRecorder}.
+ * rationale as {@link MilestoneOutcomeRecorder}.
  *
  * <p>WIN → ENDORSED (trust increases), LOSS → CHALLENGED (trust decreases),
  * TIE → SOUND (neutral). UNKNOWN is skipped — no ledger write.

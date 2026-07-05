@@ -21,9 +21,12 @@ import jakarta.enterprise.event.Event;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test: GameOutcomeRecorder writes the outcome record synchronously,
+ * Integration test: MilestoneOutcomeRecorder writes the outcome record synchronously,
  * and the full trust pipeline (OutcomeRecordSaveService → IncrementalTrustUpdateObserver
  * → ActorTrustScoreRepository.upsert) materializes decisionCount after GameStopped.
+ *
+ * <p>Until engine#648 ships AttestingOutcomeRecorder, milestone evaluation is a no-op.
+ * These tests verify game-end recording — identical to pre-milestone behavior.
  */
 @QuarkusTest
 class StrategyOutcomeRecordIT {
@@ -35,6 +38,7 @@ class StrategyOutcomeRecordIT {
     @Inject GameSession gameSession;
     @Inject Event<GameStarted> gameStartedEvent;
     @Inject Event<GameStopped> gameStoppedEvent;
+    @Inject io.quarkmind.agent.MilestoneOutcomeRecorder milestoneOutcomeRecorder;
 
     @BeforeEach
     void setUp() {
@@ -159,5 +163,27 @@ class StrategyOutcomeRecordIT {
         assertThat(trustGateService.decisionCount(selectedId, context))
             .as("UNKNOWN must not affect decisionCount")
             .isZero();
+    }
+
+    @Test
+    void milestoneEvaluation_withoutSpi_doesNotInflateDecisionCount() {
+        gameStartedEvent.fire(new GameStarted());
+        String selectedId = strategySelector.getSelectedId();
+        String context = strategySelector.getOpponentContext();
+
+        // Simulate a tick at frame 5000 (past the 4032 frame threshold)
+        // This should be a no-op without AttestingOutcomeRecorder
+        milestoneOutcomeRecorder.evaluateMilestones(
+            new io.quarkmind.domain.GameState(
+                200, 100, 15, 6,
+                java.util.List.of(), java.util.List.of(), java.util.List.of(),
+                java.util.List.of(), java.util.List.of(), java.util.List.of(),
+                java.util.List.of(), 5000));
+
+        gameStoppedEvent.fire(new GameStopped(GameResult.WIN));
+
+        assertThat(trustGateService.decisionCount(selectedId, context))
+            .as("decisionCount should be 1 — milestones must not inflate without SPI")
+            .isEqualTo(1);
     }
 }
