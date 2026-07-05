@@ -10,6 +10,7 @@ import io.casehub.api.spi.routing.TrustRoutingPolicy;
 import io.casehub.api.spi.routing.TrustRoutingPolicyProvider;
 import io.casehub.eidos.api.AgentDescriptor;
 import io.casehub.eidos.api.AgentDisposition;
+import io.casehub.eidos.api.MatchDegree;
 import io.casehub.eidos.vocab.ConscientiousnessTerm;
 import io.casehub.ledger.routing.TrustCandidateClassifier;
 import io.casehub.ledger.routing.TrustCandidateClassifier.ClassifiedCandidate;
@@ -77,7 +78,8 @@ class DispositionAwareRoutingStrategyTest {
                                 .ruleFollowing(ConscientiousnessTerm.FLEXIBLE.value())
                                 .build())
                         .tenancyId("default")
-                        .build());
+                        .build(),
+                new MatchDegree.Exact());
     }
 
     private AgentCandidate conservativeAdvisor() {
@@ -95,7 +97,8 @@ class DispositionAwareRoutingStrategyTest {
                                 .ruleFollowing(ConscientiousnessTerm.STRICT.value())
                                 .build())
                         .tenancyId("default")
-                        .build());
+                        .build(),
+                new MatchDegree.Exact());
     }
 
     // ── Game context builders ───────────────────────────────────────────
@@ -247,7 +250,8 @@ class DispositionAwareRoutingStrategyTest {
     void nullDescriptorTreatedAsBootstrap() {
         // Candidate with null descriptor: no disposition to match, treated as bootstrap
         AgentCandidate noDescriptor = new AgentCandidate(
-                "no-descriptor", Set.of(CAPABILITY), 0, AgentHealth.READY, null);
+                "no-descriptor", Set.of(CAPABILITY), 0, AgentHealth.READY, null,
+                new MatchDegree.None());
 
         StubTrustScoreSource scoreSource = new StubTrustScoreSource();
         // No trust scores seeded → bootstrap phase
