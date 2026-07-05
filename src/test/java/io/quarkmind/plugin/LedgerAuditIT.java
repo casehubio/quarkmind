@@ -1,7 +1,7 @@
 package io.quarkmind.plugin;
 
 import io.casehub.ledger.runtime.model.LedgerEntry;
-import io.casehub.ledger.runtime.repository.LedgerEntryRepository;
+import io.casehub.ledger.memory.InMemoryLedgerEntryRepository;
 import io.casehub.platform.api.identity.TenancyConstants;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.MutableMapCaseContext;
@@ -28,7 +28,7 @@ class LedgerAuditIT {
 
     @Inject DroolsStrategyTask strategyTask;
     @Inject StrategySelector strategySelector;
-    @Inject LedgerEntryRepository ledgerRepo;
+    @Inject InMemoryLedgerEntryRepository ledgerRepo;
     @Inject GameSession gameSession;
     @Inject IntentQueue intentQueue;
 

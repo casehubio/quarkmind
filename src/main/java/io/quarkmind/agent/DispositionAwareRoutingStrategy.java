@@ -56,6 +56,9 @@ import java.util.List;
 @ApplicationScoped
 public class DispositionAwareRoutingStrategy implements AgentRoutingStrategy {
 
+    @Override
+    public String id() { return "quarkmind-disposition-aware"; }
+
     private final TrustCandidateClassifier classifier;
     private final TrustRoutingPolicyProvider policyProvider;
     private final TrustScoreSource scoreSource;
@@ -74,7 +77,7 @@ public class DispositionAwareRoutingStrategy implements AgentRoutingStrategy {
     public Uni<AgentAssignment> select(
             final AgentRoutingContext context, final List<AgentCandidate> candidates) {
         if (candidates.isEmpty()) {
-            return Uni.createFrom().item(AgentAssignment.unresolvable());
+            return Uni.createFrom().item(AgentAssignment.unresolvable("no candidates provided"));
         }
 
         final String capability = context.capabilityName();
@@ -88,7 +91,8 @@ public class DispositionAwareRoutingStrategy implements AgentRoutingStrategy {
             final boolean hasBootstrap = classified.stream().anyMatch(c -> c.phase() == Phase.BOOTSTRAP);
             if (!hasQualified && hasBootstrap) {
                 return Uni.createFrom()
-                        .item(AgentAssignment.escalate(capability, EscalationReason.NO_QUALIFIED_AGENT));
+                        .item(AgentAssignment.escalate(capability, EscalationReason.NO_QUALIFIED_AGENT,
+                                "no qualified agent for capability '%s' — only bootstrap candidates".formatted(capability)));
             }
         }
 
@@ -107,7 +111,8 @@ public class DispositionAwareRoutingStrategy implements AgentRoutingStrategy {
         for (final ClassifiedCandidate cc : eligible) {
             final double trustScore = trustScore(cc, policy);
             final double multiplier = dispositionMultiplier(cc.candidate(), pref);
-            scored.add(new ScoredCandidate(cc, trustScore * multiplier));
+            scored.add(new ScoredCandidate(cc, trustScore * multiplier,
+                "trust=%.3f disposition=%.2f".formatted(trustScore, multiplier)));
         }
 
         // Delegate decision logic to classifier — handles escalation for

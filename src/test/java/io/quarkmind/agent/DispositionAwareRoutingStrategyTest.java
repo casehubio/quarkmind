@@ -57,9 +57,7 @@ class DispositionAwareRoutingStrategyTest {
         scoreSource.setCapabilityScore("conservative-advisor", CAPABILITY, 0.85);
         scoreSource.setDecisionCount("conservative-advisor", CAPABILITY, 20);
 
-        TrustRoutingPolicyProvider policyProvider = cap -> POLICY;
-
-        strategy = new DispositionAwareRoutingStrategy(classifier, policyProvider, scoreSource);
+        strategy = new DispositionAwareRoutingStrategy(classifier, stubPolicyProvider(), scoreSource);
     }
 
     // ── Candidate builders ──────────────────────────────────────────────
@@ -137,7 +135,7 @@ class DispositionAwareRoutingStrategyTest {
     @Test
     void conservativePreferredWhenEnemyAggressive() {
         // Against AGGRESSIVE enemy: prefer conservative (defensive counsel under pressure)
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext());
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default");
         List<AgentCandidate> candidates = List.of(boldAdvisor(), conservativeAdvisor());
 
         AgentAssignment result = strategy.select(ctx, candidates).await().indefinitely();
@@ -150,7 +148,7 @@ class DispositionAwareRoutingStrategyTest {
     @Test
     void boldPreferredWhenEnemyEconomic() {
         // Against ECONOMIC enemy: prefer bold (exploit the opponent's greed window)
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, economicEnemyContext());
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, economicEnemyContext(), "default");
         List<AgentCandidate> candidates = List.of(boldAdvisor(), conservativeAdvisor());
 
         AgentAssignment result = strategy.select(ctx, candidates).await().indefinitely();
@@ -163,7 +161,7 @@ class DispositionAwareRoutingStrategyTest {
     @Test
     void strictPreferredInEarlyGame() {
         // Early game: prefer strict rule following (follow established build orders)
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, earlyGameContext());
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, earlyGameContext(), "default");
         List<AgentCandidate> candidates = List.of(boldAdvisor(), conservativeAdvisor());
 
         AgentAssignment result = strategy.select(ctx, candidates).await().indefinitely();
@@ -176,7 +174,7 @@ class DispositionAwareRoutingStrategyTest {
     @Test
     void flexiblePreferredInLateGame() {
         // Late game: prefer flexible rule following (adapt to evolving situation)
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, lateGameContext());
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, lateGameContext(), "default");
         List<AgentCandidate> candidates = List.of(boldAdvisor(), conservativeAdvisor());
 
         AgentAssignment result = strategy.select(ctx, candidates).await().indefinitely();
@@ -199,10 +197,10 @@ class DispositionAwareRoutingStrategyTest {
         scoreSource.setDecisionCount("conservative-advisor", CAPABILITY, 20);
 
         DispositionAwareRoutingStrategy highTrustStrategy = new DispositionAwareRoutingStrategy(
-                classifier, cap -> POLICY, scoreSource);
+                classifier, stubPolicyProvider(), scoreSource);
 
         // AGGRESSIVE context prefers conservative — but bold has much higher trust
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext());
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default");
         List<AgentCandidate> candidates = List.of(boldAdvisor(), conservativeAdvisor());
 
         AgentAssignment result = highTrustStrategy.select(ctx, candidates).await().indefinitely();
@@ -223,10 +221,10 @@ class DispositionAwareRoutingStrategyTest {
         scoreSource.setDecisionCount("conservative-advisor", CAPABILITY, 20);
 
         DispositionAwareRoutingStrategy neutralStrategy = new DispositionAwareRoutingStrategy(
-                classifier, cap -> POLICY, scoreSource);
+                classifier, stubPolicyProvider(), scoreSource);
 
         ObjectNode emptyContext = MAPPER.createObjectNode();
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, emptyContext);
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, emptyContext, "default");
         List<AgentCandidate> candidates = List.of(boldAdvisor(), conservativeAdvisor());
 
         AgentAssignment result = neutralStrategy.select(ctx, candidates).await().indefinitely();
@@ -238,7 +236,7 @@ class DispositionAwareRoutingStrategyTest {
 
     @Test
     void emptyCandidateListReturnsUnresolvable() {
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext());
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default");
 
         AgentAssignment result = strategy.select(ctx, List.of()).await().indefinitely();
 
@@ -255,9 +253,9 @@ class DispositionAwareRoutingStrategyTest {
         // No trust scores seeded → bootstrap phase
 
         DispositionAwareRoutingStrategy bootstrapStrategy = new DispositionAwareRoutingStrategy(
-                classifier, cap -> POLICY, scoreSource);
+                classifier, stubPolicyProvider(), scoreSource);
 
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext());
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default");
 
         AgentAssignment result = bootstrapStrategy.select(ctx, List.of(noDescriptor))
                 .await().indefinitely();
@@ -316,6 +314,13 @@ class DispositionAwareRoutingStrategyTest {
         double multiplier = onlyRisk.computeMultiplier(matching);
         // Only riskAppetite axis contributes: match → +0.1 on half the range
         assertEquals(1.1, multiplier, 0.001, "Single axis match should give 1.1 multiplier");
+    }
+
+    private static TrustRoutingPolicyProvider stubPolicyProvider() {
+        return new TrustRoutingPolicyProvider() {
+            @Override public String id() { return "test-stub"; }
+            @Override public TrustRoutingPolicy forCapability(String cap) { return POLICY; }
+        };
     }
 
     // ── Stub implementations ────────────────────────────────────────────

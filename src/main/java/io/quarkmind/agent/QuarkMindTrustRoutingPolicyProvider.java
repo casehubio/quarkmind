@@ -24,6 +24,9 @@ import java.util.Map;
 @Priority(1)
 public class QuarkMindTrustRoutingPolicyProvider implements TrustRoutingPolicyProvider {
 
+    @Override
+    public String id() { return "quarkmind-trust-routing"; }
+
     private final int crisisMinObservations;
     private final int strategicMinObservations;
     private final int economicMinObservations;
