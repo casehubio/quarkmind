@@ -6,7 +6,7 @@ import io.casehub.platform.api.identity.ActorType;
 
 import java.time.Instant;
 
-import static io.casehub.ledger.api.model.ActorTrustScore.ScoreType;
+import io.casehub.ledger.api.model.ScoreType;
 
 /**
  * Test helper for seeding trust scores into {@link InMemoryActorTrustScoreRepository}.

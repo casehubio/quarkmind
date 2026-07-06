@@ -1,6 +1,6 @@
 package io.quarkmind.plugin;
 
-import io.casehub.ledger.runtime.model.LedgerEntry;
+import io.casehub.ledger.api.model.LedgerEntry;
 import io.casehub.ledger.memory.InMemoryLedgerEntryRepository;
 import io.casehub.platform.api.identity.TenancyConstants;
 import io.quarkmind.agent.GameSession;

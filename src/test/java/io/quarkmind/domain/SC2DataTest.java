@@ -317,4 +317,124 @@ class SC2DataTest {
     void queenEnergyRegenPerLoopIsPositive() {
         assertThat(SC2Data.QUEEN_ENERGY_REGEN_PER_LOOP).isGreaterThan(0);
     }
+
+    // --- techTier ---
+
+    @Test
+    void techTier_protossT1() {
+        assertThat(SC2Data.techTier(BuildingType.GATEWAY)).hasValue(1);
+    }
+
+    @Test
+    void techTier_protossT2() {
+        assertThat(SC2Data.techTier(BuildingType.ROBOTICS_FACILITY)).hasValue(2);
+        assertThat(SC2Data.techTier(BuildingType.STARGATE)).hasValue(2);
+    }
+
+    @Test
+    void techTier_protossT3() {
+        assertThat(SC2Data.techTier(BuildingType.TWILIGHT_COUNCIL)).hasValue(3);
+        assertThat(SC2Data.techTier(BuildingType.TEMPLAR_ARCHIVES)).hasValue(3);
+        assertThat(SC2Data.techTier(BuildingType.DARK_SHRINE)).hasValue(3);
+    }
+
+    @Test
+    void techTier_protossT4() {
+        assertThat(SC2Data.techTier(BuildingType.FLEET_BEACON)).hasValue(4);
+        assertThat(SC2Data.techTier(BuildingType.ROBOTICS_BAY)).hasValue(4);
+    }
+
+    @Test
+    void techTier_terranT1() {
+        assertThat(SC2Data.techTier(BuildingType.BARRACKS)).hasValue(1);
+    }
+
+    @Test
+    void techTier_terranT2() {
+        assertThat(SC2Data.techTier(BuildingType.FACTORY)).hasValue(2);
+        assertThat(SC2Data.techTier(BuildingType.STARPORT)).hasValue(2);
+    }
+
+    @Test
+    void techTier_terranT3() {
+        assertThat(SC2Data.techTier(BuildingType.GHOST_ACADEMY)).hasValue(3);
+        assertThat(SC2Data.techTier(BuildingType.ARMORY)).hasValue(3);
+    }
+
+    @Test
+    void techTier_terranT4() {
+        assertThat(SC2Data.techTier(BuildingType.FUSION_CORE)).hasValue(4);
+    }
+
+    @Test
+    void techTier_zergT1() {
+        assertThat(SC2Data.techTier(BuildingType.SPAWNING_POOL)).hasValue(1);
+    }
+
+    @Test
+    void techTier_zergT2() {
+        assertThat(SC2Data.techTier(BuildingType.ROACH_WARREN)).hasValue(2);
+        assertThat(SC2Data.techTier(BuildingType.HYDRALISK_DEN)).hasValue(2);
+        assertThat(SC2Data.techTier(BuildingType.BANELING_NEST)).hasValue(2);
+    }
+
+    @Test
+    void techTier_zergT3() {
+        assertThat(SC2Data.techTier(BuildingType.INFESTATION_PIT)).hasValue(3);
+        assertThat(SC2Data.techTier(BuildingType.LURKER_DEN)).hasValue(3);
+    }
+
+    @Test
+    void techTier_zergT4() {
+        assertThat(SC2Data.techTier(BuildingType.GREATER_SPIRE)).hasValue(4);
+        assertThat(SC2Data.techTier(BuildingType.ULTRALISK_CAVERN)).hasValue(4);
+    }
+
+    @Test
+    void techTier_nonTechBuildingsReturnEmpty() {
+        assertThat(SC2Data.techTier(BuildingType.NEXUS)).isEmpty();
+        assertThat(SC2Data.techTier(BuildingType.PYLON)).isEmpty();
+        assertThat(SC2Data.techTier(BuildingType.ASSIMILATOR)).isEmpty();
+        assertThat(SC2Data.techTier(BuildingType.PHOTON_CANNON)).isEmpty();
+        assertThat(SC2Data.techTier(BuildingType.SUPPLY_DEPOT)).isEmpty();
+        assertThat(SC2Data.techTier(BuildingType.HATCHERY)).isEmpty();
+        assertThat(SC2Data.techTier(BuildingType.EXTRACTOR)).isEmpty();
+        assertThat(SC2Data.techTier(BuildingType.UNKNOWN)).isEmpty();
+    }
+
+    // --- isWorker ---
+
+    @Test
+    void isWorker_workersReturnTrue() {
+        assertThat(SC2Data.isWorker(UnitType.PROBE)).isTrue();
+        assertThat(SC2Data.isWorker(UnitType.SCV)).isTrue();
+        assertThat(SC2Data.isWorker(UnitType.DRONE)).isTrue();
+    }
+
+    @Test
+    void isWorker_combatUnitsReturnFalse() {
+        assertThat(SC2Data.isWorker(UnitType.ZEALOT)).isFalse();
+        assertThat(SC2Data.isWorker(UnitType.MARINE)).isFalse();
+        assertThat(SC2Data.isWorker(UnitType.ZERGLING)).isFalse();
+    }
+
+    // --- isBase ---
+
+    @Test
+    void isBase_baseBuildingsReturnTrue() {
+        assertThat(SC2Data.isBase(BuildingType.NEXUS)).isTrue();
+        assertThat(SC2Data.isBase(BuildingType.COMMAND_CENTER)).isTrue();
+        assertThat(SC2Data.isBase(BuildingType.ORBITAL_COMMAND)).isTrue();
+        assertThat(SC2Data.isBase(BuildingType.PLANETARY_FORTRESS)).isTrue();
+        assertThat(SC2Data.isBase(BuildingType.HATCHERY)).isTrue();
+        assertThat(SC2Data.isBase(BuildingType.LAIR)).isTrue();
+        assertThat(SC2Data.isBase(BuildingType.HIVE)).isTrue();
+    }
+
+    @Test
+    void isBase_nonBaseBuildingsReturnFalse() {
+        assertThat(SC2Data.isBase(BuildingType.GATEWAY)).isFalse();
+        assertThat(SC2Data.isBase(BuildingType.BARRACKS)).isFalse();
+        assertThat(SC2Data.isBase(BuildingType.SPAWNING_POOL)).isFalse();
+    }
 }

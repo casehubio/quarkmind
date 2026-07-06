@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +35,7 @@ class MilestoneOutcomeRecorderTest {
         // Default: milestones enabled, dead zone 0.15
         recorder = new MilestoneOutcomeRecorder(
             outcomeRecorder, strategySelector, gameSession, milestoneSession,
-            state -> 0.5, // always returns "moderately ahead"
+            state -> new DominanceScore(0.5, Map.of()), // always returns "moderately ahead"
             List.of(new FrameThresholdTrigger(List.of(
                 new FrameThresholdTrigger.Threshold(4032, 0.3)))),
             true, 0.15);
@@ -96,7 +97,7 @@ class MilestoneOutcomeRecorderTest {
         // dominance assessor returns 0.1 (below dead zone 0.15)
         recorder = new MilestoneOutcomeRecorder(
             outcomeRecorder, strategySelector, gameSession, milestoneSession,
-            state -> 0.1, // below dead zone
+            state -> new DominanceScore(0.1, Map.of()), // below dead zone
             List.of(new FrameThresholdTrigger(List.of(
                 new FrameThresholdTrigger.Threshold(4032, 0.3)))),
             true, 0.15);
@@ -140,7 +141,7 @@ class MilestoneOutcomeRecorderTest {
     void gameEnd_recordsEvenWhenMilestonesDisabled() {
         recorder = new MilestoneOutcomeRecorder(
             outcomeRecorder, strategySelector, gameSession, milestoneSession,
-            state -> 0.5,
+            state -> new DominanceScore(0.5, Map.of()),
             List.of(), false, 0.15); // disabled
 
         recorder.onGameStarted(new GameStarted());

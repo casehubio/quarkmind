@@ -2,7 +2,7 @@ package io.quarkmind.agent;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.casehub.api.context.CaseContext;
-import io.casehub.api.context.ReadablePanel;
+import io.casehub.api.context.ReadableLayer;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -159,7 +159,7 @@ public final class MutableMapCaseContext implements CaseContext {
 
     // ── Unsupported structural operations ─────────────────────────────
 
-    @Override public ReadablePanel              panel(String name)                    { throw new UnsupportedOperationException("MutableMapCaseContext does not support panels"); }
+    @Override public ReadableLayer              layer(String name)                    { throw new UnsupportedOperationException("MutableMapCaseContext does not support layers"); }
     @Override public Object                     getPath(String path)                  { throw new UnsupportedOperationException("MutableMapCaseContext does not support path access"); }
     @Override public String                     getPathAsString(String path)          { throw new UnsupportedOperationException("MutableMapCaseContext does not support path access"); }
     @Override public CaseContext                setPath(String path, Object value)    { throw new UnsupportedOperationException("MutableMapCaseContext does not support path access"); }

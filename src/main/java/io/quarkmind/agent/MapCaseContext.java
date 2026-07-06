@@ -2,7 +2,7 @@ package io.quarkmind.agent;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.casehub.api.context.CaseContext;
-import io.casehub.api.context.ReadablePanel;
+import io.casehub.api.context.ReadableLayer;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -89,7 +89,7 @@ public final class MapCaseContext implements CaseContext {
 
     // ── Unsupported structural operations ──────────────────────────────────────
 
-    @Override public ReadablePanel              panel(String name)                    { throw new UnsupportedOperationException(); }
+    @Override public ReadableLayer              layer(String name)                    { throw new UnsupportedOperationException(); }
     @Override public Object                     getPath(String path)                  { throw new UnsupportedOperationException(); }
     @Override public String                     getPathAsString(String path)          { throw new UnsupportedOperationException(); }
     @Override public CaseContext                setPath(String path, Object value)    { throw new UnsupportedOperationException(); }

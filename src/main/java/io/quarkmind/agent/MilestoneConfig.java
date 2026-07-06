@@ -44,8 +44,30 @@ public interface MilestoneConfig {
     }
 
     interface Dominance {
-        @WithName("max-expected-delta")
-        @WithDefault("40")
-        int maxExpectedDelta();
+        @WithDefault("0.30")
+        double economyWeight();
+        @WithDefault("0.35")
+        double armyWeight();
+        @WithDefault("0.20")
+        double techWeight();
+        @WithDefault("0.15")
+        double basesWeight();
+
+        @WithName("max-expected-economy-delta")
+        @WithDefault("25.0")
+        double maxExpectedEconomyDelta();
+        @WithName("max-expected-army-delta")
+        @WithDefault("3000")
+        int maxExpectedArmyDelta();
+        @WithName("max-expected-tech-delta")
+        @WithDefault("2.0")
+        double maxExpectedTechDelta();
+        @WithName("max-expected-base-delta")
+        @WithDefault("3")
+        int maxExpectedBaseDelta();
+
+        @WithName("min-enemy-visibility")
+        @WithDefault("3")
+        int minEnemyVisibility();
     }
 }

@@ -79,7 +79,7 @@ public interface DominanceAssessor {
 
 Returns [-1.0, +1.0]. Positive = ahead, negative = behind.
 
-**`SupplyDominanceAssessor`** — placeholder implementation. Uses supply advantage as a normalized proxy. Depends on `SC2Data.supplyCost(UnitType)` to convert enemy `Unit` list to supply (the `Unit` record has `type()` but no supply field).
+**`MultiFactorDominanceAssessor`** — four-factor implementation (economy, army value, tech tier, base count) with configurable weights and two-layer fog-of-war guard. Returns `DominanceScore(double overall, Map<String, Double> factors)`. See #223 spec for details.
 
 ```
 score = clamp((mySupplyUsed - enemyArmySupplyEstimate) / maxExpectedDelta, -1.0, 1.0)
@@ -199,7 +199,7 @@ Until engine#648 ships, `MilestoneOutcomeRecorder` checks at startup whether the
 |------|--------|
 | `FrameThresholdTriggerTest` | Fires at correct frames, no double-fire, respects session tracking |
 | `GamePhaseTriggerTest` | Fires on phase transitions, temporal weight = frame/expectedLength clamped [0.1, 0.8], no double-fire |
-| `SupplyDominanceAssessorTest` | Score in [-1.0, +1.0], normalization, fog-of-war edge cases, empty enemyUnits → 0.0 |
+| `MultiFactorDominanceAssessorTest` | Four factors in [-1.0, +1.0], two-layer fog-of-war guard, weighted overall, worker exclusion |
 | `MilestoneSessionTest` | Entry ID per strategy, fired tracking, reset, concurrent access safety |
 | `MilestoneOutcomeRecorderTest` | Milestone → correct verdict/confidence, dead zone → skip, game-end appends to existing entry, no milestones → creates entry at game-end, strategy pivot → separate entries, **SPI fallback: when injected `OutcomeRecorder` is not `AttestingOutcomeRecorder`, `evaluateMilestones()` is a no-op and game-end records via `record()` only** |
 

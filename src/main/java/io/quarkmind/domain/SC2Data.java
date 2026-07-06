@@ -1,6 +1,7 @@
 package io.quarkmind.domain;
 
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
 import static io.quarkmind.domain.UnitAttribute.*;
 
@@ -618,6 +619,60 @@ public final class SC2Data {
                  NYDUS_CANAL -> 1.0f;
             // Medium (3×3 or 4×3) — all remaining tech buildings
             default -> 1.5f;
+        };
+    }
+
+    /**
+     * Tech tier per building type (1-4). Empty for non-tech buildings (bases, supply, defence, gas).
+     */
+    public static OptionalInt techTier(BuildingType type) {
+        return switch (type) {
+            // Protoss T1
+            case GATEWAY -> OptionalInt.of(1);
+            // Protoss T2
+            case ROBOTICS_FACILITY, STARGATE -> OptionalInt.of(2);
+            // Protoss T3
+            case TWILIGHT_COUNCIL, TEMPLAR_ARCHIVES, DARK_SHRINE, FORGE -> OptionalInt.of(3);
+            // Protoss T4
+            case FLEET_BEACON, ROBOTICS_BAY -> OptionalInt.of(4);
+            // Terran T1
+            case BARRACKS -> OptionalInt.of(1);
+            case ENGINEERING_BAY -> OptionalInt.of(1);
+            // Terran T2
+            case FACTORY, STARPORT -> OptionalInt.of(2);
+            // Terran T3
+            case GHOST_ACADEMY, ARMORY -> OptionalInt.of(3);
+            // Terran T4
+            case FUSION_CORE -> OptionalInt.of(4);
+            // Zerg T1
+            case SPAWNING_POOL, EVOLUTION_CHAMBER -> OptionalInt.of(1);
+            // Zerg T2
+            case ROACH_WARREN, BANELING_NEST, HYDRALISK_DEN, SPIRE -> OptionalInt.of(2);
+            // Zerg T3
+            case INFESTATION_PIT, LURKER_DEN, NYDUS_NETWORK -> OptionalInt.of(3);
+            // Zerg T4
+            case GREATER_SPIRE, ULTRALISK_CAVERN -> OptionalInt.of(4);
+            // Non-tech: bases, supply, defence, gas, unknown
+            default -> OptionalInt.empty();
+        };
+    }
+
+    /**
+     * True if the unit is a worker (PROBE, SCV, DRONE).
+     */
+    public static boolean isWorker(UnitType type) {
+        return type == UnitType.PROBE || type == UnitType.SCV || type == UnitType.DRONE;
+    }
+
+    /**
+     * True if the building is a base (NEXUS, COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS,
+     * HATCHERY, LAIR, HIVE).
+     */
+    public static boolean isBase(BuildingType type) {
+        return switch (type) {
+            case NEXUS, COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS,
+                 HATCHERY, LAIR, HIVE -> true;
+            default -> false;
         };
     }
 }
