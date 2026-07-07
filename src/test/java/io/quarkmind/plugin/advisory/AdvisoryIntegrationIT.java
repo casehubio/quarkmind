@@ -44,8 +44,9 @@ class AdvisoryIntegrationIT {
     @Inject AdvisoryInvocationCounter invocationCounter;
     @Inject DeferredAdvisoryEvaluator deferredEvaluator;
     @Inject QuarkMindTrustRoutingPolicyProvider trustRoutingProvider;
-    @Inject QuarkMindAdvisorRegistrar advisorRegistrar;
-    @Inject Event<GameStarted> gameStartedEvent;
+    @Inject
+            QuarkMindAgentRegistrar             advisorRegistrar;
+    @Inject Event<GameStarted>                  gameStartedEvent;
 
     @BeforeEach
     void setUp() {
@@ -228,15 +229,43 @@ class AdvisoryIntegrationIT {
             .containsKeys("response-latency", "recommendation-quality", "game-outcome");
     }
 
-    // ---- QuarkMindAdvisorRegistrar ----
+    // ---- QuarkMindAgentRegistrar ----
 
     @Test
-    void advisorRegistrar_produces6Descriptors() {
+    void agentRegistrar_produces10Descriptors() {
         List<AgentDescriptor> descriptors = advisorRegistrar.descriptors();
 
         assertThat(descriptors)
-            .as("3 roles x 2 disposition variants = 6 descriptors")
-            .hasSize(6);
+            .as("6 advisory + 4 commentary = 10 descriptors")
+            .hasSize(10);
+    }
+
+    @Test
+    void agentRegistrar_produces6AdvisoryDescriptors() {
+        List<AgentDescriptor> descriptors = advisorRegistrar.descriptors();
+
+        long advisoryCount = descriptors.stream()
+            .filter(d -> d.capabilities().stream()
+                .anyMatch(c -> c.name().startsWith("advisory-")))
+            .count();
+
+        assertThat(advisoryCount)
+            .as("3 roles x 2 disposition variants = 6 advisory descriptors")
+            .isEqualTo(6);
+    }
+
+    @Test
+    void agentRegistrar_produces4CommentaryDescriptors() {
+        List<AgentDescriptor> descriptors = advisorRegistrar.descriptors();
+
+        long commentaryCount = descriptors.stream()
+            .filter(d -> d.capabilities().stream()
+                .anyMatch(c -> c.name().startsWith("commentary-")))
+            .count();
+
+        assertThat(commentaryCount)
+            .as("4 commentary descriptors (2 reactive + 2 narrative)")
+            .isEqualTo(4);
     }
 
     @Test

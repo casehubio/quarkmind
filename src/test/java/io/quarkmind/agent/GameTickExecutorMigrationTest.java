@@ -2,6 +2,7 @@ package io.quarkmind.agent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -11,6 +12,8 @@ import static org.mockito.Mockito.when;
 import io.casehub.api.context.CaseContext;
 import io.quarkmind.agent.plugin.SummarisationTickable;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.plugin.commentary.CommentaryAccumulator;
+import io.quarkmind.plugin.commentary.CommentaryTriggerBuilder;
 import io.quarkmind.sc2.SC2Engine;
 import java.time.Duration;
 import java.util.Collections;
@@ -47,6 +50,8 @@ class GameTickExecutorMigrationTest {
     private SummarisationTickable summarisation;
     private DeferredAdvisoryEvaluator deferredAdvisoryEvaluator;
     private MilestoneOutcomeRecorder milestoneOutcomeRecorder;
+    private CommentaryTriggerBuilder commentaryTriggerBuilder;
+    private CommentaryAccumulator commentaryAccumulator;
     private GameTickExecutor executor;
     private UUID sessionId;
 
@@ -60,9 +65,15 @@ class GameTickExecutorMigrationTest {
         summarisation = mock(SummarisationTickable.class);
         deferredAdvisoryEvaluator = mock(DeferredAdvisoryEvaluator.class);
         milestoneOutcomeRecorder = mock(MilestoneOutcomeRecorder.class);
+        commentaryTriggerBuilder = mock(CommentaryTriggerBuilder.class);
+        commentaryAccumulator = mock(CommentaryAccumulator.class);
 
         sessionId = UUID.randomUUID();
         gameSession.setCaseId(sessionId);
+
+        // Mock commentary beans to return empty maps by default (no triggers)
+        when(commentaryTriggerBuilder.build(any(CaseContext.class), anyLong())).thenReturn(Collections.emptyMap());
+        when(commentaryAccumulator.tick(anyLong())).thenReturn(Collections.emptyMap());
 
         executor = new GameTickExecutor();
         executor.engine = engine;
@@ -73,6 +84,8 @@ class GameTickExecutorMigrationTest {
         executor.summarisationLifecycle = summarisation;
         executor.deferredAdvisoryEvaluator = deferredAdvisoryEvaluator;
         executor.milestoneOutcomeRecorder = milestoneOutcomeRecorder;
+        executor.commentaryTriggerBuilder = commentaryTriggerBuilder;
+        executor.commentaryAccumulator = commentaryAccumulator;
     }
 
     @Test

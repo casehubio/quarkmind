@@ -2,6 +2,8 @@ package io.quarkmind.agent;
 
 import io.casehub.api.context.CaseContext;
 import io.quarkmind.agent.plugin.SummarisationTickable;
+import io.quarkmind.plugin.commentary.CommentaryAccumulator;
+import io.quarkmind.plugin.commentary.CommentaryTriggerBuilder;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import io.quarkmind.sc2.SC2Engine;
@@ -24,6 +26,8 @@ class GameTickExecutor {
     @Inject SummarisationTickable  summarisationLifecycle;
     @Inject DeferredAdvisoryEvaluator deferredAdvisoryEvaluator;
     @Inject MilestoneOutcomeRecorder milestoneOutcomeRecorder;
+    @Inject CommentaryTriggerBuilder commentaryTriggerBuilder;
+    @Inject CommentaryAccumulator commentaryAccumulator;
 
     AgentOrchestrator.TickResult execute() {
         long t0 = System.currentTimeMillis();
@@ -47,12 +51,37 @@ class GameTickExecutor {
         // Summarisation: tick L2→L3 and L3→L4 runners (after engine settle, before dispatch)
         summarisationLifecycle.tick(gameState.gameFrame());
 
+        // Commentary accumulation: tick narrative window, emit trigger if ready
+        Map<String, Object> narrativeTriggers = commentaryAccumulator.tick(gameState.gameFrame());
+
         // Milestone evaluation: assess strategy dominance at game-time checkpoints
         milestoneOutcomeRecorder.evaluateMilestones(gameState);
 
         // Deferred advisory evaluation: compare mature advisories against current game state
         if (ctx != null) {
             deferredAdvisoryEvaluator.evaluate(ctx, gameState.gameFrame());
+        }
+
+        // Commentary reactive trigger: fire-and-forget signal for reactive commentary Workers
+        Map<String, Object> reactiveTriggers = Map.of();
+        if (ctx != null) {
+            reactiveTriggers = commentaryTriggerBuilder.build(ctx, gameState.gameFrame());
+            if (!reactiveTriggers.isEmpty()) {
+                caseHub.signal(gameSession.id(), reactiveTriggers)
+                    .exceptionally(ex -> {
+                        log.warnf("Reactive commentary trigger failed at frame %d: %s", gameState.gameFrame(), ex.getMessage());
+                        return null;
+                    });
+            }
+        }
+
+        // Commentary narrative trigger: fire-and-forget signal for narrative commentary Workers
+        if (!narrativeTriggers.isEmpty()) {
+            caseHub.signal(gameSession.id(), narrativeTriggers)
+                .exceptionally(ex -> {
+                    log.warnf("Narrative commentary trigger failed at frame %d: %s", gameState.gameFrame(), ex.getMessage());
+                    return null;
+                });
         }
 
         // Advisory trigger: fire-and-forget signal for advisory Workers

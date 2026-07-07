@@ -11,10 +11,12 @@ import io.casehub.eidos.api.AgentDescriptor;
 import io.casehub.worker.api.Capability;
 import io.casehub.worker.api.Worker;
 import io.casehub.worker.api.WorkerFunction;
-import io.casehub.worker.api.WorkerResult;
 import io.quarkmind.plugin.advisory.AdvisoryWorkerFactory;
 import io.quarkmind.plugin.advisory.CompletionCallback;
-import io.quarkmind.plugin.advisory.QuarkMindAdvisorRegistrar;
+import io.quarkmind.plugin.advisory.QuarkMindAgentRegistrar;
+import io.quarkmind.plugin.commentary.CommentaryCompleted;
+import io.quarkmind.plugin.commentary.CommentaryCompletionCallback;
+import io.quarkmind.plugin.commentary.CommentaryWorkerFactory;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.inject.Any;
@@ -78,6 +80,15 @@ public class QuarkMindCaseHub extends CaseHub {
     /** JQ expression that fires when an economic advisory trigger is set. */
     static final String ECONOMIC_TRIGGER = ".working[\"game.advisory.trigger.economic\"] | . != null";
 
+    // Commentary capability names — must match QuarkMindAgentRegistrar capability names
+    static final String CAPABILITY_COMMENTARY_REACTIVE = "commentary-reactive";
+    static final String CAPABILITY_COMMENTARY_NARRATIVE = "commentary-narrative";
+
+    /** JQ expression that fires when a reactive commentary trigger is set. */
+    static final String REACTIVE_TRIGGER = ".working[\"game.commentary.trigger\"] | . != null";
+    /** JQ expression that fires when a narrative commentary trigger is set. */
+    static final String NARRATIVE_TRIGGER = ".working[\"game.commentary.narrative.trigger\"] | . != null";
+
     /**
      * Plugin execution order within the tick orchestrator, keyed by ID prefix.
      * Plugins whose ID prefix does not appear here are appended at the end.
@@ -101,7 +112,7 @@ public class QuarkMindCaseHub extends CaseHub {
     private volatile List<TaskDefinition> plugins;
 
     /** Advisory registrar — provides AgentDescriptors for LLM advisory workers. */
-    private final QuarkMindAdvisorRegistrar advisorRegistrar;
+    private final QuarkMindAgentRegistrar advisorRegistrar;
 
     /**
      * Optional ChatModel — graceful degradation when no LLM is configured.
@@ -115,6 +126,18 @@ public class QuarkMindCaseHub extends CaseHub {
      * completion callback passed to {@link AdvisoryWorkerFactory}.
      */
     private final Instance<Event<AdvisoryCompleted>> advisoryCompletedEventInstance;
+
+    /**
+     * CDI event for LLM Worker completion — fired by both advisory and commentary
+     * Workers for shared latency recording.
+     */
+    private final Instance<Event<LlmWorkerCompleted>> llmWorkerCompletedEventInstance;
+
+    /**
+     * CDI event for commentary completion — fired by commentary Workers via the
+     * completion callback passed to {@link CommentaryWorkerFactory}.
+     */
+    private final Instance<Event<CommentaryCompleted>> commentaryCompletedEventInstance;
 
     /**
      * Injected separately because the parent's {@code runtime} field is package-private
@@ -131,14 +154,18 @@ public class QuarkMindCaseHub extends CaseHub {
      */
     @Inject
     QuarkMindCaseHub(@Any Instance<TaskDefinition> allTaskDefs,
-                     QuarkMindAdvisorRegistrar advisorRegistrar,
+                     QuarkMindAgentRegistrar advisorRegistrar,
                      Instance<ChatModel> chatModelInstance,
-                     Instance<Event<AdvisoryCompleted>> advisoryCompletedEventInstance) {
+                     Instance<Event<AdvisoryCompleted>> advisoryCompletedEventInstance,
+                     Instance<Event<LlmWorkerCompleted>> llmWorkerCompletedEventInstance,
+                     Instance<Event<CommentaryCompleted>> commentaryCompletedEventInstance) {
         this.taskDefInstance = allTaskDefs;
         this.plugins = null; // resolved lazily
         this.advisorRegistrar = advisorRegistrar;
         this.chatModelInstance = chatModelInstance;
         this.advisoryCompletedEventInstance = advisoryCompletedEventInstance;
+        this.llmWorkerCompletedEventInstance = llmWorkerCompletedEventInstance;
+        this.commentaryCompletedEventInstance = commentaryCompletedEventInstance;
     }
 
     /**
@@ -150,6 +177,8 @@ public class QuarkMindCaseHub extends CaseHub {
         this.advisorRegistrar = null;
         this.chatModelInstance = null;
         this.advisoryCompletedEventInstance = null;
+        this.llmWorkerCompletedEventInstance = null;
+        this.commentaryCompletedEventInstance = null;
         log.infof("[CASEHUB] Discovered %d TaskDefinition implementations", this.plugins.size());
     }
 
@@ -225,6 +254,9 @@ public class QuarkMindCaseHub extends CaseHub {
         // Advisory capabilities, bindings, and workers — only when a ChatModel is available
         int advisoryCount = wireAdvisory(allCapabilities, allBindings, allWorkers);
 
+        // Commentary capabilities, bindings, and workers — only when a ChatModel is available
+        int commentaryCount = wireCommentary(allCapabilities, allBindings, allWorkers);
+
         CaseDefinition.Builder builder = CaseDefinition.builder()
             .namespace("quarkmind")
             .name("starcraft-game")
@@ -234,14 +266,15 @@ public class QuarkMindCaseHub extends CaseHub {
             .workers(allWorkers);
 
         // Register AgentDescriptors on the CaseDefinition for routing
-        if (advisoryCount > 0 && advisorRegistrar != null) {
+        int llmWorkerCount = advisoryCount + commentaryCount;
+        if (llmWorkerCount > 0 && advisorRegistrar != null) {
             for (AgentDescriptor descriptor : advisorRegistrar.descriptors()) {
                 builder.agentDescriptor(descriptor.agentId(), descriptor);
             }
         }
 
-        log.infof("[CASEHUB] Built CaseDefinition: %d capabilities, %d workers, %d bindings (advisory: %d)",
-            allCapabilities.size(), allWorkers.size(), allBindings.size(), advisoryCount);
+        log.infof("[CASEHUB] Built CaseDefinition: %d capabilities, %d workers, %d bindings (advisory: %d, commentary: %d)",
+            allCapabilities.size(), allWorkers.size(), allBindings.size(), advisoryCount, commentaryCount);
 
         return builder.build();
     }
@@ -314,12 +347,17 @@ public class QuarkMindCaseHub extends CaseHub {
         // Advisory workers from factory
         ChatModel chatModel = chatModelInstance.get();
         Event<AdvisoryCompleted> completedEvent = advisoryCompletedEventInstance.get();
+        Event<LlmWorkerCompleted> llmWorkerCompletedEvent = llmWorkerCompletedEventInstance.get();
 
-        // Completion callback — fires AdvisoryCompleted CDI event
+        // Completion callback — fires both AdvisoryCompleted (domain-specific) and
+        // LlmWorkerCompleted (shared latency recording) CDI events
         CompletionCallback completionCallback = (advisorId, capability, gameFrame,
                                                  recommendation, confidence, latencyMs, gameStateSnapshot) -> {
             completedEvent.fire(new AdvisoryCompleted(
                 advisorId, capability, gameFrame, recommendation, confidence, latencyMs, gameStateSnapshot
+            ));
+            llmWorkerCompletedEvent.fire(new LlmWorkerCompleted(
+                advisorId, capability, gameFrame, latencyMs
             ));
         };
 
@@ -329,6 +367,87 @@ public class QuarkMindCaseHub extends CaseHub {
 
         log.infof("[CASEHUB] Wired %d advisory workers across 3 capabilities", advisoryWorkers.size());
         return advisoryWorkers.size();
+    }
+
+    /**
+     * Wires commentary capabilities, bindings, and workers into the CaseDefinition.
+     *
+     * <p>Graceful degradation: if no ChatModel bean is available (e.g. mock/test profiles
+     * without an LLM backend), commentary workers are omitted and a warning is logged.
+     *
+     * @return number of commentary workers added (0 if no ChatModel available)
+     */
+    private int wireCommentary(List<Capability> capabilities, List<Binding> bindings,
+                               List<Worker> workers) {
+        if (chatModelInstance == null || !chatModelInstance.isResolvable()) {
+            log.warn("[CASEHUB] No ChatModel bean available — commentary workers omitted. "
+                    + "Configure an LLM provider (e.g. quarkus-langchain4j-anthropic) to enable commentary.");
+            return 0;
+        }
+        if (advisorRegistrar == null) {
+            log.warn("[CASEHUB] No QuarkMindAgentRegistrar available — commentary workers omitted.");
+            return 0;
+        }
+
+        // Commentary capabilities
+        Capability commentaryReactive = Capability.builder()
+            .name(CAPABILITY_COMMENTARY_REACTIVE)
+            .inputSchema(".working")
+            .outputSchema(".")
+            .description("Reactive commentary — responds to all GameMoment types")
+            .build();
+
+        Capability commentaryNarrative = Capability.builder()
+            .name(CAPABILITY_COMMENTARY_NARRATIVE)
+            .inputSchema(".working")
+            .outputSchema(".")
+            .description("Narrative commentary — periodic strategic summaries")
+            .build();
+
+        capabilities.add(commentaryReactive);
+        capabilities.add(commentaryNarrative);
+
+        // Commentary bindings — fire on trigger keys
+        bindings.add(Binding.builder()
+            .name(CAPABILITY_COMMENTARY_REACTIVE)
+            .capability(commentaryReactive)
+            .on(new ContextChangeTrigger(REACTIVE_TRIGGER))
+            .build());
+
+        bindings.add(Binding.builder()
+            .name(CAPABILITY_COMMENTARY_NARRATIVE)
+            .capability(commentaryNarrative)
+            .on(new ContextChangeTrigger(NARRATIVE_TRIGGER))
+            .build());
+
+        // Commentary workers from factory
+        ChatModel chatModel = chatModelInstance.get();
+        Event<CommentaryCompleted> commentaryCompletedEvent = commentaryCompletedEventInstance.get();
+        Event<LlmWorkerCompleted> llmWorkerCompletedEvent = llmWorkerCompletedEventInstance.get();
+
+        // Completion callback — fires both CommentaryCompleted (domain-specific) and
+        // LlmWorkerCompleted (shared latency recording) CDI events
+        CommentaryCompletionCallback completionCallback = (workerId, capability, gameFrame,
+                                                           text, commentaryType, latencyMs) -> {
+            commentaryCompletedEvent.fire(new CommentaryCompleted(
+                workerId, capability, gameFrame, text, commentaryType, latencyMs
+            ));
+            llmWorkerCompletedEvent.fire(new LlmWorkerCompleted(
+                workerId, capability, gameFrame, latencyMs
+            ));
+        };
+
+        List<Worker> reactiveWorkers = CommentaryWorkerFactory.createReactiveWorkers(
+                advisorRegistrar.descriptors(), chatModel, completionCallback);
+        workers.addAll(reactiveWorkers);
+
+        List<Worker> narrativeWorkers = CommentaryWorkerFactory.createNarrativeWorkers(
+                advisorRegistrar.descriptors(), chatModel, completionCallback);
+        workers.addAll(narrativeWorkers);
+
+        int totalCommentaryWorkers = reactiveWorkers.size() + narrativeWorkers.size();
+        log.infof("[CASEHUB] Wired %d commentary workers across 2 capabilities", totalCommentaryWorkers);
+        return totalCommentaryWorkers;
     }
 
     /**

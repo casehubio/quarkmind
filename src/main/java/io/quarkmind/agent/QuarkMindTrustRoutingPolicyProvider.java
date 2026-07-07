@@ -18,6 +18,7 @@ import java.util.Map;
  * <p>
  * Crisis advisors converge faster (minimumObservations=5);
  * strategic and economic advisors use minimumObservations=10.
+ * Commentary (reactive and narrative) converge fast (minimumObservations=5).
  */
 @ApplicationScoped
 @Alternative
@@ -30,6 +31,7 @@ public class QuarkMindTrustRoutingPolicyProvider implements TrustRoutingPolicyPr
     private final int crisisMinObservations;
     private final int strategicMinObservations;
     private final int economicMinObservations;
+    private final int commentaryMinObservations;
 
     private final double responseLatencyFloor;
     private final double recommendationQualityFloor;
@@ -42,6 +44,8 @@ public class QuarkMindTrustRoutingPolicyProvider implements TrustRoutingPolicyPr
             int strategicMinObservations,
             @ConfigProperty(name = "quarkmind.advisory.trust.economic.min-observations", defaultValue = "10")
             int economicMinObservations,
+            @ConfigProperty(name = "quarkmind.commentary.trust.min-observations", defaultValue = "5")
+            int commentaryMinObservations,
             @ConfigProperty(name = "quarkmind.advisory.trust.quality-floors.response-latency", defaultValue = "0.3")
             double responseLatencyFloor,
             @ConfigProperty(name = "quarkmind.advisory.trust.quality-floors.recommendation-quality", defaultValue = "0.2")
@@ -51,6 +55,7 @@ public class QuarkMindTrustRoutingPolicyProvider implements TrustRoutingPolicyPr
         this.crisisMinObservations = crisisMinObservations;
         this.strategicMinObservations = strategicMinObservations;
         this.economicMinObservations = economicMinObservations;
+        this.commentaryMinObservations = commentaryMinObservations;
         this.responseLatencyFloor = responseLatencyFloor;
         this.recommendationQualityFloor = recommendationQualityFloor;
         this.gameOutcomeFloor = gameOutcomeFloor;
@@ -59,15 +64,17 @@ public class QuarkMindTrustRoutingPolicyProvider implements TrustRoutingPolicyPr
     @Override
     public TrustRoutingPolicy forCapability(String capabilityName) {
         return switch (capabilityName) {
-            case "tick-decision" -> buildPolicy(strategicMinObservations);
-            case "advisory-crisis" -> buildPolicy(crisisMinObservations);
-            case "advisory-strategic" -> buildPolicy(strategicMinObservations);
-            case "advisory-economic" -> buildPolicy(economicMinObservations);
+            case "tick-decision" -> buildAdvisoryPolicy(strategicMinObservations);
+            case "advisory-crisis" -> buildAdvisoryPolicy(crisisMinObservations);
+            case "advisory-strategic" -> buildAdvisoryPolicy(strategicMinObservations);
+            case "advisory-economic" -> buildAdvisoryPolicy(economicMinObservations);
+            case "commentary-reactive" -> buildCommentaryPolicy(commentaryMinObservations, 0.4);
+            case "commentary-narrative" -> buildCommentaryPolicy(commentaryMinObservations, 0.3);
             default -> TrustRoutingPolicy.DEFAULT;
         };
     }
 
-    private TrustRoutingPolicy buildPolicy(int minimumObservations) {
+    private TrustRoutingPolicy buildAdvisoryPolicy(int minimumObservations) {
         Map<String, Double> qualityFloors = Map.of(
                 "response-latency", responseLatencyFloor,
                 "recommendation-quality", recommendationQualityFloor,
@@ -80,6 +87,22 @@ public class QuarkMindTrustRoutingPolicyProvider implements TrustRoutingPolicyPr
                 0.1,                    // borderlineMargin
                 0.6,                    // blendFactor
                 qualityFloors,          // qualityFloors
+                false,                  // bootstrapEscalationRequired
+                null                    // fallbackBinding
+        );
+    }
+
+    private TrustRoutingPolicy buildCommentaryPolicy(int minimumObservations, double latencyFloor) {
+        Map<String, Double> qualityFloors = Map.of(
+                "response-latency", latencyFloor
+        );
+
+        return new TrustRoutingPolicy(
+                0.7,                    // threshold
+                minimumObservations,    // minimumObservations (varies per capability)
+                0.1,                    // borderlineMargin
+                0.6,                    // blendFactor
+                qualityFloors,          // qualityFloors (only response-latency for commentary)
                 false,                  // bootstrapEscalationRequired
                 null                    // fallbackBinding
         );

@@ -55,3 +55,30 @@ then
         GameMomentType.TECH_TRANSITION_DETECTED, currentFrame,
         Map.of("build", ((BuildOrder) $build).detected())));
 end
+
+rule "Army Shift"
+    salience 150
+when
+    $army : /intelEvents[this instanceof ArmySize,
+        previousArmyValue > 0,
+        Math.abs(((ArmySize)this).count() - previousArmyValue) > previousArmyValue * 0.3]
+then
+    detectedMoments.add(new GameMoment(
+        GameMomentType.ARMY_SHIFT, currentFrame,
+        Map.of("previousValue", previousArmyValue, "newValue", ((ArmySize) $army).count())));
+end
+
+rule "Posture Change"
+    salience 140
+when
+    $posture : /intelEvents[this instanceof PostureUpdate,
+        previousPosture != null,
+        !((PostureUpdate)this).posture().equals(previousPosture)]
+then
+    detectedMoments.add(new GameMoment(
+        GameMomentType.POSTURE_CHANGE, currentFrame,
+        Map.of("previousPosture", previousPosture, "newPosture", ((PostureUpdate) $posture).posture())));
+end
+
+// GAME_ENDING: Building count data comes from CaseContext, not ScoutingIntelPayload.
+// Detection is handled directly in MomentDetectionTask.execute() via CaseContext instead of via Drools.

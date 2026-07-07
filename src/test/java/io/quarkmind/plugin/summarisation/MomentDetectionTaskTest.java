@@ -90,4 +90,96 @@ class MomentDetectionTaskTest {
             .filteredOn(e -> e.payload().type() == GameMomentType.FIRST_CONTACT)
             .hasSize(1);
     }
+
+    @Test
+    void detectsArmyShift_whenArmySizeChangesBy30Percent() {
+        // First tick: baseline army size
+        level1Bus.publish(new LevelEvent<>(
+            new ScoutingIntelPayload.ArmySize(10), 100, LEVEL_1));
+        task.fireRules(100);
+
+        // No ARMY_SHIFT on first observation
+        assertThat(receivedMoments)
+            .filteredOn(e -> e.payload().type() == GameMomentType.ARMY_SHIFT)
+            .isEmpty();
+
+        // Second tick: army size increases by 40% (10 → 14)
+        level1Bus.publish(new LevelEvent<>(
+            new ScoutingIntelPayload.ArmySize(14), 200, LEVEL_1));
+        task.fireRules(200);
+
+        assertThat(receivedMoments)
+            .filteredOn(e -> e.payload().type() == GameMomentType.ARMY_SHIFT)
+            .hasSize(1);
+
+        var moment = receivedMoments.stream()
+            .filter(e -> e.payload().type() == GameMomentType.ARMY_SHIFT)
+            .findFirst().get().payload();
+
+        assertThat(moment.context()).containsEntry("previousValue", 10);
+        assertThat(moment.context()).containsEntry("newValue", 14);
+    }
+
+    @Test
+    void doesNotDetectArmyShift_whenChangeUnder30Percent() {
+        // First tick: baseline
+        level1Bus.publish(new LevelEvent<>(
+            new ScoutingIntelPayload.ArmySize(10), 100, LEVEL_1));
+        task.fireRules(100);
+
+        // Second tick: only 20% change (10 → 12)
+        level1Bus.publish(new LevelEvent<>(
+            new ScoutingIntelPayload.ArmySize(12), 200, LEVEL_1));
+        task.fireRules(200);
+
+        assertThat(receivedMoments)
+            .filteredOn(e -> e.payload().type() == GameMomentType.ARMY_SHIFT)
+            .isEmpty();
+    }
+
+    @Test
+    void detectsPostureChange_whenPostureChanges() {
+        // First tick: baseline posture
+        level1Bus.publish(new LevelEvent<>(
+            new ScoutingIntelPayload.PostureUpdate("MACRO"), 100, LEVEL_1));
+        task.fireRules(100);
+
+        // No POSTURE_CHANGE on first observation
+        assertThat(receivedMoments)
+            .filteredOn(e -> e.payload().type() == GameMomentType.POSTURE_CHANGE)
+            .isEmpty();
+
+        // Second tick: posture changes
+        level1Bus.publish(new LevelEvent<>(
+            new ScoutingIntelPayload.PostureUpdate("ATTACK"), 200, LEVEL_1));
+        task.fireRules(200);
+
+        assertThat(receivedMoments)
+            .filteredOn(e -> e.payload().type() == GameMomentType.POSTURE_CHANGE)
+            .hasSize(1);
+
+        var moment = receivedMoments.stream()
+            .filter(e -> e.payload().type() == GameMomentType.POSTURE_CHANGE)
+            .findFirst().get().payload();
+
+        assertThat(moment.context()).containsEntry("previousPosture", "MACRO");
+        assertThat(moment.context()).containsEntry("newPosture", "ATTACK");
+    }
+
+    @Test
+    void doesNotDetectPostureChange_whenPostureStaysSame() {
+        // First tick: baseline
+        level1Bus.publish(new LevelEvent<>(
+            new ScoutingIntelPayload.PostureUpdate("MACRO"), 100, LEVEL_1));
+        task.fireRules(100);
+
+        // Second tick: same posture
+        level1Bus.publish(new LevelEvent<>(
+            new ScoutingIntelPayload.PostureUpdate("MACRO"), 200, LEVEL_1));
+        task.fireRules(200);
+
+        assertThat(receivedMoments)
+            .filteredOn(e -> e.payload().type() == GameMomentType.POSTURE_CHANGE)
+            .isEmpty();
+    }
 }

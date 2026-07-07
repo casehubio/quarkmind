@@ -13,9 +13,15 @@ public class MomentDetectionRuleUnit implements RuleUnitData {
     private final DataStore<ScoutingIntelPayload> intelEvents = DataSource.createStore();
     private final List<GameMoment> detectedMoments = new ArrayList<>();
     private long currentFrame;
+    private int previousArmyValue;
+    private String previousPosture;
 
     public DataStore<ScoutingIntelPayload> getIntelEvents() { return intelEvents; }
     public List<GameMoment> getDetectedMoments() { return detectedMoments; }
     public long getCurrentFrame() { return currentFrame; }
     public void setCurrentFrame(long currentFrame) { this.currentFrame = currentFrame; }
+    public int getPreviousArmyValue() { return previousArmyValue; }
+    public void setPreviousArmyValue(int previousArmyValue) { this.previousArmyValue = previousArmyValue; }
+    public String getPreviousPosture() { return previousPosture; }
+    public void setPreviousPosture(String previousPosture) { this.previousPosture = previousPosture; }
 }

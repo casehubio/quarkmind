@@ -12,7 +12,7 @@ class QuarkMindTrustRoutingPolicyProviderTest {
     @Test
     void tickDecisionReturnsStrategyPolicy() {
         var provider = new QuarkMindTrustRoutingPolicyProvider(
-                5, 10, 10,
+                5, 10, 10, 5,
                 0.3, 0.2, 0.2
         );
 
@@ -26,7 +26,7 @@ class QuarkMindTrustRoutingPolicyProviderTest {
     @Test
     void advisoryCrisisReturnsCorrectPolicy() {
         var provider = new QuarkMindTrustRoutingPolicyProvider(
-                5, 10, 10,
+                5, 10, 10, 5,
                 0.3, 0.2, 0.2
         );
 
@@ -40,7 +40,7 @@ class QuarkMindTrustRoutingPolicyProviderTest {
     @Test
     void advisoryStrategicReturnsCorrectPolicy() {
         var provider = new QuarkMindTrustRoutingPolicyProvider(
-                5, 10, 10,
+                5, 10, 10, 5,
                 0.3, 0.2, 0.2
         );
 
@@ -54,7 +54,7 @@ class QuarkMindTrustRoutingPolicyProviderTest {
     @Test
     void advisoryEconomicReturnsCorrectPolicy() {
         var provider = new QuarkMindTrustRoutingPolicyProvider(
-                5, 10, 10,
+                5, 10, 10, 5,
                 0.3, 0.2, 0.2
         );
 
@@ -68,7 +68,7 @@ class QuarkMindTrustRoutingPolicyProviderTest {
     @Test
     void qualityFloorsMatchConfiguredValues() {
         var provider = new QuarkMindTrustRoutingPolicyProvider(
-                5, 10, 10,
+                5, 10, 10, 5,
                 0.3, 0.2, 0.2
         );
 
@@ -86,7 +86,7 @@ class QuarkMindTrustRoutingPolicyProviderTest {
     @Test
     void allCapabilitiesUseSameQualityFloors() {
         var provider = new QuarkMindTrustRoutingPolicyProvider(
-                5, 10, 10,
+                5, 10, 10, 5,
                 0.3, 0.2, 0.2
         );
 
@@ -105,7 +105,7 @@ class QuarkMindTrustRoutingPolicyProviderTest {
     @Test
     void unknownCapabilityReturnsDefault() {
         var provider = new QuarkMindTrustRoutingPolicyProvider(
-                5, 10, 10,
+                5, 10, 10, 5,
                 0.3, 0.2, 0.2
         );
 
@@ -114,5 +114,82 @@ class QuarkMindTrustRoutingPolicyProviderTest {
         assertNotNull(policy);
         assertEquals(TrustRoutingPolicy.DEFAULT, policy,
                 "unknown capabilities should return TrustRoutingPolicy.DEFAULT");
+    }
+
+    @Test
+    void commentaryReactive_hasCorrectMinObservations() {
+        var provider = new QuarkMindTrustRoutingPolicyProvider(
+                5, 10, 10, 5,
+                0.3, 0.2, 0.2
+        );
+
+        TrustRoutingPolicy policy = provider.forCapability("commentary-reactive");
+
+        assertNotNull(policy);
+        assertEquals(5, policy.minimumObservations(),
+                "reactive commentary should converge fast with minimumObservations=5");
+    }
+
+    @Test
+    void commentaryNarrative_hasCorrectMinObservations() {
+        var provider = new QuarkMindTrustRoutingPolicyProvider(
+                5, 10, 10, 5,
+                0.3, 0.2, 0.2
+        );
+
+        TrustRoutingPolicy policy = provider.forCapability("commentary-narrative");
+
+        assertNotNull(policy);
+        assertEquals(5, policy.minimumObservations(),
+                "narrative commentary should converge fast with minimumObservations=5");
+    }
+
+    @Test
+    void commentaryReactive_hasResponseLatencyFloorOnly() {
+        var provider = new QuarkMindTrustRoutingPolicyProvider(
+                5, 10, 10, 5,
+                0.3, 0.2, 0.2
+        );
+
+        TrustRoutingPolicy policy = provider.forCapability("commentary-reactive");
+
+        Map<String, Double> qualityFloors = policy.qualityFloors();
+        assertEquals(1, qualityFloors.size(),
+                "Reactive commentary should only have response-latency quality floor");
+        assertEquals(0.4, qualityFloors.get("response-latency"),
+                "reactive commentary response-latency floor should be 0.4");
+    }
+
+    @Test
+    void commentaryNarrative_hasResponseLatencyFloorOnly() {
+        var provider = new QuarkMindTrustRoutingPolicyProvider(
+                5, 10, 10, 5,
+                0.3, 0.2, 0.2
+        );
+
+        TrustRoutingPolicy policy = provider.forCapability("commentary-narrative");
+
+        Map<String, Double> qualityFloors = policy.qualityFloors();
+        assertEquals(1, qualityFloors.size(),
+                "Narrative commentary should only have response-latency quality floor");
+        assertEquals(0.3, qualityFloors.get("response-latency"),
+                "narrative commentary response-latency floor should be 0.3");
+    }
+
+    @Test
+    void advisory_hasAllThreeQualityFloors() {
+        var provider = new QuarkMindTrustRoutingPolicyProvider(
+                5, 10, 10, 5,
+                0.3, 0.2, 0.2
+        );
+
+        TrustRoutingPolicy policy = provider.forCapability("advisory-crisis");
+
+        Map<String, Double> qualityFloors = policy.qualityFloors();
+        assertEquals(3, qualityFloors.size(),
+                "Advisory should have all three quality floors");
+        assertTrue(qualityFloors.containsKey("response-latency"));
+        assertTrue(qualityFloors.containsKey("recommendation-quality"));
+        assertTrue(qualityFloors.containsKey("game-outcome"));
     }
 }

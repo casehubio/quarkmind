@@ -11,22 +11,28 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 
 /**
- * Registers QuarkMind's 6 LLM advisor configurations as eidos AgentDescriptors.
+ * Registers QuarkMind's 10 LLM agent configurations as eidos AgentDescriptors.
  * <p>
- * Three advisory roles (crisis, strategic, economic), each with two disposition variants:
+ * <b>Advisory agents (6):</b> Three advisory roles (crisis, strategic, economic), each with two disposition variants:
  * <ul>
  * <li><b>Crisis:</b> aggressive (bold, flexible) + conservative (conservative, strict)</li>
  * <li><b>Strategic:</b> bold (bold, flexible) + measured (measured, principled)</li>
  * <li><b>Economic:</b> expansion (bold, collaborative) + defensive (conservative, independent)</li>
  * </ul>
  * <p>
+ * <b>Commentary agents (4):</b> Two commentary modes (reactive, narrative), each with two disposition variants:
+ * <ul>
+ * <li><b>Reactive:</b> energetic (bold, flexible) + analytical (conservative, strict)</li>
+ * <li><b>Narrative:</b> dramatic (bold, flexible) + tactical (conservative, strict)</li>
+ * </ul>
+ * <p>
  * Agent identity format: {@code {model-family}:{persona}@{major}} per PLATFORM.md line 591.
  * <p>
- * Disposition traits use {@link ConscientiousnessTerm} values. Capability names match advisory
- * role names ({@code advisory-crisis}, {@code advisory-strategic}, {@code advisory-economic}).
+ * Disposition traits use {@link ConscientiousnessTerm} values. Capability names match role types
+ * ({@code advisory-*}, {@code commentary-reactive}, {@code commentary-narrative}).
  */
 @ApplicationScoped
-public class QuarkMindAdvisorRegistrar implements AgentDescriptorRegistrar {
+public class QuarkMindAgentRegistrar implements AgentDescriptorRegistrar {
 
     private static final String PROVIDER = "anthropic";
     private static final String MODEL_FAMILY = "claude";
@@ -42,7 +48,11 @@ public class QuarkMindAdvisorRegistrar implements AgentDescriptorRegistrar {
                 buildStrategicBold(),
                 buildStrategicMeasured(),
                 buildEconomicExpansion(),
-                buildEconomicDefensive()
+                buildEconomicDefensive(),
+                buildCommentatorEnergetic(),
+                buildCommentatorAnalytical(),
+                buildNarratorDramatic(),
+                buildNarratorTactical()
         );
     }
 
@@ -215,6 +225,122 @@ public class QuarkMindAdvisorRegistrar implements AgentDescriptorRegistrar {
                                 .latencyHintP50Ms(2500L)
                                 .qualityHint(0.7)
                                 .tags(List.of("starcraft.advisory.economic"))
+                                .build()))
+                .tenancyId(TENANT_ID)
+                .build();
+    }
+
+    // Commentary agents — reactive
+
+    private AgentDescriptor buildCommentatorEnergetic() {
+        return AgentDescriptor.builder()
+                .agentId("claude:commentator-energetic@v1")
+                .name("Energetic Commentator")
+                .provider(PROVIDER)
+                .modelFamily(MODEL_FAMILY)
+                .modelVersion(MODEL_VERSION)
+                .slot("commentator")
+                .slotVocabulary(SLOT_VOCABULARY)
+                .disposition(AgentDisposition.builder()
+                        .socialOrient(ConscientiousnessTerm.COLLABORATIVE.value())
+                        .ruleFollowing(ConscientiousnessTerm.FLEXIBLE.value())
+                        .riskAppetite(ConscientiousnessTerm.BOLD.value())
+                        .autonomy(ConscientiousnessTerm.SEMI_AUTONOMOUS.value())
+                        .conflictMode("collaborate")
+                        .delegation(false)
+                        .build())
+                .capabilities(List.of(
+                        AgentCapability.builder()
+                                .name("commentary-reactive")
+                                .latencyHintP50Ms(1500L)  // Fast — reactive commentary
+                                .qualityHint(0.7)
+                                .tags(List.of("starcraft.commentary.reactive"))
+                                .build()))
+                .tenancyId(TENANT_ID)
+                .build();
+    }
+
+    private AgentDescriptor buildCommentatorAnalytical() {
+        return AgentDescriptor.builder()
+                .agentId("claude:commentator-analytical@v1")
+                .name("Analytical Commentator")
+                .provider(PROVIDER)
+                .modelFamily(MODEL_FAMILY)
+                .modelVersion(MODEL_VERSION)
+                .slot("commentator")
+                .slotVocabulary(SLOT_VOCABULARY)
+                .disposition(AgentDisposition.builder()
+                        .socialOrient(ConscientiousnessTerm.COLLABORATIVE.value())
+                        .ruleFollowing(ConscientiousnessTerm.STRICT.value())
+                        .riskAppetite(ConscientiousnessTerm.CONSERVATIVE.value())
+                        .autonomy(ConscientiousnessTerm.SEMI_AUTONOMOUS.value())
+                        .conflictMode("collaborate")
+                        .delegation(false)
+                        .build())
+                .capabilities(List.of(
+                        AgentCapability.builder()
+                                .name("commentary-reactive")
+                                .latencyHintP50Ms(1500L)  // Fast — reactive commentary
+                                .qualityHint(0.7)
+                                .tags(List.of("starcraft.commentary.reactive"))
+                                .build()))
+                .tenancyId(TENANT_ID)
+                .build();
+    }
+
+    // Commentary agents — narrative
+
+    private AgentDescriptor buildNarratorDramatic() {
+        return AgentDescriptor.builder()
+                .agentId("claude:narrator-dramatic@v1")
+                .name("Dramatic Narrator")
+                .provider(PROVIDER)
+                .modelFamily(MODEL_FAMILY)
+                .modelVersion(MODEL_VERSION)
+                .slot("narrator")
+                .slotVocabulary(SLOT_VOCABULARY)
+                .disposition(AgentDisposition.builder()
+                        .socialOrient(ConscientiousnessTerm.COLLABORATIVE.value())
+                        .ruleFollowing(ConscientiousnessTerm.FLEXIBLE.value())
+                        .riskAppetite(ConscientiousnessTerm.BOLD.value())
+                        .autonomy(ConscientiousnessTerm.SEMI_AUTONOMOUS.value())
+                        .conflictMode("collaborate")
+                        .delegation(false)
+                        .build())
+                .capabilities(List.of(
+                        AgentCapability.builder()
+                                .name("commentary-narrative")
+                                .latencyHintP50Ms(3000L)  // Moderate — narrative commentary
+                                .qualityHint(0.7)
+                                .tags(List.of("starcraft.commentary.narrative"))
+                                .build()))
+                .tenancyId(TENANT_ID)
+                .build();
+    }
+
+    private AgentDescriptor buildNarratorTactical() {
+        return AgentDescriptor.builder()
+                .agentId("claude:narrator-tactical@v1")
+                .name("Tactical Narrator")
+                .provider(PROVIDER)
+                .modelFamily(MODEL_FAMILY)
+                .modelVersion(MODEL_VERSION)
+                .slot("narrator")
+                .slotVocabulary(SLOT_VOCABULARY)
+                .disposition(AgentDisposition.builder()
+                        .socialOrient(ConscientiousnessTerm.COLLABORATIVE.value())
+                        .ruleFollowing(ConscientiousnessTerm.STRICT.value())
+                        .riskAppetite(ConscientiousnessTerm.CONSERVATIVE.value())
+                        .autonomy(ConscientiousnessTerm.SEMI_AUTONOMOUS.value())
+                        .conflictMode("collaborate")
+                        .delegation(false)
+                        .build())
+                .capabilities(List.of(
+                        AgentCapability.builder()
+                                .name("commentary-narrative")
+                                .latencyHintP50Ms(3000L)  // Moderate — narrative commentary
+                                .qualityHint(0.7)
+                                .tags(List.of("starcraft.commentary.narrative"))
                                 .build()))
                 .tenancyId(TENANT_ID)
                 .build();

@@ -13,29 +13,53 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Unit test for QuarkMindAdvisorRegistrar.
+ * Unit test for QuarkMindAgentRegistrar.
  * <p>
- * Verifies 6 advisor configurations (2 per role × 3 roles) with correct:
+ * Verifies 10 agent configurations (6 advisory + 4 commentary) with correct:
  * - Agent ID format: {model-family}:{persona}@{major}
  * - Capability names and tags
  * - Disposition traits mapped to ConscientiousnessTerm values
  * - Latency hints matching role profile
  * - Slot, provider, and tenancy fields
  */
-class QuarkMindAdvisorRegistrarTest {
+class QuarkMindAgentRegistrarTest {
 
     @Test
-    void registrar_returns_six_advisor_descriptors() {
-        QuarkMindAdvisorRegistrar registrar = new QuarkMindAdvisorRegistrar();
+    void registrar_returns_ten_agent_descriptors() {
+        QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
 
         List<AgentDescriptor> descriptors = registrar.descriptors();
 
-        assertThat(descriptors).hasSize(6);
+        assertThat(descriptors).hasSize(10);
+    }
+
+    @Test
+    void registrar_returns_six_advisory_descriptors() {
+        QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
+
+        List<AgentDescriptor> descriptors = registrar.descriptors();
+        long advisoryCount = descriptors.stream()
+                .filter(d -> d.capabilities().stream().anyMatch(c -> c.name().startsWith("advisory-")))
+                .count();
+
+        assertThat(advisoryCount).isEqualTo(6);
+    }
+
+    @Test
+    void registrar_returns_four_commentary_descriptors() {
+        QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
+
+        List<AgentDescriptor> descriptors = registrar.descriptors();
+        long commentaryCount = descriptors.stream()
+                .filter(d -> d.capabilities().stream().anyMatch(c -> c.name().startsWith("commentary-")))
+                .count();
+
+        assertThat(commentaryCount).isEqualTo(4);
     }
 
     @Test
     void crisis_advisors_have_correct_configurations() {
-        QuarkMindAdvisorRegistrar registrar = new QuarkMindAdvisorRegistrar();
+        QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
 
         List<AgentDescriptor> descriptors = registrar.descriptors();
         List<AgentDescriptor> crisisAdvisors = descriptors.stream()
@@ -107,7 +131,7 @@ class QuarkMindAdvisorRegistrarTest {
 
     @Test
     void strategic_advisors_have_correct_configurations() {
-        QuarkMindAdvisorRegistrar registrar = new QuarkMindAdvisorRegistrar();
+        QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
 
         List<AgentDescriptor> descriptors = registrar.descriptors();
         List<AgentDescriptor> strategicAdvisors = descriptors.stream()
@@ -179,7 +203,7 @@ class QuarkMindAdvisorRegistrarTest {
 
     @Test
     void economic_advisors_have_correct_configurations() {
-        QuarkMindAdvisorRegistrar registrar = new QuarkMindAdvisorRegistrar();
+        QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
 
         List<AgentDescriptor> descriptors = registrar.descriptors();
         List<AgentDescriptor> economicAdvisors = descriptors.stream()
@@ -251,7 +275,7 @@ class QuarkMindAdvisorRegistrarTest {
 
     @Test
     void all_agent_ids_follow_platform_format() {
-        QuarkMindAdvisorRegistrar registrar = new QuarkMindAdvisorRegistrar();
+        QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
 
         List<AgentDescriptor> descriptors = registrar.descriptors();
 
@@ -263,7 +287,7 @@ class QuarkMindAdvisorRegistrarTest {
 
     @Test
     void all_descriptors_use_default_tenant() {
-        QuarkMindAdvisorRegistrar registrar = new QuarkMindAdvisorRegistrar();
+        QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
 
         List<AgentDescriptor> descriptors = registrar.descriptors();
 
@@ -273,8 +297,8 @@ class QuarkMindAdvisorRegistrarTest {
     }
 
     @Test
-    void capabilities_map_to_advisory_role_names() {
-        QuarkMindAdvisorRegistrar registrar = new QuarkMindAdvisorRegistrar();
+    void capabilities_map_to_advisory_and_commentary_role_names() {
+        QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
 
         List<AgentDescriptor> descriptors = registrar.descriptors();
 
@@ -284,10 +308,12 @@ class QuarkMindAdvisorRegistrarTest {
                 .map(AgentCapability::name)
                 .collect(Collectors.groupingBy(name -> name, Collectors.counting()));
 
-        // Should have exactly 3 capability types, 2 advisors each
-        assertThat(capabilityCounts).hasSize(3);
+        // Should have 5 capability types: 3 advisory (2 agents each) + 2 commentary (2 agents each)
+        assertThat(capabilityCounts).hasSize(5);
         assertThat(capabilityCounts.get("advisory-crisis")).isEqualTo(2L);
         assertThat(capabilityCounts.get("advisory-strategic")).isEqualTo(2L);
         assertThat(capabilityCounts.get("advisory-economic")).isEqualTo(2L);
+        assertThat(capabilityCounts.get("commentary-reactive")).isEqualTo(2L);
+        assertThat(capabilityCounts.get("commentary-narrative")).isEqualTo(2L);
     }
 }

@@ -34,26 +34,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AdvisoryWorkerFactoryTest {
 
     @Test
-    void creates_six_workers_from_six_descriptors() {
-        QuarkMindAdvisorRegistrar registrar = new QuarkMindAdvisorRegistrar();
-        ChatModel stubModel = stubChatModel("Recommendation text");
+    void creates_six_workers_from_six_advisory_descriptors() {
+        QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
+        ChatModel               stubModel = stubChatModel("Recommendation text");
+
+        // Filter to only advisory descriptors
+        List<AgentDescriptor> advisoryDescriptors = registrar.descriptors().stream()
+                .filter(d -> d.capabilities().stream().anyMatch(c -> c.name().startsWith("advisory-")))
+                .toList();
 
         List<Worker> workers = AdvisoryWorkerFactory.createWorkers(
-                registrar.descriptors(), stubModel, noOpCallback());
+                advisoryDescriptors, stubModel, noOpCallback());
 
         assertThat(workers).hasSize(6);
     }
 
     @Test
     void worker_names_match_descriptor_agent_ids() {
-        QuarkMindAdvisorRegistrar registrar = new QuarkMindAdvisorRegistrar();
-        ChatModel stubModel = stubChatModel("Recommendation text");
+        QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
+        ChatModel               stubModel = stubChatModel("Recommendation text");
+
+        // Filter to only advisory descriptors
+        List<AgentDescriptor> advisoryDescriptors = registrar.descriptors().stream()
+                .filter(d -> d.capabilities().stream().anyMatch(c -> c.name().startsWith("advisory-")))
+                .toList();
 
         List<Worker> workers = AdvisoryWorkerFactory.createWorkers(
-                registrar.descriptors(), stubModel, noOpCallback());
+                advisoryDescriptors, stubModel, noOpCallback());
 
         List<String> workerNames = workers.stream().map(Worker::name).toList();
-        List<String> descriptorIds = registrar.descriptors().stream()
+        List<String> descriptorIds = advisoryDescriptors.stream()
                 .map(AgentDescriptor::agentId).toList();
 
         assertThat(workerNames).containsExactlyElementsOf(descriptorIds);
@@ -61,16 +71,21 @@ class AdvisoryWorkerFactoryTest {
 
     @Test
     void worker_capability_names_match_descriptor_capabilities() {
-        QuarkMindAdvisorRegistrar registrar = new QuarkMindAdvisorRegistrar();
-        ChatModel stubModel = stubChatModel("Recommendation text");
+        QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
+        ChatModel               stubModel = stubChatModel("Recommendation text");
+
+        // Filter to only advisory descriptors
+        List<AgentDescriptor> advisoryDescriptors = registrar.descriptors().stream()
+                .filter(d -> d.capabilities().stream().anyMatch(c -> c.name().startsWith("advisory-")))
+                .toList();
 
         List<Worker> workers = AdvisoryWorkerFactory.createWorkers(
-                registrar.descriptors(), stubModel, noOpCallback());
+                advisoryDescriptors, stubModel, noOpCallback());
 
         // Each worker's capabilityNames set should contain the descriptor's first capability name
         for (int i = 0; i < workers.size(); i++) {
             Worker worker = workers.get(i);
-            AgentDescriptor descriptor = registrar.descriptors().get(i);
+            AgentDescriptor descriptor = advisoryDescriptors.get(i);
             String expectedCapability = descriptor.capabilities().get(0).name();
             assertThat(worker.capabilityNames())
                     .as("Worker %s capability", worker.name())

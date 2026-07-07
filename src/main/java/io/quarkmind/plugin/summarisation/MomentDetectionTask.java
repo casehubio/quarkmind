@@ -36,6 +36,8 @@ public class MomentDetectionTask implements MomentDetectionSeam {
     private EventStreamBus<ScoutingIntelPayload> level1Bus;
     private EventStreamBus<GameMoment> momentBus;
     private boolean firstContactFired = false;
+    private int previousArmyValue = 0;
+    private String previousPosture = null;
 
     @Inject
     public MomentDetectionTask(RuleUnit<MomentDetectionRuleUnit> ruleUnit) {
@@ -95,14 +97,25 @@ public class MomentDetectionTask implements MomentDetectionSeam {
 
         var data = new MomentDetectionRuleUnit();
         data.setCurrentFrame(frame);
+        data.setPreviousArmyValue(previousArmyValue);
+        data.setPreviousPosture(previousPosture);
         for (var payload : pendingIntel) {
             data.getIntelEvents().add(payload);
         }
-        pendingIntel.clear();
 
         try (RuleUnitInstance<MomentDetectionRuleUnit> instance = ruleUnit.createInstance(data)) {
             instance.fire();
         }
+
+        // Update state from pendingIntel before clearing
+        for (var payload : pendingIntel) {
+            if (payload instanceof ScoutingIntelPayload.ArmySize armySize) {
+                previousArmyValue = armySize.count();
+            } else if (payload instanceof ScoutingIntelPayload.PostureUpdate postureUpdate) {
+                previousPosture = postureUpdate.posture();
+            }
+        }
+        pendingIntel.clear();
 
         // Apply deduplication after Drools fires
         List<GameMoment> deduplicated = new ArrayList<>();
@@ -126,6 +139,8 @@ public class MomentDetectionTask implements MomentDetectionSeam {
     void onGameStarted(@Observes GameStarted event) {
         pendingIntel.clear();
         firstContactFired = false;
+        previousArmyValue = 0;
+        previousPosture = null;
     }
 
 }

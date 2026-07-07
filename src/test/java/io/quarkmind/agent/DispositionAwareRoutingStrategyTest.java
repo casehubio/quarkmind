@@ -138,7 +138,7 @@ class DispositionAwareRoutingStrategyTest {
     @Test
     void conservativePreferredWhenEnemyAggressive() {
         // Against AGGRESSIVE enemy: prefer conservative (defensive counsel under pressure)
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default");
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of());
         List<AgentCandidate> candidates = List.of(boldAdvisor(), conservativeAdvisor());
 
         AgentAssignment result = strategy.select(ctx, candidates).await().indefinitely();
@@ -151,7 +151,7 @@ class DispositionAwareRoutingStrategyTest {
     @Test
     void boldPreferredWhenEnemyEconomic() {
         // Against ECONOMIC enemy: prefer bold (exploit the opponent's greed window)
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, economicEnemyContext(), "default");
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, economicEnemyContext(), "default", List.of());
         List<AgentCandidate> candidates = List.of(boldAdvisor(), conservativeAdvisor());
 
         AgentAssignment result = strategy.select(ctx, candidates).await().indefinitely();
@@ -164,7 +164,7 @@ class DispositionAwareRoutingStrategyTest {
     @Test
     void strictPreferredInEarlyGame() {
         // Early game: prefer strict rule following (follow established build orders)
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, earlyGameContext(), "default");
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, earlyGameContext(), "default", List.of());
         List<AgentCandidate> candidates = List.of(boldAdvisor(), conservativeAdvisor());
 
         AgentAssignment result = strategy.select(ctx, candidates).await().indefinitely();
@@ -177,7 +177,7 @@ class DispositionAwareRoutingStrategyTest {
     @Test
     void flexiblePreferredInLateGame() {
         // Late game: prefer flexible rule following (adapt to evolving situation)
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, lateGameContext(), "default");
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, lateGameContext(), "default", List.of());
         List<AgentCandidate> candidates = List.of(boldAdvisor(), conservativeAdvisor());
 
         AgentAssignment result = strategy.select(ctx, candidates).await().indefinitely();
@@ -203,7 +203,7 @@ class DispositionAwareRoutingStrategyTest {
                 classifier, stubPolicyProvider(), scoreSource);
 
         // AGGRESSIVE context prefers conservative — but bold has much higher trust
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default");
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of());
         List<AgentCandidate> candidates = List.of(boldAdvisor(), conservativeAdvisor());
 
         AgentAssignment result = highTrustStrategy.select(ctx, candidates).await().indefinitely();
@@ -227,7 +227,7 @@ class DispositionAwareRoutingStrategyTest {
                 classifier, stubPolicyProvider(), scoreSource);
 
         ObjectNode emptyContext = MAPPER.createObjectNode();
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, emptyContext, "default");
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, emptyContext, "default", List.of());
         List<AgentCandidate> candidates = List.of(boldAdvisor(), conservativeAdvisor());
 
         AgentAssignment result = neutralStrategy.select(ctx, candidates).await().indefinitely();
@@ -239,7 +239,7 @@ class DispositionAwareRoutingStrategyTest {
 
     @Test
     void emptyCandidateListReturnsUnresolvable() {
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default");
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of());
 
         AgentAssignment result = strategy.select(ctx, List.of()).await().indefinitely();
 
@@ -259,7 +259,7 @@ class DispositionAwareRoutingStrategyTest {
         DispositionAwareRoutingStrategy bootstrapStrategy = new DispositionAwareRoutingStrategy(
                 classifier, stubPolicyProvider(), scoreSource);
 
-        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default");
+        AgentRoutingContext ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of());
 
         AgentAssignment result = bootstrapStrategy.select(ctx, List.of(noDescriptor))
                 .await().indefinitely();
