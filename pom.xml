@@ -156,6 +156,11 @@
             <groupId>io.casehub</groupId>
             <artifactId>casehub-qhorus</artifactId>
         </dependency>
+        <!-- casehub-blocks: reusable building blocks — summarisation framework -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-blocks</artifactId>
+        </dependency>
         <!-- H2 JDBC driver for the qhorus named datasource (db-kind=h2 in application.properties) -->
         <dependency>
             <groupId>io.quarkus</groupId>

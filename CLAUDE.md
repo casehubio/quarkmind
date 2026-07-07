@@ -119,6 +119,11 @@ This is an application, not a framework. If the capability requires SC2 game kno
 
 ---
 
+## Platform Docs
+- [Platform Index](https://raw.githubusercontent.com/casehubio/parent/main/docs/INDEX.md) — discovery index (start here)
+- [Building Apps](https://raw.githubusercontent.com/casehubio/parent/main/docs/guides/building-apps.md) — app developer guide with cross-app patterns
+- [This repo's deep-dive](https://raw.githubusercontent.com/casehubio/parent/main/docs/repos/quarkmind.md)
+
 ## Reference Documents
 
 | Document | What it covers |

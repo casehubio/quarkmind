@@ -15,8 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
-import jakarta.enterprise.inject.Any;
-import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
@@ -51,7 +49,6 @@ public class MomentBroker {
     @Inject ChannelService channelService;
     @Inject MessageService messageService;
     @Inject ObjectMapper objectMapper;
-    @Inject @Any Instance<MomentConsumer> consumers;
     @Inject MomentDetectionTask momentDetectionTask;
     @Inject SummarisationLifecycle summarisationLifecycle;
 

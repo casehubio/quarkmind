@@ -82,6 +82,7 @@ JAVA_HOME=$(/usr/libexec/java_home -v 26) mvn clean install
 | `quarkus-flow` | ✅ Quarkus-native |
 | `ocraft-s2client-protocol` | 🔲 Not verified — protobuf-java + jackson only; no Vert.x/RxJava2 (#185 removed transport layer). Tracked in `NATIVE.md`. |
 | `scelight-mpq` + `scelight-s2protocol` | ❌ JVM-only — tracked in `NATIVE.md` |
+| `casehub-blocks` | ✅ Pure Java — provides generic summarisation framework types (`io.casehub.blocks.summarisation`): `EventLevel`, `LevelEvent`, `WindowPolicy`, `EventAccumulator`, `EventStreamBus`, `Summariser`, `SummarisationRunner`. Extracted via casehubio/blocks#27. |
 
 ---
 
