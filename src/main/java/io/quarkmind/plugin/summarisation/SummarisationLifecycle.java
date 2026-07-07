@@ -1,6 +1,5 @@
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.EventAccumulator;
 import io.casehub.blocks.summarisation.EventLevel;
 import io.casehub.blocks.summarisation.EventStreamBus;
 import io.casehub.blocks.summarisation.SummarisationRunner;
@@ -91,22 +90,20 @@ public class SummarisationLifecycle implements SummarisationTickable {
     }
 
     private void wireRunners() {
-        var phaseAccumulator = new EventAccumulator<GameMoment>(
-            new WindowPolicy(PHASE_WINDOW_FRAMES, PHASE_WINDOW_COUNT));
         phaseRunner = new SummarisationRunner<>(
-            phaseAccumulator, new GamePhaseSummariser(), phaseBus, LEVEL_3);
+            new WindowPolicy(PHASE_WINDOW_FRAMES, PHASE_WINDOW_COUNT),
+            new GamePhaseSummariser(), phaseBus, LEVEL_3);
 
-        var arcAccumulator = new EventAccumulator<GamePhase>(
-            new WindowPolicy(ARC_WINDOW_FRAMES, ARC_WINDOW_COUNT));
         arcRunner = new SummarisationRunner<>(
-            arcAccumulator, new GameArcSummariser(), arcBus, LEVEL_4);
+            new WindowPolicy(ARC_WINDOW_FRAMES, ARC_WINDOW_COUNT),
+            new GameArcSummariser(), arcBus, LEVEL_4);
 
-        // L2 moments feed the phase accumulator
+        // L2 moments feed the phase runner
         momentBroker.momentBus().subscribe(m -> true,
-            e -> phaseAccumulator.collect(e));
+            e -> phaseRunner.collect(e));
 
-        // L3 phases feed the arc accumulator
+        // L3 phases feed the arc runner
         phaseBus.subscribe(p -> true,
-            e -> arcAccumulator.collect(e));
+            e -> arcRunner.collect(e));
     }
 }

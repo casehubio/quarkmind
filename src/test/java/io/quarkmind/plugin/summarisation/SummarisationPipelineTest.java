@@ -1,6 +1,5 @@
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.EventAccumulator;
 import io.casehub.blocks.summarisation.EventLevel;
 import io.casehub.blocks.summarisation.EventStreamBus;
 import io.casehub.blocks.summarisation.LevelEvent;
@@ -27,12 +26,12 @@ class SummarisationPipelineTest {
         var momentBus = new EventStreamBus<GameMoment>();
         var phaseBus = new EventStreamBus<GamePhase>();
 
-        var accumulator = new EventAccumulator<GameMoment>(new WindowPolicy(672, 5));
         var runner = new SummarisationRunner<>(
-            accumulator, new GamePhaseSummariser(), phaseBus, LEVEL_3);
+            new WindowPolicy(672, 5),
+            new GamePhaseSummariser(), phaseBus, LEVEL_3);
 
-        // Wire: moments feed the accumulator
-        momentBus.subscribe(m -> true, e -> accumulator.collect(e));
+        // Wire: moments feed the runner
+        momentBus.subscribe(m -> true, e -> runner.collect(e));
 
         // Capture phases
         List<LevelEvent<GamePhase>> receivedPhases = new ArrayList<>();
@@ -45,8 +44,8 @@ class SummarisationPipelineTest {
                 100 + i, LEVEL_2));
         }
 
-        // Verify accumulator collected
-        assertThat(accumulator.size()).isEqualTo(5);
+        // Verify runner collected
+        assertThat(runner.size()).isEqualTo(5);
 
         // Tick — should trigger
         runner.tick(200);

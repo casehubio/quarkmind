@@ -21,7 +21,7 @@ class GamePhaseSummariserTest {
             new LevelEvent<>(moment(GameMomentType.BATTLE_STARTED, 100), 100, L2),
             new LevelEvent<>(moment(GameMomentType.BATTLE_ENDED, 150), 150, L2),
             new LevelEvent<>(moment(GameMomentType.BATTLE_STARTED, 180), 180, L2));
-        var phases = summariser.summarise(batch);
+        var phases = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(phases).hasSize(1);
         assertThat(phases.get(0).phase()).isEqualTo("MID_SKIRMISH");
     }
@@ -30,7 +30,7 @@ class GamePhaseSummariserTest {
     void nexusUnderAttack_classifiesAsDefensiveHold() {
         var batch = List.of(
             new LevelEvent<>(moment(GameMomentType.NEXUS_UNDER_ATTACK, 200), 200, L2));
-        var phases = summariser.summarise(batch);
+        var phases = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(phases).hasSize(1);
         assertThat(phases.get(0).phase()).isEqualTo("DEFENSIVE_HOLD");
     }
@@ -39,7 +39,7 @@ class GamePhaseSummariserTest {
     void noCombatMoments_classifiesAsEarlyMacro() {
         var batch = List.of(
             new LevelEvent<>(moment(GameMomentType.TECH_TRANSITION_DETECTED, 50), 50, L2));
-        var phases = summariser.summarise(batch);
+        var phases = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(phases).hasSize(1);
         assertThat(phases.get(0).phase()).isEqualTo("EARLY_MACRO");
     }
@@ -49,14 +49,14 @@ class GamePhaseSummariserTest {
         var batch = List.of(
             new LevelEvent<>(moment(GameMomentType.ECONOMIC_CRISIS, 100), 100, L2),
             new LevelEvent<>(moment(GameMomentType.BATTLE_STARTED, 120), 120, L2));
-        var phases = summariser.summarise(batch);
+        var phases = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(phases).hasSize(1);
         assertThat(phases.get(0).phase()).isEqualTo("EARLY_AGGRESSION");
     }
 
     @Test
     void emptyBatch_returnsEmpty() {
-        assertThat(summariser.summarise(List.of())).isEmpty();
+        assertThat(summariser.summarise(List.of()).toCompletableFuture().join()).isEmpty();
     }
 
     private static GameMoment moment(GameMomentType type, long frame) {

@@ -7,26 +7,35 @@ public class SummarisationRunner<IN, OUT> {
     private final EventStreamBus<OUT> outputBus;
     private final EventLevel outputLevel;
 
-    public SummarisationRunner(EventAccumulator<IN> accumulator,
+    public SummarisationRunner(WindowPolicy policy,
                                Summariser<IN, OUT> summariser,
                                EventStreamBus<OUT> outputBus,
                                EventLevel outputLevel) {
-        this.accumulator = accumulator;
+        this.accumulator = new EventAccumulator<>(policy);
         this.summariser = summariser;
         this.outputBus = outputBus;
         this.outputLevel = outputLevel;
     }
 
+    public void collect(LevelEvent<IN> event) {
+        accumulator.collect(event);
+    }
+
     public void tick(long now) {
         if (!accumulator.shouldEmit(now)) return;
         var batch = accumulator.drain();
-        var results = summariser.summarise(batch);
-        for (var payload : results) {
-            outputBus.publish(new LevelEvent<>(payload, now, outputLevel));
-        }
+        summariser.summarise(batch).thenAccept(results -> {
+            for (var payload : results) {
+                outputBus.publish(new LevelEvent<>(payload, now, outputLevel));
+            }
+        });
     }
 
     public void clear() {
         accumulator.clear();
+    }
+
+    public int size() {
+        return accumulator.size();
     }
 }

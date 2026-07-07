@@ -3,6 +3,9 @@ package io.casehub.blocks.summarisation;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Not thread-safe. Caller must synchronize if accessed from multiple threads.
+ */
 public class EventAccumulator<E> {
 
     private final WindowPolicy policy;

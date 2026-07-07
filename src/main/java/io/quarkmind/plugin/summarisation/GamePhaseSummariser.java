@@ -5,6 +5,8 @@ import io.casehub.blocks.summarisation.Summariser;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class GamePhaseSummariser implements Summariser<GameMoment, GamePhase> {
 
@@ -13,7 +15,11 @@ public class GamePhaseSummariser implements Summariser<GameMoment, GamePhase> {
         GameMomentType.NEXUS_UNDER_ATTACK);
 
     @Override
-    public List<GamePhase> summarise(List<LevelEvent<GameMoment>> batch) {
+    public CompletionStage<List<GamePhase>> summarise(List<LevelEvent<GameMoment>> batch) {
+        return CompletableFuture.completedFuture(doSummarise(batch));
+    }
+
+    private List<GamePhase> doSummarise(List<LevelEvent<GameMoment>> batch) {
         if (batch.isEmpty()) return List.of();
 
         long latestFrame = batch.get(batch.size() - 1).timestamp();

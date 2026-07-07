@@ -5,6 +5,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+/**
+ * Not thread-safe. Subscriptions use CopyOnWriteArrayList for safe iteration during publish,
+ * but concurrent publish calls or concurrent publish+subscribe are not safe. Caller must
+ * synchronize if accessed from multiple threads.
+ */
 public class EventStreamBus<E> {
 
     private record Subscription<E>(Predicate<E> filter, Consumer<LevelEvent<E>> callback) {}
