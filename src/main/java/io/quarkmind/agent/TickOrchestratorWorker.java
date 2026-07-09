@@ -50,9 +50,10 @@ public final class TickOrchestratorWorker {
      * @param plugins ordered list of plugins to execute per tick
      * @return a sync function suitable for {@code Worker.builder().function(...)}
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static WorkerFunction.Sync createFunction(List<TaskDefinition> plugins) {
         List<TaskDefinition> chain = List.copyOf(plugins); // defensive copy
-        return new WorkerFunction.Sync(input -> executeChain(chain, input));
+        return new WorkerFunction.Sync<>(Map.class, input -> executeChain(chain, input));
     }
 
     private static WorkerResult executeChain(List<TaskDefinition> chain, Map<String, Object> input) {

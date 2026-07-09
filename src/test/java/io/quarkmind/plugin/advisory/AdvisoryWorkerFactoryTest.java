@@ -128,7 +128,7 @@ class AdvisoryWorkerFactoryTest {
                 "game.advisory.trigger.crisis", "NEXUS_UNDER_ATTACK"
         );
 
-        WorkerResult result = syncFn.fn().apply(input);
+        WorkerResult result = (WorkerResult) syncFn.fn().apply(input);
 
         assertThat(result.output()).containsKey("agent.advisory.crisis.recommendation");
         assertThat(result.output()).containsKey("agent.advisory.crisis.reasoning");
@@ -163,7 +163,7 @@ class AdvisoryWorkerFactoryTest {
                 "game.advisory.trigger.strategic", "PHASE_TRANSITION"
         );
 
-        WorkerResult result = syncFn.fn().apply(input);
+        WorkerResult result = (WorkerResult) syncFn.fn().apply(input);
 
         // Strategic role → keys prefixed with agent.advisory.strategic.*
         assertThat(result.output()).containsKey("agent.advisory.strategic.recommendation");
@@ -198,7 +198,7 @@ class AdvisoryWorkerFactoryTest {
         WorkerFunction.Sync syncFn = (WorkerFunction.Sync) workers.get(0).function();
 
         Map<String, Object> input = Map.of("game.frame", 1000);
-        WorkerResult result = syncFn.fn().apply(input);
+        WorkerResult result = (WorkerResult) syncFn.fn().apply(input);
 
         assertThat(result.outcome()).isInstanceOf(io.casehub.worker.api.WorkerOutcome.Failed.class);
     }

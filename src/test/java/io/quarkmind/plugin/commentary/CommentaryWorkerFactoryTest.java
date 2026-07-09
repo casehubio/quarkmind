@@ -89,7 +89,7 @@ class CommentaryWorkerFactoryTest {
             )
         );
 
-        WorkerResult result = syncFn.fn().apply(input);
+        WorkerResult result = (WorkerResult) syncFn.fn().apply(input);
 
         assertThat(result.output()).containsKey("agent.commentary.reactive.text");
         assertThat(result.output().get("agent.commentary.reactive.text"))
@@ -115,7 +115,7 @@ class CommentaryWorkerFactoryTest {
             )
         );
 
-        WorkerResult result = syncFn.fn().apply(input);
+        WorkerResult result = (WorkerResult) syncFn.fn().apply(input);
 
         assertThat(result.output()).containsKey("agent.commentary.narrative.text");
         assertThat(result.output().get("agent.commentary.narrative.text"))
@@ -203,7 +203,7 @@ class CommentaryWorkerFactoryTest {
             List.of(descriptor), failingModel, noOpCallback());
         WorkerFunction.Sync syncFn = (WorkerFunction.Sync) workers.get(0).function();
 
-        WorkerResult result = syncFn.fn().apply(Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of()));
+        WorkerResult result = (WorkerResult) syncFn.fn().apply(Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of()));
 
         assertThat(result.outcome()).isInstanceOf(io.casehub.worker.api.WorkerOutcome.Failed.class);
     }

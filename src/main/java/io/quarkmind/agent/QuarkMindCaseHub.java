@@ -11,6 +11,7 @@ import io.casehub.eidos.api.AgentDescriptor;
 import io.casehub.worker.api.Capability;
 import io.casehub.worker.api.Worker;
 import io.casehub.worker.api.WorkerFunction;
+import io.casehub.worker.api.WorkerResult;
 import io.quarkmind.plugin.advisory.AdvisoryWorkerFactory;
 import io.quarkmind.plugin.advisory.CompletionCallback;
 import io.quarkmind.plugin.advisory.QuarkMindAgentRegistrar;
@@ -227,9 +228,9 @@ public class QuarkMindCaseHub extends CaseHub {
         Worker tickOrchestrator = Worker.builder()
             .name("tick-orchestrator")
             .capabilityName(CAPABILITY_TICK_DECISION)
-            .function(new WorkerFunction.Sync(input -> {
+            .function(new WorkerFunction.Sync<>(Map.class, (Map input) -> {
                 List<TaskDefinition> chain = resolveTickChain();
-                return TickOrchestratorWorker.createFunction(chain).fn().apply(input);
+                return (WorkerResult) TickOrchestratorWorker.createFunction(chain).fn().apply(input);
             }))
             .description("Chains plugin execution: scouting → strategy → tactics → economics")
             .build();

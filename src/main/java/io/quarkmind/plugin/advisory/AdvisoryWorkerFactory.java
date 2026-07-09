@@ -72,7 +72,7 @@ public final class AdvisoryWorkerFactory {
         return Worker.builder()
                 .name(descriptor.agentId())
                 .capabilityName(capabilityName)
-                .function(new WorkerFunction.Sync(input ->
+                .function(new WorkerFunction.Sync<>(Map.class, input ->
                     executeAdvisory(descriptor, chatModel, role, input, onCompletion)))
                 .description("LLM advisory worker: " + descriptor.name()
                         + " (" + descriptor.agentId() + ")")

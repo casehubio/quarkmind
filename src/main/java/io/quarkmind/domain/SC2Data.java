@@ -1,5 +1,7 @@
 package io.quarkmind.domain;
 
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
@@ -244,24 +246,91 @@ public final class SC2Data {
         return buildTimeInLoops(type) / LOOPS_PER_TICK;
     }
 
-    public static int supplyCost(UnitType type) {
-        return switch (type) {
-            // Protoss
-            case PROBE, OBSERVER -> 1;
-            case ZEALOT, STALKER -> 2;
-            case IMMORTAL        -> 4;
-            // Terran
-            case SCV, MARINE     -> 1;
-            case MARAUDER        -> 2;
-            case MULE            -> 0;
-            // Zerg
-            case DRONE, ZERGLING -> 1; // Zergling: 1 supply per 2-unit batch
-            case OVERLORD, EGG   -> 0;
-            case QUEEN           -> 2;
-            case ROACH, HYDRALISK -> 2;
-            default              -> 2;
-        };
+    private static final Map<UnitType, UnitCosts> UNIT_COSTS;
+    static {
+        var map = new EnumMap<UnitType, UnitCosts>(UnitType.class);
+        // Protoss
+        map.put(UnitType.PROBE,              new UnitCosts( 50,   0, 1));
+        map.put(UnitType.ZEALOT,             new UnitCosts(100,   0, 2));
+        map.put(UnitType.STALKER,            new UnitCosts(125,  50, 2));
+        map.put(UnitType.IMMORTAL,           new UnitCosts(250, 100, 4));
+        map.put(UnitType.COLOSSUS,           new UnitCosts(300, 200, 6));
+        map.put(UnitType.CARRIER,            new UnitCosts(350, 250, 6));
+        map.put(UnitType.DARK_TEMPLAR,       new UnitCosts(125, 125, 2));
+        map.put(UnitType.HIGH_TEMPLAR,       new UnitCosts( 50, 150, 2));
+        map.put(UnitType.ARCHON,             new UnitCosts(  0,   0, 0));
+        map.put(UnitType.OBSERVER,           new UnitCosts( 25,  75, 1));
+        map.put(UnitType.VOID_RAY,           new UnitCosts(250, 150, 4));
+        map.put(UnitType.ADEPT,              new UnitCosts(100,  25, 2));
+        map.put(UnitType.DISRUPTOR,          new UnitCosts(150, 150, 3));
+        map.put(UnitType.SENTRY,             new UnitCosts( 50, 100, 2));
+        map.put(UnitType.PHOENIX,            new UnitCosts(150, 100, 2));
+        map.put(UnitType.ORACLE,             new UnitCosts(150, 150, 3));
+        map.put(UnitType.TEMPEST,            new UnitCosts(250, 175, 4));
+        map.put(UnitType.MOTHERSHIP,         new UnitCosts(400, 400, 8));
+        map.put(UnitType.WARP_PRISM,         new UnitCosts(200,   0, 2));
+        map.put(UnitType.WARP_PRISM_PHASING, new UnitCosts(200,   0, 2));
+        map.put(UnitType.INTERCEPTOR,        new UnitCosts( 15,   0, 0));
+        map.put(UnitType.ADEPT_PHASE_SHIFT,  new UnitCosts(  0,   0, 0));
+        // Zerg
+        map.put(UnitType.ZERGLING,           new UnitCosts( 25,   0, 1));
+        map.put(UnitType.ROACH,              new UnitCosts( 75,  25, 2));
+        map.put(UnitType.HYDRALISK,          new UnitCosts(100,  50, 2));
+        map.put(UnitType.MUTALISK,           new UnitCosts(100, 100, 2));
+        map.put(UnitType.ULTRALISK,          new UnitCosts(300, 200, 6));
+        map.put(UnitType.BROOD_LORD,         new UnitCosts(150, 150, 2));
+        map.put(UnitType.CORRUPTOR,          new UnitCosts(150, 100, 2));
+        map.put(UnitType.INFESTOR,           new UnitCosts(100, 150, 2));
+        map.put(UnitType.SWARM_HOST,         new UnitCosts(100,  75, 3));
+        map.put(UnitType.VIPER,              new UnitCosts(100, 200, 3));
+        map.put(UnitType.QUEEN,              new UnitCosts(150,   0, 2));
+        map.put(UnitType.RAVAGER,            new UnitCosts( 25,  75, 1));
+        map.put(UnitType.LURKER,             new UnitCosts( 50, 100, 1));
+        map.put(UnitType.DRONE,              new UnitCosts( 50,   0, 1));
+        map.put(UnitType.OVERLORD,           new UnitCosts(100,   0, 0));
+        map.put(UnitType.OVERSEER,           new UnitCosts( 50,  50, 0));
+        map.put(UnitType.BANELING,           new UnitCosts( 25,  25, 0));
+        map.put(UnitType.LOCUST,             new UnitCosts(  0,   0, 0));
+        map.put(UnitType.BROODLING,          new UnitCosts(  0,   0, 0));
+        map.put(UnitType.INFESTED_TERRAN,    new UnitCosts(  0,   0, 0));
+        map.put(UnitType.CHANGELING,         new UnitCosts(  0,   0, 0));
+        map.put(UnitType.EGG,                new UnitCosts(  0,   0, 0));
+        // Terran
+        map.put(UnitType.MARINE,             new UnitCosts( 50,   0, 1));
+        map.put(UnitType.MARAUDER,           new UnitCosts(100,  25, 2));
+        map.put(UnitType.MEDIVAC,            new UnitCosts(100, 100, 2));
+        map.put(UnitType.SIEGE_TANK,         new UnitCosts(150, 125, 3));
+        map.put(UnitType.SIEGE_TANK_SIEGED,  new UnitCosts(150, 125, 3));
+        map.put(UnitType.THOR,               new UnitCosts(300, 200, 6));
+        map.put(UnitType.VIKING,             new UnitCosts(150,  75, 2));
+        map.put(UnitType.GHOST,              new UnitCosts(150, 125, 2));
+        map.put(UnitType.RAVEN,              new UnitCosts(100, 200, 2));
+        map.put(UnitType.BANSHEE,            new UnitCosts(150, 100, 3));
+        map.put(UnitType.BATTLECRUISER,      new UnitCosts(400, 300, 6));
+        map.put(UnitType.CYCLONE,            new UnitCosts(150, 100, 3));
+        map.put(UnitType.LIBERATOR,          new UnitCosts(150, 150, 3));
+        map.put(UnitType.WIDOW_MINE,         new UnitCosts( 75,  25, 2));
+        map.put(UnitType.SCV,                new UnitCosts( 50,   0, 1));
+        map.put(UnitType.REAPER,             new UnitCosts( 50,  50, 1));
+        map.put(UnitType.HELLION,            new UnitCosts(100,   0, 2));
+        map.put(UnitType.HELLBAT,            new UnitCosts(100,   0, 2));
+        map.put(UnitType.MULE,               new UnitCosts(  0,   0, 0));
+        map.put(UnitType.VIKING_ASSAULT,     new UnitCosts(150,  75, 2));
+        map.put(UnitType.LIBERATOR_AG,       new UnitCosts(150, 150, 3));
+        map.put(UnitType.AUTO_TURRET,        new UnitCosts(  0,   0, 0));
+        // Fallback
+        map.put(UnitType.UNKNOWN,            new UnitCosts(  0,   0, 0));
+
+        for (UnitType t : UnitType.values()) {
+            if (!map.containsKey(t))
+                throw new ExceptionInInitializerError("Missing UnitCosts for " + t);
+        }
+        UNIT_COSTS = Collections.unmodifiableMap(map);
     }
+
+    public static UnitCosts unitCosts(UnitType type) { return UNIT_COSTS.get(type); }
+
+    public static int supplyCost(UnitType type) { return UNIT_COSTS.get(type).supply(); }
 
     public static int supplyBonus(BuildingType type) {
         return switch (type) {
@@ -400,30 +469,7 @@ public final class SC2Data {
         };
     }
 
-    public static int mineralCost(UnitType type) {
-        return switch (type) {
-            // Protoss
-            case PROBE    ->  50;
-            case ZEALOT   -> 100;
-            case STALKER  -> 125;
-            case IMMORTAL -> 250;
-            case OBSERVER ->  25;
-            // Terran
-            case SCV      ->  50;
-            case MARINE   ->  50;
-            case MARAUDER -> 100;
-            case MULE     ->   0;
-            // Zerg
-            case DRONE     ->  50;
-            case ZERGLING  ->  25;
-            case ROACH     ->  75;
-            case HYDRALISK -> 100;
-            case OVERLORD  -> 100;
-            case QUEEN     -> 150;
-            case EGG       ->   0;
-            default        -> 100;
-        };
-    }
+    public static int mineralCost(UnitType type) { return UNIT_COSTS.get(type).mineral(); }
 
     public static int mineralCost(BuildingType type) {
         return switch (type) {
@@ -482,17 +528,7 @@ public final class SC2Data {
         };
     }
 
-    public static int gasCost(UnitType type) {
-        return switch (type) {
-            case STALKER   -> 50;
-            case IMMORTAL  -> 100;
-            case OBSERVER  -> 75;
-            case MARAUDER  -> 25;
-            case ROACH     -> 25;
-            case HYDRALISK -> 50;
-            default        ->  0;
-        };
-    }
+    public static int gasCost(UnitType type) { return UNIT_COSTS.get(type).gas(); }
 
     public static BuildingType trainedBy(UnitType type) {
         return switch (type) {

@@ -437,4 +437,116 @@ class SC2DataTest {
         assertThat(SC2Data.isBase(BuildingType.BARRACKS)).isFalse();
         assertThat(SC2Data.isBase(BuildingType.SPAWNING_POOL)).isFalse();
     }
+
+    // --- UnitCosts exhaustive coverage (LotV final balance, Liquipedia-verified) ---
+    // Sources: https://liquipedia.net/starcraft2/Units_(Protoss)
+    //          https://liquipedia.net/starcraft2/Units_(Terran)
+    //          https://liquipedia.net/starcraft2/Units_(Zerg)
+
+    private static void assertCosts(UnitType type, int mineral, int gas, int supply) {
+        assertThat(SC2Data.mineralCost(type)).as(type + " mineral").isEqualTo(mineral);
+        assertThat(SC2Data.gasCost(type)).as(type + " gas").isEqualTo(gas);
+        assertThat(SC2Data.supplyCost(type)).as(type + " supply").isEqualTo(supply);
+    }
+
+    @Test
+    void allProtossUnitCosts() {
+        assertCosts(UnitType.PROBE,              50,   0, 1);
+        assertCosts(UnitType.ZEALOT,            100,   0, 2);
+        assertCosts(UnitType.STALKER,           125,  50, 2);
+        assertCosts(UnitType.IMMORTAL,          250, 100, 4);
+        assertCosts(UnitType.COLOSSUS,          300, 200, 6);
+        assertCosts(UnitType.CARRIER,           350, 250, 6);
+        assertCosts(UnitType.DARK_TEMPLAR,      125, 125, 2);
+        assertCosts(UnitType.HIGH_TEMPLAR,       50, 150, 2);
+        assertCosts(UnitType.ARCHON,              0,   0, 0);
+        assertCosts(UnitType.OBSERVER,           25,  75, 1);
+        assertCosts(UnitType.VOID_RAY,          250, 150, 4);
+        assertCosts(UnitType.ADEPT,             100,  25, 2);
+        assertCosts(UnitType.DISRUPTOR,         150, 150, 3);
+        assertCosts(UnitType.SENTRY,             50, 100, 2);
+        assertCosts(UnitType.PHOENIX,           150, 100, 2);
+        assertCosts(UnitType.ORACLE,            150, 150, 3);
+        assertCosts(UnitType.TEMPEST,           250, 175, 4);
+        assertCosts(UnitType.MOTHERSHIP,        400, 400, 8);
+        assertCosts(UnitType.WARP_PRISM,        200,   0, 2);
+        assertCosts(UnitType.WARP_PRISM_PHASING,200,   0, 2);
+        assertCosts(UnitType.INTERCEPTOR,        15,   0, 0);
+        assertCosts(UnitType.ADEPT_PHASE_SHIFT,   0,   0, 0);
+    }
+
+    @Test
+    void allTerranUnitCosts() {
+        assertCosts(UnitType.MARINE,             50,   0, 1);
+        assertCosts(UnitType.MARAUDER,          100,  25, 2);
+        assertCosts(UnitType.MEDIVAC,           100, 100, 2);
+        assertCosts(UnitType.SIEGE_TANK,        150, 125, 3);
+        assertCosts(UnitType.SIEGE_TANK_SIEGED, 150, 125, 3);
+        assertCosts(UnitType.THOR,              300, 200, 6);
+        assertCosts(UnitType.VIKING,            150,  75, 2);
+        assertCosts(UnitType.GHOST,             150, 125, 2);
+        assertCosts(UnitType.RAVEN,             100, 200, 2);
+        assertCosts(UnitType.BANSHEE,           150, 100, 3);
+        assertCosts(UnitType.BATTLECRUISER,     400, 300, 6);
+        assertCosts(UnitType.CYCLONE,           150, 100, 3);
+        assertCosts(UnitType.LIBERATOR,         150, 150, 3);
+        assertCosts(UnitType.WIDOW_MINE,         75,  25, 2);
+        assertCosts(UnitType.SCV,                50,   0, 1);
+        assertCosts(UnitType.REAPER,             50,  50, 1);
+        assertCosts(UnitType.HELLION,           100,   0, 2);
+        assertCosts(UnitType.HELLBAT,           100,   0, 2);
+        assertCosts(UnitType.MULE,                0,   0, 0);
+        assertCosts(UnitType.VIKING_ASSAULT,    150,  75, 2);
+        assertCosts(UnitType.LIBERATOR_AG,      150, 150, 3);
+        assertCosts(UnitType.AUTO_TURRET,         0,   0, 0);
+    }
+
+    @Test
+    void allZergUnitCosts() {
+        assertCosts(UnitType.ZERGLING,           25,   0, 1);
+        assertCosts(UnitType.ROACH,              75,  25, 2);
+        assertCosts(UnitType.HYDRALISK,         100,  50, 2);
+        assertCosts(UnitType.MUTALISK,          100, 100, 2);
+        assertCosts(UnitType.ULTRALISK,         300, 200, 6);
+        assertCosts(UnitType.BROOD_LORD,        150, 150, 2);
+        assertCosts(UnitType.CORRUPTOR,         150, 100, 2);
+        assertCosts(UnitType.INFESTOR,          100, 150, 2);
+        assertCosts(UnitType.SWARM_HOST,        100,  75, 3);
+        assertCosts(UnitType.VIPER,             100, 200, 3);
+        assertCosts(UnitType.QUEEN,             150,   0, 2);
+        assertCosts(UnitType.RAVAGER,            25,  75, 1);
+        assertCosts(UnitType.LURKER,             50, 100, 1);
+        assertCosts(UnitType.DRONE,              50,   0, 1);
+        assertCosts(UnitType.OVERLORD,          100,   0, 0);
+        assertCosts(UnitType.OVERSEER,           50,  50, 0);
+        assertCosts(UnitType.BANELING,           25,  25, 0);
+        assertCosts(UnitType.LOCUST,              0,   0, 0);
+        assertCosts(UnitType.BROODLING,           0,   0, 0);
+        assertCosts(UnitType.INFESTED_TERRAN,     0,   0, 0);
+        assertCosts(UnitType.CHANGELING,          0,   0, 0);
+        assertCosts(UnitType.EGG,                 0,   0, 0);
+    }
+
+    @Test
+    void unknownSentinelCosts() {
+        assertCosts(UnitType.UNKNOWN, 0, 0, 0);
+    }
+
+    @Test
+    void unitCostsAccessorMatchesDelegates() {
+        for (UnitType type : UnitType.values()) {
+            UnitCosts costs = SC2Data.unitCosts(type);
+            assertThat(costs.mineral()).as(type + " mineral via unitCosts").isEqualTo(SC2Data.mineralCost(type));
+            assertThat(costs.gas()).as(type + " gas via unitCosts").isEqualTo(SC2Data.gasCost(type));
+            assertThat(costs.supply()).as(type + " supply via unitCosts").isEqualTo(SC2Data.supplyCost(type));
+        }
+    }
+
+    @Test
+    void fleetScenarioCorrectValuation() {
+        int value = 4 * (SC2Data.mineralCost(UnitType.CARRIER) + SC2Data.gasCost(UnitType.CARRIER))
+                  + 3 * (SC2Data.mineralCost(UnitType.COLOSSUS) + SC2Data.gasCost(UnitType.COLOSSUS))
+                  + 2 * (SC2Data.mineralCost(UnitType.VOID_RAY) + SC2Data.gasCost(UnitType.VOID_RAY));
+        assertThat(value).isEqualTo(4700);
+    }
 }

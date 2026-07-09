@@ -92,7 +92,7 @@ public final class CommentaryWorkerFactory {
         return Worker.builder()
             .name(descriptor.agentId())
             .capabilityName(capabilityName)
-            .function(new WorkerFunction.Sync(input ->
+            .function(new WorkerFunction.Sync<>(Map.class, input ->
                 executeReactiveCommentary(descriptor, chatModel, input, onCompletion)))
             .description("Reactive commentary worker: " + descriptor.name()
                 + " (" + descriptor.agentId() + ")")
@@ -106,7 +106,7 @@ public final class CommentaryWorkerFactory {
         return Worker.builder()
             .name(descriptor.agentId())
             .capabilityName(capabilityName)
-            .function(new WorkerFunction.Sync(input ->
+            .function(new WorkerFunction.Sync<>(Map.class, input ->
                 executeNarrativeCommentary(descriptor, chatModel, input, onCompletion)))
             .description("Narrative commentary worker: " + descriptor.name()
                 + " (" + descriptor.agentId() + ")")
