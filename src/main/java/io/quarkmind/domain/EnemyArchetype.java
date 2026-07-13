@@ -1,0 +1,14 @@
+package io.quarkmind.domain;
+
+public enum EnemyArchetype {
+    TERRAN_MARINE_RUSH,
+    TERRAN_BIO_TIMING,
+    TERRAN_MECH_PUSH,
+    TERRAN_BANSHEE_HARASS,
+    ZERG_ZERGLING_RUSH,
+    ZERG_ROACH_RUSH,
+    ZERG_MACRO,
+    PROTOSS_GATEWAY_RUSH,
+    PROTOSS_CANNON_RUSH,
+    PROTOSS_MACRO
+}

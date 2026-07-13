@@ -231,7 +231,8 @@ class DroolsStrategyTaskTest {
         assertThat(consumer.subscribedIntelTypes())
             .containsExactlyInAnyOrder(
                 ScoutingIntelType.POSTURE,
-                ScoutingIntelType.TIMING_ALERT);
+                ScoutingIntelType.TIMING_ALERT,
+                ScoutingIntelType.PATTERN_ASSESSMENT);
     }
 
     // --- Entry criteria — two-gate model: {READY, ENEMY_ARMY_SIZE} + broker.current(POSTURE) ---

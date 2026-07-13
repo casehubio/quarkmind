@@ -1,5 +1,6 @@
 package io.quarkmind.agent.plugin;
 
+import io.quarkmind.domain.EnemyPatternAssessment;
 import io.quarkmind.domain.Point2d;
 
 public sealed interface ScoutingIntelPayload
@@ -7,23 +8,32 @@ public sealed interface ScoutingIntelPayload
                 ScoutingIntelPayload.PostureUpdate,
                 ScoutingIntelPayload.TimingAlert,
                 ScoutingIntelPayload.ArmySize,
-                ScoutingIntelPayload.BuildOrder {
+                ScoutingIntelPayload.BuildOrder,
+                ScoutingIntelPayload.PatternAssessment {
 
     ScoutingIntelType type();
 
     record ThreatPosition(Point2d position) implements ScoutingIntelPayload {
-        public ScoutingIntelType type() { return ScoutingIntelType.THREAT_POSITION; }
+        public ScoutingIntelType type() {return ScoutingIntelType.THREAT_POSITION;}
     }
+
     record PostureUpdate(String posture) implements ScoutingIntelPayload {
-        public ScoutingIntelType type() { return ScoutingIntelType.POSTURE; }
+        public ScoutingIntelType type() {return ScoutingIntelType.POSTURE;}
     }
+
     record TimingAlert(boolean incoming) implements ScoutingIntelPayload {
-        public ScoutingIntelType type() { return ScoutingIntelType.TIMING_ALERT; }
+        public ScoutingIntelType type() {return ScoutingIntelType.TIMING_ALERT;}
     }
+
     record ArmySize(int count) implements ScoutingIntelPayload {
-        public ScoutingIntelType type() { return ScoutingIntelType.ARMY_SIZE; }
+        public ScoutingIntelType type() {return ScoutingIntelType.ARMY_SIZE;}
     }
+
     record BuildOrder(String detected) implements ScoutingIntelPayload {
-        public ScoutingIntelType type() { return ScoutingIntelType.BUILD_ORDER; }
+        public ScoutingIntelType type() {return ScoutingIntelType.BUILD_ORDER;}
+    }
+
+    record PatternAssessment(EnemyPatternAssessment assessment) implements ScoutingIntelPayload {
+        public ScoutingIntelType type() {return ScoutingIntelType.PATTERN_ASSESSMENT;}
     }
 }

@@ -1,0 +1,164 @@
+package io.quarkmind.plugin.scouting;
+unit PatternClassificationRuleUnit;
+
+import io.quarkmind.domain.UnitType;
+import io.quarkmind.domain.EnemyArchetype;
+
+// ---------------------------------------------------------------------------
+// Evidence rules for enemy strategy classification.
+//
+// Each rule emits an EvidenceMarker with a weight (0.0–1.0) for one archetype.
+// Multiple rules per archetype provide additive evidence. Multiple archetypes
+// can have evidence simultaneously — rules are NOT mutually exclusive.
+//
+// gameTimeStore is a DataStore<Double> (not a global) because eval() +
+// accumulate() in the same rule does not compile in the current Drools version.
+// ---------------------------------------------------------------------------
+
+// --- TERRAN ---
+
+rule "Evidence: Marine Rush — high marine count early"
+when
+    accumulate(/unitEvents[this.type() == UnitType.MARINE]; $count: count(); $count >= 5)
+    /gameTimeStore[this < 4.0]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_MARINE_RUSH, 0.6,
+        $count + " Marines before 4min"));
+end
+
+rule "Evidence: Marine Rush — no expansion"
+when
+    not /expansionEvents
+    /unitEvents[this.type() == UnitType.MARINE]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_MARINE_RUSH, 0.3,
+        "No expansion with Marines"));
+end
+
+rule "Evidence: Bio Timing — marines + medivac mid-game"
+when
+    accumulate(/unitEvents[this.type() == UnitType.MARINE]; $mCount: count(); $mCount >= 3)
+    /unitEvents[this.type() == UnitType.MEDIVAC]
+    /gameTimeStore[this >= 4.0, this < 10.0]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_BIO_TIMING, 0.6,
+        $mCount + " Marines + Medivac in mid-game"));
+end
+
+rule "Evidence: Bio Timing — multiple marines late"
+when
+    accumulate(/unitEvents[this.type() == UnitType.MARINE]; $mCount: count(); $mCount >= 6)
+    /gameTimeStore[this >= 4.0]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_BIO_TIMING, 0.3,
+        $mCount + " Marines after 4min"));
+end
+
+rule "Evidence: Mech Push — siege tanks"
+when
+    accumulate(/unitEvents[this.type() == UnitType.SIEGE_TANK]; $count: count(); $count >= 2)
+    /gameTimeStore[this >= 5.0]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_MECH_PUSH, 0.6,
+        $count + " Siege Tanks"));
+end
+
+rule "Evidence: Mech Push — thors present"
+when
+    /unitEvents[this.type() == UnitType.THOR]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_MECH_PUSH, 0.4,
+        "Thor spotted"));
+end
+
+rule "Evidence: Banshee Harass — banshee early"
+when
+    /unitEvents[this.type() == UnitType.BANSHEE]
+    /gameTimeStore[this < 8.0]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_BANSHEE_HARASS, 0.7,
+        "Banshee before 8min"));
+end
+
+// --- ZERG ---
+
+rule "Evidence: Zergling Rush — early zerglings"
+when
+    accumulate(/unitEvents[this.type() == UnitType.ZERGLING]; $count: count(); $count >= 6)
+    /gameTimeStore[this < 4.0]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.6,
+        $count + " Zerglings before 4min"));
+end
+
+rule "Evidence: Zergling Rush — no expansion"
+when
+    not /expansionEvents
+    /unitEvents[this.type() == UnitType.ZERGLING]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.3,
+        "No expansion with Zerglings"));
+end
+
+rule "Evidence: Roach Rush — early roaches"
+when
+    accumulate(/unitEvents[this.type() == UnitType.ROACH]; $count: count(); $count >= 4)
+    /gameTimeStore[this < 5.0]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.ZERG_ROACH_RUSH, 0.7,
+        $count + " Roaches before 5min"));
+end
+
+rule "Evidence: Zerg Macro — expansion with low unit count"
+when
+    /expansionEvents
+    accumulate(/unitEvents; $count: count(); $count < 4)
+    /gameTimeStore[this < 5.0]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.ZERG_MACRO, 0.5,
+        "Expansion with < 4 units"));
+end
+
+// --- PROTOSS ---
+
+rule "Evidence: Gateway Rush — stalkers + zealots early"
+when
+    accumulate(
+        /unitEvents[this.type() == UnitType.STALKER || this.type() == UnitType.ZEALOT];
+        $count: count();
+        $count >= 4
+    )
+    /gameTimeStore[this < 5.0]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.PROTOSS_GATEWAY_RUSH, 0.6,
+        $count + " Gateway units before 5min"));
+end
+
+rule "Evidence: Gateway Rush — no expansion"
+when
+    not /expansionEvents
+    /unitEvents[this.type() == UnitType.STALKER || this.type() == UnitType.ZEALOT]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.PROTOSS_GATEWAY_RUSH, 0.3,
+        "No expansion with Gateway units"));
+end
+
+rule "Evidence: Cannon Rush — army near base early without stalkers"
+when
+    /armyNearBaseEvents
+    /gameTimeStore[this < 4.0]
+    not /unitEvents[this.type() == UnitType.STALKER]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.PROTOSS_CANNON_RUSH, 0.6,
+        "Army near base early without Stalkers"));
+end
+
+rule "Evidence: Protoss Macro — expansion with few units"
+when
+    /expansionEvents
+    accumulate(/unitEvents; $count: count(); $count < 3)
+    /gameTimeStore[this < 5.0]
+then
+    evidence.add(new EvidenceMarker(EnemyArchetype.PROTOSS_MACRO, 0.5,
+        "Expansion with < 3 units"));
+end

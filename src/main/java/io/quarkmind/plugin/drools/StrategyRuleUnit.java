@@ -1,13 +1,13 @@
 package io.quarkmind.plugin.drools;
 
-import org.drools.ruleunits.api.DataSource;
-import org.drools.ruleunits.api.DataStore;
-import org.drools.ruleunits.api.RuleUnitData;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.Resource;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GamePhase;
+import org.drools.ruleunits.api.DataSource;
+import org.drools.ruleunits.api.DataStore;
+import org.drools.ruleunits.api.RuleUnitData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +82,8 @@ public class StrategyRuleUnit implements RuleUnitData {
      * Contains only non-stale advisories (age < STALENESS_THRESHOLD).
      */
     private final DataStore<AdvisoryFact> advisoryStore = DataSource.createStore();
+    private final DataStore<io.quarkmind.domain.EnemyPatternAssessment> patternStore = DataSource.createStore();
+
 
     /**
      * Build decisions written by rules. Strings from the set
@@ -105,6 +107,9 @@ public class StrategyRuleUnit implements RuleUnitData {
     public DataStore<GameMoment> getMomentStore()      { return momentStore; }
     public DataStore<GamePhase>  getPhaseStore()       { return phaseStore; }
     public DataStore<AdvisoryFact> getAdvisoryStore() { return advisoryStore; }
+
+    public DataStore<io.quarkmind.domain.EnemyPatternAssessment> getPatternStore() {return patternStore;}
+
     public List<String>          getBuildDecisions()   { return buildDecisions; }
     public List<String>          getStrategyDecisions(){ return strategyDecisions; }
 }

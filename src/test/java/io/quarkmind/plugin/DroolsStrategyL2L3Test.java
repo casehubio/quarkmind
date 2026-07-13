@@ -1,6 +1,5 @@
 package io.quarkmind.plugin;
 
-import io.quarkus.test.junit.QuarkusTest;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
@@ -8,6 +7,7 @@ import io.quarkmind.plugin.drools.StrategyRuleUnit;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;
 import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitInstance;
@@ -99,6 +99,52 @@ class DroolsStrategyL2L3Test {
         // Then: DEFEND is selected (regression test)
         assertThat(data.getStrategyDecisions()).contains("DEFEND");
     }
+
+    @Test
+    void rushDetected_highConfidence_triggersDefendStrategy() {
+        StrategyRuleUnit data = new StrategyRuleUnit();
+
+        data.getPatternStore().add(new io.quarkmind.domain.EnemyPatternAssessment(
+                io.quarkmind.domain.EnemyArchetype.TERRAN_MARINE_RUSH, 0.8, 500L,
+                "8 Marines before 4min"));
+        data.getPostureStore().add("UNKNOWN");
+        data.getTimingStore().add(false);
+
+        fire(data);
+
+        assertThat(data.getStrategyDecisions()).contains("DEFEND");
+    }
+
+    @Test
+    void rushDetected_lowConfidence_noDefend() {
+        StrategyRuleUnit data = new StrategyRuleUnit();
+
+        data.getPatternStore().add(new io.quarkmind.domain.EnemyPatternAssessment(
+                io.quarkmind.domain.EnemyArchetype.TERRAN_MARINE_RUSH, 0.5, 300L,
+                "Low confidence"));
+        data.getPostureStore().add("UNKNOWN");
+        data.getTimingStore().add(false);
+
+        fire(data);
+
+        assertThat(data.getStrategyDecisions()).doesNotContain("DEFEND");
+    }
+
+    @Test
+    void macroArchetype_noDefend() {
+        StrategyRuleUnit data = new StrategyRuleUnit();
+
+        data.getPatternStore().add(new io.quarkmind.domain.EnemyPatternAssessment(
+                io.quarkmind.domain.EnemyArchetype.ZERG_MACRO, 0.9, 500L,
+                "Macro build"));
+        data.getPostureStore().add("UNKNOWN");
+        data.getTimingStore().add(false);
+
+        fire(data);
+
+        assertThat(data.getStrategyDecisions()).doesNotContain("DEFEND");
+    }
+
 
     private void fire(StrategyRuleUnit data) {
         try (RuleUnitInstance<StrategyRuleUnit> instance = ruleUnit.createInstance(data)) {

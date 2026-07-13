@@ -54,7 +54,8 @@ class DroolsScoutingTaskTest {
         // Test broker with real EventStreamBus
         broker = new TestBroker();
 
-        task = new DroolsScoutingTask(ruleUnit, sessionManager, intentQueue);
+        RuleUnit<PatternClassificationRuleUnit> patternRuleUnit = mock(RuleUnit.class);
+        task = new DroolsScoutingTask(ruleUnit, patternRuleUnit, sessionManager, intentQueue);
         task.gameSession = gameSession;
         task.broker = broker;
         task.decisionEvents = mock(jakarta.enterprise.event.Event.class);

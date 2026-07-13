@@ -1,0 +1,201 @@
+package io.quarkmind.plugin.scouting;
+
+import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.UnitType;
+import io.quarkmind.plugin.scouting.events.EnemyArmyNearBase;
+import io.quarkmind.plugin.scouting.events.EnemyExpansionSeen;
+import io.quarkmind.plugin.scouting.events.EnemyUnitFirstSeen;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import org.drools.ruleunits.api.RuleUnit;
+import org.drools.ruleunits.api.RuleUnitInstance;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@QuarkusTest
+class PatternClassificationRuleUnitTest {
+
+    @Inject RuleUnit<PatternClassificationRuleUnit> ruleUnit;
+
+    @Test
+    void marineRush_highCountEarly_producesEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        for (int i = 0; i < 6; i++) {
+            data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.MARINE, 60000L));
+        }
+        data.getGameTimeStore().add(3.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+            e.archetype() == EnemyArchetype.TERRAN_MARINE_RUSH && e.weight() >= 0.5);
+    }
+
+    @Test
+    void marineRush_noExpansion_producesEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.MARINE, 60000L));
+        data.getGameTimeStore().add(3.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+            e.archetype() == EnemyArchetype.TERRAN_MARINE_RUSH && e.signal().contains("No expansion"));
+    }
+
+    @Test
+    void roachRush_earlyRoaches_producesEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        for (int i = 0; i < 5; i++) {
+            data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.ROACH, 120000L));
+        }
+        data.getGameTimeStore().add(4.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+            e.archetype() == EnemyArchetype.ZERG_ROACH_RUSH && e.weight() >= 0.5);
+    }
+
+    @Test
+    void zerglingRush_earlyZerglings_producesEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        for (int i = 0; i < 7; i++) {
+            data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.ZERGLING, 90000L));
+        }
+        data.getGameTimeStore().add(3.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+            e.archetype() == EnemyArchetype.ZERG_ZERGLING_RUSH && e.weight() >= 0.5);
+    }
+
+    @Test
+    void gatewayRush_stalkersAndZealotsEarly_producesEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.STALKER, 180000L));
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.STALKER, 180000L));
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.ZEALOT, 180000L));
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.ZEALOT, 180000L));
+        data.getGameTimeStore().add(4.5);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+            e.archetype() == EnemyArchetype.PROTOSS_GATEWAY_RUSH);
+    }
+
+    @Test
+    void mechPush_siegeTanksLate_producesEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.SIEGE_TANK, 300000L));
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.SIEGE_TANK, 300000L));
+        data.getGameTimeStore().add(6.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+            e.archetype() == EnemyArchetype.TERRAN_MECH_PUSH);
+    }
+
+    @Test
+    void bansheeHarass_bansheeEarly_producesEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.BANSHEE, 300000L));
+        data.getGameTimeStore().add(6.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+            e.archetype() == EnemyArchetype.TERRAN_BANSHEE_HARASS && e.weight() >= 0.6);
+    }
+
+    @Test
+    void zergMacro_expansionWithFewUnits_producesEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        data.getExpansionEvents().add(new EnemyExpansionSeen(new Point2d(40, 40), 120000L));
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.ZERGLING, 120000L));
+        data.getGameTimeStore().add(4.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+            e.archetype() == EnemyArchetype.ZERG_MACRO);
+    }
+
+    @Test
+    void protossMacro_expansionWithFewUnits_producesEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        data.getExpansionEvents().add(new EnemyExpansionSeen(new Point2d(40, 40), 120000L));
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.ZEALOT, 120000L));
+        data.getGameTimeStore().add(4.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+            e.archetype() == EnemyArchetype.PROTOSS_MACRO);
+    }
+
+    @Test
+    void cannonRush_armyNearBaseEarlyNoStalkers_producesEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        data.getArmyNearBaseEvents().add(new EnemyArmyNearBase(3, 120000L));
+        data.getGameTimeStore().add(3.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+            e.archetype() == EnemyArchetype.PROTOSS_CANNON_RUSH);
+    }
+
+    @Test
+    void emptyEvents_noEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        data.getGameTimeStore().add(3.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).isEmpty();
+    }
+
+    @Test
+    void mixedSignals_multipleArchetypesGetEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        for (int i = 0; i < 6; i++) {
+            data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.MARINE, 60000L));
+        }
+        data.getGameTimeStore().add(3.5);
+
+        fire(data);
+
+        long distinctArchetypes = data.getEvidence().stream()
+            .map(EvidenceMarker::archetype).distinct().count();
+        assertThat(distinctArchetypes).isGreaterThanOrEqualTo(1);
+        assertThat(data.getEvidence()).anyMatch(e ->
+            e.archetype() == EnemyArchetype.TERRAN_MARINE_RUSH);
+    }
+
+    @Test
+    void bioTiming_marinesAndMedivacMidGame_producesEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        for (int i = 0; i < 4; i++) {
+            data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.MARINE, 240000L));
+        }
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.MEDIVAC, 300000L));
+        data.getGameTimeStore().add(5.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+            e.archetype() == EnemyArchetype.TERRAN_BIO_TIMING && e.weight() >= 0.5);
+    }
+
+    private void fire(PatternClassificationRuleUnit data) {
+        try (RuleUnitInstance<PatternClassificationRuleUnit> instance = ruleUnit.createInstance(data)) {
+            instance.fire();
+        }
+    }
+}

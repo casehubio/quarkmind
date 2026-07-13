@@ -1,13 +1,18 @@
 package io.quarkmind.plugin.scouting;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.plugin.scouting.events.EnemyArmyNearBase;
 import io.quarkmind.plugin.scouting.events.EnemyExpansionSeen;
 import io.quarkmind.plugin.scouting.events.EnemyUnitFirstSeen;
+import jakarta.enterprise.context.ApplicationScoped;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Manages Java-side event buffers for {@link DroolsScoutingTask}.
@@ -113,6 +118,16 @@ public class ScoutingSessionManager {
         armyBuffer.forEach(data.getArmyNearBaseEvents()::add);
         return data;
     }
+
+    public PatternClassificationRuleUnit buildPatternRuleUnit(double gameTimeMin) {
+        PatternClassificationRuleUnit data = new PatternClassificationRuleUnit();
+        unitBuffer.forEach(data.getUnitEvents()::add);
+        expansionBuffer.forEach(data.getExpansionEvents()::add);
+        armyBuffer.forEach(data.getArmyNearBaseEvents()::add);
+        data.getGameTimeStore().add(gameTimeMin);
+        return data;
+    }
+
 
     // ---- Testability accessors ----
     public int seenTagCount()        { return seenUnitTags.size(); }

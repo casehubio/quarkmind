@@ -164,7 +164,8 @@ class DroolsTacticsTaskTest {
             .containsExactlyInAnyOrder(
                 ScoutingIntelType.THREAT_POSITION,
                 ScoutingIntelType.POSTURE,
-                ScoutingIntelType.TIMING_ALERT);
+                ScoutingIntelType.TIMING_ALERT,
+                ScoutingIntelType.PATTERN_ASSESSMENT);
     }
 
 }

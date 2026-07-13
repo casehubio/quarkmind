@@ -18,12 +18,6 @@ import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
-import io.quarkmind.plugin.summarisation.GameMoment;
-import io.quarkmind.plugin.summarisation.GameMomentType;
-import io.quarkmind.plugin.summarisation.GamePhase;
-import io.quarkmind.plugin.summarisation.MomentBroker;
-import io.quarkmind.plugin.summarisation.MomentConsumer;
-import io.quarkmind.plugin.summarisation.SummarisationLifecycle;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.Point2d;
@@ -32,6 +26,12 @@ import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.plugin.drools.AdvisoryFact;
 import io.quarkmind.plugin.drools.StrategyRuleUnit;
+import io.quarkmind.plugin.summarisation.GameMoment;
+import io.quarkmind.plugin.summarisation.GameMomentType;
+import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkmind.plugin.summarisation.MomentBroker;
+import io.quarkmind.plugin.summarisation.MomentConsumer;
+import io.quarkmind.plugin.summarisation.SummarisationLifecycle;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
@@ -134,13 +134,12 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
 
     @Override
     public void refreshSubscriptions(Preferences prefs) {
-        // Strategy subscribes to POSTURE and TIMING_ALERT; BUILD_ORDER deferred until rules use it
         subscribedTypes = Arrays.stream(new ScoutingIntelType[]{
-                ScoutingIntelType.POSTURE,
-                ScoutingIntelType.TIMING_ALERT})
-            .filter(t -> prefs.getOrDefault(ScoutingIntelPreferences.consumerKey(getId(), t)).asBoolean())
-            .collect(Collectors.toUnmodifiableSet());
-    }
+                                        ScoutingIntelType.POSTURE,
+                                        ScoutingIntelType.TIMING_ALERT,
+                                        ScoutingIntelType.PATTERN_ASSESSMENT})
+                                .filter(t -> prefs.getOrDefault(ScoutingIntelPreferences.consumerKey(getId(), t)).asBoolean())
+                                .collect(Collectors.toUnmodifiableSet());}
 
     @Override
     public Set<ScoutingIntelType> subscribedIntelTypes() { return subscribedTypes; }
@@ -253,22 +252,23 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
         buildings.forEach(data.getBuildings()::add);
         firstFreeGeyser(buildings, geysers).ifPresent(data.getGeysers()::add);
 
-        // Feed Level 2 moments
         synchronized (pendingMoments) {
             pendingMoments.forEach(data.getMomentStore()::add);
             pendingMoments.clear();
         }
 
-        // Feed Level 3 phase (single-element store)
         if (currentPhase != null) {
             data.getPhaseStore().add(currentPhase);
         }
 
-        // Feed advisory facts (non-stale only)
+        broker.current(ScoutingIntelType.PATTERN_ASSESSMENT,
+                       ScoutingIntelPayload.PatternAssessment.class)
+              .map(ScoutingIntelPayload.PatternAssessment::assessment)
+              .ifPresent(data.getPatternStore()::add);
+
         feedAdvisoryFacts(ctx, currentFrame, data);
 
-        return data;
-    }
+        return data;}
 
     private void dispatchBuildDecisions(List<String> decisions, ResourceBudget budget,
                                         List<Unit> workers, List<Building> buildings,

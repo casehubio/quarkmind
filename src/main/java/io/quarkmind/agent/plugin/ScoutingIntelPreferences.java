@@ -23,6 +23,10 @@ public final class ScoutingIntelPreferences {
     public static final PreferenceKey<ScoutingIntelPreference> BUILD_ORDER_DISPATCH_ENABLED =
         new PreferenceKey<>("scouting.intel.dispatch", "build-order.enabled",
             ScoutingIntelPreference.ofBoolean(true), ScoutingIntelPreference::parseBoolean);
+    public static final PreferenceKey<ScoutingIntelPreference> PATTERN_ASSESSMENT_DISPATCH_ENABLED =
+            new PreferenceKey<>("scouting.intel.dispatch", "pattern-assessment.enabled",
+                                ScoutingIntelPreference.ofBoolean(true), ScoutingIntelPreference::parseBoolean);
+
 
     public static PreferenceKey<ScoutingIntelPreference> consumerKey(String pluginId, ScoutingIntelType type) {
         return new PreferenceKey<>(
@@ -48,7 +52,7 @@ public final class ScoutingIntelPreferences {
 
     static boolean defaultEnabled(ScoutingIntelType type) {
         return switch (type) {
-            case THREAT_POSITION, POSTURE, TIMING_ALERT -> true;
+            case THREAT_POSITION, POSTURE, TIMING_ALERT, PATTERN_ASSESSMENT -> true;
             case ARMY_SIZE, BUILD_ORDER -> false;
         };
     }

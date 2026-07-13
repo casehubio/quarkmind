@@ -11,7 +11,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,32 +52,31 @@ class ScoutingCalibrationTest {
         int aiArenaLoaded = 0, aiArenaSkipped = 0;
         int iem10Loaded   = 0;
 
-        // ---- AI Arena binary replays (all PvP) ----
         List<Path> replayFiles = Files.list(AI_ARENA_DIR)
-            .filter(p -> p.toString().endsWith(".SC2Replay"))
-            .sorted()
-            .collect(Collectors.toList());
+                                      .filter(p -> p.toString().endsWith(".SC2Replay"))
+                                      .sorted()
+                                      .collect(Collectors.toList());
 
         for (Path replay : replayFiles) {
             try {
                 ReplaySimulatedGame game = new ReplaySimulatedGame(replay, 1);
-                for (int i = 0; i < TICKS_3MIN; i++) game.tick();
+                for (int i = 0; i < TICKS_3MIN; i++) {game.tick();}
                 statsByMatchup.get("PvP").add(countByType(game.snapshot()));
                 aiArenaLoaded++;
             } catch (IllegalArgumentException e) {
-                aiArenaSkipped++; // unparseable build version
+                aiArenaSkipped++;
             }
         }
 
-        // ---- IEM10 JSON replays (PvT, PvZ, PvP) ----
         List<IEM10JsonSimulatedGame> iem10Games = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP);
         for (IEM10JsonSimulatedGame game : iem10Games) {
-            for (int i = 0; i < TICKS_3MIN; i++) game.tick();
+            for (int i = 0; i < TICKS_3MIN; i++) {game.tick();}
             statsByMatchup.get(game.matchup()).add(countByType(game.snapshot()));
             iem10Loaded++;
         }
 
         String report = buildReport(statsByMatchup, aiArenaLoaded, aiArenaSkipped, iem10Loaded);
+        report += classifyPatterns(statsByMatchup);
         System.out.println(report);
 
         Path out = Path.of("target/scouting-calibration.txt");
@@ -81,8 +85,7 @@ class ScoutingCalibrationTest {
         System.out.println("Written to: " + out.toAbsolutePath());
 
         assertThat(iem10Loaded).as("IEM10 games loaded").isGreaterThan(0);
-        assertThat(aiArenaLoaded).as("AI Arena games loaded").isGreaterThan(0);
-    }
+        assertThat(aiArenaLoaded).as("AI Arena games loaded").isGreaterThan(0);}
 
     private static Map<UnitType, Long> countByType(GameState state) {
         Map<UnitType, Long> counts = new EnumMap<>(UnitType.class);
@@ -145,4 +148,42 @@ class ScoutingCalibrationTest {
         sb.append("  → ").append(note).append("\n\n");
         return sb.toString();
     }
+
+    private static String classifyPatterns(Map<String, List<Map<UnitType, Long>>> stats) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== Pattern Classification Comparison ===\n");
+        sb.append("Old (build-order) vs New (archetype) at 3-min mark\n\n");
+
+        for (var entry : stats.entrySet()) {
+            String matchup = entry.getKey();
+            sb.append(matchup).append(":\n");
+            int gameNum = 0;
+            for (var counts : entry.getValue()) {
+                gameNum++;
+                long marines   = counts.getOrDefault(UnitType.MARINE, 0L);
+                long roaches   = counts.getOrDefault(UnitType.ROACH, 0L);
+                long stalkers  = counts.getOrDefault(UnitType.STALKER, 0L);
+                long zealots   = counts.getOrDefault(UnitType.ZEALOT, 0L);
+                long zerglings = counts.getOrDefault(UnitType.ZERGLING, 0L);
+
+                String oldLabel = "NONE";
+                if (marines >= 7) {oldLabel = "TERRAN_3RAX";}
+                if (roaches >= 4) {oldLabel = "ZERG_ROACH_RUSH";}
+                if (stalkers + zealots >= 4) {oldLabel = "PROTOSS_4GATE";}
+
+                String newLabel = "NONE";
+                if (marines >= 5) {newLabel = "TERRAN_MARINE_RUSH";}
+                if (marines >= 6) {newLabel = "TERRAN_BIO_TIMING";}
+                if (roaches >= 4) {newLabel = "ZERG_ROACH_RUSH";}
+                if (zerglings >= 6) {newLabel = "ZERG_ZERGLING_RUSH";}
+                if (stalkers + zealots >= 4) {newLabel = "PROTOSS_GATEWAY_RUSH";}
+
+                sb.append(String.format("  game %2d: old=%-16s new=%-24s (M=%d R=%d S=%d Z=%d Zl=%d)%n",
+                                        gameNum, oldLabel, newLabel, marines, roaches, stalkers, zealots, zerglings));
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
 }

@@ -3,6 +3,7 @@ unit StrategyRuleUnit;
 
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.domain.EnemyPatternAssessment;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;
 import io.quarkmind.plugin.summarisation.GamePhase;
@@ -49,7 +50,6 @@ then
     buildDecisions.add("CYBERNETICS_CORE");
 end
 
-// Fires once per complete Gateway — DroolsStrategyTask uses the tag to queue TrainIntent.
 rule "Train Stalker"
     salience 70
 when
@@ -60,18 +60,25 @@ then
 end
 
 // ---------------------------------------------------------------------------
-// Strategy Assessment Rules (salience 210..150)
-// Driven by scouting-derived intel stored in postureStore and timingStore.
-// eval() + accumulate() does not compile in the current Drools version, so
-// posture and timing are fed as DataStore facts for pattern-matching.
-// Two DEFEND rules used instead of the or-keyword: or fires once per matching
-// alternative, adding "DEFEND" twice when both conditions hold. findFirst()
-// handles that, but two rules with a not-timing guard on the second are cleaner.
-// ATTACK fires when no threat signal — UNKNOWN posture is treated as
-// equivalent to the old "not /enemies" signal (no current enemy contact).
-// See protocol: docs/protocols/strategy-attack-under-unknown-posture.md
-// Default is "MACRO" (empty strategyDecisions list).
+// Strategy Assessment Rules (salience 220..150)
 // ---------------------------------------------------------------------------
+
+rule "Strategy: Defend — Nexus Under Attack Moment"
+    salience 220
+when
+    /momentStore[ this.type() == GameMomentType.NEXUS_UNDER_ATTACK ]
+then
+    strategyDecisions.add("DEFEND");
+end
+
+rule "Strategy: Defend — Rush Detected"
+    salience 215
+when
+    /patternStore[this.confidence() >= 0.7,
+                  this.archetype().name().contains("RUSH")]
+then
+    strategyDecisions.add("DEFEND");
+end
 
 rule "Strategy: Defend — Timing Attack"
     salience 210
@@ -90,34 +97,6 @@ then
     strategyDecisions.add("DEFEND");
 end
 
-rule "Strategy: Attack"
-    salience 150
-when
-    not /timingStore[ this == true ]
-    not /postureStore[ this.equals("ALL_IN") ]
-    accumulate(
-        /army[ this.type() == UnitType.STALKER ];
-        $count : count();
-        $count >= 4
-    )
-then
-    strategyDecisions.add("ATTACK");
-end
-
-// ---------------------------------------------------------------------------
-// Level 2/3 Integration — Moment and Phase-Aware Strategy (salience 220..180)
-// Consumes GameMoment (Level 2) and GamePhase (Level 3) events.
-// Higher salience than existing posture rules to prioritize urgent moments.
-// ---------------------------------------------------------------------------
-
-rule "Strategy: Defend — Nexus Under Attack Moment"
-    salience 220
-when
-    /momentStore[ this.type() == GameMomentType.NEXUS_UNDER_ATTACK ]
-then
-    strategyDecisions.add("DEFEND");
-end
-
 rule "Strategy: Accelerate — Economic Dominance in Skirmish"
     salience 180
 when
@@ -125,6 +104,20 @@ when
     not /momentStore[ this.type() == GameMomentType.NEXUS_UNDER_ATTACK ]
     accumulate(
         /army;
+        $count : count();
+        $count >= 4
+    )
+then
+    strategyDecisions.add("ATTACK");
+end
+
+rule "Strategy: Attack"
+    salience 150
+when
+    not /timingStore[ this == true ]
+    not /postureStore[ this.equals("ALL_IN") ]
+    accumulate(
+        /army[ this.type() == UnitType.STALKER ];
         $count : count();
         $count >= 4
     )
