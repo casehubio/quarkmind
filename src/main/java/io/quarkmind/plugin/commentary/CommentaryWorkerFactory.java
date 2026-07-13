@@ -51,8 +51,8 @@ public final class CommentaryWorkerFactory {
     public static List<Worker> createReactiveWorkers(List<AgentDescriptor> descriptors, ChatModel chatModel,
                                                      CommentaryCompletionCallback onCompletion) {
         List<AgentDescriptor> reactiveDescriptors = descriptors.stream()
-            .filter(d -> d.capabilities().stream().anyMatch(c -> c.name().equals("commentary-reactive")))
-            .toList();
+                                                               .filter(d -> d.capabilities().stream().anyMatch(c -> c.name().equals("commentary-reactive")))
+                                                               .toList();
 
         List<Worker> workers = new ArrayList<>(reactiveDescriptors.size());
         for (AgentDescriptor descriptor : reactiveDescriptors) {
@@ -74,8 +74,8 @@ public final class CommentaryWorkerFactory {
     public static List<Worker> createNarrativeWorkers(List<AgentDescriptor> descriptors, ChatModel chatModel,
                                                       CommentaryCompletionCallback onCompletion) {
         List<AgentDescriptor> narrativeDescriptors = descriptors.stream()
-            .filter(d -> d.capabilities().stream().anyMatch(c -> c.name().equals("commentary-narrative")))
-            .toList();
+                                                                .filter(d -> d.capabilities().stream().anyMatch(c -> c.name().equals("commentary-narrative")))
+                                                                .toList();
 
         List<Worker> workers = new ArrayList<>(narrativeDescriptors.size());
         for (AgentDescriptor descriptor : narrativeDescriptors) {
@@ -86,100 +86,100 @@ public final class CommentaryWorkerFactory {
     }
 
     private static Worker createReactiveWorker(AgentDescriptor descriptor, ChatModel chatModel,
-                                              CommentaryCompletionCallback onCompletion) {
-        String capabilityName = descriptor.capabilities().get(0).name();
-
-        return Worker.builder()
-            .name(descriptor.agentId())
-            .capabilityName(capabilityName)
-            .function(new WorkerFunction.Sync<>(Map.class, input ->
-                executeReactiveCommentary(descriptor, chatModel, input, onCompletion)))
-            .description("Reactive commentary worker: " + descriptor.name()
-                + " (" + descriptor.agentId() + ")")
-            .build();
-    }
-
-    private static Worker createNarrativeWorker(AgentDescriptor descriptor, ChatModel chatModel,
                                                CommentaryCompletionCallback onCompletion) {
         String capabilityName = descriptor.capabilities().get(0).name();
 
         return Worker.builder()
-            .name(descriptor.agentId())
-            .capabilityName(capabilityName)
-            .function(new WorkerFunction.Sync<>(Map.class, input ->
-                executeNarrativeCommentary(descriptor, chatModel, input, onCompletion)))
-            .description("Narrative commentary worker: " + descriptor.name()
-                + " (" + descriptor.agentId() + ")")
-            .build();
+                     .name(descriptor.agentId())
+                     .capabilityName(capabilityName)
+                     .function(new WorkerFunction.Sync<>(Map.class, input ->
+                                                                            executeReactiveCommentary(descriptor, chatModel, input, onCompletion)))
+                     .description("Reactive commentary worker: " + descriptor.name()
+                                  + " (" + descriptor.agentId() + ")")
+                     .build();
+    }
+
+    private static Worker createNarrativeWorker(AgentDescriptor descriptor, ChatModel chatModel,
+                                                CommentaryCompletionCallback onCompletion) {
+        String capabilityName = descriptor.capabilities().get(0).name();
+
+        return Worker.builder()
+                     .name(descriptor.agentId())
+                     .capabilityName(capabilityName)
+                     .function(new WorkerFunction.Sync<>(Map.class, input ->
+                                                                            executeNarrativeCommentary(descriptor, chatModel, input, onCompletion)))
+                     .description("Narrative commentary worker: " + descriptor.name()
+                                  + " (" + descriptor.agentId() + ")")
+                     .build();
     }
 
     private static WorkerResult executeReactiveCommentary(
             AgentDescriptor descriptor, ChatModel chatModel,
             Map<String, Object> input, CommentaryCompletionCallback onCompletion) {
-        long startNanos = System.nanoTime();
+        long   startNanos     = System.nanoTime();
         String capabilityName = descriptor.capabilities().get(0).name();
 
         try {
             SystemMessage systemMessage = new SystemMessage(buildReactiveSystemPrompt(descriptor));
-            UserMessage userMessage = new UserMessage(buildReactiveUserMessage(input));
+            UserMessage   userMessage   = new UserMessage(buildReactiveUserMessage(input));
 
             ChatRequest request = ChatRequest.builder()
-                .messages(systemMessage, userMessage)
-                .build();
+                                             .messages(systemMessage, userMessage)
+                                             .build();
 
-            ChatResponse response = chatModel.chat(request);
-            String responseText = response.aiMessage().text();
+            ChatResponse response     = chatModel.chat(request);
+            String       responseText = response.aiMessage().text();
 
             long latencyMs = (System.nanoTime() - startNanos) / 1_000_000;
             long gameFrame = getGameFrame(input, QuarkMindCaseFile.COMMENTARY_TRIGGER);
 
             // Fire completion callback
             onCompletion.onCompleted(descriptor.agentId(), capabilityName, gameFrame,
-                responseText != null ? responseText : "",
-                CommentaryType.REACTIVE, latencyMs);
+                                     responseText != null ? responseText : "",
+                                     CommentaryType.REACTIVE, latencyMs);
 
             return WorkerResult.of(Map.of(
-                "agent.commentary.reactive.text", responseText != null ? responseText : ""
-            ));
+                    "agent.commentary.reactive.text", responseText != null ? responseText : ""
+                                         ));
         } catch (Exception e) {
             log.warnf(e, "[COMMENTARY] Reactive %s failed: %s", descriptor.agentId(), e.getMessage());
             return WorkerResult.failed(
-                "Reactive commentary " + descriptor.agentId() + " failed: " + e.getMessage());
+                    "Reactive commentary " + descriptor.agentId() + " failed: " + e.getMessage());
         }
     }
 
     private static WorkerResult executeNarrativeCommentary(
             AgentDescriptor descriptor, ChatModel chatModel,
             Map<String, Object> input, CommentaryCompletionCallback onCompletion) {
-        long startNanos = System.nanoTime();
+        long   startNanos     = System.nanoTime();
         String capabilityName = descriptor.capabilities().get(0).name();
 
         try {
             SystemMessage systemMessage = new SystemMessage(buildNarrativeSystemPrompt(descriptor));
-            UserMessage userMessage = new UserMessage(buildNarrativeUserMessage(input));
+            UserMessage   userMessage   = new UserMessage(buildNarrativeUserMessage(input));
 
             ChatRequest request = ChatRequest.builder()
-                .messages(systemMessage, userMessage)
-                .build();
+                                             .messages(systemMessage, userMessage)
+                                             .build();
 
-            ChatResponse response = chatModel.chat(request);
-            String responseText = response.aiMessage().text();
+            ChatResponse response     = chatModel.chat(request);
+            String       responseText = response.aiMessage().text();
 
             long latencyMs = (System.nanoTime() - startNanos) / 1_000_000;
             long gameFrame = getGameFrame(input, QuarkMindCaseFile.COMMENTARY_NARRATIVE_TRIGGER);
 
             // Fire completion callback
             onCompletion.onCompleted(descriptor.agentId(), capabilityName, gameFrame,
-                responseText != null ? responseText : "",
-                CommentaryType.NARRATIVE, latencyMs);
+                                     responseText != null ? responseText : "",
+                                     CommentaryType.NARRATIVE, latencyMs);
 
             return WorkerResult.of(Map.of(
-                "agent.commentary.narrative.text", responseText != null ? responseText : ""
-            ));
+                    "agent.commentary.narrative.text", responseText != null ? responseText : ""
+                                         ));
         } catch (Exception e) {
             log.warnf(e, "[COMMENTARY] Narrative %s failed: %s", descriptor.agentId(), e.getMessage());
             return WorkerResult.failed(
-                "Narrative commentary " + descriptor.agentId() + " failed: " + e.getMessage());
+                    "Narrative commentary " + descriptor.agentId() + " failed: " + e.getMessage());
         }
     }
 
@@ -188,7 +188,7 @@ public final class CommentaryWorkerFactory {
      */
     static String buildReactiveSystemPrompt(AgentDescriptor descriptor) {
         AgentDisposition disposition = descriptor.disposition();
-        StringBuilder sb = new StringBuilder();
+        StringBuilder    sb          = new StringBuilder();
         sb.append("You are a StarCraft II play-by-play commentator.\n");
         sb.append("Your name is: ").append(descriptor.name()).append("\n\n");
         sb.append("Behavioural disposition:\n");
@@ -199,7 +199,11 @@ public final class CommentaryWorkerFactory {
             appendTrait(sb, "Autonomy", disposition.autonomy());
             appendTrait(sb, "Conflict mode", disposition.conflictMode());
         }
-        sb.append("\nReact with energy to the game moment. Keep it to 1-2 sentences.\n");
+        sb.append("\nIntel types you may receive:\n");
+        sb.append("- PATTERN_ASSESSMENT: enemy strategy classification with archetype name ");
+        sb.append("(e.g. ZERG_ROACH_RUSH) and confidence score (0.0–1.0). ");
+        sb.append("When present, call out the classification naturally.\n\n");
+        sb.append("React with energy to the game moment. Keep it to 1-2 sentences.\n");
         sb.append("Your response should be plain text commentary (no labels or structure).\n");
         return sb.toString();
     }
@@ -209,7 +213,7 @@ public final class CommentaryWorkerFactory {
      */
     static String buildNarrativeSystemPrompt(AgentDescriptor descriptor) {
         AgentDisposition disposition = descriptor.disposition();
-        StringBuilder sb = new StringBuilder();
+        StringBuilder    sb          = new StringBuilder();
         sb.append("You are a StarCraft II color commentator.\n");
         sb.append("Your name is: ").append(descriptor.name()).append("\n\n");
         sb.append("Behavioural disposition:\n");
@@ -220,7 +224,11 @@ public final class CommentaryWorkerFactory {
             appendTrait(sb, "Autonomy", disposition.autonomy());
             appendTrait(sb, "Conflict mode", disposition.conflictMode());
         }
-        sb.append("\nNarrate the strategic arc. Do NOT repeat moments just announced.\n");
+        sb.append("\nIntel types you may receive:\n");
+        sb.append("- PATTERN_ASSESSMENT: enemy strategy classification with archetype name ");
+        sb.append("and confidence score (0.0–1.0). ");
+        sb.append("When present, weave the strategic implications into your narrative.\n\n");
+        sb.append("Narrate the strategic arc. Do NOT repeat moments just announced.\n");
         sb.append("Provide context and analysis. Keep it to 2-3 sentences.\n");
         sb.append("Your response should be plain text commentary (no labels or structure).\n");
         return sb.toString();
@@ -232,12 +240,28 @@ public final class CommentaryWorkerFactory {
         }
     }
 
+    private static void appendPatternAssessment(StringBuilder sb, Map<?, ?> triggerMap) {
+        Object pattern = triggerMap.get("patternAssessment");
+        if (pattern instanceof Map<?, ?> patternMap) {
+            Object archetype  = patternMap.get("archetype");
+            Object confidence = patternMap.get("confidence");
+            if (archetype != null) {
+                sb.append("\nENEMY PATTERN: ").append(archetype);
+                if (confidence != null) {
+                    sb.append(" (confidence: ").append(confidence).append(")");
+                }
+                sb.append("\n");
+            }
+        }
+    }
+
+
     /**
      * Builds user message for reactive commentary with trigger event and game state.
      */
     static String buildReactiveUserMessage(Map<String, Object> input) {
-        StringBuilder sb = new StringBuilder();
-        Object trigger = input.get(QuarkMindCaseFile.COMMENTARY_TRIGGER);
+        StringBuilder sb      = new StringBuilder();
+        Object        trigger = input.get(QuarkMindCaseFile.COMMENTARY_TRIGGER);
         if (trigger instanceof Map<?, ?> triggerMap) {
             Object momentTypes = triggerMap.get("momentTypes");
             if (momentTypes != null) {
@@ -261,6 +285,8 @@ public final class CommentaryWorkerFactory {
             if (army != null) {
                 sb.append("- Army size: ").append(army).append("\n");
             }
+
+            appendPatternAssessment(sb, triggerMap);
         }
 
         sb.append("\nProvide your immediate commentary on this moment.");
@@ -271,8 +297,8 @@ public final class CommentaryWorkerFactory {
      * Builds user message for narrative commentary with accumulated events.
      */
     static String buildNarrativeUserMessage(Map<String, Object> input) {
-        StringBuilder sb = new StringBuilder();
-        Object trigger = input.get(QuarkMindCaseFile.COMMENTARY_NARRATIVE_TRIGGER);
+        StringBuilder sb      = new StringBuilder();
+        Object        trigger = input.get(QuarkMindCaseFile.COMMENTARY_NARRATIVE_TRIGGER);
         if (trigger instanceof Map<?, ?> triggerMap) {
             Object moments = triggerMap.get("moments");
             if (moments != null) {
@@ -283,6 +309,8 @@ public final class CommentaryWorkerFactory {
             if (frame != null) {
                 sb.append("Frame: ").append(frame).append("\n");
             }
+
+            appendPatternAssessment(sb, triggerMap);
         }
 
         sb.append("\nProvide contextual narration of the strategic arc.");

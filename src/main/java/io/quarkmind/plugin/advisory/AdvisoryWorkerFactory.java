@@ -1,6 +1,5 @@
 package io.quarkmind.plugin.advisory;
 
-import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.ChatModel;
@@ -49,13 +48,13 @@ public final class AdvisoryWorkerFactory {
      *   <li>function = sync function that calls the ChatModel and returns role-prefixed keys</li>
      * </ul>
      *
-     * @param descriptors the advisor descriptors (from {@code QuarkMindAdvisorRegistrar})
-     * @param chatModel   the LangChain4j ChatModel for LLM calls
+     * @param descriptors  the advisor descriptors (from {@code QuarkMindAdvisorRegistrar})
+     * @param chatModel    the LangChain4j ChatModel for LLM calls
      * @param onCompletion callback fired after successful advisory completion
      * @return list of Workers, one per descriptor
      */
     public static List<Worker> createWorkers(List<AgentDescriptor> descriptors, ChatModel chatModel,
-                                            CompletionCallback onCompletion) {
+                                             CompletionCallback onCompletion) {
         List<Worker> workers = new ArrayList<>(descriptors.size());
         for (AgentDescriptor descriptor : descriptors) {
             workers.add(createWorker(descriptor, chatModel, onCompletion));
@@ -65,18 +64,18 @@ public final class AdvisoryWorkerFactory {
     }
 
     private static Worker createWorker(AgentDescriptor descriptor, ChatModel chatModel,
-                                      CompletionCallback onCompletion) {
+                                       CompletionCallback onCompletion) {
         String capabilityName = descriptor.capabilities().get(0).name();
-        String role = extractRole(capabilityName);
+        String role           = extractRole(capabilityName);
 
         return Worker.builder()
-                .name(descriptor.agentId())
-                .capabilityName(capabilityName)
-                .function(new WorkerFunction.Sync<>(Map.class, input ->
-                    executeAdvisory(descriptor, chatModel, role, input, onCompletion)))
-                .description("LLM advisory worker: " + descriptor.name()
-                        + " (" + descriptor.agentId() + ")")
-                .build();
+                     .name(descriptor.agentId())
+                     .capabilityName(capabilityName)
+                     .function(new WorkerFunction.Sync<>(Map.class, input ->
+                                                                            executeAdvisory(descriptor, chatModel, role, input, onCompletion)))
+                     .description("LLM advisory worker: " + descriptor.name()
+                                  + " (" + descriptor.agentId() + ")")
+                     .build();
     }
 
     /**
@@ -92,24 +91,24 @@ public final class AdvisoryWorkerFactory {
     private static WorkerResult executeAdvisory(
             AgentDescriptor descriptor, ChatModel chatModel, String role,
             Map<String, Object> input, CompletionCallback onCompletion) {
-        long startNanos = System.nanoTime();
+        long   startNanos     = System.nanoTime();
         String capabilityName = descriptor.capabilities().get(0).name();
 
         try {
             SystemMessage systemMessage = new SystemMessage(buildSystemPrompt(descriptor, role));
-            UserMessage userMessage = new UserMessage(buildUserMessage(role, input));
+            UserMessage   userMessage   = new UserMessage(buildUserMessage(role, input));
 
             ChatRequest request = ChatRequest.builder()
-                    .messages(systemMessage, userMessage)
-                    .build();
+                                             .messages(systemMessage, userMessage)
+                                             .build();
 
-            ChatResponse response = chatModel.chat(request);
-            String responseText = response.aiMessage().text();
+            ChatResponse response     = chatModel.chat(request);
+            String       responseText = response.aiMessage().text();
 
-            long latencyMs = (System.nanoTime() - startNanos) / 1_000_000;
-            String confidenceStr = extractSection(responseText, "CONFIDENCE");
-            double confidence = parseConfidence(confidenceStr);
-            long gameFrame = getGameFrame(input);
+            long                latencyMs         = (System.nanoTime() - startNanos) / 1_000_000;
+            String              confidenceStr     = extractSection(responseText, "CONFIDENCE");
+            double              confidence        = parseConfidence(confidenceStr);
+            long                gameFrame         = getGameFrame(input);
             Map<String, Double> gameStateSnapshot = captureGameStateSnapshot(input);
 
             String keyPrefix = "agent.advisory." + role + ".";
@@ -119,12 +118,12 @@ public final class AdvisoryWorkerFactory {
                     keyPrefix + "confidence", confidenceStr,
                     keyPrefix + "agent_id", descriptor.agentId(),
                     keyPrefix + "timestamp", gameFrame
-            ));
+                                                        ));
 
             // Fire completion callback
             onCompletion.onCompleted(descriptor.agentId(), capabilityName, gameFrame,
-                                    responseText != null ? responseText : "",
-                                    confidence, latencyMs, gameStateSnapshot);
+                                     responseText != null ? responseText : "",
+                                     confidence, latencyMs, gameStateSnapshot);
 
             return result;
         } catch (Exception e) {
@@ -174,7 +173,7 @@ public final class AdvisoryWorkerFactory {
      */
     static String buildSystemPrompt(AgentDescriptor descriptor, String role) {
         AgentDisposition disposition = descriptor.disposition();
-        StringBuilder sb = new StringBuilder();
+        StringBuilder    sb          = new StringBuilder();
         sb.append("You are a StarCraft II ").append(role).append(" advisor.\n");
         sb.append("Your name is: ").append(descriptor.name()).append("\n\n");
         sb.append("Behavioural disposition:\n");
@@ -185,7 +184,12 @@ public final class AdvisoryWorkerFactory {
             appendTrait(sb, "Autonomy", disposition.autonomy());
             appendTrait(sb, "Conflict mode", disposition.conflictMode());
         }
-        sb.append("\nRespond with:\n");
+        sb.append("\nIntel types you may receive:\n");
+        sb.append("- PATTERN_ASSESSMENT: enemy strategy classification with archetype name ");
+        sb.append("and confidence score (0.0–1.0). ");
+        sb.append("Factor the classified intent into your recommendation — ");
+        sb.append("a high-confidence rush classification should increase urgency.\n\n");
+        sb.append("Respond with:\n");
         sb.append("RECOMMENDATION: <your recommendation>\n");
         sb.append("REASONING: <your reasoning>\n");
         sb.append("CONFIDENCE: <0.0 to 1.0>\n");
@@ -202,11 +206,33 @@ public final class AdvisoryWorkerFactory {
      * Builds the user message with trigger event and game state summary.
      */
     static String buildUserMessage(String role, Map<String, Object> input) {
-        StringBuilder sb = new StringBuilder();
-        String triggerKey = "game.advisory.trigger." + role;
-        Object trigger = input.get(triggerKey);
+        StringBuilder sb         = new StringBuilder();
+        String        triggerKey = "game.advisory.trigger." + role;
+        Object        trigger    = input.get(triggerKey);
         if (trigger != null) {
-            sb.append("TRIGGER EVENT: ").append(trigger).append("\n\n");
+            if (trigger instanceof Map<?, ?> triggerMap) {
+                Object event = triggerMap.get("event");
+                if (event != null) {
+                    sb.append("TRIGGER EVENT: ").append(event).append("\n");
+                } else {
+                    sb.append("TRIGGER EVENT: ").append(trigger).append("\n");
+                }
+                Object pattern = triggerMap.get("patternAssessment");
+                if (pattern instanceof Map<?, ?> patternMap) {
+                    Object archetype  = patternMap.get("archetype");
+                    Object confidence = patternMap.get("confidence");
+                    if (archetype != null) {
+                        sb.append("Enemy pattern classification: ").append(archetype);
+                        if (confidence != null) {
+                            sb.append(" (confidence: ").append(confidence).append(")");
+                        }
+                        sb.append("\n");
+                    }
+                }
+            } else {
+                sb.append("TRIGGER EVENT: ").append(trigger).append("\n");
+            }
+            sb.append("\n");
         }
 
         sb.append("Current game state:\n");
@@ -247,7 +273,7 @@ public final class AdvisoryWorkerFactory {
             return "";
         }
         String prefix = label + ":";
-        int start = responseText.indexOf(prefix);
+        int    start  = responseText.indexOf(prefix);
         if (start < 0) {
             return "";
         }

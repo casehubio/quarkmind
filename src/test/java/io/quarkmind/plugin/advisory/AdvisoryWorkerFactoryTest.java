@@ -249,6 +249,46 @@ class AdvisoryWorkerFactoryTest {
 
     // ── Helper methods ─────────────────────────────────────────────────
 
+
+    @Test
+    void system_prompt_references_pattern_assessment() {
+        AgentDescriptor descriptor = buildDescriptor(
+                "claude:crisis-aggressive@v1", "Aggressive Crisis Advisor",
+                "crisis-response", "advisory-crisis",
+                AgentDisposition.builder()
+                                .socialOrient("collaborative")
+                                .ruleFollowing("flexible")
+                                .riskAppetite("bold")
+                                .autonomy("semi-autonomous")
+                                .conflictMode("collaborate")
+                                .delegation(false)
+                                .build());
+        String prompt = AdvisoryWorkerFactory.buildSystemPrompt(descriptor, "crisis");
+        assertThat(prompt).contains("PATTERN_ASSESSMENT");
+        assertThat(prompt).contains("archetype");
+    }
+
+    @Test
+    void user_message_includes_pattern_assessment_when_present() {
+        String msg = AdvisoryWorkerFactory.buildUserMessage("crisis",
+                                                            Map.of("game.advisory.trigger.crisis", Map.of(
+                                                                           "event", "TIMING_ALERT",
+                                                                           "patternAssessment", Map.of(
+                                                                                   "archetype", "ZERG_ROACH_RUSH",
+                                                                                   "confidence", 0.72)),
+                                                                   "game.frame", 3000));
+        assertThat(msg).contains("Enemy pattern classification: ZERG_ROACH_RUSH");
+        assertThat(msg).contains("0.72");
+    }
+
+    @Test
+    void user_message_omits_pattern_assessment_when_absent() {
+        String msg = AdvisoryWorkerFactory.buildUserMessage("crisis",
+                                                            Map.of("game.advisory.trigger.crisis", "TIMING_ALERT",
+                                                                   "game.frame", 3000));
+        assertThat(msg).doesNotContain("Enemy pattern classification");
+    }
+
     private static CompletionCallback noOpCallback() {
         return (advisorId, capability, gameFrame, recommendation, confidence, latencyMs, gameStateSnapshot) -> {
             // No-op for tests that don't care about completion events

@@ -256,6 +256,55 @@ class CommentaryWorkerFactoryTest {
 
     // ── Helper methods ─────────────────────────────────────────────────
 
+
+    @Test
+    void reactiveSystemPrompt_containsPatternAssessmentGuidance() {
+        AgentDescriptor descriptor = buildReactiveDescriptor(
+                "claude:commentator-energetic@v1", "Energetic Commentator", "bold");
+        String prompt = CommentaryWorkerFactory.buildReactiveSystemPrompt(descriptor);
+        assertThat(prompt).contains("PATTERN_ASSESSMENT");
+        assertThat(prompt).contains("archetype");
+        assertThat(prompt).contains("confidence");
+    }
+
+    @Test
+    void narrativeSystemPrompt_containsPatternAssessmentGuidance() {
+        AgentDescriptor descriptor = buildNarrativeDescriptor(
+                "claude:narrator-dramatic@v1", "Dramatic Narrator", "flexible");
+        String prompt = CommentaryWorkerFactory.buildNarrativeSystemPrompt(descriptor);
+        assertThat(prompt).contains("PATTERN_ASSESSMENT");
+    }
+
+    @Test
+    void reactiveUserMessage_includesPatternAssessment_whenPresent() {
+        String msg = CommentaryWorkerFactory.buildReactiveUserMessage(
+                Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of(
+                        "gameFrame", 1500L,
+                        "patternAssessment", Map.of(
+                                "archetype", "ZERG_ROACH_RUSH",
+                                "confidence", 0.72))));
+        assertThat(msg).contains("ENEMY PATTERN: ZERG_ROACH_RUSH");
+        assertThat(msg).contains("0.72");
+    }
+
+    @Test
+    void reactiveUserMessage_omitsPatternAssessment_whenAbsent() {
+        String msg = CommentaryWorkerFactory.buildReactiveUserMessage(
+                Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of("gameFrame", 1500L)));
+        assertThat(msg).doesNotContain("ENEMY PATTERN");
+    }
+
+    @Test
+    void narrativeUserMessage_includesPatternAssessment_whenPresent() {
+        String msg = CommentaryWorkerFactory.buildNarrativeUserMessage(
+                Map.of(QuarkMindCaseFile.COMMENTARY_NARRATIVE_TRIGGER, Map.of(
+                        "patternAssessment", Map.of(
+                                "archetype", "TERRAN_MARINE_RUSH",
+                                "confidence", 0.85))));
+        assertThat(msg).contains("ENEMY PATTERN: TERRAN_MARINE_RUSH");
+        assertThat(msg).contains("0.85");
+    }
+
     private static CommentaryCompletionCallback noOpCallback() {
         return (workerId, capability, gameFrame, text, type, latencyMs) -> {
             // No-op for tests that don't care about completion events

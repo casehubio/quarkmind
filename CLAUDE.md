@@ -269,7 +269,7 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 **Integration tests** (`@QuarkusTest`, full CDI context):
 - Use `@Inject` to get beans; scheduler is disabled — call `orchestrator.gameTick()` directly
 - Tests: `QaEndpointsTest`, `FullMockPipelineIT`, `DroolsStrategyTaskTest`, `EconomicsFlowTest`, `DroolsTacticsRuleUnitTest`, `DroolsTacticsTaskIT`, `DroolsScoutingRulesTest`, `DroolsScoutingTaskIT`, `LedgerAuditIT`, `TrustWeightedStrategyIT`, `StrategyCheckpointIT`, `StrategyOutcomeRecordIT`, `AdaptivePluginSelectionIT`, `MomentDetectionTaskTest`, `MomentBrokerIT`, `SummarisationPipelineIT`, `AdvisoryIntegrationIT`
-- Tests: (continued) `PatternClassificationRuleUnitTest`
+- Tests: (continued) `PatternClassificationRuleUnitTest`, `PatternClassificationCalibrationTest`
 - L6 @QuarkusTest note: `DroolsStrategyTaskTest`, `LedgerAuditIT`, `AdaptivePluginSelectionIT` inject `@CaseType("starcraft-game") DroolsStrategyTask` directly (not the `StrategyTask` interface) — three competing `StrategyTask` implementations make the interface injection ambiguous. Always use the concrete type when a specific strategy impl is the subject under test.
 - Flow integration tests emit to a SmallRye channel and assert after `Thread.sleep(300)` — the flow processes asynchronously
 
@@ -344,10 +344,11 @@ Each plugin seam (`StrategyTask`, `EconomicsTask`, `TacticsTask`, `ScoutingTask`
 
 ## Performance Benchmarking
 
-Three benchmark tests run via `mvn test -Pbenchmark`:
+Four benchmark tests run via `mvn test -Pbenchmark`:
 - `GameLoopBenchmarkTest` — per-phase tick timings across the full plugin chain (MockEngine, %test profile). Run before/after any change that could affect game loop latency; paste results into `docs/benchmarks/`.
 - `EmulatedGameBenchmarkTest` — EmulatedGame full-tick throughput with realistic combat load (PROTOSS_4GATE, A* pathfinding active). Plain JUnit — measures physics tick rate, not harness dispatch. Package: `io.quarkmind.sc2.emulated`. Run via `mvn test -Pbenchmark -Dtest=EmulatedGameBenchmarkTest`.
 - `ScoutingCalibrationTest` — runs all replay datasets to 3-min mark and prints enemy unit count statistics per matchup.
+- `PatternClassificationCalibrationTest` — `@QuarkusTest` that runs `PatternClassificationRuleUnit` against AI Arena + IEM10 replays, asserts ≥ 70% accuracy for rush and air-threat archetypes at 3-min mark.
 
 **When to run `GameLoopBenchmarkTest`:**
 - Adding or modifying a plugin
