@@ -7,19 +7,12 @@ import io.casehub.qhorus.api.message.MessageType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Tests for {@link AdvisoryChannelBackend} — HIL coaching observation backend.
- *
- * <p>Plain JUnit test — verifies backend identity, actorType, and message storage
- * without CDI or database dependencies.
- *
- * <p>Refs #180
- */
 class AdvisoryChannelBackendTest {
 
     private AdvisoryChannelBackend backend;
@@ -47,7 +40,7 @@ class AdvisoryChannelBackendTest {
             "summarisation.advisory-broker",
             MessageType.STATUS,
             "{\"advisorId\":\"claude:crisis-aggressive@v1\",\"recommendation\":\"Build Shield Batteries\"}",
-            null, null, ActorType.AGENT
+            null, null, ActorType.AGENT, List.of()
         );
 
         backend.post(channelRef, message);
@@ -61,11 +54,11 @@ class AdvisoryChannelBackendTest {
     void post_replacesLatestMessage() {
         var channelRef = new ChannelRef(UUID.randomUUID(), "quarkmind-advisory");
         var first = new OutboundMessage(
-            UUID.randomUUID(), "broker", MessageType.STATUS, "first", null, null, ActorType.AGENT
-        );
+            UUID.randomUUID(), "broker", MessageType.STATUS, "first",
+            null, null, ActorType.AGENT, List.of());
         var second = new OutboundMessage(
-            UUID.randomUUID(), "broker", MessageType.STATUS, "second", null, null, ActorType.AGENT
-        );
+            UUID.randomUUID(), "broker", MessageType.STATUS, "second",
+            null, null, ActorType.AGENT, List.of());
 
         backend.post(channelRef, first);
         backend.post(channelRef, second);
@@ -82,14 +75,12 @@ class AdvisoryChannelBackendTest {
     void open_doesNotThrow() {
         var channelRef = new ChannelRef(UUID.randomUUID(), "quarkmind-advisory");
         backend.open(channelRef, Map.of());
-        // No-op — should not throw
     }
 
     @Test
     void close_doesNotThrow() {
         var channelRef = new ChannelRef(UUID.randomUUID(), "quarkmind-advisory");
         backend.close(channelRef);
-        // No-op — should not throw
     }
 
     @Test
@@ -98,11 +89,13 @@ class AdvisoryChannelBackendTest {
         assertThat(backend.messageCount()).isZero();
 
         backend.post(channelRef, new OutboundMessage(
-            UUID.randomUUID(), "broker", MessageType.STATUS, "msg1", null, null, ActorType.AGENT));
+            UUID.randomUUID(), "broker", MessageType.STATUS, "msg1",
+            null, null, ActorType.AGENT, List.of()));
         assertThat(backend.messageCount()).isEqualTo(1);
 
         backend.post(channelRef, new OutboundMessage(
-            UUID.randomUUID(), "broker", MessageType.STATUS, "msg2", null, null, ActorType.AGENT));
+            UUID.randomUUID(), "broker", MessageType.STATUS, "msg2",
+            null, null, ActorType.AGENT, List.of()));
         assertThat(backend.messageCount()).isEqualTo(2);
     }
 }

@@ -8,6 +8,7 @@ import jakarta.enterprise.inject.Alternative;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * QuarkMind-specific trust routing policy provider.
@@ -79,32 +80,32 @@ public class QuarkMindTrustRoutingPolicyProvider implements TrustRoutingPolicyPr
                 "response-latency", responseLatencyFloor,
                 "recommendation-quality", recommendationQualityFloor,
                 "game-outcome", gameOutcomeFloor
-        );
+                                                  );
 
         return new TrustRoutingPolicy(
-                0.7,                    // threshold
-                minimumObservations,    // minimumObservations (varies per capability)
-                0.1,                    // borderlineMargin
-                0.6,                    // blendFactor
-                qualityFloors,          // qualityFloors
-                false,                  // bootstrapEscalationRequired
-                null                    // fallbackBinding
-        );
-    }
+                0.7,
+                minimumObservations,
+                0.1,
+                0.6,
+                qualityFloors,
+                false,
+                null,
+                Set.of()
+        );}
 
     private TrustRoutingPolicy buildCommentaryPolicy(int minimumObservations, double latencyFloor) {
         Map<String, Double> qualityFloors = Map.of(
                 "response-latency", latencyFloor
-        );
+                                                  );
 
         return new TrustRoutingPolicy(
-                0.7,                    // threshold
-                minimumObservations,    // minimumObservations (varies per capability)
-                0.1,                    // borderlineMargin
-                0.6,                    // blendFactor
-                qualityFloors,          // qualityFloors (only response-latency for commentary)
-                false,                  // bootstrapEscalationRequired
-                null                    // fallbackBinding
-        );
-    }
+                0.7,
+                minimumObservations,
+                0.1,
+                0.6,
+                qualityFloors,
+                false,
+                null,
+                Set.of()
+        );}
 }

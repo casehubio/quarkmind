@@ -1,17 +1,17 @@
 package io.quarkmind.plugin.summarisation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.blocks.summarisation.EventStreamBus;
 import io.casehub.blocks.summarisation.LevelEvent;
 import io.casehub.platform.api.identity.ActorType;
+import io.casehub.qhorus.api.channel.ChannelCreateRequest;
 import io.casehub.qhorus.api.channel.ChannelSemantic;
 import io.casehub.qhorus.api.message.MessageDispatch;
 import io.casehub.qhorus.api.message.MessageType;
-import io.casehub.qhorus.api.channel.ChannelCreateRequest;
 import io.casehub.qhorus.runtime.channel.ChannelService;
 import io.casehub.qhorus.runtime.message.MessageService;
-import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkmind.sc2.GameStarted;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -56,30 +56,22 @@ public class MomentBroker {
 
     @PostConstruct
     void init() {
-        // ChannelService delegates to JPA — @Transactional on @PostConstruct is not
-        // intercepted by Arc, so use QuarkusTransaction.requiringNew().
-        // GE-20260529-88b7b6: ChannelService.create() not idempotent — findByName() first
         channelId = QuarkusTransaction.requiringNew().call(() ->
-            channelService.findByName(CHANNEL_NAME)
-                .map(c -> c.id())
-                .orElseGet(() -> channelService.create(
-                    new ChannelCreateRequest(
-                        CHANNEL_NAME,
-                        "Summarisation events (L2 moments, L3 phases, L4 arcs)",
-                        ChannelSemantic.APPEND,
-                        null, null, null, null, null,
-                        Set.of(MessageType.STATUS),
-                        null, null, null, null, null)
-                ).id())
-        );
+                                                                   channelService.findByName(CHANNEL_NAME)
+                                                                                 .map(c -> c.id())
+                                                                                 .orElseGet(() -> channelService.create(
+                                                                                         ChannelCreateRequest.builder(CHANNEL_NAME)
+                                                                                                             .description("Summarisation events (L2 moments, L3 phases, L4 arcs)")
+                                                                                                             .semantic(ChannelSemantic.APPEND)
+                                                                                                             .allowedTypes(Set.of(MessageType.STATUS))
+                                                                                                             .build()
+                                                                                                                       ).id())
+                                                          );
 
-        // Wire MomentDetectionTask's output to our bus
         momentDetectionTask.setMomentBus(momentBus);
 
-        // Subscribe Qhorus dispatch — persists across games (never cleared)
         momentBus.subscribe(m -> true, this::dispatchToQhorus);
-        log.infof("[MOMENT-BROKER] Channel ready: %s", channelId);
-    }
+        log.infof("[MOMENT-BROKER] Channel ready: %s", channelId);}
 
     public EventStreamBus<GameMoment> momentBus() { return momentBus; }
     public UUID channelId() { return channelId; }

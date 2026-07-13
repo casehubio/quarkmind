@@ -287,9 +287,10 @@ public class EmulatedGame {
             }
         }
 
-        // Phase 2: resource check
-        final int mCost = SC2Data.mineralCost(t.unitType());
-        final int gCost = SC2Data.gasCost(t.unitType());
+        // Phase 2: resource check (batch-aware — Zergling costs 50 minerals for 2 units)
+        final int count = SC2Data.trainCount(t.unitType());
+        final int mCost = SC2Data.mineralCost(t.unitType()) * count;
+        final int gCost = SC2Data.gasCost(t.unitType()) * count;
         final int sCost = SC2Data.supplyCost(t.unitType());
         if ((int) state.minerals() < mCost || state.vespene() < gCost
                 || state.supplyUsed() + sCost > state.supply()) {
@@ -339,7 +340,7 @@ public class EmulatedGame {
         physics.buildingTrainingUntil.put(buildingTag, completesAt);
         physics.buildingCompletionAtLoop.put(buildingTag,
             absLoop + SC2Data.trainTimeInLoops(unitType));
-        final int spawnCount = (model != null) ? model.trainCount(unitType) : 1;
+        final int spawnCount = (model != null) ? model.trainCount(unitType) : SC2Data.trainCount(unitType);
         physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
             physics.buildingTrainingUntil.remove(buildingTag);
             if (!physics.buildingQueues.containsKey(buildingTag)) {

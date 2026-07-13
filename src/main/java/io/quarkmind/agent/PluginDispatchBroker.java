@@ -1,11 +1,11 @@
 package io.quarkmind.agent;
 
 import io.casehub.platform.api.identity.ActorType;
+import io.casehub.qhorus.api.channel.ChannelCreateRequest;
 import io.casehub.qhorus.api.channel.ChannelSemantic;
 import io.casehub.qhorus.api.message.DispatchResult;
 import io.casehub.qhorus.api.message.MessageDispatch;
 import io.casehub.qhorus.api.message.MessageType;
-import io.casehub.qhorus.api.channel.ChannelCreateRequest;
 import io.casehub.qhorus.runtime.channel.ChannelService;
 import io.casehub.qhorus.runtime.message.MessageService;
 import io.quarkmind.sc2.GameStarted;
@@ -76,24 +76,18 @@ public class PluginDispatchBroker {
 
     @PostConstruct
     void init() {
-        // GE-20260529-88b7b6: @Transactional on @PostConstruct not intercepted by Arc;
-        // ChannelService.create() is not idempotent — findByName() first.
         channelId = QuarkusTransaction.requiringNew().call(() ->
-            channelService.findByName(CHANNEL_NAME)
-                .map(c -> c.id())
-                .orElseGet(() -> channelService.create(
-                    new ChannelCreateRequest(
-                        CHANNEL_NAME,
-                        "Plugin activation commitment dispatch",
-                        ChannelSemantic.APPEND,
-                        null, null, null, null, null,
-                        Set.of(MessageType.COMMAND, MessageType.DONE, MessageType.DECLINE),
-                        null, null, null, null, null
-                    )
-                ).id())
-        );
-        log.infof("[DISPATCH-BROKER] Channel ready: %s", channelId);
-    }
+                                                                   channelService.findByName(CHANNEL_NAME)
+                                                                                 .map(c -> c.id())
+                                                                                 .orElseGet(() -> channelService.create(
+                                                                                         ChannelCreateRequest.builder(CHANNEL_NAME)
+                                                                                                             .description("Plugin activation commitment dispatch")
+                                                                                                             .semantic(ChannelSemantic.APPEND)
+                                                                                                             .allowedTypes(Set.of(MessageType.COMMAND, MessageType.DONE, MessageType.DECLINE))
+                                                                                                             .build()
+                                                                                                                       ).id())
+                                                          );
+        log.infof("[DISPATCH-BROKER] Channel ready: %s", channelId);}
 
     void onGameStarted(@Observes GameStarted event) {
         // Clear so first tick re-establishes baseline for the new game.

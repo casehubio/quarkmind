@@ -47,24 +47,18 @@ public class AdvisoryChannelBroker {
 
     @PostConstruct
     void init() {
-        // GE-20260529-88b7b6: @Transactional on @PostConstruct not intercepted by Arc;
-        // ChannelService.create() is not idempotent — findByName() first.
         channelId = QuarkusTransaction.requiringNew().call(() ->
-            channelService.findByName(CHANNEL_NAME)
-                .map(c -> c.id())
-                .orElseGet(() -> channelService.create(
-                    new ChannelCreateRequest(
-                        CHANNEL_NAME,
-                        "Advisory audit trail",
-                        ChannelSemantic.APPEND,
-                        null, null, null, null, null,
-                        Set.of(MessageType.STATUS),
-                        null, null, null, null, null
-                    )
-                ).id())
-        );
-        log.infof("[ADVISORY-BROKER] Channel ready: %s", channelId);
-    }
+                                                                   channelService.findByName(CHANNEL_NAME)
+                                                                                 .map(c -> c.id())
+                                                                                 .orElseGet(() -> channelService.create(
+                                                                                         ChannelCreateRequest.builder(CHANNEL_NAME)
+                                                                                                             .description("Advisory audit trail")
+                                                                                                             .semantic(ChannelSemantic.APPEND)
+                                                                                                             .allowedTypes(Set.of(MessageType.STATUS))
+                                                                                                             .build()
+                                                                                                                       ).id())
+                                                          );
+        log.infof("[ADVISORY-BROKER] Channel ready: %s", channelId);}
 
     public UUID channelId() { return channelId; }
 

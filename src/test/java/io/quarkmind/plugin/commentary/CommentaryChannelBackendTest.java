@@ -7,19 +7,12 @@ import io.casehub.qhorus.api.message.MessageType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Tests for {@link CommentaryChannelBackend} — observer mode commentary backend.
- *
- * <p>Plain JUnit test — verifies backend identity, actorType, and message storage
- * without CDI or database dependencies.
- *
- * <p>Refs #181
- */
 class CommentaryChannelBackendTest {
 
     private CommentaryChannelBackend backend;
@@ -47,7 +40,7 @@ class CommentaryChannelBackendTest {
             "commentary.reactive",
             MessageType.STATUS,
             "{\"text\":\"The enemy is at the gates!\",\"type\":\"REACTIVE\"}",
-            null, null, ActorType.AGENT
+            null, null, ActorType.AGENT, List.of()
         );
 
         backend.post(channelRef, message);
@@ -61,11 +54,11 @@ class CommentaryChannelBackendTest {
     void post_replacesLatestMessage() {
         var channelRef = new ChannelRef(UUID.randomUUID(), "quarkmind-commentary");
         var first = new OutboundMessage(
-            UUID.randomUUID(), "commentary.reactive", MessageType.STATUS, "first", null, null, ActorType.AGENT
-        );
+            UUID.randomUUID(), "commentary.reactive", MessageType.STATUS, "first",
+            null, null, ActorType.AGENT, List.of());
         var second = new OutboundMessage(
-            UUID.randomUUID(), "commentary.narrative", MessageType.STATUS, "second", null, null, ActorType.AGENT
-        );
+            UUID.randomUUID(), "commentary.narrative", MessageType.STATUS, "second",
+            null, null, ActorType.AGENT, List.of());
 
         backend.post(channelRef, first);
         backend.post(channelRef, second);
@@ -82,14 +75,12 @@ class CommentaryChannelBackendTest {
     void open_doesNotThrow() {
         var channelRef = new ChannelRef(UUID.randomUUID(), "quarkmind-commentary");
         backend.open(channelRef, Map.of());
-        // No-op — should not throw
     }
 
     @Test
     void close_doesNotThrow() {
         var channelRef = new ChannelRef(UUID.randomUUID(), "quarkmind-commentary");
         backend.close(channelRef);
-        // No-op — should not throw
     }
 
     @Test
@@ -98,11 +89,13 @@ class CommentaryChannelBackendTest {
         assertThat(backend.messageCount()).isZero();
 
         backend.post(channelRef, new OutboundMessage(
-            UUID.randomUUID(), "commentary.reactive", MessageType.STATUS, "msg1", null, null, ActorType.AGENT));
+            UUID.randomUUID(), "commentary.reactive", MessageType.STATUS, "msg1",
+            null, null, ActorType.AGENT, List.of()));
         assertThat(backend.messageCount()).isEqualTo(1);
 
         backend.post(channelRef, new OutboundMessage(
-            UUID.randomUUID(), "commentary.narrative", MessageType.STATUS, "msg2", null, null, ActorType.AGENT));
+            UUID.randomUUID(), "commentary.narrative", MessageType.STATUS, "msg2",
+            null, null, ActorType.AGENT, List.of()));
         assertThat(backend.messageCount()).isEqualTo(2);
     }
 }

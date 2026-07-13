@@ -1,12 +1,17 @@
 package io.quarkmind.sc2.emulated;
 
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Race;
+import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -355,6 +360,52 @@ class ZergEmulatedGameTest {
     }
 
     // --- Helpers ---
+
+
+    @Test
+    void trainZergling_deductsFullBatchCost_50minerals() {
+        game.setMineralsForTesting(200);
+        game.setSupplyForTesting(20, 12);
+        final String hatchTag       = hatcheryTag();
+        final int    mineralsBefore = game.snapshot().minerals();
+
+        game.applyIntent(new TrainIntent(hatchTag, UnitType.ZERGLING));
+
+        assertThat(game.snapshot().minerals()).isEqualTo(mineralsBefore - 50);
+    }
+
+    @Test
+    void trainZergling_insufficientForBatch_rejected() {
+        game.setMineralsForTesting(30);
+        game.setSupplyForTesting(20, 12);
+        final String hatchTag = hatcheryTag();
+
+        game.applyIntent(new TrainIntent(hatchTag, UnitType.ZERGLING));
+
+        assertThat(model.larvaCount(hatchTag)).isEqualTo(3);
+        assertThat(game.snapshot().minerals()).isEqualTo(30);
+    }
+
+    @Test
+    void enemyZerglingTrain_spawnsTwoUnits() {
+        game.spawnEnemyBuildingForTesting(BuildingType.HATCHERY, new Point2d(50, 50));
+        game.enemy.setMinerals(200);
+
+        final String enemyHatchTag = game.snapshot().enemyBuildings().stream()
+                                         .filter(b -> b.type() == BuildingType.HATCHERY)
+                                         .findFirst().orElseThrow().tag();
+
+        game.applyIntent(new TrainIntent(enemyHatchTag, UnitType.ZERGLING),
+                         game.enemy, game.enemyPhysics);
+
+        final int buildTicks = SC2Data.trainTimeInTicks(UnitType.ZERGLING);
+        for (int i = 0; i < buildTicks; i++) {game.tick();}
+
+        final long enemyZerglings = game.snapshot().enemyUnits().stream()
+                                        .filter(u -> u.type() == UnitType.ZERGLING).count();
+        assertThat(enemyZerglings).isEqualTo(2);
+    }
+
 
     private String hatcheryTag() {
         return game.snapshot().myBuildings().stream()
