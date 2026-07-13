@@ -6,16 +6,18 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
+import static io.quarkmind.agent.AnchorInterpolatorTest.anchor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
 class MultiFactorDominanceAssessorTest {
 
+    private static final DominanceWeightStrategy FIXED_WEIGHTS =
+        new TemporalDominanceWeightStrategy(List.of(
+            anchor(0, 0.30, 0.35, 0.20, 0.15)));
+
     private final MultiFactorDominanceAssessor assessor = new MultiFactorDominanceAssessor(
-        0.30, 0.35, 0.20, 0.15,  // weights
-        25.0, 3000, 2.0, 3,       // max expected deltas
-        3                          // min enemy visibility
-    );
+        FIXED_WEIGHTS, 25.0, 3000, 2.0, 3, 3);
 
     // --- fog-of-war combined threshold ---
 
@@ -170,10 +172,11 @@ class MultiFactorDominanceAssessorTest {
             List.of(probe(), probe(), probe()), List.of(nexus(), gateway()),
             List.of(probe(), probe(), probe()), List.of(nexus(), gateway()));
         DominanceScore score = assessor.assess(state);
-        double expectedOverall = score.factors().get("economy") * 0.30
-            + score.factors().get("army") * 0.35
-            + score.factors().get("tech") * 0.20
-            + score.factors().get("bases") * 0.15;
+        DominanceWeights w = FIXED_WEIGHTS.resolve(new WeightContext(state.gameFrame(), null));
+        double expectedOverall = score.factors().get("economy") * w.economy()
+            + score.factors().get("army") * w.army()
+            + score.factors().get("tech") * w.tech()
+            + score.factors().get("bases") * w.bases();
         assertThat(score.overall()).isCloseTo(
             Math.max(-1.0, Math.min(1.0, expectedOverall)), offset(0.001));
     }
@@ -182,7 +185,7 @@ class MultiFactorDominanceAssessorTest {
     void assess_overallClampedToOne() {
         // Extreme advantage in all factors
         MultiFactorDominanceAssessor smallDelta = new MultiFactorDominanceAssessor(
-            0.30, 0.35, 0.20, 0.15, 1.0, 100, 0.5, 1, 3);
+            FIXED_WEIGHTS, 1.0, 100, 0.5, 1, 3);
         GameState state = gameState(200, 100, 15, 20,
             armyOf(10, UnitType.ZEALOT), List.of(nexus(), nexus(), nexus(), gateway(), roboFacility(), fleetBeacon()),
             List.of(probe()), List.of(nexus()));
@@ -202,14 +205,40 @@ class MultiFactorDominanceAssessorTest {
         assertThat(score.factors()).containsOnlyKeys("economy", "army", "tech", "bases");
     }
 
+    // --- phase-adaptive weights ---
+
+    @Test
+    void assess_weightsChangeWithGameFrame() {
+        var multiAnchor = new TemporalDominanceWeightStrategy(List.of(
+            anchor(0, 0.40, 0.20, 0.25, 0.15),
+            anchor(10000, 0.20, 0.40, 0.25, 0.15)));
+        var adaptiveAssessor = new MultiFactorDominanceAssessor(multiAnchor, 25.0, 3000, 2.0, 3, 3);
+        GameState earlyState = gameState(200, 100, 15, 10,
+            List.of(probe(), probe(), probe(), probe(), probe()), List.of(nexus()),
+            List.of(probe(), probe(), zealot()), List.of(nexus()), 1000);
+        GameState lateState = gameState(200, 100, 15, 10,
+            List.of(probe(), probe(), probe(), probe(), probe()), List.of(nexus()),
+            List.of(probe(), probe(), zealot()), List.of(nexus()), 9000);
+        DominanceScore earlyScore = adaptiveAssessor.assess(earlyState);
+        DominanceScore lateScore = adaptiveAssessor.assess(lateState);
+        assertThat(earlyScore.overall()).isNotCloseTo(lateScore.overall(), offset(0.01));
+    }
+
     // --- helpers ---
 
     private static GameState gameState(int minerals, int vespene, int supply, int supplyUsed,
             List<Unit> myUnits, List<Building> myBuildings,
             List<Unit> enemyUnits, List<Building> enemyBuildings) {
+        return gameState(minerals, vespene, supply, supplyUsed,
+            myUnits, myBuildings, enemyUnits, enemyBuildings, 5000);
+    }
+
+    private static GameState gameState(int minerals, int vespene, int supply, int supplyUsed,
+            List<Unit> myUnits, List<Building> myBuildings,
+            List<Unit> enemyUnits, List<Building> enemyBuildings, long gameFrame) {
         return new GameState(minerals, vespene, supply, supplyUsed,
             myUnits, myBuildings, enemyUnits, enemyBuildings,
-            List.of(), List.of(), List.of(), 5000);
+            List.of(), List.of(), List.of(), gameFrame);
     }
 
     private static Unit probe() { return unit(UnitType.PROBE); }

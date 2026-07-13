@@ -44,15 +44,6 @@ public interface MilestoneConfig {
     }
 
     interface Dominance {
-        @WithDefault("0.30")
-        double economyWeight();
-        @WithDefault("0.35")
-        double armyWeight();
-        @WithDefault("0.20")
-        double techWeight();
-        @WithDefault("0.15")
-        double basesWeight();
-
         @WithName("max-expected-economy-delta")
         @WithDefault("25.0")
         double maxExpectedEconomyDelta();
@@ -69,5 +60,19 @@ public interface MilestoneConfig {
         @WithName("min-enemy-visibility")
         @WithDefault("3")
         int minEnemyVisibility();
+
+        @WithName("weight-strategy")
+        @WithDefault("temporal")
+        String weightStrategy();
+
+        List<WeightAnchor> anchors();
+
+        interface WeightAnchor {
+            long frame();
+            @WithName("economy-weight") double economyWeight();
+            @WithName("army-weight") double armyWeight();
+            @WithName("tech-weight") double techWeight();
+            @WithName("bases-weight") double basesWeight();
+        }
     }
 }
