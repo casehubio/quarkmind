@@ -191,7 +191,10 @@ class PatternClassificationCalibrationTest {
                 instance.fire();
             }
             var tickConf = PatternClassifier.computeAllConfidences(data.getEvidence());
-            PatternClassifier.mergeCumulative(cumulative, tickConf);
+            long prevFrame = tick == 0 ? -1 : state.gameFrame() - 1;
+            PatternClassifier.mergeCumulative(cumulative, tickConf, state.gameFrame(), prevFrame);
+            long framesElapsed = prevFrame >= 0 ? state.gameFrame() - prevFrame : 0;
+            PatternClassifier.applyRevisions(cumulative, data.getRevisions(), framesElapsed);
         }
 
         GameState           finalState = game.snapshot();
@@ -202,12 +205,12 @@ class PatternClassificationCalibrationTest {
         EnemyArchetype groundTruth = deriveGroundTruth(counts, GAME_TIME_3MIN);
         if (groundTruth == null) {return null;}
 
-        var            topOpt    = PatternClassifier.topAssessment(cumulative, TICKS_3MIN);
-        EnemyArchetype predicted = topOpt.map(EnemyPatternAssessment::archetype).orElse(null);
-        boolean        correct   = groundTruth == predicted;
+        var            assessments = PatternClassifier.allAssessments(cumulative, TICKS_3MIN);
+        EnemyArchetype predicted   = assessments.isEmpty() ? null : assessments.get(0).archetype();
+        boolean        correct     = groundTruth == predicted;
 
         return new ClassificationResult(matchup, gameName, groundTruth, predicted, correct,
-                                        topOpt.map(EnemyPatternAssessment::confidence).orElse(0.0));
+                                        assessments.isEmpty() ? 0.0 : assessments.get(0).confidence());
     }
 
     private record ClassificationResult(String matchup, String gameName,

@@ -3,6 +3,7 @@ unit PatternClassificationRuleUnit;
 
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.Race;
 
 // ---------------------------------------------------------------------------
 // Evidence rules for enemy strategy classification.
@@ -114,6 +115,7 @@ when
     /expansionEvents
     accumulate(/unitEvents; $count: count(); $count < 4)
     /gameTimeStore[this < 5.0]
+    exists /unitEvents[this.type().race() == Race.ZERG]
 then
     evidence.add(new EvidenceMarker(EnemyArchetype.ZERG_MACRO, 0.5,
         "Expansion with < 4 units"));
@@ -148,6 +150,7 @@ when
     /armyNearBaseEvents
     /gameTimeStore[this < 4.0]
     not /unitEvents[this.type() == UnitType.STALKER]
+    exists /unitEvents[this.type().race() == Race.PROTOSS]
 then
     evidence.add(new EvidenceMarker(EnemyArchetype.PROTOSS_CANNON_RUSH, 0.6,
         "Army near base early without Stalkers"));
@@ -158,7 +161,86 @@ when
     /expansionEvents
     accumulate(/unitEvents; $count: count(); $count < 3)
     /gameTimeStore[this < 5.0]
+    exists /unitEvents[this.type().race() == Race.PROTOSS]
 then
     evidence.add(new EvidenceMarker(EnemyArchetype.PROTOSS_MACRO, 0.5,
         "Expansion with < 3 units"));
+end
+
+// --- COUNTER-INDICATION ---
+
+rule "Counter: Expansion vs Terran rush"
+when
+    /expansionEvents
+    exists /unitEvents[this.type().race() == Race.TERRAN]
+then
+    revisions.add(new ConfidenceRevision(EnemyArchetype.TERRAN_MARINE_RUSH, 0.997,
+        "Expansion detected — rush unlikely"));
+end
+
+rule "Counter: Expansion vs Zerg rush"
+when
+    /expansionEvents
+    exists /unitEvents[this.type().race() == Race.ZERG]
+then
+    revisions.add(new ConfidenceRevision(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.997,
+        "Expansion detected — rush unlikely"));
+    revisions.add(new ConfidenceRevision(EnemyArchetype.ZERG_ROACH_RUSH, 0.997,
+        "Expansion detected — rush unlikely"));
+end
+
+rule "Counter: Expansion vs Protoss rush"
+when
+    /expansionEvents
+    exists /unitEvents[this.type().race() == Race.PROTOSS]
+then
+    revisions.add(new ConfidenceRevision(EnemyArchetype.PROTOSS_GATEWAY_RUSH, 0.997,
+        "Expansion detected — rush unlikely"));
+    revisions.add(new ConfidenceRevision(EnemyArchetype.PROTOSS_CANNON_RUSH, 0.997,
+        "Expansion detected — rush unlikely"));
+end
+
+rule "Counter: Tech transition vs Terran rush — siege tank"
+when
+    /unitEvents[this.type() == UnitType.SIEGE_TANK]
+then
+    revisions.add(new ConfidenceRevision(EnemyArchetype.TERRAN_MARINE_RUSH, 0.998,
+        "Siege Tank spotted — tech transition"));
+end
+
+rule "Counter: Tech transition vs Zerg rush — brood lord"
+when
+    /unitEvents[this.type() == UnitType.BROOD_LORD]
+then
+    revisions.add(new ConfidenceRevision(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.998,
+        "Brood Lord spotted — tech transition"));
+    revisions.add(new ConfidenceRevision(EnemyArchetype.ZERG_ROACH_RUSH, 0.998,
+        "Brood Lord spotted — tech transition"));
+end
+
+rule "Counter: Tech transition vs Protoss rush — colossus"
+when
+    /unitEvents[this.type() == UnitType.COLOSSUS]
+then
+    revisions.add(new ConfidenceRevision(EnemyArchetype.PROTOSS_GATEWAY_RUSH, 0.998,
+        "Colossus spotted — tech transition"));
+    revisions.add(new ConfidenceRevision(EnemyArchetype.PROTOSS_CANNON_RUSH, 0.998,
+        "Colossus spotted — tech transition"));
+end
+
+rule "Counter: Prediction window expiry — rush didn't materialise"
+when
+    /gameTimeStore[this > 5.0]
+    not /armyNearBaseEvents
+then
+    revisions.add(new ConfidenceRevision(EnemyArchetype.TERRAN_MARINE_RUSH, 0.998,
+        "Past 5min with no attack"));
+    revisions.add(new ConfidenceRevision(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.998,
+        "Past 5min with no attack"));
+    revisions.add(new ConfidenceRevision(EnemyArchetype.ZERG_ROACH_RUSH, 0.998,
+        "Past 5min with no attack"));
+    revisions.add(new ConfidenceRevision(EnemyArchetype.PROTOSS_GATEWAY_RUSH, 0.998,
+        "Past 5min with no attack"));
+    revisions.add(new ConfidenceRevision(EnemyArchetype.PROTOSS_CANNON_RUSH, 0.998,
+        "Past 5min with no attack"));
 end

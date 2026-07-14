@@ -90,7 +90,8 @@ public class QuarkMindTrustRoutingPolicyProvider implements TrustRoutingPolicyPr
                 qualityFloors,
                 false,
                 null,
-                Set.of()
+                Set.of(),
+                0.0
         );}
 
     private TrustRoutingPolicy buildCommentaryPolicy(int minimumObservations, double latencyFloor) {
@@ -106,6 +107,7 @@ public class QuarkMindTrustRoutingPolicyProvider implements TrustRoutingPolicyPr
                 qualityFloors,
                 false,
                 null,
-                Set.of()
+                Set.of(),
+                0.0
         );}
 }

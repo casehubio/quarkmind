@@ -62,17 +62,17 @@ class PatternConfidenceTest {
         var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
         cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.4);
 
-        PatternClassifier.mergeCumulative(cumulative, Map.of(EnemyArchetype.TERRAN_MARINE_RUSH, 0.6));
+        PatternClassifier.mergeCumulative(cumulative, Map.of(EnemyArchetype.TERRAN_MARINE_RUSH, 0.6), 100, 100);
 
         assertThat(cumulative.get(EnemyArchetype.TERRAN_MARINE_RUSH)).isEqualTo(0.6);
     }
 
     @Test
-    void cumulativeMerge_doesNotDecrease() {
+    void cumulativeMerge_doesNotDecrease_withinSameFrame() {
         var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
         cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.8);
 
-        PatternClassifier.mergeCumulative(cumulative, Map.of(EnemyArchetype.TERRAN_MARINE_RUSH, 0.3));
+        PatternClassifier.mergeCumulative(cumulative, Map.of(EnemyArchetype.TERRAN_MARINE_RUSH, 0.3), 100, 100);
 
         assertThat(cumulative.get(EnemyArchetype.TERRAN_MARINE_RUSH)).isEqualTo(0.8);
     }
@@ -82,36 +82,159 @@ class PatternConfidenceTest {
         var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
         cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.5);
 
-        PatternClassifier.mergeCumulative(cumulative, Map.of(EnemyArchetype.ZERG_ROACH_RUSH, 0.7));
+        PatternClassifier.mergeCumulative(cumulative, Map.of(EnemyArchetype.ZERG_ROACH_RUSH, 0.7), 100, 100);
 
         assertThat(cumulative).containsKeys(EnemyArchetype.TERRAN_MARINE_RUSH, EnemyArchetype.ZERG_ROACH_RUSH);
     }
 
     @Test
-    void topAssessment_returnsHighestConfidence() {
+    void decay_reducesConfidenceOverFrames() {
         var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
-        cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.7);
-        cumulative.put(EnemyArchetype.TERRAN_BIO_TIMING, 0.3);
+        cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.8);
 
-        var top = PatternClassifier.topAssessment(cumulative, 100L);
-        assertThat(top).isPresent();
-        assertThat(top.get().archetype()).isEqualTo(EnemyArchetype.TERRAN_MARINE_RUSH);
-        assertThat(top.get().confidence()).isEqualTo(0.7);
+        PatternClassifier.mergeCumulative(cumulative, Map.of(), 1344, 0);
+
+        assertThat(cumulative.get(EnemyArchetype.TERRAN_MARINE_RUSH))
+                .isCloseTo(0.4, within(0.02));
     }
 
     @Test
-    void topAssessment_belowThreshold_returnsEmpty() {
+    void decay_removesEntriesBelowNoiseFloor() {
+        var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
+        cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.02);
+
+        PatternClassifier.mergeCumulative(cumulative, Map.of(), 2000, 0);
+
+        assertThat(cumulative).doesNotContainKey(EnemyArchetype.TERRAN_MARINE_RUSH);
+    }
+
+    @Test
+    void decay_skippedOnFirstInvocation() {
+        var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
+        cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.8);
+
+        PatternClassifier.mergeCumulative(cumulative, Map.of(), 100, -1);
+
+        assertThat(cumulative.get(EnemyArchetype.TERRAN_MARINE_RUSH)).isEqualTo(0.8);
+    }
+
+    @Test
+    void decay_steadyEvidenceProducesStableConfidence() {
+        var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
+        cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.65);
+
+        PatternClassifier.mergeCumulative(cumulative,
+                                          Map.of(EnemyArchetype.TERRAN_MARINE_RUSH, 0.65), 200, 100);
+
+        assertThat(cumulative.get(EnemyArchetype.TERRAN_MARINE_RUSH)).isEqualTo(0.65);
+    }
+
+    @Test
+    void applyRevisions_dampensConfidence() {
+        var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
+        cumulative.put(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.8);
+
+        var revisions = List.of(new ConfidenceRevision(
+                EnemyArchetype.ZERG_ZERGLING_RUSH, 0.997, "expansion detected"));
+        PatternClassifier.applyRevisions(cumulative, revisions, 1344);
+
+        assertThat(cumulative.get(EnemyArchetype.ZERG_ZERGLING_RUSH))
+                .isLessThan(0.5);
+    }
+
+    @Test
+    void applyRevisions_multipleRevisionsCompound() {
+        var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
+        cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.8);
+
+        var revisions = List.of(
+                new ConfidenceRevision(EnemyArchetype.TERRAN_MARINE_RUSH, 0.997, "expansion"),
+                new ConfidenceRevision(EnemyArchetype.TERRAN_MARINE_RUSH, 0.998, "tech"));
+        PatternClassifier.applyRevisions(cumulative, revisions, 100);
+
+        double singleFactor = Math.pow(0.997, 100) * Math.pow(0.998, 100);
+        assertThat(cumulative.get(EnemyArchetype.TERRAN_MARINE_RUSH))
+                .isCloseTo(0.8 * singleFactor, within(0.001));
+    }
+
+    @Test
+    void applyRevisions_clampsToZero() {
+        var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
+        cumulative.put(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.01);
+
+        var revisions = List.of(new ConfidenceRevision(
+                EnemyArchetype.ZERG_ZERGLING_RUSH, 0.5, "strong counter"));
+        PatternClassifier.applyRevisions(cumulative, revisions, 100);
+
+        assertThat(cumulative.get(EnemyArchetype.ZERG_ZERGLING_RUSH))
+                .isGreaterThanOrEqualTo(0.0);
+    }
+
+    @Test
+    void applyRevisions_emptyRevisions_noChange() {
+        var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
+        cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.7);
+
+        PatternClassifier.applyRevisions(cumulative, List.of(), 100);
+
+        assertThat(cumulative.get(EnemyArchetype.TERRAN_MARINE_RUSH)).isEqualTo(0.7);
+    }
+
+    @Test
+    void applyRevisions_ignoresUnmatchedArchetypes() {
+        var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
+        cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.7);
+
+        var revisions = List.of(new ConfidenceRevision(
+                EnemyArchetype.ZERG_ZERGLING_RUSH, 0.997, "expansion"));
+        PatternClassifier.applyRevisions(cumulative, revisions, 100);
+
+        assertThat(cumulative.get(EnemyArchetype.TERRAN_MARINE_RUSH)).isEqualTo(0.7);
+    }
+
+    @Test
+    void allAssessments_returnsAllAboveThreshold() {
+        var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
+        cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.7);
+        cumulative.put(EnemyArchetype.TERRAN_BIO_TIMING, 0.4);
+        cumulative.put(EnemyArchetype.ZERG_MACRO, 0.1);
+
+        var assessments = PatternClassifier.allAssessments(cumulative, 100L);
+
+        assertThat(assessments).hasSize(2);
+        assertThat(assessments.get(0).archetype()).isEqualTo(EnemyArchetype.TERRAN_MARINE_RUSH);
+        assertThat(assessments.get(1).archetype()).isEqualTo(EnemyArchetype.TERRAN_BIO_TIMING);
+    }
+
+    @Test
+    void allAssessments_sortedByConfidenceDescending() {
+        var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
+        cumulative.put(EnemyArchetype.TERRAN_BIO_TIMING, 0.5);
+        cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.8);
+        cumulative.put(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.6);
+
+        var assessments = PatternClassifier.allAssessments(cumulative, 100L);
+
+        assertThat(assessments).extracting("confidence")
+                               .containsExactly(0.8, 0.6, 0.5);
+    }
+
+    @Test
+    void allAssessments_emptyWhenAllBelowThreshold() {
         var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
         cumulative.put(EnemyArchetype.TERRAN_MARINE_RUSH, 0.2);
 
-        var top = PatternClassifier.topAssessment(cumulative, 100L);
-        assertThat(top).isEmpty();
+        var assessments = PatternClassifier.allAssessments(cumulative, 100L);
+
+        assertThat(assessments).isEmpty();
     }
 
     @Test
-    void topAssessment_emptyMap_returnsEmpty() {
-        var cumulative = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
-        var top = PatternClassifier.topAssessment(cumulative, 100L);
-        assertThat(top).isEmpty();
+    void allAssessments_emptyMapReturnsEmpty() {
+        var cumulative  = new EnumMap<EnemyArchetype, Double>(EnemyArchetype.class);
+        var assessments = PatternClassifier.allAssessments(cumulative, 100L);
+        assertThat(assessments).isEmpty();
     }
+
+
 }

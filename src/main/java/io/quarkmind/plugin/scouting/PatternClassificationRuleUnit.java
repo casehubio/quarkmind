@@ -18,6 +18,8 @@ public class PatternClassificationRuleUnit implements RuleUnitData {
     private final DataStore<Double>              gameTimeStore      = DataSource.createStore();
 
     private final List<EvidenceMarker> evidence = new ArrayList<>();
+    private final List<ConfidenceRevision> revisions = new ArrayList<>();
+
 
     public DataStore<EnemyUnitFirstSeen>  getUnitEvents()         { return unitEvents; }
     public DataStore<EnemyExpansionSeen>  getExpansionEvents()    { return expansionEvents; }
@@ -25,4 +27,7 @@ public class PatternClassificationRuleUnit implements RuleUnitData {
     public DataStore<Double>              getGameTimeStore()      { return gameTimeStore; }
 
     public List<EvidenceMarker> getEvidence() { return evidence; }
+
+    public List<ConfidenceRevision> getRevisions() {return revisions;}
+
 }

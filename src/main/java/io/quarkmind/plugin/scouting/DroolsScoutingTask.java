@@ -1,23 +1,11 @@
 package io.quarkmind.plugin.scouting;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.annotation.CaseType;
 import io.casehub.api.context.CaseContext;
 import io.casehub.blocks.summarisation.EventLevel;
 import io.casehub.blocks.summarisation.LevelEvent;
-import io.quarkmind.agent.QuarkMindCaseFile;
-import io.quarkmind.agent.plugin.ScoutingTask;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import io.quarkmind.domain.*;
-import io.quarkmind.sc2.IntentQueue;
-import io.quarkmind.sc2.intent.MoveIntent;
-import org.drools.ruleunits.api.RuleUnit;
-import org.drools.ruleunits.api.RuleUnitInstance;
-import org.jboss.logging.Logger;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.platform.api.identity.ActorType;
 import io.casehub.platform.api.preferences.PreferenceProvider;
@@ -29,12 +17,29 @@ import io.quarkmind.agent.EnemyPostureClassifiedEvent;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.PluginDecisionEvent;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
+import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
+import io.quarkmind.agent.plugin.ScoutingTask;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.EnemyPatternAssessment;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.sc2.IntentQueue;
+import io.quarkmind.sc2.intent.MoveIntent;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
+import org.drools.ruleunits.api.RuleUnit;
+import org.drools.ruleunits.api.RuleUnitInstance;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
+
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
@@ -93,7 +98,7 @@ public class DroolsScoutingTask implements ScoutingTask {
 
     private final EnumMap<EnemyArchetype, Double> cumulativeConfidence =
         new EnumMap<>(EnemyArchetype.class);
-    volatile EnemyPatternAssessment prevAssessment = null;
+    volatile List<EnemyPatternAssessment> prevAssessments = List.of();
 
     @Inject
     public DroolsScoutingTask(RuleUnit<ScoutingRuleUnit> ruleUnit,
@@ -116,8 +121,7 @@ public class DroolsScoutingTask implements ScoutingTask {
         scoutProbeTag   = null;
         lastFrame       = -1;
         cumulativeConfidence.clear();
-        prevAssessment  = null;
-    }
+        prevAssessments = List.of();}
 
     @PostConstruct
     void initThresholds() {
@@ -178,8 +182,9 @@ public class DroolsScoutingTask implements ScoutingTask {
             prevTimingAlert  = null;
             prevBuildOrder   = null;
             cumulativeConfidence.clear();
-            prevAssessment   = null;
+            prevAssessments  = List.of();
         }
+        long prevFrame = lastFrame;
         lastFrame = frame;
 
         long gameTimeMs = (long) (frame * (1000.0 / FRAMES_PER_SECOND));
@@ -272,19 +277,20 @@ public class DroolsScoutingTask implements ScoutingTask {
                 pInstance.fire();
             }
             var allConf = PatternClassifier.computeAllConfidences(patternData.getEvidence());
-            PatternClassifier.mergeCumulative(cumulativeConfidence, allConf);
+            PatternClassifier.mergeCumulative(cumulativeConfidence, allConf, frame, prevFrame);
+            long framesElapsed = prevFrame >= 0 ? frame - prevFrame : 0;
+            PatternClassifier.applyRevisions(cumulativeConfidence, patternData.getRevisions(), framesElapsed);
 
-            var top = PatternClassifier.topAssessment(cumulativeConfidence, frame);
-            if (top.isPresent()) {
-                var assessment = top.get();
-                boolean changed = prevAssessment == null
-                    || assessment.archetype() != prevAssessment.archetype()
-                    || crossedThreshold(prevAssessment.confidence(), assessment.confidence());
+            var assessments = PatternClassifier.allAssessments(cumulativeConfidence, frame);
+            if (!assessments.isEmpty()) {
+                boolean changed = assessmentsChanged(prevAssessments, assessments);
                 if (changed && patternAssessmentDispatchEnabled
                         && (broker.isSubscribed(ScoutingIntelType.PATTERN_ASSESSMENT) || advisoryEnabled)) {
-                    prevAssessment = assessment;
-                    publishIntel(new ScoutingIntelPayload.PatternAssessment(assessment));
+                    prevAssessments = assessments;
+                    publishIntel(new ScoutingIntelPayload.PatternAssessment(assessments));
                 }
+            } else if (!prevAssessments.isEmpty()) {
+                prevAssessments = List.of();
             }
         }
 
@@ -373,6 +379,26 @@ public class DroolsScoutingTask implements ScoutingTask {
         }
         return false;
     }
+
+    private static final double[] THRESHOLDS = {0.3, 0.5, 0.7, 0.9};
+
+    static boolean assessmentsChanged(List<EnemyPatternAssessment> prev,
+                                      List<EnemyPatternAssessment> curr) {
+        if (prev.size() != curr.size()) {return true;}
+        for (int i = 0; i < curr.size(); i++) {
+            if (curr.get(i).archetype() != prev.get(i).archetype()) {return true;}
+            if (crossedAnyThreshold(prev.get(i).confidence(), curr.get(i).confidence())) {return true;}
+        }
+        return false;
+    }
+
+    private static boolean crossedAnyThreshold(double prev, double curr) {
+        for (double t : THRESHOLDS) {
+            if ((prev < t) != (curr < t)) {return true;}
+        }
+        return false;
+    }
+
 
     private static Point2d nexusPosition(List<Building> buildings) {
         return buildings.stream()

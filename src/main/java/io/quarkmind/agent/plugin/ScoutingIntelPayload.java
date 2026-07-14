@@ -3,6 +3,8 @@ package io.quarkmind.agent.plugin;
 import io.quarkmind.domain.EnemyPatternAssessment;
 import io.quarkmind.domain.Point2d;
 
+import java.util.List;
+
 public sealed interface ScoutingIntelPayload
         permits ScoutingIntelPayload.ThreatPosition,
                 ScoutingIntelPayload.PostureUpdate,
@@ -33,7 +35,7 @@ public sealed interface ScoutingIntelPayload
         public ScoutingIntelType type() {return ScoutingIntelType.BUILD_ORDER;}
     }
 
-    record PatternAssessment(EnemyPatternAssessment assessment) implements ScoutingIntelPayload {
+    record PatternAssessment(List<EnemyPatternAssessment> assessments) implements ScoutingIntelPayload {
         public ScoutingIntelType type() {return ScoutingIntelType.PATTERN_ASSESSMENT;}
     }
 }

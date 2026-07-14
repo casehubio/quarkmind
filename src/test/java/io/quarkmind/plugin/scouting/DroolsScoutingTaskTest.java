@@ -10,22 +10,21 @@ import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.EnemyPatternAssessment;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.IntentQueue;
+import jakarta.enterprise.inject.Vetoed;
 import org.drools.ruleunits.api.RuleUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import jakarta.enterprise.inject.Vetoed;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -236,6 +235,40 @@ class DroolsScoutingTaskTest {
         // All events should have level "intel" level 1
         assertThat(received).allMatch(e -> e.level().name().equals("intel") && e.level().ordinal() == 1);
     }
+
+    @Test
+    void assessmentsChanged_differentSize_returnsTrue() {
+        var prev = List.of(new EnemyPatternAssessment(EnemyArchetype.TERRAN_MARINE_RUSH, 0.6, 100, "test"));
+        var curr = List.<EnemyPatternAssessment>of();
+        assertThat(DroolsScoutingTask.assessmentsChanged(prev, curr)).isTrue();
+    }
+
+    @Test
+    void assessmentsChanged_differentArchetype_returnsTrue() {
+        var prev = List.of(new EnemyPatternAssessment(EnemyArchetype.TERRAN_MARINE_RUSH, 0.6, 100, "test"));
+        var curr = List.of(new EnemyPatternAssessment(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.6, 200, "test"));
+        assertThat(DroolsScoutingTask.assessmentsChanged(prev, curr)).isTrue();
+    }
+
+    @Test
+    void assessmentsChanged_crossesThreshold_returnsTrue() {
+        var prev = List.of(new EnemyPatternAssessment(EnemyArchetype.TERRAN_MARINE_RUSH, 0.49, 100, "test"));
+        var curr = List.of(new EnemyPatternAssessment(EnemyArchetype.TERRAN_MARINE_RUSH, 0.51, 200, "test"));
+        assertThat(DroolsScoutingTask.assessmentsChanged(prev, curr)).isTrue();
+    }
+
+    @Test
+    void assessmentsChanged_sameArchetypeSameBand_returnsFalse() {
+        var prev = List.of(new EnemyPatternAssessment(EnemyArchetype.TERRAN_MARINE_RUSH, 0.55, 100, "test"));
+        var curr = List.of(new EnemyPatternAssessment(EnemyArchetype.TERRAN_MARINE_RUSH, 0.59, 200, "test"));
+        assertThat(DroolsScoutingTask.assessmentsChanged(prev, curr)).isFalse();
+    }
+
+    @Test
+    void assessmentsChanged_bothEmpty_returnsFalse() {
+        assertThat(DroolsScoutingTask.assessmentsChanged(List.of(), List.of())).isFalse();
+    }
+
 
     // ---- Test helpers ----
 

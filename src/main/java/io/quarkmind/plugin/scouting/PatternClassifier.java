@@ -6,15 +6,16 @@ import io.quarkmind.domain.EnemyPatternAssessment;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public final class PatternClassifier {
 
     static final double DISPATCH_THRESHOLD = 0.3;
+    static final double DECAY_PER_FRAME    = 0.99948;
+    static final double NOISE_FLOOR        = 0.01;
 
     static double computeTickConfidence(List<EvidenceMarker> markers) {
-        if (markers.isEmpty()) return 0.0;
+        if (markers.isEmpty()) {return 0.0;}
         double product = 1.0;
         for (EvidenceMarker m : markers) {
             product *= (1.0 - m.weight());
@@ -24,26 +25,43 @@ public final class PatternClassifier {
 
     static Map<EnemyArchetype, Double> computeAllConfidences(List<EvidenceMarker> markers) {
         return markers.stream()
-            .collect(Collectors.groupingBy(EvidenceMarker::archetype))
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                e -> computeTickConfidence(e.getValue())));
+                      .collect(Collectors.groupingBy(EvidenceMarker::archetype))
+                      .entrySet().stream()
+                      .collect(Collectors.toMap(Map.Entry::getKey,
+                                                e -> computeTickConfidence(e.getValue())));
     }
 
     static void mergeCumulative(EnumMap<EnemyArchetype, Double> cumulative,
-                                Map<EnemyArchetype, Double> thisTick) {
+                                Map<EnemyArchetype, Double> thisTick,
+                                long currentFrame, long lastFrame) {
+        if (lastFrame >= 0) {
+            long   elapsed = currentFrame - lastFrame;
+            double decay   = Math.pow(DECAY_PER_FRAME, elapsed);
+            cumulative.replaceAll((arch, conf) -> conf * decay);
+        }
         thisTick.forEach((arch, conf) ->
-            cumulative.merge(arch, conf, Math::max));
+                                 cumulative.merge(arch, conf, Math::max));
+        cumulative.values().removeIf(v -> v < NOISE_FLOOR);
     }
 
-    static Optional<EnemyPatternAssessment> topAssessment(
+    static void applyRevisions(EnumMap<EnemyArchetype, Double> cumulative,
+                               List<ConfidenceRevision> revisions,
+                               long framesElapsed) {
+        for (ConfidenceRevision rev : revisions) {
+            cumulative.computeIfPresent(rev.archetype(), (arch, conf) ->
+                                                                 Math.max(0, conf * Math.pow(rev.dampingFactor(), framesElapsed)));
+        }
+    }
+
+    static List<EnemyPatternAssessment> allAssessments(
             EnumMap<EnemyArchetype, Double> cumulative, long frame) {
         return cumulative.entrySet().stream()
-            .filter(e -> e.getValue() >= DISPATCH_THRESHOLD)
-            .max(Map.Entry.comparingByValue())
-            .map(e -> new EnemyPatternAssessment(e.getKey(), e.getValue(), frame,
-                e.getKey().name() + " (confidence " +
-                    String.format("%.2f", e.getValue()) + ")"));
+                         .filter(e -> e.getValue() >= DISPATCH_THRESHOLD)
+                         .sorted(Map.Entry.<EnemyArchetype, Double>comparingByValue().reversed())
+                         .map(e -> new EnemyPatternAssessment(e.getKey(), e.getValue(), frame,
+                                                              e.getKey().name() + " (confidence " +
+                                                              String.format("%.2f", e.getValue()) + ")"))
+                         .toList();
     }
 
     private PatternClassifier() {}

@@ -2,6 +2,7 @@ package io.quarkmind.plugin.scouting;
 
 import io.quarkmind.domain.EnemyArchetype;
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Race;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.plugin.scouting.events.EnemyArmyNearBase;
 import io.quarkmind.plugin.scouting.events.EnemyExpansionSeen;
@@ -142,14 +143,154 @@ class PatternClassificationRuleUnitTest {
     @Test
     void cannonRush_armyNearBaseEarlyNoStalkers_producesEvidence() {
         var data = new PatternClassificationRuleUnit();
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.PROBE, 120000L));
         data.getArmyNearBaseEvents().add(new EnemyArmyNearBase(3, 120000L));
         data.getGameTimeStore().add(3.0);
 
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-            e.archetype() == EnemyArchetype.PROTOSS_CANNON_RUSH);
+                                                        e.archetype() == EnemyArchetype.PROTOSS_CANNON_RUSH);
     }
+
+    @Test
+    void cannonRush_doesNotFireForTerranUnitsNearBase() {
+        var data = new PatternClassificationRuleUnit();
+        // Terran marines near base — should NOT trigger cannon rush
+        for (int i = 0; i < 5; i++) {
+            data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.MARINE, 90000L));
+        }
+        data.getArmyNearBaseEvents().add(new EnemyArmyNearBase(5, 90000L));
+        data.getGameTimeStore().add(2.5);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).noneMatch(e ->
+                                                         e.archetype() == EnemyArchetype.PROTOSS_CANNON_RUSH);
+    }
+
+    @Test
+    void cannonRush_doesNotFireForZergUnitsNearBase() {
+        var data = new PatternClassificationRuleUnit();
+        for (int i = 0; i < 6; i++) {
+            data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.ZERGLING, 90000L));
+        }
+        data.getArmyNearBaseEvents().add(new EnemyArmyNearBase(6, 90000L));
+        data.getGameTimeStore().add(2.5);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).noneMatch(e ->
+                                                         e.archetype() == EnemyArchetype.PROTOSS_CANNON_RUSH);
+    }
+
+    @Test
+    void cannonRush_firesWithProtossUnitsNearBase() {
+        var data = new PatternClassificationRuleUnit();
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.PROBE, 90000L));
+        data.getArmyNearBaseEvents().add(new EnemyArmyNearBase(3, 90000L));
+        data.getGameTimeStore().add(2.5);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+                                                        e.archetype() == EnemyArchetype.PROTOSS_CANNON_RUSH);
+    }
+
+    @Test
+    void zergMacro_doesNotFireForProtossExpansion() {
+        var data = new PatternClassificationRuleUnit();
+        data.getExpansionEvents().add(new EnemyExpansionSeen(new Point2d(40, 40), 120000L));
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.ZEALOT, 120000L));
+        data.getGameTimeStore().add(4.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).noneMatch(e ->
+                                                         e.archetype() == EnemyArchetype.ZERG_MACRO);
+    }
+
+    @Test
+    void protossMacro_doesNotFireForZergExpansion() {
+        var data = new PatternClassificationRuleUnit();
+        data.getExpansionEvents().add(new EnemyExpansionSeen(new Point2d(40, 40), 120000L));
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.ZERGLING, 120000L));
+        data.getGameTimeStore().add(4.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).noneMatch(e ->
+                                                         e.archetype() == EnemyArchetype.PROTOSS_MACRO);
+    }
+
+    @Test
+    void counterIndication_expansionReducesRushConfidence() {
+        var data = new PatternClassificationRuleUnit();
+        data.getExpansionEvents().add(new EnemyExpansionSeen(new Point2d(40, 40), 120000L));
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.ZERGLING, 120000L));
+        data.getGameTimeStore().add(4.0);
+
+        fire(data);
+
+        assertThat(data.getRevisions()).anyMatch(r ->
+                                                         r.archetype() == EnemyArchetype.ZERG_ZERGLING_RUSH && r.dampingFactor() < 1.0);
+    }
+
+    @Test
+    void counterIndication_techTransitionReducesRushConfidence() {
+        var data = new PatternClassificationRuleUnit();
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.SIEGE_TANK, 300000L));
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.MARINE, 60000L));
+        data.getGameTimeStore().add(6.0);
+
+        fire(data);
+
+        assertThat(data.getRevisions()).anyMatch(r ->
+                                                         r.archetype() == EnemyArchetype.TERRAN_MARINE_RUSH && r.dampingFactor() < 1.0);
+    }
+
+    @Test
+    void counterIndication_predictionWindowExpiry_noAttack() {
+        var data = new PatternClassificationRuleUnit();
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.MARINE, 60000L));
+        data.getGameTimeStore().add(6.0);
+
+        fire(data);
+
+        assertThat(data.getRevisions()).anyMatch(r ->
+                                                         r.archetype() == EnemyArchetype.TERRAN_MARINE_RUSH && r.dampingFactor() < 1.0);
+    }
+
+    @Test
+    void counterIndication_noRevisions_whenNoCounterEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        for (int i = 0; i < 6; i++) {
+            data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.MARINE, 60000L));
+        }
+        data.getGameTimeStore().add(3.0);
+
+        fire(data);
+
+        assertThat(data.getRevisions().stream()
+                       .filter(r -> r.archetype() == EnemyArchetype.TERRAN_MARINE_RUSH))
+                .isEmpty();
+    }
+
+    @Test
+    void counterIndication_expansionOnlyAffectsSameRaceRush() {
+        var data = new PatternClassificationRuleUnit();
+        data.getExpansionEvents().add(new EnemyExpansionSeen(new Point2d(40, 40), 120000L));
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.ZERGLING, 120000L));
+        data.getGameTimeStore().add(4.0);
+
+        fire(data);
+
+        assertThat(data.getRevisions()).noneMatch(r ->
+                                                          r.archetype().race() == Race.TERRAN);
+        assertThat(data.getRevisions()).noneMatch(r ->
+                                                          r.archetype().race() == Race.PROTOSS);
+    }
+
 
     @Test
     void emptyEvents_noEvidence() {

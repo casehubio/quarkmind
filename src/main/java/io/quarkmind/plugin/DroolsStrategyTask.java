@@ -263,8 +263,8 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
 
         broker.current(ScoutingIntelType.PATTERN_ASSESSMENT,
                        ScoutingIntelPayload.PatternAssessment.class)
-              .map(ScoutingIntelPayload.PatternAssessment::assessment)
-              .ifPresent(data.getPatternStore()::add);
+              .map(ScoutingIntelPayload.PatternAssessment::assessments)
+              .ifPresent(list -> list.forEach(data.getPatternStore()::add));
 
         feedAdvisoryFacts(ctx, currentFrame, data);
 
