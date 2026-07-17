@@ -1,5 +1,7 @@
 package io.quarkmind.agent;
 
+import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.domain.*;
 import io.quarkmind.plugin.summarisation.GamePhase;
 import io.quarkmind.plugin.summarisation.SummarisationLifecycle;
@@ -27,6 +29,7 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
     private final double maxExpectedTechDelta;
     private final int maxExpectedBaseDelta;
     private final int minEnemyVisibility;
+    private final ScoutingIntelBroker broker;
 
     private final Instance<SummarisationLifecycle> lazyLifecycle;
     private volatile GamePhase cachedPhase;
@@ -37,6 +40,7 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
     MultiFactorDominanceAssessor(
             @Any Instance<DominanceWeightStrategy> strategies,
             Instance<SummarisationLifecycle> summarisationLifecycle,
+            ScoutingIntelBroker broker,
             MilestoneConfig config) {
         String selectedId = config.dominance().weightStrategy();
         this.strategy = strategies.stream()
@@ -46,6 +50,7 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
             .orElseThrow(() -> new IllegalStateException(
                 "No DominanceWeightStrategy with id '" + selectedId + "'"));
         this.lazyLifecycle = summarisationLifecycle;
+        this.broker = broker;
         this.maxExpectedEconomyDelta = config.dominance().maxExpectedEconomyDelta();
         this.maxExpectedArmyDelta = config.dominance().maxExpectedArmyDelta();
         this.maxExpectedTechDelta = config.dominance().maxExpectedTechDelta();
@@ -57,9 +62,11 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
             DominanceWeightStrategy strategy,
             double maxExpectedEconomyDelta, int maxExpectedArmyDelta,
             double maxExpectedTechDelta, int maxExpectedBaseDelta,
-            int minEnemyVisibility) {
+            int minEnemyVisibility,
+            ScoutingIntelBroker broker) {
         this.strategy = strategy;
         this.lazyLifecycle = null;
+        this.broker = broker;
         this.subscribed = true;
         this.maxExpectedEconomyDelta = maxExpectedEconomyDelta;
         this.maxExpectedArmyDelta = maxExpectedArmyDelta;
@@ -101,8 +108,15 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
         double bases = basesFactor(state);
 
         GamePhase phase = cachedPhase;
+        List<EnemyPatternAssessment> assessments = broker != null
+            ? broker.current(ScoutingIntelType.PATTERN_ASSESSMENT,
+                             ScoutingIntelPayload.PatternAssessment.class)
+                .map(ScoutingIntelPayload.PatternAssessment::assessments)
+                .orElse(List.of())
+            : List.of();
         WeightContext ctx = new WeightContext(state.gameFrame(),
-            phase != null ? phase.phase() : null);
+            phase != null ? phase.phase() : null,
+            assessments);
         DominanceWeights weights = strategy.resolve(ctx);
 
         if (lastWeights != null && (

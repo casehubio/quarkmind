@@ -1,3 +1,11 @@
 package io.quarkmind.agent;
 
-public record WeightContext(long gameFrame, String currentPhase) {}
+import io.quarkmind.domain.EnemyPatternAssessment;
+
+import java.util.List;
+
+public record WeightContext(
+        long gameFrame,
+        String currentPhase,
+        List<EnemyPatternAssessment> patternAssessments
+) {}

@@ -17,7 +17,7 @@ class MultiFactorDominanceAssessorTest {
             anchor(0, 0.30, 0.35, 0.20, 0.15)));
 
     private final MultiFactorDominanceAssessor assessor = new MultiFactorDominanceAssessor(
-        FIXED_WEIGHTS, 25.0, 3000, 2.0, 3, 3);
+        FIXED_WEIGHTS, 25.0, 3000, 2.0, 3, 3, null);
 
     // --- fog-of-war combined threshold ---
 
@@ -172,7 +172,7 @@ class MultiFactorDominanceAssessorTest {
             List.of(probe(), probe(), probe()), List.of(nexus(), gateway()),
             List.of(probe(), probe(), probe()), List.of(nexus(), gateway()));
         DominanceScore score = assessor.assess(state);
-        DominanceWeights w = FIXED_WEIGHTS.resolve(new WeightContext(state.gameFrame(), null));
+        DominanceWeights w = FIXED_WEIGHTS.resolve(new WeightContext(state.gameFrame(), null, List.of()));
         double expectedOverall = score.factors().get("economy") * w.economy()
             + score.factors().get("army") * w.army()
             + score.factors().get("tech") * w.tech()
@@ -185,7 +185,7 @@ class MultiFactorDominanceAssessorTest {
     void assess_overallClampedToOne() {
         // Extreme advantage in all factors
         MultiFactorDominanceAssessor smallDelta = new MultiFactorDominanceAssessor(
-            FIXED_WEIGHTS, 1.0, 100, 0.5, 1, 3);
+            FIXED_WEIGHTS, 1.0, 100, 0.5, 1, 3, null);
         GameState state = gameState(200, 100, 15, 20,
             armyOf(10, UnitType.ZEALOT), List.of(nexus(), nexus(), nexus(), gateway(), roboFacility(), fleetBeacon()),
             List.of(probe()), List.of(nexus()));
@@ -212,7 +212,7 @@ class MultiFactorDominanceAssessorTest {
         var multiAnchor = new TemporalDominanceWeightStrategy(List.of(
             anchor(0, 0.40, 0.20, 0.25, 0.15),
             anchor(10000, 0.20, 0.40, 0.25, 0.15)));
-        var adaptiveAssessor = new MultiFactorDominanceAssessor(multiAnchor, 25.0, 3000, 2.0, 3, 3);
+        var adaptiveAssessor = new MultiFactorDominanceAssessor(multiAnchor, 25.0, 3000, 2.0, 3, 3, null);
         GameState earlyState = gameState(200, 100, 15, 10,
             List.of(probe(), probe(), probe(), probe(), probe()), List.of(nexus()),
             List.of(probe(), probe(), zealot()), List.of(nexus()), 1000);

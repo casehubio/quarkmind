@@ -22,7 +22,7 @@ class SituationalDominanceWeightStrategyTest {
 
     @Test
     void nullPhase_returnsTemporalBaseline() {
-        DominanceWeights w = strategy.resolve(new WeightContext(5000, null));
+        DominanceWeights w = strategy.resolve(new WeightContext(5000, null, List.of()));
         assertThat(w.economy()).isCloseTo(0.30, offset(0.001));
         assertThat(w.army()).isCloseTo(0.35, offset(0.001));
         assertThat(w.tech()).isCloseTo(0.20, offset(0.001));
@@ -31,34 +31,34 @@ class SituationalDominanceWeightStrategyTest {
 
     @Test
     void transitioning_noModifier() {
-        DominanceWeights w = strategy.resolve(new WeightContext(5000, "TRANSITIONING"));
+        DominanceWeights w = strategy.resolve(new WeightContext(5000, "TRANSITIONING", List.of()));
         assertThat(w.economy()).isCloseTo(0.30, offset(0.001));
         assertThat(w.army()).isCloseTo(0.35, offset(0.001));
     }
 
     @Test
     void defensiveHold_spikesArmyWeight() {
-        DominanceWeights w = strategy.resolve(new WeightContext(5000, "DEFENSIVE_HOLD"));
+        DominanceWeights w = strategy.resolve(new WeightContext(5000, "DEFENSIVE_HOLD", List.of()));
         assertThat(w.army()).isGreaterThan(0.35);
         assertThat(w.economy()).isLessThan(0.30);
     }
 
     @Test
     void earlyMacro_boostsEconomyWeight() {
-        DominanceWeights w = strategy.resolve(new WeightContext(5000, "EARLY_MACRO"));
+        DominanceWeights w = strategy.resolve(new WeightContext(5000, "EARLY_MACRO", List.of()));
         assertThat(w.economy()).isGreaterThan(0.30);
         assertThat(w.army()).isLessThan(0.35);
     }
 
     @Test
     void earlyAggression_boostsArmyWeight() {
-        DominanceWeights w = strategy.resolve(new WeightContext(5000, "EARLY_AGGRESSION"));
+        DominanceWeights w = strategy.resolve(new WeightContext(5000, "EARLY_AGGRESSION", List.of()));
         assertThat(w.army()).isGreaterThan(0.35);
     }
 
     @Test
     void midSkirmish_boostsArmyWeight() {
-        DominanceWeights w = strategy.resolve(new WeightContext(5000, "MID_SKIRMISH"));
+        DominanceWeights w = strategy.resolve(new WeightContext(5000, "MID_SKIRMISH", List.of()));
         assertThat(w.army()).isGreaterThan(0.35);
     }
 
@@ -66,7 +66,7 @@ class SituationalDominanceWeightStrategyTest {
     void allPhases_sumToOne() {
         for (String phase : List.of("DEFENSIVE_HOLD", "EARLY_AGGRESSION", "EARLY_MACRO",
                 "MID_SKIRMISH", "TRANSITIONING")) {
-            DominanceWeights w = strategy.resolve(new WeightContext(5000, phase));
+            DominanceWeights w = strategy.resolve(new WeightContext(5000, phase, List.of()));
             double sum = w.economy() + w.army() + w.tech() + w.bases();
             assertThat(sum).as("phase=" + phase).isCloseTo(1.0, offset(0.001));
         }
@@ -76,7 +76,7 @@ class SituationalDominanceWeightStrategyTest {
     void allWeights_atLeastFloor() {
         for (String phase : List.of("DEFENSIVE_HOLD", "EARLY_AGGRESSION", "EARLY_MACRO",
                 "MID_SKIRMISH", "TRANSITIONING")) {
-            DominanceWeights w = strategy.resolve(new WeightContext(5000, phase));
+            DominanceWeights w = strategy.resolve(new WeightContext(5000, phase, List.of()));
             assertThat(w.economy()).as("economy phase=" + phase).isGreaterThanOrEqualTo(0.05);
             assertThat(w.army()).as("army phase=" + phase).isGreaterThanOrEqualTo(0.05);
             assertThat(w.tech()).as("tech phase=" + phase).isGreaterThanOrEqualTo(0.05);
@@ -86,7 +86,7 @@ class SituationalDominanceWeightStrategyTest {
 
     @Test
     void unknownPhase_treatedAsNoModifier() {
-        DominanceWeights w = strategy.resolve(new WeightContext(5000, "UNKNOWN_PHASE"));
+        DominanceWeights w = strategy.resolve(new WeightContext(5000, "UNKNOWN_PHASE", List.of()));
         assertThat(w.economy()).isCloseTo(0.30, offset(0.001));
         assertThat(w.army()).isCloseTo(0.35, offset(0.001));
     }
@@ -96,7 +96,7 @@ class SituationalDominanceWeightStrategyTest {
         var multiAnchor = new SituationalDominanceWeightStrategy(List.of(
             anchor(0, 0.40, 0.20, 0.25, 0.15),
             anchor(10000, 0.20, 0.40, 0.25, 0.15)));
-        DominanceWeights w = multiAnchor.resolve(new WeightContext(5000, "DEFENSIVE_HOLD"));
+        DominanceWeights w = multiAnchor.resolve(new WeightContext(5000, "DEFENSIVE_HOLD", List.of()));
         assertThat(w.army()).isGreaterThan(0.30);
         double sum = w.economy() + w.army() + w.tech() + w.bases();
         assertThat(sum).isCloseTo(1.0, offset(0.001));

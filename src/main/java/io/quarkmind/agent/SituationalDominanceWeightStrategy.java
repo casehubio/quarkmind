@@ -12,8 +12,6 @@ import java.util.Map;
 public class SituationalDominanceWeightStrategy implements DominanceWeightStrategy {
 
     private static final Logger log = Logger.getLogger(SituationalDominanceWeightStrategy.class);
-    private static final double FLOOR = 0.05;
-
     private static final Map<String, double[]> PHASE_MODIFIERS = Map.of(
         "DEFENSIVE_HOLD",    new double[]{-0.10, +0.15, -0.05,  0.00},
         "EARLY_AGGRESSION",  new double[]{-0.05, +0.10, -0.05,  0.00},
@@ -45,10 +43,10 @@ public class SituationalDominanceWeightStrategy implements DominanceWeightStrate
             ? PHASE_MODIFIERS.getOrDefault(context.currentPhase(), new double[4])
             : new double[4];
 
-        double economy = Math.max(FLOOR, baseline.economy() + mod[0]);
-        double army    = Math.max(FLOOR, baseline.army()    + mod[1]);
-        double tech    = Math.max(FLOOR, baseline.tech()    + mod[2]);
-        double bases   = Math.max(FLOOR, baseline.bases()   + mod[3]);
+        double economy = Math.max(MINIMUM_WEIGHT, baseline.economy() + mod[0]);
+        double army    = Math.max(MINIMUM_WEIGHT, baseline.army()    + mod[1]);
+        double tech    = Math.max(MINIMUM_WEIGHT, baseline.tech()    + mod[2]);
+        double bases   = Math.max(MINIMUM_WEIGHT, baseline.bases()   + mod[3]);
 
         if (economy != baseline.economy() + mod[0] || army != baseline.army() + mod[1]
                 || tech != baseline.tech() + mod[2] || bases != baseline.bases() + mod[3]) {
