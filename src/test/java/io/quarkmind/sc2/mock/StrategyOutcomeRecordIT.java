@@ -8,7 +8,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
-import io.quarkmind.agent.StrategySelector;
+import io.quarkmind.agent.cbr.SC2StrategyRouterTask;
 import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.GameStarted;
 import io.quarkmind.sc2.GameStopped;
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @QuarkusTest
 class StrategyOutcomeRecordIT {
 
-    @Inject StrategySelector strategySelector;
+    @Inject SC2StrategyRouterTask strategyRouter;
     @Inject TrustGateService trustGateService;
     @Inject InMemoryLedgerEntryRepository ledgerRepo;
     @Inject InMemoryActorTrustScoreRepository trustScoreRepo;
@@ -44,7 +44,7 @@ class StrategyOutcomeRecordIT {
     void setUp() {
         ledgerRepo.clear();
         trustScoreRepo.clear();
-        strategySelector.reset();
+        // Router resets naturally via CaseFile on new game
         gameSession.reset();
     }
 
@@ -55,8 +55,8 @@ class StrategyOutcomeRecordIT {
     @Test
     void gameStopped_writesOutcomeRecord_andMaterializesDecisionCount() {
         gameStartedEvent.fire(new GameStarted());
-        String selectedId = strategySelector.getSelectedId();
-        String context    = strategySelector.getOpponentContext();
+        String selectedId = strategyRouter.lastSelectedId();
+        String context    = "strategy";
 
         assertThat(selectedId).isEqualTo("strategy.drools");
         assertThat(context).isEqualTo(QuarkMindCapabilityTag.STRATEGY_VS_UNKNOWN);
@@ -74,8 +74,8 @@ class StrategyOutcomeRecordIT {
     @Test
     void gameStopped_recordsCorrectStrategyAndContext() {
         gameStartedEvent.fire(new GameStarted());
-        String selectedId = strategySelector.getSelectedId();
-        String context    = strategySelector.getOpponentContext();
+        String selectedId = strategyRouter.lastSelectedId();
+        String context    = "strategy";
 
         gameStoppedEvent.fire(new GameStopped(GameResult.WIN));
 
@@ -152,8 +152,8 @@ class StrategyOutcomeRecordIT {
     @Test
     void gameStopped_withUnknown_writesNoLedgerEntry_andDoesNotChangeTrustCount() {
         gameStartedEvent.fire(new GameStarted());
-        String selectedId = strategySelector.getSelectedId();
-        String context    = strategySelector.getOpponentContext();
+        String selectedId = strategyRouter.lastSelectedId();
+        String context    = "strategy";
 
         gameStoppedEvent.fire(new GameStopped(GameResult.UNKNOWN));
 
@@ -168,8 +168,8 @@ class StrategyOutcomeRecordIT {
     @Test
     void milestoneEvaluation_withoutSpi_doesNotInflateDecisionCount() {
         gameStartedEvent.fire(new GameStarted());
-        String selectedId = strategySelector.getSelectedId();
-        String context = strategySelector.getOpponentContext();
+        String selectedId = strategyRouter.lastSelectedId();
+        String context = "strategy";
 
         // Simulate a tick at frame 5000 (past the 4032 frame threshold)
         // This should be a no-op without AttestingOutcomeRecorder

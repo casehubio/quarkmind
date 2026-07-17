@@ -3,7 +3,6 @@ package io.quarkmind.plugin;
 import io.quarkmind.agent.MapCaseContext;
 import io.quarkmind.agent.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
-import io.quarkmind.agent.StrategySelector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,18 +12,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class EarlyPressureStrategyTaskTest {
 
-    StrategySelector selector;
     EarlyPressureStrategyTask task;
 
     @BeforeEach
     void setUp() {
-        selector = new StrategySelector();
-        task = new EarlyPressureStrategyTask(selector);
+        task = new EarlyPressureStrategyTask();
     }
 
     private MutableMapCaseContext readyContext() {
-        return new MutableMapCaseContext(Map.of(
-            QuarkMindCaseFile.READY, Boolean.TRUE));
+        return new MutableMapCaseContext(new java.util.HashMap<>(Map.of(
+            QuarkMindCaseFile.READY, Boolean.TRUE)));
+    }
+
+    private MutableMapCaseContext readyContextWithStrategy(String strategyId) {
+        return new MutableMapCaseContext(new java.util.HashMap<>(Map.of(
+            QuarkMindCaseFile.READY, Boolean.TRUE,
+            QuarkMindCaseFile.STRATEGY_SELECTED_ID, strategyId)));
     }
 
     @Test
@@ -39,20 +42,18 @@ class EarlyPressureStrategyTaskTest {
 
     @Test
     void testActivation_falseWhenNotSelected() {
-        // selector defaults to "strategy.drools" — not early-pressure
         assertThat(task.testActivation(readyContext())).isFalse();
     }
 
     @Test
     void testActivation_trueWhenSelectedAndReadyPresent() {
-        selector.selectForGame("strategy.early-pressure", "vs.unknown");
-        assertThat(task.testActivation(readyContext())).isTrue();
+        assertThat(task.testActivation(readyContextWithStrategy("strategy.early-pressure"))).isTrue();
     }
 
     @Test
     void testActivation_falseWhenSelectedButReadyAbsent() {
-        selector.selectForGame("strategy.early-pressure", "vs.unknown");
-        var ctx = new MapCaseContext(Map.of());
+        var ctx = new MapCaseContext(Map.of(
+            QuarkMindCaseFile.STRATEGY_SELECTED_ID, "strategy.early-pressure"));
         // READY not present
         assertThat(task.testActivation(ctx)).isFalse();
     }

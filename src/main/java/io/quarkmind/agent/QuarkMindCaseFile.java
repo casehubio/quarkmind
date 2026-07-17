@@ -21,8 +21,13 @@ public final class QuarkMindCaseFile {
 
     // Agent state — written by plugins
     public static final String STRATEGY             = "agent.strategy.current";
-    /** Written by StrategyTrustRouter; read by SequenceWorker step activateIf() in Phase 2. */
+    /** Written by SC2StrategyRouterTask; read by strategy task activateIf(). */
     public static final String STRATEGY_SELECTED_ID = "agent.strategy.selected.id";
+    public static final String STRATEGY_ROUTED_CONTEXT = "agent.strategy.routed.context";
+    public static final String STRATEGY_ROUTED_ARCHETYPE = "agent.strategy.routed.archetype";
+    public static final String STRATEGY_ROUTED_CONFIDENCE = "agent.strategy.routed.confidence";
+    public static final String STRATEGY_PIVOT_COUNT = "agent.strategy.pivot.count";
+
     /** Reserved — no plugin currently writes this key. Placeholder for emergency override signals. */
     public static final String CRISIS          = "agent.intent.crisis";
     public static final String ENEMY_ARMY_SIZE = "agent.intel.enemy.army.size";
@@ -35,14 +40,15 @@ public final class QuarkMindCaseFile {
     public static final String COMMENTARY_TRIGGER          = "game.commentary.trigger";
     public static final String COMMENTARY_NARRATIVE_TRIGGER = "game.commentary.narrative.trigger";
 
-    /** All known CaseContext keys — used by GameStateTranslator and plugin activation. */
     public static final List<String> ALL_KEYS = List.of(
-        MINERALS, VESPENE, SUPPLY_USED, SUPPLY_CAP,
-        WORKERS, ARMY, MY_BUILDINGS, GEYSERS, ENEMY_UNITS, GAME_FRAME, READY,
-        RESOURCE_BUDGET, STRATEGY, CRISIS, ENEMY_ARMY_SIZE,
-        ENEMY_BUILD_ORDER, TIMING_ATTACK_INCOMING, ENEMY_POSTURE, MOMENTS_LATEST,
-        STRATEGY_SELECTED_ID, COMMENTARY_TRIGGER, COMMENTARY_NARRATIVE_TRIGGER
-    );
+            MINERALS, VESPENE, SUPPLY_USED, SUPPLY_CAP,
+            WORKERS, ARMY, MY_BUILDINGS, GEYSERS, ENEMY_UNITS, GAME_FRAME, READY,
+            RESOURCE_BUDGET, STRATEGY, CRISIS, ENEMY_ARMY_SIZE,
+            ENEMY_BUILD_ORDER, TIMING_ATTACK_INCOMING, ENEMY_POSTURE, MOMENTS_LATEST,
+            STRATEGY_SELECTED_ID, STRATEGY_ROUTED_CONTEXT, STRATEGY_ROUTED_ARCHETYPE,
+            STRATEGY_ROUTED_CONFIDENCE, STRATEGY_PIVOT_COUNT,
+            COMMENTARY_TRIGGER, COMMENTARY_NARRATIVE_TRIGGER
+                                                       );
 
     private QuarkMindCaseFile() {}
 }

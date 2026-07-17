@@ -4,7 +4,6 @@ import io.casehub.api.context.CaseContext;
 import io.quarkmind.agent.MapCaseContext;
 import io.quarkmind.agent.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
-import io.quarkmind.agent.StrategySelector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,13 +18,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class EarlyPressureStrategyTaskMigrationTest {
 
-    StrategySelector selector;
     EarlyPressureStrategyTask task;
 
     @BeforeEach
     void setUp() {
-        selector = new StrategySelector();
-        task = new EarlyPressureStrategyTask(selector);
+        task = new EarlyPressureStrategyTask();
     }
 
     private CaseContext emptyCtx() {
@@ -33,8 +30,14 @@ class EarlyPressureStrategyTaskMigrationTest {
     }
 
     private CaseContext readyCtx() {
-        return new MutableMapCaseContext(Map.of(
-            QuarkMindCaseFile.READY, Boolean.TRUE));
+        return new MutableMapCaseContext(new java.util.HashMap<>(Map.of(
+            QuarkMindCaseFile.READY, Boolean.TRUE)));
+    }
+
+    private CaseContext readyCtxWithStrategy(String strategyId) {
+        return new MutableMapCaseContext(new java.util.HashMap<>(Map.of(
+            QuarkMindCaseFile.READY, Boolean.TRUE,
+            QuarkMindCaseFile.STRATEGY_SELECTED_ID, strategyId)));
     }
 
     @Test
@@ -49,14 +52,12 @@ class EarlyPressureStrategyTaskMigrationTest {
 
     @Test
     void activateIf_falseWhenNotSelected() {
-        // selector defaults to "strategy.drools" — not early-pressure
         assertThat(task.activateIf().test(readyCtx())).isFalse();
     }
 
     @Test
     void activateIf_trueWhenSelectedAndReadyPresent() {
-        selector.selectForGame("strategy.early-pressure", "vs.unknown");
-        assertThat(task.activateIf().test(readyCtx())).isTrue();
+        assertThat(task.activateIf().test(readyCtxWithStrategy("strategy.early-pressure"))).isTrue();
     }
 
     @Test

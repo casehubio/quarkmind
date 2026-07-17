@@ -113,6 +113,11 @@
             <groupId>io.casehub</groupId>
             <artifactId>casehub-engine-blackboard</artifactId>
         </dependency>
+        <!-- casehub-neocortex-memory-cbr-inmem: in-memory CbrCaseMemoryStore for CBR testing and mock profiles -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-neocortex-memory-cbr-inmem</artifactId>
+        </dependency>
         <!-- casehub-engine-persistence-memory: in-memory SPIs — @Alternative impls of
              CaseInstanceRepository, EventLogRepository, CaseMetaModelRepository, SubCaseGroupRepository.
              Compile scope (not test) because engine runtime CDI beans inject these at augmentation time. -->

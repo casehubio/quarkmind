@@ -11,7 +11,7 @@ import io.quarkmind.agent.AgentOrchestrator;
 import io.quarkmind.agent.MapCaseContext;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.agent.QuarkMindCaseFile;
-import io.quarkmind.agent.StrategySelector;
+import io.quarkmind.agent.cbr.SC2StrategyRouterTask;
 import io.quarkmind.agent.TrustTestUtils;
 import io.quarkmind.agent.plugin.StrategyTask;
 import io.quarkmind.sc2.GameStarted;
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @QuarkusTest
 class TrustWeightedStrategyIT {
 
-    @Inject StrategySelector strategySelector;
+    @Inject SC2StrategyRouterTask strategyRouter;
     @Inject TrustGateService trustGateService;
     @Inject ActorTrustScoreRepository trustScoreRepo;
     @Inject InMemoryLedgerEntryRepository ledgerRepo;
@@ -46,7 +46,7 @@ class TrustWeightedStrategyIT {
     @BeforeEach
     void setUp() {
         ledgerRepo.clear();
-        strategySelector.reset();
+        // Router resets naturally via CaseFile on new game
         simulatedGame.reset();
         intentQueue.drainAll();
         TrustTestUtils.seedQualified(trustScoreRepo,
@@ -58,7 +58,7 @@ class TrustWeightedStrategyIT {
         TrustTestUtils.seedQualified(trustScoreRepo,
             "strategy.early-pressure", QuarkMindCapabilityTag.STRATEGY_VS_UNKNOWN);
         orchestrator.startGame();
-        assertThat(strategySelector.getSelectedId()).isEqualTo("strategy.early-pressure");
+        assertThat(strategyRouter.lastSelectedId()).isEqualTo("strategy.early-pressure");
         orchestrator.gameTick();
         AgentOrchestrator.TickResult result = orchestrator.getLastTickResult();
         assertThat(result.solveSucceeded()).isTrue();
@@ -67,7 +67,7 @@ class TrustWeightedStrategyIT {
     @Test
     void gameStarted_withSeedForVsUnknown_selectsDroolsFallback() {
         gameStartedEvent.fire(new GameStarted());
-        assertThat(strategySelector.getSelectedId()).isEqualTo("strategy.drools");
+        assertThat(strategyRouter.lastSelectedId()).isEqualTo("strategy.drools");
     }
 
     @Test
@@ -81,10 +81,9 @@ class TrustWeightedStrategyIT {
 
     @Test
     void testActivation_onlySelectedStrategy_returnsTrue() {
-        strategySelector.selectForGame("strategy.early-pressure",
-            QuarkMindCapabilityTag.STRATEGY_VS_AGGRESSIVE);
-
-        var ctx = new MapCaseContext(Map.of(QuarkMindCaseFile.READY, Boolean.TRUE));
+        var ctx = new MapCaseContext(Map.of(
+            QuarkMindCaseFile.READY, Boolean.TRUE,
+            QuarkMindCaseFile.STRATEGY_SELECTED_ID, "strategy.early-pressure"));
 
         strategyTasks.forEach(task -> {
             if ("strategy.early-pressure".equals(task.getId())) {

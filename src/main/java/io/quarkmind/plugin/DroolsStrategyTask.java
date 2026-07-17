@@ -12,7 +12,6 @@ import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ResourceBudget;
 import io.quarkmind.agent.ScoutingIntelBroker;
-import io.quarkmind.agent.StrategySelector;
 import io.quarkmind.agent.plugin.ScoutingIntelConsumer;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
@@ -82,7 +81,7 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
     private final IntentQueue intentQueue;
     private final ScoutingIntelBroker broker;
 
-    @Inject StrategySelector strategySelector;
+    
     @Inject Event<PluginDecisionEvent> decisionEvents;
     @Inject GameSession gameSession;
     @Inject PreferenceProvider preferenceProvider;
@@ -184,11 +183,8 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
 
     @Override
     public Predicate<CaseContext> activateIf() {
-        // PP-20260603-cefed9: explicit override required — poc default unconditionally returns true.
-        // requires() already gates on READY and ENEMY_ARMY_SIZE; only the selector and broker
-        // checks are extra (CDI-injected state, not derivable from context key presence).
-        return ctx -> strategySelector.isSelected(getId())
-            && broker.current(ScoutingIntelType.POSTURE).isPresent();
+        return ctx -> getId().equals(
+                ctx.getString(QuarkMindCaseFile.STRATEGY_SELECTED_ID));
     }
 
     @Override

@@ -23,6 +23,8 @@ import jakarta.enterprise.event.Event;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import org.jboss.logging.Logger;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -30,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
-import org.jboss.logging.Logger;
 
 /**
  * CaseHub subclass defining the {@code starcraft-game} case type for the casehub-engine.
@@ -90,17 +91,14 @@ public class QuarkMindCaseHub extends CaseHub {
     /** JQ expression that fires when a narrative commentary trigger is set. */
     static final String NARRATIVE_TRIGGER = ".working[\"game.commentary.narrative.trigger\"] | . != null";
 
-    /**
-     * Plugin execution order within the tick orchestrator, keyed by ID prefix.
-     * Plugins whose ID prefix does not appear here are appended at the end.
-     */
     private static final List<String> PHASE_ORDER = List.of(
-        "scouting.",     // Phase 1: observe
-        "strategy.",     // Phase 2: decide (competing implementations — activateIf gates selection)
-        "tactics.",      // Phase 3: act
-        "economics.",    // Phase 4: build
-        "summarisation." // Phase 5: reflect
-    );
+            "scouting.",           // Phase 1: observe
+            "strategy-routing.",   // Phase 2a: route (select which strategy — CBR + trust)
+            "strategy.",           // Phase 2b: decide (selected strategy executes)
+            "tactics.",            // Phase 3: act
+            "economics.",          // Phase 4: build
+            "summarisation."       // Phase 5: reflect
+                                                           );
 
     /**
      * CDI Instance — lazy handle. Not resolved in the constructor because the engine calls

@@ -22,7 +22,7 @@ public class MilestoneOutcomeRecorder {
     private static final Logger log = Logger.getLogger(MilestoneOutcomeRecorder.class);
 
     private final OutcomeRecorder outcomeRecorder;
-    private final StrategySelector strategySelector;
+    private final io.quarkmind.agent.cbr.SC2StrategyRouterTask strategyRouter;
     private final GameSession gameSession;
     private final MilestoneSession milestoneSession;
     private final DominanceAssessor dominanceAssessor;
@@ -33,14 +33,14 @@ public class MilestoneOutcomeRecorder {
     @Inject
     MilestoneOutcomeRecorder(
             OutcomeRecorder outcomeRecorder,
-            StrategySelector strategySelector,
+            io.quarkmind.agent.cbr.SC2StrategyRouterTask strategyRouter,
             GameSession gameSession,
             MilestoneSession milestoneSession,
             DominanceAssessor dominanceAssessor,
             @Any Instance<MilestoneTrigger> triggerInstances,
             MilestoneConfig config) {
         this.outcomeRecorder = outcomeRecorder;
-        this.strategySelector = strategySelector;
+        this.strategyRouter = strategyRouter;
         this.gameSession = gameSession;
         this.milestoneSession = milestoneSession;
         this.dominanceAssessor = dominanceAssessor;
@@ -52,7 +52,7 @@ public class MilestoneOutcomeRecorder {
     /** Test constructor — no CDI. */
     MilestoneOutcomeRecorder(
             OutcomeRecorder outcomeRecorder,
-            StrategySelector strategySelector,
+            io.quarkmind.agent.cbr.SC2StrategyRouterTask strategyRouter,
             GameSession gameSession,
             MilestoneSession milestoneSession,
             DominanceAssessor dominanceAssessor,
@@ -60,7 +60,7 @@ public class MilestoneOutcomeRecorder {
             boolean milestonesEnabled,
             double deadZoneThreshold) {
         this.outcomeRecorder = outcomeRecorder;
-        this.strategySelector = strategySelector;
+        this.strategyRouter = strategyRouter;
         this.gameSession = gameSession;
         this.milestoneSession = milestoneSession;
         this.dominanceAssessor = dominanceAssessor;
@@ -84,12 +84,12 @@ public class MilestoneOutcomeRecorder {
 
     void onGameStopped(@Observes GameStopped event) {
         if (event.result() == GameResult.UNKNOWN) {
-            log.infof("[MILESTONE] Game ended with unknown result — skipped (strategy=%s context=%s)",
-                strategySelector.getSelectedId(), strategySelector.getOpponentContext());
+            log.infof("[MILESTONE] Game ended with unknown result — skipped (strategy=%s)",
+                strategyRouter.lastSelectedId());
             return;
         }
-        String strategyId = strategySelector.getSelectedId();
-        String context = strategySelector.getOpponentContext();
+        String strategyId = strategyRouter.lastSelectedId();
+        String context = "strategy";
         AttestationVerdict verdict = switch (event.result()) {
             case WIN     -> AttestationVerdict.ENDORSED;
             case LOSS    -> AttestationVerdict.CHALLENGED;

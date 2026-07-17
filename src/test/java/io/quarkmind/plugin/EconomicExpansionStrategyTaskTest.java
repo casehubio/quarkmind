@@ -3,7 +3,6 @@ package io.quarkmind.plugin;
 import io.quarkmind.agent.MapCaseContext;
 import io.quarkmind.agent.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
-import io.quarkmind.agent.StrategySelector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,18 +12,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class EconomicExpansionStrategyTaskTest {
 
-    StrategySelector selector;
     EconomicExpansionStrategyTask task;
 
     @BeforeEach
     void setUp() {
-        selector = new StrategySelector();
-        task = new EconomicExpansionStrategyTask(selector);
+        task = new EconomicExpansionStrategyTask();
     }
 
     private MutableMapCaseContext readyContext() {
-        return new MutableMapCaseContext(Map.of(
-            QuarkMindCaseFile.READY, Boolean.TRUE));
+        return new MutableMapCaseContext(new java.util.HashMap<>(Map.of(
+            QuarkMindCaseFile.READY, Boolean.TRUE)));
+    }
+
+    private MutableMapCaseContext readyContextWithStrategy(String strategyId) {
+        return new MutableMapCaseContext(new java.util.HashMap<>(Map.of(
+            QuarkMindCaseFile.READY, Boolean.TRUE,
+            QuarkMindCaseFile.STRATEGY_SELECTED_ID, strategyId)));
     }
 
     @Test
@@ -44,14 +47,13 @@ class EconomicExpansionStrategyTaskTest {
 
     @Test
     void testActivation_trueWhenSelectedAndReadyPresent() {
-        selector.selectForGame("strategy.economic-expansion", "vs.unknown");
-        assertThat(task.testActivation(readyContext())).isTrue();
+        assertThat(task.testActivation(readyContextWithStrategy("strategy.economic-expansion"))).isTrue();
     }
 
     @Test
     void testActivation_falseWhenSelectedButReadyAbsent() {
-        selector.selectForGame("strategy.economic-expansion", "vs.unknown");
-        var ctx = new MapCaseContext(Map.of());
+        var ctx = new MapCaseContext(Map.of(
+            QuarkMindCaseFile.STRATEGY_SELECTED_ID, "strategy.economic-expansion"));
         assertThat(task.testActivation(ctx)).isFalse();
     }
 

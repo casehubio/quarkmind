@@ -9,7 +9,7 @@ import io.quarkmind.agent.ResourceBudget;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
-import io.quarkmind.agent.StrategySelector;
+import io.quarkmind.agent.cbr.SC2StrategyRouterTask;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DroolsStrategyTaskTest {
 
     @Inject DroolsStrategyTask strategyTask;
-    @Inject StrategySelector strategySelector;
+    @Inject SC2StrategyRouterTask strategyRouter;
     @Inject IntentQueue intentQueue;
     @Inject ScoutingIntelBroker broker;
 
@@ -46,7 +46,7 @@ class DroolsStrategyTaskTest {
     void drainQueue() {
         intentQueue.drainAll();
         broker.clearLatest();
-        strategySelector.selectForGame("strategy.drools", QuarkMindCapabilityTag.STRATEGY_VS_UNKNOWN);
+        // Router fallback is strategy.drools when broker has no archetype
         strategyTask.resetPrevStrategy(); // prevStrategy leaks across @Test methods on the same CDI bean
     }
 
@@ -239,11 +239,11 @@ class DroolsStrategyTaskTest {
 
     @Test
     void testActivation_true_whenBothGatesSatisfied() {
-        // Gate 1: context has {READY, ENEMY_ARMY_SIZE}; Gate 2: broker has POSTURE
-        broker.update(new ScoutingIntelPayload.PostureUpdate("UNKNOWN"));
+        // Gate 1: context has {READY, ENEMY_ARMY_SIZE}; Gate 2: STRATEGY_SELECTED_ID matches
         var ctx = new MapCaseContext(Map.of(
             QuarkMindCaseFile.READY,           Boolean.TRUE,
-            QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0));
+            QuarkMindCaseFile.ENEMY_ARMY_SIZE, 0,
+            QuarkMindCaseFile.STRATEGY_SELECTED_ID, "strategy.drools"));
         assertThat(strategyTask.testActivation(ctx)).isTrue();
     }
 

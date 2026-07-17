@@ -7,7 +7,7 @@ import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ResourceBudget;
-import io.quarkmind.agent.StrategySelector;
+import io.quarkmind.agent.cbr.SC2StrategyRouterTask;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LedgerAuditIT {
 
     @Inject DroolsStrategyTask strategyTask;
-    @Inject StrategySelector strategySelector;
+    @Inject SC2StrategyRouterTask strategyRouter;
     @Inject InMemoryLedgerEntryRepository ledgerRepo;
     @Inject GameSession gameSession;
     @Inject IntentQueue intentQueue;
@@ -36,7 +36,7 @@ class LedgerAuditIT {
     void setup() {
         gameSession.reset();
         intentQueue.drainAll();
-        strategySelector.selectForGame("strategy.drools", QuarkMindCapabilityTag.STRATEGY_VS_UNKNOWN);
+        // Router fallback is strategy.drools when broker has no archetype
         strategyTask.resetPrevStrategy(); // prevents prevStrategy leakage from earlier @QuarkusTest runs
     }
 

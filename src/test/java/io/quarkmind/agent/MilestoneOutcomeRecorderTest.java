@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MilestoneOutcomeRecorderTest {
 
     private RecordingOutcomeRecorder outcomeRecorder;
-    private StrategySelector strategySelector;
+    private io.quarkmind.agent.cbr.SC2StrategyRouterTask strategyRouter;
     private GameSession gameSession;
     private MilestoneSession milestoneSession;
     private MilestoneOutcomeRecorder recorder;
@@ -28,13 +28,14 @@ class MilestoneOutcomeRecorderTest {
     @BeforeEach
     void setUp() {
         outcomeRecorder = new RecordingOutcomeRecorder();
-        strategySelector = new StrategySelector();
+        strategyRouter = org.mockito.Mockito.mock(io.quarkmind.agent.cbr.SC2StrategyRouterTask.class);
+        org.mockito.Mockito.when(strategyRouter.lastSelectedId()).thenReturn("strategy.drools");
         gameSession = new GameSession();
         milestoneSession = new MilestoneSession();
 
         // Default: milestones enabled, dead zone 0.15
         recorder = new MilestoneOutcomeRecorder(
-            outcomeRecorder, strategySelector, gameSession, milestoneSession,
+            outcomeRecorder, strategyRouter, gameSession, milestoneSession,
             state -> new DominanceScore(0.5, Map.of()), // always returns "moderately ahead"
             List.of(new FrameThresholdTrigger(List.of(
                 new FrameThresholdTrigger.Threshold(4032, 0.3)))),
@@ -96,7 +97,7 @@ class MilestoneOutcomeRecorderTest {
     void evaluateMilestones_deadZone_skipsAttestation() {
         // dominance assessor returns 0.1 (below dead zone 0.15)
         recorder = new MilestoneOutcomeRecorder(
-            outcomeRecorder, strategySelector, gameSession, milestoneSession,
+            outcomeRecorder, strategyRouter, gameSession, milestoneSession,
             state -> new DominanceScore(0.1, Map.of()), // below dead zone
             List.of(new FrameThresholdTrigger(List.of(
                 new FrameThresholdTrigger.Threshold(4032, 0.3)))),
@@ -125,14 +126,13 @@ class MilestoneOutcomeRecorderTest {
 
     @Test
     void gameEnd_usesCurrentStrategyAndContext() {
-        strategySelector.selectForGame("strategy.early-pressure",
-            QuarkMindCapabilityTag.STRATEGY_VS_AGGRESSIVE);
+        org.mockito.Mockito.when(strategyRouter.lastSelectedId()).thenReturn("strategy.early-pressure");
         recorder.onGameStarted(new GameStarted());
         recorder.onGameStopped(new GameStopped(GameResult.WIN));
 
         OutcomeRecord recorded = outcomeRecorder.records.get(0);
         assertThat(recorded.actorId()).isEqualTo("strategy.early-pressure");
-        assertThat(recorded.capabilityTag()).isEqualTo(QuarkMindCapabilityTag.STRATEGY_VS_AGGRESSIVE);
+        assertThat(recorded.capabilityTag()).isEqualTo("strategy");
     }
 
     // --- disabled switch ---
@@ -140,7 +140,7 @@ class MilestoneOutcomeRecorderTest {
     @Test
     void gameEnd_recordsEvenWhenMilestonesDisabled() {
         recorder = new MilestoneOutcomeRecorder(
-            outcomeRecorder, strategySelector, gameSession, milestoneSession,
+            outcomeRecorder, strategyRouter, gameSession, milestoneSession,
             state -> new DominanceScore(0.5, Map.of()),
             List.of(), false, 0.15); // disabled
 

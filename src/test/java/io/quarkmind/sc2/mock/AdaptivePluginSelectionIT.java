@@ -10,7 +10,7 @@ import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
-import io.quarkmind.agent.StrategySelector;
+import io.quarkmind.agent.cbr.SC2StrategyRouterTask;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.plugin.DroolsStrategyTask;
 import io.quarkmind.plugin.DroolsTacticsTask;
@@ -36,7 +36,7 @@ class AdaptivePluginSelectionIT {
     @Inject ScenarioRunner    scenarioRunner;
     @Inject DroolsTacticsTask tacticsTask;
     @Inject DroolsStrategyTask strategyTask;
-    @Inject StrategySelector strategySelector;
+    @Inject SC2StrategyRouterTask strategyRouter;
     @Inject ScoutingIntelBroker broker;
     @Inject PluginDispatchBroker dispatchBroker;
     @Inject MessageService        messageService;
