@@ -1,16 +1,35 @@
 package io.quarkmind.agent;
 
 import io.quarkmind.domain.DominanceWeights;
+import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.EnemyPatternAssessment;
+import io.quarkmind.plugin.drools.DominanceWeightRuleUnit;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import org.drools.ruleunits.api.RuleUnit;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static io.quarkmind.agent.AnchorInterpolatorTest.anchor;
 import static org.junit.jupiter.api.Assertions.*;
 
+@QuarkusTest
 class DroolsDominanceWeightStrategyTest {
+
+    @Inject RuleUnit<DominanceWeightRuleUnit> ruleUnit;
 
     private static final DominanceWeights BASELINE =
         new DominanceWeights(0.30, 0.30, 0.20, 0.20);
+
+    private static final List<MilestoneConfig.Dominance.WeightAnchor> ANCHORS = List.of(
+        anchor(0, 0.30, 0.30, 0.20, 0.20),
+        anchor(20160, 0.25, 0.35, 0.20, 0.20)
+    );
+
+    private DroolsDominanceWeightStrategy createStrategy() {
+        return new DroolsDominanceWeightStrategy(ruleUnit, ANCHORS);
+    }
 
     @Test
     void applyModifiers_emptyList_returnsBaseline() {
@@ -78,5 +97,43 @@ class DroolsDominanceWeightStrategyTest {
         assertEquals(0.25, result.army(), 0.001);
         assertEquals(0.25, result.tech(), 0.001);
         assertEquals(0.25, result.bases(), 0.001);
+    }
+
+    @Test
+    void id_returnsDrools() {
+        assertEquals("drools", createStrategy().id());
+    }
+
+    @Test
+    void resolve_emptyContext_returnsBaseline() {
+        var ctx = new WeightContext(5000, null, List.of());
+        DominanceWeights result = createStrategy().resolve(ctx);
+        assertNotNull(result);
+        assertEquals(1.0, result.economy() + result.army()
+            + result.tech() + result.bases(), 0.001);
+    }
+
+    @Test
+    void resolve_withRush_shiftsToArmy() {
+        var ctx = new WeightContext(5000, null, List.of(
+            new EnemyPatternAssessment(
+                EnemyArchetype.TERRAN_MARINE_RUSH, 0.7, 3000, "test")));
+        DominanceWeights baseline = new AnchorInterpolator(ANCHORS)
+            .interpolate(5000);
+        DominanceWeights result = createStrategy().resolve(ctx);
+        assertTrue(result.army() > baseline.army());
+        assertEquals(1.0, result.economy() + result.army()
+            + result.tech() + result.bases(), 0.001);
+    }
+
+    @Test
+    void resolve_withPhaseAndPattern_composesAll() {
+        var ctx = new WeightContext(5000, "DEFENSIVE_HOLD", List.of(
+            new EnemyPatternAssessment(
+                EnemyArchetype.ZERG_ZERGLING_RUSH, 0.6, 2000, "test")));
+        DominanceWeights result = createStrategy().resolve(ctx);
+        assertTrue(result.army() > 0.40, "Army should dominate: " + result.army());
+        assertEquals(1.0, result.economy() + result.army()
+            + result.tech() + result.bases(), 0.001);
     }
 }

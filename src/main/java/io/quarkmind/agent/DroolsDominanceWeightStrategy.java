@@ -1,10 +1,59 @@
 package io.quarkmind.agent;
 
 import io.quarkmind.domain.DominanceWeights;
+import io.quarkmind.plugin.drools.DominanceWeightRuleUnit;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.drools.ruleunits.api.RuleUnit;
+import org.drools.ruleunits.api.RuleUnitInstance;
 
 import java.util.List;
 
-public class DroolsDominanceWeightStrategy {
+@ApplicationScoped
+public class DroolsDominanceWeightStrategy implements DominanceWeightStrategy {
+
+    private final RuleUnit<DominanceWeightRuleUnit> ruleUnit;
+    private final AnchorInterpolator interpolator;
+
+    @Inject
+    DroolsDominanceWeightStrategy(
+            RuleUnit<DominanceWeightRuleUnit> ruleUnit,
+            MilestoneConfig config) {
+        this.ruleUnit = ruleUnit;
+        this.interpolator = new AnchorInterpolator(config.dominance().anchors());
+    }
+
+    DroolsDominanceWeightStrategy(
+            RuleUnit<DominanceWeightRuleUnit> ruleUnit,
+            List<MilestoneConfig.Dominance.WeightAnchor> anchors) {
+        this.ruleUnit = ruleUnit;
+        this.interpolator = new AnchorInterpolator(anchors);
+    }
+
+    @Override
+    public String id() {
+        return "drools";
+    }
+
+    @Override
+    public DominanceWeights resolve(WeightContext context) {
+        DominanceWeights baseline = interpolator.interpolate(context.gameFrame());
+        DominanceWeightRuleUnit data = new DominanceWeightRuleUnit();
+
+        if (context.currentPhase() != null) {
+            data.getPhaseStore().add(context.currentPhase());
+        }
+        for (var a : context.patternAssessments()) {
+            data.getPatternStore().add(a);
+        }
+
+        try (RuleUnitInstance<DominanceWeightRuleUnit> instance =
+                 ruleUnit.createInstance(data)) {
+            instance.fire();
+        }
+
+        return applyModifiers(baseline, data.getModifiers());
+    }
 
     static DominanceWeights applyModifiers(DominanceWeights baseline,
                                            List<WeightModifier> modifiers) {

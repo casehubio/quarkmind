@@ -288,7 +288,11 @@
       "Bash(wait *)",
       "Bash(bash /Users/mdproctor/.claude/skills/subagent-driven-development/scripts/task-brief /Users/mdproctor/claude/public/quarkmind/plans/2026-07-06-commentator-observer-llm.md 7)",
       "Bash(git -c commit.gpgsign=false add -A)",
-      "Bash(git -c commit.gpgsign=false commit -m 'feat\\(#181\\): game loop integration — commentary pipeline end-to-end *)"
+      "Bash(git -c commit.gpgsign=false commit -m 'feat\\(#181\\): game loop integration — commentary pipeline end-to-end *)",
+      "mcp__intellij-index__ide_edit_member",
+      "mcp__intellij-index__ide_replace_text_in_file",
+      "mcp__intellij-index__ide_insert_member",
+      "mcp__intellij-index__ide_create_file"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"
