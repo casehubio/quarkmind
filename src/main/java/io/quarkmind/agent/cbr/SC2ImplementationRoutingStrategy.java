@@ -1,13 +1,23 @@
 package io.quarkmind.agent.cbr;
 
-import io.casehub.api.spi.routing.*;
+import io.casehub.api.spi.routing.AgentCandidate;
+import io.casehub.api.spi.routing.AgentHealth;
+import io.casehub.api.spi.routing.ImplementationCandidate;
+import io.casehub.api.spi.routing.ImplementationRoutingContext;
+import io.casehub.api.spi.routing.ImplementationRoutingStrategy;
+import io.casehub.api.spi.routing.ImplementationSelection;
+import io.casehub.api.spi.routing.RetrievedExperience;
+import io.casehub.api.spi.routing.TrustRoutingPolicy;
+import io.casehub.api.spi.routing.TrustRoutingPolicyProvider;
 import io.casehub.ledger.api.spi.TrustScoreSource;
 import io.casehub.ledger.routing.TrustCandidateClassifier;
 import io.casehub.ledger.routing.TrustCandidateClassifier.ClassifiedCandidate;
-import io.smallrye.mutiny.Uni;
 import org.jboss.logging.Logger;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SC2ImplementationRoutingStrategy implements ImplementationRoutingStrategy {
@@ -31,21 +41,21 @@ public class SC2ImplementationRoutingStrategy implements ImplementationRoutingSt
     public String id() { return "sc2-cbr-routing"; }
 
     @Override
-    public Uni<ImplementationSelection> select(
+    public io.smallrye.mutiny.Uni<ImplementationSelection> select(
             ImplementationRoutingContext context,
             List<ImplementationCandidate> candidates) {
 
         if (candidates.size() <= 1) {
-            return Uni.createFrom().item(new ImplementationSelection.RunAll());
+            return io.smallrye.mutiny.Uni.createFrom().item(new ImplementationSelection.RunAll());
         }
 
-        TrustRoutingPolicy policy = policyProvider.forCapability(context.capabilityName());
-        double cbrWeight = policy.cbrWeight();
+        TrustRoutingPolicy policy    = policyProvider.forCapability(context.capabilityName());
+        double             cbrWeight = policy.cbrWeight();
 
         List<AgentCandidate> agentCandidates = candidates.stream()
-                .map(c -> new AgentCandidate(c.workerName(), Set.of(c.capabilityName()),
-                        0, AgentHealth.READY, null, null))
-                .toList();
+                                                         .map(c -> new AgentCandidate(c.workerName(), Set.of(c.capabilityName()),
+                                                                                      0, AgentHealth.READY, null, null))
+                                                         .toList();
 
         List<ClassifiedCandidate> classified = classifier.classify(
                 agentCandidates, context.capabilityName(), policy, scoreSource);
@@ -54,22 +64,22 @@ public class SC2ImplementationRoutingStrategy implements ImplementationRoutingSt
                 context.experiences(), candidates);
 
         String bestBinding = null;
-        double bestScore = -1.0;
+        double bestScore   = -1.0;
 
         for (int i = 0; i < classified.size(); i++) {
-            ClassifiedCandidate cc = classified.get(i);
+            ClassifiedCandidate     cc = classified.get(i);
             ImplementationCandidate ic = candidates.get(i);
 
             double trustScore = computeTrustScore(cc, policy, ic.bindingName());
-            double expWeight = experienceWeights.getOrDefault(ic.bindingName(), 0.5);
+            double expWeight  = experienceWeights.getOrDefault(ic.bindingName(), 0.5);
             double finalScore = (1.0 - cbrWeight) * trustScore + cbrWeight * expWeight;
 
             log.debugf("[CBR-ROUTE] candidate=%s trust=%.3f cbr=%.3f final=%.3f (phase=%s)",
-                    ic.bindingName(), trustScore, expWeight, finalScore, cc.phase());
+                       ic.bindingName(), trustScore, expWeight, finalScore, cc.phase());
 
             if (finalScore > bestScore
-                    || (finalScore == bestScore && ic.bindingName().equals(policy.fallbackBinding()))) {
-                bestScore = finalScore;
+                || (finalScore == bestScore && ic.bindingName().equals(policy.fallbackBinding()))) {
+                bestScore   = finalScore;
                 bestBinding = ic.bindingName();
             }
         }
@@ -79,10 +89,9 @@ public class SC2ImplementationRoutingStrategy implements ImplementationRoutingSt
         }
 
         log.infof("[CBR-ROUTE] Selected: %s (score=%.3f, cbrWeight=%.2f, experiences=%d)",
-                bestBinding, bestScore, cbrWeight, context.experiences().size());
+                  bestBinding, bestScore, cbrWeight, context.experiences().size());
 
-        return Uni.createFrom().item(
-                new ImplementationSelection.Selected(List.of(bestBinding)));
+        return io.smallrye.mutiny.Uni.createFrom().item(new ImplementationSelection.Selected(List.of(bestBinding)));
     }
 
     private double computeTrustScore(ClassifiedCandidate cc, TrustRoutingPolicy policy,

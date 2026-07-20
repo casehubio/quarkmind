@@ -104,7 +104,7 @@ class SC2ImplementationRoutingStrategyTest {
     @Test
     void noCandidates_runsAll() {
         var ctx = new ImplementationRoutingContext(UUID.randomUUID(), "strategy", null, "t1", List.of());
-        var result = strategy.select(ctx, List.of()).await().indefinitely();
+        var result = strategy.select(ctx, List.of());
         assertThat(result).isInstanceOf(ImplementationSelection.RunAll.class);
     }
 

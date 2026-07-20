@@ -14,7 +14,6 @@ import io.casehub.ledger.routing.TrustCandidateClassifier;
 import io.casehub.ledger.routing.TrustCandidateClassifier.ClassifiedCandidate;
 import io.casehub.ledger.routing.TrustCandidateClassifier.Phase;
 import io.casehub.ledger.routing.TrustCandidateClassifier.ScoredCandidate;
-import io.smallrye.mutiny.Uni;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Alternative;
@@ -46,14 +45,14 @@ public class DispositionAwareRoutingStrategy implements AgentRoutingStrategy {
     }
 
     @Override
-    public Uni<RoutingResult> select(
+    public io.smallrye.mutiny.Uni<RoutingResult> select(
             final AgentRoutingContext context, final List<AgentCandidate> candidates) {
         if (candidates.isEmpty()) {
-            return Uni.createFrom().item(RoutingResult.unresolvable("no candidates provided"));
+            return io.smallrye.mutiny.Uni.createFrom().item(RoutingResult.unresolvable("no candidates provided"));
         }
 
-        final String capability = context.capabilityName();
-        final TrustRoutingPolicy policy = policyProvider.forCapability(capability);
+        final String             capability = context.capabilityName();
+        final TrustRoutingPolicy policy     = policyProvider.forCapability(capability);
         final List<ClassifiedCandidate> classified =
                 classifier.classify(candidates, capability, policy, scoreSource);
 
@@ -61,29 +60,28 @@ public class DispositionAwareRoutingStrategy implements AgentRoutingStrategy {
             final boolean hasQualified = classified.stream().anyMatch(c -> c.phase() == Phase.QUALIFIED);
             final boolean hasBootstrap = classified.stream().anyMatch(c -> c.phase() == Phase.BOOTSTRAP);
             if (!hasQualified && hasBootstrap) {
-                return Uni.createFrom()
-                        .item(RoutingResult.escalate(capability, EscalationReason.NO_QUALIFIED_AGENT,
-                                "no qualified agent for capability '%s' — only bootstrap candidates".formatted(capability)));
+                return io.smallrye.mutiny.Uni.createFrom().item(RoutingResult.escalate(capability, EscalationReason.NO_QUALIFIED_AGENT,
+                                                                                       "no qualified agent for capability '%s' — only bootstrap candidates".formatted(capability)));
             }
         }
 
         final List<ClassifiedCandidate> eligible =
                 policy.bootstrapEscalationRequired()
-                        ? classified.stream().filter(c -> c.phase() != Phase.BOOTSTRAP).toList()
-                        : classified;
+                ? classified.stream().filter(c -> c.phase() != Phase.BOOTSTRAP).toList()
+                : classified;
 
-        final JsonNode gameState = context.caseContext();
-        final DispositionPreference pref = resolvePreference(gameState);
+        final JsonNode              gameState = context.caseContext();
+        final DispositionPreference pref      = resolvePreference(gameState);
 
         final List<ScoredCandidate> scored = new ArrayList<>(eligible.size());
         for (final ClassifiedCandidate cc : eligible) {
             final double trustScore = trustScore(cc, policy);
             final double multiplier = dispositionMultiplier(cc.candidate(), pref);
             scored.add(new ScoredCandidate(cc, trustScore * multiplier,
-                "trust=%.3f disposition=%.2f".formatted(trustScore, multiplier)));
+                                           "trust=%.3f disposition=%.2f".formatted(trustScore, multiplier)));
         }
 
-        return Uni.createFrom().item(classifier.decide(eligible, scored, capability));
+        return io.smallrye.mutiny.Uni.createFrom().item(classifier.decide(eligible, scored, capability));
     }
 
     static DispositionPreference resolvePreference(final JsonNode gameState) {
