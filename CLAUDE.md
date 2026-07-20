@@ -256,6 +256,7 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 | `%replay` | No | Agent loop against a real `.SC2Replay` — observe-only |
 | `%sc2` | Yes | Real SC2 integration |
 | `%test` | No | @QuarkusTest — scheduler disabled |
+| `%coach` | No | Coach mode — human plays, AI observes and advises via coaching pipeline |
 | `%prod` | — | Production — QA endpoints stripped |
 
 ## Testing Patterns
@@ -264,6 +265,7 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 - Instantiate classes directly via `new` — no CDI
 - Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `IEM10CommandExtractorTest`, `IEM10CommandExtractorSelectionDeltaTest`, `SelectionStateTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `DroolsStrategyTaskStaticTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TerranEmulatedGameTest`, `ZergEmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `PhysicsStateTest`, `PlayerStateTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`, `ObservationTranslatorIntegrationTest`, `QuarkusSC2TransportTest`, `AbilityDiscoveryTest`, `AbilityMappingTest`, `ReplayCommandExtractorTest`, `TerranReplayCommandExtractorTest`, `ReplayValidationTest`, `ReplayValidationHarnessTest`, `ReplaySimulatedGameMovementTest`, `SC2DataTest`, `SC2TrainTimeCalibrationTest`, `SC2BuildTimeCalibrationTest`, `GameEventStreamTest`, `UnitOrderTrackerTest`, `DispositionAwareRoutingStrategyTest`, `EarlyPressureStrategyTaskTest`, `EarlyPressureStrategyTaskMigrationTest`, `EconomicExpansionStrategyTaskTest`, `RealSC2EngineTest`, `MapCaseContextTest`, `PluginDispatchBrokerTest`, `EmulatedSC2ServerTest`, `GameStateRoundTripTest`, `EventAccumulatorTest`, `EventStreamBusTest`, `SummarisationRunnerTest`, `GamePhaseSummariserTest`, `GameArcSummariserTest`, `SummarisationPipelineTest`, `DroolsStrategyL2L3Test`, `AdvisoryWorkerFactoryTest`, `QuarkMindAdvisorRegistrarTest`, `AdvisoryTriggerBuilderTest`, `AdvisoryCompletionObserverTest`, `AdvisoryInvocationCounterTest`, `AdvisoryLatencyRecorderTest`, `DeferredAdvisoryEvaluatorTest`, `AdvisoryGameOutcomeRecorderTest`, `AdvisoryChannelBrokerTest`, `AdvisoryChannelBackendTest`, `QuarkMindTrustRoutingPolicyProviderTest`, `QuarkMindCaseHubTest`, `GameTickExecutorMigrationTest`, `TickOrchestratorWorkerTest`, `MilestoneSessionTest`, `FrameThresholdTriggerTest`, `GamePhaseTriggerTest`, `DominanceScoreTest`, `MultiFactorDominanceAssessorTest`, `MilestoneOutcomeRecorderTest`
 - Tests: (continued) `PatternConfidenceTest`, `DominanceWeightsTest`, `AnchorInterpolatorTest`, `TemporalDominanceWeightStrategyTest`, `SituationalDominanceWeightStrategyTest`, `DroolsDominanceWeightStrategyTest`, `UnitTypeTest`, `EnemyArchetypeTest`, `SC2GameCbrCaseTest`, `SC2CbrRetentionObserverTest`, `SC2ImplementationRoutingStrategyTest`, `SC2StrategyRouterTaskTest`
+- Tests: (continued) `CoachingAdviceTest`, `CoachingDispositionTermTest`, `CoachingTriggerBuilderTest`, `CoachingSessionSelectorTest`, `CoachingWorkerFactoryTest`, `CoachingChannelBrokerTest`, `CoachingComplianceEvaluatorTest`
 - Package-private static methods on CDI beans are tested from the same package without CDI — make them `static` (not `private`) to enable this.
 
 **Integration tests** (`@QuarkusTest`, full CDI context):
@@ -327,6 +329,7 @@ src/main/java/io/quarkmind/
   plugin/scouting/     Drools CEP scouting — DroolsScoutingTask, ScoutingSessionManager, event records
   plugin/tactics/      GOAP planning + CDI strategy interfaces
   agent/cbr/           CBR (Case-Based Reasoning) — SC2GameCbrCase, SC2CbrRetentionObserver, SC2ImplementationRoutingStrategy, SC2StrategyRouterTask, SC2CbrSchemaRegistrar
+  plugin/coaching/     Coach mode — CoachingTriggerBuilder, CoachingWorkerFactory, CoachingChannelBroker, CoachingComplianceEvaluator
   plugin/flow/         Quarkus Flow integration — EconomicsFlow, EconomicsDecisionService, EconomicsLifecycle
   qa/                  QA REST endpoints — dev/test only (@UnlessBuildProfile("prod"))
 ```

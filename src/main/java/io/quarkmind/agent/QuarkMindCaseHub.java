@@ -15,6 +15,9 @@ import io.casehub.worker.api.WorkerResult;
 import io.quarkmind.plugin.advisory.AdvisoryWorkerFactory;
 import io.quarkmind.plugin.advisory.CompletionCallback;
 import io.quarkmind.plugin.advisory.QuarkMindAgentRegistrar;
+import io.quarkmind.plugin.coaching.CoachingCompleted;
+import io.quarkmind.plugin.coaching.CoachingCompletionCallback;
+import io.quarkmind.plugin.coaching.CoachingWorkerFactory;
 import io.quarkmind.plugin.commentary.CommentaryCompleted;
 import io.quarkmind.plugin.commentary.CommentaryCompletionCallback;
 import io.quarkmind.plugin.commentary.CommentaryWorkerFactory;
@@ -91,6 +94,12 @@ public class QuarkMindCaseHub extends CaseHub {
     /** JQ expression that fires when a narrative commentary trigger is set. */
     static final String NARRATIVE_TRIGGER = ".working[\"game.commentary.narrative.trigger\"] | . != null";
 
+    // Coaching capability name — must match QuarkMindAgentRegistrar capability name
+    static final String CAPABILITY_COACHING = "coaching";
+
+    /** JQ expression that fires when a coaching trigger is set. */
+    static final String COACHING_TRIGGER = ".working[\"game.coaching.trigger\"] | . != null";
+
     private static final List<String> PHASE_ORDER = List.of(
             "scouting.",           // Phase 1: observe
             "strategy-routing.",   // Phase 2a: route (select which strategy — CBR + trust)
@@ -138,6 +147,8 @@ public class QuarkMindCaseHub extends CaseHub {
      */
     private final Instance<Event<CommentaryCompleted>> commentaryCompletedEventInstance;
 
+    private final Instance<Event<CoachingCompleted>> coachingCompletedEventInstance;
+
     /**
      * Injected separately because the parent's {@code runtime} field is package-private
      * ({@code io.casehub.api.engine}) and inaccessible from this package. Used for
@@ -157,7 +168,8 @@ public class QuarkMindCaseHub extends CaseHub {
                      Instance<ChatModel> chatModelInstance,
                      Instance<Event<AdvisoryCompleted>> advisoryCompletedEventInstance,
                      Instance<Event<LlmWorkerCompleted>> llmWorkerCompletedEventInstance,
-                     Instance<Event<CommentaryCompleted>> commentaryCompletedEventInstance) {
+                     Instance<Event<CommentaryCompleted>> commentaryCompletedEventInstance,
+                     Instance<Event<CoachingCompleted>> coachingCompletedEventInstance) {
         this.taskDefInstance = allTaskDefs;
         this.plugins = null; // resolved lazily
         this.advisorRegistrar = advisorRegistrar;
@@ -165,6 +177,7 @@ public class QuarkMindCaseHub extends CaseHub {
         this.advisoryCompletedEventInstance = advisoryCompletedEventInstance;
         this.llmWorkerCompletedEventInstance = llmWorkerCompletedEventInstance;
         this.commentaryCompletedEventInstance = commentaryCompletedEventInstance;
+        this.coachingCompletedEventInstance = coachingCompletedEventInstance;
     }
 
     /**
@@ -178,6 +191,7 @@ public class QuarkMindCaseHub extends CaseHub {
         this.advisoryCompletedEventInstance = null;
         this.llmWorkerCompletedEventInstance = null;
         this.commentaryCompletedEventInstance = null;
+        this.coachingCompletedEventInstance = null;
         log.infof("[CASEHUB] Discovered %d TaskDefinition implementations", this.plugins.size());
     }
 
@@ -256,6 +270,9 @@ public class QuarkMindCaseHub extends CaseHub {
         // Commentary capabilities, bindings, and workers — only when a ChatModel is available
         int commentaryCount = wireCommentary(allCapabilities, allBindings, allWorkers);
 
+        // Coaching capabilities, bindings, and workers — only when a ChatModel is available
+        int coachingCount = wireCoaching(allCapabilities, allBindings, allWorkers);
+
         CaseDefinition.Builder builder = CaseDefinition.builder()
             .namespace("quarkmind")
             .name("starcraft-game")
@@ -265,15 +282,15 @@ public class QuarkMindCaseHub extends CaseHub {
             .workers(allWorkers);
 
         // Register AgentDescriptors on the CaseDefinition for routing
-        int llmWorkerCount = advisoryCount + commentaryCount;
+        int llmWorkerCount = advisoryCount + commentaryCount + coachingCount;
         if (llmWorkerCount > 0 && advisorRegistrar != null) {
             for (AgentDescriptor descriptor : advisorRegistrar.descriptors()) {
                 builder.agentDescriptor(descriptor.agentId(), descriptor);
             }
         }
 
-        log.infof("[CASEHUB] Built CaseDefinition: %d capabilities, %d workers, %d bindings (advisory: %d, commentary: %d)",
-            allCapabilities.size(), allWorkers.size(), allBindings.size(), advisoryCount, commentaryCount);
+        log.infof("[CASEHUB] Built CaseDefinition: %d capabilities, %d workers, %d bindings (advisory: %d, commentary: %d, coaching: %d)",
+            allCapabilities.size(), allWorkers.size(), allBindings.size(), advisoryCount, commentaryCount, coachingCount);
 
         return builder.build();
     }
@@ -448,6 +465,55 @@ public class QuarkMindCaseHub extends CaseHub {
         log.infof("[CASEHUB] Wired %d commentary workers across 2 capabilities", totalCommentaryWorkers);
         return totalCommentaryWorkers;
     }
+
+    private int wireCoaching(List<Capability> capabilities, List<Binding> bindings,
+                             List<Worker> workers) {
+        if (chatModelInstance == null || !chatModelInstance.isResolvable()) {
+            log.warn("[CASEHUB] No ChatModel bean available — coaching workers omitted.");
+            return 0;
+        }
+        if (advisorRegistrar == null) {
+            log.warn("[CASEHUB] No QuarkMindAgentRegistrar available — coaching workers omitted.");
+            return 0;
+        }
+
+        Capability coaching = Capability.builder()
+                                        .name(CAPABILITY_COACHING)
+                                        .inputSchema(".working")
+                                        .outputSchema(".")
+                                        .description("Coaching — real-time actionable advice for human players")
+                                        .build();
+
+        capabilities.add(coaching);
+
+        bindings.add(Binding.builder()
+                            .name(CAPABILITY_COACHING)
+                            .capability(coaching)
+                            .on(new ContextChangeTrigger(COACHING_TRIGGER))
+                            .build());
+
+        ChatModel                 chatModel               = chatModelInstance.get();
+        Event<CoachingCompleted>  coachingCompletedEvent  = coachingCompletedEventInstance.get();
+        Event<LlmWorkerCompleted> llmWorkerCompletedEvent = llmWorkerCompletedEventInstance.get();
+
+        CoachingCompletionCallback completionCallback = (workerId, capability, gameFrame,
+                                                         advice, urgencyTier, latencyMs) -> {
+            coachingCompletedEvent.fire(new CoachingCompleted(
+                    workerId, capability, gameFrame, advice, urgencyTier, latencyMs
+            ));
+            llmWorkerCompletedEvent.fire(new LlmWorkerCompleted(
+                    workerId, capability, gameFrame, latencyMs
+            ));
+        };
+
+        List<Worker> coachingWorkers = CoachingWorkerFactory.createWorkers(
+                advisorRegistrar.descriptors(), chatModel, completionCallback);
+        workers.addAll(coachingWorkers);
+
+        log.infof("[CASEHUB] Wired %d coaching workers", coachingWorkers.size());
+        return coachingWorkers.size();
+    }
+
 
     /**
      * Resolves the tick plugin chain in execution order.

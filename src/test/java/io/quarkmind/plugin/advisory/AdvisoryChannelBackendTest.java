@@ -40,7 +40,7 @@ class AdvisoryChannelBackendTest {
             "summarisation.advisory-broker",
             MessageType.STATUS,
             "{\"advisorId\":\"claude:crisis-aggressive@v1\",\"recommendation\":\"Build Shield Batteries\"}",
-            null, null, ActorType.AGENT, List.of()
+            null, null, ActorType.AGENT, List.of(), null
         );
 
         backend.post(channelRef, message);
@@ -55,10 +55,10 @@ class AdvisoryChannelBackendTest {
         var channelRef = new ChannelRef(UUID.randomUUID(), "quarkmind-advisory");
         var first = new OutboundMessage(
             UUID.randomUUID(), "broker", MessageType.STATUS, "first",
-            null, null, ActorType.AGENT, List.of());
+            null, null, ActorType.AGENT, List.of(), null);
         var second = new OutboundMessage(
             UUID.randomUUID(), "broker", MessageType.STATUS, "second",
-            null, null, ActorType.AGENT, List.of());
+            null, null, ActorType.AGENT, List.of(), null);
 
         backend.post(channelRef, first);
         backend.post(channelRef, second);
@@ -90,12 +90,12 @@ class AdvisoryChannelBackendTest {
 
         backend.post(channelRef, new OutboundMessage(
             UUID.randomUUID(), "broker", MessageType.STATUS, "msg1",
-            null, null, ActorType.AGENT, List.of()));
+            null, null, ActorType.AGENT, List.of(), null));
         assertThat(backend.messageCount()).isEqualTo(1);
 
         backend.post(channelRef, new OutboundMessage(
             UUID.randomUUID(), "broker", MessageType.STATUS, "msg2",
-            null, null, ActorType.AGENT, List.of()));
+            null, null, ActorType.AGENT, List.of(), null));
         assertThat(backend.messageCount()).isEqualTo(2);
     }
 }

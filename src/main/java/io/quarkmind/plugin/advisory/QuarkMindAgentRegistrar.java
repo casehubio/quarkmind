@@ -52,8 +52,10 @@ public class QuarkMindAgentRegistrar implements AgentDescriptorRegistrar {
                 buildCommentatorEnergetic(),
                 buildCommentatorAnalytical(),
                 buildNarratorDramatic(),
-                buildNarratorTactical()
-        );
+                buildNarratorTactical(),
+                buildCoachDirective(),
+                buildCoachSocratic()
+                      );
     }
 
     // Crisis advisors
@@ -345,4 +347,61 @@ public class QuarkMindAgentRegistrar implements AgentDescriptorRegistrar {
                 .tenancyId(TENANT_ID)
                 .build();
     }
+
+    private AgentDescriptor buildCoachDirective() {
+        return AgentDescriptor.builder()
+                              .agentId("claude:coach-directive@v1")
+                              .name("Directive Coach")
+                              .provider(PROVIDER)
+                              .modelFamily(MODEL_FAMILY)
+                              .modelVersion(MODEL_VERSION)
+                              .slot("coach")
+                              .slotVocabulary(SLOT_VOCABULARY)
+                              .disposition(AgentDisposition.builder()
+                                                           .socialOrient(ConscientiousnessTerm.COLLABORATIVE.value())
+                                                           .ruleFollowing(ConscientiousnessTerm.FLEXIBLE.value())
+                                                           .riskAppetite(ConscientiousnessTerm.BOLD.value())
+                                                           .autonomy(ConscientiousnessTerm.SEMI_AUTONOMOUS.value())
+                                                           .conflictMode("collaborate")
+                                                           .delegation(false)
+                                                           .build())
+                              .capabilities(List.of(
+                                      AgentCapability.builder()
+                                                     .name("coaching")
+                                                     .latencyHintP50Ms(2000L)
+                                                     .qualityHint(0.7)
+                                                     .tags(List.of("starcraft.coaching"))
+                                                     .build()))
+                              .tenancyId(TENANT_ID)
+                              .build();
+    }
+
+    private AgentDescriptor buildCoachSocratic() {
+        return AgentDescriptor.builder()
+                              .agentId("claude:coach-socratic@v1")
+                              .name("Socratic Coach")
+                              .provider(PROVIDER)
+                              .modelFamily(MODEL_FAMILY)
+                              .modelVersion(MODEL_VERSION)
+                              .slot("coach")
+                              .slotVocabulary(SLOT_VOCABULARY)
+                              .disposition(AgentDisposition.builder()
+                                                           .socialOrient(ConscientiousnessTerm.COLLABORATIVE.value())
+                                                           .ruleFollowing(ConscientiousnessTerm.STRICT.value())
+                                                           .riskAppetite(ConscientiousnessTerm.CONSERVATIVE.value())
+                                                           .autonomy(ConscientiousnessTerm.SEMI_AUTONOMOUS.value())
+                                                           .conflictMode("collaborate")
+                                                           .delegation(false)
+                                                           .build())
+                              .capabilities(List.of(
+                                      AgentCapability.builder()
+                                                     .name("coaching")
+                                                     .latencyHintP50Ms(2000L)
+                                                     .qualityHint(0.7)
+                                                     .tags(List.of("starcraft.coaching"))
+                                                     .build()))
+                              .tenancyId(TENANT_ID)
+                              .build();
+    }
+
 }

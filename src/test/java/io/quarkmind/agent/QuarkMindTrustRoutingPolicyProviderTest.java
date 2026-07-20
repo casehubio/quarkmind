@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QuarkMindTrustRoutingPolicyProviderTest {
 
@@ -192,4 +196,22 @@ class QuarkMindTrustRoutingPolicyProviderTest {
         assertTrue(qualityFloors.containsKey("recommendation-quality"));
         assertTrue(qualityFloors.containsKey("game-outcome"));
     }
+
+    @Test
+    void coaching_returnsCoachingPolicy() {
+        var provider = new QuarkMindTrustRoutingPolicyProvider(
+                5, 10, 10, 5,
+                0.3, 0.2, 0.2
+        );
+
+        TrustRoutingPolicy policy = provider.forCapability("coaching");
+
+        assertNotNull(policy);
+        assertNotEquals(TrustRoutingPolicy.DEFAULT, policy);
+        assertTrue(policy.qualityFloors().containsKey("coaching-effectiveness"));
+        assertTrue(policy.qualityFloors().containsKey("response-latency"));
+        assertFalse(policy.qualityFloors().containsKey("game-outcome"));
+        assertEquals(3, policy.minimumObservations());
+    }
+
 }

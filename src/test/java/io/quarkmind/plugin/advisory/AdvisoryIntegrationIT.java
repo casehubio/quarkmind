@@ -232,12 +232,12 @@ class AdvisoryIntegrationIT {
     // ---- QuarkMindAgentRegistrar ----
 
     @Test
-    void agentRegistrar_produces10Descriptors() {
+    void agentRegistrar_produces12Descriptors() {
         List<AgentDescriptor> descriptors = advisorRegistrar.descriptors();
 
         assertThat(descriptors)
-            .as("6 advisory + 4 commentary = 10 descriptors")
-            .hasSize(10);
+                .as("6 advisory + 4 commentary + 2 coaching = 12 descriptors")
+                .hasSize(12);
     }
 
     @Test
@@ -287,19 +287,22 @@ class AdvisoryIntegrationIT {
     void advisorRegistrar_agentIdsFollowConvention() {
         List<AgentDescriptor> descriptors = advisorRegistrar.descriptors();
 
-        Set<String> agentIds = Set.copyOf(
-            descriptors.stream().map(AgentDescriptor::agentId).toList());
+        List<String> advisoryIds = descriptors.stream()
+                                              .filter(d -> d.capabilities().stream()
+                                                            .anyMatch(c -> c.name().startsWith("advisory-")))
+                                              .map(AgentDescriptor::agentId)
+                                              .toList();
 
-        assertThat(agentIds)
-            .as("Agent IDs follow {model-family}:{persona}@{major} format")
-            .containsExactlyInAnyOrder(
-                "claude:crisis-aggressive@v1",
-                "claude:crisis-conservative@v1",
-                "claude:strategic-bold@v1",
-                "claude:strategic-measured@v1",
-                "claude:economic-expansion@v1",
-                "claude:economic-defensive@v1"
-            );
+        assertThat(advisoryIds)
+                .as("Advisory agent IDs follow {model-family}:{persona}@{major} format")
+                .containsExactlyInAnyOrder(
+                        "claude:crisis-aggressive@v1",
+                        "claude:crisis-conservative@v1",
+                        "claude:strategic-bold@v1",
+                        "claude:strategic-measured@v1",
+                        "claude:economic-expansion@v1",
+                        "claude:economic-defensive@v1"
+                                          );
     }
 
     @Test

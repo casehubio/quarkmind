@@ -72,8 +72,10 @@ public class QuarkMindTrustRoutingPolicyProvider implements TrustRoutingPolicyPr
             case "commentary-reactive" -> buildCommentaryPolicy(commentaryMinObservations, 0.4);
             case "commentary-narrative" -> buildCommentaryPolicy(commentaryMinObservations, 0.3);
             case "strategy" -> buildStrategyPolicy();
+            case "coaching" -> buildCoachingPolicy();
             default -> TrustRoutingPolicy.DEFAULT;
-        };}
+        };
+    }
 
     private TrustRoutingPolicy buildAdvisoryPolicy(int minimumObservations) {
         Map<String, Double> qualityFloors = Map.of(
@@ -115,5 +117,16 @@ public class QuarkMindTrustRoutingPolicyProvider implements TrustRoutingPolicyPr
         return new TrustRoutingPolicy(
                 0.65, 10, 0.08, 0.6, Map.of(), false, "strategy.drools", Set.of(), 0.4);
     }
+
+    private TrustRoutingPolicy buildCoachingPolicy() {
+        Map<String, Double> qualityFloors = Map.of(
+                "coaching-effectiveness", 0.3,
+                "response-latency", 0.3
+                                                  );
+        return new TrustRoutingPolicy(
+                0.7, 3, 0.1, 0.6, qualityFloors, false, null, Set.of(), 0.0
+        );
+    }
+
 
 }

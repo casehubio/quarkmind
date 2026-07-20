@@ -40,7 +40,7 @@ class CommentaryChannelBackendTest {
             "commentary.reactive",
             MessageType.STATUS,
             "{\"text\":\"The enemy is at the gates!\",\"type\":\"REACTIVE\"}",
-            null, null, ActorType.AGENT, List.of()
+            null, null, ActorType.AGENT, List.of(), null
         );
 
         backend.post(channelRef, message);
@@ -55,10 +55,10 @@ class CommentaryChannelBackendTest {
         var channelRef = new ChannelRef(UUID.randomUUID(), "quarkmind-commentary");
         var first = new OutboundMessage(
             UUID.randomUUID(), "commentary.reactive", MessageType.STATUS, "first",
-            null, null, ActorType.AGENT, List.of());
+            null, null, ActorType.AGENT, List.of(), null);
         var second = new OutboundMessage(
             UUID.randomUUID(), "commentary.narrative", MessageType.STATUS, "second",
-            null, null, ActorType.AGENT, List.of());
+            null, null, ActorType.AGENT, List.of(), null);
 
         backend.post(channelRef, first);
         backend.post(channelRef, second);
@@ -90,12 +90,12 @@ class CommentaryChannelBackendTest {
 
         backend.post(channelRef, new OutboundMessage(
             UUID.randomUUID(), "commentary.reactive", MessageType.STATUS, "msg1",
-            null, null, ActorType.AGENT, List.of()));
+            null, null, ActorType.AGENT, List.of(), null));
         assertThat(backend.messageCount()).isEqualTo(1);
 
         backend.post(channelRef, new OutboundMessage(
             UUID.randomUUID(), "commentary.narrative", MessageType.STATUS, "msg2",
-            null, null, ActorType.AGENT, List.of()));
+            null, null, ActorType.AGENT, List.of(), null));
         assertThat(backend.messageCount()).isEqualTo(2);
     }
 }

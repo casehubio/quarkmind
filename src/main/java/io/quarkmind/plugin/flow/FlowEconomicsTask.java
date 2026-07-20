@@ -1,6 +1,7 @@
 package io.quarkmind.plugin.flow;
 
 import io.casehub.annotation.CaseType;
+import java.util.function.Predicate;
 import io.casehub.api.context.CaseContext;
 import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
@@ -79,6 +80,12 @@ public class FlowEconomicsTask implements EconomicsTask, ScoutingIntelConsumer {
 
     @Override
     public Set<String> requires() { return Set.of(QuarkMindCaseFile.READY); }
+
+    @Override
+    public Predicate<CaseContext> activateIf() {
+        return ctx -> !"coach".equals(ctx.getString(QuarkMindCaseFile.GAME_MODE));
+    }
+
 
     // activateIf() not overridden — default ctx -> true is correct;
     // requires() already gates on READY.

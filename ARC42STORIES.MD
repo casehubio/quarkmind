@@ -226,6 +226,7 @@ src/main/java/io/quarkmind/
   plugin/flow/         Quarkus Flow: EconomicsFlow, FlowEconomicsTask
   plugin/scouting/     Drools CEP scouting: DroolsScoutingTask, ScoutingSessionManager
   plugin/tactics/      GOAP planning + CDI strategy interfaces
+  plugin/coaching/     Coach mode: CoachingTriggerBuilder, CoachingWorkerFactory, CoachingChannelBroker, CoachingComplianceEvaluator
   qa/                  QA REST endpoints — @UnlessBuildProfile("prod")
 ```
 
@@ -265,6 +266,10 @@ sequenceDiagram
 ```
 
 **Not shown:** `@Scheduled(concurrentExecution = SKIP)` — if the previous tick's `createAndSolve()` has not completed, the next firing is silently skipped. This prevents tick accumulation under load.
+
+### Scenario — Coach mode tick (game.mode = "coach")
+
+In coach mode, `GameTickExecutor` gates off action plugins (strategy, tactics, economics, strategy-routing) via `activateIf()` predicates checking `game.mode`. Observation plugins (scouting, moment detection, summarisation) and commentary run in both modes. The coaching pipeline adds two per-tick operations: `CoachingComplianceEvaluator.evaluate()` checks open commitments against game state deltas, and `CoachingTriggerBuilder.build()` fires COMMAND triggers on coaching moments. Advisory triggers and milestone evaluation are suppressed.
 
 ---
 

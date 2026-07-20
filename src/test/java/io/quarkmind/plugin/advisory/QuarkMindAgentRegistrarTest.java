@@ -25,12 +25,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class QuarkMindAgentRegistrarTest {
 
     @Test
-    void registrar_returns_ten_agent_descriptors() {
+    void registrar_returns_twelve_agent_descriptors() {
         QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
 
         List<AgentDescriptor> descriptors = registrar.descriptors();
 
-        assertThat(descriptors).hasSize(10);
+        assertThat(descriptors).hasSize(12);
     }
 
     @Test
@@ -297,23 +297,24 @@ class QuarkMindAgentRegistrarTest {
     }
 
     @Test
-    void capabilities_map_to_advisory_and_commentary_role_names() {
+    void capabilities_map_to_advisory_commentary_and_coaching_role_names() {
         QuarkMindAgentRegistrar registrar = new QuarkMindAgentRegistrar();
 
         List<AgentDescriptor> descriptors = registrar.descriptors();
 
         // Extract all capability names
         Map<String, Long> capabilityCounts = descriptors.stream()
-                .flatMap(d -> d.capabilities().stream())
-                .map(AgentCapability::name)
-                .collect(Collectors.groupingBy(name -> name, Collectors.counting()));
+                                                        .flatMap(d -> d.capabilities().stream())
+                                                        .map(AgentCapability::name)
+                                                        .collect(Collectors.groupingBy(name -> name, Collectors.counting()));
 
-        // Should have 5 capability types: 3 advisory (2 agents each) + 2 commentary (2 agents each)
-        assertThat(capabilityCounts).hasSize(5);
+        // 6 capability types: 3 advisory (2 each) + 2 commentary (2 each) + 1 coaching (2 agents)
+        assertThat(capabilityCounts).hasSize(6);
         assertThat(capabilityCounts.get("advisory-crisis")).isEqualTo(2L);
         assertThat(capabilityCounts.get("advisory-strategic")).isEqualTo(2L);
         assertThat(capabilityCounts.get("advisory-economic")).isEqualTo(2L);
         assertThat(capabilityCounts.get("commentary-reactive")).isEqualTo(2L);
         assertThat(capabilityCounts.get("commentary-narrative")).isEqualTo(2L);
+        assertThat(capabilityCounts.get("coaching")).isEqualTo(2L);
     }
 }

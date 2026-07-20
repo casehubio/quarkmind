@@ -102,7 +102,9 @@ public class SC2StrategyRouterTask implements TaskDefinition {
     }
 
     @Override
-    public Predicate<CaseContext> activateIf() { return ctx -> true; }
+    public Predicate<CaseContext> activateIf() {
+        return ctx -> !"coach".equals(ctx.getString(QuarkMindCaseFile.GAME_MODE));
+    }
 
     public String lastSelectedId() { return lastSelectedId; }
 

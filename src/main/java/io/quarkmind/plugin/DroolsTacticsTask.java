@@ -2,11 +2,13 @@ package io.quarkmind.plugin;
 
 import io.casehub.annotation.CaseType;
 import io.casehub.api.context.CaseContext;
+import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
 import io.casehub.platform.api.preferences.SettingsScope;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import io.quarkmind.agent.GameSession;
+import io.quarkmind.agent.PluginDecisionEvent;
+import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelConsumer;
@@ -14,7 +16,13 @@ import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.TacticsTask;
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.TerrainGrid;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.plugin.drools.TacticsRuleUnit;
 import io.quarkmind.plugin.tactics.FocusFireStrategy;
 import io.quarkmind.plugin.tactics.GoapAction;
@@ -27,20 +35,24 @@ import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.literal.NamedLiteral;
+import jakarta.inject.Inject;
 import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitInstance;
-import org.jboss.logging.Logger;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
 
-import io.casehub.ledger.api.model.AttestationVerdict;
-import io.quarkmind.agent.GameSession;
-import io.quarkmind.agent.PluginDecisionEvent;
-import io.quarkmind.agent.QuarkMindCapabilityTag;
-import jakarta.enterprise.event.Event;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -147,9 +159,8 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer {
 
     @Override
     public Predicate<CaseContext> activateIf() {
-        // PP-20260603-cefed9: explicit override required — poc default unconditionally returns true.
-        // requires() already gates on READY and STRATEGY; only the broker check is extra.
-        return ctx -> broker.current(ScoutingIntelType.THREAT_POSITION).isPresent();
+        return ctx -> !"coach".equals(ctx.getString(QuarkMindCaseFile.GAME_MODE))
+                      && broker.current(ScoutingIntelType.THREAT_POSITION).isPresent();
     }
 
     @Override

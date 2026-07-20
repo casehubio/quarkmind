@@ -183,8 +183,8 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
 
     @Override
     public Predicate<CaseContext> activateIf() {
-        return ctx -> getId().equals(
-                ctx.getString(QuarkMindCaseFile.STRATEGY_SELECTED_ID));
+        return ctx -> !"coach".equals(ctx.getString(QuarkMindCaseFile.GAME_MODE))
+                      && getId().equals(ctx.getString(QuarkMindCaseFile.STRATEGY_SELECTED_ID));
     }
 
     @Override

@@ -39,6 +39,9 @@ public final class QuarkMindCaseFile {
     // Commentary triggers — written by CommentaryTriggerBuilder, CommentaryAccumulator
     public static final String COMMENTARY_TRIGGER          = "game.commentary.trigger";
     public static final String COMMENTARY_NARRATIVE_TRIGGER = "game.commentary.narrative.trigger";
+    public static final String GAME_MODE                    = "game.mode";
+    public static final String COACHING_TRIGGER             = "game.coaching.trigger";
+
 
     public static final List<String> ALL_KEYS = List.of(
             MINERALS, VESPENE, SUPPLY_USED, SUPPLY_CAP,
@@ -47,7 +50,8 @@ public final class QuarkMindCaseFile {
             ENEMY_BUILD_ORDER, TIMING_ATTACK_INCOMING, ENEMY_POSTURE, MOMENTS_LATEST,
             STRATEGY_SELECTED_ID, STRATEGY_ROUTED_CONTEXT, STRATEGY_ROUTED_ARCHETYPE,
             STRATEGY_ROUTED_CONFIDENCE, STRATEGY_PIVOT_COUNT,
-            COMMENTARY_TRIGGER, COMMENTARY_NARRATIVE_TRIGGER
+            COMMENTARY_TRIGGER, COMMENTARY_NARRATIVE_TRIGGER,
+            GAME_MODE, COACHING_TRIGGER
                                                        );
 
     private QuarkMindCaseFile() {}

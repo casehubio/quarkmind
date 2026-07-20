@@ -1,5 +1,21 @@
 package io.quarkmind.agent;
 
+import io.casehub.api.context.CaseContext;
+import io.quarkmind.agent.plugin.SummarisationTickable;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.plugin.commentary.CommentaryAccumulator;
+import io.quarkmind.plugin.commentary.CommentaryTriggerBuilder;
+import io.quarkmind.sc2.SC2Engine;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -8,21 +24,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import io.casehub.api.context.CaseContext;
-import io.quarkmind.agent.plugin.SummarisationTickable;
-import io.quarkmind.domain.GameState;
-import io.quarkmind.plugin.commentary.CommentaryAccumulator;
-import io.quarkmind.plugin.commentary.CommentaryTriggerBuilder;
-import io.quarkmind.sc2.SC2Engine;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 /**
  * Migration test: verifies that {@link GameTickExecutor} dispatches ticks via
@@ -52,6 +53,8 @@ class GameTickExecutorMigrationTest {
     private MilestoneOutcomeRecorder milestoneOutcomeRecorder;
     private CommentaryTriggerBuilder commentaryTriggerBuilder;
     private CommentaryAccumulator commentaryAccumulator;
+    private io.quarkmind.plugin.coaching.CoachingTriggerBuilder coachingTriggerBuilder;
+    private io.quarkmind.plugin.coaching.CoachingComplianceEvaluator coachingComplianceEvaluator;
     private GameTickExecutor executor;
     private UUID sessionId;
 
@@ -67,6 +70,8 @@ class GameTickExecutorMigrationTest {
         milestoneOutcomeRecorder = mock(MilestoneOutcomeRecorder.class);
         commentaryTriggerBuilder = mock(CommentaryTriggerBuilder.class);
         commentaryAccumulator = mock(CommentaryAccumulator.class);
+        coachingTriggerBuilder = mock(io.quarkmind.plugin.coaching.CoachingTriggerBuilder.class);
+        coachingComplianceEvaluator = mock(io.quarkmind.plugin.coaching.CoachingComplianceEvaluator.class);
 
         sessionId = UUID.randomUUID();
         gameSession.setCaseId(sessionId);
@@ -86,6 +91,9 @@ class GameTickExecutorMigrationTest {
         executor.milestoneOutcomeRecorder = milestoneOutcomeRecorder;
         executor.commentaryTriggerBuilder = commentaryTriggerBuilder;
         executor.commentaryAccumulator = commentaryAccumulator;
+        executor.coachingTriggerBuilder = coachingTriggerBuilder;
+        executor.coachingComplianceEvaluator = coachingComplianceEvaluator;
+        executor.gameMode = "ai";
     }
 
     @Test
@@ -213,6 +221,54 @@ class GameTickExecutorMigrationTest {
         inOrder.verify(milestoneOutcomeRecorder).evaluateMilestones(state);
         inOrder.verify(engine).dispatch();
     }
+
+    @Test
+    void execute_coachMode_skipsMilestonesAndAdvisory() {
+        executor.gameMode = "coach";
+        GameState state = stubGameState(100L, 400, 200);
+        when(engine.observe()).thenReturn(state);
+        CaseContext ctx = mock(CaseContext.class);
+        when(caseHub.signalAndAwaitSync(eq(sessionId), any(), any())).thenReturn(ctx);
+        when(coachingTriggerBuilder.build(any(CaseContext.class), anyLong())).thenReturn(Collections.emptyMap());
+
+        executor.execute();
+
+        verify(milestoneOutcomeRecorder, never()).evaluateMilestones(any());
+        verify(deferredAdvisoryEvaluator, never()).evaluate(any(), anyLong());
+        verify(coachingComplianceEvaluator).evaluate(state, 100L);
+    }
+
+    @Test
+    void execute_coachMode_firesCoachingTrigger() {
+        executor.gameMode = "coach";
+        GameState state = stubGameState(200L, 300, 150);
+        when(engine.observe()).thenReturn(state);
+        CaseContext ctx = mock(CaseContext.class);
+        when(caseHub.signalAndAwaitSync(eq(sessionId), any(), any())).thenReturn(ctx);
+
+        Map<String, Object> triggerMap = Map.of(QuarkMindCaseFile.COACHING_TRIGGER, Map.of("urgencyTier", "CRISIS"));
+        when(coachingTriggerBuilder.build(any(CaseContext.class), anyLong())).thenReturn(triggerMap);
+        when(caseHub.signal(any(), any())).thenReturn(java.util.concurrent.CompletableFuture.completedFuture(null));
+
+        executor.execute();
+
+        verify(caseHub).signal(eq(sessionId), eq(triggerMap));
+    }
+
+    @Test
+    void execute_aiMode_skipsCoachingEvaluation() {
+        executor.gameMode = "ai";
+        GameState state = stubGameState(100L, 400, 200);
+        when(engine.observe()).thenReturn(state);
+        CaseContext ctx = mock(CaseContext.class);
+        when(caseHub.signalAndAwaitSync(eq(sessionId), any(), any())).thenReturn(ctx);
+
+        executor.execute();
+
+        verify(milestoneOutcomeRecorder).evaluateMilestones(state);
+        verify(coachingComplianceEvaluator, never()).evaluate(any(), anyLong());
+    }
+
 
     // ------------------------------------------------------------------
     // Helpers
