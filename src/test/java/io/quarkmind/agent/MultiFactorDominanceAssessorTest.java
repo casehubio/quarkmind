@@ -238,7 +238,7 @@ class MultiFactorDominanceAssessorTest {
             List<Unit> enemyUnits, List<Building> enemyBuildings, long gameFrame) {
         return new GameState(minerals, vespene, supply, supplyUsed,
             myUnits, myBuildings, enemyUnits, enemyBuildings,
-            List.of(), List.of(), List.of(), gameFrame);
+            List.of(), List.of(), List.of(), gameFrame, null);
     }
 
     private static Unit probe() { return unit(UnitType.PROBE); }

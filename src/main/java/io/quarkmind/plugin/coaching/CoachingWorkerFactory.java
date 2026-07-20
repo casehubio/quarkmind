@@ -83,7 +83,7 @@ public final class CoachingWorkerFactory {
             CoachingUrgencyTier tier = isCrisis ? CoachingUrgencyTier.CRISIS : resolveUrgencyTier(input);
 
             onCompletion.onCompleted(descriptor.agentId(), capabilityName, gameFrame,
-                advice, tier, latencyMs);
+                advice, tier, latencyMs, reconstructTriggerState(input));
 
             return WorkerResult.of(Map.of("agent.coaching.advice", advice.advice()));
         } catch (Exception e) {
@@ -95,7 +95,7 @@ public final class CoachingWorkerFactory {
     static String buildSystemPrompt(AgentDescriptor descriptor, boolean crisisOverride) {
         AgentDisposition disposition = descriptor.disposition();
         boolean isDirective = crisisOverride
-            || (disposition != null && "bold".equals(disposition.riskAppetite()));
+                              || (disposition != null && "bold".equals(disposition.riskAppetite()));
 
         StringBuilder sb = new StringBuilder();
         sb.append("You are a StarCraft II coach providing real-time advice to a human player.\n\n");
@@ -119,16 +119,21 @@ public final class CoachingWorkerFactory {
         sb.append("{\n");
         sb.append("  \"advice\": \"<your coaching advice as a single sentence>\",\n");
         sb.append("  \"domain\": \"<CoachingDomain: BUILD | MILITARY | EXPAND | TECH>\",\n");
-        sb.append("  \"verificationUnitType\": \"<UnitType if verifiable, e.g. STALKER, or null>\",\n");
-        sb.append("  \"verificationBuildingType\": \"<BuildingType if verifiable, e.g. NEXUS, or null>\",\n");
-        sb.append("  \"verificationCountDelta\": <integer count to verify, or null>,\n");
+        sb.append("  \"verificationType\": \"<see types below, or omit for non-verifiable advice>\",\n");
+        sb.append("  \"verificationParams\": { <type-specific params> },\n");
         sb.append("  \"verificationWindowFrames\": <frames to wait before checking, default 450>\n");
         sb.append("}\n\n");
-        sb.append("Only set verification fields when the advice is concretely measurable.\n");
-        sb.append("For general advice like \"improve macro\", omit verification fields.\n");
+        sb.append("Verification types:\n");
+        sb.append("- COUNT_DELTA: params {unitType, buildingType, expectedDelta}\n");
+        sb.append("- ARMY_CENTROID_RETREAT: params {referenceLocation, minDistance} - army moved AWAY from referenceLocation\n");
+        sb.append("- ARMY_CENTROID_ADVANCE: params {referenceLocation, minDistance} - army moved TOWARD referenceLocation\n");
+        sb.append("- EXPANSION_PLACEMENT: params {expansionOrdinal} - new base near expansion N (0=main, 1=natural, 2=third)\n");
+        sb.append("- UNITS_NEAR_LOCATION: params {location, unitType, radius, minCount}\n\n");
+        sb.append("Location tokens: PLAYER_BASE, ENEMY_BASE, MAP_CENTER, NATURAL, THIRD, EXPANSION_N, NEAREST_RAMP, WATCHTOWER\n\n");
+        sb.append("Only set verificationType when the advice is concretely verifiable.\n");
+        sb.append("For general advice like \"improve macro\", omit verificationType entirely.\n");
 
-        return sb.toString();
-    }
+        return sb.toString();}
 
     static String buildUserMessage(Map<String, Object> input) {
         StringBuilder sb = new StringBuilder();
@@ -167,44 +172,114 @@ public final class CoachingWorkerFactory {
     }
 
     static CoachingAdvice parseAdvice(String text) {
-        if (text == null || text.isBlank()) return null;
+        if (text == null || text.isBlank()) {return null;}
         try {
             String json = text.strip();
             if (json.startsWith("```")) {
                 json = json.replaceAll("^```[a-z]*\\n?", "").replaceAll("\\n?```$", "").strip();
             }
-            JsonNode node = MAPPER.readTree(json);
-            String advice = node.path("advice").asText(null);
-            if (advice == null) return null;
+            JsonNode node   = MAPPER.readTree(json);
+            String   advice = node.path("advice").asText(null);
+            if (advice == null) {return null;}
 
-            String domainStr = node.path("domain").asText("BUILD");
-            CoachingDomain domain = CoachingDomain.valueOf(domainStr);
+            String         domainStr    = node.path("domain").asText("BUILD");
+            CoachingDomain domain       = CoachingDomain.valueOf(domainStr);
+            int            windowFrames = node.path("verificationWindowFrames").asInt(450);
+
+            String verificationType = node.path("verificationType").asText(null);
+            if (verificationType != null) {
+                JsonNode              params = node.path("verificationParams");
+                VerificationPredicate pred   = parseVerificationType(verificationType, params);
+                return new CoachingAdvice(advice, domain, pred, windowFrames);
+            }
 
             UnitType unitType = null;
             if (node.has("verificationUnitType") && !node.get("verificationUnitType").isNull()) {
-                try { unitType = UnitType.valueOf(node.get("verificationUnitType").asText()); }
-                catch (IllegalArgumentException ignored) {}
+                try {
+                    unitType = UnitType.valueOf(node.get("verificationUnitType").asText());
+                } catch (IllegalArgumentException ignored) {}
             }
-
             BuildingType buildingType = null;
             if (node.has("verificationBuildingType") && !node.get("verificationBuildingType").isNull()) {
-                try { buildingType = BuildingType.valueOf(node.get("verificationBuildingType").asText()); }
-                catch (IllegalArgumentException ignored) {}
+                try {
+                    buildingType = BuildingType.valueOf(node.get("verificationBuildingType").asText());
+                } catch (IllegalArgumentException ignored) {}
             }
-
             Integer countDelta = null;
             if (node.has("verificationCountDelta") && !node.get("verificationCountDelta").isNull()) {
                 countDelta = node.get("verificationCountDelta").asInt();
             }
 
-            int windowFrames = node.path("verificationWindowFrames").asInt(450);
-
-            return new CoachingAdvice(advice, domain, unitType, buildingType, countDelta, windowFrames);
+            VerificationPredicate verification = null;
+            if (countDelta != null && (unitType != null || buildingType != null)) {
+                verification = new CountDelta(unitType, buildingType, countDelta, 0);
+            }
+            return new CoachingAdvice(advice, domain, verification, windowFrames);
         } catch (Exception e) {
             log.debugf("Failed to parse coaching advice: %s", e.getMessage());
             return null;
-        }
+        }}
+
+    private static VerificationPredicate parseVerificationType(String type, JsonNode params) {
+        return switch (type) {
+            case "COUNT_DELTA" -> {
+                UnitType     ut    = parseUnitType(params.path("unitType").asText(null));
+                BuildingType bt    = parseBuildingType(params.path("buildingType").asText(null));
+                int          delta = params.path("expectedDelta").asInt(1);
+                yield new CountDelta(ut, bt, delta, 0);
+            }
+            case "ARMY_CENTROID_RETREAT" -> new ArmyCentroidMovement(
+                    MovementDirection.RETREAT,
+                    parseLocationToken(params.path("referenceLocation").asText("ENEMY_BASE")),
+                    params.path("minDistance").asDouble(8.0), null);
+            case "ARMY_CENTROID_ADVANCE" -> new ArmyCentroidMovement(
+                    MovementDirection.ADVANCE,
+                    parseLocationToken(params.path("referenceLocation").asText("ENEMY_BASE")),
+                    params.path("minDistance").asDouble(8.0), null);
+            case "EXPANSION_PLACEMENT" -> new ExpansionPlacement(
+                    new LocationReference.ExpansionOrdinal(params.path("expansionOrdinal").asInt(1)),
+                    params.path("proximityRadius").asDouble(5.0), java.util.Set.of());
+            case "UNITS_NEAR_LOCATION" -> new UnitsNearLocation(
+                    parseUnitType(params.path("unitType").asText(null)),
+                    parseLocationToken(params.path("location").asText("MAP_CENTER")),
+                    params.path("radius").asDouble(10.0),
+                    params.path("minCount").asInt(1));
+            default -> null;
+        };
     }
+
+    private static LocationReference parseLocationToken(String token) {
+        if (token == null) {return new LocationReference.MapCenter();}
+        return switch (token) {
+            case "PLAYER_BASE" -> new LocationReference.PlayerBase();
+            case "ENEMY_BASE" -> new LocationReference.EnemyBase();
+            case "MAP_CENTER" -> new LocationReference.MapCenter();
+            case "NATURAL" -> new LocationReference.ExpansionOrdinal(1);
+            case "THIRD" -> new LocationReference.ExpansionOrdinal(2);
+            case "NEAREST_RAMP" -> new LocationReference.NearestRamp(new LocationReference.PlayerBase());
+            case "WATCHTOWER" -> new LocationReference.Watchtower(0);
+            default -> {
+                if (token.startsWith("EXPANSION_")) {
+                    try {
+                        int ordinal = Integer.parseInt(token.substring("EXPANSION_".length()));
+                        yield new LocationReference.ExpansionOrdinal(ordinal);
+                    } catch (NumberFormatException ignored) {}
+                }
+                yield new LocationReference.MapCenter();
+            }
+        };
+    }
+
+    private static UnitType parseUnitType(String text) {
+        if (text == null) {return null;}
+        try {return UnitType.valueOf(text);} catch (IllegalArgumentException e) {return null;}
+    }
+
+    private static BuildingType parseBuildingType(String text) {
+        if (text == null) {return null;}
+        try {return BuildingType.valueOf(text);} catch (IllegalArgumentException e) {return null;}
+    }
+
 
     private static boolean isCrisisTrigger(Map<String, Object> input) {
         Object trigger = input.get(QuarkMindCaseFile.COACHING_TRIGGER);
@@ -241,5 +316,30 @@ public final class CoachingWorkerFactory {
 
     private static void appendField(StringBuilder sb, String label, Object value) {
         if (value != null) sb.append("- ").append(label).append(": ").append(value).append("\n");
+    }
+
+    @SuppressWarnings("unchecked")
+    private static io.quarkmind.domain.GameState reconstructTriggerState(Map<String, Object> input) {
+        try {
+            var army = (java.util.List<io.quarkmind.domain.Unit>) input.getOrDefault(
+                    io.quarkmind.agent.QuarkMindCaseFile.ARMY, java.util.List.of());
+            var workers = (java.util.List<io.quarkmind.domain.Unit>) input.getOrDefault(
+                    io.quarkmind.agent.QuarkMindCaseFile.WORKERS, java.util.List.of());
+            var buildings = (java.util.List<io.quarkmind.domain.Building>) input.getOrDefault(
+                    io.quarkmind.agent.QuarkMindCaseFile.MY_BUILDINGS, java.util.List.of());
+            var allUnits = new java.util.ArrayList<>(army);
+            allUnits.addAll(workers);
+            int  minerals   = input.get(io.quarkmind.agent.QuarkMindCaseFile.MINERALS) instanceof Number n ? n.intValue() : 0;
+            int  vespene    = input.get(io.quarkmind.agent.QuarkMindCaseFile.VESPENE) instanceof Number n ? n.intValue() : 0;
+            int  supplyCap  = input.get(io.quarkmind.agent.QuarkMindCaseFile.SUPPLY_CAP) instanceof Number n ? n.intValue() : 0;
+            int  supplyUsed = input.get(io.quarkmind.agent.QuarkMindCaseFile.SUPPLY_USED) instanceof Number n ? n.intValue() : 0;
+            long frame      = getGameFrame(input);
+            return new io.quarkmind.domain.GameState(minerals, vespene, supplyCap, supplyUsed,
+                                                     allUnits, buildings, java.util.List.of(), java.util.List.of(), java.util.List.of(),
+                                                     java.util.List.of(), java.util.List.of(), frame, null);
+        } catch (Exception e) {
+            log.debugf("Failed to reconstruct trigger state: %s", e.getMessage());
+            return null;
+        }
     }
 }

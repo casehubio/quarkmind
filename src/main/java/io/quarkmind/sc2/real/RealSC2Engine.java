@@ -119,6 +119,6 @@ public class RealSC2Engine implements SC2Engine {
 
     private static GameState emptyState() {
         return new GameState(0, 0, 0, 0,
-            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L);
+            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
     }
 }

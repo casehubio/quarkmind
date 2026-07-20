@@ -72,7 +72,7 @@ public final class ObservationTranslator {
      * <p>Observation.getGameLoop() returns {@code int}; GameState.gameFrame is {@code long} —
      * widening from int to long is implicit in the constructor call.
      */
-    public static GameState translate(Observation obs) {
+    public static GameState translate(Observation obs, io.quarkmind.domain.MapInfo mapInfo) {
         ObservationRaw raw = obs.getRaw().orElseThrow();
         Set<com.github.ocraft.s2client.protocol.unit.Unit> allUnits = raw.getUnits();
 
@@ -110,7 +110,8 @@ public final class ObservationTranslator {
             List.of(),   // enemyStagingArea: not applicable for real SC2
             List.of(),   // geysers: neutral unit detection deferred to Phase 3+
             List.of(),   // mineralPatches: neutral unit detection deferred to Phase 3+
-            obs.getGameLoop()   // int widened to long at GameState.gameFrame
+            obs.getGameLoop(),  // int widened to long at GameState.gameFrame
+            mapInfo
         );
     }
 

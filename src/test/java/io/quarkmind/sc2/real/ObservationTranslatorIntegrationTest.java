@@ -18,7 +18,7 @@ class ObservationTranslatorIntegrationTest {
     void translate_extractsMinerals() {
         Observation obs = Observation.from(sc2ApiObservation());
 
-        GameState state = ObservationTranslator.translate(obs);
+        GameState state = ObservationTranslator.translate(obs, null);
 
         assertThat(state.minerals()).as("minerals").isEqualTo(MINERALS);
     }
@@ -27,7 +27,7 @@ class ObservationTranslatorIntegrationTest {
     void translate_extractsVespene() {
         Observation obs = Observation.from(sc2ApiObservation());
 
-        GameState state = ObservationTranslator.translate(obs);
+        GameState state = ObservationTranslator.translate(obs, null);
 
         assertThat(state.vespene()).as("vespene").isEqualTo(VESPENE);
     }
@@ -37,7 +37,7 @@ class ObservationTranslatorIntegrationTest {
         // PlayerCommon.foodCap → GameState.supply; PlayerCommon.foodUsed → GameState.supplyUsed
         Observation obs = Observation.from(sc2ApiObservation());
 
-        GameState state = ObservationTranslator.translate(obs);
+        GameState state = ObservationTranslator.translate(obs, null);
 
         assertThat(state.supply()).as("supply (foodCap)").isEqualTo(FOOD_CAP);
         assertThat(state.supplyUsed()).as("supplyUsed (foodUsed)").isEqualTo(FOOD_USED);
@@ -48,7 +48,7 @@ class ObservationTranslatorIntegrationTest {
         // Observation.getGameLoop() returns int; GameState.gameFrame is long — widening implicit
         Observation obs = Observation.from(sc2ApiObservation());
 
-        GameState state = ObservationTranslator.translate(obs);
+        GameState state = ObservationTranslator.translate(obs, null);
 
         assertThat(state.gameFrame()).as("gameFrame widened from int").isEqualTo((long) GAME_LOOP);
     }
@@ -57,7 +57,7 @@ class ObservationTranslatorIntegrationTest {
     void translate_doesNotThrowOnNullUnitGuardRemoval() {
         // ObservationRaw.getUnits() built with .filter(Raw.Unit::hasTag).map(Unit::from) — never null.
         Observation obs = Observation.from(sc2ApiObservation());
-        assertThat(ObservationTranslator.translate(obs)).isNotNull();
+        assertThat(ObservationTranslator.translate(obs, null)).isNotNull();
     }
 
     @Test
@@ -68,7 +68,7 @@ class ObservationTranslatorIntegrationTest {
         // This exercises the Alliance filter + building classifier path.
         Observation obs = Observation.from(sc2ApiObservation());
 
-        GameState state = ObservationTranslator.translate(obs);
+        GameState state = ObservationTranslator.translate(obs, null);
 
         // Only one unit total in the fixture, it's SELF alliance → classified by building set
         int totalSelfEntities = state.myUnits().size() + state.myBuildings().size();

@@ -153,7 +153,7 @@ class MilestoneOutcomeRecorderTest {
     // --- helpers ---
 
     private static GameState gameStateAtFrame(long frame) {
-        return new GameState(200, 100, 15, 6, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), frame);
+        return new GameState(200, 100, 15, 6, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), frame, null);
     }
 
     static class RecordingOutcomeRecorder implements OutcomeRecorder {

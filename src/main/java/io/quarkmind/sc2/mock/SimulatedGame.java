@@ -99,7 +99,7 @@ public class SimulatedGame {
             List.copyOf(myUnits), List.copyOf(myBuildings), List.copyOf(enemyUnits),
             List.copyOf(enemyBuildings),
             List.copyOf(testStagingArea),   // enemyStagingArea — populated by test helpers
-            List.copyOf(geysers), List.copyOf(mineralPatches), gameFrame.get());
+            List.copyOf(geysers), List.copyOf(mineralPatches), gameFrame.get(), null);
     }
 
     /**

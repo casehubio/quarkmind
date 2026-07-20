@@ -37,6 +37,42 @@ public final class TerrainGrid {
     public int width()  { return width; }
     public int height() { return height; }
 
+    public java.util.List<Point2d> rampPositions() {
+        boolean[][] visited            = new boolean[height][width];
+        java.util.List<Point2d> result = new java.util.ArrayList<>();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (grid[y][x] == Height.RAMP && !visited[y][x]) {
+                    java.util.List<Point2d> cells = new java.util.ArrayList<>();
+                    java.util.Deque<int[]>  stack = new java.util.ArrayDeque<>();
+                    stack.push(new int[]{x, y});
+                    visited[y][x] = true;
+                    while (!stack.isEmpty()) {
+                        int[] cell = stack.pop();
+                        cells.add(new Point2d(cell[0], cell[1]));
+                        for (int[] d : new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}) {
+                            int nx = cell[0] + d[0], ny = cell[1] + d[1];
+                            if (nx >= 0 && nx < width && ny >= 0 && ny < height
+                                && grid[ny][nx] == Height.RAMP && !visited[ny][nx]) {
+                                visited[ny][nx] = true;
+                                stack.push(new int[]{nx, ny});
+                            }
+                        }
+                    }
+                    float sx = 0, sy = 0;
+                    for (var p : cells) {
+                        sx += p.x();
+                        sy += p.y();
+                    }
+                    result.add(new Point2d(sx / cells.size(), sy / cells.size()));
+                }
+            }
+        }
+        return java.util.List.copyOf(result);
+    }
+
+
     /**
      * 64x64 emulated map.
      * y > 18: HIGH ground (enemy staging side, visually top of screen)

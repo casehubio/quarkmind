@@ -50,10 +50,10 @@ class CoachingIntegrationIT {
     @Test
     void channelBroker_commitmentsSharedWithEvaluator() {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-            UnitType.STALKER, null, 3, 450);
+            new CountDelta(UnitType.STALKER, null, 3, 0), 450);
         var event = new CoachingCompleted(
             "claude:coach-directive@v1", "coaching", 100,
-            advice, CoachingUrgencyTier.STRATEGIC, 500);
+            advice, CoachingUrgencyTier.STRATEGIC, 500, null);
 
         channelBroker.onCoachingCompleted(event);
 
@@ -95,7 +95,7 @@ class CoachingIntegrationIT {
 
         var state = new GameState(400, 200, 62, 44,
             List.of(), List.of(), List.of(), List.of(), List.of(),
-            List.of(), List.of(), 350);
+            List.of(), List.of(), 350, null);
 
         complianceEvaluator.evaluate(state, 350);
     }
@@ -103,10 +103,10 @@ class CoachingIntegrationIT {
     @Test
     void complianceEvaluator_endToEnd_endorsedOnCompliance() {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-            UnitType.STALKER, null, 3, 200);
+            new CountDelta(UnitType.STALKER, null, 3, 0), 200);
 
         channelBroker.commitments().put(CoachingDomain.MILITARY,
-            new OpenCommitment("corr-test", advice, 100, 0));
+            new OpenCommitment("corr-test", advice, 100));
 
         assertThat(channelBroker.commitments()).containsKey(CoachingDomain.MILITARY);
 
@@ -117,10 +117,10 @@ class CoachingIntegrationIT {
         }
         var state = new GameState(400, 200, 62, 44,
             units, List.of(), List.of(), List.of(), List.of(),
-            List.of(), List.of(), 350);
+            List.of(), List.of(), 350, null);
 
         var manualEvaluator = new CoachingComplianceEvaluator(
-            channelBroker.commitments(), trustRecorder);
+            channelBroker.commitments(), trustRecorder, new LocationResolver());
         manualEvaluator.evaluate(state, 350);
 
         assertThat(channelBroker.commitments())
@@ -131,16 +131,16 @@ class CoachingIntegrationIT {
     @Test
     void complianceEvaluator_supersession_replacesCommitment() {
         var advice1 = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-            UnitType.STALKER, null, 3, 450);
+            new CountDelta(UnitType.STALKER, null, 3, 0), 450);
         channelBroker.onCoachingCompleted(new CoachingCompleted(
-            "w1", "coaching", 100, advice1, CoachingUrgencyTier.STRATEGIC, 500));
+            "w1", "coaching", 100, advice1, CoachingUrgencyTier.STRATEGIC, 500, null));
 
         String firstCorrelationId = channelBroker.commitments().get(CoachingDomain.MILITARY).correlationId();
 
         var advice2 = new CoachingAdvice("build zealots", CoachingDomain.MILITARY,
-            UnitType.ZEALOT, null, 4, 450);
+            new CountDelta(UnitType.ZEALOT, null, 4, 0), 450);
         channelBroker.onCoachingCompleted(new CoachingCompleted(
-            "w1", "coaching", 200, advice2, CoachingUrgencyTier.STRATEGIC, 500));
+            "w1", "coaching", 200, advice2, CoachingUrgencyTier.STRATEGIC, 500, null));
 
         assertThat(channelBroker.commitments()).hasSize(1);
         assertThat(channelBroker.commitments().get(CoachingDomain.MILITARY).correlationId())
@@ -152,14 +152,14 @@ class CoachingIntegrationIT {
     @Test
     void complianceEvaluator_crossDomain_independent() {
         var militaryAdvice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-            UnitType.STALKER, null, 3, 450);
+            new CountDelta(UnitType.STALKER, null, 3, 0), 450);
         channelBroker.onCoachingCompleted(new CoachingCompleted(
-            "w1", "coaching", 100, militaryAdvice, CoachingUrgencyTier.STRATEGIC, 500));
+            "w1", "coaching", 100, militaryAdvice, CoachingUrgencyTier.STRATEGIC, 500, null));
 
         var expandAdvice = new CoachingAdvice("expand", CoachingDomain.EXPAND,
-            null, null, null, 450);
+            null, 450);
         channelBroker.onCoachingCompleted(new CoachingCompleted(
-            "w1", "coaching", 100, expandAdvice, CoachingUrgencyTier.ECONOMIC, 500));
+            "w1", "coaching", 100, expandAdvice, CoachingUrgencyTier.ECONOMIC, 500, null));
 
         assertThat(channelBroker.commitments()).hasSize(2);
         assertThat(channelBroker.commitments()).containsKeys(CoachingDomain.MILITARY, CoachingDomain.EXPAND);

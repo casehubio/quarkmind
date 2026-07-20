@@ -12,12 +12,12 @@ class CoachingComplianceEvaluatorTest {
     void implicitCompliance_unitCountDeltaSatisfied_endorsed() {
         var commitments = new ConcurrentHashMap<CoachingDomain, OpenCommitment>();
         var recorder = new TestTrustRecorder();
-        var evaluator = new CoachingComplianceEvaluator(commitments, recorder);
+        var evaluator = new CoachingComplianceEvaluator(commitments, recorder, new LocationResolver());
 
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-            UnitType.STALKER, null, 3, 200);
+            new CountDelta(UnitType.STALKER, null, 3, 2), 200);
         commitments.put(CoachingDomain.MILITARY,
-            new OpenCommitment("corr-1", advice, 100, 2));
+            new OpenCommitment("corr-1", advice, 100));
 
         var state = gameStateWithUnits(Map.of(UnitType.STALKER, 5));
         evaluator.evaluate(state, 350);
@@ -30,12 +30,12 @@ class CoachingComplianceEvaluatorTest {
     void implicitCompliance_notSatisfied_withinWindow_noAction() {
         var commitments = new ConcurrentHashMap<CoachingDomain, OpenCommitment>();
         var recorder = new TestTrustRecorder();
-        var evaluator = new CoachingComplianceEvaluator(commitments, recorder);
+        var evaluator = new CoachingComplianceEvaluator(commitments, recorder, new LocationResolver());
 
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-            UnitType.STALKER, null, 3, 200);
+            new CountDelta(UnitType.STALKER, null, 3, 2), 200);
         commitments.put(CoachingDomain.MILITARY,
-            new OpenCommitment("corr-1", advice, 100, 2));
+            new OpenCommitment("corr-1", advice, 100));
 
         var state = gameStateWithUnits(Map.of(UnitType.STALKER, 3));
         evaluator.evaluate(state, 250);
@@ -48,12 +48,12 @@ class CoachingComplianceEvaluatorTest {
     void implicitCompliance_notSatisfied_pastAutoExpire_challenged() {
         var commitments = new ConcurrentHashMap<CoachingDomain, OpenCommitment>();
         var recorder = new TestTrustRecorder();
-        var evaluator = new CoachingComplianceEvaluator(commitments, recorder, 900);
+        var evaluator = new CoachingComplianceEvaluator(commitments, recorder, new LocationResolver(), 900);
 
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-            UnitType.STALKER, null, 3, 200);
+            new CountDelta(UnitType.STALKER, null, 3, 2), 200);
         commitments.put(CoachingDomain.MILITARY,
-            new OpenCommitment("corr-1", advice, 100, 2));
+            new OpenCommitment("corr-1", advice, 100));
 
         var state = gameStateWithUnits(Map.of(UnitType.STALKER, 3));
         evaluator.evaluate(state, 1050);
@@ -66,12 +66,12 @@ class CoachingComplianceEvaluatorTest {
     void nonVerifiable_autoExpiresAsNeutral() {
         var commitments = new ConcurrentHashMap<CoachingDomain, OpenCommitment>();
         var recorder = new TestTrustRecorder();
-        var evaluator = new CoachingComplianceEvaluator(commitments, recorder);
+        var evaluator = new CoachingComplianceEvaluator(commitments, recorder, new LocationResolver());
 
         var advice = new CoachingAdvice("improve macro", CoachingDomain.BUILD,
-            null, null, null, 450);
+            null, 450);
         commitments.put(CoachingDomain.BUILD,
-            new OpenCommitment("corr-2", advice, 100, 0));
+            new OpenCommitment("corr-2", advice, 100));
 
         var state = gameStateWithUnits(Map.of());
         evaluator.evaluate(state, 600);
@@ -84,12 +84,12 @@ class CoachingComplianceEvaluatorTest {
     void buildingType_compliance_endorsed() {
         var commitments = new ConcurrentHashMap<CoachingDomain, OpenCommitment>();
         var recorder = new TestTrustRecorder();
-        var evaluator = new CoachingComplianceEvaluator(commitments, recorder);
+        var evaluator = new CoachingComplianceEvaluator(commitments, recorder, new LocationResolver());
 
         var advice = new CoachingAdvice("expand", CoachingDomain.EXPAND,
-            null, BuildingType.NEXUS, 1, 200);
+            new CountDelta(null, BuildingType.NEXUS, 1, 1), 200);
         commitments.put(CoachingDomain.EXPAND,
-            new OpenCommitment("corr-3", advice, 100, 1));
+            new OpenCommitment("corr-3", advice, 100));
 
         var state = gameStateWithBuildings(Map.of(BuildingType.NEXUS, 2));
         evaluator.evaluate(state, 350);
@@ -102,12 +102,12 @@ class CoachingComplianceEvaluatorTest {
     void withdrawAll_clearsAndRecordsNeutral() {
         var commitments = new ConcurrentHashMap<CoachingDomain, OpenCommitment>();
         var recorder = new TestTrustRecorder();
-        var evaluator = new CoachingComplianceEvaluator(commitments, recorder);
+        var evaluator = new CoachingComplianceEvaluator(commitments, recorder, new LocationResolver());
 
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-            UnitType.STALKER, null, 3, 450);
+            new CountDelta(UnitType.STALKER, null, 3, 2), 450);
         commitments.put(CoachingDomain.MILITARY,
-            new OpenCommitment("corr-1", advice, 100, 2));
+            new OpenCommitment("corr-1", advice, 100));
 
         evaluator.withdrawAll();
 
@@ -119,17 +119,17 @@ class CoachingComplianceEvaluatorTest {
     void multipleCommitments_evaluatedIndependently() {
         var commitments = new ConcurrentHashMap<CoachingDomain, OpenCommitment>();
         var recorder = new TestTrustRecorder();
-        var evaluator = new CoachingComplianceEvaluator(commitments, recorder);
+        var evaluator = new CoachingComplianceEvaluator(commitments, recorder, new LocationResolver());
 
         var militaryAdvice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-            UnitType.STALKER, null, 3, 200);
+            new CountDelta(UnitType.STALKER, null, 3, 2), 200);
         commitments.put(CoachingDomain.MILITARY,
-            new OpenCommitment("corr-1", militaryAdvice, 100, 2));
+            new OpenCommitment("corr-1", militaryAdvice, 100));
 
         var expandAdvice = new CoachingAdvice("improve macro", CoachingDomain.EXPAND,
-            null, null, null, 200);
+            null, 200);
         commitments.put(CoachingDomain.EXPAND,
-            new OpenCommitment("corr-2", expandAdvice, 100, 0));
+            new OpenCommitment("corr-2", expandAdvice, 100));
 
         var state = gameStateWithUnits(Map.of(UnitType.STALKER, 5));
         evaluator.evaluate(state, 350);
@@ -149,7 +149,7 @@ class CoachingComplianceEvaluatorTest {
             }
         }
         return new GameState(400, 200, 62, 44, units, List.of(),
-            List.of(), List.of(), List.of(), List.of(), List.of(), 350);
+            List.of(), List.of(), List.of(), List.of(), List.of(), 350, null);
     }
 
     private GameState gameStateWithBuildings(Map<BuildingType, Integer> buildingCounts) {
@@ -162,7 +162,7 @@ class CoachingComplianceEvaluatorTest {
             }
         }
         return new GameState(400, 200, 62, 44, List.of(), buildings,
-            List.of(), List.of(), List.of(), List.of(), List.of(), 350);
+            List.of(), List.of(), List.of(), List.of(), List.of(), 350, null);
     }
 
     static class TestTrustRecorder extends CoachingEffectivenessTrustRecorder {

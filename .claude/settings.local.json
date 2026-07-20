@@ -292,7 +292,8 @@
       "mcp__intellij-index__ide_edit_member",
       "mcp__intellij-index__ide_replace_text_in_file",
       "mcp__intellij-index__ide_insert_member",
-      "mcp__intellij-index__ide_create_file"
+      "mcp__intellij-index__ide_create_file",
+      "mcp__intellij-index__ide_replace_member"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"

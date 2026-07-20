@@ -40,4 +40,9 @@ public enum UnitType {
     UnitType(Race race) {this.race = race;}
 
     public Race race()  {return race;}
+
+    public boolean isWorker() {
+        return this == PROBE || this == SCV || this == DRONE;
+    }
+
 }

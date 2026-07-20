@@ -13,31 +13,37 @@ public class CoachingComplianceEvaluator {
 
     private final ConcurrentHashMap<CoachingDomain, OpenCommitment> commitments;
     private final CoachingEffectivenessTrustRecorder                recorder;
+    private final LocationResolver                                  locationResolver;
     private final int                                               autoExpireFrames;
 
     @Inject
     CoachingComplianceEvaluator(CoachingChannelBroker broker,
                                 CoachingEffectivenessTrustRecorder recorder,
+                                LocationResolver locationResolver,
                                 @ConfigProperty(name = "quarkmind.coaching.compliance.auto-expire-frames",
                                                 defaultValue = "900")
                                 int autoExpireFrames) {
         this.commitments      = broker.commitments();
         this.recorder         = recorder;
+        this.locationResolver = locationResolver;
         this.autoExpireFrames = autoExpireFrames;
     }
 
     CoachingComplianceEvaluator(
             ConcurrentHashMap<CoachingDomain, OpenCommitment> commitments,
-            CoachingEffectivenessTrustRecorder recorder) {
-        this(commitments, recorder, DEFAULT_AUTO_EXPIRE_FRAMES);
+            CoachingEffectivenessTrustRecorder recorder,
+            LocationResolver locationResolver) {
+        this(commitments, recorder, locationResolver, DEFAULT_AUTO_EXPIRE_FRAMES);
     }
 
     CoachingComplianceEvaluator(
             ConcurrentHashMap<CoachingDomain, OpenCommitment> commitments,
             CoachingEffectivenessTrustRecorder recorder,
+            LocationResolver locationResolver,
             int autoExpireFrames) {
         this.commitments      = commitments;
         this.recorder         = recorder;
+        this.locationResolver = locationResolver;
         this.autoExpireFrames = autoExpireFrames;
     }
 
@@ -60,10 +66,7 @@ public class CoachingComplianceEvaluator {
             }
 
             if (currentFrame >= windowEnd) {
-                int currentCount = countUnitsOrBuildings(state, advice);
-                int delta        = currentCount - commitment.baselineCount();
-
-                if (delta >= advice.verificationCountDelta()) {
+                if (advice.verification().isSatisfied(state, locationResolver)) {
                     recorder.record(commitment.correlationId(), "ENDORSED", advice);
                     iterator.remove();
                 } else if (currentFrame >= expireEnd) {
@@ -72,20 +75,6 @@ public class CoachingComplianceEvaluator {
                 }
             }
         }
-    }
-
-    private int countUnitsOrBuildings(GameState state, CoachingAdvice advice) {
-        if (advice.verificationUnitType() != null) {
-            return (int) state.myUnits().stream()
-                              .filter(u -> u.type() == advice.verificationUnitType())
-                              .count();
-        }
-        if (advice.verificationBuildingType() != null) {
-            return (int) state.myBuildings().stream()
-                              .filter(b -> b.type() == advice.verificationBuildingType())
-                              .count();
-        }
-        return 0;
     }
 
     public void withdrawAll() {

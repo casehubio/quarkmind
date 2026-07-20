@@ -34,7 +34,7 @@ class GameStateRoundTripTest {
         // Through ocraft parsing — catches malformed protobuf
         ResponseObservation ro = ResponseObservation.from(response);
         Observation obs = ro.getObservation();
-        GameState roundTripped = ObservationTranslator.translate(obs);
+        GameState roundTripped = ObservationTranslator.translate(obs, null);
 
         // Preserved fields
         assertThat(roundTripped.minerals()).isEqualTo(original.minerals());
@@ -72,14 +72,14 @@ class GameStateRoundTripTest {
             List.of(),
             List.of(),
             List.of(),
-            150L
+            150L, null
         );
 
         Sc2Api.ResponseObservation protoObs = GameStateToProtobuf.translate(original);
         Sc2Api.Response response = Sc2Api.Response.newBuilder()
             .setObservation(protoObs).setStatus(Sc2Api.Status.in_game).build();
         ResponseObservation ro = ResponseObservation.from(response);
-        GameState rt = ObservationTranslator.translate(ro.getObservation());
+        GameState rt = ObservationTranslator.translate(ro.getObservation(), null);
 
         Unit rtStalker = rt.myUnits().get(0);
         assertThat(rtStalker.type()).isEqualTo(UnitType.STALKER);

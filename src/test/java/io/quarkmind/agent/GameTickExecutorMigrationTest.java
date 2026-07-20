@@ -278,7 +278,7 @@ class GameTickExecutorMigrationTest {
         return new GameState(
             minerals, vespene, 15, 6,
             List.of(), List.of(), List.of(), List.of(), List.of(),
-            List.of(), List.of(), frame
+            List.of(), List.of(), frame, null
         );
     }
 

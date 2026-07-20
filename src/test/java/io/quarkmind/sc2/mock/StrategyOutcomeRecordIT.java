@@ -178,7 +178,7 @@ class StrategyOutcomeRecordIT {
                 200, 100, 15, 6,
                 java.util.List.of(), java.util.List.of(), java.util.List.of(),
                 java.util.List.of(), java.util.List.of(), java.util.List.of(),
-                java.util.List.of(), 5000));
+                java.util.List.of(), 5000, null));
 
         gameStoppedEvent.fire(new GameStopped(GameResult.WIN));
 

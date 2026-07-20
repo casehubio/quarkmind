@@ -34,6 +34,8 @@ public class CoachingChannelBroker {
     MessageService messageService;
     @Inject
     ObjectMapper   objectMapper;
+    @Inject
+    LocationResolver locationResolver;
 
     private volatile UUID                                              channelId;
     private final    ConcurrentHashMap<CoachingDomain, OpenCommitment> commitments          = new ConcurrentHashMap<>();
@@ -75,7 +77,13 @@ public class CoachingChannelBroker {
         latestFramePerDomain.put(domain, gameFrame);
 
         String correlationId = UUID.randomUUID().toString();
-        commitments.put(domain, new OpenCommitment(correlationId, event.advice(), gameFrame, 0));
+        CoachingAdvice adviceWithBaseline = event.advice();
+        if (adviceWithBaseline.isVerifiable() && event.triggerState() != null) {
+            var baselined = adviceWithBaseline.verification().withBaseline(event.triggerState(), locationResolver);
+            adviceWithBaseline = new CoachingAdvice(adviceWithBaseline.advice(), adviceWithBaseline.domainTag(),
+                baselined, adviceWithBaseline.verificationWindowFrames());
+        }
+        commitments.put(domain, new OpenCommitment(correlationId, adviceWithBaseline, gameFrame));
         dispatchCount++;
 
         if (channelId == null) {return;}

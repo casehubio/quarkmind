@@ -37,51 +37,52 @@ class CoachingAdviceTest {
     @Test
     void advice_verificationWindowFloor_clampedTo200() {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.BUILD,
-            null, null, null, 50);
+            null, 50);
         assertThat(advice.verificationWindowFrames()).isEqualTo(200);
     }
 
     @Test
     void advice_verificationWindowAboveFloor_unchanged() {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.BUILD,
-            null, null, null, 450);
+            null, 450);
         assertThat(advice.verificationWindowFrames()).isEqualTo(450);
     }
 
     @Test
     void advice_nullVerificationFields_nonVerifiable() {
         var advice = new CoachingAdvice("improve macro", CoachingDomain.BUILD,
-            null, null, null, 450);
+            null, 450);
         assertThat(advice.isVerifiable()).isFalse();
     }
 
     @Test
     void advice_withUnitType_verifiable() {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-            io.quarkmind.domain.UnitType.STALKER, null, 3, 450);
+            new CountDelta(io.quarkmind.domain.UnitType.STALKER, null, 3, 0), 450);
         assertThat(advice.isVerifiable()).isTrue();
     }
 
     @Test
     void advice_withBuildingType_verifiable() {
         var advice = new CoachingAdvice("expand", CoachingDomain.EXPAND,
-            null, io.quarkmind.domain.BuildingType.NEXUS, 1, 450);
+            new CountDelta(null, io.quarkmind.domain.BuildingType.NEXUS, 1, 0), 450);
         assertThat(advice.isVerifiable()).isTrue();
     }
 
     @Test
-    void advice_unitAndBuildingBothSet_unitWins() {
+    void advice_unitAndBuildingBothSet_verifiable() {
         var advice = new CoachingAdvice("mixed", CoachingDomain.BUILD,
-            io.quarkmind.domain.UnitType.STALKER, io.quarkmind.domain.BuildingType.NEXUS, 1, 450);
-        assertThat(advice.verificationUnitType()).isNotNull();
-        assertThat(advice.verificationBuildingType()).isNull();
+                                        new CountDelta(io.quarkmind.domain.UnitType.STALKER, io.quarkmind.domain.BuildingType.NEXUS, 1, 0), 450);
+        assertThat(advice.isVerifiable()).isTrue();
+        var countDelta = (CountDelta) advice.verification();
+        assertThat(countDelta.unitType()).isEqualTo(io.quarkmind.domain.UnitType.STALKER);
     }
 
     @Test
-    void advice_countDeltaNull_withUnitType_notVerifiable() {
+    void advice_nullVerification_notVerifiable() {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-            io.quarkmind.domain.UnitType.STALKER, null, null, 450);
+                                        null, 450);
         assertThat(advice.isVerifiable()).isFalse();
-        assertThat(advice.verificationUnitType()).isNull();
+        assertThat(advice.verification()).isNull();
     }
 }

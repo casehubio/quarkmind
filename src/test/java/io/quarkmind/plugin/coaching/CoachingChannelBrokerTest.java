@@ -18,9 +18,9 @@ class CoachingChannelBrokerTest {
     @Test
     void onCoachingCompleted_storesCommitment() {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-                                        UnitType.STALKER, null, 3, 450);
+                                        new CountDelta(UnitType.STALKER, null, 3, 0), 450);
         var event = new CoachingCompleted("worker-1", "coaching", 100,
-                                          advice, CoachingUrgencyTier.STRATEGIC, 500);
+                                          advice, CoachingUrgencyTier.STRATEGIC, 500, null);
 
         broker.onCoachingCompleted(event);
 
@@ -31,9 +31,9 @@ class CoachingChannelBrokerTest {
     @Test
     void onCoachingCompleted_generatesCorrelationId() {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-                                        UnitType.STALKER, null, 3, 450);
+                                        new CountDelta(UnitType.STALKER, null, 3, 0), 450);
         var event = new CoachingCompleted("worker-1", "coaching", 100,
-                                          advice, CoachingUrgencyTier.STRATEGIC, 500);
+                                          advice, CoachingUrgencyTier.STRATEGIC, 500, null);
 
         broker.onCoachingCompleted(event);
 
@@ -44,9 +44,9 @@ class CoachingChannelBrokerTest {
     @Test
     void onCoachingCompleted_dispatchesCommand() {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-                                        UnitType.STALKER, null, 3, 450);
+                                        new CountDelta(UnitType.STALKER, null, 3, 0), 450);
         var event = new CoachingCompleted("worker-1", "coaching", 100,
-                                          advice, CoachingUrgencyTier.STRATEGIC, 500);
+                                          advice, CoachingUrgencyTier.STRATEGIC, 500, null);
 
         broker.onCoachingCompleted(event);
 
@@ -56,14 +56,14 @@ class CoachingChannelBrokerTest {
     @Test
     void onCoachingCompleted_staleFrame_discarded() {
         var advice1 = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-                                         UnitType.STALKER, null, 3, 450);
+                                         new CountDelta(UnitType.STALKER, null, 3, 0), 450);
         broker.onCoachingCompleted(new CoachingCompleted("w1", "coaching", 200,
-                                                         advice1, CoachingUrgencyTier.STRATEGIC, 500));
+                                                         advice1, CoachingUrgencyTier.STRATEGIC, 500, null));
 
         var advice2 = new CoachingAdvice("build zealots", CoachingDomain.MILITARY,
-                                         UnitType.ZEALOT, null, 2, 450);
+                                         new CountDelta(UnitType.ZEALOT, null, 2, 0), 450);
         broker.onCoachingCompleted(new CoachingCompleted("w1", "coaching", 100,
-                                                         advice2, CoachingUrgencyTier.STRATEGIC, 500));
+                                                         advice2, CoachingUrgencyTier.STRATEGIC, 500, null));
 
         assertThat(broker.dispatchCount()).isEqualTo(1);
         assertThat(broker.commitments().get(CoachingDomain.MILITARY).advice().advice()).isEqualTo("build stalkers");
@@ -72,14 +72,14 @@ class CoachingChannelBrokerTest {
     @Test
     void frameOrderingGate_differentDomains_independent() {
         var militaryAdvice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-                                                UnitType.STALKER, null, 3, 450);
+                                                new CountDelta(UnitType.STALKER, null, 3, 0), 450);
         var expandAdvice = new CoachingAdvice("expand", CoachingDomain.EXPAND,
-                                              null, null, null, 450);
+                                              null, 450);
 
         broker.onCoachingCompleted(new CoachingCompleted("w1", "coaching", 100,
-                                                         militaryAdvice, CoachingUrgencyTier.STRATEGIC, 500));
+                                                         militaryAdvice, CoachingUrgencyTier.STRATEGIC, 500, null));
         broker.onCoachingCompleted(new CoachingCompleted("w1", "coaching", 100,
-                                                         expandAdvice, CoachingUrgencyTier.ECONOMIC, 500));
+                                                         expandAdvice, CoachingUrgencyTier.ECONOMIC, 500, null));
 
         assertThat(broker.commitments()).hasSize(2);
         assertThat(broker.dispatchCount()).isEqualTo(2);
@@ -88,14 +88,14 @@ class CoachingChannelBrokerTest {
     @Test
     void supersession_replacesSameDomainCommitment() {
         var advice1 = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-                                         UnitType.STALKER, null, 3, 450);
+                                         new CountDelta(UnitType.STALKER, null, 3, 0), 450);
         broker.onCoachingCompleted(new CoachingCompleted("w1", "coaching", 100,
-                                                         advice1, CoachingUrgencyTier.STRATEGIC, 500));
+                                                         advice1, CoachingUrgencyTier.STRATEGIC, 500, null));
 
         var advice2 = new CoachingAdvice("build zealots", CoachingDomain.MILITARY,
-                                         UnitType.ZEALOT, null, 4, 450);
+                                         new CountDelta(UnitType.ZEALOT, null, 4, 0), 450);
         broker.onCoachingCompleted(new CoachingCompleted("w1", "coaching", 200,
-                                                         advice2, CoachingUrgencyTier.STRATEGIC, 500));
+                                                         advice2, CoachingUrgencyTier.STRATEGIC, 500, null));
 
         assertThat(broker.commitments()).hasSize(1);
         assertThat(broker.commitments().get(CoachingDomain.MILITARY).advice().advice()).isEqualTo("build zealots");
@@ -105,9 +105,9 @@ class CoachingChannelBrokerTest {
     @Test
     void onGameStarted_clearsState() {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
-                                        UnitType.STALKER, null, 3, 450);
+                                        new CountDelta(UnitType.STALKER, null, 3, 0), 450);
         broker.onCoachingCompleted(new CoachingCompleted("w1", "coaching", 100,
-                                                         advice, CoachingUrgencyTier.STRATEGIC, 500));
+                                                         advice, CoachingUrgencyTier.STRATEGIC, 500, null));
 
         broker.onGameStarted(null);
 

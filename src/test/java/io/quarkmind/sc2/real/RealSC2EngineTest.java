@@ -50,7 +50,7 @@ class RealSC2EngineTest {
         engine.botAgent = botAgent;
 
         GameState state = new GameState(100, 50, 12, 0,
-            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 42L);
+            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 42L, null);
         botAgent.latestGameState.set(state);
 
         List<GameState> captured = new ArrayList<>();
@@ -84,7 +84,7 @@ class RealSC2EngineTest {
         engine.botAgent = botAgent;
 
         GameState state = new GameState(100, 50, 12, 0,
-            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 1L);
+            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 1L, null);
         botAgent.latestGameState.set(state);
 
         List<GameState> captured1 = new ArrayList<>();

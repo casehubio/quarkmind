@@ -497,9 +497,9 @@ public class QuarkMindCaseHub extends CaseHub {
         Event<LlmWorkerCompleted> llmWorkerCompletedEvent = llmWorkerCompletedEventInstance.get();
 
         CoachingCompletionCallback completionCallback = (workerId, capability, gameFrame,
-                                                         advice, urgencyTier, latencyMs) -> {
+                                                         advice, urgencyTier, latencyMs, triggerState) -> {
             coachingCompletedEvent.fire(new CoachingCompleted(
-                    workerId, capability, gameFrame, advice, urgencyTier, latencyMs
+                    workerId, capability, gameFrame, advice, urgencyTier, latencyMs, triggerState
             ));
             llmWorkerCompletedEvent.fire(new LlmWorkerCompleted(
                     workerId, capability, gameFrame, latencyMs

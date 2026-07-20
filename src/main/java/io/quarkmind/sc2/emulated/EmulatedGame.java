@@ -610,7 +610,8 @@ public class EmulatedGame {
                 visibleStaging,
                 List.copyOf(geysers),
                 List.of(),   // mineralPatches: not modelled in emulated physics
-                gameFrame);
+                gameFrame,
+                null);       // mapInfo: not yet wired in emulated
         }
         return new GameState(
             (int) friendly.minerals(), // floor: fractional minerals accumulate silently
@@ -621,7 +622,8 @@ public class EmulatedGame {
             List.copyOf(stagingArea),
             List.copyOf(geysers),
             List.of(),   // mineralPatches: not modelled in emulated physics
-            gameFrame);
+            gameFrame,
+            null);       // mapInfo: not yet wired in emulated
     }
 
     private GameState snapshotForEnemy() {
@@ -629,7 +631,7 @@ public class EmulatedGame {
         return new GameState(0, 0, 0, 0,
             List.of(), List.of(),
             List.copyOf(friendly.units()), List.of(), List.of(),
-            List.of(), List.of(), gameFrame);
+            List.of(), List.of(), gameFrame, null);
     }
 
     /** Returns the current visibility grid — used by EmulatedEngine to update VisibilityHolder. */

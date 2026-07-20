@@ -33,7 +33,7 @@ class EnemyStrategyTest {
             List.of(), List.of(), List.of(),
             List.of(),           // enemyBuildings
             List.of(staged),     // enemyStagingArea
-            List.of(), List.of(), 0L);
+            List.of(), List.of(), 0L, null);
         assertThat(state.enemyStagingArea()).hasSize(1);
         assertThat(state.enemyStagingArea().get(0).tag()).isEqualTo("s-1");
     }

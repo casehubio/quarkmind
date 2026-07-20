@@ -25,7 +25,7 @@ class GameStateBroadcasterTest {
             List.of(),   // enemyBuildings
             List.of(new Resource("geyser-0", new Point2d(5f, 11f), 2250)),
             List.of(),   // mineralPatches
-            42L
+            42L, null
         );
 
         String json = broadcaster.toJson(state);

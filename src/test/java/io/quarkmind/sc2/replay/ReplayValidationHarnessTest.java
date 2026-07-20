@@ -82,6 +82,6 @@ class ReplayValidationHarnessTest {
 
     private static GameState gameState(List<Unit> units, List<Building> buildings) {
         return new GameState(0, 0, 0, 0, units, buildings,
-            List.of(), List.of(), List.of(), List.of(), List.of(), 0);
+            List.of(), List.of(), List.of(), List.of(), List.of(), 0, null);
     }
 }
