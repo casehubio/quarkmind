@@ -2,15 +2,25 @@ package io.quarkmind.sc2.mock;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Resource;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.intent.Intent;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -175,23 +185,30 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
         String tag      = makeTag(e.get("unitTagIndex").asInt(), e.get("unitTagRecycle").asInt());
         int    ctrlId   = e.get("controlPlayerId").asInt();
 
-        if (Sc2ReplayShared.BUILDING_NAMES.contains(unitName)) {
+        if (ctrlId == 0) {
+            Point2d pos = pos(e);
+            if (Sc2ReplayShared.isGeyser(unitName)) {
+                addGeyser(new Resource(tag, pos, Sc2ReplayShared.defaultGeyserAmount(unitName)));
+            } else if (Sc2ReplayShared.isMineralPatch(unitName)) {
+                addMineralPatch(new Resource(tag, pos, Sc2ReplayShared.defaultMineralAmount(unitName)));
+            }
+        } else if (Sc2ReplayShared.BUILDING_NAMES.contains(unitName)) {
             if (ctrlId == watchedPlayerId) {
                 BuildingType bt = toBuildingType(unitName);
                 if (bt != BuildingType.UNKNOWN) {
                     Point2d pos = pos(e);
                     addBuilding(new Building(tag, bt, pos,
-                        defaultBuildingHealth(bt), defaultBuildingHealth(bt), true));
+                                             defaultBuildingHealth(bt), defaultBuildingHealth(bt), true));
                 }
             }
         } else {
             UnitType ut = toUnitType(unitName);
-            if (ut == UnitType.UNKNOWN) return;
+            if (ut == UnitType.UNKNOWN) {return;}
             Point2d pos = pos(e);
             if (ctrlId == watchedPlayerId) {
                 addUnit(new Unit(tag, ut, pos,
-                    defaultUnitHealth(ut), defaultUnitHealth(ut), 0, 0, 0, 0));
-            } else if (ctrlId != 0) {
+                                 defaultUnitHealth(ut), defaultUnitHealth(ut), 0, 0, 0, 0));
+            } else {
                 spawnEnemyUnit(ut, pos);
             }
         }

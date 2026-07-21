@@ -1,6 +1,9 @@
 package io.quarkmind.sc2.mock;
 
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.UnitType;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -73,6 +76,39 @@ class IEM10JsonSimulatedGameTest {
         assertThat(state.myUnits().stream().filter(u -> u.type() == UnitType.PROBE).count())
             .as("12 probes at game start").isEqualTo(12);
     }
+
+    @Test
+    void initialStateHasMineralPatches() throws IOException {
+        IEM10JsonSimulatedGame game  = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
+        GameState              state = game.snapshot();
+        assertThat(state.mineralPatches())
+                .as("Mineral patches present at game start (neutral UnitBorn at loop 0)")
+                .isNotEmpty();
+    }
+
+    @Test
+    void initialStateHasGeysers() throws IOException {
+        IEM10JsonSimulatedGame game  = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
+        GameState              state = game.snapshot();
+        assertThat(state.geysers())
+                .as("Geysers present at game start (neutral UnitBorn at loop 0)")
+                .isNotEmpty();
+    }
+
+    @Test
+    void mineralPatchesHavePositiveRemaining() throws IOException {
+        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
+        assertThat(game.snapshot().mineralPatches())
+                .allMatch(r -> r.remaining() > 0, "all mineral patches have positive remaining");
+    }
+
+    @Test
+    void geysersHavePositiveRemaining() throws IOException {
+        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
+        assertThat(game.snapshot().geysers())
+                .allMatch(r -> r.remaining() > 0, "all geysers have positive remaining");
+    }
+
 
     @Test
     void initialGameFrameIsZero() throws IOException {

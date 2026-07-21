@@ -56,6 +56,29 @@ public final class ObservationTranslator {
         Units.ZERG_NYDUS_NETWORK, Units.ZERG_NYDUS_CANAL,
         Units.ZERG_ULTRALISK_CAVERN, Units.ZERG_EXTRACTOR
     );
+    private static final Set<Units> ALL_GEYSERS   = Set.of(
+            Units.NEUTRAL_VESPENE_GEYSER,
+            Units.NEUTRAL_RICH_VESPENE_GEYSER,
+            Units.NEUTRAL_PROTOSS_VESPENE_GEYSER,
+            Units.NEUTRAL_PURIFIER_VESPENE_GEYSER,
+            Units.NEUTRAL_SHAKURAS_VESPENE_GEYSER,
+            Units.NEUTRAL_SPACE_PLATFORM_GEYSER
+                                                          );
+
+    private static final Set<Units> ALL_MINERAL_PATCHES = Set.of(
+            Units.NEUTRAL_MINERAL_FIELD,
+            Units.NEUTRAL_MINERAL_FIELD750,
+            Units.NEUTRAL_MINERAL_FIELD450,
+            Units.NEUTRAL_RICH_MINERAL_FIELD,
+            Units.NEUTRAL_RICH_MINERAL_FIELD750,
+            Units.NEUTRAL_LAB_MINERAL_FIELD,
+            Units.NEUTRAL_LAB_MINERAL_FIELD750,
+            Units.NEUTRAL_PURIFIER_MINERAL_FIELD,
+            Units.NEUTRAL_PURIFIER_MINERAL_FIELD750,
+            Units.NEUTRAL_BATTLE_STATION_MINERAL_FIELD,
+            Units.NEUTRAL_BATTLE_STATION_MINERAL_FIELD750
+                                                                );
+
 
     private ObservationTranslator() {}
 
@@ -73,51 +96,108 @@ public final class ObservationTranslator {
      * widening from int to long is implicit in the constructor call.
      */
     public static GameState translate(Observation obs, io.quarkmind.domain.MapInfo mapInfo) {
-        ObservationRaw raw = obs.getRaw().orElseThrow();
+        ObservationRaw                                     raw      = obs.getRaw().orElseThrow();
         Set<com.github.ocraft.s2client.protocol.unit.Unit> allUnits = raw.getUnits();
 
         var selfUnits = allUnits.stream()
-            .filter(u -> u.getAlliance() == Alliance.SELF)
-            .toList();
+                                .filter(u -> u.getAlliance() == Alliance.SELF)
+                                .toList();
         var enemyUnits = allUnits.stream()
-            .filter(u -> u.getAlliance() == Alliance.ENEMY)
-            .toList();
+                                 .filter(u -> u.getAlliance() == Alliance.ENEMY)
+                                 .toList();
+        var neutralUnits = allUnits.stream()
+                                   .filter(u -> u.getAlliance() == Alliance.NEUTRAL)
+                                   .toList();
 
         List<Unit> myUnits = selfUnits.stream()
-            .filter(u -> !isBuilding(toUnitsEnum(u)))
-            .map(ObservationTranslator::toUnit)
-            .toList();
+                                      .filter(u -> !isBuilding(toUnitsEnum(u)))
+                                      .map(ObservationTranslator::toUnit)
+                                      .toList();
 
         List<Building> myBuildings = selfUnits.stream()
-            .filter(u -> isBuilding(toUnitsEnum(u)))
-            .map(ObservationTranslator::toBuilding)
-            .toList();
+                                              .filter(u -> isBuilding(toUnitsEnum(u)))
+                                              .map(ObservationTranslator::toBuilding)
+                                              .toList();
 
         List<Unit> enemies = enemyUnits.stream()
-            .map(ObservationTranslator::toUnit)
-            .toList();
+                                       .map(ObservationTranslator::toUnit)
+                                       .toList();
+
+        List<Resource> geysers = neutralUnits.stream()
+                                             .filter(u -> isGeyser(toUnitsEnum(u)))
+                                             .map(u -> toResource(u, defaultGeyserAmount(toUnitsEnum(u))))
+                                             .toList();
+
+        List<Resource> mineralPatches = neutralUnits.stream()
+                                                    .filter(u -> isMineralPatch(toUnitsEnum(u)))
+                                                    .map(u -> toResource(u, defaultMineralAmount(toUnitsEnum(u))))
+                                                    .toList();
 
         PlayerCommon common = obs.getPlayerCommon();
         return new GameState(
-            common.getMinerals(),
-            common.getVespene(),
-            common.getFoodCap(),
-            common.getFoodUsed(),
-            myUnits,
-            myBuildings,
-            enemies,
-            List.of(),   // enemyBuildings: real SC2 neutral/enemy detection deferred
-            List.of(),   // enemyStagingArea: not applicable for real SC2
-            List.of(),   // geysers: neutral unit detection deferred to Phase 3+
-            List.of(),   // mineralPatches: neutral unit detection deferred to Phase 3+
-            obs.getGameLoop(),  // int widened to long at GameState.gameFrame
-            mapInfo
-        );
+                common.getMinerals(),
+                common.getVespene(),
+                common.getFoodCap(),
+                common.getFoodUsed(),
+                myUnits,
+                myBuildings,
+                enemies,
+                List.of(),   // enemyBuildings: enemy building detection deferred
+                List.of(),   // enemyStagingArea: not applicable for real SC2
+                geysers,
+                mineralPatches,
+                obs.getGameLoop(),
+                mapInfo
+        );}
+
+    public static List<NeutralFeature> extractNeutralFeatures(
+            Set<com.github.ocraft.s2client.protocol.unit.Unit> allUnits) {
+        return allUnits.stream()
+                       .filter(u -> u.getAlliance() == Alliance.NEUTRAL)
+                       .filter(u -> mapNeutralFeatureType(toUnitsEnum(u)) != null)
+                       .map(u -> {
+                           var pos = u.getPosition();
+                           return new NeutralFeature(
+                                   String.valueOf(u.getTag().getValue()),
+                                   mapNeutralFeatureType(toUnitsEnum(u)),
+                                   new Point2d(pos.getX(), pos.getY())
+                           );
+                       })
+                       .toList();
     }
+
 
     static boolean isBuilding(Units type) {
         return ALL_BUILDINGS.contains(type);
     }
+
+    static boolean isGeyser(Units type) {
+        return ALL_GEYSERS.contains(type);
+    }
+
+    static boolean isMineralPatch(Units type) {
+        return ALL_MINERAL_PATCHES.contains(type);
+    }
+
+    public static NeutralFeatureType mapNeutralFeatureType(Units type) {
+        if (type == Units.NEUTRAL_XELNAGA_TOWER) {return NeutralFeatureType.XELNAGA_TOWER;}
+        String name = type.name();
+        if (name.startsWith("NEUTRAL_DESTRUCTIBLE")) {return NeutralFeatureType.DESTRUCTIBLE_ROCK;}
+        if (name.startsWith("NEUTRAL_UNBUILDABLE")) {return NeutralFeatureType.DESTRUCTIBLE_DEBRIS;}
+        return null;
+    }
+
+    static int defaultGeyserAmount(Units type) {
+        return type == Units.NEUTRAL_RICH_VESPENE_GEYSER ? 2500 : 2250;
+    }
+
+    static int defaultMineralAmount(Units type) {
+        String name = type.name();
+        if (name.contains("450")) {return 450;}
+        if (name.contains("750")) {return 750;}
+        return 1500;
+    }
+
 
     public static UnitType fromSc2Id(int sc2UnitTypeId) {
         for (Units u : Units.values()) {
@@ -240,4 +320,14 @@ public final class ObservationTranslator {
             u.getBuildProgress() >= 1.0f
         );
     }
+
+    private static Resource toResource(com.github.ocraft.s2client.protocol.unit.Unit u, int amount) {
+        var pos = u.getPosition();
+        return new Resource(
+                String.valueOf(u.getTag().getValue()),
+                new Point2d(pos.getX(), pos.getY()),
+                amount
+        );
+    }
+
 }
