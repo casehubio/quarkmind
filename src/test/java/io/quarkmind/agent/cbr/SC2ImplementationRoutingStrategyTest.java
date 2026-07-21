@@ -49,7 +49,7 @@ class SC2ImplementationRoutingStrategyTest {
                 new ImplementationCandidate("strategy.early-pressure", "strategy.early-pressure", "strategy"));
         var ctx = new ImplementationRoutingContext(UUID.randomUUID(), "strategy", null, "t1", List.of());
 
-        var result = strategy.select(ctx, candidates).await().indefinitely();
+        var result = strategy.select(ctx, candidates);
 
         assertThat(result).isInstanceOf(ImplementationSelection.Selected.class);
         var selected = (ImplementationSelection.Selected) result;
@@ -62,7 +62,7 @@ class SC2ImplementationRoutingStrategyTest {
                 new ImplementationCandidate("strategy.drools", "strategy.drools", "strategy"));
         var ctx = new ImplementationRoutingContext(UUID.randomUUID(), "strategy", null, "t1", List.of());
 
-        var result = strategy.select(ctx, candidates).await().indefinitely();
+        var result = strategy.select(ctx, candidates);
         assertThat(result).isInstanceOf(ImplementationSelection.RunAll.class);
     }
 
@@ -81,7 +81,7 @@ class SC2ImplementationRoutingStrategyTest {
                 new ImplementationCandidate("strategy.early-pressure", "strategy.early-pressure", "strategy"));
         var ctx = new ImplementationRoutingContext(UUID.randomUUID(), "strategy", null, "t1", experiences);
 
-        var result = strategy.select(ctx, candidates).await().indefinitely();
+        var result = strategy.select(ctx, candidates);
         var selected = (ImplementationSelection.Selected) result;
         assertThat(selected.bindingNames()).containsExactly("strategy.early-pressure");
     }
@@ -96,7 +96,7 @@ class SC2ImplementationRoutingStrategyTest {
                 new ImplementationCandidate("strategy.early-pressure", "strategy.early-pressure", "strategy"));
         var ctx = new ImplementationRoutingContext(UUID.randomUUID(), "strategy", null, "t1", List.of());
 
-        var result   = strategy.select(ctx, candidates).await().indefinitely();
+        var result   = strategy.select(ctx, candidates);
         var selected = (ImplementationSelection.Selected) result;
         assertThat(selected.bindingNames()).containsExactly("strategy.drools");
     }
@@ -104,7 +104,7 @@ class SC2ImplementationRoutingStrategyTest {
     @Test
     void noCandidates_runsAll() {
         var ctx = new ImplementationRoutingContext(UUID.randomUUID(), "strategy", null, "t1", List.of());
-        var result = strategy.select(ctx, List.of()).await().indefinitely();
+        var result = strategy.select(ctx, List.of());
         assertThat(result).isInstanceOf(ImplementationSelection.RunAll.class);
     }
 

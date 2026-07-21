@@ -96,10 +96,10 @@ public class DispositionAwareRoutingStrategy implements AgentRoutingStrategy {
     public String id() {return "quarkmind-disposition-aware";}
 
     @Override
-    public io.smallrye.mutiny.Uni<RoutingResult> select(
+    public RoutingResult select(
             final AgentRoutingContext context, final List<AgentCandidate> candidates) {
         if (candidates.isEmpty()) {
-            return io.smallrye.mutiny.Uni.createFrom().item(RoutingResult.unresolvable("no candidates provided"));
+            return RoutingResult.unresolvable("no candidates provided"));
         }
 
         final String             capability = context.capabilityName();
@@ -111,7 +111,7 @@ public class DispositionAwareRoutingStrategy implements AgentRoutingStrategy {
             final boolean hasQualified = classified.stream().anyMatch(c -> c.phase() == Phase.QUALIFIED);
             final boolean hasBootstrap = classified.stream().anyMatch(c -> c.phase() == Phase.BOOTSTRAP);
             if (!hasQualified && hasBootstrap) {
-                return io.smallrye.mutiny.Uni.createFrom().item(RoutingResult.escalate(capability, EscalationReason.NO_QUALIFIED_AGENT,
+                return RoutingResult.escalate(capability, EscalationReason.NO_QUALIFIED_AGENT,
                                                                                        "no qualified agent for capability '%s' — only bootstrap candidates".formatted(capability)));
             }
         }
@@ -132,7 +132,7 @@ public class DispositionAwareRoutingStrategy implements AgentRoutingStrategy {
                                            "trust=%.3f disposition=%.2f".formatted(ts, multiplier)));
         }
 
-        return io.smallrye.mutiny.Uni.createFrom().item(classifier.decide(eligible, scored, capability));
+        return classifier.decide(eligible, scored, capability);
     }
 
     private double dispositionMultiplier(final AgentCandidate candidate, final DispositionPreference pref) {
