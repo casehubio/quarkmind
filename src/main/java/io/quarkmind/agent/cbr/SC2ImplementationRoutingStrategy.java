@@ -46,7 +46,7 @@ public class SC2ImplementationRoutingStrategy implements ImplementationRoutingSt
             List<ImplementationCandidate> candidates) {
 
         if (candidates.size() <= 1) {
-            return new ImplementationSelection.RunAll());
+            return new ImplementationSelection.RunAll();
         }
 
         TrustRoutingPolicy policy    = policyProvider.forCapability(context.capabilityName());
@@ -91,7 +91,7 @@ public class SC2ImplementationRoutingStrategy implements ImplementationRoutingSt
         log.infof("[CBR-ROUTE] Selected: %s (score=%.3f, cbrWeight=%.2f, experiences=%d)",
                   bestBinding, bestScore, cbrWeight, context.experiences().size());
 
-        return new ImplementationSelection.Selected(List.of(bestBinding)));
+        return new ImplementationSelection.Selected(List.of(bestBinding));
     }
 
     private double computeTrustScore(ClassifiedCandidate cc, TrustRoutingPolicy policy,

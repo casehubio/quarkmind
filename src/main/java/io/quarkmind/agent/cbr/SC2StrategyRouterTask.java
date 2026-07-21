@@ -173,8 +173,7 @@ public class SC2StrategyRouterTask implements TaskDefinition {
         ImplementationRoutingContext routingCtx = new ImplementationRoutingContext(
                 gameSession.id(), CAPABILITY, null, "default", experiences);
 
-        ImplementationSelection selection = routingStrategy.select(routingCtx, candidates)
-                .await().indefinitely();
+        ImplementationSelection selection = routingStrategy.select(routingCtx, candidates);
 
         String winner = switch (selection) {
             case ImplementationSelection.Selected s -> s.bindingNames().getFirst();

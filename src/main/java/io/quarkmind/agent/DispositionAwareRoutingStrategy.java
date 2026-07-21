@@ -99,7 +99,7 @@ public class DispositionAwareRoutingStrategy implements AgentRoutingStrategy {
     public RoutingResult select(
             final AgentRoutingContext context, final List<AgentCandidate> candidates) {
         if (candidates.isEmpty()) {
-            return RoutingResult.unresolvable("no candidates provided"));
+            return RoutingResult.unresolvable("no candidates provided");
         }
 
         final String             capability = context.capabilityName();
@@ -112,7 +112,7 @@ public class DispositionAwareRoutingStrategy implements AgentRoutingStrategy {
             final boolean hasBootstrap = classified.stream().anyMatch(c -> c.phase() == Phase.BOOTSTRAP);
             if (!hasQualified && hasBootstrap) {
                 return RoutingResult.escalate(capability, EscalationReason.NO_QUALIFIED_AGENT,
-                                                                                       "no qualified agent for capability '%s' — only bootstrap candidates".formatted(capability)));
+                                                                                       "no qualified agent for capability '%s' — only bootstrap candidates".formatted(capability));
             }
         }
 
