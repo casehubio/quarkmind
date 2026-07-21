@@ -1,9 +1,14 @@
 package io.quarkmind.domain;
 
 import org.junit.jupiter.api.Test;
+
+import static io.quarkmind.domain.UnitAttribute.ARMORED;
+import static io.quarkmind.domain.UnitAttribute.BIOLOGICAL;
+import static io.quarkmind.domain.UnitAttribute.LIGHT;
+import static io.quarkmind.domain.UnitAttribute.MASSIVE;
+import static io.quarkmind.domain.UnitAttribute.MECHANICAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static io.quarkmind.domain.UnitAttribute.*;
 
 class SC2DataTest {
 
@@ -47,6 +52,13 @@ class SC2DataTest {
     @Test void marineArmour()  { assertThat(SC2Data.armour(UnitType.MARINE)).isEqualTo(0); }
     @Test void probeArmour()   { assertThat(SC2Data.armour(UnitType.PROBE)).isEqualTo(0); }
     @Test void hydraliskArmour() { assertThat(SC2Data.armour(UnitType.HYDRALISK)).isEqualTo(0); }
+
+    @Test
+    void scvArmour()             {assertThat(SC2Data.armour(UnitType.SCV)).isEqualTo(1);}
+
+    @Test
+    void queenArmour()           {assertThat(SC2Data.armour(UnitType.QUEEN)).isEqualTo(1);}
+
 
     @Test void stalkerBonusVsArmored()  { assertThat(SC2Data.bonusDamageVs(UnitType.STALKER,  ARMORED)).isEqualTo(4); }
     @Test void stalkerBonusVsLight()    { assertThat(SC2Data.bonusDamageVs(UnitType.STALKER,  LIGHT)).isEqualTo(0); }
@@ -548,5 +560,84 @@ class SC2DataTest {
                   + 3 * (SC2Data.mineralCost(UnitType.COLOSSUS) + SC2Data.gasCost(UnitType.COLOSSUS))
                   + 2 * (SC2Data.mineralCost(UnitType.VOID_RAY) + SC2Data.gasCost(UnitType.VOID_RAY));
         assertThat(value).isEqualTo(4700);
+    }
+
+    @Test
+    void unitCombatStatsAccessor_stalker() {
+        UnitCombatStats stats = SC2Data.unitCombatStats(UnitType.STALKER);
+        assertThat(stats.damagePerAttack()).isEqualTo(13);
+        assertThat(stats.attackCooldownInTicks()).isEqualTo(1);
+        assertThat(stats.attackRange()).isEqualTo(5.0f);
+        assertThat(stats.bonusDamageVs()).containsEntry(UnitAttribute.ARMORED, 4);
+    }
+
+    @Test
+    void unitCombatStatsAccessor_zealot() {
+        UnitCombatStats stats = SC2Data.unitCombatStats(UnitType.ZEALOT);
+        assertThat(stats.damagePerAttack()).isEqualTo(8);
+        assertThat(stats.attackCooldownInTicks()).isEqualTo(2);
+        assertThat(stats.attackRange()).isEqualTo(0.5f);
+        assertThat(stats.bonusDamageVs()).isEmpty();
+    }
+
+    @Test
+    void unitDefensesAccessor_stalker() {
+        UnitDefenses def = SC2Data.unitDefenses(UnitType.STALKER);
+        assertThat(def.maxHealth()).isEqualTo(80);
+        assertThat(def.maxShields()).isEqualTo(80);
+        assertThat(def.armour()).isEqualTo(1);
+    }
+
+    @Test
+    void unitDefensesAccessor_marine() {
+        UnitDefenses def = SC2Data.unitDefenses(UnitType.MARINE);
+        assertThat(def.maxHealth()).isEqualTo(45);
+        assertThat(def.maxShields()).isEqualTo(0);
+        assertThat(def.armour()).isEqualTo(0);
+    }
+
+    @Test
+    void allUnitTypesHaveCombatStats() {
+        for (UnitType type : UnitType.values()) {
+            assertThat(SC2Data.unitCombatStats(type))
+                    .as("Missing UnitCombatStats for " + type)
+                    .isNotNull();
+        }
+    }
+
+    @Test
+    void allUnitTypesHaveDefenses() {
+        for (UnitType type : UnitType.values()) {
+            assertThat(SC2Data.unitDefenses(type))
+                    .as("Missing UnitDefenses for " + type)
+                    .isNotNull();
+        }
+    }
+
+    @Test
+    void allUnitTypesHaveAttributes() {
+        for (UnitType type : UnitType.values()) {
+            assertThat(SC2Data.unitAttributes(type))
+                    .as("Missing unitAttributes for " + type)
+                    .isNotNull();
+        }
+    }
+
+    @Test
+    void allUnitTypesHaveTrainTime() {
+        for (UnitType type : UnitType.values()) {
+            assertThat(SC2Data.trainTimeInLoops(type))
+                    .as("Missing trainTimeInLoops for " + type)
+                    .isGreaterThan(0);
+        }
+    }
+
+    @Test
+    void allUnitTypesHaveSightRange() {
+        for (UnitType type : UnitType.values()) {
+            assertThat(SC2Data.sightRange(type))
+                    .as("Missing sightRange for " + type)
+                    .isGreaterThan(0);
+        }
     }
 }

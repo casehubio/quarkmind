@@ -5,7 +5,12 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
-import static io.quarkmind.domain.UnitAttribute.*;
+
+import static io.quarkmind.domain.UnitAttribute.ARMORED;
+import static io.quarkmind.domain.UnitAttribute.BIOLOGICAL;
+import static io.quarkmind.domain.UnitAttribute.LIGHT;
+import static io.quarkmind.domain.UnitAttribute.MASSIVE;
+import static io.quarkmind.domain.UnitAttribute.MECHANICAL;
 
 public final class SC2Data {
 
@@ -131,39 +136,100 @@ public final class SC2Data {
         return UNIT_SPEEDS.getOrDefault(type, DEFAULT_UNIT_SPEED);
     }
 
+
+    private static final Map<UnitType, Integer> UNIT_TRAIN_TIMES;
+
+    static {
+        var map = new EnumMap<UnitType, Integer>(UnitType.class);
+        // Protoss — empirical (SC2TrainTimeCalibrationTest, AI Arena replays)
+        map.put(UnitType.PROBE, 272);  // empirical (499 obs)
+        map.put(UnitType.ZEALOT, 618);  // empirical (7 obs)
+        map.put(UnitType.STALKER, 698);  // empirical (2 obs — low confidence)
+        map.put(UnitType.IMMORTAL, 896);  // uncalibrated — 40s × 22.4 = 896.0
+        map.put(UnitType.COLOSSUS, 672);  // uncalibrated
+        map.put(UnitType.CARRIER, 672);  // uncalibrated
+        map.put(UnitType.DARK_TEMPLAR, 672);  // uncalibrated
+        map.put(UnitType.HIGH_TEMPLAR, 672);  // uncalibrated
+        map.put(UnitType.ARCHON, 672);  // uncalibrated
+        map.put(UnitType.OBSERVER, 493);  // uncalibrated — ceil(22s × 22.4)
+        map.put(UnitType.VOID_RAY, 672);  // uncalibrated
+        map.put(UnitType.ADEPT, 672);  // uncalibrated
+        map.put(UnitType.DISRUPTOR, 672);  // uncalibrated
+        map.put(UnitType.SENTRY, 672);  // uncalibrated
+        map.put(UnitType.PHOENIX, 672);  // uncalibrated
+        map.put(UnitType.ORACLE, 672);  // uncalibrated
+        map.put(UnitType.TEMPEST, 672);  // uncalibrated
+        map.put(UnitType.MOTHERSHIP, 672);  // uncalibrated
+        map.put(UnitType.WARP_PRISM, 672);  // uncalibrated
+        map.put(UnitType.WARP_PRISM_PHASING, 672);  // uncalibrated
+        map.put(UnitType.INTERCEPTOR, 672);  // uncalibrated
+        map.put(UnitType.ADEPT_PHASE_SHIFT, 672);  // uncalibrated
+        // Zerg — uncalibrated estimates; pending Zerg replay calibration
+        map.put(UnitType.ZERGLING, 400);  // estimate: ceil(17.85s × 22.4)
+        map.put(UnitType.ROACH, 572);  // estimate: ceil(25.5s × 22.4)
+        map.put(UnitType.HYDRALISK, 672);  // estimate: 30s × 22.4
+        map.put(UnitType.MUTALISK, 672);  // uncalibrated
+        map.put(UnitType.ULTRALISK, 672);  // uncalibrated
+        map.put(UnitType.BROOD_LORD, 672);  // uncalibrated
+        map.put(UnitType.CORRUPTOR, 672);  // uncalibrated
+        map.put(UnitType.INFESTOR, 672);  // uncalibrated
+        map.put(UnitType.SWARM_HOST, 672);  // uncalibrated
+        map.put(UnitType.VIPER, 672);  // uncalibrated
+        map.put(UnitType.QUEEN, 900);  // estimate: ceil(40.18s × 22.4)
+        map.put(UnitType.RAVAGER, 672);  // uncalibrated
+        map.put(UnitType.LURKER, 672);  // uncalibrated
+        map.put(UnitType.DRONE, 275);  // estimate: same as SCV (same real-time duration)
+        map.put(UnitType.OVERLORD, 357);  // estimate: ceil(15.93s × 22.4)
+        map.put(UnitType.OVERSEER, 672);  // uncalibrated
+        map.put(UnitType.BANELING, 672);  // uncalibrated
+        map.put(UnitType.LOCUST, 672);  // uncalibrated
+        map.put(UnitType.BROODLING, 672);  // uncalibrated
+        map.put(UnitType.INFESTED_TERRAN, 672);  // uncalibrated
+        map.put(UnitType.CHANGELING, 672);  // uncalibrated
+        map.put(UnitType.EGG, 672);  // uncalibrated
+        // Terran — uncalibrated estimates; pending Terran replays from #140
+        map.put(UnitType.MARINE, 563);  // estimate: ceil(25.13s × 22.4)
+        map.put(UnitType.MARAUDER, 757);  // estimate: ceil(33.8s × 22.4)
+        map.put(UnitType.MEDIVAC, 672);  // uncalibrated
+        map.put(UnitType.SIEGE_TANK, 672);  // uncalibrated
+        map.put(UnitType.SIEGE_TANK_SIEGED, 672);  // uncalibrated
+        map.put(UnitType.THOR, 672);  // uncalibrated
+        map.put(UnitType.VIKING, 672);  // uncalibrated
+        map.put(UnitType.GHOST, 672);  // uncalibrated
+        map.put(UnitType.RAVEN, 672);  // uncalibrated
+        map.put(UnitType.BANSHEE, 672);  // uncalibrated
+        map.put(UnitType.BATTLECRUISER, 672);  // uncalibrated
+        map.put(UnitType.CYCLONE, 672);  // uncalibrated
+        map.put(UnitType.LIBERATOR, 672);  // uncalibrated
+        map.put(UnitType.WIDOW_MINE, 672);  // uncalibrated
+        map.put(UnitType.SCV, 275);  // estimate: ceil(12.25s × 22.4)
+        map.put(UnitType.REAPER, 672);  // uncalibrated
+        map.put(UnitType.HELLION, 672);  // uncalibrated
+        map.put(UnitType.HELLBAT, 672);  // uncalibrated
+        map.put(UnitType.MULE, 672);  // uncalibrated
+        map.put(UnitType.VIKING_ASSAULT, 672);  // uncalibrated
+        map.put(UnitType.LIBERATOR_AG, 672);  // uncalibrated
+        map.put(UnitType.AUTO_TURRET, 672);  // uncalibrated
+        // Fallback
+        map.put(UnitType.UNKNOWN, 672);  // uncalibrated — 30s × 22.4 = 672.0
+        for (UnitType t : UnitType.values()) {
+            if (!map.containsKey(t)) {throw new ExceptionInInitializerError("Missing trainTime for " + t);}
+        }
+        UNIT_TRAIN_TIMES = Collections.unmodifiableMap(map);
+    }
+
     /**
      * Exact train time in game loops at SC2 Faster speed.
      * Source of truth for all train timing — {@link #trainTimeInTicks} derives from this.
      * Values are empirically calibrated from replay ground truth in
-     * {@code SC2TrainTimeCalibrationTest} (paired GAME_EVENTS commands + tracker UnitBorn events,
-     * 29 AI Arena replays). Observations: PROBE=499, ZEALOT=7, STALKER=2; IMMORTAL and OBSERVER
-     * are uncalibrated (no observations in the Protoss-vs-Protoss bot corpus) and retain
-     * integer-rounded estimates until replay data is available.
+     * {@code SC2TrainTimeCalibrationTest} where observations are available;
+     * uncalibrated entries retain integer-rounded estimates.
      *
      * <p>Note: values differ from {@code seconds × GAME_LOOPS_PER_SECOND} (22.4) because SC2
      * stores training times as integer game loops — see issue #149.
      */
     public static int trainTimeInLoops(UnitType type) {
-        return switch (type) {
-            // Protoss — empirical (SC2TrainTimeCalibrationTest, AI Arena replays)
-            case PROBE    -> 272;  // empirical (499 obs)
-            case ZEALOT   -> 618;  // empirical (7 obs)
-            case STALKER  -> 698;  // empirical (2 obs — low confidence)
-            case IMMORTAL -> 896;  // uncalibrated — 40s × 22.4 = 896.0
-            case OBSERVER -> 493;  // uncalibrated — ceil(22s × 22.4)
-            // Terran — uncalibrated estimates; pending Terran replays from #140
-            case SCV      -> 275;  // estimate: ceil(12.25s × 22.4)
-            case MARINE   -> 563;  // estimate: ceil(25.13s × 22.4)
-            case MARAUDER -> 757;  // estimate: ceil(33.8s × 22.4)
-            // Zerg — uncalibrated estimates; pending Zerg replay calibration
-            case DRONE     -> 275; // estimate: same as SCV (same real-time duration)
-            case ZERGLING  -> 400; // estimate: ceil(17.85s × 22.4)
-            case ROACH     -> 572; // estimate: ceil(25.5s × 22.4)
-            case HYDRALISK -> 672; // estimate: 30s × 22.4
-            case OVERLORD  -> 357; // estimate: ceil(15.93s × 22.4)
-            case QUEEN     -> 900; // estimate: ceil(40.18s × 22.4)
-            default        -> 672; // uncalibrated — 30s × 22.4 = 672.0
-        };
+        return UNIT_TRAIN_TIMES.get(type);
     }
 
     public static int trainTimeInTicks(UnitType type) {
@@ -341,59 +407,187 @@ public final class SC2Data {
         };
     }
 
+
+    private static final Map<UnitType, UnitDefenses> UNIT_DEFENSES;
+
+    static {
+        var map = new EnumMap<UnitType, UnitDefenses>(UnitType.class);
+        // Protoss                                    HP   Sh  Ar
+        map.put(UnitType.PROBE, new UnitDefenses(45, 20, 0));
+        map.put(UnitType.ZEALOT, new UnitDefenses(100, 50, 1));
+        map.put(UnitType.STALKER, new UnitDefenses(80, 80, 1));
+        map.put(UnitType.IMMORTAL, new UnitDefenses(200, 100, 1));
+        map.put(UnitType.COLOSSUS, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.CARRIER, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.DARK_TEMPLAR, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.HIGH_TEMPLAR, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.ARCHON, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.OBSERVER, new UnitDefenses(100, 20, 0));
+        map.put(UnitType.VOID_RAY, new UnitDefenses(100, 100, 0));
+        map.put(UnitType.ADEPT, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.DISRUPTOR, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.SENTRY, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.PHOENIX, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.ORACLE, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.TEMPEST, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.MOTHERSHIP, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.WARP_PRISM, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.WARP_PRISM_PHASING, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.INTERCEPTOR, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.ADEPT_PHASE_SHIFT, new UnitDefenses(100, 0, 0));
+        // Zerg                                       HP   Sh  Ar
+        map.put(UnitType.ZERGLING, new UnitDefenses(35, 0, 0));
+        map.put(UnitType.ROACH, new UnitDefenses(145, 0, 1));
+        map.put(UnitType.HYDRALISK, new UnitDefenses(90, 0, 0));
+        map.put(UnitType.MUTALISK, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.ULTRALISK, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.BROOD_LORD, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.CORRUPTOR, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.INFESTOR, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.SWARM_HOST, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.VIPER, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.QUEEN, new UnitDefenses(175, 0, 1));
+        map.put(UnitType.RAVAGER, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.LURKER, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.DRONE, new UnitDefenses(40, 0, 0));
+        map.put(UnitType.OVERLORD, new UnitDefenses(200, 0, 0));
+        map.put(UnitType.OVERSEER, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.BANELING, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.LOCUST, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.BROODLING, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.INFESTED_TERRAN, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.CHANGELING, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.EGG, new UnitDefenses(200, 0, 0));
+        // Terran                                     HP   Sh  Ar
+        map.put(UnitType.MARINE, new UnitDefenses(45, 0, 0));
+        map.put(UnitType.MARAUDER, new UnitDefenses(125, 0, 1));
+        map.put(UnitType.MEDIVAC, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.SIEGE_TANK, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.SIEGE_TANK_SIEGED, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.THOR, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.VIKING, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.GHOST, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.RAVEN, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.BANSHEE, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.BATTLECRUISER, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.CYCLONE, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.LIBERATOR, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.WIDOW_MINE, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.SCV, new UnitDefenses(45, 0, 1));
+        map.put(UnitType.REAPER, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.HELLION, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.HELLBAT, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.MULE, new UnitDefenses(60, 0, 0));
+        map.put(UnitType.VIKING_ASSAULT, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.LIBERATOR_AG, new UnitDefenses(100, 0, 0));
+        map.put(UnitType.AUTO_TURRET, new UnitDefenses(100, 0, 0));
+        // Fallback
+        map.put(UnitType.UNKNOWN, new UnitDefenses(100, 0, 0));
+        for (UnitType t : UnitType.values()) {
+            if (!map.containsKey(t)) {throw new ExceptionInInitializerError("Missing UnitDefenses for " + t);}
+        }
+        UNIT_DEFENSES = Collections.unmodifiableMap(map);
+    }
+
     public static int maxHealth(UnitType type) {
-        return switch (type) {
-            // Protoss
-            case PROBE     ->  45;
-            case ZEALOT    -> 100;
-            case STALKER   ->  80;
-            case IMMORTAL  -> 200;
-            // Terran
-            case MARINE    ->  45;
-            case MARAUDER  -> 125;
-            case SCV       ->  45;
-            case MULE      ->  60;
-            // Zerg
-            case ROACH     -> 145;
-            case HYDRALISK ->  90;
-            case DRONE     ->  40;
-            case ZERGLING  ->  35;
-            case OVERLORD  -> 200;
-            case QUEEN     -> 175;
-            case EGG       -> 200;
-            default        -> 100;
-        };
+        return UNIT_DEFENSES.get(type).maxHealth();
+    }
+
+
+    private static final Map<UnitType, Set<UnitAttribute>> UNIT_ATTRIBUTES;
+
+    static {
+        var map = new EnumMap<UnitType, Set<UnitAttribute>>(UnitType.class);
+        // Protoss
+        map.put(UnitType.PROBE, Set.of(LIGHT, MECHANICAL));
+        map.put(UnitType.ZEALOT, Set.of(LIGHT, BIOLOGICAL));
+        map.put(UnitType.STALKER, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.IMMORTAL, Set.of(ARMORED, MECHANICAL, MASSIVE));
+        map.put(UnitType.COLOSSUS, Set.of());
+        map.put(UnitType.CARRIER, Set.of());
+        map.put(UnitType.DARK_TEMPLAR, Set.of());
+        map.put(UnitType.HIGH_TEMPLAR, Set.of());
+        map.put(UnitType.ARCHON, Set.of());
+        map.put(UnitType.OBSERVER, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.VOID_RAY, Set.of());
+        map.put(UnitType.ADEPT, Set.of());
+        map.put(UnitType.DISRUPTOR, Set.of());
+        map.put(UnitType.SENTRY, Set.of());
+        map.put(UnitType.PHOENIX, Set.of());
+        map.put(UnitType.ORACLE, Set.of());
+        map.put(UnitType.TEMPEST, Set.of());
+        map.put(UnitType.MOTHERSHIP, Set.of());
+        map.put(UnitType.WARP_PRISM, Set.of());
+        map.put(UnitType.WARP_PRISM_PHASING, Set.of());
+        map.put(UnitType.INTERCEPTOR, Set.of());
+        map.put(UnitType.ADEPT_PHASE_SHIFT, Set.of());
+        // Zerg
+        map.put(UnitType.ZERGLING, Set.of());
+        map.put(UnitType.ROACH, Set.of(ARMORED, BIOLOGICAL));
+        map.put(UnitType.HYDRALISK, Set.of(LIGHT, BIOLOGICAL));
+        map.put(UnitType.MUTALISK, Set.of());
+        map.put(UnitType.ULTRALISK, Set.of());
+        map.put(UnitType.BROOD_LORD, Set.of());
+        map.put(UnitType.CORRUPTOR, Set.of());
+        map.put(UnitType.INFESTOR, Set.of());
+        map.put(UnitType.SWARM_HOST, Set.of());
+        map.put(UnitType.VIPER, Set.of());
+        map.put(UnitType.QUEEN, Set.of());
+        map.put(UnitType.RAVAGER, Set.of());
+        map.put(UnitType.LURKER, Set.of());
+        map.put(UnitType.DRONE, Set.of());
+        map.put(UnitType.OVERLORD, Set.of());
+        map.put(UnitType.OVERSEER, Set.of());
+        map.put(UnitType.BANELING, Set.of());
+        map.put(UnitType.LOCUST, Set.of());
+        map.put(UnitType.BROODLING, Set.of());
+        map.put(UnitType.INFESTED_TERRAN, Set.of());
+        map.put(UnitType.CHANGELING, Set.of());
+        map.put(UnitType.EGG, Set.of());
+        // Terran
+        map.put(UnitType.MARINE, Set.of(LIGHT, BIOLOGICAL));
+        map.put(UnitType.MARAUDER, Set.of(BIOLOGICAL, ARMORED));
+        map.put(UnitType.MEDIVAC, Set.of());
+        map.put(UnitType.SIEGE_TANK, Set.of());
+        map.put(UnitType.SIEGE_TANK_SIEGED, Set.of());
+        map.put(UnitType.THOR, Set.of());
+        map.put(UnitType.VIKING, Set.of());
+        map.put(UnitType.GHOST, Set.of());
+        map.put(UnitType.RAVEN, Set.of());
+        map.put(UnitType.BANSHEE, Set.of());
+        map.put(UnitType.BATTLECRUISER, Set.of());
+        map.put(UnitType.CYCLONE, Set.of());
+        map.put(UnitType.LIBERATOR, Set.of());
+        map.put(UnitType.WIDOW_MINE, Set.of());
+        map.put(UnitType.SCV, Set.of());
+        map.put(UnitType.REAPER, Set.of());
+        map.put(UnitType.HELLION, Set.of());
+        map.put(UnitType.HELLBAT, Set.of());
+        map.put(UnitType.MULE, Set.of());
+        map.put(UnitType.VIKING_ASSAULT, Set.of());
+        map.put(UnitType.LIBERATOR_AG, Set.of());
+        map.put(UnitType.AUTO_TURRET, Set.of());
+        // Fallback
+        map.put(UnitType.UNKNOWN, Set.of());
+        for (UnitType t : UnitType.values()) {
+            if (!map.containsKey(t)) {throw new ExceptionInInitializerError("Missing unitAttributes for " + t);}
+        }
+        UNIT_ATTRIBUTES = Collections.unmodifiableMap(map);
     }
 
     public static Set<UnitAttribute> unitAttributes(UnitType type) {
-        return switch (type) {
-            case PROBE     -> Set.of(LIGHT, MECHANICAL);
-            case ZEALOT    -> Set.of(LIGHT, BIOLOGICAL);
-            case STALKER   -> Set.of(ARMORED, MECHANICAL);
-            case IMMORTAL  -> Set.of(ARMORED, MECHANICAL, MASSIVE);
-            case OBSERVER  -> Set.of(ARMORED, MECHANICAL);
-            case MARINE    -> Set.of(LIGHT, BIOLOGICAL);
-            case MARAUDER  -> Set.of(BIOLOGICAL, ARMORED);
-            case ROACH     -> Set.of(ARMORED, BIOLOGICAL);
-            case HYDRALISK -> Set.of(LIGHT, BIOLOGICAL);
-            default        -> Set.of();
-        };
+        return UNIT_ATTRIBUTES.get(type);
     }
 
     public static int armour(UnitType type) {
-        return switch (type) {
-            case ZEALOT, STALKER, IMMORTAL, MARAUDER, ROACH, SCV, QUEEN -> 1;
-            default -> 0;
-        };
+        return UNIT_DEFENSES.get(type).armour();
     }
 
+    public static UnitDefenses unitDefenses(UnitType type) {return UNIT_DEFENSES.get(type);}
+
+
     public static int bonusDamageVs(UnitType attackerType, UnitAttribute targetAttribute) {
-        return switch (attackerType) {
-            case STALKER  -> targetAttribute == ARMORED ? 4  : 0;
-            case IMMORTAL -> targetAttribute == ARMORED ? 3  : 0;
-            case MARAUDER -> targetAttribute == ARMORED ? 10 : 0;
-            default       -> 0;
-        };
+        return UNIT_COMBAT_STATS.get(attackerType).bonusDamageVs().getOrDefault(targetAttribute, 0);
     }
 
     public static boolean hasHardenedShield(UnitType type) {
@@ -401,15 +595,7 @@ public final class SC2Data {
     }
 
     public static int maxShields(UnitType type) {
-        return switch (type) {
-            case PROBE    -> 20;
-            case ZEALOT   -> 50;
-            case STALKER  -> 80;
-            case IMMORTAL -> 100;
-            case OBSERVER -> 20;
-            case VOID_RAY -> 100;
-            default       -> 0;   // Terran/Zerg have no shields
-        };
+        return UNIT_DEFENSES.get(type).maxShields();
     }
 
     public static int maxBuildingHealth(BuildingType type) {
@@ -550,66 +736,186 @@ public final class SC2Data {
         };
     }
 
-    /**
-     * Damage dealt per attack event (replaces damagePerTick from E3).
-     * Phase E4: units fire at cooldown intervals, not every tick.
-     *
-     * <p><b>Note: these are simplified/balanced values, not exact SC2 numbers.</b>
-     * Real SC2 stats (e.g. Immortal: 50+100 vs Armored, Stalker: 13+5 vs Armored)
-     * are scaled down to keep simulation legible at 500ms/tick. Values are tuned
-     * for realistic fight outcomes, not stat-sheet accuracy.
-     */
+
+    private static final Map<UnitType, UnitCombatStats> UNIT_COMBAT_STATS;
+
+    static {
+        var map = new EnumMap<UnitType, UnitCombatStats>(UnitType.class);
+        // Protoss                                    dmg  cd   range  bonus
+        map.put(UnitType.PROBE, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.ZEALOT, new UnitCombatStats(8, 2, 0.5f));
+        map.put(UnitType.STALKER, new UnitCombatStats(13, 1, 5.0f, Map.of(ARMORED, 4)));
+        map.put(UnitType.IMMORTAL, new UnitCombatStats(20, 2, 5.5f, Map.of(ARMORED, 3)));
+        map.put(UnitType.COLOSSUS, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.CARRIER, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.DARK_TEMPLAR, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.HIGH_TEMPLAR, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.ARCHON, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.OBSERVER, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.VOID_RAY, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.ADEPT, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.DISRUPTOR, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.SENTRY, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.PHOENIX, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.ORACLE, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.TEMPEST, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.MOTHERSHIP, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.WARP_PRISM, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.WARP_PRISM_PHASING, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.INTERCEPTOR, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.ADEPT_PHASE_SHIFT, new UnitCombatStats(5, 2, 3.0f));
+        // Zerg                                       dmg  cd   range  bonus
+        map.put(UnitType.ZERGLING, new UnitCombatStats(5, 1, 0.5f));
+        map.put(UnitType.ROACH, new UnitCombatStats(9, 2, 4.0f));
+        map.put(UnitType.HYDRALISK, new UnitCombatStats(12, 1, 5.0f));
+        map.put(UnitType.MUTALISK, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.ULTRALISK, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.BROOD_LORD, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.CORRUPTOR, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.INFESTOR, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.SWARM_HOST, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.VIPER, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.QUEEN, new UnitCombatStats(20, 2, 5.0f));
+        map.put(UnitType.RAVAGER, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.LURKER, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.DRONE, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.OVERLORD, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.OVERSEER, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.BANELING, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.LOCUST, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.BROODLING, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.INFESTED_TERRAN, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.CHANGELING, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.EGG, new UnitCombatStats(0, Integer.MAX_VALUE, 0.0f));
+        // Terran                                     dmg  cd   range  bonus
+        map.put(UnitType.MARINE, new UnitCombatStats(6, 1, 5.0f));
+        map.put(UnitType.MARAUDER, new UnitCombatStats(10, 2, 5.0f, Map.of(ARMORED, 10)));
+        map.put(UnitType.MEDIVAC, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.SIEGE_TANK, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.SIEGE_TANK_SIEGED, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.THOR, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.VIKING, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.GHOST, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.RAVEN, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.BANSHEE, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.BATTLECRUISER, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.CYCLONE, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.LIBERATOR, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.WIDOW_MINE, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.SCV, new UnitCombatStats(5, 2, 0.5f));
+        map.put(UnitType.REAPER, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.HELLION, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.HELLBAT, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.MULE, new UnitCombatStats(0, Integer.MAX_VALUE, 0.0f));
+        map.put(UnitType.VIKING_ASSAULT, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.LIBERATOR_AG, new UnitCombatStats(5, 2, 3.0f));
+        map.put(UnitType.AUTO_TURRET, new UnitCombatStats(5, 2, 3.0f));
+        // Fallback
+        map.put(UnitType.UNKNOWN, new UnitCombatStats(5, 2, 3.0f));
+        for (UnitType t : UnitType.values()) {
+            if (!map.containsKey(t)) {throw new ExceptionInInitializerError("Missing UnitCombatStats for " + t);}
+        }
+        UNIT_COMBAT_STATS = Collections.unmodifiableMap(map);
+    }
+
     public static int damagePerAttack(UnitType type) {
-        return switch (type) {
-            case PROBE     ->  5;
-            case ZEALOT    ->  8;
-            case STALKER   -> 13;
-            case IMMORTAL  -> 20;
-            case MARINE    ->  6;
-            case MARAUDER  -> 10;
-            case SCV       ->  5;
-            case ROACH     ->  9;
-            case HYDRALISK -> 12;
-            case ZERGLING  ->  5;
-            case QUEEN     -> 20;
-            case MULE      ->  0;
-            case EGG       ->  0;
-            default        ->  5;
-        };
+        return UNIT_COMBAT_STATS.get(type).damagePerAttack();
     }
 
-    /** Ticks between attacks (cooldown reset after firing). 1 tick = 500ms at Faster speed. */
     public static int attackCooldownInTicks(UnitType type) {
-        return switch (type) {
-            case MARINE, HYDRALISK, STALKER, ZERGLING -> 1;
-            case PROBE, ZEALOT, IMMORTAL, MARAUDER, ROACH, SCV, QUEEN -> 2;
-            case MULE, EGG -> Integer.MAX_VALUE; // non-combat
-            default        -> 2;
-        };
+        return UNIT_COMBAT_STATS.get(type).attackCooldownInTicks();
     }
 
-    /** Attack range in tiles. Zealots are melee (0.5 tiles). */
     public static float attackRange(UnitType type) {
-        return switch (type) {
-            case ZEALOT, SCV, ZERGLING -> 0.5f;
-            case PROBE                 -> 3.0f;
-            case STALKER, MARINE, MARAUDER, HYDRALISK -> 5.0f;
-            case IMMORTAL              -> 5.5f;
-            case ROACH                 -> 4.0f;
-            case QUEEN                 -> 5.0f;
-            case MULE, EGG             -> 0.0f; // non-combat
-            default                    -> 3.0f;
-        };
+        return UNIT_COMBAT_STATS.get(type).attackRange();
     }
 
-    /** Official SC2 sight radius in tiles. Friendly units only — we compute friendly vision. */
+    public static UnitCombatStats unitCombatStats(UnitType type) {return UNIT_COMBAT_STATS.get(type);}
+
+
+    private static final Map<UnitType, Integer> UNIT_SIGHT_RANGES;
+
+    static {
+        var map = new EnumMap<UnitType, Integer>(UnitType.class);
+        // Protoss
+        map.put(UnitType.PROBE, 8);
+        map.put(UnitType.ZEALOT, 9);
+        map.put(UnitType.STALKER, 10);
+        map.put(UnitType.IMMORTAL, 9);
+        map.put(UnitType.COLOSSUS, 9);
+        map.put(UnitType.CARRIER, 9);
+        map.put(UnitType.DARK_TEMPLAR, 9);
+        map.put(UnitType.HIGH_TEMPLAR, 9);
+        map.put(UnitType.ARCHON, 9);
+        map.put(UnitType.OBSERVER, 9);
+        map.put(UnitType.VOID_RAY, 9);
+        map.put(UnitType.ADEPT, 9);
+        map.put(UnitType.DISRUPTOR, 9);
+        map.put(UnitType.SENTRY, 9);
+        map.put(UnitType.PHOENIX, 9);
+        map.put(UnitType.ORACLE, 9);
+        map.put(UnitType.TEMPEST, 9);
+        map.put(UnitType.MOTHERSHIP, 9);
+        map.put(UnitType.WARP_PRISM, 9);
+        map.put(UnitType.WARP_PRISM_PHASING, 9);
+        map.put(UnitType.INTERCEPTOR, 9);
+        map.put(UnitType.ADEPT_PHASE_SHIFT, 9);
+        // Zerg
+        map.put(UnitType.ZERGLING, 9);
+        map.put(UnitType.ROACH, 9);
+        map.put(UnitType.HYDRALISK, 9);
+        map.put(UnitType.MUTALISK, 9);
+        map.put(UnitType.ULTRALISK, 9);
+        map.put(UnitType.BROOD_LORD, 9);
+        map.put(UnitType.CORRUPTOR, 9);
+        map.put(UnitType.INFESTOR, 9);
+        map.put(UnitType.SWARM_HOST, 9);
+        map.put(UnitType.VIPER, 9);
+        map.put(UnitType.QUEEN, 9);
+        map.put(UnitType.RAVAGER, 9);
+        map.put(UnitType.LURKER, 9);
+        map.put(UnitType.DRONE, 9);
+        map.put(UnitType.OVERLORD, 9);
+        map.put(UnitType.OVERSEER, 9);
+        map.put(UnitType.BANELING, 9);
+        map.put(UnitType.LOCUST, 9);
+        map.put(UnitType.BROODLING, 9);
+        map.put(UnitType.INFESTED_TERRAN, 9);
+        map.put(UnitType.CHANGELING, 9);
+        map.put(UnitType.EGG, 9);
+        // Terran
+        map.put(UnitType.MARINE, 9);
+        map.put(UnitType.MARAUDER, 9);
+        map.put(UnitType.MEDIVAC, 9);
+        map.put(UnitType.SIEGE_TANK, 9);
+        map.put(UnitType.SIEGE_TANK_SIEGED, 9);
+        map.put(UnitType.THOR, 9);
+        map.put(UnitType.VIKING, 9);
+        map.put(UnitType.GHOST, 9);
+        map.put(UnitType.RAVEN, 9);
+        map.put(UnitType.BANSHEE, 9);
+        map.put(UnitType.BATTLECRUISER, 9);
+        map.put(UnitType.CYCLONE, 9);
+        map.put(UnitType.LIBERATOR, 9);
+        map.put(UnitType.WIDOW_MINE, 9);
+        map.put(UnitType.SCV, 9);
+        map.put(UnitType.REAPER, 9);
+        map.put(UnitType.HELLION, 9);
+        map.put(UnitType.HELLBAT, 9);
+        map.put(UnitType.MULE, 9);
+        map.put(UnitType.VIKING_ASSAULT, 9);
+        map.put(UnitType.LIBERATOR_AG, 9);
+        map.put(UnitType.AUTO_TURRET, 9);
+        // Fallback
+        map.put(UnitType.UNKNOWN, 9);
+        for (UnitType t : UnitType.values()) {
+            if (!map.containsKey(t)) {throw new ExceptionInInitializerError("Missing sightRange for " + t);}
+        }
+        UNIT_SIGHT_RANGES = Collections.unmodifiableMap(map);
+    }
+
     public static int sightRange(UnitType type) {
-        return switch (type) {
-            case PROBE   -> 8;
-            case ZEALOT  -> 9;
-            case STALKER -> 10;
-            default      -> 9;
-        };
+        return UNIT_SIGHT_RANGES.get(type);
     }
 
     /** Official SC2 sight radius in tiles for buildings. */
