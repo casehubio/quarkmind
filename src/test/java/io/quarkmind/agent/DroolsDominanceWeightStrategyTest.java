@@ -1,7 +1,7 @@
 package io.quarkmind.agent;
 
 import io.quarkmind.domain.DominanceWeights;
-import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.EnemyPatternAssessment;
 import io.quarkmind.plugin.drools.DominanceWeightRuleUnit;
 import io.quarkus.test.junit.QuarkusTest;
@@ -117,7 +117,7 @@ class DroolsDominanceWeightStrategyTest {
     void resolve_withRush_shiftsToArmy() {
         var ctx = new WeightContext(5000, null, List.of(
             new EnemyPatternAssessment(
-                EnemyArchetype.TERRAN_MARINE_RUSH, 0.7, 3000, "test")));
+                StrategyArchetype.TERRAN_MARINE_RUSH, 0.7, 3000, "test")));
         DominanceWeights baseline = new AnchorInterpolator(ANCHORS)
             .interpolate(5000);
         DominanceWeights result = createStrategy().resolve(ctx);
@@ -130,7 +130,7 @@ class DroolsDominanceWeightStrategyTest {
     void resolve_withPhaseAndPattern_composesAll() {
         var ctx = new WeightContext(5000, "DEFENSIVE_HOLD", List.of(
             new EnemyPatternAssessment(
-                EnemyArchetype.ZERG_ZERGLING_RUSH, 0.6, 2000, "test")));
+                StrategyArchetype.ZERG_ZERGLING_RUSH, 0.6, 2000, "test")));
         DominanceWeights result = createStrategy().resolve(ctx);
         assertTrue(result.army() > 0.40, "Army should dominate: " + result.army());
         assertEquals(1.0, result.economy() + result.army()

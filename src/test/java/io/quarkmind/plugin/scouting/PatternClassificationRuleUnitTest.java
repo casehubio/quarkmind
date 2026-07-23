@@ -1,6 +1,6 @@
 package io.quarkmind.plugin.scouting;
 
-import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.UnitType;
@@ -31,7 +31,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-            e.archetype() == EnemyArchetype.TERRAN_MARINE_RUSH && e.weight() >= 0.5);
+            e.archetype() == StrategyArchetype.TERRAN_MARINE_RUSH && e.weight() >= 0.5);
     }
 
     @Test
@@ -43,7 +43,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-            e.archetype() == EnemyArchetype.TERRAN_MARINE_RUSH && e.signal().contains("No expansion"));
+            e.archetype() == StrategyArchetype.TERRAN_MARINE_RUSH && e.signal().contains("No expansion"));
     }
 
     @Test
@@ -57,7 +57,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-            e.archetype() == EnemyArchetype.ZERG_ROACH_RUSH && e.weight() >= 0.5);
+            e.archetype() == StrategyArchetype.ZERG_ROACH_RUSH && e.weight() >= 0.5);
     }
 
     @Test
@@ -71,7 +71,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-            e.archetype() == EnemyArchetype.ZERG_ZERGLING_RUSH && e.weight() >= 0.5);
+            e.archetype() == StrategyArchetype.ZERG_ZERGLING_RUSH && e.weight() >= 0.5);
     }
 
     @Test
@@ -86,7 +86,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-            e.archetype() == EnemyArchetype.PROTOSS_GATEWAY_RUSH);
+            e.archetype() == StrategyArchetype.PROTOSS_GATEWAY_RUSH);
     }
 
     @Test
@@ -99,7 +99,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-            e.archetype() == EnemyArchetype.TERRAN_MECH_PUSH);
+            e.archetype() == StrategyArchetype.TERRAN_MECH_PUSH);
     }
 
     @Test
@@ -111,7 +111,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-            e.archetype() == EnemyArchetype.TERRAN_BANSHEE_HARASS && e.weight() >= 0.6);
+            e.archetype() == StrategyArchetype.TERRAN_BANSHEE_HARASS && e.weight() >= 0.6);
     }
 
     @Test
@@ -124,7 +124,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-            e.archetype() == EnemyArchetype.ZERG_MACRO);
+            e.archetype() == StrategyArchetype.ZERG_MACRO);
     }
 
     @Test
@@ -137,7 +137,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-            e.archetype() == EnemyArchetype.PROTOSS_MACRO);
+            e.archetype() == StrategyArchetype.PROTOSS_MACRO);
     }
 
     @Test
@@ -150,7 +150,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-                                                        e.archetype() == EnemyArchetype.PROTOSS_CANNON_RUSH);
+                                                        e.archetype() == StrategyArchetype.PROTOSS_CANNON_RUSH);
     }
 
     @Test
@@ -166,7 +166,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).noneMatch(e ->
-                                                         e.archetype() == EnemyArchetype.PROTOSS_CANNON_RUSH);
+                                                         e.archetype() == StrategyArchetype.PROTOSS_CANNON_RUSH);
     }
 
     @Test
@@ -181,7 +181,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).noneMatch(e ->
-                                                         e.archetype() == EnemyArchetype.PROTOSS_CANNON_RUSH);
+                                                         e.archetype() == StrategyArchetype.PROTOSS_CANNON_RUSH);
     }
 
     @Test
@@ -194,7 +194,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-                                                        e.archetype() == EnemyArchetype.PROTOSS_CANNON_RUSH);
+                                                        e.archetype() == StrategyArchetype.PROTOSS_CANNON_RUSH);
     }
 
     @Test
@@ -207,7 +207,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).noneMatch(e ->
-                                                         e.archetype() == EnemyArchetype.ZERG_MACRO);
+                                                         e.archetype() == StrategyArchetype.ZERG_MACRO);
     }
 
     @Test
@@ -220,7 +220,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).noneMatch(e ->
-                                                         e.archetype() == EnemyArchetype.PROTOSS_MACRO);
+                                                         e.archetype() == StrategyArchetype.PROTOSS_MACRO);
     }
 
     @Test
@@ -233,7 +233,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getRevisions()).anyMatch(r ->
-                                                         r.archetype() == EnemyArchetype.ZERG_ZERGLING_RUSH && r.dampingFactor() < 1.0);
+                                                         r.archetype() == StrategyArchetype.ZERG_ZERGLING_RUSH && r.dampingFactor() < 1.0);
     }
 
     @Test
@@ -246,7 +246,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getRevisions()).anyMatch(r ->
-                                                         r.archetype() == EnemyArchetype.TERRAN_MARINE_RUSH && r.dampingFactor() < 1.0);
+                                                         r.archetype() == StrategyArchetype.TERRAN_MARINE_RUSH && r.dampingFactor() < 1.0);
     }
 
     @Test
@@ -258,7 +258,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getRevisions()).anyMatch(r ->
-                                                         r.archetype() == EnemyArchetype.TERRAN_MARINE_RUSH && r.dampingFactor() < 1.0);
+                                                         r.archetype() == StrategyArchetype.TERRAN_MARINE_RUSH && r.dampingFactor() < 1.0);
     }
 
     @Test
@@ -272,7 +272,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getRevisions().stream()
-                       .filter(r -> r.archetype() == EnemyArchetype.TERRAN_MARINE_RUSH))
+                       .filter(r -> r.archetype() == StrategyArchetype.TERRAN_MARINE_RUSH))
                 .isEmpty();
     }
 
@@ -316,7 +316,7 @@ class PatternClassificationRuleUnitTest {
             .map(EvidenceMarker::archetype).distinct().count();
         assertThat(distinctArchetypes).isGreaterThanOrEqualTo(1);
         assertThat(data.getEvidence()).anyMatch(e ->
-            e.archetype() == EnemyArchetype.TERRAN_MARINE_RUSH);
+            e.archetype() == StrategyArchetype.TERRAN_MARINE_RUSH);
     }
 
     @Test
@@ -331,7 +331,7 @@ class PatternClassificationRuleUnitTest {
         fire(data);
 
         assertThat(data.getEvidence()).anyMatch(e ->
-            e.archetype() == EnemyArchetype.TERRAN_BIO_TIMING && e.weight() >= 0.5);
+            e.archetype() == StrategyArchetype.TERRAN_BIO_TIMING && e.weight() >= 0.5);
     }
 
     private void fire(PatternClassificationRuleUnit data) {

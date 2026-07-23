@@ -1,6 +1,6 @@
 package io.quarkmind.plugin.scouting;
 
-import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.EnemyPatternAssessment;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Point2d;
@@ -43,14 +43,14 @@ class PatternClassificationCalibrationTest {
     void groundTruth_roachRush() {
         var counts = new EnumMap<UnitType, Long>(UnitType.class);
         counts.put(UnitType.ROACH, 5L);
-        assertThat(deriveGroundTruth(counts, 3.0)).isEqualTo(EnemyArchetype.ZERG_ROACH_RUSH);
+        assertThat(deriveGroundTruth(counts, 3.0)).isEqualTo(StrategyArchetype.ZERG_ROACH_RUSH);
     }
 
     @Test
     void groundTruth_marineRush() {
         var counts = new EnumMap<UnitType, Long>(UnitType.class);
         counts.put(UnitType.MARINE, 6L);
-        assertThat(deriveGroundTruth(counts, 3.0)).isEqualTo(EnemyArchetype.TERRAN_MARINE_RUSH);
+        assertThat(deriveGroundTruth(counts, 3.0)).isEqualTo(StrategyArchetype.TERRAN_MARINE_RUSH);
     }
 
     @Test
@@ -64,7 +64,7 @@ class PatternClassificationCalibrationTest {
     void groundTruth_zerglingRush() {
         var counts = new EnumMap<UnitType, Long>(UnitType.class);
         counts.put(UnitType.ZERGLING, 7L);
-        assertThat(deriveGroundTruth(counts, 3.0)).isEqualTo(EnemyArchetype.ZERG_ZERGLING_RUSH);
+        assertThat(deriveGroundTruth(counts, 3.0)).isEqualTo(StrategyArchetype.ZERG_ZERGLING_RUSH);
     }
 
     @Test
@@ -72,35 +72,35 @@ class PatternClassificationCalibrationTest {
         var counts = new EnumMap<UnitType, Long>(UnitType.class);
         counts.put(UnitType.STALKER, 2L);
         counts.put(UnitType.ZEALOT, 3L);
-        assertThat(deriveGroundTruth(counts, 4.0)).isEqualTo(EnemyArchetype.PROTOSS_GATEWAY_RUSH);
+        assertThat(deriveGroundTruth(counts, 4.0)).isEqualTo(StrategyArchetype.PROTOSS_GATEWAY_RUSH);
     }
 
     @Test
     void groundTruth_bansheeHarass() {
         var counts = new EnumMap<UnitType, Long>(UnitType.class);
         counts.put(UnitType.BANSHEE, 1L);
-        assertThat(deriveGroundTruth(counts, 6.0)).isEqualTo(EnemyArchetype.TERRAN_BANSHEE_HARASS);
+        assertThat(deriveGroundTruth(counts, 6.0)).isEqualTo(StrategyArchetype.TERRAN_BANSHEE_HARASS);
     }
 
     @Test
     void groundTruth_bioTiming_marinesLate() {
         var counts = new EnumMap<UnitType, Long>(UnitType.class);
         counts.put(UnitType.MARINE, 7L);
-        assertThat(deriveGroundTruth(counts, 5.0)).isEqualTo(EnemyArchetype.TERRAN_BIO_TIMING);
+        assertThat(deriveGroundTruth(counts, 5.0)).isEqualTo(StrategyArchetype.TERRAN_BIO_TIMING);
     }
 
     @Test
     void groundTruth_mechPush() {
         var counts = new EnumMap<UnitType, Long>(UnitType.class);
         counts.put(UnitType.SIEGE_TANK, 3L);
-        assertThat(deriveGroundTruth(counts, 6.0)).isEqualTo(EnemyArchetype.TERRAN_MECH_PUSH);
+        assertThat(deriveGroundTruth(counts, 6.0)).isEqualTo(StrategyArchetype.TERRAN_MECH_PUSH);
     }
 
     @Test
     void groundTruth_precedence_marineRushBeforeBioTiming() {
         var counts = new EnumMap<UnitType, Long>(UnitType.class);
         counts.put(UnitType.MARINE, 6L);
-        assertThat(deriveGroundTruth(counts, 3.0)).isEqualTo(EnemyArchetype.TERRAN_MARINE_RUSH);
+        assertThat(deriveGroundTruth(counts, 3.0)).isEqualTo(StrategyArchetype.TERRAN_MARINE_RUSH);
     }
 
     // --- Classification accuracy calibration ---
@@ -173,7 +173,7 @@ class PatternClassificationCalibrationTest {
 
     private ClassificationResult classifyGame(SimulatedGame game, String matchup, String gameName) {
         ScoutingSessionManager          sessionManager = new ScoutingSessionManager();
-        EnumMap<EnemyArchetype, Double> cumulative     = new EnumMap<>(EnemyArchetype.class);
+        EnumMap<StrategyArchetype, Double> cumulative     = new EnumMap<>(StrategyArchetype.class);
         Point2d                         ourNexus       = new Point2d(30, 30);
         Point2d                         enemyBase      = new Point2d(120, 120);
 
@@ -202,11 +202,11 @@ class PatternClassificationCalibrationTest {
         for (var unit : finalState.enemyUnits()) {
             counts.merge(unit.type(), 1L, Long::sum);
         }
-        EnemyArchetype groundTruth = deriveGroundTruth(counts, GAME_TIME_3MIN);
+        StrategyArchetype groundTruth = deriveGroundTruth(counts, GAME_TIME_3MIN);
         if (groundTruth == null) {return null;}
 
         var            assessments = PatternClassifier.allAssessments(cumulative, TICKS_3MIN);
-        EnemyArchetype predicted   = assessments.isEmpty() ? null : assessments.get(0).archetype();
+        StrategyArchetype predicted   = assessments.isEmpty() ? null : assessments.get(0).archetype();
         boolean        correct     = groundTruth == predicted;
 
         return new ClassificationResult(matchup, gameName, groundTruth, predicted, correct,
@@ -214,17 +214,17 @@ class PatternClassificationCalibrationTest {
     }
 
     private record ClassificationResult(String matchup, String gameName,
-                                        EnemyArchetype groundTruth, EnemyArchetype predicted,
+                                        StrategyArchetype groundTruth, StrategyArchetype predicted,
                                         boolean correct, double confidence) {
         boolean isRush() {
-            return groundTruth == EnemyArchetype.TERRAN_MARINE_RUSH
-                   || groundTruth == EnemyArchetype.ZERG_ZERGLING_RUSH
-                   || groundTruth == EnemyArchetype.ZERG_ROACH_RUSH
-                   || groundTruth == EnemyArchetype.PROTOSS_GATEWAY_RUSH;
+            return groundTruth == StrategyArchetype.TERRAN_MARINE_RUSH
+                   || groundTruth == StrategyArchetype.ZERG_ZERGLING_RUSH
+                   || groundTruth == StrategyArchetype.ZERG_ROACH_RUSH
+                   || groundTruth == StrategyArchetype.PROTOSS_GATEWAY_RUSH;
         }
 
         boolean isAirThreat() {
-            return groundTruth == EnemyArchetype.TERRAN_BANSHEE_HARASS;
+            return groundTruth == StrategyArchetype.TERRAN_BANSHEE_HARASS;
         }
 
         String reportLine() {
@@ -233,7 +233,7 @@ class PatternClassificationCalibrationTest {
         }
     }
 
-    static EnemyArchetype deriveGroundTruth(Map<UnitType, Long> counts, double gameTimeMin) {
+    static StrategyArchetype deriveGroundTruth(Map<UnitType, Long> counts, double gameTimeMin) {
         long marines    = counts.getOrDefault(UnitType.MARINE, 0L);
         long roaches    = counts.getOrDefault(UnitType.ROACH, 0L);
         long zerglings  = counts.getOrDefault(UnitType.ZERGLING, 0L);
@@ -242,13 +242,13 @@ class PatternClassificationCalibrationTest {
         long siegeTanks = counts.getOrDefault(UnitType.SIEGE_TANK, 0L);
         long banshees   = counts.getOrDefault(UnitType.BANSHEE, 0L);
 
-        if (marines >= 5 && gameTimeMin < 4.0) {return EnemyArchetype.TERRAN_MARINE_RUSH;}
-        if (banshees >= 1 && gameTimeMin < 8.0) {return EnemyArchetype.TERRAN_BANSHEE_HARASS;}
-        if (zerglings >= 6 && gameTimeMin < 4.0) {return EnemyArchetype.ZERG_ZERGLING_RUSH;}
-        if (roaches >= 4 && gameTimeMin < 5.0) {return EnemyArchetype.ZERG_ROACH_RUSH;}
-        if (stalkers + zealots >= 4 && gameTimeMin < 5.0) {return EnemyArchetype.PROTOSS_GATEWAY_RUSH;}
-        if (marines >= 6 && gameTimeMin >= 4.0) {return EnemyArchetype.TERRAN_BIO_TIMING;}
-        if (siegeTanks >= 2 && gameTimeMin >= 5.0) {return EnemyArchetype.TERRAN_MECH_PUSH;}
+        if (marines >= 5 && gameTimeMin < 4.0) {return StrategyArchetype.TERRAN_MARINE_RUSH;}
+        if (banshees >= 1 && gameTimeMin < 8.0) {return StrategyArchetype.TERRAN_BANSHEE_HARASS;}
+        if (zerglings >= 6 && gameTimeMin < 4.0) {return StrategyArchetype.ZERG_ZERGLING_RUSH;}
+        if (roaches >= 4 && gameTimeMin < 5.0) {return StrategyArchetype.ZERG_ROACH_RUSH;}
+        if (stalkers + zealots >= 4 && gameTimeMin < 5.0) {return StrategyArchetype.PROTOSS_GATEWAY_RUSH;}
+        if (marines >= 6 && gameTimeMin >= 4.0) {return StrategyArchetype.TERRAN_BIO_TIMING;}
+        if (siegeTanks >= 2 && gameTimeMin >= 5.0) {return StrategyArchetype.TERRAN_MECH_PUSH;}
         return null;
     }
 }

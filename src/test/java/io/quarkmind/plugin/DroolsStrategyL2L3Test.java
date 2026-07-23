@@ -105,7 +105,7 @@ class DroolsStrategyL2L3Test {
         StrategyRuleUnit data = new StrategyRuleUnit();
 
         data.getPatternStore().add(new io.quarkmind.domain.EnemyPatternAssessment(
-                io.quarkmind.domain.EnemyArchetype.TERRAN_MARINE_RUSH, 0.8, 500L,
+                io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, 0.8, 500L,
                 "8 Marines before 4min"));
         data.getPostureStore().add("UNKNOWN");
         data.getTimingStore().add(false);
@@ -120,7 +120,7 @@ class DroolsStrategyL2L3Test {
         StrategyRuleUnit data = new StrategyRuleUnit();
 
         data.getPatternStore().add(new io.quarkmind.domain.EnemyPatternAssessment(
-                io.quarkmind.domain.EnemyArchetype.TERRAN_MARINE_RUSH, 0.5, 300L,
+                io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, 0.5, 300L,
                 "Low confidence"));
         data.getPostureStore().add("UNKNOWN");
         data.getTimingStore().add(false);
@@ -135,7 +135,7 @@ class DroolsStrategyL2L3Test {
         StrategyRuleUnit data = new StrategyRuleUnit();
 
         data.getPatternStore().add(new io.quarkmind.domain.EnemyPatternAssessment(
-                io.quarkmind.domain.EnemyArchetype.ZERG_MACRO, 0.9, 500L,
+                io.quarkmind.domain.StrategyArchetype.ZERG_MACRO, 0.9, 500L,
                 "Macro build"));
         data.getPostureStore().add("UNKNOWN");
         data.getTimingStore().add(false);

@@ -22,7 +22,7 @@ import io.quarkmind.agent.TaskDefinition;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
-import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.EnemyPatternAssessment;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
@@ -123,7 +123,7 @@ public class SC2StrategyRouterTask implements TaskDefinition {
         }
 
         EnemyPatternAssessment best = pa.assessments().getFirst();
-        EnemyArchetype archetype = best.archetype();
+        StrategyArchetype archetype = best.archetype();
         double confidence = best.confidence();
 
         if (confidence < confidenceThreshold) {

@@ -2,7 +2,7 @@ package io.quarkmind.plugin.scouting;
 unit PatternClassificationRuleUnit;
 
 import io.quarkmind.domain.UnitType;
-import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.Race;
 
 // ---------------------------------------------------------------------------
@@ -23,7 +23,7 @@ when
     accumulate(/unitEvents[this.type() == UnitType.MARINE]; $count: count(); $count >= 5)
     /gameTimeStore[this < 4.0]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_MARINE_RUSH, 0.6,
+    evidence.add(new EvidenceMarker(StrategyArchetype.TERRAN_MARINE_RUSH, 0.6,
         $count + " Marines before 4min"));
 end
 
@@ -32,7 +32,7 @@ when
     not /expansionEvents
     /unitEvents[this.type() == UnitType.MARINE]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_MARINE_RUSH, 0.3,
+    evidence.add(new EvidenceMarker(StrategyArchetype.TERRAN_MARINE_RUSH, 0.3,
         "No expansion with Marines"));
 end
 
@@ -42,7 +42,7 @@ when
     /unitEvents[this.type() == UnitType.MEDIVAC]
     /gameTimeStore[this >= 4.0, this < 10.0]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_BIO_TIMING, 0.6,
+    evidence.add(new EvidenceMarker(StrategyArchetype.TERRAN_BIO_TIMING, 0.6,
         $mCount + " Marines + Medivac in mid-game"));
 end
 
@@ -51,7 +51,7 @@ when
     accumulate(/unitEvents[this.type() == UnitType.MARINE]; $mCount: count(); $mCount >= 6)
     /gameTimeStore[this >= 4.0]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_BIO_TIMING, 0.3,
+    evidence.add(new EvidenceMarker(StrategyArchetype.TERRAN_BIO_TIMING, 0.3,
         $mCount + " Marines after 4min"));
 end
 
@@ -60,7 +60,7 @@ when
     accumulate(/unitEvents[this.type() == UnitType.SIEGE_TANK]; $count: count(); $count >= 2)
     /gameTimeStore[this >= 5.0]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_MECH_PUSH, 0.6,
+    evidence.add(new EvidenceMarker(StrategyArchetype.TERRAN_MECH_PUSH, 0.6,
         $count + " Siege Tanks"));
 end
 
@@ -68,7 +68,7 @@ rule "Evidence: Mech Push — thors present"
 when
     /unitEvents[this.type() == UnitType.THOR]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_MECH_PUSH, 0.4,
+    evidence.add(new EvidenceMarker(StrategyArchetype.TERRAN_MECH_PUSH, 0.4,
         "Thor spotted"));
 end
 
@@ -77,7 +77,7 @@ when
     /unitEvents[this.type() == UnitType.BANSHEE]
     /gameTimeStore[this < 8.0]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.TERRAN_BANSHEE_HARASS, 0.7,
+    evidence.add(new EvidenceMarker(StrategyArchetype.TERRAN_BANSHEE_HARASS, 0.7,
         "Banshee before 8min"));
 end
 
@@ -88,7 +88,7 @@ when
     accumulate(/unitEvents[this.type() == UnitType.ZERGLING]; $count: count(); $count >= 6)
     /gameTimeStore[this < 4.0]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.6,
+    evidence.add(new EvidenceMarker(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.6,
         $count + " Zerglings before 4min"));
 end
 
@@ -97,7 +97,7 @@ when
     not /expansionEvents
     /unitEvents[this.type() == UnitType.ZERGLING]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.3,
+    evidence.add(new EvidenceMarker(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.3,
         "No expansion with Zerglings"));
 end
 
@@ -106,7 +106,7 @@ when
     accumulate(/unitEvents[this.type() == UnitType.ROACH]; $count: count(); $count >= 4)
     /gameTimeStore[this < 5.0]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.ZERG_ROACH_RUSH, 0.7,
+    evidence.add(new EvidenceMarker(StrategyArchetype.ZERG_ROACH_RUSH, 0.7,
         $count + " Roaches before 5min"));
 end
 
@@ -117,7 +117,7 @@ when
     /gameTimeStore[this < 5.0]
     exists /unitEvents[this.type().race() == Race.ZERG]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.ZERG_MACRO, 0.5,
+    evidence.add(new EvidenceMarker(StrategyArchetype.ZERG_MACRO, 0.5,
         "Expansion with < 4 units"));
 end
 
@@ -132,7 +132,7 @@ when
     )
     /gameTimeStore[this < 5.0]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.PROTOSS_GATEWAY_RUSH, 0.6,
+    evidence.add(new EvidenceMarker(StrategyArchetype.PROTOSS_GATEWAY_RUSH, 0.6,
         $count + " Gateway units before 5min"));
 end
 
@@ -141,7 +141,7 @@ when
     not /expansionEvents
     /unitEvents[this.type() == UnitType.STALKER || this.type() == UnitType.ZEALOT]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.PROTOSS_GATEWAY_RUSH, 0.3,
+    evidence.add(new EvidenceMarker(StrategyArchetype.PROTOSS_GATEWAY_RUSH, 0.3,
         "No expansion with Gateway units"));
 end
 
@@ -152,7 +152,7 @@ when
     not /unitEvents[this.type() == UnitType.STALKER]
     exists /unitEvents[this.type().race() == Race.PROTOSS]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.PROTOSS_CANNON_RUSH, 0.6,
+    evidence.add(new EvidenceMarker(StrategyArchetype.PROTOSS_CANNON_RUSH, 0.6,
         "Army near base early without Stalkers"));
 end
 
@@ -163,7 +163,7 @@ when
     /gameTimeStore[this < 5.0]
     exists /unitEvents[this.type().race() == Race.PROTOSS]
 then
-    evidence.add(new EvidenceMarker(EnemyArchetype.PROTOSS_MACRO, 0.5,
+    evidence.add(new EvidenceMarker(StrategyArchetype.PROTOSS_MACRO, 0.5,
         "Expansion with < 3 units"));
 end
 
@@ -174,7 +174,7 @@ when
     /expansionEvents
     exists /unitEvents[this.type().race() == Race.TERRAN]
 then
-    revisions.add(new ConfidenceRevision(EnemyArchetype.TERRAN_MARINE_RUSH, 0.997,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.TERRAN_MARINE_RUSH, 0.997,
         "Expansion detected — rush unlikely"));
 end
 
@@ -183,9 +183,9 @@ when
     /expansionEvents
     exists /unitEvents[this.type().race() == Race.ZERG]
 then
-    revisions.add(new ConfidenceRevision(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.997,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.997,
         "Expansion detected — rush unlikely"));
-    revisions.add(new ConfidenceRevision(EnemyArchetype.ZERG_ROACH_RUSH, 0.997,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.ZERG_ROACH_RUSH, 0.997,
         "Expansion detected — rush unlikely"));
 end
 
@@ -194,9 +194,9 @@ when
     /expansionEvents
     exists /unitEvents[this.type().race() == Race.PROTOSS]
 then
-    revisions.add(new ConfidenceRevision(EnemyArchetype.PROTOSS_GATEWAY_RUSH, 0.997,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.PROTOSS_GATEWAY_RUSH, 0.997,
         "Expansion detected — rush unlikely"));
-    revisions.add(new ConfidenceRevision(EnemyArchetype.PROTOSS_CANNON_RUSH, 0.997,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.PROTOSS_CANNON_RUSH, 0.997,
         "Expansion detected — rush unlikely"));
 end
 
@@ -204,7 +204,7 @@ rule "Counter: Tech transition vs Terran rush — siege tank"
 when
     /unitEvents[this.type() == UnitType.SIEGE_TANK]
 then
-    revisions.add(new ConfidenceRevision(EnemyArchetype.TERRAN_MARINE_RUSH, 0.998,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.TERRAN_MARINE_RUSH, 0.998,
         "Siege Tank spotted — tech transition"));
 end
 
@@ -212,9 +212,9 @@ rule "Counter: Tech transition vs Zerg rush — brood lord"
 when
     /unitEvents[this.type() == UnitType.BROOD_LORD]
 then
-    revisions.add(new ConfidenceRevision(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.998,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.998,
         "Brood Lord spotted — tech transition"));
-    revisions.add(new ConfidenceRevision(EnemyArchetype.ZERG_ROACH_RUSH, 0.998,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.ZERG_ROACH_RUSH, 0.998,
         "Brood Lord spotted — tech transition"));
 end
 
@@ -222,9 +222,9 @@ rule "Counter: Tech transition vs Protoss rush — colossus"
 when
     /unitEvents[this.type() == UnitType.COLOSSUS]
 then
-    revisions.add(new ConfidenceRevision(EnemyArchetype.PROTOSS_GATEWAY_RUSH, 0.998,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.PROTOSS_GATEWAY_RUSH, 0.998,
         "Colossus spotted — tech transition"));
-    revisions.add(new ConfidenceRevision(EnemyArchetype.PROTOSS_CANNON_RUSH, 0.998,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.PROTOSS_CANNON_RUSH, 0.998,
         "Colossus spotted — tech transition"));
 end
 
@@ -233,14 +233,14 @@ when
     /gameTimeStore[this > 5.0]
     not /armyNearBaseEvents
 then
-    revisions.add(new ConfidenceRevision(EnemyArchetype.TERRAN_MARINE_RUSH, 0.998,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.TERRAN_MARINE_RUSH, 0.998,
         "Past 5min with no attack"));
-    revisions.add(new ConfidenceRevision(EnemyArchetype.ZERG_ZERGLING_RUSH, 0.998,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.998,
         "Past 5min with no attack"));
-    revisions.add(new ConfidenceRevision(EnemyArchetype.ZERG_ROACH_RUSH, 0.998,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.ZERG_ROACH_RUSH, 0.998,
         "Past 5min with no attack"));
-    revisions.add(new ConfidenceRevision(EnemyArchetype.PROTOSS_GATEWAY_RUSH, 0.998,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.PROTOSS_GATEWAY_RUSH, 0.998,
         "Past 5min with no attack"));
-    revisions.add(new ConfidenceRevision(EnemyArchetype.PROTOSS_CANNON_RUSH, 0.998,
+    revisions.add(new ConfidenceRevision(StrategyArchetype.PROTOSS_CANNON_RUSH, 0.998,
         "Past 5min with no attack"));
 end

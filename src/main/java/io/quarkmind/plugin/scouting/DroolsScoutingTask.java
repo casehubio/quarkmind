@@ -26,7 +26,7 @@ import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.ScoutingTask;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
-import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.EnemyPatternAssessment;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Unit;
@@ -97,8 +97,8 @@ public class DroolsScoutingTask implements ScoutingTask {
     private volatile String scoutProbeTag;
     private long lastFrame = -1;
 
-    private final EnumMap<EnemyArchetype, Double> cumulativeConfidence =
-        new EnumMap<>(EnemyArchetype.class);
+    private final EnumMap<StrategyArchetype, Double> cumulativeConfidence =
+        new EnumMap<>(StrategyArchetype.class);
     volatile List<EnemyPatternAssessment> prevAssessments = List.of();
 
     @Inject

@@ -1,7 +1,7 @@
 package io.quarkmind.plugin.drools;
 
 import io.quarkmind.agent.WeightModifier;
-import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.EnemyPatternAssessment;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -37,7 +37,7 @@ class DominanceWeightRuleUnitTest {
     void highConfidenceRush_emitsArmyBoost() {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new EnemyPatternAssessment(
-            EnemyArchetype.TERRAN_MARINE_RUSH, 0.7, 3000, "test"));
+            StrategyArchetype.TERRAN_MARINE_RUSH, 0.7, 3000, "test"));
         List<WeightModifier> mods = fire(data);
         assertFalse(mods.isEmpty());
         double totalArmyDelta = mods.stream()
@@ -52,7 +52,7 @@ class DominanceWeightRuleUnitTest {
     void moderateConfidenceRush_emitsSmallerBoost() {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new EnemyPatternAssessment(
-            EnemyArchetype.ZERG_ZERGLING_RUSH, 0.4, 2000, "test"));
+            StrategyArchetype.ZERG_ZERGLING_RUSH, 0.4, 2000, "test"));
         List<WeightModifier> mods = fire(data);
         double totalArmyDelta = mods.stream()
             .mapToDouble(WeightModifier::armyDelta).sum();
@@ -65,7 +65,7 @@ class DominanceWeightRuleUnitTest {
     void rushBelowThreshold_noModifier() {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new EnemyPatternAssessment(
-            EnemyArchetype.TERRAN_MARINE_RUSH, 0.29, 3000, "test"));
+            StrategyArchetype.TERRAN_MARINE_RUSH, 0.29, 3000, "test"));
         List<WeightModifier> mods = fire(data);
         boolean hasRushMod = mods.stream()
             .anyMatch(m -> m.reason().toLowerCase().contains("rush"));
@@ -76,7 +76,7 @@ class DominanceWeightRuleUnitTest {
     void pushArchetype_emitsTechAndArmyBoost() {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new EnemyPatternAssessment(
-            EnemyArchetype.TERRAN_BIO_TIMING, 0.6, 5000, "test"));
+            StrategyArchetype.TERRAN_BIO_TIMING, 0.6, 5000, "test"));
         List<WeightModifier> mods = fire(data);
         double armyDelta = mods.stream()
             .mapToDouble(WeightModifier::armyDelta).sum();
@@ -90,7 +90,7 @@ class DominanceWeightRuleUnitTest {
     void harassArchetype_emitsTechBoost() {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new EnemyPatternAssessment(
-            EnemyArchetype.TERRAN_BANSHEE_HARASS, 0.5, 6000, "test"));
+            StrategyArchetype.TERRAN_BANSHEE_HARASS, 0.5, 6000, "test"));
         List<WeightModifier> mods = fire(data);
         double techDelta = mods.stream()
             .mapToDouble(WeightModifier::techDelta).sum();
@@ -101,7 +101,7 @@ class DominanceWeightRuleUnitTest {
     void macroArchetype_boostsEconomyAndTech() {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new EnemyPatternAssessment(
-            EnemyArchetype.ZERG_MACRO, 0.6, 4000, "test"));
+            StrategyArchetype.ZERG_MACRO, 0.6, 4000, "test"));
         List<WeightModifier> mods = fire(data);
         double economyDelta = mods.stream()
             .mapToDouble(WeightModifier::economyDelta).sum();
@@ -155,7 +155,7 @@ class DominanceWeightRuleUnitTest {
     void combinedSignal_rushAndDefensiveHold_stacksModifiers() {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new EnemyPatternAssessment(
-            EnemyArchetype.TERRAN_MARINE_RUSH, 0.7, 3000, "test"));
+            StrategyArchetype.TERRAN_MARINE_RUSH, 0.7, 3000, "test"));
         data.getPhaseStore().add("DEFENSIVE_HOLD");
         List<WeightModifier> mods = fire(data);
         assertTrue(mods.size() >= 3,
@@ -170,7 +170,7 @@ class DominanceWeightRuleUnitTest {
     void combinedSignal_macroAndEarlyMacro_stacksModifiers() {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new EnemyPatternAssessment(
-            EnemyArchetype.PROTOSS_MACRO, 0.6, 4000, "test"));
+            StrategyArchetype.PROTOSS_MACRO, 0.6, 4000, "test"));
         data.getPhaseStore().add("EARLY_MACRO");
         List<WeightModifier> mods = fire(data);
         assertTrue(mods.size() >= 3);
@@ -184,7 +184,7 @@ class DominanceWeightRuleUnitTest {
     void combinedSignal_pushAndMidSkirmish_stacksModifiers() {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new EnemyPatternAssessment(
-            EnemyArchetype.TERRAN_MECH_PUSH, 0.6, 7000, "test"));
+            StrategyArchetype.TERRAN_MECH_PUSH, 0.6, 7000, "test"));
         data.getPhaseStore().add("MID_SKIRMISH");
         List<WeightModifier> mods = fire(data);
         assertTrue(mods.size() >= 3);
@@ -200,7 +200,7 @@ class DominanceWeightRuleUnitTest {
     void combinedSignal_rushAndEarlyAggression_stacksModifiers() {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new EnemyPatternAssessment(
-            EnemyArchetype.ZERG_ZERGLING_RUSH, 0.6, 2000, "test"));
+            StrategyArchetype.ZERG_ZERGLING_RUSH, 0.6, 2000, "test"));
         data.getPhaseStore().add("EARLY_AGGRESSION");
         List<WeightModifier> mods = fire(data);
         assertTrue(mods.size() >= 3);
@@ -210,9 +210,9 @@ class DominanceWeightRuleUnitTest {
     void multipleArchetypes_allFireAndStack() {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new EnemyPatternAssessment(
-            EnemyArchetype.TERRAN_MARINE_RUSH, 0.5, 3000, "test"));
+            StrategyArchetype.TERRAN_MARINE_RUSH, 0.5, 3000, "test"));
         data.getPatternStore().add(new EnemyPatternAssessment(
-            EnemyArchetype.TERRAN_BIO_TIMING, 0.5, 3000, "test"));
+            StrategyArchetype.TERRAN_BIO_TIMING, 0.5, 3000, "test"));
         List<WeightModifier> mods = fire(data);
         assertTrue(mods.size() >= 2, "Both archetypes should produce modifiers");
     }

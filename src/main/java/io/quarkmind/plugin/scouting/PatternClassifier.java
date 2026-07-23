@@ -1,6 +1,6 @@
 package io.quarkmind.plugin.scouting;
 
-import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.EnemyPatternAssessment;
 
 import java.util.EnumMap;
@@ -23,7 +23,7 @@ public final class PatternClassifier {
         return 1.0 - product;
     }
 
-    static Map<EnemyArchetype, Double> computeAllConfidences(List<EvidenceMarker> markers) {
+    static Map<StrategyArchetype, Double> computeAllConfidences(List<EvidenceMarker> markers) {
         return markers.stream()
                       .collect(Collectors.groupingBy(EvidenceMarker::archetype))
                       .entrySet().stream()
@@ -31,8 +31,8 @@ public final class PatternClassifier {
                                                 e -> computeTickConfidence(e.getValue())));
     }
 
-    static void mergeCumulative(EnumMap<EnemyArchetype, Double> cumulative,
-                                Map<EnemyArchetype, Double> thisTick,
+    static void mergeCumulative(EnumMap<StrategyArchetype, Double> cumulative,
+                                Map<StrategyArchetype, Double> thisTick,
                                 long currentFrame, long lastFrame) {
         if (lastFrame >= 0) {
             long   elapsed = currentFrame - lastFrame;
@@ -44,7 +44,7 @@ public final class PatternClassifier {
         cumulative.values().removeIf(v -> v < NOISE_FLOOR);
     }
 
-    static void applyRevisions(EnumMap<EnemyArchetype, Double> cumulative,
+    static void applyRevisions(EnumMap<StrategyArchetype, Double> cumulative,
                                List<ConfidenceRevision> revisions,
                                long framesElapsed) {
         for (ConfidenceRevision rev : revisions) {
@@ -54,10 +54,10 @@ public final class PatternClassifier {
     }
 
     static List<EnemyPatternAssessment> allAssessments(
-            EnumMap<EnemyArchetype, Double> cumulative, long frame) {
+            EnumMap<StrategyArchetype, Double> cumulative, long frame) {
         return cumulative.entrySet().stream()
                          .filter(e -> e.getValue() >= DISPATCH_THRESHOLD)
-                         .sorted(Map.Entry.<EnemyArchetype, Double>comparingByValue().reversed())
+                         .sorted(Map.Entry.<StrategyArchetype, Double>comparingByValue().reversed())
                          .map(e -> new EnemyPatternAssessment(e.getKey(), e.getValue(), frame,
                                                               e.getKey().name() + " (confidence " +
                                                               String.format("%.2f", e.getValue()) + ")"))

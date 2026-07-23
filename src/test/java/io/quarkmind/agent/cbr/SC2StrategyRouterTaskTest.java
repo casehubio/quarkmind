@@ -11,7 +11,7 @@ import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
-import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.EnemyPatternAssessment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,7 +73,7 @@ class SC2StrategyRouterTaskTest {
 
     @Test
     void archetypePresent_routesAndWritesKeys() {
-        setArchetype(EnemyArchetype.ZERG_ROACH_RUSH, 0.85);
+        setArchetype(StrategyArchetype.ZERG_ROACH_RUSH, 0.85);
         MutableMapCaseContext ctx = new MutableMapCaseContext(new HashMap<>(Map.of(QuarkMindCaseFile.READY, true)));
 
         router.execute(ctx);
@@ -88,7 +88,7 @@ class SC2StrategyRouterTaskTest {
 
     @Test
     void sameArchetype_skipsReroute() {
-        setArchetype(EnemyArchetype.ZERG_ROACH_RUSH, 0.85);
+        setArchetype(StrategyArchetype.ZERG_ROACH_RUSH, 0.85);
         Map<String, Object> persisted = new HashMap<>(Map.of(
                 QuarkMindCaseFile.READY, true,
                 QuarkMindCaseFile.STRATEGY_SELECTED_ID, "strategy.drools",
@@ -102,7 +102,7 @@ class SC2StrategyRouterTaskTest {
 
     @Test
     void lowConfidence_skipsRouting() {
-        setArchetype(EnemyArchetype.ZERG_ROACH_RUSH, 0.3);
+        setArchetype(StrategyArchetype.ZERG_ROACH_RUSH, 0.3);
         MutableMapCaseContext ctx = new MutableMapCaseContext(new HashMap<>(Map.of(QuarkMindCaseFile.READY, true)));
 
         router.execute(ctx);
@@ -114,7 +114,7 @@ class SC2StrategyRouterTaskTest {
 
     @Test
     void pivotLimitEnforced() {
-        setArchetype(EnemyArchetype.TERRAN_MARINE_RUSH, 0.9);
+        setArchetype(StrategyArchetype.TERRAN_MARINE_RUSH, 0.9);
         Map<String, Object> persisted = new HashMap<>(Map.of(
                 QuarkMindCaseFile.READY, true,
                 QuarkMindCaseFile.STRATEGY_SELECTED_ID, "strategy.drools",
@@ -129,7 +129,7 @@ class SC2StrategyRouterTaskTest {
 
     @Test
     void lastSelectedId_exposedForOutcomeRecorders() {
-        setArchetype(EnemyArchetype.ZERG_ROACH_RUSH, 0.85);
+        setArchetype(StrategyArchetype.ZERG_ROACH_RUSH, 0.85);
         MutableMapCaseContext ctx = new MutableMapCaseContext(new HashMap<>(Map.of(QuarkMindCaseFile.READY, true)));
         router.execute(ctx);
         assertThat(router.lastSelectedId()).isNotNull();
@@ -148,7 +148,7 @@ class SC2StrategyRouterTaskTest {
         verify(cbrStore, never()).retrieveSimilar(any(), any());
     }
 
-    private void setArchetype(EnemyArchetype archetype, double confidence) {
+    private void setArchetype(StrategyArchetype archetype, double confidence) {
         var assessment = new EnemyPatternAssessment(archetype, confidence, 1000, "test");
         when(broker.current(ScoutingIntelType.PATTERN_ASSESSMENT))
                 .thenReturn(Optional.of(new ScoutingIntelPayload.PatternAssessment(List.of(assessment))));
