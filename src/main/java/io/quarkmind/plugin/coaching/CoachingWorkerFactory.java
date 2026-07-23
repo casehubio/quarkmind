@@ -48,7 +48,7 @@ public final class CoachingWorkerFactory {
         return Worker.builder()
             .name(descriptor.agentId())
             .capabilityName(capabilityName)
-            .function(new WorkerFunction.Sync<>(Map.class, input ->
+            .function(new WorkerFunction.Sync<>(Map.class, Map.class, (input, scope) ->
                 executeCoaching(descriptor, chatModel, input, onCompletion)))
             .description("Coaching worker: " + descriptor.name() + " (" + descriptor.agentId() + ")")
             .build();

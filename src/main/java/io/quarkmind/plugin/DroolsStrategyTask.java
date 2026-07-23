@@ -5,6 +5,7 @@ import io.casehub.api.context.CaseContext;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
+import io.casehub.platform.api.identity.TenancyConstants;
 import io.casehub.platform.api.preferences.SettingsScope;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.PluginDecisionEvent;
@@ -100,7 +101,7 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
 
     @PostConstruct
     void init() {
-        refreshSubscriptions(preferenceProvider.resolve(SettingsScope.root()));
+        refreshSubscriptions(preferenceProvider.resolve(SettingsScope.root(TenancyConstants.DEFAULT_TENANT_ID)));
         // Don't initialize summarisation subscriptions here — causes circular dependency
         // with MomentBroker. Initialize lazily on first execute() call.
     }

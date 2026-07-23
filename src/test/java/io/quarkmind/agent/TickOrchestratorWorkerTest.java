@@ -38,7 +38,7 @@ class TickOrchestratorWorkerTest {
         );
 
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(plugins);
-        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1));
+        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1), null);
 
         assertThat(executionOrder).containsExactly("scouting", "strategy", "tactics", "economics");
         assertThat(result.outcome()).isInstanceOf(WorkerOutcome.Success.class);
@@ -56,7 +56,7 @@ class TickOrchestratorWorkerTest {
         );
 
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(plugins);
-        fn.fn().apply(Map.of("game.frame", 1));
+        fn.fn().apply(Map.of("game.frame", 1), null);
 
         assertThat(executionOrder).containsExactly("scouting", "tactics", "economics");
     }
@@ -79,7 +79,7 @@ class TickOrchestratorWorkerTest {
 
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(plugins);
         // Input does NOT contain "game.enemy.army_size"
-        fn.fn().apply(Map.of("game.frame", 1));
+        fn.fn().apply(Map.of("game.frame", 1), null);
 
         assertThat(executionOrder).containsExactly("scouting", "tactics", "economics");
     }
@@ -100,7 +100,7 @@ class TickOrchestratorWorkerTest {
         );
 
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(plugins);
-        fn.fn().apply(Map.of("game.frame", 1, "game.enemy.army_size", 5));
+        fn.fn().apply(Map.of("game.frame", 1, "game.enemy.army_size", 5), null);
 
         assertThat(executionOrder).containsExactly("scouting", "strategy", "tactics");
     }
@@ -127,11 +127,11 @@ class TickOrchestratorWorkerTest {
         List<TaskDefinition> plugins = List.of(scouting, strategy);
 
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(plugins);
-        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1));
+        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1), null);
 
         assertThat(result.outcome()).isInstanceOf(WorkerOutcome.Success.class);
-        assertThat(result.output()).containsEntry("game.enemy.army_size", 10);
-        assertThat(result.output()).containsEntry("agent.strategy", "DEFEND");
+        assertThat((Map<String, Object>) result.output()).containsEntry("game.enemy.army_size", 10);
+        assertThat((Map<String, Object>) result.output()).containsEntry("agent.strategy", "DEFEND");
     }
 
     @Test
@@ -145,9 +145,9 @@ class TickOrchestratorWorkerTest {
         };
 
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(List.of(writer));
-        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1));
+        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1), null);
 
-        assertThat(result.output())
+        assertThat((Map<String, Object>) result.output())
             .containsEntry("agent.scouting.result", "enemy_rush")
             .containsEntry("agent.scouting.confidence", 0.85);
     }
@@ -155,10 +155,10 @@ class TickOrchestratorWorkerTest {
     @Test
     void emptyPluginList_returnsEmptySuccess() {
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(List.of());
-        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1));
+        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1), null);
 
         assertThat(result.outcome()).isInstanceOf(WorkerOutcome.Success.class);
-        assertThat(result.output()).isEmpty();
+        assertThat((Map<String, Object>) result.output()).isEmpty();
     }
 
     @Test
@@ -177,7 +177,7 @@ class TickOrchestratorWorkerTest {
         );
 
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(plugins);
-        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1));
+        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1), null);
 
         assertThat(result.outcome()).isInstanceOf(WorkerOutcome.Failed.class);
         // Strategy should NOT execute after scouting failure
@@ -197,7 +197,7 @@ class TickOrchestratorWorkerTest {
         };
 
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(List.of(reader));
-        fn.fn().apply(Map.of("game.frame", 42, "game.resources.minerals", 350));
+        fn.fn().apply(Map.of("game.frame", 42, "game.resources.minerals", 350), null);
 
         assertThat(captured).containsExactly(42, 350);
     }
@@ -211,10 +211,10 @@ class TickOrchestratorWorkerTest {
         );
 
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(plugins);
-        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1));
+        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1), null);
 
         assertThat(result.outcome()).isInstanceOf(WorkerOutcome.Success.class);
-        assertThat(result.output()).isEmpty();
+        assertThat((Map<String, Object>) result.output()).isEmpty();
     }
 
     @Test
@@ -228,10 +228,10 @@ class TickOrchestratorWorkerTest {
         };
 
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(List.of(writer));
-        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1));
+        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1), null);
 
         // The output should contain only mutations
-        assertThat(result.output()).containsEntry("game.frame", 999);
+        assertThat((Map<String, Object>) result.output()).containsEntry("game.frame", 999);
     }
 
     // ------------------------------------------------------------------

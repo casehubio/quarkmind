@@ -151,7 +151,7 @@ class QuarkMindCaseHubTest {
         assertThat(tickOrchestrator.function()).isInstanceOf(WorkerFunction.Sync.class);
 
         WorkerFunction.Sync fn = (WorkerFunction.Sync) tickOrchestrator.function();
-        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1));
+        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1), null);
 
         // Stub plugins are no-ops, but the function should still return Success
         assertThat(result.outcome()).isInstanceOf(WorkerOutcome.Success.class);
@@ -198,7 +198,7 @@ class QuarkMindCaseHubTest {
             .findFirst().orElseThrow();
 
         WorkerFunction.Sync fn = (WorkerFunction.Sync) tickOrchestrator.function();
-        fn.fn().apply(Map.of("game.frame", 1));
+        fn.fn().apply(Map.of("game.frame", 1), null);
 
         assertThat(executionOrder)
             .containsExactly("scouting.test", "strategy.test", "tactics.test", "economics.test");

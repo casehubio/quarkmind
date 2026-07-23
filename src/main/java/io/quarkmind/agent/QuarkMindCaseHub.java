@@ -12,6 +12,7 @@ import io.casehub.worker.api.Capability;
 import io.casehub.worker.api.Worker;
 import io.casehub.worker.api.WorkerFunction;
 import io.casehub.worker.api.WorkerResult;
+import io.casehub.worker.api.WorkerScope;
 import io.quarkmind.plugin.advisory.AdvisoryWorkerFactory;
 import io.quarkmind.plugin.advisory.CompletionCallback;
 import io.quarkmind.plugin.advisory.QuarkMindAgentRegistrar;
@@ -240,9 +241,9 @@ public class QuarkMindCaseHub extends CaseHub {
         Worker tickOrchestrator = Worker.builder()
             .name("tick-orchestrator")
             .capabilityName(CAPABILITY_TICK_DECISION)
-            .function(new WorkerFunction.Sync<>(Map.class, (Map input) -> {
+            .function(new WorkerFunction.Sync<>(Map.class, Map.class, (Map input, WorkerScope scope) -> {
                 List<TaskDefinition> chain = resolveTickChain();
-                return (WorkerResult) TickOrchestratorWorker.createFunction(chain).fn().apply(input);
+                return (WorkerResult) TickOrchestratorWorker.createFunction(chain).fn().apply(input, scope);
             }))
             .description("Chains plugin execution: scouting → strategy → tactics → economics")
             .build();

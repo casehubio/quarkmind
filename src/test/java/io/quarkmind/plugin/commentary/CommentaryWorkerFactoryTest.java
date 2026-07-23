@@ -89,10 +89,10 @@ class CommentaryWorkerFactoryTest {
             )
         );
 
-        WorkerResult result = (WorkerResult) syncFn.fn().apply(input);
+        WorkerResult result = (WorkerResult) syncFn.fn().apply(input, null);
 
-        assertThat(result.output()).containsKey("agent.commentary.reactive.text");
-        assertThat(result.output().get("agent.commentary.reactive.text"))
+        assertThat((Map<String, Object>) result.output()).containsKey("agent.commentary.reactive.text");
+        assertThat(((Map<String, Object>) result.output()).get("agent.commentary.reactive.text"))
             .isEqualTo("The enemy is at the gates!");
     }
 
@@ -115,10 +115,10 @@ class CommentaryWorkerFactoryTest {
             )
         );
 
-        WorkerResult result = (WorkerResult) syncFn.fn().apply(input);
+        WorkerResult result = (WorkerResult) syncFn.fn().apply(input, null);
 
-        assertThat(result.output()).containsKey("agent.commentary.narrative.text");
-        assertThat(result.output().get("agent.commentary.narrative.text"))
+        assertThat((Map<String, Object>) result.output()).containsKey("agent.commentary.narrative.text");
+        assertThat(((Map<String, Object>) result.output()).get("agent.commentary.narrative.text"))
             .isEqualTo("Over the last minute, the bot secured map control.");
     }
 
@@ -142,7 +142,7 @@ class CommentaryWorkerFactoryTest {
             List.of(descriptor), capturingModel, noOpCallback());
         WorkerFunction.Sync syncFn = (WorkerFunction.Sync) workers.get(0).function();
 
-        syncFn.fn().apply(Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of("gameFrame", 1000L)));
+        syncFn.fn().apply(Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of("gameFrame", 1000L)), null);
 
         assertThat(captured[0]).isNotNull();
         String systemText = captured[0].stream()
@@ -175,7 +175,7 @@ class CommentaryWorkerFactoryTest {
             List.of(descriptor), capturingModel, noOpCallback());
         WorkerFunction.Sync syncFn = (WorkerFunction.Sync) workers.get(0).function();
 
-        syncFn.fn().apply(Map.of(QuarkMindCaseFile.COMMENTARY_NARRATIVE_TRIGGER, Map.of("gameFrame", 1000L)));
+        syncFn.fn().apply(Map.of(QuarkMindCaseFile.COMMENTARY_NARRATIVE_TRIGGER, Map.of("gameFrame", 1000L)), null);
 
         assertThat(captured[0]).isNotNull();
         String systemText = captured[0].stream()
@@ -203,7 +203,7 @@ class CommentaryWorkerFactoryTest {
             List.of(descriptor), failingModel, noOpCallback());
         WorkerFunction.Sync syncFn = (WorkerFunction.Sync) workers.get(0).function();
 
-        WorkerResult result = (WorkerResult) syncFn.fn().apply(Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of()));
+        WorkerResult result = (WorkerResult) syncFn.fn().apply(Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of()), null);
 
         assertThat(result.outcome()).isInstanceOf(io.casehub.worker.api.WorkerOutcome.Failed.class);
     }
@@ -227,7 +227,7 @@ class CommentaryWorkerFactoryTest {
             List.of(descriptor), stubModel, callback);
         WorkerFunction.Sync syncFn = (WorkerFunction.Sync) workers.get(0).function();
 
-        syncFn.fn().apply(Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of("gameFrame", 2240L)));
+        syncFn.fn().apply(Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of("gameFrame", 2240L)), null);
 
         assertThat(capturedWorkerId[0]).isEqualTo("claude:commentator-energetic@v1");
         assertThat(capturedText[0]).isEqualTo("The enemy is at the gates!");
@@ -249,7 +249,7 @@ class CommentaryWorkerFactoryTest {
             List.of(descriptor), stubModel, callback);
         WorkerFunction.Sync syncFn = (WorkerFunction.Sync) workers.get(0).function();
 
-        syncFn.fn().apply(Map.of(QuarkMindCaseFile.COMMENTARY_NARRATIVE_TRIGGER, Map.of("gameFrame", 5000L)));
+        syncFn.fn().apply(Map.of(QuarkMindCaseFile.COMMENTARY_NARRATIVE_TRIGGER, Map.of("gameFrame", 5000L)), null);
 
         assertThat(capturedType[0]).isEqualTo(CommentaryType.NARRATIVE);
     }

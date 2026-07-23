@@ -128,13 +128,13 @@ class AdvisoryWorkerFactoryTest {
                 "game.advisory.trigger.crisis", "NEXUS_UNDER_ATTACK"
         );
 
-        WorkerResult result = (WorkerResult) syncFn.fn().apply(input);
+        WorkerResult result = (WorkerResult) syncFn.fn().apply(input, null);
 
-        assertThat(result.output()).containsKey("agent.advisory.crisis.recommendation");
-        assertThat(result.output()).containsKey("agent.advisory.crisis.reasoning");
-        assertThat(result.output()).containsKey("agent.advisory.crisis.confidence");
-        assertThat(result.output()).containsKey("agent.advisory.crisis.agent_id");
-        assertThat(result.output().get("agent.advisory.crisis.agent_id"))
+        assertThat((Map<String, Object>) result.output()).containsKey("agent.advisory.crisis.recommendation");
+        assertThat((Map<String, Object>) result.output()).containsKey("agent.advisory.crisis.reasoning");
+        assertThat((Map<String, Object>) result.output()).containsKey("agent.advisory.crisis.confidence");
+        assertThat((Map<String, Object>) result.output()).containsKey("agent.advisory.crisis.agent_id");
+        assertThat(((Map<String, Object>) result.output()).get("agent.advisory.crisis.agent_id"))
                 .isEqualTo("claude:crisis-aggressive@v1");
     }
 
@@ -163,12 +163,12 @@ class AdvisoryWorkerFactoryTest {
                 "game.advisory.trigger.strategic", "PHASE_TRANSITION"
         );
 
-        WorkerResult result = (WorkerResult) syncFn.fn().apply(input);
+        WorkerResult result = (WorkerResult) syncFn.fn().apply(input, null);
 
         // Strategic role → keys prefixed with agent.advisory.strategic.*
-        assertThat(result.output()).containsKey("agent.advisory.strategic.recommendation");
-        assertThat(result.output()).containsKey("agent.advisory.strategic.agent_id");
-        assertThat(result.output().get("agent.advisory.strategic.agent_id"))
+        assertThat((Map<String, Object>) result.output()).containsKey("agent.advisory.strategic.recommendation");
+        assertThat((Map<String, Object>) result.output()).containsKey("agent.advisory.strategic.agent_id");
+        assertThat(((Map<String, Object>) result.output()).get("agent.advisory.strategic.agent_id"))
                 .isEqualTo("claude:strategic-bold@v1");
     }
 
@@ -198,7 +198,7 @@ class AdvisoryWorkerFactoryTest {
         WorkerFunction.Sync syncFn = (WorkerFunction.Sync) workers.get(0).function();
 
         Map<String, Object> input = Map.of("game.frame", 1000);
-        WorkerResult result = (WorkerResult) syncFn.fn().apply(input);
+        WorkerResult result = (WorkerResult) syncFn.fn().apply(input, null);
 
         assertThat(result.outcome()).isInstanceOf(io.casehub.worker.api.WorkerOutcome.Failed.class);
     }
@@ -233,7 +233,7 @@ class AdvisoryWorkerFactoryTest {
                 List.of(descriptor), capturingModel, noOpCallback());
         WorkerFunction.Sync syncFn = (WorkerFunction.Sync) workers.get(0).function();
 
-        syncFn.fn().apply(Map.of("game.frame", 3000, "game.advisory.trigger.economic", "EXPANSION_WINDOW"));
+        syncFn.fn().apply(Map.of("game.frame", 3000, "game.advisory.trigger.economic", "EXPANSION_WINDOW"), null);
 
         assertThat(captured[0]).isNotNull();
         // System message should mention disposition traits

@@ -9,6 +9,7 @@ import io.casehub.blocks.summarisation.LevelEvent;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.platform.api.identity.ActorType;
 import io.casehub.platform.api.preferences.PreferenceProvider;
+import io.casehub.platform.api.identity.TenancyConstants;
 import io.casehub.platform.api.preferences.SettingsScope;
 import io.casehub.qhorus.api.message.MessageDispatch;
 import io.casehub.qhorus.api.message.MessageType;
@@ -125,11 +126,11 @@ public class DroolsScoutingTask implements ScoutingTask {
 
     @PostConstruct
     void initThresholds() {
-        initThresholds(preferenceProvider.resolve(SettingsScope.root()));
+        initThresholds(preferenceProvider.resolve(SettingsScope.root(TenancyConstants.DEFAULT_TENANT_ID)));
     }
 
     public void refreshThresholds() {
-        initThresholds(preferenceProvider.resolve(SettingsScope.root()));
+        initThresholds(preferenceProvider.resolve(SettingsScope.root(TenancyConstants.DEFAULT_TENANT_ID)));
     }
 
     void initThresholds(io.casehub.platform.api.preferences.Preferences prefs) {

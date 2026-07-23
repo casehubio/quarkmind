@@ -5,6 +5,7 @@ import io.casehub.api.context.CaseContext;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
+import io.casehub.platform.api.identity.TenancyConstants;
 import io.casehub.platform.api.preferences.SettingsScope;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.PluginDecisionEvent;
@@ -128,7 +129,7 @@ public class DroolsTacticsTask implements TacticsTask, ScoutingIntelConsumer {
     void init() {
         kiteStrategy      = kiteStrategies.select(NamedLiteral.of(kiteStrategyName)).get();
         focusFireStrategy = focusFireStrategies.select(NamedLiteral.of(focusFireStrategyName)).get();
-        refreshSubscriptions(preferenceProvider.resolve(SettingsScope.root()));
+        refreshSubscriptions(preferenceProvider.resolve(SettingsScope.root(TenancyConstants.DEFAULT_TENANT_ID)));
     }
 
     @Override

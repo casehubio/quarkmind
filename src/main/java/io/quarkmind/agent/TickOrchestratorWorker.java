@@ -53,7 +53,7 @@ public final class TickOrchestratorWorker {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static WorkerFunction.Sync createFunction(List<TaskDefinition> plugins) {
         List<TaskDefinition> chain = List.copyOf(plugins); // defensive copy
-        return new WorkerFunction.Sync<>(Map.class, input -> executeChain(chain, input));
+        return new WorkerFunction.Sync<>(Map.class, Map.class, (input, scope) -> executeChain(chain, input));
     }
 
     private static WorkerResult executeChain(List<TaskDefinition> chain, Map<String, Object> input) {

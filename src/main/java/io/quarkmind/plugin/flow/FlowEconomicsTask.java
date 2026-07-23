@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import io.casehub.api.context.CaseContext;
 import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
+import io.casehub.platform.api.identity.TenancyConstants;
 import io.casehub.platform.api.preferences.SettingsScope;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ResourceBudget;
@@ -58,7 +59,7 @@ public class FlowEconomicsTask implements EconomicsTask, ScoutingIntelConsumer {
 
     @PostConstruct
     void init() {
-        refreshSubscriptions(preferenceProvider.resolve(SettingsScope.root()));
+        refreshSubscriptions(preferenceProvider.resolve(SettingsScope.root(TenancyConstants.DEFAULT_TENANT_ID)));
     }
 
     @Override

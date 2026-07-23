@@ -3,6 +3,7 @@ package io.quarkmind.agent;
 import io.casehub.blocks.summarisation.EventStreamBus;
 import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
+import io.casehub.platform.api.identity.TenancyConstants;
 import io.casehub.platform.api.preferences.SettingsScope;
 import io.casehub.qhorus.api.channel.ChannelCreateRequest;
 import io.casehub.qhorus.api.channel.ChannelSemantic;
@@ -127,7 +128,7 @@ public class ScoutingIntelBroker {
 
     /** Hot-reload subscription union (#178) — called from QA endpoint on HTTP thread. */
     public void refreshAll() {
-        Preferences prefs = preferenceProvider.resolve(SettingsScope.root());
+        Preferences prefs = preferenceProvider.resolve(SettingsScope.root(TenancyConstants.DEFAULT_TENANT_ID));
         consumers.forEach(c -> c.refreshSubscriptions(prefs));
         activeTypes = computeActiveTypes(consumers);
     }
