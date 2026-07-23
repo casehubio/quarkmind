@@ -4,7 +4,7 @@ import io.quarkmind.domain.Building;
 import io.quarkmind.domain.Resource;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.plugin.summarisation.GameMoment;
-import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkmind.plugin.summarisation.TacticalPosture;
 import org.drools.ruleunits.api.DataSource;
 import org.drools.ruleunits.api.DataStore;
 import org.drools.ruleunits.api.RuleUnitData;
@@ -56,7 +56,7 @@ public class StrategyRuleUnit implements RuleUnitData {
      * {@code "ALL_IN"}, {@code "MACRO"}, or {@code "UNKNOWN"}.
      * One item always inserted before {@code fire()}.
      */
-    private final DataStore<String>  postureStore = DataSource.createStore();
+    private final DataStore<String>  enemyPostureStore = DataSource.createStore();
 
     /**
      * Single-element store holding whether a timing attack is incoming.
@@ -74,7 +74,7 @@ public class StrategyRuleUnit implements RuleUnitData {
      * Level 3 game phase from SummarisationLifecycle.
      * Single-element store (current phase only).
      */
-    private final DataStore<GamePhase>  phaseStore  = DataSource.createStore();
+    private final DataStore<TacticalPosture>  tacticalPostureStore  = DataSource.createStore();
 
     /**
      * Advisory facts from LLM advisory Workers.
@@ -82,7 +82,7 @@ public class StrategyRuleUnit implements RuleUnitData {
      * Contains only non-stale advisories (age < STALENESS_THRESHOLD).
      */
     private final DataStore<AdvisoryFact> advisoryStore = DataSource.createStore();
-    private final DataStore<io.quarkmind.domain.EnemyPatternAssessment> patternStore = DataSource.createStore();
+    private final DataStore<io.quarkmind.domain.PatternAssessment> patternStore = DataSource.createStore();
 
 
     /**
@@ -102,13 +102,13 @@ public class StrategyRuleUnit implements RuleUnitData {
     public DataStore<Building>   getBuildings()        { return buildings; }
     public DataStore<Unit>       getArmy()             { return army; }
     public DataStore<Resource>   getGeysers()          { return geysers; }
-    public DataStore<String>     getPostureStore()     { return postureStore; }
+    public DataStore<String>     getEnemyPostureStore()     { return enemyPostureStore; }
     public DataStore<Boolean>    getTimingStore()      { return timingStore; }
     public DataStore<GameMoment> getMomentStore()      { return momentStore; }
-    public DataStore<GamePhase>  getPhaseStore()       { return phaseStore; }
+    public DataStore<TacticalPosture>  getTacticalPostureStore()       { return tacticalPostureStore; }
     public DataStore<AdvisoryFact> getAdvisoryStore() { return advisoryStore; }
 
-    public DataStore<io.quarkmind.domain.EnemyPatternAssessment> getPatternStore() {return patternStore;}
+    public DataStore<io.quarkmind.domain.PatternAssessment> getPatternStore() {return patternStore;}
 
     public List<String>          getBuildDecisions()   { return buildDecisions; }
     public List<String>          getStrategyDecisions(){ return strategyDecisions; }

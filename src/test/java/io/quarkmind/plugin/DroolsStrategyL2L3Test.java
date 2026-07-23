@@ -6,7 +6,7 @@ import io.quarkmind.domain.UnitType;
 import io.quarkmind.plugin.drools.StrategyRuleUnit;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;
-import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkmind.plugin.summarisation.TacticalPosture;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.drools.ruleunits.api.RuleUnit;
@@ -34,7 +34,7 @@ class DroolsStrategyL2L3Test {
 
         // Given: NEXUS_UNDER_ATTACK moment
         data.getMomentStore().add(new GameMoment(GameMomentType.NEXUS_UNDER_ATTACK, 500L, Map.of()));
-        data.getPostureStore().add("MACRO");
+        data.getEnemyPostureStore().add("MACRO");
         data.getTimingStore().add(false);
 
         // When: rules fire
@@ -49,8 +49,8 @@ class DroolsStrategyL2L3Test {
         StrategyRuleUnit data = new StrategyRuleUnit();
 
         // Given: MID_SKIRMISH phase and 4 Stalkers
-        data.getPhaseStore().add(new GamePhase("MID_SKIRMISH", 1200L, "Engagement at expansion"));
-        data.getPostureStore().add("UNKNOWN");
+        data.getTacticalPostureStore().add(new TacticalPosture("MID_SKIRMISH", 1200L, "Engagement at expansion"));
+        data.getEnemyPostureStore().add("UNKNOWN");
         data.getTimingStore().add(false);
         data.getArmy().add(stalker("s1"));
         data.getArmy().add(stalker("s2"));
@@ -69,9 +69,9 @@ class DroolsStrategyL2L3Test {
         StrategyRuleUnit data = new StrategyRuleUnit();
 
         // Given: both MID_SKIRMISH phase AND NEXUS_UNDER_ATTACK moment
-        data.getPhaseStore().add(new GamePhase("MID_SKIRMISH", 1200L, "Engagement at expansion"));
+        data.getTacticalPostureStore().add(new TacticalPosture("MID_SKIRMISH", 1200L, "Engagement at expansion"));
         data.getMomentStore().add(new GameMoment(GameMomentType.NEXUS_UNDER_ATTACK, 1250L, Map.of()));
-        data.getPostureStore().add("UNKNOWN");
+        data.getEnemyPostureStore().add("UNKNOWN");
         data.getTimingStore().add(false);
         data.getArmy().add(stalker("s1"));
         data.getArmy().add(stalker("s2"));
@@ -90,7 +90,7 @@ class DroolsStrategyL2L3Test {
         StrategyRuleUnit data = new StrategyRuleUnit();
 
         // Given: ALL_IN posture (existing L1 rule)
-        data.getPostureStore().add("ALL_IN");
+        data.getEnemyPostureStore().add("ALL_IN");
         data.getTimingStore().add(false);
 
         // When: rules fire
@@ -104,10 +104,10 @@ class DroolsStrategyL2L3Test {
     void rushDetected_highConfidence_triggersDefendStrategy() {
         StrategyRuleUnit data = new StrategyRuleUnit();
 
-        data.getPatternStore().add(new io.quarkmind.domain.EnemyPatternAssessment(
-                io.quarkmind.domain.EnemyArchetype.TERRAN_MARINE_RUSH, 0.8, 500L,
+        data.getPatternStore().add(new io.quarkmind.domain.PatternAssessment(
+                io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, 0.8, 500L,
                 "8 Marines before 4min"));
-        data.getPostureStore().add("UNKNOWN");
+        data.getEnemyPostureStore().add("UNKNOWN");
         data.getTimingStore().add(false);
 
         fire(data);
@@ -119,10 +119,10 @@ class DroolsStrategyL2L3Test {
     void rushDetected_lowConfidence_noDefend() {
         StrategyRuleUnit data = new StrategyRuleUnit();
 
-        data.getPatternStore().add(new io.quarkmind.domain.EnemyPatternAssessment(
-                io.quarkmind.domain.EnemyArchetype.TERRAN_MARINE_RUSH, 0.5, 300L,
+        data.getPatternStore().add(new io.quarkmind.domain.PatternAssessment(
+                io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, 0.5, 300L,
                 "Low confidence"));
-        data.getPostureStore().add("UNKNOWN");
+        data.getEnemyPostureStore().add("UNKNOWN");
         data.getTimingStore().add(false);
 
         fire(data);
@@ -134,10 +134,10 @@ class DroolsStrategyL2L3Test {
     void macroArchetype_noDefend() {
         StrategyRuleUnit data = new StrategyRuleUnit();
 
-        data.getPatternStore().add(new io.quarkmind.domain.EnemyPatternAssessment(
-                io.quarkmind.domain.EnemyArchetype.ZERG_MACRO, 0.9, 500L,
+        data.getPatternStore().add(new io.quarkmind.domain.PatternAssessment(
+                io.quarkmind.domain.StrategyArchetype.ZERG_MACRO, 0.9, 500L,
                 "Macro build"));
-        data.getPostureStore().add("UNKNOWN");
+        data.getEnemyPostureStore().add("UNKNOWN");
         data.getTimingStore().add(false);
 
         fire(data);

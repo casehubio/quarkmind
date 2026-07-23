@@ -1,7 +1,7 @@
 package io.quarkmind.agent;
 
 import io.casehub.blocks.summarisation.EventStreamBus;
-import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkmind.plugin.summarisation.TacticalPosture;
 import io.quarkmind.plugin.summarisation.SummarisationLifecycle;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
@@ -15,7 +15,7 @@ public class GamePhaseTrigger implements MilestoneTrigger {
     private final double minWeight;
     private final double maxWeight;
 
-    private volatile GamePhase lastSeenPhase;
+    private volatile TacticalPosture lastSeenPhase;
 
     private final Instance<SummarisationLifecycle> lazyLifecycle;
     private volatile boolean subscribed = false;
@@ -29,7 +29,7 @@ public class GamePhaseTrigger implements MilestoneTrigger {
     }
 
     /** Test constructor — direct phaseBus injection, no CDI. */
-    GamePhaseTrigger(EventStreamBus<GamePhase> phaseBus, long expectedGameLength, double minWeight, double maxWeight) {
+    GamePhaseTrigger(EventStreamBus<TacticalPosture> phaseBus, long expectedGameLength, double minWeight, double maxWeight) {
         this.expectedGameLength = expectedGameLength;
         this.minWeight = minWeight;
         this.maxWeight = maxWeight;
@@ -52,10 +52,10 @@ public class GamePhaseTrigger implements MilestoneTrigger {
     @Override
     public List<MilestoneEvent> check(long gameFrame, MilestoneSession session) {
         ensureSubscribed();
-        GamePhase phase = lastSeenPhase;
+        TacticalPosture phase = lastSeenPhase;
         if (phase == null) return List.of();
 
-        String milestoneId = "phase:" + phase.phase();
+        String milestoneId = "phase:" + phase.posture();
         if (session.hasFired(milestoneId)) return List.of();
 
         session.markFired(milestoneId);

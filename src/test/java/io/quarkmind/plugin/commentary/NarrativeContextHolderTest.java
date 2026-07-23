@@ -4,7 +4,7 @@ import io.casehub.blocks.summarisation.EventLevel;
 import io.casehub.blocks.summarisation.EventStreamBus;
 import io.casehub.blocks.summarisation.LevelEvent;
 import io.quarkmind.plugin.summarisation.GameArc;
-import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkmind.plugin.summarisation.TacticalPosture;
 import io.quarkmind.sc2.GameStarted;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class NarrativeContextHolderTest {
     private static final EventLevel LEVEL_3 = new EventLevel("phase", 3);
     private static final EventLevel LEVEL_4 = new EventLevel("arc", 4);
 
-    private EventStreamBus<GamePhase> phaseBus;
+    private EventStreamBus<TacticalPosture> phaseBus;
     private EventStreamBus<GameArc> arcBus;
     private NarrativeContextHolder holder;
 
@@ -39,11 +39,11 @@ class NarrativeContextHolderTest {
     }
 
     @Test
-    void publishesPhase_updatesLatestPhase() {
-        var phase = new GamePhase("Opening", 100L, "Economy priority");
+    void publishesPhase_updatesLatestPosture() {
+        var phase = new TacticalPosture("Opening", 100L, "Economy priority");
         phaseBus.publish(new LevelEvent<>(phase, 100L, LEVEL_3));
 
-        assertThat(holder.latestPhase()).isEqualTo(phase);
+        assertThat(holder.latestPosture()).isEqualTo(phase);
     }
 
     @Test
@@ -58,7 +58,7 @@ class NarrativeContextHolderTest {
     void gameStarted_clearsBothFields() {
         // Given — context populated
         phaseBus.publish(new LevelEvent<>(
-            new GamePhase("Mid-game", 200L, "Skirmish"), 200L, LEVEL_3));
+            new TacticalPosture("Mid-game", 200L, "Skirmish"), 200L, LEVEL_3));
         arcBus.publish(new LevelEvent<>(
             new GameArc("Narrative arc", 400L), 400L, LEVEL_4));
 
@@ -66,14 +66,14 @@ class NarrativeContextHolderTest {
         holder.onGameStarted(new GameStarted());
 
         // Then
-        assertThat(holder.latestPhase()).isNull();
+        assertThat(holder.latestPosture()).isNull();
         assertThat(holder.latestArc()).isNull();
     }
 
     @Test
     void snapshot_returnsMapWithPhaseAndArcData() {
         // Given
-        var phase = new GamePhase("Late-game", 300L, "Tech race");
+        var phase = new TacticalPosture("Late-game", 300L, "Tech race");
         var arc = new GameArc("Strategic pivot to air", 600L);
         phaseBus.publish(new LevelEvent<>(phase, 300L, LEVEL_3));
         arcBus.publish(new LevelEvent<>(arc, 600L, LEVEL_4));
@@ -104,7 +104,7 @@ class NarrativeContextHolderTest {
     @Test
     void snapshot_nullArc_returnsPartialMap() {
         // Given — only phase populated
-        var phase = new GamePhase("Opening", 50L, "Scout rush");
+        var phase = new TacticalPosture("Opening", 50L, "Scout rush");
         phaseBus.publish(new LevelEvent<>(phase, 50L, LEVEL_3));
 
         // When

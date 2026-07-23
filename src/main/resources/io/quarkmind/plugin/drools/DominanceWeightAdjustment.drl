@@ -2,14 +2,15 @@ package io.quarkmind.plugin.drools;
 unit DominanceWeightRuleUnit;
 
 import io.quarkmind.agent.WeightModifier;
-import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.ArchetypeCategory;
+import io.quarkmind.domain.StrategyArchetype;
 
 // --- RUSH RESPONSE ---
 
 rule "Rush response — high confidence"
 when
     /patternStore[$arch: archetype(), confidence >= 0.6,
-                  archetype().name().contains("RUSH")]
+                  archetype().category() == ArchetypeCategory.RUSH]
 then
     modifiers.add(new WeightModifier(-0.10, +0.15, -0.05, 0.00,
         "High-confidence rush: " + $arch));
@@ -18,7 +19,7 @@ end
 rule "Rush response — moderate confidence"
 when
     /patternStore[$arch: archetype(), confidence >= 0.3, confidence < 0.6,
-                  archetype().name().contains("RUSH")]
+                  archetype().category() == ArchetypeCategory.RUSH]
 then
     modifiers.add(new WeightModifier(-0.05, +0.08, -0.03, 0.00,
         "Moderate rush: " + $arch));
@@ -29,8 +30,8 @@ end
 rule "Push response — bio timing or mech push"
 when
     /patternStore[$arch: archetype(), confidence >= 0.5,
-                  archetype() == EnemyArchetype.TERRAN_BIO_TIMING
-                  || archetype() == EnemyArchetype.TERRAN_MECH_PUSH]
+                  archetype() == StrategyArchetype.TERRAN_BIO_TIMING
+                  || archetype() == StrategyArchetype.TERRAN_MECH_PUSH]
 then
     modifiers.add(new WeightModifier(-0.10, +0.10, +0.05, -0.05,
         "Push detected: " + $arch));
@@ -41,7 +42,7 @@ end
 rule "Harass response — banshee"
 when
     /patternStore[$arch: archetype(), confidence >= 0.3,
-                  archetype() == EnemyArchetype.TERRAN_BANSHEE_HARASS]
+                  archetype() == StrategyArchetype.TERRAN_BANSHEE_HARASS]
 then
     modifiers.add(new WeightModifier(-0.10, +0.05, +0.10, -0.05,
         "Harass detected: " + $arch));
@@ -52,7 +53,7 @@ end
 rule "Macro response"
 when
     /patternStore[$arch: archetype(), confidence >= 0.5,
-                  archetype().name().contains("MACRO")]
+                  archetype().category() == ArchetypeCategory.MACRO]
 then
     modifiers.add(new WeightModifier(+0.08, -0.10, +0.05, -0.03,
         "Macro detected: " + $arch));
@@ -62,7 +63,7 @@ end
 
 rule "Phase: DEFENSIVE_HOLD"
 when
-    /phaseStore[this == "DEFENSIVE_HOLD"]
+    /tacticalPostureStore[this == "DEFENSIVE_HOLD"]
 then
     modifiers.add(new WeightModifier(-0.10, +0.15, -0.05, 0.00,
         "Phase: DEFENSIVE_HOLD"));
@@ -70,7 +71,7 @@ end
 
 rule "Phase: EARLY_AGGRESSION"
 when
-    /phaseStore[this == "EARLY_AGGRESSION"]
+    /tacticalPostureStore[this == "EARLY_AGGRESSION"]
 then
     modifiers.add(new WeightModifier(-0.05, +0.10, -0.05, 0.00,
         "Phase: EARLY_AGGRESSION"));
@@ -78,7 +79,7 @@ end
 
 rule "Phase: EARLY_MACRO"
 when
-    /phaseStore[this == "EARLY_MACRO"]
+    /tacticalPostureStore[this == "EARLY_MACRO"]
 then
     modifiers.add(new WeightModifier(+0.10, -0.10, +0.05, -0.05,
         "Phase: EARLY_MACRO"));
@@ -86,7 +87,7 @@ end
 
 rule "Phase: MID_SKIRMISH"
 when
-    /phaseStore[this == "MID_SKIRMISH"]
+    /tacticalPostureStore[this == "MID_SKIRMISH"]
 then
     modifiers.add(new WeightModifier(-0.05, +0.10, -0.05, 0.00,
         "Phase: MID_SKIRMISH"));
@@ -96,8 +97,8 @@ end
 
 rule "Combined: Rush + DEFENSIVE_HOLD"
 when
-    /patternStore[confidence >= 0.5, archetype().name().contains("RUSH")]
-    /phaseStore[this == "DEFENSIVE_HOLD"]
+    /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.RUSH]
+    /tacticalPostureStore[this == "DEFENSIVE_HOLD"]
 then
     modifiers.add(new WeightModifier(0.00, +0.05, 0.00, 0.00,
         "Combined: rush + defensive hold"));
@@ -105,8 +106,8 @@ end
 
 rule "Combined: Macro + EARLY_MACRO"
 when
-    /patternStore[confidence >= 0.5, archetype().name().contains("MACRO")]
-    /phaseStore[this == "EARLY_MACRO"]
+    /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.MACRO]
+    /tacticalPostureStore[this == "EARLY_MACRO"]
 then
     modifiers.add(new WeightModifier(+0.05, 0.00, 0.00, 0.00,
         "Combined: macro + early macro"));
@@ -115,9 +116,9 @@ end
 rule "Combined: Push + MID_SKIRMISH"
 when
     /patternStore[confidence >= 0.5,
-                  archetype() == EnemyArchetype.TERRAN_BIO_TIMING
-                  || archetype() == EnemyArchetype.TERRAN_MECH_PUSH]
-    /phaseStore[this == "MID_SKIRMISH"]
+                  archetype() == StrategyArchetype.TERRAN_BIO_TIMING
+                  || archetype() == StrategyArchetype.TERRAN_MECH_PUSH]
+    /tacticalPostureStore[this == "MID_SKIRMISH"]
 then
     modifiers.add(new WeightModifier(0.00, +0.05, +0.03, 0.00,
         "Combined: push + mid skirmish"));
@@ -125,8 +126,8 @@ end
 
 rule "Combined: Rush + EARLY_AGGRESSION"
 when
-    /patternStore[confidence >= 0.5, archetype().name().contains("RUSH")]
-    /phaseStore[this == "EARLY_AGGRESSION"]
+    /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.RUSH]
+    /tacticalPostureStore[this == "EARLY_AGGRESSION"]
 then
     modifiers.add(new WeightModifier(+0.03, +0.03, 0.00, 0.00,
         "Combined: rush + early aggression"));

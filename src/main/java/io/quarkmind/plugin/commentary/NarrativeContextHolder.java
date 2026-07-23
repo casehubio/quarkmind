@@ -2,7 +2,7 @@ package io.quarkmind.plugin.commentary;
 
 import io.casehub.blocks.summarisation.EventStreamBus;
 import io.quarkmind.plugin.summarisation.GameArc;
-import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkmind.plugin.summarisation.TacticalPosture;
 import io.quarkmind.plugin.summarisation.SummarisationLifecycle;
 import io.quarkmind.sc2.GameStarted;
 import jakarta.annotation.PostConstruct;
@@ -17,7 +17,7 @@ import java.util.Map;
  * Holds live L3/L4 context for snapshotting by {@link CommentaryAccumulator}.
  *
  * <p>Subscribes to the L3 phase bus and L4 arc bus at {@code @PostConstruct},
- * maintaining the latest {@link GamePhase} and {@link GameArc} as volatile fields.
+ * maintaining the latest {@link TacticalPosture} and {@link GameArc} as volatile fields.
  *
  * <p>When {@link CommentaryAccumulator} emits a narrative trigger, it calls
  * {@link #snapshot()} to capture the current strategic context. The snapshot is
@@ -34,8 +34,8 @@ import java.util.Map;
 @ApplicationScoped
 public class NarrativeContextHolder {
 
-    private volatile GamePhase latestPhase;
-    private volatile GameArc latestArc;
+    private volatile TacticalPosture latestPosture;
+    private volatile GameArc         latestArc;
 
     @Inject SummarisationLifecycle summarisationLifecycle;
 
@@ -43,13 +43,13 @@ public class NarrativeContextHolder {
     public NarrativeContextHolder() {}
 
     /** Package-private constructor for testing without CDI */
-    NarrativeContextHolder(EventStreamBus<GamePhase> phaseBus,
+    NarrativeContextHolder(EventStreamBus<TacticalPosture> phaseBus,
                            EventStreamBus<GameArc> arcBus) {
         this.phaseBus = phaseBus;
         this.arcBus = arcBus;
     }
 
-    private EventStreamBus<GamePhase> phaseBus;
+    private EventStreamBus<TacticalPosture> phaseBus;
     private EventStreamBus<GameArc> arcBus;
 
     @PostConstruct
@@ -62,7 +62,7 @@ public class NarrativeContextHolder {
         }
 
         // Subscribe to L3 phase bus — captures latest phase
-        phaseBus.subscribe(p -> true, event -> latestPhase = event.payload());
+        phaseBus.subscribe(p -> true, event -> latestPosture = event.payload());
 
         // Subscribe to L4 arc bus — captures latest arc
         arcBus.subscribe(a -> true, event -> latestArc = event.payload());
@@ -78,9 +78,9 @@ public class NarrativeContextHolder {
      */
     public Map<String, String> snapshot() {
         var snapshot = new HashMap<String, String>();
-        if (latestPhase != null) {
-            snapshot.put("phase", latestPhase.phase());
-            snapshot.put("phase_rationale", latestPhase.rationale());
+        if (latestPosture != null) {
+            snapshot.put("phase", latestPosture.posture());
+            snapshot.put("phase_rationale", latestPosture.rationale());
         }
         if (latestArc != null) {
             snapshot.put("arc_narrative", latestArc.narrative());
@@ -95,18 +95,18 @@ public class NarrativeContextHolder {
      * (application-scoped lifecycle).
      */
     void onGameStarted(@Observes GameStarted event) {
-        latestPhase = null;
-        latestArc = null;
+        latestPosture = null;
+        latestArc     = null;
     }
 
     /** Package-private accessor for testing */
-    GamePhase latestPhase() { return latestPhase; }
+    TacticalPosture latestPosture() { return latestPosture; }
 
     /** Package-private accessor for testing */
     GameArc latestArc() { return latestArc; }
 
     /** Package-private setter for testing without CDI */
-    void setLatestPhase(GamePhase phase) { this.latestPhase = phase; }
+    void setLatestPosture(TacticalPosture phase) {this.latestPosture = phase; }
 
     /** Package-private setter for testing without CDI */
     void setLatestArc(GameArc arc) { this.latestArc = arc; }

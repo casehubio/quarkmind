@@ -20,10 +20,11 @@ import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.TaskDefinition;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
-import io.quarkmind.domain.EnemyArchetype;
-import io.quarkmind.domain.EnemyPatternAssessment;
+import io.quarkmind.domain.StrategyArchetype;
+import io.quarkmind.domain.PatternAssessment;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
@@ -116,14 +117,14 @@ public class SC2StrategyRouterTask implements TaskDefinition {
             return;
         }
 
-        ScoutingIntelPayload.PatternAssessment pa = (ScoutingIntelPayload.PatternAssessment) raw.get();
+        PatternAssessmentPayload pa = (PatternAssessmentPayload) raw.get();
         if (pa.assessments().isEmpty()) {
             setFallbackIfAbsent(ctx);
             return;
         }
 
-        EnemyPatternAssessment best = pa.assessments().getFirst();
-        EnemyArchetype archetype = best.archetype();
+        PatternAssessment best = pa.assessments().getFirst();
+        StrategyArchetype archetype = best.archetype();
         double confidence = best.confidence();
 
         if (confidence < confidenceThreshold) {

@@ -16,7 +16,7 @@ import org.jboss.logging.Logger;
  * <p>Subscribes to {@link MomentBroker}'s moment bus (L2 events) and feeds
  * them through a two-stage pipeline:
  * <ul>
- *   <li>L2-L3: {@link GamePhaseSummariser} -- accumulates moments, emits phases</li>
+ *   <li>L2-L3: {@link TacticalPostureSummariser} -- accumulates moments, emits phases</li>
  *   <li>L3-L4: {@link GameArcSummariser} -- accumulates phases, emits arcs</li>
  * </ul>
  *
@@ -46,11 +46,11 @@ public class SummarisationLifecycle implements SummarisationTickable {
 
     @Inject MomentBroker momentBroker;
 
-    private final EventStreamBus<GamePhase> phaseBus = new EventStreamBus<>();
+    private final EventStreamBus<TacticalPosture> phaseBus = new EventStreamBus<>();
     private final EventStreamBus<GameArc>   arcBus   = new EventStreamBus<>();
 
-    private SummarisationRunner<GameMoment, GamePhase> phaseRunner;
-    private SummarisationRunner<GamePhase, GameArc>    arcRunner;
+    private SummarisationRunner<GameMoment, TacticalPosture> phaseRunner;
+    private SummarisationRunner<TacticalPosture, GameArc>    arcRunner;
 
     @PostConstruct
     void init() {
@@ -72,7 +72,7 @@ public class SummarisationLifecycle implements SummarisationTickable {
         arcRunner.tick(gameFrame);
     }
 
-    public EventStreamBus<GamePhase> phaseBus() { return phaseBus; }
+    public EventStreamBus<TacticalPosture> phaseBus() { return phaseBus; }
     public EventStreamBus<GameArc>   arcBus()   { return arcBus; }
 
     /**

@@ -35,7 +35,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletionStage;
 
 /**
  * CaseHub subclass defining the {@code starcraft-game} case type for the casehub-engine.
@@ -157,6 +156,9 @@ public class QuarkMindCaseHub extends CaseHub {
      */
     @Inject
     CaseHubRuntime caseHubRuntime;
+    @Inject
+    StrategyTaxonomy strategyTaxonomy;
+
 
     /**
      * CDI constructor — stores the Instance handles without resolving beans.
@@ -208,15 +210,15 @@ public class QuarkMindCaseHub extends CaseHub {
      * @return the settled CaseContext
      */
     public CaseContext signalAndAwaitSync(UUID caseId, Map<String, Object> updates, Duration timeout) {
-        return caseHubRuntime.signalAndAwaitSync(caseId, updates, timeout);
+        return caseHubRuntime.signalAndAwait(caseId, updates, timeout);
     }
 
     /**
      * Async bulk signal — applies updates and triggers bindings without waiting for settlement.
      * Used for fire-and-forget advisory triggers (two-signal pattern).
      */
-    public CompletionStage<Void> signal(UUID caseId, Map<String, Object> updates) {
-        return caseHubRuntime.signal(caseId, updates);
+    public void signal(UUID caseId, Map<String, Object> updates) {
+        caseHubRuntime.signal(caseId, updates);
     }
 
     @Override
@@ -508,7 +510,7 @@ public class QuarkMindCaseHub extends CaseHub {
         };
 
         List<Worker> coachingWorkers = CoachingWorkerFactory.createWorkers(
-                advisorRegistrar.descriptors(), chatModel, completionCallback);
+                advisorRegistrar.descriptors(), chatModel, completionCallback, strategyTaxonomy);
         workers.addAll(coachingWorkers);
 
         log.infof("[CASEHUB] Wired %d coaching workers", coachingWorkers.size());

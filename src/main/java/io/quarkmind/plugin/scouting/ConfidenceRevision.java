@@ -1,5 +1,5 @@
 package io.quarkmind.plugin.scouting;
 
-import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.StrategyArchetype;
 
-public record ConfidenceRevision(EnemyArchetype archetype, double dampingFactor, String reason) {}
+public record ConfidenceRevision(StrategyArchetype archetype, double dampingFactor, String reason) {}

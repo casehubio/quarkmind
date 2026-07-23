@@ -7,7 +7,7 @@ import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
 import io.casehub.neocortex.memory.cbr.CbrOutcome;
 import io.casehub.platform.api.path.Path;
 import io.quarkmind.agent.QuarkMindCaseFile;
-import io.quarkmind.domain.EnemyArchetype;
+import io.quarkmind.domain.StrategyArchetype;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
@@ -43,7 +43,7 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
 
         String strategyId = (String) snapshot.get(QuarkMindCaseFile.STRATEGY_SELECTED_ID);
         Double confidence = (Double) snapshot.get(QuarkMindCaseFile.STRATEGY_ROUTED_CONFIDENCE);
-        String raceName = EnemyArchetype.valueOf(archetype).race().name();
+        String raceName = StrategyArchetype.valueOf(archetype).race().name();
         String matchup = "Pv" + raceName.charAt(0);
 
         SC2GameCbrCase cbrCase = SC2GameCbrCase.buildForGame(

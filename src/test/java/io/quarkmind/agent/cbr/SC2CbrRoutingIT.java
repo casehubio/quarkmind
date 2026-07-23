@@ -5,9 +5,9 @@ import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
-import io.quarkmind.agent.plugin.ScoutingIntelPayload;
-import io.quarkmind.domain.EnemyArchetype;
-import io.quarkmind.domain.EnemyPatternAssessment;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
+import io.quarkmind.domain.StrategyArchetype;
+import io.quarkmind.domain.PatternAssessment;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
@@ -40,9 +40,9 @@ class SC2CbrRoutingIT {
                     "WIN", Instant.now(), Map.of()));
         }
 
-        var assessment = new EnemyPatternAssessment(
-                EnemyArchetype.ZERG_ROACH_RUSH, 0.9, 1000, "test");
-        broker.update(new ScoutingIntelPayload.PatternAssessment(List.of(assessment)));
+        var assessment = new PatternAssessment(
+                StrategyArchetype.ZERG_ROACH_RUSH, 0.9, 1000, "test");
+        broker.update(new PatternAssessmentPayload(List.of(assessment)));
 
         MutableMapCaseContext ctx = new MutableMapCaseContext(
                 new HashMap<>(Map.of(QuarkMindCaseFile.READY, true)));
@@ -55,9 +55,9 @@ class SC2CbrRoutingIT {
 
     @Test
     void pivotLimit_preventsUnboundedRerouting() {
-        var assessment1 = new EnemyPatternAssessment(
-                EnemyArchetype.ZERG_ROACH_RUSH, 0.9, 1000, "test");
-        broker.update(new ScoutingIntelPayload.PatternAssessment(List.of(assessment1)));
+        var assessment1 = new PatternAssessment(
+                StrategyArchetype.ZERG_ROACH_RUSH, 0.9, 1000, "test");
+        broker.update(new PatternAssessmentPayload(List.of(assessment1)));
 
         MutableMapCaseContext ctx = new MutableMapCaseContext(
                 new HashMap<>(Map.of(QuarkMindCaseFile.READY, true)));
@@ -66,15 +66,15 @@ class SC2CbrRoutingIT {
         assertThat(firstSelection).isNotNull();
         assertThat(ctx.getInt(QuarkMindCaseFile.STRATEGY_PIVOT_COUNT)).isEqualTo(0);
 
-        var assessment2 = new EnemyPatternAssessment(
-                EnemyArchetype.TERRAN_MARINE_RUSH, 0.9, 2000, "test");
-        broker.update(new ScoutingIntelPayload.PatternAssessment(List.of(assessment2)));
+        var assessment2 = new PatternAssessment(
+                StrategyArchetype.TERRAN_MARINE_RUSH, 0.9, 2000, "test");
+        broker.update(new PatternAssessmentPayload(List.of(assessment2)));
         routerTask.execute(ctx);
         assertThat(ctx.getInt(QuarkMindCaseFile.STRATEGY_PIVOT_COUNT)).isEqualTo(1);
 
-        var assessment3 = new EnemyPatternAssessment(
-                EnemyArchetype.ZERG_MACRO, 0.9, 3000, "test");
-        broker.update(new ScoutingIntelPayload.PatternAssessment(List.of(assessment3)));
+        var assessment3 = new PatternAssessment(
+                StrategyArchetype.ZERG_MACRO, 0.9, 3000, "test");
+        broker.update(new PatternAssessmentPayload(List.of(assessment3)));
         routerTask.execute(ctx);
         assertThat(ctx.getInt(QuarkMindCaseFile.STRATEGY_PIVOT_COUNT))
                 .as("pivot limit (1) should prevent third routing").isEqualTo(1);

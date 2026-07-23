@@ -94,7 +94,7 @@ class CoachingWorkerFactoryTest {
             QuarkMindCaseFile.MINERALS, 500,
             QuarkMindCaseFile.SUPPLY_USED, 44,
             QuarkMindCaseFile.SUPPLY_CAP, 62);
-        var message = CoachingWorkerFactory.buildUserMessage(input);
+        var message = CoachingWorkerFactory.buildUserMessage(input, null);
         assertThat(message).contains("NEXUS_UNDER_ATTACK");
         assertThat(message).contains("500");
         assertThat(message).contains("44");
@@ -111,10 +111,31 @@ class CoachingWorkerFactoryTest {
                     "archetype", "ZERG_ROACH_RUSH",
                     "confidence", 0.85)),
             QuarkMindCaseFile.MINERALS, 300);
-        var message = CoachingWorkerFactory.buildUserMessage(input);
+        var message = CoachingWorkerFactory.buildUserMessage(input, null);
         assertThat(message).contains("ZERG_ROACH_RUSH");
         assertThat(message).contains("0.85");
     }
+
+    @Test
+    void buildUserMessage_withTaxonomy_includesCountersAndPhase() {
+        var taxonomy = new io.quarkmind.agent.StrategyTaxonomy();
+        taxonomy.init();
+        Map<String, Object> input = Map.of(
+                QuarkMindCaseFile.COACHING_TRIGGER, Map.of(
+                        "gameFrame", 2000L,
+                        "urgencyTier", "STRATEGIC",
+                        "momentTypes", List.of("TECH_TRANSITION_DETECTED"),
+                        "patternAssessment", Map.of(
+                                "archetype", "ZERG_ROACH_RUSH",
+                                "confidence", 0.85)),
+                QuarkMindCaseFile.MINERALS, 300,
+                QuarkMindCaseFile.GAME_PHASE, "EARLY");
+        var message = CoachingWorkerFactory.buildUserMessage(input, taxonomy);
+        assertThat(message).contains("STRONG COUNTERS:");
+        assertThat(message).contains("Immortal");
+        assertThat(message).contains("GAME PHASE: EARLY");
+    }
+
 
     @Test
     void parseAdvice_validJson_returnsCoachingAdvice() {

@@ -1,0 +1,428 @@
+archetypes:
+  TERRAN_MARINE_RUSH:
+    displayName: "Marine Rush"
+    race: TERRAN
+    phase: EARLY
+    category: RUSH
+    phaseWindow: [0.0, 5.0]
+    handAuthored: true
+    signature:
+      units:
+        - type: MARINE
+          minCount: 5
+      noExpansion: true
+    strongCounters:
+      - units: [STALKER, SENTRY]
+        action: "Wall off natural with Stalkers and a Sentry for Force Field"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots alone trade poorly against kiting Marines"
+    detectionSignals:
+      - "5+ Marines before 4 minutes"
+      - "No expansion with Marines"
+
+  TERRAN_BIO_TIMING:
+    displayName: "Bio Timing"
+    race: TERRAN
+    phase: MID
+    category: TIMING
+    phaseWindow: [4.0, 10.0]
+    handAuthored: true
+    signature:
+      units:
+        - type: MARINE
+          minCount: 3
+        - type: MEDIVAC
+          minCount: 1
+    strongCounters:
+      - units: [STALKER, COLOSSUS]
+        action: "Colossus splash shreds clumped bio — get Robo Bay tech"
+      - units: [HIGH_TEMPLAR]
+        action: "Storm is devastating against stimmed bio balls"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots get kited by stimmed Marines with Medivac support"
+    detectionSignals:
+      - "3+ Marines with Medivac between 4-10 minutes"
+      - "6+ Marines after 4 minutes"
+
+  TERRAN_MECH_PUSH:
+    displayName: "Mech Push"
+    race: TERRAN
+    phase: MID
+    category: TIMING
+    phaseWindow: [5.0, 15.0]
+    handAuthored: true
+    signature:
+      units:
+        - type: SIEGE_TANK
+          minCount: 2
+        - type: THOR
+          minCount: 1
+    strongCounters:
+      - units: [IMMORTAL, STALKER]
+        action: "Immortals shred mech armour — use Stalkers for mobility"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots can't close the gap against sieged tanks"
+    detectionSignals:
+      - "2+ Siege Tanks after 5 minutes"
+      - "Thor spotted"
+
+  TERRAN_BANSHEE_HARASS:
+    displayName: "Banshee Harass"
+    race: TERRAN
+    phase: EARLY
+    category: HARASS
+    phaseWindow: [4.0, 8.0]
+    handAuthored: true
+    signature:
+      units:
+        - type: BANSHEE
+          minCount: 1
+    strongCounters:
+      - units: [STALKER, OBSERVER]
+        action: "Observer for detection, Stalkers to chase — Banshees are fragile"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots cannot attack air units"
+    detectionSignals:
+      - "Banshee spotted before 8 minutes"
+
+  ZERG_ZERGLING_RUSH:
+    displayName: "Zergling Rush"
+    race: ZERG
+    phase: EARLY
+    category: RUSH
+    phaseWindow: [0.0, 4.0]
+    handAuthored: true
+    signature:
+      units:
+        - type: ZERGLING
+          minCount: 6
+      noExpansion: true
+    strongCounters:
+      - units: [ZEALOT, SENTRY]
+        action: "Wall off with Zealot hold position, Sentry Force Field at ramp"
+    weakCounters:
+      - units: [PROBE]
+        action: "Probes alone cannot hold against massed Zerglings"
+    detectionSignals:
+      - "6+ Zerglings before 4 minutes"
+      - "No expansion with Zerglings"
+
+  ZERG_ROACH_RUSH:
+    displayName: "Roach Rush"
+    race: ZERG
+    phase: EARLY
+    category: RUSH
+    phaseWindow: [0.0, 5.0]
+    handAuthored: true
+    signature:
+      units:
+        - type: ROACH
+          minCount: 4
+    strongCounters:
+      - units: [STALKER, IMMORTAL]
+        action: "Immortals hard-counter Roach armour — prioritise Robo tech"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots trade inefficiently against Roach range"
+    detectionSignals:
+      - "4+ Roaches before 5 minutes"
+
+  ZERG_MACRO:
+    displayName: "Zerg Macro"
+    race: ZERG
+    phase: EARLY
+    category: MACRO
+    phaseWindow: [0.0, 5.0]
+    handAuthored: true
+    signature:
+      units:
+        - type: ZERGLING
+          minCount: 1
+      noExpansion: false
+    strongCounters:
+      - units: [STALKER, ADEPT]
+        action: "Pressure with Adept harass to punish greedy expansion timing"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Passive Zealot defense lets Zerg scale freely"
+    detectionSignals:
+      - "Expansion with fewer than 4 units before 5 minutes"
+
+  PROTOSS_GATEWAY_RUSH:
+    displayName: "Gateway Rush"
+    race: PROTOSS
+    phase: EARLY
+    category: RUSH
+    phaseWindow: [0.0, 5.0]
+    handAuthored: true
+    signature:
+      units:
+        - type: STALKER
+          minCount: 2
+        - type: ZEALOT
+          minCount: 2
+      noExpansion: true
+    strongCounters:
+      - units: [STALKER, SENTRY]
+        action: "Mirror gateway units with Sentry Force Field for chokepoint advantage"
+    weakCounters:
+      - units: [PROBE]
+        action: "Workers cannot hold against massed gateway units"
+    detectionSignals:
+      - "4+ Gateway units (Stalker/Zealot) before 5 minutes"
+      - "No expansion with Gateway units"
+
+  PROTOSS_CANNON_RUSH:
+    displayName: "Cannon Rush"
+    race: PROTOSS
+    phase: EARLY
+    category: RUSH
+    phaseWindow: [0.0, 4.0]
+    handAuthored: true
+    signature:
+      units:
+        - type: ZEALOT
+          minCount: 1
+    strongCounters:
+      - units: [STALKER]
+        action: "Pull workers to attack Pylons before cannons finish, then Stalkers to clean up"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots cannot outrange Photon Cannons"
+    detectionSignals:
+      - "Army near base early without Stalkers (proxy Pylon indicator)"
+
+  PROTOSS_MACRO:
+    displayName: "Protoss Macro"
+    race: PROTOSS
+    phase: EARLY
+    category: MACRO
+    phaseWindow: [0.0, 5.0]
+    handAuthored: true
+    signature:
+      units:
+        - type: STALKER
+          minCount: 1
+      noExpansion: false
+    strongCounters:
+      - units: [ADEPT, STALKER]
+        action: "Pressure with early Adept shade to punish greedy expansion"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Passive Zealot play lets opponent scale freely"
+    detectionSignals:
+      - "Expansion with fewer than 3 units before 5 minutes"
+
+  PROTOSS_DT_HARASS:
+    displayName: "Dark Templar Harass"
+    race: PROTOSS
+    phase: EARLY
+    category: HARASS
+    phaseWindow: [4.0, 8.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: DARK_TEMPLAR
+          minCount: 1
+    strongCounters:
+      - units: [OBSERVER, STALKER]
+        action: "Observer for detection — DTs are fragile once revealed"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots without detection cannot target cloaked DTs"
+    detectionSignals:
+      - "Dark Templar spotted before 8 minutes"
+
+  TERRAN_MARINE_TANK:
+    displayName: "Marine Tank"
+    race: TERRAN
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [5.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MARINE
+          minCount: 6
+        - type: SIEGE_TANK
+          minCount: 2
+    strongCounters:
+      - units: [IMMORTAL, COLOSSUS]
+        action: "Immortals destroy tanks, Colossus splash shreds Marines"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots melt to sieged tanks before reaching the line"
+    detectionSignals:
+      - "6+ Marines with 2+ Siege Tanks between 5-15 minutes"
+
+  TERRAN_BATTLE_MECH:
+    displayName: "Battle Mech"
+    race: TERRAN
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [6.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: HELLION
+          minCount: 3
+        - type: THOR
+          minCount: 1
+    strongCounters:
+      - units: [IMMORTAL, STALKER]
+        action: "Immortals hard-counter mech armour, Stalkers kite Hellions"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots are shredded by Hellion splash before closing"
+    detectionSignals:
+      - "3+ Hellions with Thor between 6-15 minutes"
+
+  TERRAN_BC_TRANSITION:
+    displayName: "Battlecruiser Transition"
+    race: TERRAN
+    phase: LATE
+    category: TECH
+    phaseWindow: [10.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: BATTLECRUISER
+          minCount: 1
+    strongCounters:
+      - units: [VOID_RAY, TEMPEST]
+        action: "Void Rays and Tempests counter Battlecruisers — stay at range"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers trade poorly against Battlecruiser armour and Yamato"
+    detectionSignals:
+      - "Battlecruiser spotted after 10 minutes"
+
+  ZERG_ROACH_HYDRA:
+    displayName: "Roach Hydra"
+    race: ZERG
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [5.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ROACH
+          minCount: 3
+        - type: HYDRALISK
+          minCount: 2
+    strongCounters:
+      - units: [COLOSSUS, IMMORTAL]
+        action: "Colossus splash devastates clumped Roach-Hydra — get Robo Bay"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers alone lose to massed Roach-Hydra in a straight fight"
+    detectionSignals:
+      - "3+ Roaches with 2+ Hydralisks between 5-15 minutes"
+
+  ZERG_MUTALISK_HARASS:
+    displayName: "Mutalisk Harass"
+    race: ZERG
+    phase: MID
+    category: HARASS
+    phaseWindow: [5.0, 12.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MUTALISK
+          minCount: 3
+    strongCounters:
+      - units: [PHOENIX, STALKER]
+        action: "Phoenix hard-counter Mutalisks — build Stargate tech"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots cannot attack air units"
+    detectionSignals:
+      - "3+ Mutalisks between 5-12 minutes"
+
+  ZERG_BROOD_LORD:
+    displayName: "Brood Lord Composition"
+    race: ZERG
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [12.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: BROOD_LORD
+          minCount: 2
+    strongCounters:
+      - units: [TEMPEST, VOID_RAY]
+        action: "Tempests outrange Brood Lords — build Stargate tech"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers are overwhelmed by Broodlings while Brood Lords siege"
+    detectionSignals:
+      - "2+ Brood Lords after 12 minutes"
+
+  PROTOSS_STALKER_COLOSSUS:
+    displayName: "Stalker Colossus"
+    race: PROTOSS
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [6.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: STALKER
+          minCount: 3
+        - type: COLOSSUS
+          minCount: 1
+    strongCounters:
+      - units: [IMMORTAL, STALKER]
+        action: "Immortals shred Colossus armour — focus fire with Blink Stalkers"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots are melted by Colossus beams before engaging"
+    detectionSignals:
+      - "3+ Stalkers with Colossus between 6-15 minutes"
+
+  PROTOSS_CHARGELOT_ARCHON:
+    displayName: "Chargelot Archon"
+    race: PROTOSS
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [6.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ZEALOT
+          minCount: 4
+        - type: ARCHON
+          minCount: 1
+    strongCounters:
+      - units: [COLOSSUS, HIGH_TEMPLAR]
+        action: "Colossus splash shreds clumped Zealots — Storm hurts Archons"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers get overwhelmed by Charge Zealots closing the gap"
+    detectionSignals:
+      - "4+ Zealots with Archon between 6-15 minutes"
+
+  PROTOSS_CARRIER:
+    displayName: "Carrier Composition"
+    race: PROTOSS
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [12.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: CARRIER
+          minCount: 2
+    strongCounters:
+      - units: [VOID_RAY, TEMPEST]
+        action: "Tempests outrange Carriers — build Stargate tech"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers trade poorly against massed Interceptors"
+    detectionSignals:
+      - "2+ Carriers after 12 minutes"

@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -248,7 +249,7 @@ class GameTickExecutorMigrationTest {
 
         Map<String, Object> triggerMap = Map.of(QuarkMindCaseFile.COACHING_TRIGGER, Map.of("urgencyTier", "CRISIS"));
         when(coachingTriggerBuilder.build(any(CaseContext.class), anyLong())).thenReturn(triggerMap);
-        when(caseHub.signal(any(), any())).thenReturn(java.util.concurrent.CompletableFuture.completedFuture(null));
+        doNothing().when(caseHub).signal(any(), any(Map.class));
 
         executor.execute();
 

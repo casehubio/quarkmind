@@ -24,7 +24,7 @@ class SummarisationPipelineTest {
     @Test
     void phaseRunner_emitsPhase_afterCountThreshold() {
         var momentBus = new EventStreamBus<GameMoment>();
-        var phaseBus = new EventStreamBus<GamePhase>();
+        var phaseBus = new EventStreamBus<TacticalPosture>();
 
         var runner = new SummarisationRunner<>(
             new WindowPolicy(672, 5),
@@ -34,7 +34,7 @@ class SummarisationPipelineTest {
         momentBus.subscribe(m -> true, e -> runner.collect(e));
 
         // Capture phases
-        List<LevelEvent<GamePhase>> receivedPhases = new ArrayList<>();
+        List<LevelEvent<TacticalPosture>> receivedPhases = new ArrayList<>();
         phaseBus.subscribe(p -> true, receivedPhases::add);
 
         // Publish 5 moments (count threshold)
@@ -51,6 +51,6 @@ class SummarisationPipelineTest {
         runner.tick(200);
 
         assertThat(receivedPhases).hasSize(1);
-        assertThat(receivedPhases.get(0).payload().phase()).isEqualTo("MID_SKIRMISH");
+        assertThat(receivedPhases.get(0).payload().posture()).isEqualTo("MID_SKIRMISH");
     }
 }

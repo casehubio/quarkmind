@@ -8,8 +8,8 @@ import io.casehub.blocks.summarisation.EventLevel;
 import io.casehub.blocks.summarisation.LevelEvent;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.platform.api.identity.ActorType;
-import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.identity.TenancyConstants;
+import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.SettingsScope;
 import io.casehub.qhorus.api.message.MessageDispatch;
 import io.casehub.qhorus.api.message.MessageType;
@@ -20,15 +20,18 @@ import io.quarkmind.agent.PluginDecisionEvent;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
+import io.quarkmind.agent.StrategyTaxonomy;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.ScoutingTask;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
-import io.quarkmind.domain.EnemyArchetype;
-import io.quarkmind.domain.EnemyPatternAssessment;
+import io.quarkmind.domain.PatternAssessment;
+import io.quarkmind.domain.PhaseResolver;
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.MoveIntent;
@@ -74,6 +77,9 @@ public class DroolsScoutingTask implements ScoutingTask {
     @Inject MessageService messageService;
     @Inject ObjectMapper objectMapper;
     @Inject PreferenceProvider preferenceProvider;
+    @Inject StrategyTaxonomy taxonomy;
+    @Inject PhaseResolver phaseResolver;
+
 
     @Inject
     @org.eclipse.microprofile.config.inject.ConfigProperty(
@@ -97,9 +103,9 @@ public class DroolsScoutingTask implements ScoutingTask {
     private volatile String scoutProbeTag;
     private long lastFrame = -1;
 
-    private final EnumMap<EnemyArchetype, Double> cumulativeConfidence =
-        new EnumMap<>(EnemyArchetype.class);
-    volatile List<EnemyPatternAssessment> prevAssessments = List.of();
+    private final EnumMap<StrategyArchetype, Double> cumulativeConfidence =
+        new EnumMap<>(StrategyArchetype.class);
+    volatile List<PatternAssessment> prevAssessments = List.of();
 
     @Inject
     public DroolsScoutingTask(RuleUnit<ScoutingRuleUnit> ruleUnit,
@@ -272,7 +278,9 @@ public class DroolsScoutingTask implements ScoutingTask {
         // --- Pattern classification ---
         if (needsCep) {
             double gameTimeMin = gameTimeMs / 60000.0;
+            ctx.set(QuarkMindCaseFile.GAME_PHASE, phaseResolver.resolve(gameTimeMin).name());
             PatternClassificationRuleUnit patternData = sessionManager.buildPatternRuleUnit(gameTimeMin);
+            taxonomy.activeSignatures(gameTimeMin).forEach(patternData.getSignatureStore()::add);
             try (RuleUnitInstance<PatternClassificationRuleUnit> pInstance =
                     patternRuleUnit.createInstance(patternData)) {
                 pInstance.fire();
@@ -288,7 +296,7 @@ public class DroolsScoutingTask implements ScoutingTask {
                 if (changed && patternAssessmentDispatchEnabled
                         && (broker.isSubscribed(ScoutingIntelType.PATTERN_ASSESSMENT) || advisoryEnabled)) {
                     prevAssessments = assessments;
-                    publishIntel(new ScoutingIntelPayload.PatternAssessment(assessments));
+                    publishIntel(new PatternAssessmentPayload(assessments));
                 }
             } else if (!prevAssessments.isEmpty()) {
                 prevAssessments = List.of();
@@ -308,7 +316,8 @@ public class DroolsScoutingTask implements ScoutingTask {
             QuarkMindCaseFile.ENEMY_ARMY_SIZE,
             QuarkMindCaseFile.ENEMY_BUILD_ORDER,
             QuarkMindCaseFile.TIMING_ATTACK_INCOMING,
-            QuarkMindCaseFile.ENEMY_POSTURE);
+            QuarkMindCaseFile.ENEMY_POSTURE,
+            QuarkMindCaseFile.GAME_PHASE);
     }
 
     private void maybeSendScout(long frame, List<Unit> workers, Point2d target) {
@@ -383,8 +392,8 @@ public class DroolsScoutingTask implements ScoutingTask {
 
     private static final double[] THRESHOLDS = {0.3, 0.5, 0.7, 0.9};
 
-    static boolean assessmentsChanged(List<EnemyPatternAssessment> prev,
-                                      List<EnemyPatternAssessment> curr) {
+    static boolean assessmentsChanged(List<PatternAssessment> prev,
+                                      List<PatternAssessment> curr) {
         if (prev.size() != curr.size()) {return true;}
         for (int i = 0; i < curr.size(); i++) {
             if (curr.get(i).archetype() != prev.get(i).archetype()) {return true;}

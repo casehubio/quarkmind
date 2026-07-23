@@ -293,7 +293,8 @@
       "mcp__intellij-index__ide_replace_text_in_file",
       "mcp__intellij-index__ide_insert_member",
       "mcp__intellij-index__ide_create_file",
-      "mcp__intellij-index__ide_replace_member"
+      "mcp__intellij-index__ide_replace_member",
+      "Bash(xargs -I{} python3 -c \"import zipfile,sys;z=zipfile.ZipFile\\(sys.argv[1]\\);[print\\(sys.argv[1],n\\) for n in z.namelist\\(\\) if 'ReactiveAgentIdentity' in n]\" {})"
     ],
     "additionalDirectories": [
       "/Users/mdproctor/claude/scelight"

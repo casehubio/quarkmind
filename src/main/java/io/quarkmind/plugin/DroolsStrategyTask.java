@@ -15,6 +15,7 @@ import io.quarkmind.agent.ResourceBudget;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelConsumer;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
@@ -28,7 +29,7 @@ import io.quarkmind.plugin.drools.AdvisoryFact;
 import io.quarkmind.plugin.drools.StrategyRuleUnit;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;
-import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkmind.plugin.summarisation.TacticalPosture;
 import io.quarkmind.plugin.summarisation.MomentBroker;
 import io.quarkmind.plugin.summarisation.MomentConsumer;
 import io.quarkmind.plugin.summarisation.SummarisationLifecycle;
@@ -96,7 +97,7 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
 
     // Level 2/3 state
     private final List<GameMoment> pendingMoments = new ArrayList<>();
-    private volatile GamePhase currentPhase = null;
+    private volatile TacticalPosture currentPhase = null;
     private volatile boolean summarisationInitialized = false;
 
     @PostConstruct
@@ -242,7 +243,7 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
                                            List<Building> buildings, List<Resource> geysers,
                                            String posture, boolean timing, CaseContext ctx, long currentFrame) {
         StrategyRuleUnit data = new StrategyRuleUnit();
-        data.getPostureStore().add(posture);
+        data.getEnemyPostureStore().add(posture);
         data.getTimingStore().add(timing);
         workers.stream().findFirst().ifPresent(data.getBuilders()::add);
         army.forEach(data.getArmy()::add);
@@ -255,12 +256,12 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
         }
 
         if (currentPhase != null) {
-            data.getPhaseStore().add(currentPhase);
+            data.getTacticalPostureStore().add(currentPhase);
         }
 
         broker.current(ScoutingIntelType.PATTERN_ASSESSMENT,
-                       ScoutingIntelPayload.PatternAssessment.class)
-              .map(ScoutingIntelPayload.PatternAssessment::assessments)
+                       PatternAssessmentPayload.class)
+              .map(PatternAssessmentPayload::assessments)
               .ifPresent(list -> list.forEach(data.getPatternStore()::add));
 
         feedAdvisoryFacts(ctx, currentFrame, data);

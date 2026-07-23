@@ -3,7 +3,7 @@ package io.quarkmind.agent;
 import io.casehub.blocks.summarisation.EventStreamBus;
 import io.casehub.blocks.summarisation.LevelEvent;
 import io.casehub.blocks.summarisation.EventLevel;
-import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkmind.plugin.summarisation.TacticalPosture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,7 @@ class GamePhaseTriggerTest {
     private static final double MAX_WEIGHT = 0.8;
     private static final EventLevel LEVEL_3 = new EventLevel("phase", 3);
 
-    private EventStreamBus<GamePhase> phaseBus;
+    private EventStreamBus<TacticalPosture> phaseBus;
     private GamePhaseTrigger trigger;
     private MilestoneSession session;
 
@@ -37,7 +37,7 @@ class GamePhaseTriggerTest {
     @Test
     void check_firesOnPhaseTransition() {
         phaseBus.publish(new LevelEvent<>(
-            new GamePhase("EARLY_AGGRESSION", 3000, "combat"), 3000, LEVEL_3));
+            new TacticalPosture("EARLY_AGGRESSION", 3000, "combat"), 3000, LEVEL_3));
 
         List<MilestoneEvent> events = trigger.check(3000, session);
 
@@ -49,7 +49,7 @@ class GamePhaseTriggerTest {
     void check_temporalWeight_proportionalToGameProgress() {
         long frame = 10000;
         phaseBus.publish(new LevelEvent<>(
-            new GamePhase("MID_SKIRMISH", frame, "combat"), frame, LEVEL_3));
+            new TacticalPosture("MID_SKIRMISH", frame, "combat"), frame, LEVEL_3));
 
         List<MilestoneEvent> events = trigger.check(frame, session);
 
@@ -61,7 +61,7 @@ class GamePhaseTriggerTest {
     void check_temporalWeight_clampedToMin() {
         long earlyFrame = 500; // 0.025 of game → clamped to 0.1
         phaseBus.publish(new LevelEvent<>(
-            new GamePhase("EARLY_MACRO", earlyFrame, "econ"), earlyFrame, LEVEL_3));
+            new TacticalPosture("EARLY_MACRO", earlyFrame, "econ"), earlyFrame, LEVEL_3));
 
         List<MilestoneEvent> events = trigger.check(earlyFrame, session);
 
@@ -72,7 +72,7 @@ class GamePhaseTriggerTest {
     void check_temporalWeight_clampedToMax() {
         long lateFrame = 25000; // beyond expected length → clamped to 0.8
         phaseBus.publish(new LevelEvent<>(
-            new GamePhase("DEFENSIVE_HOLD", lateFrame, "attack"), lateFrame, LEVEL_3));
+            new TacticalPosture("DEFENSIVE_HOLD", lateFrame, "attack"), lateFrame, LEVEL_3));
 
         List<MilestoneEvent> events = trigger.check(lateFrame, session);
 
@@ -82,7 +82,7 @@ class GamePhaseTriggerTest {
     @Test
     void check_doesNotDoubleFire_samePhase() {
         phaseBus.publish(new LevelEvent<>(
-            new GamePhase("EARLY_AGGRESSION", 3000, "combat"), 3000, LEVEL_3));
+            new TacticalPosture("EARLY_AGGRESSION", 3000, "combat"), 3000, LEVEL_3));
 
         trigger.check(3000, session); // fires and marks
         List<MilestoneEvent> second = trigger.check(3500, session);
@@ -93,11 +93,11 @@ class GamePhaseTriggerTest {
     @Test
     void check_firesDifferentPhases() {
         phaseBus.publish(new LevelEvent<>(
-            new GamePhase("EARLY_AGGRESSION", 3000, "combat"), 3000, LEVEL_3));
+            new TacticalPosture("EARLY_AGGRESSION", 3000, "combat"), 3000, LEVEL_3));
         trigger.check(3000, session);
 
         phaseBus.publish(new LevelEvent<>(
-            new GamePhase("MID_SKIRMISH", 8000, "combat"), 8000, LEVEL_3));
+            new TacticalPosture("MID_SKIRMISH", 8000, "combat"), 8000, LEVEL_3));
         List<MilestoneEvent> events = trigger.check(8000, session);
 
         assertThat(events).hasSize(1);
