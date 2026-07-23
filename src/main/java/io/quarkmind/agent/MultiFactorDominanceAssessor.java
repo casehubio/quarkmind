@@ -3,7 +3,7 @@ package io.quarkmind.agent;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.domain.*;
-import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkmind.plugin.summarisation.TacticalPosture;
 import io.quarkmind.plugin.summarisation.SummarisationLifecycle;
 import io.quarkmind.sc2.GameStarted;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -32,7 +32,7 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
     private final ScoutingIntelBroker broker;
 
     private final Instance<SummarisationLifecycle> lazyLifecycle;
-    private volatile GamePhase cachedPhase;
+    private volatile TacticalPosture cachedPhase;
     private volatile boolean subscribed = false;
     private DominanceWeights lastWeights;
 
@@ -107,7 +107,7 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
         double tech = techFactor(state);
         double bases = basesFactor(state);
 
-        GamePhase phase = cachedPhase;
+        TacticalPosture phase = cachedPhase;
         List<PatternAssessment> assessments = broker != null
             ? broker.current(ScoutingIntelType.PATTERN_ASSESSMENT,
                              PatternAssessmentPayload.class)
@@ -115,7 +115,7 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
                 .orElse(List.of())
             : List.of();
         WeightContext ctx = new WeightContext(state.gameFrame(),
-            phase != null ? phase.phase() : null,
+            phase != null ? phase.posture() : null,
             assessments);
         DominanceWeights weights = strategy.resolve(ctx);
 

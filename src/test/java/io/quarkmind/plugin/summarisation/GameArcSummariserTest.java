@@ -17,8 +17,8 @@ class GameArcSummariserTest {
     @Test
     void producesNarrative_fromPhaseSequence() {
         var batch = List.of(
-            new LevelEvent<>(new GamePhase("EARLY_MACRO", 0, "expanding"), 100, L3),
-            new LevelEvent<>(new GamePhase("MID_SKIRMISH", 100, "battles"), 200, L3));
+            new LevelEvent<>(new TacticalPosture("EARLY_MACRO", 0, "expanding"), 100, L3),
+            new LevelEvent<>(new TacticalPosture("MID_SKIRMISH", 100, "battles"), 200, L3));
         var arcs = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(arcs).hasSize(1);
         assertThat(arcs.get(0).narrative()).isNotBlank();
@@ -27,7 +27,7 @@ class GameArcSummariserTest {
     @Test
     void singlePhase_producesNarrative() {
         var batch = List.of(
-            new LevelEvent<>(new GamePhase("DEFENSIVE_HOLD", 50, "under attack"), 100, L3));
+            new LevelEvent<>(new TacticalPosture("DEFENSIVE_HOLD", 50, "under attack"), 100, L3));
         var arcs = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(arcs).hasSize(1);
         assertThat(arcs.get(0).narrative()).contains("DEFENSIVE_HOLD");

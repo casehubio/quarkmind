@@ -41,7 +41,7 @@ public class DroolsDominanceWeightStrategy implements DominanceWeightStrategy {
         DominanceWeightRuleUnit data = new DominanceWeightRuleUnit();
 
         if (context.currentPhase() != null) {
-            data.getPhaseStore().add(context.currentPhase());
+            data.getTacticalPostureStore().add(context.currentPhase());
         }
         for (var a : context.patternAssessments()) {
             data.getPatternStore().add(a);

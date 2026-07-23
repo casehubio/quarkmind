@@ -8,18 +8,18 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-public class GamePhaseSummariser implements Summariser<GameMoment, GamePhase> {
+public class GamePhaseSummariser implements Summariser<GameMoment, TacticalPosture> {
 
     private static final Set<GameMomentType> COMBAT_TYPES = Set.of(
         GameMomentType.BATTLE_STARTED, GameMomentType.BATTLE_ENDED,
         GameMomentType.NEXUS_UNDER_ATTACK);
 
     @Override
-    public CompletionStage<List<GamePhase>> summarise(List<LevelEvent<GameMoment>> batch) {
+    public CompletionStage<List<TacticalPosture>> summarise(List<LevelEvent<GameMoment>> batch) {
         return CompletableFuture.completedFuture(doSummarise(batch));
     }
 
-    private List<GamePhase> doSummarise(List<LevelEvent<GameMoment>> batch) {
+    private List<TacticalPosture> doSummarise(List<LevelEvent<GameMoment>> batch) {
         if (batch.isEmpty()) return List.of();
 
         long latestFrame = batch.get(batch.size() - 1).timestamp();
@@ -51,6 +51,6 @@ public class GamePhaseSummariser implements Summariser<GameMoment, GamePhase> {
             rationale = "No combat — economic development";
         }
 
-        return List.of(new GamePhase(phase, latestFrame, rationale));
+        return List.of(new TacticalPosture(phase, latestFrame, rationale));
     }
 }

@@ -63,7 +63,7 @@ end
 
 rule "Phase: DEFENSIVE_HOLD"
 when
-    /phaseStore[this == "DEFENSIVE_HOLD"]
+    /tacticalPostureStore[this == "DEFENSIVE_HOLD"]
 then
     modifiers.add(new WeightModifier(-0.10, +0.15, -0.05, 0.00,
         "Phase: DEFENSIVE_HOLD"));
@@ -71,7 +71,7 @@ end
 
 rule "Phase: EARLY_AGGRESSION"
 when
-    /phaseStore[this == "EARLY_AGGRESSION"]
+    /tacticalPostureStore[this == "EARLY_AGGRESSION"]
 then
     modifiers.add(new WeightModifier(-0.05, +0.10, -0.05, 0.00,
         "Phase: EARLY_AGGRESSION"));
@@ -79,7 +79,7 @@ end
 
 rule "Phase: EARLY_MACRO"
 when
-    /phaseStore[this == "EARLY_MACRO"]
+    /tacticalPostureStore[this == "EARLY_MACRO"]
 then
     modifiers.add(new WeightModifier(+0.10, -0.10, +0.05, -0.05,
         "Phase: EARLY_MACRO"));
@@ -87,7 +87,7 @@ end
 
 rule "Phase: MID_SKIRMISH"
 when
-    /phaseStore[this == "MID_SKIRMISH"]
+    /tacticalPostureStore[this == "MID_SKIRMISH"]
 then
     modifiers.add(new WeightModifier(-0.05, +0.10, -0.05, 0.00,
         "Phase: MID_SKIRMISH"));
@@ -98,7 +98,7 @@ end
 rule "Combined: Rush + DEFENSIVE_HOLD"
 when
     /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.RUSH]
-    /phaseStore[this == "DEFENSIVE_HOLD"]
+    /tacticalPostureStore[this == "DEFENSIVE_HOLD"]
 then
     modifiers.add(new WeightModifier(0.00, +0.05, 0.00, 0.00,
         "Combined: rush + defensive hold"));
@@ -107,7 +107,7 @@ end
 rule "Combined: Macro + EARLY_MACRO"
 when
     /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.MACRO]
-    /phaseStore[this == "EARLY_MACRO"]
+    /tacticalPostureStore[this == "EARLY_MACRO"]
 then
     modifiers.add(new WeightModifier(+0.05, 0.00, 0.00, 0.00,
         "Combined: macro + early macro"));
@@ -118,7 +118,7 @@ when
     /patternStore[confidence >= 0.5,
                   archetype() == StrategyArchetype.TERRAN_BIO_TIMING
                   || archetype() == StrategyArchetype.TERRAN_MECH_PUSH]
-    /phaseStore[this == "MID_SKIRMISH"]
+    /tacticalPostureStore[this == "MID_SKIRMISH"]
 then
     modifiers.add(new WeightModifier(0.00, +0.05, +0.03, 0.00,
         "Combined: push + mid skirmish"));
@@ -127,7 +127,7 @@ end
 rule "Combined: Rush + EARLY_AGGRESSION"
 when
     /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.RUSH]
-    /phaseStore[this == "EARLY_AGGRESSION"]
+    /tacticalPostureStore[this == "EARLY_AGGRESSION"]
 then
     modifiers.add(new WeightModifier(+0.03, +0.03, 0.00, 0.00,
         "Combined: rush + early aggression"));

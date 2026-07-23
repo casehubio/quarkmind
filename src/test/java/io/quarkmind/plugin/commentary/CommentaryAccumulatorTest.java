@@ -7,7 +7,7 @@ import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.plugin.summarisation.GameArc;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;
-import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkmind.plugin.summarisation.TacticalPosture;
 import io.quarkmind.sc2.GameStarted;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class CommentaryAccumulatorTest {
 
     private EventStreamBus<GameMoment> momentBus;
     private NarrativeContextHolder contextHolder;
-    private EventStreamBus<GamePhase> phaseBus;
+    private EventStreamBus<TacticalPosture> phaseBus;
     private EventStreamBus<GameArc> arcBus;
     private CommentaryAccumulator accumulator;
 
@@ -56,7 +56,7 @@ class CommentaryAccumulatorTest {
 
         // Context populated
         phaseBus.publish(new LevelEvent<>(
-            new GamePhase("Mid-game", 300L, "Combat"), 300L, new EventLevel("phase", 3)));
+            new TacticalPosture("Mid-game", 300L, "Combat"), 300L, new EventLevel("phase", 3)));
 
         // When — tick at frame >= minimum floor (672)
         Map<String, Object> result = accumulator.tick(FRAME_672);
@@ -159,7 +159,7 @@ class CommentaryAccumulatorTest {
         publishMoment(400, GameMomentType.SUPPLY_BLOCK);
 
         phaseBus.publish(new LevelEvent<>(
-            new GamePhase("Late-game", 300L, "Tech race"), 300L, new EventLevel("phase", 3)));
+            new TacticalPosture("Late-game", 300L, "Tech race"), 300L, new EventLevel("phase", 3)));
         arcBus.publish(new LevelEvent<>(
             new GameArc("Narrative arc content", 600L), 600L, new EventLevel("arc", 4)));
 

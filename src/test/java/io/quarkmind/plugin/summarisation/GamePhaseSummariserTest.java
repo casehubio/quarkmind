@@ -23,7 +23,7 @@ class GamePhaseSummariserTest {
             new LevelEvent<>(moment(GameMomentType.BATTLE_STARTED, 180), 180, L2));
         var phases = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(phases).hasSize(1);
-        assertThat(phases.get(0).phase()).isEqualTo("MID_SKIRMISH");
+        assertThat(phases.get(0).posture()).isEqualTo("MID_SKIRMISH");
     }
 
     @Test
@@ -32,7 +32,7 @@ class GamePhaseSummariserTest {
             new LevelEvent<>(moment(GameMomentType.NEXUS_UNDER_ATTACK, 200), 200, L2));
         var phases = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(phases).hasSize(1);
-        assertThat(phases.get(0).phase()).isEqualTo("DEFENSIVE_HOLD");
+        assertThat(phases.get(0).posture()).isEqualTo("DEFENSIVE_HOLD");
     }
 
     @Test
@@ -41,7 +41,7 @@ class GamePhaseSummariserTest {
             new LevelEvent<>(moment(GameMomentType.TECH_TRANSITION_DETECTED, 50), 50, L2));
         var phases = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(phases).hasSize(1);
-        assertThat(phases.get(0).phase()).isEqualTo("EARLY_MACRO");
+        assertThat(phases.get(0).posture()).isEqualTo("EARLY_MACRO");
     }
 
     @Test
@@ -51,7 +51,7 @@ class GamePhaseSummariserTest {
             new LevelEvent<>(moment(GameMomentType.BATTLE_STARTED, 120), 120, L2));
         var phases = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(phases).hasSize(1);
-        assertThat(phases.get(0).phase()).isEqualTo("EARLY_AGGRESSION");
+        assertThat(phases.get(0).posture()).isEqualTo("EARLY_AGGRESSION");
     }
 
     @Test

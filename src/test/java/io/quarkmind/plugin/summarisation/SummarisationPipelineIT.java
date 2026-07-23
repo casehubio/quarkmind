@@ -28,7 +28,7 @@ class SummarisationPipelineIT {
     @Inject SummarisationLifecycle lifecycle;
     @Inject Event<GameStarted> gameStartedEvent;
 
-    private final List<LevelEvent<GamePhase>> receivedPhases = new ArrayList<>();
+    private final List<LevelEvent<TacticalPosture>> receivedPhases = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
@@ -52,7 +52,7 @@ class SummarisationPipelineIT {
         lifecycle.tick(200);
 
         assertThat(receivedPhases).isNotEmpty();
-        assertThat(receivedPhases.get(0).payload().phase()).isEqualTo("MID_SKIRMISH");
+        assertThat(receivedPhases.get(0).payload().posture()).isEqualTo("MID_SKIRMISH");
     }
 
     /**
@@ -78,7 +78,7 @@ class SummarisationPipelineIT {
         }
         lifecycle.tick(200);
         assertThat(receivedPhases).as("First game: phases should appear").isNotEmpty();
-        int firstGamePhaseCount = receivedPhases.size();
+        int firstTacticalPostureCount = receivedPhases.size();
 
         // Fire GameStarted (simulates game restart)
         gameStartedEvent.fire(new GameStarted());
@@ -94,6 +94,6 @@ class SummarisationPipelineIT {
         // Pipeline should still work — more phases should have been published
         assertThat(receivedPhases.size())
             .as("Second game: pipeline still works, phases published")
-            .isGreaterThan(firstGamePhaseCount);
+            .isGreaterThan(firstTacticalPostureCount);
     }
 }

@@ -6,7 +6,7 @@ import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;
-import io.quarkmind.plugin.summarisation.GamePhase;
+import io.quarkmind.plugin.summarisation.TacticalPosture;
 
 // ---------------------------------------------------------------------------
 // Build Order Rules (salience 100..70)
@@ -92,7 +92,7 @@ rule "Strategy: Defend — All-In Posture"
     salience 200
 when
     not /timingStore[ this == true ]
-    /postureStore[ this.equals("ALL_IN") ]
+    /enemyPostureStore[ this.equals("ALL_IN") ]
 then
     strategyDecisions.add("DEFEND");
 end
@@ -100,7 +100,7 @@ end
 rule "Strategy: Accelerate — Economic Dominance in Skirmish"
     salience 180
 when
-    /phaseStore[ this.phase().equals("MID_SKIRMISH") ]
+    /tacticalPostureStore[ this.posture().equals("MID_SKIRMISH") ]
     not /momentStore[ this.type() == GameMomentType.NEXUS_UNDER_ATTACK ]
     accumulate(
         /army;
@@ -115,7 +115,7 @@ rule "Strategy: Attack"
     salience 150
 when
     not /timingStore[ this == true ]
-    not /postureStore[ this.equals("ALL_IN") ]
+    not /enemyPostureStore[ this.equals("ALL_IN") ]
     accumulate(
         /army[ this.type() == UnitType.STALKER ];
         $count : count();

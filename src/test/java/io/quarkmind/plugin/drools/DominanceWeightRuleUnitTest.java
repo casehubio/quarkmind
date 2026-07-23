@@ -114,7 +114,7 @@ class DominanceWeightRuleUnitTest {
     @Test
     void phaseOnly_defensiveHold_boostsArmy() {
         var data = new DominanceWeightRuleUnit();
-        data.getPhaseStore().add("DEFENSIVE_HOLD");
+        data.getTacticalPostureStore().add("DEFENSIVE_HOLD");
         List<WeightModifier> mods = fire(data);
         double armyDelta = mods.stream()
             .mapToDouble(WeightModifier::armyDelta).sum();
@@ -124,7 +124,7 @@ class DominanceWeightRuleUnitTest {
     @Test
     void phaseOnly_earlyMacro_boostsEconomy() {
         var data = new DominanceWeightRuleUnit();
-        data.getPhaseStore().add("EARLY_MACRO");
+        data.getTacticalPostureStore().add("EARLY_MACRO");
         List<WeightModifier> mods = fire(data);
         double economyDelta = mods.stream()
             .mapToDouble(WeightModifier::economyDelta).sum();
@@ -134,7 +134,7 @@ class DominanceWeightRuleUnitTest {
     @Test
     void phaseOnly_midSkirmish_boostsArmy() {
         var data = new DominanceWeightRuleUnit();
-        data.getPhaseStore().add("MID_SKIRMISH");
+        data.getTacticalPostureStore().add("MID_SKIRMISH");
         List<WeightModifier> mods = fire(data);
         double armyDelta = mods.stream()
             .mapToDouble(WeightModifier::armyDelta).sum();
@@ -144,7 +144,7 @@ class DominanceWeightRuleUnitTest {
     @Test
     void phaseOnly_earlyAggression_boostsArmy() {
         var data = new DominanceWeightRuleUnit();
-        data.getPhaseStore().add("EARLY_AGGRESSION");
+        data.getTacticalPostureStore().add("EARLY_AGGRESSION");
         List<WeightModifier> mods = fire(data);
         double armyDelta = mods.stream()
             .mapToDouble(WeightModifier::armyDelta).sum();
@@ -156,7 +156,7 @@ class DominanceWeightRuleUnitTest {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new PatternAssessment(
             StrategyArchetype.TERRAN_MARINE_RUSH, 0.7, 3000, "test"));
-        data.getPhaseStore().add("DEFENSIVE_HOLD");
+        data.getTacticalPostureStore().add("DEFENSIVE_HOLD");
         List<WeightModifier> mods = fire(data);
         assertTrue(mods.size() >= 3,
             "Expected rush + phase + combined modifiers, got " + mods.size());
@@ -171,7 +171,7 @@ class DominanceWeightRuleUnitTest {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new PatternAssessment(
             StrategyArchetype.PROTOSS_MACRO, 0.6, 4000, "test"));
-        data.getPhaseStore().add("EARLY_MACRO");
+        data.getTacticalPostureStore().add("EARLY_MACRO");
         List<WeightModifier> mods = fire(data);
         assertTrue(mods.size() >= 3);
         double economyDelta = mods.stream()
@@ -185,7 +185,7 @@ class DominanceWeightRuleUnitTest {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new PatternAssessment(
             StrategyArchetype.TERRAN_MECH_PUSH, 0.6, 7000, "test"));
-        data.getPhaseStore().add("MID_SKIRMISH");
+        data.getTacticalPostureStore().add("MID_SKIRMISH");
         List<WeightModifier> mods = fire(data);
         assertTrue(mods.size() >= 3);
         double armyDelta = mods.stream()
@@ -201,7 +201,7 @@ class DominanceWeightRuleUnitTest {
         var data = new DominanceWeightRuleUnit();
         data.getPatternStore().add(new PatternAssessment(
             StrategyArchetype.ZERG_ZERGLING_RUSH, 0.6, 2000, "test"));
-        data.getPhaseStore().add("EARLY_AGGRESSION");
+        data.getTacticalPostureStore().add("EARLY_AGGRESSION");
         List<WeightModifier> mods = fire(data);
         assertTrue(mods.size() >= 3);
     }
@@ -220,7 +220,7 @@ class DominanceWeightRuleUnitTest {
     @Test
     void transitioning_noPhaseModifier() {
         var data = new DominanceWeightRuleUnit();
-        data.getPhaseStore().add("TRANSITIONING");
+        data.getTacticalPostureStore().add("TRANSITIONING");
         List<WeightModifier> mods = fire(data);
         assertTrue(mods.isEmpty(),
             "TRANSITIONING should produce no modifiers");
@@ -229,7 +229,7 @@ class DominanceWeightRuleUnitTest {
     @Test
     void unknownPhase_noPhaseModifier() {
         var data = new DominanceWeightRuleUnit();
-        data.getPhaseStore().add("SOME_UNKNOWN_PHASE");
+        data.getTacticalPostureStore().add("SOME_UNKNOWN_PHASE");
         List<WeightModifier> mods = fire(data);
         assertTrue(mods.isEmpty());
     }

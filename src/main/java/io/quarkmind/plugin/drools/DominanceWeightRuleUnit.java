@@ -11,12 +11,14 @@ import java.util.List;
 
 public class DominanceWeightRuleUnit implements RuleUnitData {
 
-    private final DataStore<PatternAssessment> patternStore = DataSource.createStore();
-    private final DataStore<String>                 phaseStore   = DataSource.createStore();
+    private final DataStore<PatternAssessment> patternStore         = DataSource.createStore();
+    private final DataStore<String>            tacticalPostureStore = DataSource.createStore();
 
     private final List<WeightModifier> modifiers = new ArrayList<>();
 
-    public DataStore<PatternAssessment> getPatternStore() { return patternStore; }
-    public DataStore<String>                 getPhaseStore()   { return phaseStore; }
-    public List<WeightModifier>              getModifiers()    { return modifiers; }
+    public DataStore<PatternAssessment> getPatternStore() {return patternStore;}
+
+    public DataStore<String> getTacticalPostureStore()    {return tacticalPostureStore;}
+
+    public List<WeightModifier> getModifiers()            {return modifiers;}
 }
