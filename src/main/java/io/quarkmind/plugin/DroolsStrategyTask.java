@@ -15,6 +15,7 @@ import io.quarkmind.agent.ResourceBudget;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelConsumer;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
@@ -259,8 +260,8 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
         }
 
         broker.current(ScoutingIntelType.PATTERN_ASSESSMENT,
-                       ScoutingIntelPayload.PatternAssessment.class)
-              .map(ScoutingIntelPayload.PatternAssessment::assessments)
+                       PatternAssessmentPayload.class)
+              .map(PatternAssessmentPayload::assessments)
               .ifPresent(list -> list.forEach(data.getPatternStore()::add));
 
         feedAdvisoryFacts(ctx, currentFrame, data);

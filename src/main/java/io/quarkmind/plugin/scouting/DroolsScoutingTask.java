@@ -21,13 +21,14 @@ import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.ScoutingTask;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.StrategyArchetype;
-import io.quarkmind.domain.EnemyPatternAssessment;
+import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.sc2.IntentQueue;
@@ -99,7 +100,7 @@ public class DroolsScoutingTask implements ScoutingTask {
 
     private final EnumMap<StrategyArchetype, Double> cumulativeConfidence =
         new EnumMap<>(StrategyArchetype.class);
-    volatile List<EnemyPatternAssessment> prevAssessments = List.of();
+    volatile List<PatternAssessment> prevAssessments = List.of();
 
     @Inject
     public DroolsScoutingTask(RuleUnit<ScoutingRuleUnit> ruleUnit,
@@ -288,7 +289,7 @@ public class DroolsScoutingTask implements ScoutingTask {
                 if (changed && patternAssessmentDispatchEnabled
                         && (broker.isSubscribed(ScoutingIntelType.PATTERN_ASSESSMENT) || advisoryEnabled)) {
                     prevAssessments = assessments;
-                    publishIntel(new ScoutingIntelPayload.PatternAssessment(assessments));
+                    publishIntel(new PatternAssessmentPayload(assessments));
                 }
             } else if (!prevAssessments.isEmpty()) {
                 prevAssessments = List.of();
@@ -383,8 +384,8 @@ public class DroolsScoutingTask implements ScoutingTask {
 
     private static final double[] THRESHOLDS = {0.3, 0.5, 0.7, 0.9};
 
-    static boolean assessmentsChanged(List<EnemyPatternAssessment> prev,
-                                      List<EnemyPatternAssessment> curr) {
+    static boolean assessmentsChanged(List<PatternAssessment> prev,
+                                      List<PatternAssessment> curr) {
         if (prev.size() != curr.size()) {return true;}
         for (int i = 0; i < curr.size(); i++) {
             if (curr.get(i).archetype() != prev.get(i).archetype()) {return true;}

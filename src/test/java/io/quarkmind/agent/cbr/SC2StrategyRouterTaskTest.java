@@ -8,11 +8,11 @@ import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
-import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
 import io.quarkmind.domain.StrategyArchetype;
-import io.quarkmind.domain.EnemyPatternAssessment;
+import io.quarkmind.domain.PatternAssessment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -138,7 +138,7 @@ class SC2StrategyRouterTaskTest {
     @Test
     void emptyAssessments_selectsFallback() {
         when(broker.current(ScoutingIntelType.PATTERN_ASSESSMENT))
-                .thenReturn(Optional.of(new ScoutingIntelPayload.PatternAssessment(List.of())));
+                .thenReturn(Optional.of(new PatternAssessmentPayload(List.of())));
         MutableMapCaseContext ctx = new MutableMapCaseContext(new HashMap<>(Map.of(QuarkMindCaseFile.READY, true)));
 
         router.execute(ctx);
@@ -149,9 +149,9 @@ class SC2StrategyRouterTaskTest {
     }
 
     private void setArchetype(StrategyArchetype archetype, double confidence) {
-        var assessment = new EnemyPatternAssessment(archetype, confidence, 1000, "test");
+        var assessment = new PatternAssessment(archetype, confidence, 1000, "test");
         when(broker.current(ScoutingIntelType.PATTERN_ASSESSMENT))
-                .thenReturn(Optional.of(new ScoutingIntelPayload.PatternAssessment(List.of(assessment))));
+                .thenReturn(Optional.of(new PatternAssessmentPayload(List.of(assessment))));
     }
 
     private StrategyTask stubStrategy(String id) {

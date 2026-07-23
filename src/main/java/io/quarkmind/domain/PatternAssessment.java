@@ -1,6 +1,6 @@
 package io.quarkmind.domain;
 
-public record EnemyPatternAssessment(
+public record PatternAssessment(
     StrategyArchetype archetype,
     double confidence,
     long detectedAtFrame,

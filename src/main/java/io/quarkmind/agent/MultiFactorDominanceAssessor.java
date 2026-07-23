@@ -1,6 +1,6 @@
 package io.quarkmind.agent;
 
-import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.domain.*;
 import io.quarkmind.plugin.summarisation.GamePhase;
@@ -108,10 +108,10 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
         double bases = basesFactor(state);
 
         GamePhase phase = cachedPhase;
-        List<EnemyPatternAssessment> assessments = broker != null
+        List<PatternAssessment> assessments = broker != null
             ? broker.current(ScoutingIntelType.PATTERN_ASSESSMENT,
-                             ScoutingIntelPayload.PatternAssessment.class)
-                .map(ScoutingIntelPayload.PatternAssessment::assessments)
+                             PatternAssessmentPayload.class)
+                .map(PatternAssessmentPayload::assessments)
                 .orElse(List.of())
             : List.of();
         WeightContext ctx = new WeightContext(state.gameFrame(),

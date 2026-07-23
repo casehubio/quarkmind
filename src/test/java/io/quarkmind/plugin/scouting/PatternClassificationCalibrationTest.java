@@ -1,7 +1,7 @@
 package io.quarkmind.plugin.scouting;
 
 import io.quarkmind.domain.StrategyArchetype;
-import io.quarkmind.domain.EnemyPatternAssessment;
+import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.UnitType;

@@ -82,7 +82,7 @@ public class StrategyRuleUnit implements RuleUnitData {
      * Contains only non-stale advisories (age < STALENESS_THRESHOLD).
      */
     private final DataStore<AdvisoryFact> advisoryStore = DataSource.createStore();
-    private final DataStore<io.quarkmind.domain.EnemyPatternAssessment> patternStore = DataSource.createStore();
+    private final DataStore<io.quarkmind.domain.PatternAssessment> patternStore = DataSource.createStore();
 
 
     /**
@@ -108,7 +108,7 @@ public class StrategyRuleUnit implements RuleUnitData {
     public DataStore<GamePhase>  getPhaseStore()       { return phaseStore; }
     public DataStore<AdvisoryFact> getAdvisoryStore() { return advisoryStore; }
 
-    public DataStore<io.quarkmind.domain.EnemyPatternAssessment> getPatternStore() {return patternStore;}
+    public DataStore<io.quarkmind.domain.PatternAssessment> getPatternStore() {return patternStore;}
 
     public List<String>          getBuildDecisions()   { return buildDecisions; }
     public List<String>          getStrategyDecisions(){ return strategyDecisions; }

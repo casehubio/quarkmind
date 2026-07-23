@@ -1,7 +1,7 @@
 package io.quarkmind.plugin.scouting;
 
 import io.quarkmind.domain.StrategyArchetype;
-import io.quarkmind.domain.EnemyPatternAssessment;
+import io.quarkmind.domain.PatternAssessment;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -53,12 +53,12 @@ public final class PatternClassifier {
         }
     }
 
-    static List<EnemyPatternAssessment> allAssessments(
+    static List<PatternAssessment> allAssessments(
             EnumMap<StrategyArchetype, Double> cumulative, long frame) {
         return cumulative.entrySet().stream()
                          .filter(e -> e.getValue() >= DISPATCH_THRESHOLD)
                          .sorted(Map.Entry.<StrategyArchetype, Double>comparingByValue().reversed())
-                         .map(e -> new EnemyPatternAssessment(e.getKey(), e.getValue(), frame,
+                         .map(e -> new PatternAssessment(e.getKey(), e.getValue(), frame,
                                                               e.getKey().name() + " (confidence " +
                                                               String.format("%.2f", e.getValue()) + ")"))
                          .toList();

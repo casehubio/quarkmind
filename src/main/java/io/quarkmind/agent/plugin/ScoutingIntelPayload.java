@@ -1,6 +1,7 @@
 package io.quarkmind.agent.plugin;
 
-import io.quarkmind.domain.EnemyPatternAssessment;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
+import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.Point2d;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public sealed interface ScoutingIntelPayload
                 ScoutingIntelPayload.TimingAlert,
                 ScoutingIntelPayload.ArmySize,
                 ScoutingIntelPayload.BuildOrder,
-                ScoutingIntelPayload.PatternAssessment {
+                PatternAssessmentPayload {
 
     ScoutingIntelType type();
 
@@ -35,7 +36,7 @@ public sealed interface ScoutingIntelPayload
         public ScoutingIntelType type() {return ScoutingIntelType.BUILD_ORDER;}
     }
 
-    record PatternAssessment(List<EnemyPatternAssessment> assessments) implements ScoutingIntelPayload {
+    record PatternAssessmentPayload(List<PatternAssessment> assessments) implements ScoutingIntelPayload {
         public ScoutingIntelType type() {return ScoutingIntelType.PATTERN_ASSESSMENT;}
     }
 }
