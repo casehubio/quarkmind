@@ -99,32 +99,32 @@ class GameTickExecutor {
         if (ctx != null) {
             reactiveTriggers = commentaryTriggerBuilder.build(ctx, gameState.gameFrame());
             if (!reactiveTriggers.isEmpty()) {
-                caseHub.signal(gameSession.id(), reactiveTriggers)
-                       .exceptionally(ex -> {
-                           log.warnf("Reactive commentary trigger failed at frame %d: %s", gameState.gameFrame(), ex.getMessage());
-                           return null;
-                       });
+                try {
+                    caseHub.signal(gameSession.id(), reactiveTriggers);
+                } catch (Exception ex) {
+                    log.warnf("Reactive commentary trigger failed at frame %d: %s", gameState.gameFrame(), ex.getMessage());
+                }
             }
         }
 
         // Commentary narrative trigger: fire-and-forget signal (both modes)
         if (!narrativeTriggers.isEmpty()) {
-            caseHub.signal(gameSession.id(), narrativeTriggers)
-                   .exceptionally(ex -> {
-                       log.warnf("Narrative commentary trigger failed at frame %d: %s", gameState.gameFrame(), ex.getMessage());
-                       return null;
-                   });
+            try {
+                caseHub.signal(gameSession.id(), narrativeTriggers);
+            } catch (Exception ex) {
+                log.warnf("Narrative commentary trigger failed at frame %d: %s", gameState.gameFrame(), ex.getMessage());
+            }
         }
 
         // Advisory trigger: fire-and-forget signal — only in AI mode
         if (ctx != null && !isCoachMode) {
             Map<String, Object> triggers = AdvisoryTriggerBuilder.buildTriggers(ctx, gameState.gameFrame());
             if (!triggers.isEmpty()) {
-                caseHub.signal(gameSession.id(), triggers)
-                       .exceptionally(ex -> {
-                           log.warnf("Advisory signal failed at frame %d: %s", gameState.gameFrame(), ex.getMessage());
-                           return null;
-                       });
+                try {
+                    caseHub.signal(gameSession.id(), triggers);
+                } catch (Exception ex) {
+                    log.warnf("Advisory signal failed at frame %d: %s", gameState.gameFrame(), ex.getMessage());
+                }
             }
         }
 
@@ -132,11 +132,11 @@ class GameTickExecutor {
         if (ctx != null && isCoachMode) {
             Map<String, Object> coachingTriggers = coachingTriggerBuilder.build(ctx, gameState.gameFrame());
             if (!coachingTriggers.isEmpty()) {
-                caseHub.signal(gameSession.id(), coachingTriggers)
-                       .exceptionally(ex -> {
-                           log.warnf("Coaching trigger failed at frame %d: %s", gameState.gameFrame(), ex.getMessage());
-                           return null;
-                       });
+                try {
+                    caseHub.signal(gameSession.id(), coachingTriggers);
+                } catch (Exception ex) {
+                    log.warnf("Coaching trigger failed at frame %d: %s", gameState.gameFrame(), ex.getMessage());
+                }
             }
         }
 

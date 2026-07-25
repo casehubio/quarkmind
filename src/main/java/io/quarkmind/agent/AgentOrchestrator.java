@@ -81,8 +81,7 @@ public class AgentOrchestrator {
         // Called after connect/joinGame so observe() returns the initial game state.
         try {
             Map<String, Object> initialData = translator.toMap(engine.observe());
-            UUID caseId = caseHub.startCase(initialData).toCompletableFuture()
-                .get(5, TimeUnit.SECONDS);
+            UUID caseId = caseHub.startCase(initialData);
             gameSession.setCaseId(caseId);
             log.infof("Engine case started: %s", caseId);
         } catch (Exception e) {

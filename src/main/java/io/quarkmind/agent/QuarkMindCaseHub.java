@@ -208,15 +208,15 @@ public class QuarkMindCaseHub extends CaseHub {
      * @return the settled CaseContext
      */
     public CaseContext signalAndAwaitSync(UUID caseId, Map<String, Object> updates, Duration timeout) {
-        return caseHubRuntime.signalAndAwaitSync(caseId, updates, timeout);
+        return caseHubRuntime.signalAndAwait(caseId, updates, timeout);
     }
 
     /**
      * Async bulk signal — applies updates and triggers bindings without waiting for settlement.
      * Used for fire-and-forget advisory triggers (two-signal pattern).
      */
-    public CompletionStage<Void> signal(UUID caseId, Map<String, Object> updates) {
-        return caseHubRuntime.signal(caseId, updates);
+    public void signal(UUID caseId, Map<String, Object> updates) {
+        caseHubRuntime.signal(caseId, updates);
     }
 
     @Override

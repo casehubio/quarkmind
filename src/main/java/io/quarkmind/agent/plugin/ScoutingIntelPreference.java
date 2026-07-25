@@ -22,6 +22,10 @@ public record ScoutingIntelPreference(Object value) implements SingleValuePrefer
         return n.intValue();
     }
 
+    @Override
+    public String toSerializedValue() {return String.valueOf(value);}
+
+
     public static ScoutingIntelPreference ofBoolean(boolean v) { return new ScoutingIntelPreference(v); }
     public static ScoutingIntelPreference ofDouble(double v)   { return new ScoutingIntelPreference(v); }
     public static ScoutingIntelPreference ofInt(int v)         { return new ScoutingIntelPreference(v); }
