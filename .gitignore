@@ -47,3 +47,5 @@ nb-configuration.xml
 node_modules/
 electron-app/package-lock.json
 wksp
+.claude
+package-lock.json
