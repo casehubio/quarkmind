@@ -216,3 +216,213 @@ archetypes:
         action: "Passive Zealot play lets opponent scale freely"
     detectionSignals:
       - "Expansion with fewer than 3 units before 5 minutes"
+
+  PROTOSS_DT_HARASS:
+    displayName: "Dark Templar Harass"
+    race: PROTOSS
+    phase: EARLY
+    category: HARASS
+    phaseWindow: [4.0, 8.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: DARK_TEMPLAR
+          minCount: 1
+    strongCounters:
+      - units: [OBSERVER, STALKER]
+        action: "Observer for detection — DTs are fragile once revealed"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots without detection cannot target cloaked DTs"
+    detectionSignals:
+      - "Dark Templar spotted before 8 minutes"
+
+  TERRAN_MARINE_TANK:
+    displayName: "Marine Tank"
+    race: TERRAN
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [5.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MARINE
+          minCount: 6
+        - type: SIEGE_TANK
+          minCount: 2
+    strongCounters:
+      - units: [IMMORTAL, COLOSSUS]
+        action: "Immortals destroy tanks, Colossus splash shreds Marines"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots melt to sieged tanks before reaching the line"
+    detectionSignals:
+      - "6+ Marines with 2+ Siege Tanks between 5-15 minutes"
+
+  TERRAN_BATTLE_MECH:
+    displayName: "Battle Mech"
+    race: TERRAN
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [6.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: HELLION
+          minCount: 3
+        - type: THOR
+          minCount: 1
+    strongCounters:
+      - units: [IMMORTAL, STALKER]
+        action: "Immortals hard-counter mech armour, Stalkers kite Hellions"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots are shredded by Hellion splash before closing"
+    detectionSignals:
+      - "3+ Hellions with Thor between 6-15 minutes"
+
+  TERRAN_BC_TRANSITION:
+    displayName: "Battlecruiser Transition"
+    race: TERRAN
+    phase: LATE
+    category: TECH
+    phaseWindow: [10.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: BATTLECRUISER
+          minCount: 1
+    strongCounters:
+      - units: [VOID_RAY, TEMPEST]
+        action: "Void Rays and Tempests counter Battlecruisers — stay at range"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers trade poorly against Battlecruiser armour and Yamato"
+    detectionSignals:
+      - "Battlecruiser spotted after 10 minutes"
+
+  ZERG_ROACH_HYDRA:
+    displayName: "Roach Hydra"
+    race: ZERG
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [5.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ROACH
+          minCount: 3
+        - type: HYDRALISK
+          minCount: 2
+    strongCounters:
+      - units: [COLOSSUS, IMMORTAL]
+        action: "Colossus splash devastates clumped Roach-Hydra — get Robo Bay"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers alone lose to massed Roach-Hydra in a straight fight"
+    detectionSignals:
+      - "3+ Roaches with 2+ Hydralisks between 5-15 minutes"
+
+  ZERG_MUTALISK_HARASS:
+    displayName: "Mutalisk Harass"
+    race: ZERG
+    phase: MID
+    category: HARASS
+    phaseWindow: [5.0, 12.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MUTALISK
+          minCount: 3
+    strongCounters:
+      - units: [PHOENIX, STALKER]
+        action: "Phoenix hard-counter Mutalisks — build Stargate tech"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots cannot attack air units"
+    detectionSignals:
+      - "3+ Mutalisks between 5-12 minutes"
+
+  ZERG_BROOD_LORD:
+    displayName: "Brood Lord Composition"
+    race: ZERG
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [12.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: BROOD_LORD
+          minCount: 2
+    strongCounters:
+      - units: [TEMPEST, VOID_RAY]
+        action: "Tempests outrange Brood Lords — build Stargate tech"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers are overwhelmed by Broodlings while Brood Lords siege"
+    detectionSignals:
+      - "2+ Brood Lords after 12 minutes"
+
+  PROTOSS_STALKER_COLOSSUS:
+    displayName: "Stalker Colossus"
+    race: PROTOSS
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [6.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: STALKER
+          minCount: 3
+        - type: COLOSSUS
+          minCount: 1
+    strongCounters:
+      - units: [IMMORTAL, STALKER]
+        action: "Immortals shred Colossus armour — focus fire with Blink Stalkers"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots are melted by Colossus beams before engaging"
+    detectionSignals:
+      - "3+ Stalkers with Colossus between 6-15 minutes"
+
+  PROTOSS_CHARGELOT_ARCHON:
+    displayName: "Chargelot Archon"
+    race: PROTOSS
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [6.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ZEALOT
+          minCount: 4
+        - type: ARCHON
+          minCount: 1
+    strongCounters:
+      - units: [COLOSSUS, HIGH_TEMPLAR]
+        action: "Colossus splash shreds clumped Zealots — Storm hurts Archons"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers get overwhelmed by Charge Zealots closing the gap"
+    detectionSignals:
+      - "4+ Zealots with Archon between 6-15 minutes"
+
+  PROTOSS_CARRIER:
+    displayName: "Carrier Composition"
+    race: PROTOSS
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [12.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: CARRIER
+          minCount: 2
+    strongCounters:
+      - units: [VOID_RAY, TEMPEST]
+        action: "Tempests outrange Carriers — build Stargate tech"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers trade poorly against massed Interceptors"
+    detectionSignals:
+      - "2+ Carriers after 12 minutes"

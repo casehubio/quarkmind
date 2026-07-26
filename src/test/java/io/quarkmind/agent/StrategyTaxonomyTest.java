@@ -83,10 +83,25 @@ class StrategyTaxonomyTest {
     }
 
     @Test
-    void activeSignatures_allHandAuthored_returnsEmpty() {
-        assertThat(taxonomy.activeSignatures(2.0)).isEmpty();
-        assertThat(taxonomy.activeSignatures(7.0)).isEmpty();
-        assertThat(taxonomy.activeSignatures(15.0)).isEmpty();
+    void activeSignatures_earlyGame_returnsNonHandAuthoredOnly() {
+        var sigs = taxonomy.activeSignatures(5.0);
+        assertThat(sigs).isNotEmpty();
+        assertThat(sigs).allSatisfy(s -> {
+            var entry = taxonomy.lookup(s.archetype());
+            assertThat(entry.handAuthored()).isFalse();
+            assertThat(5.0).isBetween(s.windowStart(), s.windowEnd());
+        });
+    }
+
+    @Test
+    void activeSignatures_outsideAllWindows_returnsEmpty() {
+        assertThat(taxonomy.activeSignatures(-1.0)).isEmpty();
+    }
+
+    @Test
+    void activeSignatures_lateGame_includesLateArchetypes() {
+        var sigs = taxonomy.activeSignatures(15.0);
+        assertThat(sigs).anyMatch(s -> s.archetype().phase() == io.quarkmind.domain.GamePhase.LATE);
     }
 
 }
