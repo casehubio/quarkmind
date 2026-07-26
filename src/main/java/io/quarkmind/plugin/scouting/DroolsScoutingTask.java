@@ -77,6 +77,8 @@ public class DroolsScoutingTask implements ScoutingTask {
     @Inject PreferenceProvider preferenceProvider;
     @Inject
             io.quarkmind.agent.StrategyTaxonomy taxonomy;
+    @Inject
+    io.quarkmind.domain.PhaseResolver phaseResolver;
 
 
     @Inject
@@ -276,6 +278,7 @@ public class DroolsScoutingTask implements ScoutingTask {
         // --- Pattern classification ---
         if (needsCep) {
             double gameTimeMin = gameTimeMs / 60000.0;
+            ctx.set(QuarkMindCaseFile.GAME_PHASE, phaseResolver.resolve(gameTimeMin).name());
             PatternClassificationRuleUnit patternData = sessionManager.buildPatternRuleUnit(gameTimeMin);
             taxonomy.activeSignatures(gameTimeMin).forEach(patternData.getSignatureStore()::add);
             try (RuleUnitInstance<PatternClassificationRuleUnit> pInstance =
@@ -313,7 +316,8 @@ public class DroolsScoutingTask implements ScoutingTask {
             QuarkMindCaseFile.ENEMY_ARMY_SIZE,
             QuarkMindCaseFile.ENEMY_BUILD_ORDER,
             QuarkMindCaseFile.TIMING_ATTACK_INCOMING,
-            QuarkMindCaseFile.ENEMY_POSTURE);
+            QuarkMindCaseFile.ENEMY_POSTURE,
+            QuarkMindCaseFile.GAME_PHASE);
     }
 
     private void maybeSendScout(long frame, List<Unit> workers, Point2d target) {

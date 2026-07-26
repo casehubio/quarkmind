@@ -35,6 +35,8 @@ public final class QuarkMindCaseFile {
     public static final String TIMING_ATTACK_INCOMING  = "agent.intel.enemy.timing";
     public static final String ENEMY_POSTURE           = "agent.intel.enemy.posture";
     public static final String MOMENTS_LATEST          = "agent.intel.moments.latest";
+    public static final String GAME_PHASE              = "agent.intel.game.phase";
+
 
     // Commentary triggers — written by CommentaryTriggerBuilder, CommentaryAccumulator
     public static final String COMMENTARY_TRIGGER          = "game.commentary.trigger";
@@ -47,7 +49,7 @@ public final class QuarkMindCaseFile {
             MINERALS, VESPENE, SUPPLY_USED, SUPPLY_CAP,
             WORKERS, ARMY, MY_BUILDINGS, GEYSERS, ENEMY_UNITS, GAME_FRAME, READY,
             RESOURCE_BUDGET, STRATEGY, CRISIS, ENEMY_ARMY_SIZE,
-            ENEMY_BUILD_ORDER, TIMING_ATTACK_INCOMING, ENEMY_POSTURE, MOMENTS_LATEST,
+            ENEMY_BUILD_ORDER, TIMING_ATTACK_INCOMING, ENEMY_POSTURE, MOMENTS_LATEST, GAME_PHASE,
             STRATEGY_SELECTED_ID, STRATEGY_ROUTED_CONTEXT, STRATEGY_ROUTED_ARCHETYPE,
             STRATEGY_ROUTED_CONFIDENCE, STRATEGY_PIVOT_COUNT,
             COMMENTARY_TRIGGER, COMMENTARY_NARRATIVE_TRIGGER,

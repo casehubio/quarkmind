@@ -24,7 +24,7 @@ public class StrategyTaxonomy {
     private final EnumMap<StrategyArchetype, ArchetypeEntry> entries = new EnumMap<>(StrategyArchetype.class);
 
     @PostConstruct
-    void init() {
+    public void init() {
         Yaml yaml = new Yaml();
         InputStream stream = Thread.currentThread().getContextClassLoader()
             .getResourceAsStream("io/quarkmind/domain/strategy-taxonomy.yaml");

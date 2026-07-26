@@ -29,48 +29,51 @@ public final class CoachingWorkerFactory {
     private CoachingWorkerFactory() {}
 
     public static List<Worker> createWorkers(List<AgentDescriptor> descriptors, ChatModel chatModel,
-                                              CoachingCompletionCallback onCompletion) {
+                                             CoachingCompletionCallback onCompletion,
+                                             io.quarkmind.agent.StrategyTaxonomy taxonomy) {
         List<AgentDescriptor> coachDescriptors = descriptors.stream()
-            .filter(d -> d.capabilities().stream().anyMatch(c -> c.name().equals("coaching")))
-            .toList();
+                                                            .filter(d -> d.capabilities().stream().anyMatch(c -> c.name().equals("coaching")))
+                                                            .toList();
 
         List<Worker> workers = new ArrayList<>(coachDescriptors.size());
         for (AgentDescriptor descriptor : coachDescriptors) {
-            workers.add(createWorker(descriptor, chatModel, onCompletion));
+            workers.add(createWorker(descriptor, chatModel, onCompletion, taxonomy));
         }
         log.infof("[COACHING] Created %d coaching workers", workers.size());
         return workers;
     }
 
     private static Worker createWorker(AgentDescriptor descriptor, ChatModel chatModel,
-                                        CoachingCompletionCallback onCompletion) {
+                                       CoachingCompletionCallback onCompletion,
+                                       io.quarkmind.agent.StrategyTaxonomy taxonomy) {
         String capabilityName = descriptor.capabilities().get(0).name();
         return Worker.builder()
-            .name(descriptor.agentId())
-            .capabilityName(capabilityName)
-            .function(new WorkerFunction.Sync<>(Map.class, Map.class, (input, scope) ->
-                executeCoaching(descriptor, chatModel, input, onCompletion)))
-            .description("Coaching worker: " + descriptor.name() + " (" + descriptor.agentId() + ")")
-            .build();
+                     .name(descriptor.agentId())
+                     .capabilityName(capabilityName)
+                     .function(new WorkerFunction.Sync<>(Map.class, Map.class, (input, scope) ->
+                                                                                       executeCoaching(descriptor, chatModel, input, onCompletion, taxonomy)))
+                     .description("Coaching worker: " + descriptor.name() + " (" + descriptor.agentId() + ")")
+                     .build();
     }
 
     private static WorkerResult executeCoaching(AgentDescriptor descriptor, ChatModel chatModel,
-                                                 Map<String, Object> input,
-                                                 CoachingCompletionCallback onCompletion) {
-        long startNanos = System.nanoTime();
+                                                Map<String, Object> input,
+                                                CoachingCompletionCallback onCompletion,
+                                                io.quarkmind.agent.StrategyTaxonomy taxonomy) {
+        long   startNanos     = System.nanoTime();
         String capabilityName = descriptor.capabilities().get(0).name();
 
         try {
-            boolean isCrisis = isCrisisTrigger(input);
+            boolean       isCrisis      = isCrisisTrigger(input);
             SystemMessage systemMessage = new SystemMessage(buildSystemPrompt(descriptor, isCrisis));
-            UserMessage userMessage = new UserMessage(buildUserMessage(input));
+            UserMessage   userMessage   = new UserMessage(buildUserMessage(input, taxonomy));
 
             ChatRequest request = ChatRequest.builder()
-                .messages(systemMessage, userMessage)
-                .build();
+                                             .messages(systemMessage, userMessage)
+                                             .build();
 
-            ChatResponse response = chatModel.chat(request);
-            String responseText = response.aiMessage().text();
+            ChatResponse response     = chatModel.chat(request);
+            String       responseText = response.aiMessage().text();
 
             CoachingAdvice advice = parseAdvice(responseText);
             if (advice == null) {
@@ -78,12 +81,12 @@ public final class CoachingWorkerFactory {
                 return WorkerResult.failed("Coaching " + descriptor.agentId() + " returned unparseable response");
             }
 
-            long latencyMs = (System.nanoTime() - startNanos) / 1_000_000;
-            long gameFrame = getGameFrame(input);
-            CoachingUrgencyTier tier = isCrisis ? CoachingUrgencyTier.CRISIS : resolveUrgencyTier(input);
+            long                latencyMs = (System.nanoTime() - startNanos) / 1_000_000;
+            long                gameFrame = getGameFrame(input);
+            CoachingUrgencyTier tier      = isCrisis ? CoachingUrgencyTier.CRISIS : resolveUrgencyTier(input);
 
             onCompletion.onCompleted(descriptor.agentId(), capabilityName, gameFrame,
-                advice, tier, latencyMs, reconstructTriggerState(input));
+                                     advice, tier, latencyMs, reconstructTriggerState(input));
 
             return WorkerResult.of(Map.of("agent.coaching.advice", advice.advice()));
         } catch (Exception e) {
@@ -135,9 +138,9 @@ public final class CoachingWorkerFactory {
 
         return sb.toString();}
 
-    static String buildUserMessage(Map<String, Object> input) {
-        StringBuilder sb = new StringBuilder();
-        Object trigger = input.get(QuarkMindCaseFile.COACHING_TRIGGER);
+    static String buildUserMessage(Map<String, Object> input, io.quarkmind.agent.StrategyTaxonomy taxonomy) {
+        StringBuilder sb      = new StringBuilder();
+        Object        trigger = input.get(QuarkMindCaseFile.COACHING_TRIGGER);
         if (trigger instanceof Map<?, ?> triggerMap) {
             Object momentTypes = triggerMap.get("momentTypes");
             if (momentTypes != null) {
@@ -150,15 +153,29 @@ public final class CoachingWorkerFactory {
 
             Object pattern = triggerMap.get("patternAssessment");
             if (pattern instanceof Map<?, ?> patternMap) {
-                Object archetype = patternMap.get("archetype");
+                Object archetype  = patternMap.get("archetype");
                 Object confidence = patternMap.get("confidence");
                 if (archetype != null) {
                     sb.append("ENEMY PATTERN: ").append(archetype);
-                    if (confidence != null) sb.append(" (confidence: ").append(confidence).append(")");
+                    if (confidence != null) {sb.append(" (confidence: ").append(confidence).append(")");}
                     sb.append("\n");
+
+                    if (taxonomy != null) {
+                        try {
+                            var arch     = io.quarkmind.domain.StrategyArchetype.valueOf(archetype.toString());
+                            var counters = taxonomy.countersFor(arch);
+                            if (counters != null) {
+                                appendCounters(sb, "STRONG COUNTERS", counters.strongCounters());
+                                appendCounters(sb, "WEAK COUNTERS", counters.weakCounters());
+                            }
+                        } catch (IllegalArgumentException ignored) {}
+                    }
                 }
             }
         }
+
+        Object phase = input.get(QuarkMindCaseFile.GAME_PHASE);
+        if (phase != null) {sb.append("GAME PHASE: ").append(phase).append("\n");}
 
         sb.append("\nGame state:\n");
         appendField(sb, "Minerals", input.get(QuarkMindCaseFile.MINERALS));
@@ -317,6 +334,15 @@ public final class CoachingWorkerFactory {
     private static void appendField(StringBuilder sb, String label, Object value) {
         if (value != null) sb.append("- ").append(label).append(": ").append(value).append("\n");
     }
+
+    private static void appendCounters(StringBuilder sb, String label, List<io.quarkmind.domain.CounterEntry> entries) {
+        if (entries == null || entries.isEmpty()) {return;}
+        sb.append(label).append(":\n");
+        for (var entry : entries) {
+            sb.append("  - ").append(entry.units().stream().map(Enum::name).reduce((a, b) -> a + " + " + b).orElse("")).append(": ").append(entry.action()).append("\n");
+        }
+    }
+
 
     @SuppressWarnings("unchecked")
     private static io.quarkmind.domain.GameState reconstructTriggerState(Map<String, Object> input) {

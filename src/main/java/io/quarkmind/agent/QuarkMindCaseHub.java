@@ -35,7 +35,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletionStage;
 
 /**
  * CaseHub subclass defining the {@code starcraft-game} case type for the casehub-engine.
@@ -157,6 +156,9 @@ public class QuarkMindCaseHub extends CaseHub {
      */
     @Inject
     CaseHubRuntime caseHubRuntime;
+    @jakarta.inject.Inject
+    StrategyTaxonomy strategyTaxonomy;
+
 
     /**
      * CDI constructor — stores the Instance handles without resolving beans.
@@ -508,7 +510,7 @@ public class QuarkMindCaseHub extends CaseHub {
         };
 
         List<Worker> coachingWorkers = CoachingWorkerFactory.createWorkers(
-                advisorRegistrar.descriptors(), chatModel, completionCallback);
+                advisorRegistrar.descriptors(), chatModel, completionCallback, strategyTaxonomy);
         workers.addAll(coachingWorkers);
 
         log.infof("[CASEHUB] Wired %d coaching workers", coachingWorkers.size());
