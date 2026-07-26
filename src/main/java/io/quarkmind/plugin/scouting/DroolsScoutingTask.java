@@ -8,8 +8,8 @@ import io.casehub.blocks.summarisation.EventLevel;
 import io.casehub.blocks.summarisation.LevelEvent;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.platform.api.identity.ActorType;
-import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.identity.TenancyConstants;
+import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.SettingsScope;
 import io.casehub.qhorus.api.message.MessageDispatch;
 import io.casehub.qhorus.api.message.MessageType;
@@ -27,9 +27,9 @@ import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.ScoutingTask;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
-import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.MoveIntent;
@@ -75,6 +75,9 @@ public class DroolsScoutingTask implements ScoutingTask {
     @Inject MessageService messageService;
     @Inject ObjectMapper objectMapper;
     @Inject PreferenceProvider preferenceProvider;
+    @Inject
+            io.quarkmind.agent.StrategyTaxonomy taxonomy;
+
 
     @Inject
     @org.eclipse.microprofile.config.inject.ConfigProperty(
@@ -274,6 +277,7 @@ public class DroolsScoutingTask implements ScoutingTask {
         if (needsCep) {
             double gameTimeMin = gameTimeMs / 60000.0;
             PatternClassificationRuleUnit patternData = sessionManager.buildPatternRuleUnit(gameTimeMin);
+            taxonomy.activeSignatures(gameTimeMin).forEach(patternData.getSignatureStore()::add);
             try (RuleUnitInstance<PatternClassificationRuleUnit> pInstance =
                     patternRuleUnit.createInstance(patternData)) {
                 pInstance.fire();

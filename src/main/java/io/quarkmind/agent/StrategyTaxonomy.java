@@ -5,6 +5,7 @@ import io.quarkmind.domain.CounterEntry;
 import io.quarkmind.domain.CounterInfo;
 import io.quarkmind.domain.GamePhase;
 import io.quarkmind.domain.Race;
+import io.quarkmind.domain.SignatureSpec;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.UnitType;
 import jakarta.annotation.PostConstruct;
@@ -77,6 +78,15 @@ public class StrategyTaxonomy {
             .flatMap(e -> e.signatureSpecs().stream())
             .toList();
     }
+
+    public List<SignatureSpec> activeSignatures(double gameTimeMinutes) {
+        return entries.values().stream()
+                      .filter(e -> !e.handAuthored())
+                      .filter(e -> gameTimeMinutes >= e.phaseWindow()[0] && gameTimeMinutes <= e.phaseWindow()[1])
+                      .flatMap(e -> e.signatureSpecs().stream())
+                      .toList();
+    }
+
 
     @SuppressWarnings("unchecked")
     private ArchetypeEntry parseEntry(StrategyArchetype archetype, Map<String, Object> data) {
@@ -168,14 +178,4 @@ public class StrategyTaxonomy {
         List<String> detectionSignals
     ) {}
 
-    public record SignatureSpec(
-        StrategyArchetype archetype,
-        UnitType unitType,
-        int minCount,
-        double windowStart,
-        double windowEnd,
-        double weight,
-        boolean noExpansion,
-        Race race
-    ) {}
 }

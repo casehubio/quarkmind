@@ -1,8 +1,9 @@
 package io.quarkmind.plugin.scouting;
 
-import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Race;
+import io.quarkmind.domain.SignatureSpec;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.plugin.scouting.events.EnemyArmyNearBase;
 import io.quarkmind.plugin.scouting.events.EnemyExpansionSeen;
@@ -333,6 +334,62 @@ class PatternClassificationRuleUnitTest {
         assertThat(data.getEvidence()).anyMatch(e ->
             e.archetype() == StrategyArchetype.TERRAN_BIO_TIMING && e.weight() >= 0.5);
     }
+
+    @Test
+    void generic_unitCountThreshold_emitsEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        var sig = new SignatureSpec(
+                StrategyArchetype.TERRAN_BIO_TIMING, UnitType.MARINE, 3,
+                4.0, 10.0, 0.5, false, Race.TERRAN);
+        data.getSignatureStore().add(sig);
+        for (int i = 0; i < 4; i++) {
+            data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.MARINE, 300000L));
+        }
+        data.getGameTimeStore().add(6.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+                                                        e.archetype() == StrategyArchetype.TERRAN_BIO_TIMING
+                                                        && e.signal().contains("MARINE")
+                                                        && e.signal().contains("in window"));
+    }
+
+    @Test
+    void generic_noExpansionGate_emitsEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        var sig = new SignatureSpec(
+                StrategyArchetype.TERRAN_MARINE_RUSH, UnitType.MARINE, 1,
+                0.0, 5.0, 0.5, true, Race.TERRAN);
+        data.getSignatureStore().add(sig);
+        data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.MARINE, 60000L));
+        data.getGameTimeStore().add(2.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).anyMatch(e ->
+                                                        e.archetype() == StrategyArchetype.TERRAN_MARINE_RUSH
+                                                        && e.signal().contains("No expansion"));
+    }
+
+    @Test
+    void generic_outsideWindow_noEvidence() {
+        var data = new PatternClassificationRuleUnit();
+        var sig = new SignatureSpec(
+                StrategyArchetype.TERRAN_BIO_TIMING, UnitType.MARINE, 3,
+                4.0, 10.0, 0.5, false, Race.TERRAN);
+        data.getSignatureStore().add(sig);
+        for (int i = 0; i < 5; i++) {
+            data.getUnitEvents().add(new EnemyUnitFirstSeen(UnitType.MARINE, 60000L));
+        }
+        data.getGameTimeStore().add(2.0);
+
+        fire(data);
+
+        assertThat(data.getEvidence()).noneMatch(e ->
+                                                         e.signal().contains("in window"));
+    }
+
 
     private void fire(PatternClassificationRuleUnit data) {
         try (RuleUnitInstance<PatternClassificationRuleUnit> instance = ruleUnit.createInstance(data)) {

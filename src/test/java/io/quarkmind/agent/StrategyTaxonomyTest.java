@@ -81,4 +81,12 @@ class StrategyTaxonomyTest {
         assertThat(counters.strongCounters()).isNotEmpty();
         assertThat(counters.strongCounters().get(0).action()).contains("Stalker");
     }
+
+    @Test
+    void activeSignatures_allHandAuthored_returnsEmpty() {
+        assertThat(taxonomy.activeSignatures(2.0)).isEmpty();
+        assertThat(taxonomy.activeSignatures(7.0)).isEmpty();
+        assertThat(taxonomy.activeSignatures(15.0)).isEmpty();
+    }
+
 }

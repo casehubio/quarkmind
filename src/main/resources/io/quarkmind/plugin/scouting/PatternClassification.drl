@@ -4,6 +4,7 @@ unit PatternClassificationRuleUnit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.Race;
+import io.quarkmind.domain.SignatureSpec;
 
 // ---------------------------------------------------------------------------
 // Evidence rules for enemy strategy classification.
@@ -243,4 +244,29 @@ then
         "Past 5min with no attack"));
     revisions.add(new ConfidenceRevision(StrategyArchetype.PROTOSS_CANNON_RUSH, 0.998,
         "Past 5min with no attack"));
+end
+
+// --- GENERIC DATA-DRIVEN RULES ---
+// These rules match SignatureSpec facts from the YAML taxonomy (handAuthored=false archetypes).
+// Hand-authored archetypes above are NOT affected — they produce no SignatureSpec facts.
+
+rule "Generic: unit count threshold"
+when
+    $sig: /signatureStore
+    accumulate(/unitEvents[this.type() == $sig.unitType()];
+               $count: count(); $count >= $sig.minCount())
+    /gameTimeStore[this >= $sig.windowStart(), this <= $sig.windowEnd()]
+then
+    evidence.add(new EvidenceMarker($sig.archetype(), $sig.weight(),
+        $count + " " + $sig.unitType() + " in window"));
+end
+
+rule "Generic: no expansion gate"
+when
+    $sig: /signatureStore[noExpansion == true]
+    not /expansionEvents
+    exists /unitEvents[this.type().race() == $sig.race()]
+then
+    evidence.add(new EvidenceMarker($sig.archetype(), 0.3,
+        "No expansion with " + $sig.race() + " units"));
 end
