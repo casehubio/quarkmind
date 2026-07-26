@@ -156,7 +156,7 @@ public class QuarkMindCaseHub extends CaseHub {
      */
     @Inject
     CaseHubRuntime caseHubRuntime;
-    @jakarta.inject.Inject
+    @Inject
     StrategyTaxonomy strategyTaxonomy;
 
 

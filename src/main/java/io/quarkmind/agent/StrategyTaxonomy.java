@@ -26,12 +26,16 @@ public class StrategyTaxonomy {
     @PostConstruct
     public void init() {
         Yaml yaml = new Yaml();
-        InputStream stream = Thread.currentThread().getContextClassLoader()
-            .getResourceAsStream("io/quarkmind/domain/strategy-taxonomy.yaml");
-        if (stream == null) {
-            throw new IllegalStateException("strategy-taxonomy.yaml not found on classpath");
+        Map<String, Object> root;
+        try (InputStream stream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("io/quarkmind/domain/strategy-taxonomy.yaml")) {
+            if (stream == null) {
+                throw new IllegalStateException("strategy-taxonomy.yaml not found on classpath");
+            }
+            root = yaml.load(stream);
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException("Failed to read strategy-taxonomy.yaml", e);
         }
-        Map<String, Object> root = yaml.load(stream);
         @SuppressWarnings("unchecked")
         Map<String, Map<String, Object>> archetypes = (Map<String, Map<String, Object>>) root.get("archetypes");
         if (archetypes == null) {
@@ -166,16 +170,20 @@ public class StrategyTaxonomy {
     }
 
     public record ArchetypeEntry(
-        StrategyArchetype archetype,
-        String displayName,
-        Race race,
-        GamePhase phase,
-        ArchetypeCategory category,
-        double[] phaseWindow,
-        boolean handAuthored,
-        List<SignatureSpec> signatureSpecs,
-        CounterInfo counterInfo,
-        List<String> detectionSignals
-    ) {}
+            StrategyArchetype archetype,
+            String displayName,
+            Race race,
+            GamePhase phase,
+            ArchetypeCategory category,
+            double[] phaseWindow,
+            boolean handAuthored,
+            List<SignatureSpec> signatureSpecs,
+            CounterInfo counterInfo,
+            List<String> detectionSignals
+    ) {
+        public ArchetypeEntry {
+            phaseWindow = phaseWindow.clone();
+        }
+    }
 
 }

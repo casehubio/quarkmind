@@ -20,6 +20,7 @@ import io.quarkmind.agent.PluginDecisionEvent;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
+import io.quarkmind.agent.StrategyTaxonomy;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
@@ -28,6 +29,7 @@ import io.quarkmind.agent.plugin.ScoutingTask;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.PatternAssessment;
+import io.quarkmind.domain.PhaseResolver;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.Unit;
@@ -75,10 +77,8 @@ public class DroolsScoutingTask implements ScoutingTask {
     @Inject MessageService messageService;
     @Inject ObjectMapper objectMapper;
     @Inject PreferenceProvider preferenceProvider;
-    @Inject
-            io.quarkmind.agent.StrategyTaxonomy taxonomy;
-    @Inject
-    io.quarkmind.domain.PhaseResolver phaseResolver;
+    @Inject StrategyTaxonomy taxonomy;
+    @Inject PhaseResolver phaseResolver;
 
 
     @Inject
