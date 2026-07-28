@@ -11,12 +11,28 @@ archetypes:
         - type: MARINE
           minCount: 5
       noExpansion: true
-    strongCounters:
-      - units: [STALKER, SENTRY]
-        action: "Wall off natural with Stalkers and a Sentry for Force Field"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots alone trade poorly against kiting Marines"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER, SENTRY]
+            action: "Wall off natural with Stalkers and a Sentry for Force Field"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots alone trade poorly against kiting Marines"
+      TERRAN:
+        strong:
+          - units: [MARAUDER, MARINE]
+            action: "Marauders slow and outrange Marines — superior Concussive Shell trading"
+        weak:
+          - units: [SCV]
+            action: "Workers alone cannot hold against massed Marines"
+      ZERG:
+        strong:
+          - units: [QUEEN, ZERGLING]
+            action: "Queens at natural tank damage — Speedlings surround and trade efficiently"
+        weak:
+          - units: [DRONE]
+            action: "Workers alone cannot hold against massed Marines"
     detectionSignals:
       - "5+ Marines before 4 minutes"
       - "No expansion with Marines"
@@ -32,12 +48,28 @@ archetypes:
       units:
         - type: REAPER
           minCount: 1
-    strongCounters:
-      - units: [STALKER, ADEPT]
-        action: "Stalkers and Adepts chase Reapers efficiently — Adept shade cuts retreat paths"
-    weakCounters:
-      - units: [PROBE]
-        action: "Workers alone cannot catch or kill a kiting Reaper"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER, ADEPT]
+            action: "Stalkers and Adepts chase Reapers efficiently — Adept shade cuts retreat paths"
+        weak:
+          - units: [PROBE]
+            action: "Workers alone cannot catch or kill a kiting Reaper"
+      TERRAN:
+        strong:
+          - units: [MARINE, MARAUDER]
+            action: "Marines outnumber and outDPS a lone Reaper — Marauder slow prevents escape"
+        weak:
+          - units: [SCV]
+            action: "Workers cannot catch a kiting Reaper"
+      ZERG:
+        strong:
+          - units: [QUEEN, ZERGLING]
+            action: "Queen blocks Reaper escape — Speedlings chase and surround"
+        weak:
+          - units: [DRONE]
+            action: "Workers cannot catch a kiting Reaper"
     detectionSignals:
       - "Reaper spotted before 3 minutes"
       - "Reaper harassing mineral line"
@@ -56,12 +88,28 @@ archetypes:
         - type: REAPER
           minCount: 1
       noExpansion: true
-    strongCounters:
-      - units: [ZEALOT, STALKER]
-        action: "Wall off with Zealot hold position — Stalkers clean up once Gateway is complete"
-    weakCounters:
-      - units: [PROBE]
-        action: "Probes alone lose to early Marines with Reaper support"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [ZEALOT, STALKER]
+            action: "Wall off with Zealot hold position — Stalkers clean up once Gateway is complete"
+        weak:
+          - units: [PROBE]
+            action: "Probes alone lose to early Marines with Reaper support"
+      TERRAN:
+        strong:
+          - units: [MARINE, MARAUDER]
+            action: "Bunker at natural with Marines holds proxy Barracks pushes efficiently"
+        weak:
+          - units: [SCV]
+            action: "Workers alone lose to early proxy Marines"
+      ZERG:
+        strong:
+          - units: [QUEEN, ZERGLING]
+            action: "Queens tank at natural — Speedlings surround proxy Marines"
+        weak:
+          - units: [DRONE]
+            action: "Workers alone lose to early Marines"
     detectionSignals:
       - "3+ Marines with Reaper before 5 minutes"
       - "No expansion with early Marines"
@@ -78,12 +126,28 @@ archetypes:
         - type: MARINE
           minCount: 1
       noExpansion: false
-    strongCounters:
-      - units: [ADEPT, STALKER]
-        action: "Pressure with Adept shade to punish greedy CC first — deny the fast natural"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Passive Zealot play lets Terran establish safe two-base economy"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [ADEPT, STALKER]
+            action: "Pressure with Adept shade to punish greedy CC first — deny the fast natural"
+        weak:
+          - units: [ZEALOT]
+            action: "Passive Zealot play lets Terran establish safe two-base economy"
+      TERRAN:
+        strong:
+          - units: [REAPER, MARINE]
+            action: "Reaper harass punishes greedy CC first — Marines apply early pressure"
+        weak:
+          - units: [SCV]
+            action: "Passive SCV repair lets opponent establish safe two-base economy"
+      ZERG:
+        strong:
+          - units: [ZERGLING, BANELING]
+            action: "Speedling pressure punishes greedy CC first — Banelings bust walls"
+        weak:
+          - units: [DRONE]
+            action: "Passive droning lets Terran establish safe economy"
     detectionSignals:
       - "Expansion with fewer than 3 units before 5 minutes"
       - "Command Centre first detected"
@@ -101,14 +165,30 @@ archetypes:
           minCount: 3
         - type: MEDIVAC
           minCount: 1
-    strongCounters:
-      - units: [STALKER, COLOSSUS]
-        action: "Colossus splash shreds clumped bio — get Robo Bay tech"
-      - units: [HIGH_TEMPLAR]
-        action: "Storm is devastating against stimmed bio balls"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots get kited by stimmed Marines with Medivac support"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER, COLOSSUS]
+            action: "Colossus splash shreds clumped bio — get Robo Bay tech"
+          - units: [HIGH_TEMPLAR]
+            action: "Storm is devastating against stimmed bio balls"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots get kited by stimmed Marines with Medivac support"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, MARINE]
+            action: "Siege Tanks shred clumped bio from range — set up siege lines at chokes"
+        weak:
+          - units: [MARINE]
+            action: "Marines alone lose to Medivac-supported bio with Stim"
+      ZERG:
+        strong:
+          - units: [BANELING, ZERGLING]
+            action: "Banelings devastate clumped stimmed bio — Speedlings surround survivors"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings alone die to stimmed Marines with Medivac heal"
     detectionSignals:
       - "3+ Marines with Medivac between 4-10 minutes"
       - "6+ Marines after 4 minutes"
@@ -126,12 +206,28 @@ archetypes:
           minCount: 2
         - type: THOR
           minCount: 1
-    strongCounters:
-      - units: [IMMORTAL, STALKER]
-        action: "Immortals shred mech armour — use Stalkers for mobility"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots can't close the gap against sieged tanks"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [IMMORTAL, STALKER]
+            action: "Immortals shred mech armour — use Stalkers for mobility"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots can't close the gap against sieged tanks"
+      TERRAN:
+        strong:
+          - units: [VIKING, SIEGE_TANK]
+            action: "Vikings gain air superiority — Siege Tanks counter-siege from high ground"
+        weak:
+          - units: [MARINE]
+            action: "Marines melt to sieged Tank splash"
+      ZERG:
+        strong:
+          - units: [ROACH, RAVAGER]
+            action: "Roaches tank — Ravager Bile forces Tank unsiege"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings melt to sieged Tank splash"
     detectionSignals:
       - "2+ Siege Tanks after 5 minutes"
       - "Thor spotted"
@@ -147,12 +243,28 @@ archetypes:
       units:
         - type: BANSHEE
           minCount: 1
-    strongCounters:
-      - units: [STALKER, OBSERVER]
-        action: "Observer for detection, Stalkers to chase — Banshees are fragile"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots cannot attack air units"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER, OBSERVER]
+            action: "Observer for detection, Stalkers to chase — Banshees are fragile"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots cannot attack air units"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARINE]
+            action: "Vikings hard-counter Banshees in air — Marines provide ground anti-air"
+        weak:
+          - units: [SCV]
+            action: "SCVs have no anti-air capability"
+      ZERG:
+        strong:
+          - units: [QUEEN, OVERSEER]
+            action: "Queens provide anti-air — Overseer reveals cloaked Banshees"
+        weak:
+          - units: [DRONE]
+            action: "Workers have no anti-air capability"
     detectionSignals:
       - "Banshee spotted before 8 minutes"
 
@@ -168,12 +280,28 @@ archetypes:
         - type: ZERGLING
           minCount: 6
       noExpansion: true
-    strongCounters:
-      - units: [ZEALOT, SENTRY]
-        action: "Wall off with Zealot hold position, Sentry Force Field at ramp"
-    weakCounters:
-      - units: [PROBE]
-        action: "Probes alone cannot hold against massed Zerglings"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [ZEALOT, SENTRY]
+            action: "Wall off with Zealot hold position, Sentry Force Field at ramp"
+        weak:
+          - units: [PROBE]
+            action: "Probes alone cannot hold against massed Zerglings"
+      TERRAN:
+        strong:
+          - units: [MARINE, MARAUDER]
+            action: "Wall off with Bunker at natural — Marines inside trade 4:1 against Lings"
+        weak:
+          - units: [SCV]
+            action: "Workers alone are overwhelmed by massed Zerglings"
+      ZERG:
+        strong:
+          - units: [QUEEN, ZERGLING]
+            action: "Queens at natural tank damage — speed advantage wins Ling-on-Ling"
+        weak:
+          - units: [DRONE]
+            action: "Workers alone are overwhelmed by Zerglings"
     detectionSignals:
       - "6+ Zerglings before 4 minutes"
       - "No expansion with Zerglings"
@@ -189,12 +317,28 @@ archetypes:
       units:
         - type: ROACH
           minCount: 4
-    strongCounters:
-      - units: [STALKER, IMMORTAL]
-        action: "Immortals hard-counter Roach armour — prioritise Robo tech"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots trade inefficiently against Roach range"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER, IMMORTAL]
+            action: "Immortals hard-counter Roach armour — prioritise Robo tech"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots trade inefficiently against Roach range"
+      TERRAN:
+        strong:
+          - units: [MARAUDER, MARINE]
+            action: "Marauders with Concussive Shell kite Roaches — add Marines for DPS"
+        weak:
+          - units: [SCV]
+            action: "Workers cannot trade into Roach armour"
+      ZERG:
+        strong:
+          - units: [ROACH, QUEEN]
+            action: "Mirror Roaches with Queen support — advantage goes to defender with Queens"
+        weak:
+          - units: [DRONE]
+            action: "Workers cannot trade into Roach armour"
     detectionSignals:
       - "4+ Roaches before 5 minutes"
 
@@ -210,12 +354,28 @@ archetypes:
         - type: ZERGLING
           minCount: 1
       noExpansion: false
-    strongCounters:
-      - units: [STALKER, ADEPT]
-        action: "Pressure with Adept harass to punish greedy expansion timing"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Passive Zealot defense lets Zerg scale freely"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER, ADEPT]
+            action: "Pressure with Adept harass to punish greedy expansion timing"
+        weak:
+          - units: [ZEALOT]
+            action: "Passive Zealot defense lets Zerg scale freely"
+      TERRAN:
+        strong:
+          - units: [HELLION, MARINE]
+            action: "Hellion runby harasses drones — Marines pressure the exposed natural"
+        weak:
+          - units: [SCV]
+            action: "Passive play lets Zerg scale freely"
+      ZERG:
+        strong:
+          - units: [ZERGLING, BANELING]
+            action: "Speedling-Baneling pressure punishes greedy expansion timing"
+        weak:
+          - units: [DRONE]
+            action: "Passive droning with no pressure lets opponent scale freely"
     detectionSignals:
       - "Expansion with fewer than 4 units before 5 minutes"
 
@@ -233,12 +393,28 @@ archetypes:
         - type: ZERGLING
           minCount: 4
       noExpansion: true
-    strongCounters:
-      - units: [ZEALOT, SENTRY]
-        action: "Sentry Force Field at choke blocks Banelings — Zealots clean up Lings behind"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers lose shields to Baneling splash — prefer Zealots for soak"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [ZEALOT, SENTRY]
+            action: "Sentry Force Field at choke blocks Banelings — Zealots clean up Lings behind"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers lose shields to Baneling splash — prefer Zealots for soak"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, MARINE]
+            action: "Siege Tanks destroy Banelings before they reach the wall — Marines clean up"
+        weak:
+          - units: [MARINE]
+            action: "Clumped Marines die to Baneling detonations"
+      ZERG:
+        strong:
+          - units: [ROACH, QUEEN]
+            action: "Roaches soak Baneling damage — Queens add DPS from behind"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings trade poorly against Baneling detonations"
     detectionSignals:
       - "4+ Banelings before 5 minutes"
       - "Baneling Nest spotted early"
@@ -256,12 +432,28 @@ archetypes:
           minCount: 3
         - type: ROACH
           minCount: 2
-    strongCounters:
-      - units: [IMMORTAL, STALKER]
-        action: "Immortals hard-counter Roach/Ravager armour — dodge Bile projectiles manually"
-    weakCounters:
-      - units: [SENTRY]
-        action: "Ravager Bile destroys Force Fields — Sentries lose their key ability"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [IMMORTAL, STALKER]
+            action: "Immortals hard-counter Roach/Ravager armour — dodge Bile projectiles manually"
+        weak:
+          - units: [SENTRY]
+            action: "Ravager Bile destroys Force Fields — Sentries lose their key ability"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, MARAUDER]
+            action: "Siege Tanks outrange Ravagers — dodge Bile and counter-fire"
+        weak:
+          - units: [MARAUDER]
+            action: "Ravager Bile destroys Bunkers — static defense is nullified"
+      ZERG:
+        strong:
+          - units: [ROACH, RAVAGER]
+            action: "Mirror Roach-Ravager with defensive Queen advantage — dodge Bile"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings cannot close the gap against Ravager Bile"
     detectionSignals:
       - "3+ Ravagers before 7 minutes"
       - "Ravager Corrosive Bile targeting structures"
@@ -280,12 +472,28 @@ archetypes:
         - type: ZEALOT
           minCount: 2
       noExpansion: true
-    strongCounters:
-      - units: [STALKER, SENTRY]
-        action: "Mirror gateway units with Sentry Force Field for chokepoint advantage"
-    weakCounters:
-      - units: [PROBE]
-        action: "Workers cannot hold against massed gateway units"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER, SENTRY]
+            action: "Mirror gateway units with Sentry Force Field for chokepoint advantage"
+        weak:
+          - units: [PROBE]
+            action: "Workers cannot hold against massed gateway units"
+      TERRAN:
+        strong:
+          - units: [MARAUDER, MARINE]
+            action: "Marauders shred Stalker shields with Concussive Shell — Marines add DPS"
+        weak:
+          - units: [SCV]
+            action: "Workers alone lose to massed Gateway units"
+      ZERG:
+        strong:
+          - units: [QUEEN, ZERGLING]
+            action: "Queens tank Gateway units — Speedlings surround and overwhelm"
+        weak:
+          - units: [DRONE]
+            action: "Workers alone lose to massed Gateway units"
     detectionSignals:
       - "4+ Gateway units (Stalker/Zealot) before 5 minutes"
       - "No expansion with Gateway units"
@@ -301,12 +509,28 @@ archetypes:
       units:
         - type: ZEALOT
           minCount: 1
-    strongCounters:
-      - units: [STALKER]
-        action: "Pull workers to attack Pylons before cannons finish, then Stalkers to clean up"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots cannot outrange Photon Cannons"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER]
+            action: "Pull workers to attack Pylons before cannons finish, then Stalkers to clean up"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots cannot outrange Photon Cannons"
+      TERRAN:
+        strong:
+          - units: [MARINE, SCV]
+            action: "Pull workers to kill Pylons before Cannons finish — Marines outrange Cannons"
+        weak:
+          - units: [SCV]
+            action: "Workers alone are too slow to prevent multiple Cannon placements"
+      ZERG:
+        strong:
+          - units: [ZERGLING, RAVAGER]
+            action: "Zerglings block probe — Ravager Bile destroys Pylons and Cannons"
+        weak:
+          - units: [DRONE]
+            action: "Workers alone are too slow to prevent Cannon placements"
     detectionSignals:
       - "Army near base early without Stalkers (proxy Pylon indicator)"
 
@@ -322,12 +546,28 @@ archetypes:
         - type: STALKER
           minCount: 1
       noExpansion: false
-    strongCounters:
-      - units: [ADEPT, STALKER]
-        action: "Pressure with early Adept shade to punish greedy expansion"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Passive Zealot play lets opponent scale freely"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [ADEPT, STALKER]
+            action: "Pressure with early Adept shade to punish greedy expansion"
+        weak:
+          - units: [ZEALOT]
+            action: "Passive Zealot play lets opponent scale freely"
+      TERRAN:
+        strong:
+          - units: [HELLION, REAPER]
+            action: "Hellion runby and Reaper harass punish greedy expansion timing"
+        weak:
+          - units: [SCV]
+            action: "Passive play lets Protoss scale freely"
+      ZERG:
+        strong:
+          - units: [ZERGLING, BANELING]
+            action: "Speedling-Baneling pressure punishes greedy Protoss expansion"
+        weak:
+          - units: [DRONE]
+            action: "Passive droning lets Protoss scale freely"
     detectionSignals:
       - "Expansion with fewer than 3 units before 5 minutes"
 
@@ -342,12 +582,28 @@ archetypes:
       units:
         - type: DARK_TEMPLAR
           minCount: 1
-    strongCounters:
-      - units: [OBSERVER, STALKER]
-        action: "Observer for detection — DTs are fragile once revealed"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots without detection cannot target cloaked DTs"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [OBSERVER, STALKER]
+            action: "Observer for detection — DTs are fragile once revealed"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots without detection cannot target cloaked DTs"
+      TERRAN:
+        strong:
+          - units: [RAVEN, MARINE]
+            action: "Raven provides detection — Marines clean up revealed DTs"
+        weak:
+          - units: [MARINE]
+            action: "Marines without detection cannot target cloaked DTs"
+      ZERG:
+        strong:
+          - units: [OVERSEER, QUEEN]
+            action: "Overseer reveals DTs — Queens clean up with ranged attack"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings without detection cannot target cloaked DTs"
     detectionSignals:
       - "Dark Templar spotted before 8 minutes"
 
@@ -362,12 +618,28 @@ archetypes:
       units:
         - type: ORACLE
           minCount: 1
-    strongCounters:
-      - units: [PHOENIX, STALKER]
-        action: "Phoenix hard-counters Oracle — Stalkers provide ground anti-air"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots cannot attack air units"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [PHOENIX, STALKER]
+            action: "Phoenix hard-counters Oracle — Stalkers provide ground anti-air"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots cannot attack air units"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARINE]
+            action: "Vikings chase Oracle — Marines provide ground anti-air DPS"
+        weak:
+          - units: [SCV]
+            action: "Workers are vulnerable to Oracle beam"
+      ZERG:
+        strong:
+          - units: [QUEEN, OVERSEER]
+            action: "Queens at each base provide anti-air — Overseer tracks Oracle movement"
+        weak:
+          - units: [DRONE]
+            action: "Workers are vulnerable to Oracle beam"
     detectionSignals:
       - "Oracle spotted before 7 minutes"
       - "Oracle attacking mineral line"
@@ -383,12 +655,28 @@ archetypes:
       units:
         - type: ADEPT
           minCount: 3
-    strongCounters:
-      - units: [STALKER, IMMORTAL]
-        action: "Stalkers outrange Adepts — Immortals shred them in direct combat"
-    weakCounters:
-      - units: [PROBE]
-        action: "Workers cannot fight Adept shade harass effectively"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER, IMMORTAL]
+            action: "Stalkers outrange Adepts — Immortals shred them in direct combat"
+        weak:
+          - units: [PROBE]
+            action: "Workers cannot fight Adept shade harass effectively"
+      TERRAN:
+        strong:
+          - units: [MARAUDER, MARINE]
+            action: "Marauders slow Adepts with Concussive Shell — Marines add DPS"
+        weak:
+          - units: [SCV]
+            action: "Workers cannot fight Adept shade harass"
+      ZERG:
+        strong:
+          - units: [QUEEN, ZERGLING]
+            action: "Queens block shade destinations — Speedlings surround Adepts"
+        weak:
+          - units: [DRONE]
+            action: "Workers cannot fight Adept shade harass"
     detectionSignals:
       - "3+ Adepts before 6 minutes"
       - "Adept shade towards mineral line"
@@ -407,12 +695,28 @@ archetypes:
         - type: STALKER
           minCount: 1
       noExpansion: true
-    strongCounters:
-      - units: [STALKER, SENTRY]
-        action: "Wall off and Force Field choke — Stalkers kite Zealots at range"
-    weakCounters:
-      - units: [PROBE]
-        action: "Workers cannot hold against early gateway pressure"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER, SENTRY]
+            action: "Wall off and Force Field choke — Stalkers kite Zealots at range"
+        weak:
+          - units: [PROBE]
+            action: "Workers cannot hold against early gateway pressure"
+      TERRAN:
+        strong:
+          - units: [MARINE, MARAUDER]
+            action: "Bunker at natural with Marines holds proxy Gateway pressure"
+        weak:
+          - units: [SCV]
+            action: "Workers alone lose to early Gateway units"
+      ZERG:
+        strong:
+          - units: [QUEEN, ZERGLING]
+            action: "Queens tank at natural — Speedlings surround proxy units"
+        weak:
+          - units: [DRONE]
+            action: "Workers alone lose to early Gateway units"
     detectionSignals:
       - "2+ Zealots with Stalker before 4 minutes"
       - "No expansion with early Gateway units near our base"
@@ -430,12 +734,28 @@ archetypes:
           minCount: 6
         - type: SIEGE_TANK
           minCount: 2
-    strongCounters:
-      - units: [IMMORTAL, COLOSSUS]
-        action: "Immortals destroy tanks, Colossus splash shreds Marines"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots melt to sieged tanks before reaching the line"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [IMMORTAL, COLOSSUS]
+            action: "Immortals destroy tanks, Colossus splash shreds Marines"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots melt to sieged tanks before reaching the line"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, MARAUDER]
+            action: "Siege Tanks outrange Marine-Tank — Marauders tank damage with Concussive Shell"
+        weak:
+          - units: [MARINE]
+            action: "Unsupported Marines die to sieged Tanks"
+      ZERG:
+        strong:
+          - units: [BANELING, MUTALISK]
+            action: "Banelings connect on Marine clumps — Mutalisk harass forces splits"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings die to Tank splash before reaching Marines"
     detectionSignals:
       - "6+ Marines with 2+ Siege Tanks between 5-15 minutes"
 
@@ -452,12 +772,28 @@ archetypes:
           minCount: 3
         - type: THOR
           minCount: 1
-    strongCounters:
-      - units: [IMMORTAL, STALKER]
-        action: "Immortals hard-counter mech armour, Stalkers kite Hellions"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots are shredded by Hellion splash before closing"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [IMMORTAL, STALKER]
+            action: "Immortals hard-counter mech armour, Stalkers kite Hellions"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots are shredded by Hellion splash before closing"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, MARAUDER]
+            action: "Siege Tanks counter Hellion groups — Marauders slow and destroy Thors"
+        weak:
+          - units: [MARINE]
+            action: "Marines are shredded by Hellion splash"
+      ZERG:
+        strong:
+          - units: [ROACH, RAVAGER]
+            action: "Roaches soak Hellion damage — Ravager Bile forces mech to reposition"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings are shredded by Hellion splash"
     detectionSignals:
       - "3+ Hellions with Thor between 6-15 minutes"
 
@@ -474,12 +810,28 @@ archetypes:
           minCount: 6
         - type: WIDOW_MINE
           minCount: 2
-    strongCounters:
-      - units: [COLOSSUS, OBSERVER]
-        action: "Colossus splash shreds bio — Observer reveals buried Widow Mines"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots trigger Widow Mines and melt to Marine fire behind"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [COLOSSUS, OBSERVER]
+            action: "Colossus splash shreds bio — Observer reveals buried Widow Mines"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots trigger Widow Mines and melt to Marine fire behind"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, RAVEN]
+            action: "Siege Tanks outrange bio — Raven detects Widow Mines"
+        weak:
+          - units: [MARINE]
+            action: "Marines trigger Widow Mines and die to splash"
+      ZERG:
+        strong:
+          - units: [OVERSEER, BANELING]
+            action: "Overseer reveals Mines — Banelings detonate on Marine clumps"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings trigger Mines and die to splash"
     detectionSignals:
       - "6+ Marines with 2+ Widow Mines between 5-15 minutes"
       - "Widow Mine burrow detected"
@@ -497,12 +849,28 @@ archetypes:
           minCount: 4
         - type: LIBERATOR
           minCount: 2
-    strongCounters:
-      - units: [TEMPEST, STALKER]
-        action: "Tempests outrange Liberator zones — Stalkers snipe unsieged Liberators"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots cannot enter Liberator zones without dying instantly"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [TEMPEST, STALKER]
+            action: "Tempests outrange Liberator zones — Stalkers snipe unsieged Liberators"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots cannot enter Liberator zones without dying instantly"
+      TERRAN:
+        strong:
+          - units: [VIKING, SIEGE_TANK]
+            action: "Vikings snipe Liberators — Siege Tanks zone bio from range"
+        weak:
+          - units: [MARINE]
+            action: "Marines cannot enter Liberator zones safely"
+      ZERG:
+        strong:
+          - units: [CORRUPTOR, ZERGLING]
+            action: "Corruptors snipe Liberators — Speedlings overwhelm unsupported bio"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings cannot enter Liberator zones"
     detectionSignals:
       - "4+ Marines with 2+ Liberators between 6-15 minutes"
       - "Liberator defender mode zones active"
@@ -520,12 +888,28 @@ archetypes:
           minCount: 4
         - type: GHOST
           minCount: 2
-    strongCounters:
-      - units: [COLOSSUS, IMMORTAL]
-        action: "Colossus splash ignores EMP — Immortals shred bio with armour"
-    weakCounters:
-      - units: [HIGH_TEMPLAR]
-        action: "HTs lose shields and Storm energy to Ghost EMP — rendered useless"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [COLOSSUS, IMMORTAL]
+            action: "Colossus splash ignores EMP — Immortals shred bio with armour"
+        weak:
+          - units: [HIGH_TEMPLAR]
+            action: "HTs lose shields and Storm energy to Ghost EMP — rendered useless"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, MARAUDER]
+            action: "Siege Tanks provide splash without energy to EMP — Marauders outrange Ghosts"
+        weak:
+          - units: [GHOST]
+            action: "Mirror Ghost play devolves into RNG snipe wars"
+      ZERG:
+        strong:
+          - units: [BANELING, ULTRALISK]
+            action: "Banelings ignore EMP — Ultralisks tank Ghost snipes and cleave bio"
+        weak:
+          - units: [INFESTOR]
+            action: "Infestor Neural Parasite range is dangerous against Ghosts with snipe"
     detectionSignals:
       - "4+ Marines with 2+ Ghosts between 7-15 minutes"
       - "EMP detected on army"
@@ -543,12 +927,28 @@ archetypes:
           minCount: 2
         - type: MARINE
           minCount: 4
-    strongCounters:
-      - units: [PHOENIX, STALKER]
-        action: "Phoenix lifts Medivacs — Stalkers pick off loaded drops"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots arrive too slow to intercept drops at multiple locations"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [PHOENIX, STALKER]
+            action: "Phoenix lifts Medivacs — Stalkers pick off loaded drops"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots arrive too slow to intercept drops at multiple locations"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARINE]
+            action: "Vikings pick off Medivacs — Marines defend mineral lines"
+        weak:
+          - units: [SCV]
+            action: "Workers alone cannot defend against multi-drop harassment"
+      ZERG:
+        strong:
+          - units: [QUEEN, MUTALISK]
+            action: "Queens at each base for anti-air — Mutalisks chase and kill Medivacs"
+        weak:
+          - units: [DRONE]
+            action: "Workers alone cannot defend against multi-drop"
     detectionSignals:
       - "2+ Medivacs with Marines between 5-15 minutes"
       - "Drop detected at mineral line"
@@ -564,12 +964,28 @@ archetypes:
       units:
         - type: CYCLONE
           minCount: 2
-    strongCounters:
-      - units: [IMMORTAL, STALKER]
-        action: "Immortals shred Cyclone armour — Stalkers can Blink out of Lock On"
-    weakCounters:
-      - units: [VOID_RAY]
-        action: "Void Rays are vulnerable to Cyclone Lock On — must micro carefully"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [IMMORTAL, STALKER]
+            action: "Immortals shred Cyclone armour — Stalkers can Blink out of Lock On"
+        weak:
+          - units: [VOID_RAY]
+            action: "Void Rays are vulnerable to Cyclone Lock On — must micro carefully"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, MARAUDER]
+            action: "Siege Tanks outrange Cyclones — Marauders slow them and close the gap"
+        weak:
+          - units: [MARINE]
+            action: "Marines are vulnerable to Cyclone Lock On kiting"
+      ZERG:
+        strong:
+          - units: [ROACH, RAVAGER]
+            action: "Roaches soak Lock On — Ravager Bile forces repositioning"
+        weak:
+          - units: [QUEEN]
+            action: "Queens are slow and vulnerable to Cyclone Lock On kiting"
     detectionSignals:
       - "2+ Cyclones between 4-10 minutes"
       - "Cyclone Lock On targeting units"
@@ -587,12 +1003,28 @@ archetypes:
           minCount: 1
         - type: WIDOW_MINE
           minCount: 2
-    strongCounters:
-      - units: [OBSERVER, PHOENIX]
-        action: "Observer reveals Mines before they fire — Phoenix lifts Medivacs"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots trigger Widow Mines causing splash damage to own army"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [OBSERVER, PHOENIX]
+            action: "Observer reveals Mines before they fire — Phoenix lifts Medivacs"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots trigger Widow Mines causing splash damage to own army"
+      TERRAN:
+        strong:
+          - units: [RAVEN, MARINE]
+            action: "Raven reveals Widow Mines before they fire — Marines clean up"
+        weak:
+          - units: [SCV]
+            action: "Workers trigger buried Mines and die to splash"
+      ZERG:
+        strong:
+          - units: [OVERSEER, QUEEN]
+            action: "Overseer reveals Mines before they fire — Queens provide anti-air at each base"
+        weak:
+          - units: [DRONE]
+            action: "Workers trigger buried Mines and die to splash"
     detectionSignals:
       - "Medivac with Widow Mines between 4-12 minutes"
       - "Widow Mine drop at mineral line"
@@ -608,12 +1040,28 @@ archetypes:
       units:
         - type: BATTLECRUISER
           minCount: 1
-    strongCounters:
-      - units: [VOID_RAY, TEMPEST]
-        action: "Void Rays and Tempests counter Battlecruisers — stay at range"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers trade poorly against Battlecruiser armour and Yamato"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [VOID_RAY, TEMPEST]
+            action: "Void Rays and Tempests counter Battlecruisers — stay at range"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers trade poorly against Battlecruiser armour and Yamato"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARINE]
+            action: "Vikings hard-counter Battlecruisers — Marines add DPS from ground"
+        weak:
+          - units: [MARINE]
+            action: "Marines lack sustained DPS against Battlecruiser armour and Yamato"
+      ZERG:
+        strong:
+          - units: [CORRUPTOR, QUEEN]
+            action: "Corruptors hard-counter Battlecruisers — Queens provide ground anti-air"
+        weak:
+          - units: [HYDRALISK]
+            action: "Hydralisks lack the burst to kill Battlecruisers before Yamato"
     detectionSignals:
       - "Battlecruiser spotted after 10 minutes"
 
@@ -628,12 +1076,28 @@ archetypes:
       units:
         - type: GHOST
           minCount: 2
-    strongCounters:
-      - units: [OBSERVER, ORACLE]
-        action: "Observer reveals cloaked Ghosts — Oracle Revelation covers large area"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots cannot detect cloaked Ghosts and die to Nuke"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [OBSERVER, ORACLE]
+            action: "Observer reveals cloaked Ghosts — Oracle Revelation covers large area"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots cannot detect cloaked Ghosts and die to Nuke"
+      TERRAN:
+        strong:
+          - units: [RAVEN, MARINE]
+            action: "Raven reveals cloaked Ghosts — scan the Nuke dot immediately"
+        weak:
+          - units: [SCV]
+            action: "Workers cannot detect cloaked Ghosts"
+      ZERG:
+        strong:
+          - units: [OVERSEER, ZERGLING]
+            action: "Overseer reveals cloaked Ghosts — Speedlings chase them down"
+        weak:
+          - units: [DRONE]
+            action: "Workers cannot detect cloaked Ghosts"
     detectionSignals:
       - "2+ Ghosts after 10 minutes"
       - "Nuclear Silo completed or Nuke dot detected"
@@ -653,12 +1117,28 @@ archetypes:
           minCount: 3
         - type: HELLBAT
           minCount: 2
-    strongCounters:
-      - units: [IMMORTAL, TEMPEST]
-        action: "Immortals shred mech armour — Tempests outrange Siege Tanks safely"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots melt to Hellbat flame and sieged Tank splash"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [IMMORTAL, TEMPEST]
+            action: "Immortals shred mech armour — Tempests outrange Siege Tanks safely"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots melt to Hellbat flame and sieged Tank splash"
+      TERRAN:
+        strong:
+          - units: [BATTLECRUISER, VIKING]
+            action: "Battlecruisers Yamato key targets — Vikings gain air superiority for repositioning"
+        weak:
+          - units: [MARINE]
+            action: "Marines melt to Thor splash and Tank siege"
+      ZERG:
+        strong:
+          - units: [BROOD_LORD, VIPER]
+            action: "Brood Lords siege from range — Viper Abduct pulls key mech units"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings melt to Hellbat flame and Tank splash"
     detectionSignals:
       - "2+ Thors with 3+ Siege Tanks and Hellbats after 12 minutes"
       - "Full mech army with multiple Factory units"
@@ -678,12 +1158,28 @@ archetypes:
           minCount: 2
         - type: LIBERATOR
           minCount: 2
-    strongCounters:
-      - units: [COLOSSUS, ARCHON]
-        action: "Colossus splash devastates massed Marines — Archons tank Ghost snipes"
-    weakCounters:
-      - units: [HIGH_TEMPLAR]
-        action: "HTs lose all Storm energy to Ghost EMP in late game"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [COLOSSUS, ARCHON]
+            action: "Colossus splash devastates massed Marines — Archons tank Ghost snipes"
+        weak:
+          - units: [HIGH_TEMPLAR]
+            action: "HTs lose all Storm energy to Ghost EMP in late game"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, LIBERATOR]
+            action: "Siege Tanks and Liberator zones control space — deny stimmed bio pushes"
+        weak:
+          - units: [MARINE]
+            action: "Mirror bio trades are attrition wars — Ghosts and Liberators decide them"
+      ZERG:
+        strong:
+          - units: [ULTRALISK, BANELING]
+            action: "Ultralisks tank Ghost snipes and cleave bio — Banelings destroy Marine clumps"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings die to Ghost snipe and Liberator zones"
     detectionSignals:
       - "10+ Marines with Ghosts and Liberators after 12 minutes"
       - "Maxed bio army with tech support"
@@ -703,12 +1199,28 @@ archetypes:
           minCount: 2
         - type: VIKING
           minCount: 2
-    strongCounters:
-      - units: [TEMPEST, VOID_RAY]
-        action: "Tempests outrange all Terran air — Void Rays melt armoured air units"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers lack the sustained DPS to trade into massed air"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [TEMPEST, VOID_RAY]
+            action: "Tempests outrange all Terran air — Void Rays melt armoured air units"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers lack the sustained DPS to trade into massed air"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARINE]
+            action: "Vikings dominate air-to-air — Marines provide ground DPS under Liberator cover"
+        weak:
+          - units: [SIEGE_TANK]
+            action: "Ground-only mech cannot touch air army"
+      ZERG:
+        strong:
+          - units: [CORRUPTOR, VIPER]
+            action: "Corruptors dominate air-to-air — Viper Abduct pulls Battlecruisers"
+        weak:
+          - units: [HYDRALISK]
+            action: "Hydralisks lack the DPS to trade into massed air"
     detectionSignals:
       - "Battlecruiser with Liberators and Vikings after 12 minutes"
       - "Multiple Starports with Reactor"
@@ -726,12 +1238,28 @@ archetypes:
           minCount: 3
         - type: HYDRALISK
           minCount: 2
-    strongCounters:
-      - units: [COLOSSUS, IMMORTAL]
-        action: "Colossus splash devastates clumped Roach-Hydra — get Robo Bay"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers alone lose to massed Roach-Hydra in a straight fight"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [COLOSSUS, IMMORTAL]
+            action: "Colossus splash devastates clumped Roach-Hydra — get Robo Bay"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers alone lose to massed Roach-Hydra in a straight fight"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, MARINE]
+            action: "Siege Tanks devastate clumped Roach-Hydra — stim Marines add burst DPS"
+        weak:
+          - units: [MARAUDER]
+            action: "Marauders alone lack splash to handle Roach-Hydra mass"
+      ZERG:
+        strong:
+          - units: [LURKER, ROACH]
+            action: "Lurkers shred clumped Roach-Hydra — Roaches soak return fire"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings melt to Hydralisk DPS"
     detectionSignals:
       - "3+ Roaches with 2+ Hydralisks between 5-15 minutes"
 
@@ -746,12 +1274,28 @@ archetypes:
       units:
         - type: MUTALISK
           minCount: 3
-    strongCounters:
-      - units: [PHOENIX, STALKER]
-        action: "Phoenix hard-counter Mutalisks — build Stargate tech"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots cannot attack air units"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [PHOENIX, STALKER]
+            action: "Phoenix hard-counter Mutalisks — build Stargate tech"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots cannot attack air units"
+      TERRAN:
+        strong:
+          - units: [THOR, MARINE]
+            action: "Thor anti-air splash devastates clumped Mutalisks — Marines add DPS"
+        weak:
+          - units: [SCV]
+            action: "Workers cannot defend against air harass"
+      ZERG:
+        strong:
+          - units: [QUEEN, CORRUPTOR]
+            action: "Queens at each base for anti-air — Corruptors chase down Mutalisks"
+        weak:
+          - units: [DRONE]
+            action: "Workers have no anti-air"
     detectionSignals:
       - "3+ Mutalisks between 5-12 minutes"
 
@@ -768,12 +1312,28 @@ archetypes:
           minCount: 8
         - type: BANELING
           minCount: 4
-    strongCounters:
-      - units: [COLOSSUS, ARCHON]
-        action: "Colossus beams devastate clumped Lings — Archon splash destroys Banelings"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers get overwhelmed by mass Ling surround and Baneling detonations"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [COLOSSUS, ARCHON]
+            action: "Colossus beams devastate clumped Lings — Archon splash destroys Banelings"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers get overwhelmed by mass Ling surround and Baneling detonations"
+      TERRAN:
+        strong:
+          - units: [HELLBAT, SIEGE_TANK]
+            action: "Hellbat flame shreds Lings — Siege Tanks destroy Banelings at range"
+        weak:
+          - units: [MARINE]
+            action: "Marines are obliterated by Baneling connections"
+      ZERG:
+        strong:
+          - units: [ROACH, BANELING]
+            action: "Roaches soak Banelings — own Banelings trade into Ling clumps"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings die to Baneling detonations in mirror"
     detectionSignals:
       - "8+ Zerglings with 4+ Banelings between 5-15 minutes"
       - "Baneling aggression into army"
@@ -791,12 +1351,28 @@ archetypes:
           minCount: 4
         - type: RAVAGER
           minCount: 2
-    strongCounters:
-      - units: [IMMORTAL, COLOSSUS]
-        action: "Immortals shred Roach armour — dodge Ravager Bile and engage"
-    weakCounters:
-      - units: [SENTRY]
-        action: "Ravager Bile nullifies Force Fields — Sentries become dead weight"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [IMMORTAL, COLOSSUS]
+            action: "Immortals shred Roach armour — dodge Ravager Bile and engage"
+        weak:
+          - units: [SENTRY]
+            action: "Ravager Bile nullifies Force Fields — Sentries become dead weight"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, MARAUDER]
+            action: "Siege Tanks outrange the composition — Marauders slow and trade efficiently"
+        weak:
+          - units: [MARAUDER]
+            action: "Static defense is destroyed by Ravager Bile"
+      ZERG:
+        strong:
+          - units: [LURKER, ROACH]
+            action: "Lurkers outrange Roach-Ravager — Roaches tank return fire"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings cannot fight Roach armour"
     detectionSignals:
       - "4+ Roaches with 2+ Ravagers between 5-12 minutes"
 
@@ -811,12 +1387,28 @@ archetypes:
       units:
         - type: LURKER
           minCount: 3
-    strongCounters:
-      - units: [DISRUPTOR, OBSERVER]
-        action: "Disruptor Purification Nova clears burrowed Lurkers — Observer provides vision"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots are shredded by Lurker spines before reaching them"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [DISRUPTOR, OBSERVER]
+            action: "Disruptor Purification Nova clears burrowed Lurkers — Observer provides vision"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots are shredded by Lurker spines before reaching them"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, RAVEN]
+            action: "Siege Tanks outrange Lurkers — Raven reveals burrowed positions"
+        weak:
+          - units: [MARINE]
+            action: "Marines are shredded by Lurker spines before reaching them"
+      ZERG:
+        strong:
+          - units: [VIPER, ROACH]
+            action: "Viper Blinding Cloud disables Lurkers — Roaches close and trade"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings are shredded by Lurker spines"
     detectionSignals:
       - "3+ Lurkers after 7 minutes"
       - "Lurker siege line established"
@@ -834,12 +1426,28 @@ archetypes:
           minCount: 3
         - type: LURKER
           minCount: 2
-    strongCounters:
-      - units: [COLOSSUS, DISRUPTOR]
-        action: "Colossus splash devastates clumped Hydras — Disruptor clears Lurker positions"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers lose to Hydra DPS and cannot approach burrowed Lurkers"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [COLOSSUS, DISRUPTOR]
+            action: "Colossus splash devastates clumped Hydras — Disruptor clears Lurker positions"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers lose to Hydra DPS and cannot approach burrowed Lurkers"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, LIBERATOR]
+            action: "Siege Tanks splash Hydras — Liberator zones deny Lurker advance"
+        weak:
+          - units: [MARINE]
+            action: "Marines die to both Hydra DPS and Lurker spines"
+      ZERG:
+        strong:
+          - units: [VIPER, BROOD_LORD]
+            action: "Vipers Blinding Cloud Lurkers — Brood Lords siege from outside Hydra range"
+        weak:
+          - units: [ROACH]
+            action: "Roaches cannot close into Lurker-protected Hydra positions"
     detectionSignals:
       - "3+ Hydralisks with 2+ Lurkers between 7-15 minutes"
 
@@ -854,12 +1462,28 @@ archetypes:
       units:
         - type: SWARM_HOST
           minCount: 4
-    strongCounters:
-      - units: [PHOENIX, ORACLE]
-        action: "Phoenix picks off Locusts — Oracle Revelation reveals Swarm Host positions for attack"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots cannot reach burrowed Swarm Hosts and trade poorly vs Locusts"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [PHOENIX, ORACLE]
+            action: "Phoenix picks off Locusts — Oracle Revelation reveals Swarm Host positions for attack"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots cannot reach burrowed Swarm Hosts and trade poorly vs Locusts"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, HELLBAT]
+            action: "Siege Tanks destroy Locust waves — Hellbats clean up spawns efficiently"
+        weak:
+          - units: [MARINE]
+            action: "Marines trade poorly against endless Locust waves"
+      ZERG:
+        strong:
+          - units: [MUTALISK, ZERGLING]
+            action: "Mutalisks pick off Locusts — Speedlings dive burrowed Swarm Hosts"
+        weak:
+          - units: [ROACH]
+            action: "Roaches trade poorly against endless Locust waves"
     detectionSignals:
       - "4+ Swarm Hosts after 6 minutes"
       - "Locust waves launched repeatedly"
@@ -879,12 +1503,28 @@ archetypes:
           minCount: 3
         - type: MUTALISK
           minCount: 2
-    strongCounters:
-      - units: [ARCHON, PHOENIX]
-        action: "Archon splash handles Ling/Bane — Phoenix hard-counters Mutalisks"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers get overwhelmed on the ground and lack burst vs Mutas"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [ARCHON, PHOENIX]
+            action: "Archon splash handles Ling/Bane — Phoenix hard-counters Mutalisks"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers get overwhelmed on the ground and lack burst vs Mutas"
+      TERRAN:
+        strong:
+          - units: [THOR, SIEGE_TANK]
+            action: "Thor anti-air handles Mutas — Siege Tanks destroy Ling-Bane from range"
+        weak:
+          - units: [MARINE]
+            action: "Marines die to both Baneling connections and Mutalisk bounce"
+      ZERG:
+        strong:
+          - units: [ROACH, CORRUPTOR]
+            action: "Roaches soak Banelings — Corruptors chase Mutalisks"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings die to both Banelings and Mutalisk bounce"
     detectionSignals:
       - "6+ Zerglings with 3+ Banelings and 2+ Mutalisks"
       - "Combined ground swarm with air harass"
@@ -900,12 +1540,28 @@ archetypes:
       units:
         - type: BROOD_LORD
           minCount: 2
-    strongCounters:
-      - units: [TEMPEST, VOID_RAY]
-        action: "Tempests outrange Brood Lords — build Stargate tech"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers are overwhelmed by Broodlings while Brood Lords siege"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [TEMPEST, VOID_RAY]
+            action: "Tempests outrange Brood Lords — build Stargate tech"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers are overwhelmed by Broodlings while Brood Lords siege"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARINE]
+            action: "Vikings hard-counter Brood Lords from range — Marines clean Broodlings"
+        weak:
+          - units: [SIEGE_TANK]
+            action: "Siege Tanks cannot shoot air — Brood Lords outrange them"
+      ZERG:
+        strong:
+          - units: [CORRUPTOR, VIPER]
+            action: "Corruptors hard-counter Brood Lords — Viper Abduct pulls them into army"
+        weak:
+          - units: [ROACH]
+            action: "Roaches are overwhelmed by Broodlings while Brood Lords siege"
     detectionSignals:
       - "2+ Brood Lords after 12 minutes"
 
@@ -920,12 +1576,28 @@ archetypes:
       units:
         - type: ULTRALISK
           minCount: 2
-    strongCounters:
-      - units: [IMMORTAL, VOID_RAY]
-        action: "Immortals hard-counter Ultralisk armour with Barrier — Void Rays melt them from air"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots are cleaved by Ultralisk splash and die in seconds"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [IMMORTAL, VOID_RAY]
+            action: "Immortals hard-counter Ultralisk armour with Barrier — Void Rays melt them from air"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots are cleaved by Ultralisk splash and die in seconds"
+      TERRAN:
+        strong:
+          - units: [MARAUDER, LIBERATOR]
+            action: "Marauders kite with Concussive Shell — Liberator zones deny Ultralisk advance"
+        weak:
+          - units: [MARINE]
+            action: "Marines are cleaved by Ultralisk splash"
+      ZERG:
+        strong:
+          - units: [BROOD_LORD, VIPER]
+            action: "Brood Lords siege from range — Viper Blinding Cloud disables Ultralisk"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings are cleaved by Ultralisk splash"
     detectionSignals:
       - "2+ Ultralisks after 12 minutes"
       - "Ultralisk Cavern completed"
@@ -943,12 +1615,28 @@ archetypes:
           minCount: 2
         - type: INFESTOR
           minCount: 2
-    strongCounters:
-      - units: [TEMPEST, VOID_RAY]
-        action: "Tempests outrange Brood Lords — focus fire before Fungal Growth lands"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers get Fungal Growthd and overwhelmed by Broodlings"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [TEMPEST, VOID_RAY]
+            action: "Tempests outrange Brood Lords — focus fire before Fungal Growth lands"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers get Fungal Growthd and overwhelmed by Broodlings"
+      TERRAN:
+        strong:
+          - units: [VIKING, GHOST]
+            action: "Vikings snipe Brood Lords — Ghost EMP removes Infestor energy"
+        weak:
+          - units: [MARINE]
+            action: "Marines get Fungal Growthd and overwhelmed by Broodlings"
+      ZERG:
+        strong:
+          - units: [CORRUPTOR, VIPER]
+            action: "Corruptors snipe Brood Lords — Viper Abduct pulls Infestors"
+        weak:
+          - units: [ROACH]
+            action: "Roaches get Fungal Growthd and overwhelmed by Broodlings"
     detectionSignals:
       - "2+ Brood Lords with 2+ Infestors after 14 minutes"
       - "Fungal Growth combined with Brood Lord siege"
@@ -964,12 +1652,28 @@ archetypes:
       units:
         - type: VIPER
           minCount: 2
-    strongCounters:
-      - units: [PHOENIX, STALKER]
-        action: "Phoenix picks off Vipers — Stalkers spread to minimise Blinding Cloud impact"
-    weakCounters:
-      - units: [COLOSSUS]
-        action: "Colossus gets Abducted into Zerg army — instant death"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [PHOENIX, STALKER]
+            action: "Phoenix picks off Vipers — Stalkers spread to minimise Blinding Cloud impact"
+        weak:
+          - units: [COLOSSUS]
+            action: "Colossus gets Abducted into Zerg army — instant death"
+      TERRAN:
+        strong:
+          - units: [VIKING, GHOST]
+            action: "Vikings pick off Vipers — Ghost snipe one-shots them"
+        weak:
+          - units: [SIEGE_TANK]
+            action: "Siege Tanks get Abducted into Zerg army"
+      ZERG:
+        strong:
+          - units: [CORRUPTOR, QUEEN]
+            action: "Corruptors pick off Vipers — Queens provide ground anti-air support"
+        weak:
+          - units: [BROOD_LORD]
+            action: "Brood Lords get Abducted by Vipers"
     detectionSignals:
       - "2+ Vipers after 10 minutes"
       - "Abduct or Blinding Cloud used"
@@ -985,12 +1689,28 @@ archetypes:
       units:
         - type: CORRUPTOR
           minCount: 4
-    strongCounters:
-      - units: [ARCHON, VOID_RAY]
-        action: "Archons have massive anti-air splash — Void Rays burn armoured Corruptors"
-    weakCounters:
-      - units: [COLOSSUS]
-        action: "Colossus cannot shoot air — army loses critical splash while Corruptors dominate"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [ARCHON, VOID_RAY]
+            action: "Archons have massive anti-air splash — Void Rays burn armoured Corruptors"
+        weak:
+          - units: [COLOSSUS]
+            action: "Colossus cannot shoot air — army loses critical splash while Corruptors dominate"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARINE]
+            action: "Vikings dominate air-to-air vs Corruptors — Marines add ground DPS"
+        weak:
+          - units: [SIEGE_TANK]
+            action: "Ground-only army cannot touch air"
+      ZERG:
+        strong:
+          - units: [CORRUPTOR, VIPER]
+            action: "Mirror Corruptors with Viper Parasitic Bomb for splash damage"
+        weak:
+          - units: [HYDRALISK]
+            action: "Hydralisks lack air-to-air to contest Corruptor flock"
     detectionSignals:
       - "4+ Corruptors after 10 minutes"
       - "Corruptor flock controlling airspace"
@@ -1008,12 +1728,28 @@ archetypes:
           minCount: 3
         - type: COLOSSUS
           minCount: 1
-    strongCounters:
-      - units: [IMMORTAL, STALKER]
-        action: "Immortals shred Colossus armour — focus fire with Blink Stalkers"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots are melted by Colossus beams before engaging"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [IMMORTAL, STALKER]
+            action: "Immortals shred Colossus armour — focus fire with Blink Stalkers"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots are melted by Colossus beams before engaging"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARAUDER]
+            action: "Vikings snipe Colossus — Marauders shred remaining Stalkers"
+        weak:
+          - units: [MARINE]
+            action: "Marines are melted by Colossus beams"
+      ZERG:
+        strong:
+          - units: [CORRUPTOR, ROACH]
+            action: "Corruptors snipe Colossus — Roaches engage remaining Stalkers"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings are melted by Colossus beams"
     detectionSignals:
       - "3+ Stalkers with Colossus between 6-15 minutes"
 
@@ -1030,12 +1766,28 @@ archetypes:
           minCount: 4
         - type: ARCHON
           minCount: 1
-    strongCounters:
-      - units: [COLOSSUS, HIGH_TEMPLAR]
-        action: "Colossus splash shreds clumped Zealots — Storm hurts Archons"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers get overwhelmed by Charge Zealots closing the gap"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [COLOSSUS, HIGH_TEMPLAR]
+            action: "Colossus splash shreds clumped Zealots — Storm hurts Archons"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers get overwhelmed by Charge Zealots closing the gap"
+      TERRAN:
+        strong:
+          - units: [SIEGE_TANK, LIBERATOR]
+            action: "Siege Tanks destroy charging Zealots — Liberator zones deny Archon advance"
+        weak:
+          - units: [MARINE]
+            action: "Marines get overwhelmed by Charge Zealots closing the gap"
+      ZERG:
+        strong:
+          - units: [LURKER, ROACH]
+            action: "Lurkers shred charging Zealots — Roaches tank Archon splash"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings get overwhelmed by Charge Zealots"
     detectionSignals:
       - "4+ Zealots with Archon between 6-15 minutes"
 
@@ -1050,12 +1802,28 @@ archetypes:
       units:
         - type: STALKER
           minCount: 6
-    strongCounters:
-      - units: [IMMORTAL, COLOSSUS]
-        action: "Immortals shred Stalker shields — Colossus splash punishes clumping"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots cannot catch Blink Stalkers and get kited to death"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [IMMORTAL, COLOSSUS]
+            action: "Immortals shred Stalker shields — Colossus splash punishes clumping"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots cannot catch Blink Stalkers and get kited to death"
+      TERRAN:
+        strong:
+          - units: [MARAUDER, SIEGE_TANK]
+            action: "Marauders slow Stalkers — Siege Tanks punish Blink-ins with splash"
+        weak:
+          - units: [MARINE]
+            action: "Marines are kited to death by Blink micro"
+      ZERG:
+        strong:
+          - units: [ROACH, RAVAGER]
+            action: "Roaches soak Stalker damage — Ravager Bile forces Blinks defensively"
+        weak:
+          - units: [ZERGLING]
+            action: "Zerglings are kited by Blink Stalkers"
     detectionSignals:
       - "6+ Stalkers between 5-10 minutes"
       - "Blink research complete"
@@ -1073,12 +1841,28 @@ archetypes:
           minCount: 2
         - type: SENTRY
           minCount: 2
-    strongCounters:
-      - units: [VOID_RAY, PHOENIX]
-        action: "Air units bypass Force Fields and kite Immortals freely"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers get trapped by Force Fields and shredded by Immortal Barrier"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [VOID_RAY, PHOENIX]
+            action: "Air units bypass Force Fields and kite Immortals freely"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers get trapped by Force Fields and shredded by Immortal Barrier"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARINE]
+            action: "Viking air superiority bypasses Force Fields — Marines stim into the gap"
+        weak:
+          - units: [SIEGE_TANK]
+            action: "Siege Tanks get trapped by Force Fields and shredded by Immortals"
+      ZERG:
+        strong:
+          - units: [SWARM_HOST, ROACH]
+            action: "Swarm Hosts stall the push — Roaches flank around Force Fields"
+        weak:
+          - units: [ROACH]
+            action: "Roaches get trapped by Force Fields and shredded by Immortals"
     detectionSignals:
       - "2+ Immortals with 2+ Sentries between 5-10 minutes"
       - "Warp Prism delivering Immortals"
@@ -1096,12 +1880,28 @@ archetypes:
           minCount: 3
         - type: ADEPT
           minCount: 3
-    strongCounters:
-      - units: [STALKER, ARCHON]
-        action: "Stalkers shoot Phoenix — Archons tank Adept shade damage"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots are kited by Adepts and cannot touch Phoenix"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER, ARCHON]
+            action: "Stalkers shoot Phoenix — Archons tank Adept shade damage"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots are kited by Adepts and cannot touch Phoenix"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARAUDER]
+            action: "Vikings counter Phoenix — Marauders slow and kill Adepts"
+        weak:
+          - units: [MARINE]
+            action: "Marines get lifted by Phoenix and kited by Adepts"
+      ZERG:
+        strong:
+          - units: [QUEEN, HYDRALISK]
+            action: "Queens provide anti-air — Hydralisks outrange and shred both"
+        weak:
+          - units: [MUTALISK]
+            action: "Mutalisks die to Phoenix in air combat"
     detectionSignals:
       - "3+ Phoenix with 3+ Adepts between 5-12 minutes"
       - "Phoenix lift with Adept shade combo"
@@ -1119,12 +1919,28 @@ archetypes:
           minCount: 2
         - type: STALKER
           minCount: 3
-    strongCounters:
-      - units: [IMMORTAL, STALKER]
-        action: "Split micro to dodge Disruptor Novas — Immortals shred Disruptors directly"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots cannot dodge Purification Nova effectively and die in clusters"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [IMMORTAL, STALKER]
+            action: "Split micro to dodge Disruptor Novas — Immortals shred Disruptors directly"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots cannot dodge Purification Nova effectively and die in clusters"
+      TERRAN:
+        strong:
+          - units: [MARINE, MEDIVAC]
+            action: "Split Marines to dodge Novas — Medivac mobility avoids Disruptor zones"
+        weak:
+          - units: [SIEGE_TANK]
+            action: "Siege Tanks cannot dodge Purification Nova"
+      ZERG:
+        strong:
+          - units: [ZERGLING, BANELING]
+            action: "Speedlings split naturally — Banelings close and detonate before Nova"
+        weak:
+          - units: [ROACH]
+            action: "Roaches cannot dodge Purification Nova and die in clusters"
     detectionSignals:
       - "2+ Disruptors with Stalkers after 7 minutes"
       - "Purification Nova launched"
@@ -1142,12 +1958,28 @@ archetypes:
           minCount: 2
         - type: STALKER
           minCount: 3
-    strongCounters:
-      - units: [GHOST, IMMORTAL]
-        action: "Ghost EMP removes Storm energy and shields — devastating counter to HT-based armies"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots clump and melt to Psionic Storm"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [GHOST, IMMORTAL]
+            action: "Ghost EMP removes Storm energy and shields — devastating counter to HT-based armies"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots clump and melt to Psionic Storm"
+      TERRAN:
+        strong:
+          - units: [GHOST, MARAUDER]
+            action: "Ghost EMP removes Storm energy and shields — devastating counter to HT armies"
+        weak:
+          - units: [MARINE]
+            action: "Clumped Marines melt to Psionic Storm"
+      ZERG:
+        strong:
+          - units: [ULTRALISK, ZERGLING]
+            action: "Ultralisks power through Storm — Speedlings flank and surround HTs"
+        weak:
+          - units: [ROACH]
+            action: "Roaches clump and melt to Psionic Storm"
     detectionSignals:
       - "2+ High Templars with Stalkers after 7 minutes"
       - "Psionic Storm research complete"
@@ -1165,12 +1997,28 @@ archetypes:
           minCount: 1
         - type: ZEALOT
           minCount: 2
-    strongCounters:
-      - units: [STALKER, PHOENIX]
-        action: "Stalkers snipe Warp Prism — Phoenix lifts it before warping completes"
-    weakCounters:
-      - units: [PROBE]
-        action: "Workers cannot defend against warped-in units supported by Warp Prism"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER, PHOENIX]
+            action: "Stalkers snipe Warp Prism — Phoenix lifts it before warping completes"
+        weak:
+          - units: [PROBE]
+            action: "Workers cannot defend against warped-in units supported by Warp Prism"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARINE]
+            action: "Vikings snipe Warp Prism — Marines defend mineral lines"
+        weak:
+          - units: [SCV]
+            action: "Workers cannot defend against warped-in units"
+      ZERG:
+        strong:
+          - units: [QUEEN, ZERGLING]
+            action: "Queens at each base — Speedlings chase and kill Warp Prism"
+        weak:
+          - units: [DRONE]
+            action: "Workers cannot defend against warped-in units"
     detectionSignals:
       - "Warp Prism with warp-ins between 5-12 minutes"
       - "Warp Prism phasing near base"
@@ -1186,12 +2034,28 @@ archetypes:
       units:
         - type: CARRIER
           minCount: 2
-    strongCounters:
-      - units: [VOID_RAY, TEMPEST]
-        action: "Tempests outrange Carriers — build Stargate tech"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers trade poorly against massed Interceptors"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [VOID_RAY, TEMPEST]
+            action: "Tempests outrange Carriers — build Stargate tech"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers trade poorly against massed Interceptors"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARINE]
+            action: "Vikings outrange Interceptors — Marines add ground DPS"
+        weak:
+          - units: [SIEGE_TANK]
+            action: "Ground-only army cannot touch Carrier fleet"
+      ZERG:
+        strong:
+          - units: [CORRUPTOR, VIPER]
+            action: "Corruptors counter Carriers — Viper Parasitic Bomb devastates clumped fleet"
+        weak:
+          - units: [HYDRALISK]
+            action: "Hydralisks trade poorly against massed Interceptors"
     detectionSignals:
       - "2+ Carriers after 12 minutes"
 
@@ -1206,12 +2070,28 @@ archetypes:
       units:
         - type: TEMPEST
           minCount: 3
-    strongCounters:
-      - units: [VOID_RAY, PHOENIX]
-        action: "Void Rays close range and burn Tempests — Phoenix speed forces engagement"
-    weakCounters:
-      - units: [COLOSSUS]
-        action: "Colossus is outranged and slowly picked off by Tempest shots"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [VOID_RAY, PHOENIX]
+            action: "Void Rays close range and burn Tempests — Phoenix speed forces engagement"
+        weak:
+          - units: [COLOSSUS]
+            action: "Colossus is outranged and slowly picked off by Tempest shots"
+      TERRAN:
+        strong:
+          - units: [VIKING, BATTLECRUISER]
+            action: "Vikings close range and trade — Battlecruiser Yamato one-shots Tempests"
+        weak:
+          - units: [SIEGE_TANK]
+            action: "Ground units are outranged and cannot touch Tempests"
+      ZERG:
+        strong:
+          - units: [CORRUPTOR, VIPER]
+            action: "Corruptors close range — Viper Abduct pulls Tempests into army"
+        weak:
+          - units: [HYDRALISK]
+            action: "Hydralisks are outranged by Tempest shots"
     detectionSignals:
       - "3+ Tempests after 12 minutes"
       - "Tempest siege from maximum range"
@@ -1231,12 +2111,28 @@ archetypes:
           minCount: 2
         - type: TEMPEST
           minCount: 1
-    strongCounters:
-      - units: [TEMPEST, ARCHON]
-        action: "Tempests outrange other air — Archons provide massive anti-air splash damage"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers lack sustained DPS to trade into full sky army"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [TEMPEST, ARCHON]
+            action: "Tempests outrange other air — Archons provide massive anti-air splash damage"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers lack sustained DPS to trade into full sky army"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARINE]
+            action: "Mass Vikings dominate air-to-air — Marines add DPS under Viking cover"
+        weak:
+          - units: [SIEGE_TANK]
+            action: "Ground-only mech cannot touch full sky army"
+      ZERG:
+        strong:
+          - units: [CORRUPTOR, VIPER]
+            action: "Mass Corruptors with Viper Parasitic Bomb — the only composition that trades"
+        weak:
+          - units: [HYDRALISK]
+            action: "Hydralisks lack sustained DPS to trade into full sky army"
     detectionSignals:
       - "2+ Carriers with Void Rays and Tempest after 14 minutes"
       - "Multiple Stargates producing fleet units"
@@ -1254,12 +2150,28 @@ archetypes:
           minCount: 3
         - type: HIGH_TEMPLAR
           minCount: 2
-    strongCounters:
-      - units: [GHOST, IMMORTAL]
-        action: "Ghost EMP strips Archon shields and HT energy — Immortals shred Archons"
-    weakCounters:
-      - units: [ZEALOT]
-        action: "Zealots melt to Storm and Archon splash damage"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [GHOST, IMMORTAL]
+            action: "Ghost EMP strips Archon shields and HT energy — Immortals shred Archons"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots melt to Storm and Archon splash damage"
+      TERRAN:
+        strong:
+          - units: [GHOST, MARAUDER]
+            action: "Ghost EMP strips Archon shields and HT energy — Marauders clean up"
+        weak:
+          - units: [MARINE]
+            action: "Marines melt to Storm and Archon splash"
+      ZERG:
+        strong:
+          - units: [ULTRALISK, ZERGLING]
+            action: "Ultralisks ignore Storm — Speedlings surround HTs before they cast"
+        weak:
+          - units: [ROACH]
+            action: "Roaches melt to Storm and Archon splash"
     detectionSignals:
       - "3+ Archons with 2+ High Templars after 12 minutes"
       - "Psionic Storm supporting Archon front line"
@@ -1275,12 +2187,28 @@ archetypes:
       units:
         - type: MOTHERSHIP
           minCount: 1
-    strongCounters:
-      - units: [TEMPEST, VOID_RAY]
-        action: "Tempests outrange Mothership — focus fire it down before Mass Recall"
-    weakCounters:
-      - units: [STALKER]
-        action: "Stalkers struggle to break Mothership shields under Time Warp"
+    counters:
+      PROTOSS:
+        strong:
+          - units: [TEMPEST, VOID_RAY]
+            action: "Tempests outrange Mothership — focus fire it down before Mass Recall"
+        weak:
+          - units: [STALKER]
+            action: "Stalkers struggle to break Mothership shields under Time Warp"
+      TERRAN:
+        strong:
+          - units: [VIKING, GHOST]
+            action: "Vikings focus Mothership — Ghost EMP strips its massive shields"
+        weak:
+          - units: [MARINE]
+            action: "Marines are caught in Time Warp and destroyed by fleet"
+      ZERG:
+        strong:
+          - units: [CORRUPTOR, VIPER]
+            action: "Corruptors focus Mothership — Viper Abduct pulls it from fleet protection"
+        weak:
+          - units: [HYDRALISK]
+            action: "Hydralisks are caught under Time Warp and destroyed"
     detectionSignals:
       - "Mothership spotted after 14 minutes"
       - "Fleet Beacon completed"
