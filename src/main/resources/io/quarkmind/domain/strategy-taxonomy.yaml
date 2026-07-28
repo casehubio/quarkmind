@@ -21,6 +21,73 @@ archetypes:
       - "5+ Marines before 4 minutes"
       - "No expansion with Marines"
 
+  TERRAN_REAPER_HARASS:
+    displayName: "Reaper Harass"
+    race: TERRAN
+    phase: EARLY
+    category: HARASS
+    phaseWindow: [2.0, 6.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: REAPER
+          minCount: 1
+    strongCounters:
+      - units: [STALKER, ADEPT]
+        action: "Stalkers and Adepts chase Reapers efficiently — Adept shade cuts retreat paths"
+    weakCounters:
+      - units: [PROBE]
+        action: "Workers alone cannot catch or kill a kiting Reaper"
+    detectionSignals:
+      - "Reaper spotted before 3 minutes"
+      - "Reaper harassing mineral line"
+
+  TERRAN_PROXY_BARRACKS:
+    displayName: "Proxy Barracks"
+    race: TERRAN
+    phase: EARLY
+    category: RUSH
+    phaseWindow: [0.0, 5.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MARINE
+          minCount: 3
+        - type: REAPER
+          minCount: 1
+      noExpansion: true
+    strongCounters:
+      - units: [ZEALOT, STALKER]
+        action: "Wall off with Zealot hold position — Stalkers clean up once Gateway is complete"
+    weakCounters:
+      - units: [PROBE]
+        action: "Probes alone lose to early Marines with Reaper support"
+    detectionSignals:
+      - "3+ Marines with Reaper before 5 minutes"
+      - "No expansion with early Marines"
+
+  TERRAN_FAST_EXPAND:
+    displayName: "Terran Fast Expand"
+    race: TERRAN
+    phase: EARLY
+    category: MACRO
+    phaseWindow: [0.0, 5.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MARINE
+          minCount: 1
+      noExpansion: false
+    strongCounters:
+      - units: [ADEPT, STALKER]
+        action: "Pressure with Adept shade to punish greedy CC first — deny the fast natural"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Passive Zealot play lets Terran establish safe two-base economy"
+    detectionSignals:
+      - "Expansion with fewer than 3 units before 5 minutes"
+      - "Command Centre first detected"
+
   TERRAN_BIO_TIMING:
     displayName: "Bio Timing"
     race: TERRAN
@@ -152,6 +219,53 @@ archetypes:
     detectionSignals:
       - "Expansion with fewer than 4 units before 5 minutes"
 
+  ZERG_BANELING_BUST:
+    displayName: "Baneling Bust"
+    race: ZERG
+    phase: EARLY
+    category: RUSH
+    phaseWindow: [0.0, 5.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: BANELING
+          minCount: 4
+        - type: ZERGLING
+          minCount: 4
+      noExpansion: true
+    strongCounters:
+      - units: [ZEALOT, SENTRY]
+        action: "Sentry Force Field at choke blocks Banelings — Zealots clean up Lings behind"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers lose shields to Baneling splash — prefer Zealots for soak"
+    detectionSignals:
+      - "4+ Banelings before 5 minutes"
+      - "Baneling Nest spotted early"
+
+  ZERG_RAVAGER_PUSH:
+    displayName: "Ravager Push"
+    race: ZERG
+    phase: EARLY
+    category: TIMING
+    phaseWindow: [3.0, 7.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: RAVAGER
+          minCount: 3
+        - type: ROACH
+          minCount: 2
+    strongCounters:
+      - units: [IMMORTAL, STALKER]
+        action: "Immortals hard-counter Roach/Ravager armour — dodge Bile projectiles manually"
+    weakCounters:
+      - units: [SENTRY]
+        action: "Ravager Bile destroys Force Fields — Sentries lose their key ability"
+    detectionSignals:
+      - "3+ Ravagers before 7 minutes"
+      - "Ravager Corrosive Bile targeting structures"
+
   PROTOSS_GATEWAY_RUSH:
     displayName: "Gateway Rush"
     race: PROTOSS
@@ -237,6 +351,72 @@ archetypes:
     detectionSignals:
       - "Dark Templar spotted before 8 minutes"
 
+  PROTOSS_ORACLE_HARASS:
+    displayName: "Oracle Harass"
+    race: PROTOSS
+    phase: EARLY
+    category: HARASS
+    phaseWindow: [3.0, 7.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ORACLE
+          minCount: 1
+    strongCounters:
+      - units: [PHOENIX, STALKER]
+        action: "Phoenix hard-counters Oracle — Stalkers provide ground anti-air"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots cannot attack air units"
+    detectionSignals:
+      - "Oracle spotted before 7 minutes"
+      - "Oracle attacking mineral line"
+
+  PROTOSS_ADEPT_HARASS:
+    displayName: "Adept Harass"
+    race: PROTOSS
+    phase: EARLY
+    category: HARASS
+    phaseWindow: [2.0, 6.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ADEPT
+          minCount: 3
+    strongCounters:
+      - units: [STALKER, IMMORTAL]
+        action: "Stalkers outrange Adepts — Immortals shred them in direct combat"
+    weakCounters:
+      - units: [PROBE]
+        action: "Workers cannot fight Adept shade harass effectively"
+    detectionSignals:
+      - "3+ Adepts before 6 minutes"
+      - "Adept shade towards mineral line"
+
+  PROTOSS_PROXY_GATE:
+    displayName: "Proxy Gateway"
+    race: PROTOSS
+    phase: EARLY
+    category: RUSH
+    phaseWindow: [0.0, 4.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ZEALOT
+          minCount: 2
+        - type: STALKER
+          minCount: 1
+      noExpansion: true
+    strongCounters:
+      - units: [STALKER, SENTRY]
+        action: "Wall off and Force Field choke — Stalkers kite Zealots at range"
+    weakCounters:
+      - units: [PROBE]
+        action: "Workers cannot hold against early gateway pressure"
+    detectionSignals:
+      - "2+ Zealots with Stalker before 4 minutes"
+      - "No expansion with early Gateway units near our base"
+
   TERRAN_MARINE_TANK:
     displayName: "Marine Tank"
     race: TERRAN
@@ -281,6 +461,142 @@ archetypes:
     detectionSignals:
       - "3+ Hellions with Thor between 6-15 minutes"
 
+  TERRAN_BIO_MINE:
+    displayName: "Bio Mine"
+    race: TERRAN
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [5.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MARINE
+          minCount: 6
+        - type: WIDOW_MINE
+          minCount: 2
+    strongCounters:
+      - units: [COLOSSUS, OBSERVER]
+        action: "Colossus splash shreds bio — Observer reveals buried Widow Mines"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots trigger Widow Mines and melt to Marine fire behind"
+    detectionSignals:
+      - "6+ Marines with 2+ Widow Mines between 5-15 minutes"
+      - "Widow Mine burrow detected"
+
+  TERRAN_LIBERATOR_BIO:
+    displayName: "Liberator Bio"
+    race: TERRAN
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [6.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MARINE
+          minCount: 4
+        - type: LIBERATOR
+          minCount: 2
+    strongCounters:
+      - units: [TEMPEST, STALKER]
+        action: "Tempests outrange Liberator zones — Stalkers snipe unsieged Liberators"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots cannot enter Liberator zones without dying instantly"
+    detectionSignals:
+      - "4+ Marines with 2+ Liberators between 6-15 minutes"
+      - "Liberator defender mode zones active"
+
+  TERRAN_GHOST_BIO:
+    displayName: "Ghost Bio"
+    race: TERRAN
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [7.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MARINE
+          minCount: 4
+        - type: GHOST
+          minCount: 2
+    strongCounters:
+      - units: [COLOSSUS, IMMORTAL]
+        action: "Colossus splash ignores EMP — Immortals shred bio with armour"
+    weakCounters:
+      - units: [HIGH_TEMPLAR]
+        action: "HTs lose shields and Storm energy to Ghost EMP — rendered useless"
+    detectionSignals:
+      - "4+ Marines with 2+ Ghosts between 7-15 minutes"
+      - "EMP detected on army"
+
+  TERRAN_DROP_HARASS:
+    displayName: "Drop Harass"
+    race: TERRAN
+    phase: MID
+    category: HARASS
+    phaseWindow: [5.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MEDIVAC
+          minCount: 2
+        - type: MARINE
+          minCount: 4
+    strongCounters:
+      - units: [PHOENIX, STALKER]
+        action: "Phoenix lifts Medivacs — Stalkers pick off loaded drops"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots arrive too slow to intercept drops at multiple locations"
+    detectionSignals:
+      - "2+ Medivacs with Marines between 5-15 minutes"
+      - "Drop detected at mineral line"
+
+  TERRAN_CYCLONE_PUSH:
+    displayName: "Cyclone Push"
+    race: TERRAN
+    phase: MID
+    category: TIMING
+    phaseWindow: [4.0, 10.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: CYCLONE
+          minCount: 2
+    strongCounters:
+      - units: [IMMORTAL, STALKER]
+        action: "Immortals shred Cyclone armour — Stalkers can Blink out of Lock On"
+    weakCounters:
+      - units: [VOID_RAY]
+        action: "Void Rays are vulnerable to Cyclone Lock On — must micro carefully"
+    detectionSignals:
+      - "2+ Cyclones between 4-10 minutes"
+      - "Cyclone Lock On targeting units"
+
+  TERRAN_MINE_DROP:
+    displayName: "Mine Drop"
+    race: TERRAN
+    phase: MID
+    category: HARASS
+    phaseWindow: [4.0, 12.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MEDIVAC
+          minCount: 1
+        - type: WIDOW_MINE
+          minCount: 2
+    strongCounters:
+      - units: [OBSERVER, PHOENIX]
+        action: "Observer reveals Mines before they fire — Phoenix lifts Medivacs"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots trigger Widow Mines causing splash damage to own army"
+    detectionSignals:
+      - "Medivac with Widow Mines between 4-12 minutes"
+      - "Widow Mine drop at mineral line"
+
   TERRAN_BC_TRANSITION:
     displayName: "Battlecruiser Transition"
     race: TERRAN
@@ -300,6 +616,102 @@ archetypes:
         action: "Stalkers trade poorly against Battlecruiser armour and Yamato"
     detectionSignals:
       - "Battlecruiser spotted after 10 minutes"
+
+  TERRAN_GHOST_NUKE:
+    displayName: "Ghost Nuke"
+    race: TERRAN
+    phase: LATE
+    category: TECH
+    phaseWindow: [10.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: GHOST
+          minCount: 2
+    strongCounters:
+      - units: [OBSERVER, ORACLE]
+        action: "Observer reveals cloaked Ghosts — Oracle Revelation covers large area"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots cannot detect cloaked Ghosts and die to Nuke"
+    detectionSignals:
+      - "2+ Ghosts after 10 minutes"
+      - "Nuclear Silo completed or Nuke dot detected"
+
+  TERRAN_MECH_LATE:
+    displayName: "Late Mech"
+    race: TERRAN
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [12.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: THOR
+          minCount: 2
+        - type: SIEGE_TANK
+          minCount: 3
+        - type: HELLBAT
+          minCount: 2
+    strongCounters:
+      - units: [IMMORTAL, TEMPEST]
+        action: "Immortals shred mech armour — Tempests outrange Siege Tanks safely"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots melt to Hellbat flame and sieged Tank splash"
+    detectionSignals:
+      - "2+ Thors with 3+ Siege Tanks and Hellbats after 12 minutes"
+      - "Full mech army with multiple Factory units"
+
+  TERRAN_BIO_LATE:
+    displayName: "Late Bio"
+    race: TERRAN
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [12.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MARINE
+          minCount: 10
+        - type: GHOST
+          minCount: 2
+        - type: LIBERATOR
+          minCount: 2
+    strongCounters:
+      - units: [COLOSSUS, ARCHON]
+        action: "Colossus splash devastates massed Marines — Archons tank Ghost snipes"
+    weakCounters:
+      - units: [HIGH_TEMPLAR]
+        action: "HTs lose all Storm energy to Ghost EMP in late game"
+    detectionSignals:
+      - "10+ Marines with Ghosts and Liberators after 12 minutes"
+      - "Maxed bio army with tech support"
+
+  TERRAN_SKY_TERRAN:
+    displayName: "Sky Terran"
+    race: TERRAN
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [12.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: BATTLECRUISER
+          minCount: 1
+        - type: LIBERATOR
+          minCount: 2
+        - type: VIKING
+          minCount: 2
+    strongCounters:
+      - units: [TEMPEST, VOID_RAY]
+        action: "Tempests outrange all Terran air — Void Rays melt armoured air units"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers lack the sustained DPS to trade into massed air"
+    detectionSignals:
+      - "Battlecruiser with Liberators and Vikings after 12 minutes"
+      - "Multiple Starports with Reactor"
 
   ZERG_ROACH_HYDRA:
     displayName: "Roach Hydra"
@@ -343,6 +755,140 @@ archetypes:
     detectionSignals:
       - "3+ Mutalisks between 5-12 minutes"
 
+  ZERG_LING_BANE:
+    displayName: "Ling Bane"
+    race: ZERG
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [5.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ZERGLING
+          minCount: 8
+        - type: BANELING
+          minCount: 4
+    strongCounters:
+      - units: [COLOSSUS, ARCHON]
+        action: "Colossus beams devastate clumped Lings — Archon splash destroys Banelings"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers get overwhelmed by mass Ling surround and Baneling detonations"
+    detectionSignals:
+      - "8+ Zerglings with 4+ Banelings between 5-15 minutes"
+      - "Baneling aggression into army"
+
+  ZERG_ROACH_RAVAGER:
+    displayName: "Roach Ravager"
+    race: ZERG
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [5.0, 12.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ROACH
+          minCount: 4
+        - type: RAVAGER
+          minCount: 2
+    strongCounters:
+      - units: [IMMORTAL, COLOSSUS]
+        action: "Immortals shred Roach armour — dodge Ravager Bile and engage"
+    weakCounters:
+      - units: [SENTRY]
+        action: "Ravager Bile nullifies Force Fields — Sentries become dead weight"
+    detectionSignals:
+      - "4+ Roaches with 2+ Ravagers between 5-12 minutes"
+
+  ZERG_LURKER_CONTAIN:
+    displayName: "Lurker Contain"
+    race: ZERG
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [7.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: LURKER
+          minCount: 3
+    strongCounters:
+      - units: [DISRUPTOR, OBSERVER]
+        action: "Disruptor Purification Nova clears burrowed Lurkers — Observer provides vision"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots are shredded by Lurker spines before reaching them"
+    detectionSignals:
+      - "3+ Lurkers after 7 minutes"
+      - "Lurker siege line established"
+
+  ZERG_HYDRA_LURKER:
+    displayName: "Hydra Lurker"
+    race: ZERG
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [7.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: HYDRALISK
+          minCount: 3
+        - type: LURKER
+          minCount: 2
+    strongCounters:
+      - units: [COLOSSUS, DISRUPTOR]
+        action: "Colossus splash devastates clumped Hydras — Disruptor clears Lurker positions"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers lose to Hydra DPS and cannot approach burrowed Lurkers"
+    detectionSignals:
+      - "3+ Hydralisks with 2+ Lurkers between 7-15 minutes"
+
+  ZERG_SWARM_HOST:
+    displayName: "Swarm Host"
+    race: ZERG
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [6.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: SWARM_HOST
+          minCount: 4
+    strongCounters:
+      - units: [PHOENIX, ORACLE]
+        action: "Phoenix picks off Locusts — Oracle Revelation reveals Swarm Host positions for attack"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots cannot reach burrowed Swarm Hosts and trade poorly vs Locusts"
+    detectionSignals:
+      - "4+ Swarm Hosts after 6 minutes"
+      - "Locust waves launched repeatedly"
+
+  ZERG_LING_BANE_MUTA:
+    displayName: "Ling Bane Muta"
+    race: ZERG
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [6.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ZERGLING
+          minCount: 6
+        - type: BANELING
+          minCount: 3
+        - type: MUTALISK
+          minCount: 2
+    strongCounters:
+      - units: [ARCHON, PHOENIX]
+        action: "Archon splash handles Ling/Bane — Phoenix hard-counters Mutalisks"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers get overwhelmed on the ground and lack burst vs Mutas"
+    detectionSignals:
+      - "6+ Zerglings with 3+ Banelings and 2+ Mutalisks"
+      - "Combined ground swarm with air harass"
+
   ZERG_BROOD_LORD:
     displayName: "Brood Lord Composition"
     race: ZERG
@@ -362,6 +908,92 @@ archetypes:
         action: "Stalkers are overwhelmed by Broodlings while Brood Lords siege"
     detectionSignals:
       - "2+ Brood Lords after 12 minutes"
+
+  ZERG_ULTRALISK:
+    displayName: "Ultralisk Composition"
+    race: ZERG
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [12.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ULTRALISK
+          minCount: 2
+    strongCounters:
+      - units: [IMMORTAL, VOID_RAY]
+        action: "Immortals hard-counter Ultralisk armour with Barrier — Void Rays melt them from air"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots are cleaved by Ultralisk splash and die in seconds"
+    detectionSignals:
+      - "2+ Ultralisks after 12 minutes"
+      - "Ultralisk Cavern completed"
+
+  ZERG_INFESTOR_BROOD:
+    displayName: "Infestor Brood Lord"
+    race: ZERG
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [14.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: BROOD_LORD
+          minCount: 2
+        - type: INFESTOR
+          minCount: 2
+    strongCounters:
+      - units: [TEMPEST, VOID_RAY]
+        action: "Tempests outrange Brood Lords — focus fire before Fungal Growth lands"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers get Fungal Growthd and overwhelmed by Broodlings"
+    detectionSignals:
+      - "2+ Brood Lords with 2+ Infestors after 14 minutes"
+      - "Fungal Growth combined with Brood Lord siege"
+
+  ZERG_VIPER_SUPPORT:
+    displayName: "Viper Support"
+    race: ZERG
+    phase: LATE
+    category: TECH
+    phaseWindow: [10.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: VIPER
+          minCount: 2
+    strongCounters:
+      - units: [PHOENIX, STALKER]
+        action: "Phoenix picks off Vipers — Stalkers spread to minimise Blinding Cloud impact"
+    weakCounters:
+      - units: [COLOSSUS]
+        action: "Colossus gets Abducted into Zerg army — instant death"
+    detectionSignals:
+      - "2+ Vipers after 10 minutes"
+      - "Abduct or Blinding Cloud used"
+
+  ZERG_CORRUPTOR_MASS:
+    displayName: "Mass Corruptor"
+    race: ZERG
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [10.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: CORRUPTOR
+          minCount: 4
+    strongCounters:
+      - units: [ARCHON, VOID_RAY]
+        action: "Archons have massive anti-air splash — Void Rays burn armoured Corruptors"
+    weakCounters:
+      - units: [COLOSSUS]
+        action: "Colossus cannot shoot air — army loses critical splash while Corruptors dominate"
+    detectionSignals:
+      - "4+ Corruptors after 10 minutes"
+      - "Corruptor flock controlling airspace"
 
   PROTOSS_STALKER_COLOSSUS:
     displayName: "Stalker Colossus"
@@ -407,6 +1039,142 @@ archetypes:
     detectionSignals:
       - "4+ Zealots with Archon between 6-15 minutes"
 
+  PROTOSS_BLINK_STALKER:
+    displayName: "Blink Stalker"
+    race: PROTOSS
+    phase: MID
+    category: TIMING
+    phaseWindow: [5.0, 10.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: STALKER
+          minCount: 6
+    strongCounters:
+      - units: [IMMORTAL, COLOSSUS]
+        action: "Immortals shred Stalker shields — Colossus splash punishes clumping"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots cannot catch Blink Stalkers and get kited to death"
+    detectionSignals:
+      - "6+ Stalkers between 5-10 minutes"
+      - "Blink research complete"
+
+  PROTOSS_IMMORTAL_PUSH:
+    displayName: "Immortal Push"
+    race: PROTOSS
+    phase: MID
+    category: TIMING
+    phaseWindow: [5.0, 10.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: IMMORTAL
+          minCount: 2
+        - type: SENTRY
+          minCount: 2
+    strongCounters:
+      - units: [VOID_RAY, PHOENIX]
+        action: "Air units bypass Force Fields and kite Immortals freely"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers get trapped by Force Fields and shredded by Immortal Barrier"
+    detectionSignals:
+      - "2+ Immortals with 2+ Sentries between 5-10 minutes"
+      - "Warp Prism delivering Immortals"
+
+  PROTOSS_PHOENIX_ADEPT:
+    displayName: "Phoenix Adept"
+    race: PROTOSS
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [5.0, 12.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: PHOENIX
+          minCount: 3
+        - type: ADEPT
+          minCount: 3
+    strongCounters:
+      - units: [STALKER, ARCHON]
+        action: "Stalkers shoot Phoenix — Archons tank Adept shade damage"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots are kited by Adepts and cannot touch Phoenix"
+    detectionSignals:
+      - "3+ Phoenix with 3+ Adepts between 5-12 minutes"
+      - "Phoenix lift with Adept shade combo"
+
+  PROTOSS_DISRUPTOR:
+    displayName: "Disruptor Composition"
+    race: PROTOSS
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [7.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: DISRUPTOR
+          minCount: 2
+        - type: STALKER
+          minCount: 3
+    strongCounters:
+      - units: [IMMORTAL, STALKER]
+        action: "Split micro to dodge Disruptor Novas — Immortals shred Disruptors directly"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots cannot dodge Purification Nova effectively and die in clusters"
+    detectionSignals:
+      - "2+ Disruptors with Stalkers after 7 minutes"
+      - "Purification Nova launched"
+
+  PROTOSS_STORM:
+    displayName: "Storm Composition"
+    race: PROTOSS
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [7.0, 15.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: HIGH_TEMPLAR
+          minCount: 2
+        - type: STALKER
+          minCount: 3
+    strongCounters:
+      - units: [GHOST, IMMORTAL]
+        action: "Ghost EMP removes Storm energy and shields — devastating counter to HT-based armies"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots clump and melt to Psionic Storm"
+    detectionSignals:
+      - "2+ High Templars with Stalkers after 7 minutes"
+      - "Psionic Storm research complete"
+
+  PROTOSS_WARP_PRISM_HARASS:
+    displayName: "Warp Prism Harass"
+    race: PROTOSS
+    phase: MID
+    category: HARASS
+    phaseWindow: [5.0, 12.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: WARP_PRISM
+          minCount: 1
+        - type: ZEALOT
+          minCount: 2
+    strongCounters:
+      - units: [STALKER, PHOENIX]
+        action: "Stalkers snipe Warp Prism — Phoenix lifts it before warping completes"
+    weakCounters:
+      - units: [PROBE]
+        action: "Workers cannot defend against warped-in units supported by Warp Prism"
+    detectionSignals:
+      - "Warp Prism with warp-ins between 5-12 minutes"
+      - "Warp Prism phasing near base"
+
   PROTOSS_CARRIER:
     displayName: "Carrier Composition"
     race: PROTOSS
@@ -426,3 +1194,93 @@ archetypes:
         action: "Stalkers trade poorly against massed Interceptors"
     detectionSignals:
       - "2+ Carriers after 12 minutes"
+
+  PROTOSS_TEMPEST_SIEGE:
+    displayName: "Tempest Siege"
+    race: PROTOSS
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [12.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: TEMPEST
+          minCount: 3
+    strongCounters:
+      - units: [VOID_RAY, PHOENIX]
+        action: "Void Rays close range and burn Tempests — Phoenix speed forces engagement"
+    weakCounters:
+      - units: [COLOSSUS]
+        action: "Colossus is outranged and slowly picked off by Tempest shots"
+    detectionSignals:
+      - "3+ Tempests after 12 minutes"
+      - "Tempest siege from maximum range"
+
+  PROTOSS_SKYTOSS:
+    displayName: "Sky Protoss"
+    race: PROTOSS
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [14.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: CARRIER
+          minCount: 2
+        - type: VOID_RAY
+          minCount: 2
+        - type: TEMPEST
+          minCount: 1
+    strongCounters:
+      - units: [TEMPEST, ARCHON]
+        action: "Tempests outrange other air — Archons provide massive anti-air splash damage"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers lack sustained DPS to trade into full sky army"
+    detectionSignals:
+      - "2+ Carriers with Void Rays and Tempest after 14 minutes"
+      - "Multiple Stargates producing fleet units"
+
+  PROTOSS_ARCHON_STORM:
+    displayName: "Archon Storm"
+    race: PROTOSS
+    phase: LATE
+    category: COMPOSITION
+    phaseWindow: [12.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ARCHON
+          minCount: 3
+        - type: HIGH_TEMPLAR
+          minCount: 2
+    strongCounters:
+      - units: [GHOST, IMMORTAL]
+        action: "Ghost EMP strips Archon shields and HT energy — Immortals shred Archons"
+    weakCounters:
+      - units: [ZEALOT]
+        action: "Zealots melt to Storm and Archon splash damage"
+    detectionSignals:
+      - "3+ Archons with 2+ High Templars after 12 minutes"
+      - "Psionic Storm supporting Archon front line"
+
+  PROTOSS_MOTHERSHIP_FLEET:
+    displayName: "Mothership Fleet"
+    race: PROTOSS
+    phase: LATE
+    category: TECH
+    phaseWindow: [14.0, 30.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: MOTHERSHIP
+          minCount: 1
+    strongCounters:
+      - units: [TEMPEST, VOID_RAY]
+        action: "Tempests outrange Mothership — focus fire it down before Mass Recall"
+    weakCounters:
+      - units: [STALKER]
+        action: "Stalkers struggle to break Mothership shields under Time Warp"
+    detectionSignals:
+      - "Mothership spotted after 14 minutes"
+      - "Fleet Beacon completed"
