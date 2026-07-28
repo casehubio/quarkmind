@@ -65,9 +65,15 @@ public class StrategyTaxonomy {
     }
 
     public CounterInfo countersFor(StrategyArchetype archetype) {
-        ArchetypeEntry entry = entries.get(archetype);
-        return entry != null ? entry.counterInfo() : null;
+        return countersFor(archetype, Race.PROTOSS);
     }
+
+    public CounterInfo countersFor(StrategyArchetype archetype, Race playerRace) {
+        ArchetypeEntry entry = entries.get(archetype);
+        if (entry == null) {return null;}
+        return entry.countersByRace().get(playerRace);
+    }
+
 
     public List<ArchetypeEntry> forPhase(GamePhase phase) {
         return entries.values().stream()
@@ -94,11 +100,11 @@ public class StrategyTaxonomy {
 
     @SuppressWarnings("unchecked")
     private ArchetypeEntry parseEntry(StrategyArchetype archetype, Map<String, Object> data) {
-        String displayName = (String) data.get("displayName");
-        Race race = Race.valueOf((String) data.get("race"));
-        GamePhase phase = GamePhase.valueOf((String) data.get("phase"));
-        ArchetypeCategory category = ArchetypeCategory.valueOf((String) data.get("category"));
-        boolean handAuthored = Boolean.TRUE.equals(data.get("handAuthored"));
+        String            displayName  = (String) data.get("displayName");
+        Race              race         = Race.valueOf((String) data.get("race"));
+        GamePhase         phase        = GamePhase.valueOf((String) data.get("phase"));
+        ArchetypeCategory category     = ArchetypeCategory.valueOf((String) data.get("category"));
+        boolean           handAuthored = Boolean.TRUE.equals(data.get("handAuthored"));
 
         if (race != archetype.race()) {
             throw new IllegalStateException(archetype + " YAML race " + race + " != enum race " + archetype.race());
@@ -112,20 +118,20 @@ public class StrategyTaxonomy {
 
         List<Number> windowList = (List<Number>) data.get("phaseWindow");
         double[] phaseWindow = windowList != null
-            ? new double[]{windowList.get(0).doubleValue(), windowList.get(1).doubleValue()}
-            : new double[]{0.0, 30.0};
+                               ? new double[]{windowList.get(0).doubleValue(), windowList.get(1).doubleValue()}
+                               : new double[]{0.0, 30.0};
         if (phaseWindow[0] > phaseWindow[1]) {
             throw new IllegalStateException(archetype + " invalid phaseWindow: start > end");
         }
 
-        List<SignatureSpec> signatureSpecs = parseSignature(archetype, data, phaseWindow);
-        CounterInfo counterInfo = parseCounters(data);
+        List<SignatureSpec>        signatureSpecs = parseSignature(archetype, data, phaseWindow);
+        EnumMap<Race, CounterInfo> countersByRace = parseMatchupCounters(archetype, data);
         List<String> detectionSignals = data.containsKey("detectionSignals")
-            ? (List<String>) data.get("detectionSignals")
-            : List.of();
+                                        ? (List<String>) data.get("detectionSignals")
+                                        : List.of();
 
         return new ArchetypeEntry(archetype, displayName, race, phase, category,
-            phaseWindow, handAuthored, signatureSpecs, counterInfo, detectionSignals);
+                                  phaseWindow, handAuthored, signatureSpecs, countersByRace, detectionSignals);
     }
 
     @SuppressWarnings("unchecked")
@@ -148,10 +154,25 @@ public class StrategyTaxonomy {
     }
 
     @SuppressWarnings("unchecked")
-    private CounterInfo parseCounters(Map<String, Object> data) {
-        List<CounterEntry> strong = parseCounterList((List<Map<String, Object>>) data.get("strongCounters"));
-        List<CounterEntry> weak = parseCounterList((List<Map<String, Object>>) data.get("weakCounters"));
-        return new CounterInfo(strong, weak);
+    private EnumMap<Race, CounterInfo> parseMatchupCounters(StrategyArchetype archetype, Map<String, Object> data) {
+        Map<String, Map<String, Object>> counters = (Map<String, Map<String, Object>>) data.get("counters");
+        if (counters == null) {
+            throw new IllegalStateException(archetype + " missing 'counters' section in YAML");
+        }
+        EnumMap<Race, CounterInfo> result = new EnumMap<>(Race.class);
+        for (var raceEntry : counters.entrySet()) {
+            Race                playerRace = Race.valueOf(raceEntry.getKey());
+            Map<String, Object> matchup    = raceEntry.getValue();
+            List<CounterEntry>  strong     = parseCounterList((List<Map<String, Object>>) matchup.get("strong"));
+            List<CounterEntry>  weak       = parseCounterList((List<Map<String, Object>>) matchup.get("weak"));
+            result.put(playerRace, new CounterInfo(strong, weak));
+        }
+        for (Race r : Race.values()) {
+            if (!result.containsKey(r)) {
+                throw new IllegalStateException(archetype + " missing counters for player race " + r);
+            }
+        }
+        return result;
     }
 
     @SuppressWarnings("unchecked")
@@ -178,7 +199,7 @@ public class StrategyTaxonomy {
             double[] phaseWindow,
             boolean handAuthored,
             List<SignatureSpec> signatureSpecs,
-            CounterInfo counterInfo,
+            EnumMap<Race, CounterInfo> countersByRace,
             List<String> detectionSignals
     ) {
         public ArchetypeEntry {

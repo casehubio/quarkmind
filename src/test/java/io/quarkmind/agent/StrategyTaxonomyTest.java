@@ -53,6 +53,21 @@ class StrategyTaxonomyTest {
 
     @ParameterizedTest
     @EnumSource(StrategyArchetype.class)
+    void everyArchetype_hasCountersForAllThreeRaces(StrategyArchetype arch) {
+        for (Race playerRace : Race.values()) {
+            CounterInfo counters = taxonomy.countersFor(arch, playerRace);
+            assertThat(counters)
+                    .as(arch + " missing counters for player race " + playerRace)
+                    .isNotNull();
+            assertThat(counters.strongCounters())
+                    .as(arch + " has no strong counters for " + playerRace)
+                    .isNotEmpty();
+        }
+    }
+
+
+    @ParameterizedTest
+    @EnumSource(StrategyArchetype.class)
     void everyArchetype_hasDetectionSignals(StrategyArchetype arch) {
         assertThat(taxonomy.lookup(arch).detectionSignals()).isNotEmpty();
     }
@@ -81,6 +96,32 @@ class StrategyTaxonomyTest {
         assertThat(counters.strongCounters()).isNotEmpty();
         assertThat(counters.strongCounters().get(0).action()).contains("Stalker");
     }
+
+    @Test
+    void countersFor_marineRush_terranPerspective_hasTerranUnits() {
+        var counters = taxonomy.countersFor(StrategyArchetype.TERRAN_MARINE_RUSH, Race.TERRAN);
+        assertThat(counters).isNotNull();
+        assertThat(counters.strongCounters()).isNotEmpty();
+        assertThat(counters.strongCounters().get(0).units())
+                .allSatisfy(u -> assertThat(u.race()).isEqualTo(Race.TERRAN));
+    }
+
+    @Test
+    void countersFor_marineRush_zergPerspective_hasZergUnits() {
+        var counters = taxonomy.countersFor(StrategyArchetype.TERRAN_MARINE_RUSH, Race.ZERG);
+        assertThat(counters).isNotNull();
+        assertThat(counters.strongCounters()).isNotEmpty();
+        assertThat(counters.strongCounters().get(0).units())
+                .allSatisfy(u -> assertThat(u.race()).isEqualTo(Race.ZERG));
+    }
+
+    @Test
+    void countersFor_noRace_defaultsToProtoss() {
+        var defaultCounters = taxonomy.countersFor(StrategyArchetype.TERRAN_MARINE_RUSH);
+        var protossCounters = taxonomy.countersFor(StrategyArchetype.TERRAN_MARINE_RUSH, Race.PROTOSS);
+        assertThat(defaultCounters).isEqualTo(protossCounters);
+    }
+
 
     @Test
     void activeSignatures_earlyGame_returnsNonHandAuthoredOnly() {
