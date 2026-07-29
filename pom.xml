@@ -106,12 +106,12 @@
             <groupId>io.casehub</groupId>
             <artifactId>casehub-engine-ledger</artifactId>
         </dependency>
-        <!-- casehub-engine-blackboard: WritablePanelImpl, CaseContextImpl — CDI beans for
-             the blackboard layer. Engine runtime satisfies the SPI dependencies (EventLogRepository,
+        <!-- casehub-engine-planning: WritablePanelImpl, CaseContextImpl — CDI beans for
+             the planning layer. Engine runtime satisfies the SPI dependencies (EventLogRepository,
              JobScheduler etc.) that previously blocked this dependency. -->
         <dependency>
             <groupId>io.casehub</groupId>
-            <artifactId>casehub-engine-blackboard</artifactId>
+            <artifactId>casehub-engine-planning</artifactId>
         </dependency>
         <!-- casehub-neocortex-memory-cbr-inmem: in-memory CbrCaseMemoryStore for CBR testing and mock profiles -->
         <dependency>
