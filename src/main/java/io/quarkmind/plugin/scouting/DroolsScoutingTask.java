@@ -31,6 +31,7 @@ import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.PhaseResolver;
+import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.Unit;
@@ -56,7 +57,7 @@ import java.util.stream.Collectors;
 @CaseType("starcraft-game")
 public class DroolsScoutingTask implements ScoutingTask {
 
-    static final double FRAMES_PER_SECOND = 22.4;
+    static final double FRAMES_PER_SECOND = SC2Data.GAME_LOOPS_PER_SECOND;
     public static final int SCOUT_DELAY_TICKS = 20;
     static final EventLevel LEVEL_1 = new EventLevel("intel", 1);
 

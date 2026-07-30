@@ -2,6 +2,7 @@ package io.quarkmind.plugin.scouting;
 
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.mock.IEM10JsonSimulatedGame;
@@ -41,7 +42,7 @@ class PatternClassificationCalibrationTest {
     private static final double GAME_TIME_3MIN    = 3.0;
     private static final double GAME_TIME_8MIN    = 8.0;
     private static final double GAME_TIME_15MIN   = 15.0;
-    private static final double FRAMES_PER_SECOND = 22.4;
+    private static final double FRAMES_PER_SECOND = SC2Data.GAME_LOOPS_PER_SECOND;
 
     // --- Ground truth unit tests (no CDI needed, but run inside @QuarkusTest) ---
 
