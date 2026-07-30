@@ -24,7 +24,7 @@ class StateBasedPhaseResolverTest {
     }
 
     static long minutesToFrames(double minutes) {
-        return (long) (minutes * 60 * SC2Data.GAME_LOOPS_PER_SECOND);
+        return Math.round(minutes * 60 * SC2Data.GAME_LOOPS_PER_SECOND);
     }
 
     // --- EARLY ---

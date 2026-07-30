@@ -29,6 +29,7 @@ import io.quarkmind.agent.plugin.ScoutingTask;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.PatternAssessment;
+import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.PhaseResolver;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.StrategyArchetype;
@@ -277,8 +278,9 @@ public class DroolsScoutingTask implements ScoutingTask {
 
         // --- Pattern classification ---
         if (needsCep) {
-            double gameTimeMin = gameTimeMs / 60000.0;
-            ctx.set(QuarkMindCaseFile.GAME_PHASE, phaseResolver.resolve(gameTimeMin).name());
+            GameState gameState = ctx.getAs(QuarkMindCaseFile.GAME_STATE, GameState.class);
+            double gameTimeMin = gameState.gameTimeMinutes();
+            ctx.set(QuarkMindCaseFile.GAME_PHASE, phaseResolver.resolve(gameState).name());
             PatternClassificationRuleUnit patternData = sessionManager.buildPatternRuleUnit(gameTimeMin);
             taxonomy.activeSignatures(gameTimeMin).forEach(patternData.getSignatureStore()::add);
             try (RuleUnitInstance<PatternClassificationRuleUnit> pInstance =

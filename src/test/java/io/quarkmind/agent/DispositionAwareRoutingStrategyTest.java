@@ -100,7 +100,7 @@ class DispositionAwareRoutingStrategyTest {
 
     @Test
     void conservativePreferredWhenEnemyAggressive() {
-        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of());
+        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of(), null, null);
         RoutingResult result = strategy.select(ctx, List.of(boldAdvisor(), conservativeAdvisor()));
         var selected = assertInstanceOf(RoutingResult.Selected.class, result);
         assertEquals("conservative-advisor", selected.single().executorId());
@@ -108,7 +108,7 @@ class DispositionAwareRoutingStrategyTest {
 
     @Test
     void boldPreferredWhenEnemyEconomic() {
-        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, economicEnemyContext(), "default", List.of());
+        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, economicEnemyContext(), "default", List.of(), null, null);
         RoutingResult result = strategy.select(ctx, List.of(boldAdvisor(), conservativeAdvisor()));
         var selected = assertInstanceOf(RoutingResult.Selected.class, result);
         assertEquals("bold-advisor", selected.single().executorId());
@@ -116,7 +116,7 @@ class DispositionAwareRoutingStrategyTest {
 
     @Test
     void strictPreferredInEarlyGame() {
-        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, earlyGameContext(), "default", List.of());
+        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, earlyGameContext(), "default", List.of(), null, null);
         RoutingResult result = strategy.select(ctx, List.of(boldAdvisor(), conservativeAdvisor()));
         var selected = assertInstanceOf(RoutingResult.Selected.class, result);
         assertEquals("conservative-advisor", selected.single().executorId());
@@ -124,7 +124,7 @@ class DispositionAwareRoutingStrategyTest {
 
     @Test
     void flexiblePreferredInLateGame() {
-        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, lateGameContext(), "default", List.of());
+        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, lateGameContext(), "default", List.of(), null, null);
         RoutingResult result = strategy.select(ctx, List.of(boldAdvisor(), conservativeAdvisor()));
         var selected = assertInstanceOf(RoutingResult.Selected.class, result);
         assertEquals("bold-advisor", selected.single().executorId());
@@ -138,7 +138,7 @@ class DispositionAwareRoutingStrategyTest {
         scoreSource.setCapabilityScore("conservative-advisor", CAPABILITY, 0.72);
         scoreSource.setDecisionCount("conservative-advisor", CAPABILITY, 20);
         var highTrustStrategy = new DispositionAwareRoutingStrategy(classifier, stubPolicyProvider(), scoreSource);
-        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of());
+        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of(), null, null);
         RoutingResult result = highTrustStrategy.select(ctx, List.of(boldAdvisor(), conservativeAdvisor()));
         var selected = assertInstanceOf(RoutingResult.Selected.class, result);
         assertEquals("bold-advisor", selected.single().executorId());
@@ -152,7 +152,7 @@ class DispositionAwareRoutingStrategyTest {
         scoreSource.setCapabilityScore("conservative-advisor", CAPABILITY, 0.85);
         scoreSource.setDecisionCount("conservative-advisor", CAPABILITY, 20);
         var neutralStrategy = new DispositionAwareRoutingStrategy(classifier, stubPolicyProvider(), scoreSource);
-        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, MAPPER.createObjectNode(), "default", List.of());
+        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, MAPPER.createObjectNode(), "default", List.of(), null, null);
         RoutingResult result = neutralStrategy.select(ctx, List.of(boldAdvisor(), conservativeAdvisor()));
         var selected = assertInstanceOf(RoutingResult.Selected.class, result);
         assertEquals("bold-advisor", selected.single().executorId());
@@ -160,7 +160,7 @@ class DispositionAwareRoutingStrategyTest {
 
     @Test
     void emptyCandidateListReturnsUnresolvable() {
-        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of());
+        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of(), null, null);
         RoutingResult result = strategy.select(ctx, List.of());
         assertInstanceOf(RoutingResult.Unresolvable.class, result);
     }
@@ -169,7 +169,7 @@ class DispositionAwareRoutingStrategyTest {
     void nullDescriptorTreatedAsBootstrap() {
         var noDescriptor = new AgentCandidate("no-descriptor", Set.of(CAPABILITY), 0, AgentHealth.READY, null, new MatchDegree.None());
         var bootstrapStrategy = new DispositionAwareRoutingStrategy(classifier, stubPolicyProvider(), new StubTrustScoreSource());
-        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of());
+        var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of(), null, null);
         RoutingResult result = bootstrapStrategy.select(ctx, List.of(noDescriptor));
         var selected = assertInstanceOf(RoutingResult.Selected.class, result);
         assertEquals("no-descriptor", selected.single().executorId());

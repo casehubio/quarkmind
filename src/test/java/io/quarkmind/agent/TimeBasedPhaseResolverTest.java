@@ -21,7 +21,7 @@ class TimeBasedPhaseResolverTest {
             "12.0, LATE", "20.0, LATE"
     })
     void resolve_mapsTimeToPhase(double minutes, GamePhase expected) {
-        long frame = (long) (minutes * 60 * SC2Data.GAME_LOOPS_PER_SECOND);
+        long frame = Math.round(minutes * 60 * SC2Data.GAME_LOOPS_PER_SECOND);
         GameState state = new GameState(0, 0, 0, 0,
                                         List.of(), List.of(), List.of(), List.of(), List.of(),
                                         List.of(), List.of(), frame, null);
