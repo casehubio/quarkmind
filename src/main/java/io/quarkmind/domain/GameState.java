@@ -26,4 +26,8 @@ public record GameState(
         geysers          = List.copyOf(geysers);
         mineralPatches   = List.copyOf(mineralPatches);
     }
+
+    public double gameTimeMinutes() {
+        return gameFrame() / SC2Data.GAME_LOOPS_PER_SECOND / 60.0;
+    }
 }

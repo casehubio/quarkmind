@@ -15,6 +15,8 @@ public final class QuarkMindCaseFile {
     public static final String ENEMY_UNITS     = "game.intel.enemy.units";
     public static final String GAME_FRAME      = "game.frame";
     public static final String READY           = "game.ready";
+    public static final String GAME_STATE      = "game.state";
+
 
     // Per-tick resource budget — written by GameStateTranslator, consumed by plugins
     public static final String RESOURCE_BUDGET = "agent.resources.budget";
@@ -48,6 +50,7 @@ public final class QuarkMindCaseFile {
     public static final List<String> ALL_KEYS = List.of(
             MINERALS, VESPENE, SUPPLY_USED, SUPPLY_CAP,
             WORKERS, ARMY, MY_BUILDINGS, GEYSERS, ENEMY_UNITS, GAME_FRAME, READY,
+            GAME_STATE,
             RESOURCE_BUDGET, STRATEGY, CRISIS, ENEMY_ARMY_SIZE,
             ENEMY_BUILD_ORDER, TIMING_ATTACK_INCOMING, ENEMY_POSTURE, MOMENTS_LATEST, GAME_PHASE,
             STRATEGY_SELECTED_ID, STRATEGY_ROUTED_CONTEXT, STRATEGY_ROUTED_ARCHETYPE,

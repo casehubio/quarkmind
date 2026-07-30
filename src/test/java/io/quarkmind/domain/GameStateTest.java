@@ -32,4 +32,13 @@ class GameStateTest {
         long probeCount = state.myUnits().stream().filter(u -> u.type() == UnitType.PROBE).count();
         assertThat(probeCount).isEqualTo(2);
     }
+
+    @Test
+    void gameTimeMinutes_convertsFrameToMinutes() {
+        long frame = (long) (5.0 * 60 * SC2Data.GAME_LOOPS_PER_SECOND);
+        var state = new GameState(0, 0, 0, 0,
+                                  List.of(), List.of(), List.of(), List.of(), List.of(),
+                                  List.of(), List.of(), frame, null);
+        assertThat(state.gameTimeMinutes()).isCloseTo(5.0, org.assertj.core.data.Offset.offset(0.01));
+    }
 }

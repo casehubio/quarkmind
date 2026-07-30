@@ -1,6 +1,7 @@
 package io.quarkmind.agent;
 
 import io.casehub.eidos.api.AgentDisposition;
+import io.casehub.eidos.api.DispositionAxis;
 
 /**
  * Maps game context (enemy posture, game phase) to preferred disposition axis values.
@@ -39,9 +40,13 @@ public record DispositionPreference(String preferredRiskAppetite, String preferr
      * @return multiplier in [0.8, 1.2]
      */
     public double computeMultiplier(final AgentDisposition disposition) {
+        if (disposition == null) {
+            return 1.0;
+        }
+
         double adjustment = 0.0;
-        adjustment += axisContribution(preferredRiskAppetite, disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RISK_APPETITE));
-        adjustment += axisContribution(preferredRuleFollowing, disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RULE_FOLLOWING));
+        adjustment += axisContribution(preferredRiskAppetite, disposition.primaryTerm(DispositionAxis.RISK_APPETITE));
+        adjustment += axisContribution(preferredRuleFollowing, disposition.primaryTerm(DispositionAxis.RULE_FOLLOWING));
         return 1.0 + adjustment;}
 
     /**

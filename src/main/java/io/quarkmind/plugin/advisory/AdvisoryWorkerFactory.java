@@ -7,6 +7,7 @@ import dev.langchain4j.model.chat.request.ChatRequest;
 import dev.langchain4j.model.chat.response.ChatResponse;
 import io.casehub.eidos.api.AgentDescriptor;
 import io.casehub.eidos.api.AgentDisposition;
+import io.casehub.eidos.api.DispositionAxis;
 import io.casehub.worker.api.Worker;
 import io.casehub.worker.api.WorkerFunction;
 import io.casehub.worker.api.WorkerResult;
@@ -178,11 +179,11 @@ public final class AdvisoryWorkerFactory {
         sb.append("Your name is: ").append(descriptor.name()).append("\n\n");
         sb.append("Behavioural disposition:\n");
         if (disposition != null) {
-            appendTrait(sb, "Risk appetite", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RISK_APPETITE));
-            appendTrait(sb, "Rule following", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RULE_FOLLOWING));
-            appendTrait(sb, "Social orientation", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.SOCIAL_ORIENTATION));
-            appendTrait(sb, "Autonomy", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.AUTONOMY));
-            appendTrait(sb, "Conflict mode", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.CONFLICT_MODE));
+            appendTrait(sb, "Risk appetite", disposition.primaryTerm(DispositionAxis.RISK_APPETITE));
+            appendTrait(sb, "Rule following", disposition.primaryTerm(DispositionAxis.RULE_FOLLOWING));
+            appendTrait(sb, "Social orientation", disposition.primaryTerm(DispositionAxis.SOCIAL_ORIENTATION));
+            appendTrait(sb, "Autonomy", disposition.primaryTerm(DispositionAxis.AUTONOMY));
+            appendTrait(sb, "Conflict mode", disposition.primaryTerm(DispositionAxis.CONFLICT_MODE));
         }
         sb.append("\nIntel types you may receive:\n");
         sb.append("- PATTERN_ASSESSMENT: enemy strategy classification with archetype name ");
