@@ -39,15 +39,10 @@ public record DispositionPreference(String preferredRiskAppetite, String preferr
      * @return multiplier in [0.8, 1.2]
      */
     public double computeMultiplier(final AgentDisposition disposition) {
-        if (disposition == null) {
-            return 1.0;
-        }
-
         double adjustment = 0.0;
-        adjustment += axisContribution(preferredRiskAppetite, disposition.riskAppetite());
-        adjustment += axisContribution(preferredRuleFollowing, disposition.ruleFollowing());
-        return 1.0 + adjustment;
-    }
+        adjustment += axisContribution(preferredRiskAppetite, disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RISK_APPETITE));
+        adjustment += axisContribution(preferredRuleFollowing, disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RULE_FOLLOWING));
+        return 1.0 + adjustment;}
 
     /**
      * Returns +0.1 if the axis value matches the preference, -0.1 if it mismatches,

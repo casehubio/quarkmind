@@ -193,11 +193,11 @@ public final class CommentaryWorkerFactory {
         sb.append("Your name is: ").append(descriptor.name()).append("\n\n");
         sb.append("Behavioural disposition:\n");
         if (disposition != null) {
-            appendTrait(sb, "Risk appetite", disposition.riskAppetite());
-            appendTrait(sb, "Rule following", disposition.ruleFollowing());
-            appendTrait(sb, "Social orientation", disposition.socialOrient());
-            appendTrait(sb, "Autonomy", disposition.autonomy());
-            appendTrait(sb, "Conflict mode", disposition.conflictMode());
+            appendTrait(sb, "Risk appetite", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RISK_APPETITE));
+            appendTrait(sb, "Rule following", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RULE_FOLLOWING));
+            appendTrait(sb, "Social orientation", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.SOCIAL_ORIENTATION));
+            appendTrait(sb, "Autonomy", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.AUTONOMY));
+            appendTrait(sb, "Conflict mode", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.CONFLICT_MODE));
         }
         sb.append("\nIntel types you may receive:\n");
         sb.append("- PATTERN_ASSESSMENT: enemy strategy classification with archetype name ");
@@ -218,11 +218,11 @@ public final class CommentaryWorkerFactory {
         sb.append("Your name is: ").append(descriptor.name()).append("\n\n");
         sb.append("Behavioural disposition:\n");
         if (disposition != null) {
-            appendTrait(sb, "Risk appetite", disposition.riskAppetite());
-            appendTrait(sb, "Rule following", disposition.ruleFollowing());
-            appendTrait(sb, "Social orientation", disposition.socialOrient());
-            appendTrait(sb, "Autonomy", disposition.autonomy());
-            appendTrait(sb, "Conflict mode", disposition.conflictMode());
+            appendTrait(sb, "Risk appetite", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RISK_APPETITE));
+            appendTrait(sb, "Rule following", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RULE_FOLLOWING));
+            appendTrait(sb, "Social orientation", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.SOCIAL_ORIENTATION));
+            appendTrait(sb, "Autonomy", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.AUTONOMY));
+            appendTrait(sb, "Conflict mode", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.CONFLICT_MODE));
         }
         sb.append("\nIntel types you may receive:\n");
         sb.append("- PATTERN_ASSESSMENT: enemy strategy classification with archetype name ");

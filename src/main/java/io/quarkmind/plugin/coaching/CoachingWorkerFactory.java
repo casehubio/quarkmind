@@ -98,7 +98,7 @@ public final class CoachingWorkerFactory {
     static String buildSystemPrompt(AgentDescriptor descriptor, boolean crisisOverride) {
         AgentDisposition disposition = descriptor.disposition();
         boolean isDirective = crisisOverride
-                              || (disposition != null && "bold".equals(disposition.riskAppetite()));
+                              || (disposition != null && "bold".equals(disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RISK_APPETITE)));
 
         StringBuilder sb = new StringBuilder();
         sb.append("You are a StarCraft II coach providing real-time advice to a human player.\n\n");
@@ -113,9 +113,9 @@ public final class CoachingWorkerFactory {
 
         sb.append("Behavioural disposition:\n");
         if (disposition != null) {
-            appendTrait(sb, "Risk appetite", disposition.riskAppetite());
-            appendTrait(sb, "Rule following", disposition.ruleFollowing());
-            appendTrait(sb, "Social orientation", disposition.socialOrient());
+            appendTrait(sb, "Risk appetite", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RISK_APPETITE));
+            appendTrait(sb, "Rule following", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.RULE_FOLLOWING));
+            appendTrait(sb, "Social orientation", disposition.primaryTerm(io.casehub.eidos.api.DispositionAxis.SOCIAL_ORIENTATION));
         }
 
         sb.append("\nRespond with JSON in this exact format:\n");
