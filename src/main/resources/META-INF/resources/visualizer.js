@@ -30,6 +30,27 @@ let tTheta = camTheta, tPhi = camPhi, tDist = camDist;
 let renderer, scene, camera;
 let wsConnected = false;
 let wbWsConnected = false;
+
+var selectionRings = new Map();
+var selection = {
+  type: null, tag: null, unitType: null, isEnemy: null, source: null,
+  _listeners: [], _dispatching: false,
+  subscribe: function(fn) {
+    this._listeners.push(fn);
+    var self = this;
+    return function() { self._listeners = self._listeners.filter(function(l) { return l !== fn; }); };
+  },
+  set: function(sel) {
+    if (this._dispatching) return;
+    Object.assign(this, sel);
+    this._dispatching = true;
+    for (var i = 0; i < this._listeners.length; i++) {
+      try { this._listeners[i](this); } catch (e) { console.error('selection listener error', e); }
+    }
+    this._dispatching = false;
+  },
+  clear: function() { this.set({ type: null, tag: null, unitType: null, isEnemy: null, source: null }); }
+};
 let lastState   = null;
 let group2d, group3d;
 
@@ -404,7 +425,60 @@ window.__test = {
   workbenchPage:      () => { var t = document.querySelector('.wb-tab.active'); return t ? t.dataset.page : null; },
   unitDetailName:     () => document.getElementById('up-name')?.textContent || '',
   workbenchPatternCount: () => document.querySelectorAll('#page-pattern .assessment-item').length,
+  selectionRingCount: () => selectionRings.size,
+  selectionState:     () => ({ type: selection.type, tag: selection.tag, unitType: selection.unitType, isEnemy: selection.isEnemy, source: selection.source }),
 };
+
+// ── Selection rings ─────────────────────────────────────────────────────────
+
+function createRing(tag, position, color) {
+  var s = typeof MARKER_SCALE !== 'undefined' ? MARKER_SCALE : 0.4;
+  var geo = new THREE.RingGeometry(s * 0.6, s * 0.8, 32);
+  var mat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
+  var ring = new THREE.Mesh(geo, mat);
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(position.x, 0.05, position.z);
+  scene.add(ring);
+  selectionRings.set(tag, ring);
+}
+
+function clearRings() {
+  selectionRings.forEach(function(ring) { scene.remove(ring); ring.geometry.dispose(); ring.material.dispose(); });
+  selectionRings.clear();
+}
+
+function updateRingPulse() {
+  if (selectionRings.size === 0) return;
+  var t = performance.now() / 1000;
+  var opacity = 0.3 + 0.5 * (0.5 + 0.5 * Math.sin(t * Math.PI * 2));
+  selectionRings.forEach(function(ring) { ring.material.opacity = opacity; });
+}
+
+function syncRingPositions() {
+  selectionRings.forEach(function(ring, tag) {
+    var sp = unitSprites.get(tag) || enemySprites.get(tag);
+    if (sp) { ring.position.x = sp.position.x; ring.position.z = sp.position.z; }
+    else { scene.remove(ring); ring.geometry.dispose(); ring.material.dispose(); selectionRings.delete(tag); }
+  });
+  if (selection.type === 'unit' && selection.tag != null && !selectionRings.has(selection.tag)) {
+    selection.clear();
+  }
+}
+
+selection.subscribe(function(sel) {
+  clearRings();
+  if (!sel.type) return;
+  if (sel.type === 'unit' || sel.type === 'building') {
+    var sp = unitSprites.get(sel.tag) || enemySprites.get(sel.tag) || buildingMeshes.get(sel.tag) || enemyBuildingMeshes.get(sel.tag);
+    if (sp) createRing(sel.tag, sp.position, sel.isEnemy ? 0xff4444 : 0x44ff44);
+  } else if (sel.type === 'unitType') {
+    [unitSprites, enemySprites].forEach(function(map) {
+      map.forEach(function(sp, tag) {
+        if (sp.userData.unitType === sel.unitType) createRing(tag, sp.position, sp.userData.isEnemy ? 0xff4444 : 0x44ff44);
+      });
+    });
+  }
+});
 
 // ── Unit inspect panel ──────────────────────────────────────────────────────
 const raycaster = new THREE.Raycaster();
@@ -451,17 +525,20 @@ function setupInspectPanel() {
     if (hits.length > 0) {
       var obj = hits[0].object;
       if (obj.userData.buildingTag !== undefined) {
+        selection.set({ type: 'building', tag: obj.userData.buildingTag, isEnemy: obj.userData.isEnemy, source: 'canvas' });
         showBuildingPanelAsync(obj.userData.buildingTag, obj.userData.isEnemy);
       } else {
+        selection.set({ type: 'unit', tag: obj.userData.unitTag, unitType: obj.userData.unitType, isEnemy: obj.userData.isEnemy, source: 'canvas' });
         showUnitPanel(obj.userData.unitTag, obj.userData.isEnemy);
       }
     } else {
+      selection.clear();
       hideUnitPanel();
     }
   });
 
   window.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') hideUnitPanel();
+    if (e.key === 'Escape') { selection.clear(); hideUnitPanel(); }
   });
 }
 
@@ -719,6 +796,8 @@ function animate() {
   requestAnimationFrame(animate);
   smoothCamera();
   updateSpriteDirs();
+  updateRingPulse();
+  syncRingPositions();
   renderer.render(scene, camera);
 }
 
