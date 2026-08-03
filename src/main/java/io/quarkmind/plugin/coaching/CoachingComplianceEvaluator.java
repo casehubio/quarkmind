@@ -15,6 +15,9 @@ public class CoachingComplianceEvaluator {
     private final CoachingEffectivenessTrustRecorder                recorder;
     private final LocationResolver                                  locationResolver;
     private final int                                               autoExpireFrames;
+    @jakarta.inject.Inject
+                  jakarta.enterprise.event.Event<CoachingComplianceResolved> complianceResolvedEvent;
+
 
     @Inject
     CoachingComplianceEvaluator(CoachingChannelBroker broker,
@@ -51,6 +54,7 @@ public class CoachingComplianceEvaluator {
         var iterator = commitments.entrySet().iterator();
         while (iterator.hasNext()) {
             var entry      = iterator.next();
+            var domain     = entry.getKey();
             var commitment = entry.getValue();
             var advice     = commitment.advice();
 
@@ -60,6 +64,7 @@ public class CoachingComplianceEvaluator {
             if (!advice.isVerifiable()) {
                 if (currentFrame >= windowEnd) {
                     recorder.record(commitment.correlationId(), "NEUTRAL", advice);
+                    fireComplianceResolved(currentFrame, domain, "NEUTRAL");
                     iterator.remove();
                 }
                 continue;
@@ -68,9 +73,11 @@ public class CoachingComplianceEvaluator {
             if (currentFrame >= windowEnd) {
                 if (advice.verification().isSatisfied(state, locationResolver)) {
                     recorder.record(commitment.correlationId(), "ENDORSED", advice);
+                    fireComplianceResolved(currentFrame, domain, "ENDORSED");
                     iterator.remove();
                 } else if (currentFrame >= expireEnd) {
                     recorder.record(commitment.correlationId(), "CHALLENGED", advice);
+                    fireComplianceResolved(currentFrame, domain, "CHALLENGED");
                     iterator.remove();
                 }
             }
@@ -82,4 +89,11 @@ public class CoachingComplianceEvaluator {
                                     recorder.record(commitment.correlationId(), "NEUTRAL", commitment.advice()));
         commitments.clear();
     }
+
+    private void fireComplianceResolved(long frame, CoachingDomain domain, String status) {
+        if (complianceResolvedEvent != null) {
+            complianceResolvedEvent.fire(new CoachingComplianceResolved(frame, domain, status));
+        }
+    }
+
 }

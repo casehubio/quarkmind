@@ -21,6 +21,7 @@ import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.StrategyTaxonomy;
+import io.quarkmind.agent.plugin.PatternAssessmentPublished;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
@@ -73,6 +74,9 @@ public class DroolsScoutingTask implements ScoutingTask {
 
     @Inject Event<PluginDecisionEvent> decisionEvents;
     @Inject Event<EnemyPostureClassifiedEvent> postureClassified;
+    @Inject
+            Event<PatternAssessmentPublished>  patternAssessmentPublished;
+
     @Inject GameSession gameSession;
 
     @Inject ScoutingIntelBroker broker;
@@ -355,6 +359,9 @@ public class DroolsScoutingTask implements ScoutingTask {
         }
         broker.level1Bus().publish(new LevelEvent<>(payload, lastFrame, LEVEL_1));
         dispatchToAdvisory(payload);
+        if (payload instanceof PatternAssessmentPayload pa && patternAssessmentPublished != null) {
+            patternAssessmentPublished.fire(new PatternAssessmentPublished(pa.assessments()));
+        }
     }
 
     private void dispatchToAdvisory(ScoutingIntelPayload payload) {

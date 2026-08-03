@@ -56,6 +56,9 @@ public class SC2StrategyRouterTask implements TaskDefinition {
     private final SC2ImplementationRoutingStrategy routingStrategy;
 
     private volatile String lastSelectedId = FALLBACK;
+    @jakarta.inject.Inject
+                     jakarta.enterprise.event.Event<StrategySelectionPublished> strategySelectionEvent;
+
 
     @Inject
     public SC2StrategyRouterTask(
@@ -188,6 +191,9 @@ public class SC2StrategyRouterTask implements TaskDefinition {
         ctx.set(QuarkMindCaseFile.STRATEGY_ROUTED_CONFIDENCE, confidence);
         ctx.set(QuarkMindCaseFile.STRATEGY_PIVOT_COUNT, pivotCount + 1);
         lastSelectedId = winner;
+        if (strategySelectionEvent != null) {
+            strategySelectionEvent.fire(new StrategySelectionPublished(winner, archetype, confidence, pivotCount + 1));
+        }
 
         log.infof("[CBR-ROUTE] %s -> %s (archetype=%s confidence=%.2f experiences=%d pivot=%d)",
                 existingContext.isEmpty() ? "initial" : "pivot",
