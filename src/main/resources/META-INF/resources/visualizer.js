@@ -29,6 +29,7 @@ let tTheta = camTheta, tPhi = camPhi, tDist = camDist;
 
 let renderer, scene, camera;
 let wsConnected = false;
+let wbWsConnected = false;
 let lastState   = null;
 let group2d, group3d;
 
@@ -389,7 +390,7 @@ window.__test = {
 
   unitHasTag:         (tag) => unitSprites.has(tag),
   buildingHasTag:     (tag) => buildingMeshes.has(tag),
-  panelVisible:       () => document.getElementById('unit-panel')?.classList.contains('visible') ?? false,
+  panelVisible:       () => !!(document.getElementById('up-name')?.textContent),
   panelName:          () => document.getElementById('up-name')?.textContent ?? '',
   panelTeam:          () => document.getElementById('up-team')?.textContent ?? '',
   panelHpText:        () => document.getElementById('up-hp-txt')?.textContent ?? '',
@@ -400,6 +401,9 @@ window.__test = {
   },
   cameraMode:         () => cameraMode,
   enemyLayerVisible:  () => enemyVisible,
+  workbenchPage:      () => { var t = document.querySelector('.wb-tab.active'); return t ? t.dataset.page : null; },
+  unitDetailName:     () => document.getElementById('up-name')?.textContent || '',
+  workbenchPatternCount: () => document.querySelectorAll('#page-pattern .assessment-item').length,
 };
 
 // ── Unit inspect panel ──────────────────────────────────────────────────────
@@ -407,66 +411,45 @@ const raycaster = new THREE.Raycaster();
 const ndcMouse  = new THREE.Vector2();
 
 function setupInspectPanel() {
-  const panel = document.createElement('div');
-  panel.id = 'unit-panel';
-  panel.innerHTML = `
-    <canvas id="up-portrait" width="64" height="64"></canvas>
-    <div id="up-info">
-      <div id="up-name"></div>
-      <div id="up-team"></div>
-      <div class="up-row"><label>HP</label>
-        <div class="up-bar"><div id="up-hp" class="up-fill"></div></div>
-        <span id="up-hp-txt"></span></div>
-      <div class="up-row sh-row"><label>SH</label>
-        <div class="up-bar"><div id="up-sh" class="up-fill" style="background:#4488ff"></div></div>
-        <span id="up-sh-txt"></span></div>
-    </div>
-  `;
-  document.body.appendChild(panel);
+  var detail = document.getElementById('wb-detail');
+  detail.innerHTML =
+    '<div style="display:flex;gap:10px">' +
+    '<canvas id="up-portrait" width="64" height="64" style="border-radius:3px;flex-shrink:0;width:64px;height:64px"></canvas>' +
+    '<div id="up-info" style="flex:1;min-width:0">' +
+    '<div id="up-name" style="font-weight:bold;font-size:13px;margin-bottom:3px"></div>' +
+    '<div id="up-team" style="color:#aaa;margin-bottom:6px;font-size:11px"></div>' +
+    '<div class="up-row" style="display:flex;align-items:center;gap:5px;margin-bottom:3px"><span style="width:16px;color:#888;font-size:10px;flex-shrink:0">HP</span>' +
+    '<div style="flex:1;height:7px;background:#333;border-radius:3px;overflow:hidden"><div id="up-hp" style="height:100%;background:#44cc44;border-radius:3px;transition:width 200ms"></div></div>' +
+    '<span id="up-hp-txt" style="font-size:11px"></span></div>' +
+    '<div class="up-row sh-row" style="display:none;align-items:center;gap:5px;margin-bottom:3px"><span style="width:16px;color:#888;font-size:10px;flex-shrink:0">SH</span>' +
+    '<div style="flex:1;height:7px;background:#333;border-radius:3px;overflow:hidden"><div id="up-sh" style="height:100%;background:#4488ff;border-radius:3px;transition:width 200ms"></div></div>' +
+    '<span id="up-sh-txt" style="font-size:11px"></span></div>' +
+    '<div id="up-pos" style="font-size:10px;color:#666;margin-top:4px"></div>' +
+    '</div></div>';
+  detail.querySelector('#up-name').textContent = '';
+  detail.querySelector('#up-team').textContent = '';
 
-  const css = document.createElement('style');
-  css.textContent = `
-    #unit-panel {
-      position:fixed; bottom:56px; right:12px; width:234px;
-      background:rgba(0,0,0,0.88); color:#fff; border:1px solid #444;
-      border-radius:6px; padding:10px; display:flex; gap:10px;
-      transform:translateX(260px); transition:transform 150ms ease;
-      z-index:150; font-family:monospace; font-size:12px;
-    }
-    #unit-panel.visible { transform:translateX(0); }
-    #up-portrait { border-radius:3px; flex-shrink:0; width:64px !important; height:64px !important; }
-    #up-info { flex:1; min-width:0; }
-    #up-name { font-weight:bold; font-size:13px; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    #up-team { color:#aaa; margin-bottom:6px; font-size:11px; }
-    .up-row { display:flex; align-items:center; gap:5px; margin-bottom:3px; }
-    .up-row label { width:16px; color:#888; font-size:10px; flex-shrink:0; }
-    .up-bar { flex:1; height:7px; background:#333; border-radius:3px; overflow:hidden; }
-    .up-fill { height:100%; background:#44cc44; border-radius:3px; transition:width 200ms; }
-    .sh-row { display:none; }
-  `;
-  document.head.appendChild(css);
-
-  // Raycasting on click (only if not a drag)
-  let mouseDownX = 0, mouseDownY = 0;
-  renderer.domElement.addEventListener('mousedown', e => {
+  var mouseDownX = 0, mouseDownY = 0;
+  renderer.domElement.addEventListener('mousedown', function(e) {
     mouseDownX = e.clientX; mouseDownY = e.clientY;
-  }, true); // capture phase so we see it before the camera drag handler
+  }, true);
 
-  renderer.domElement.addEventListener('mouseup', e => {
-    const dx = e.clientX - mouseDownX, dy = e.clientY - mouseDownY;
-    if (dx*dx + dy*dy > 25) return; // was a drag
+  renderer.domElement.addEventListener('mouseup', function(e) {
+    var dx = e.clientX - mouseDownX, dy = e.clientY - mouseDownY;
+    if (dx*dx + dy*dy > 25) return;
 
-    ndcMouse.x =  (e.clientX / window.innerWidth)  * 2 - 1;
-    ndcMouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    var rect = renderer.domElement.getBoundingClientRect();
+    ndcMouse.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+    ndcMouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
     raycaster.setFromCamera(ndcMouse, camera);
 
-    const allClickable = [
+    var allClickable = [
       ...unitSprites.values(), ...enemySprites.values(),
       ...buildingMeshes.values(), ...enemyBuildingMeshes.values()
     ];
-    const hits = raycaster.intersectObjects(allClickable);
+    var hits = raycaster.intersectObjects(allClickable);
     if (hits.length > 0) {
-      const obj = hits[0].object;
+      var obj = hits[0].object;
       if (obj.userData.buildingTag !== undefined) {
         showBuildingPanelAsync(obj.userData.buildingTag, obj.userData.isEnemy);
       } else {
@@ -477,24 +460,20 @@ function setupInspectPanel() {
     }
   });
 
-  window.addEventListener('keydown', e => {
+  window.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') hideUnitPanel();
   });
 }
 
 function showUnitPanel(tag, isEnemy) {
   if (lastState) {
-    const units = isEnemy ? (lastState.enemyUnits || []) : (lastState.myUnits || []);
-    const u = units.find(u => u.tag === tag);
-    if (u) { _populateUnitPanel(u, isEnemy); document.getElementById('unit-panel').classList.add('visible'); return; }
+    var units = isEnemy ? (lastState.enemyUnits || []) : (lastState.myUnits || []);
+    var u = units.find(function(u) { return u.tag === tag; });
+    if (u) { _populateUnitPanel(u, isEnemy); return; }
   }
-  fetch(`/qa/unit/${encodeURIComponent(tag)}`)
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      if (!data) return;
-      _populateUnitPanel(data, isEnemy);
-      document.getElementById('unit-panel').classList.add('visible');
-    });
+  fetch('/qa/unit/' + encodeURIComponent(tag))
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(data) { if (data) _populateUnitPanel(data, isEnemy); });
 }
 
 async function showBuildingPanelAsync(tag, isEnemy) {
@@ -522,15 +501,13 @@ async function showBuildingPanelAsync(tag, isEnemy) {
   const tColor = isEnemy ? '#ff4422' : '#4488ff';
   const fnName = 'draw' + data.type.split('_').map(w => w[0] + w.slice(1).toLowerCase()).join('');
   if (typeof window[fnName] === 'function') window[fnName](pCtx, 32, 0, tColor);
-  document.getElementById('unit-panel').classList.add('visible');
 }
 
 async function showUnitPanelAsync(tag, isEnemy) {
-  const r    = await fetch(`/qa/unit/${encodeURIComponent(tag)}`);
-  const data = r.ok ? await r.json() : null;
+  var r    = await fetch('/qa/unit/' + encodeURIComponent(tag));
+  var data = r.ok ? await r.json() : null;
   if (!data) return;
   _populateUnitPanel(data, isEnemy);
-  document.getElementById('unit-panel').classList.add('visible');
 }
 
 function _populateUnitPanel(data, isEnemy) {
@@ -556,10 +533,25 @@ function _populateUnitPanel(data, isEnemy) {
   const tColor = isEnemy ? '#ff4422' : '#4488ff';
   const fnName = 'draw' + data.type.split('_').map(w => w[0] + w.slice(1).toLowerCase()).join('');
   if (typeof window[fnName] === 'function') window[fnName](pCtx, 32, 0, tColor);
+  var posEl = document.getElementById('up-pos');
+  if (posEl && data.position) posEl.textContent = 'Tag: ' + data.tag + ' | Pos: ' + Math.round(data.position.x) + ', ' + Math.round(data.position.y);
+  else if (posEl && data.tag != null) posEl.textContent = 'Tag: ' + data.tag;
 }
 
 function hideUnitPanel() {
-  document.getElementById('unit-panel')?.classList.remove('visible');
+  var nameEl = document.getElementById('up-name');
+  var teamEl = document.getElementById('up-team');
+  if (nameEl) nameEl.textContent = '';
+  if (teamEl) teamEl.textContent = '';
+  var hpEl = document.getElementById('up-hp');
+  if (hpEl) hpEl.style.width = '0';
+  document.getElementById('up-hp-txt').textContent = '';
+  var shRow = document.querySelector('.sh-row');
+  if (shRow) shRow.style.display = 'none';
+  var posEl = document.getElementById('up-pos');
+  if (posEl) posEl.textContent = '';
+  var pCanvas = document.getElementById('up-portrait');
+  if (pCanvas) pCanvas.getContext('2d').clearRect(0, 0, 64, 64);
 }
 
 function setupCameraToggle() {
@@ -660,19 +652,8 @@ function setupKeyboardControls() {
 }
 
 function applyLayoutCss() {
-  const layoutCss = document.createElement('style');
-  layoutCss.textContent = `
-    * { box-sizing: border-box; }
-    body { margin: 0; overflow: hidden; background: #000; }
-    canvas { display: block; width: 100vw !important; height: 100vh !important; }
-    #hud {
-      position: fixed; top: 12px; right: 12px; z-index: 200;
-      background: rgba(0,0,0,0.65); color: #e0e0e0;
-      padding: 6px 12px; border-radius: 4px;
-      font-family: monospace; font-size: 13px;
-      pointer-events: none;
-    }
-  `;
+  var layoutCss = document.createElement('style');
+  layoutCss.textContent = '* { box-sizing: border-box; } body { margin: 0; overflow: hidden; background: #0a0a1a; } #wb-canvas canvas { display: block; width: 100%; height: 100%; }';
   document.head.appendChild(layoutCss);
 }
 
@@ -680,12 +661,23 @@ async function init() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a0a1a);
 
+  var canvasContainer = document.getElementById('wb-canvas');
+  var cw = canvasContainer.clientWidth, ch = canvasContainer.clientHeight;
   renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(cw, ch);
   renderer.shadowMap.enabled = true;
-  document.body.appendChild(renderer.domElement);
+  canvasContainer.appendChild(renderer.domElement);
 
-  camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 500);
+  camera = new THREE.PerspectiveCamera(45, cw / ch, 0.1, 500);
+
+  new ResizeObserver(function() {
+    var w = canvasContainer.clientWidth, h = canvasContainer.clientHeight;
+    if (w > 0 && h > 0) {
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+  }).observe(canvasContainer);
 
   group2d = new THREE.Group(); scene.add(group2d);
   group3d = new THREE.Group(); scene.add(group3d);
@@ -706,15 +698,22 @@ async function init() {
   initConfigPanel();
   initReplayControls();
   setupInspectPanel();
+  setupWorkbenchTabs();
   animate();
 }
 
-window.addEventListener('resize', () => {
-  if (!renderer || !camera) return;
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
+function setupWorkbenchTabs() {
+  document.querySelectorAll('.wb-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelector('.wb-tab.active').classList.remove('active');
+      btn.classList.add('active');
+      document.querySelectorAll('.wb-page').forEach(function(p) { p.classList.remove('active'); });
+      document.getElementById('page-' + btn.dataset.page).classList.add('active');
+    });
+  });
+}
+
+// resize handled by ResizeObserver in init()
 
 function animate() {
   requestAnimationFrame(animate);
@@ -930,19 +929,28 @@ function gw(gx, gz) {
   return { x: gx * TILE - HALF_W, z: gz * TILE - HALF_H };
 }
 
+function updateConnectionStatus() {
+  var gameEl = document.getElementById('status-game');
+  var intelEl = document.getElementById('status-intel');
+  if (gameEl) { gameEl.textContent = 'Game: ' + (wsConnected ? 'Connected' : 'Disconnected'); gameEl.style.color = wsConnected ? '#44ff44' : '#ff4444'; }
+  if (intelEl) { intelEl.textContent = 'Intel: ' + (wbWsConnected ? 'Connected' : 'Disconnected'); intelEl.style.color = wbWsConnected ? '#44ff44' : '#ffaa00'; }
+}
+
 function connectWebSocket() {
-  const ws = new WebSocket(`ws://${window.location.host}/ws/gamestate`);
-  ws.onopen  = () => { wsConnected = true; cameraCentred = false; };
-  ws.onmessage = e => {
+  const ws = new WebSocket('ws://' + window.location.host + '/ws/gamestate');
+  ws.onopen  = function() { wsConnected = true; cameraCentred = false; updateConnectionStatus(); };
+  ws.onmessage = function(e) {
     try {
-      const msg = JSON.parse(e.data);
+      var msg = JSON.parse(e.data);
       onFrame(msg.state, msg.visibility);
     } catch (err) { console.warn('Bad WS message', err); }
   };
-  ws.onerror = () => ws.close();
-  ws.onclose = () => {
+  ws.onerror = function() { ws.close(); };
+  ws.onclose = function() {
     wsConnected = false;
-    document.getElementById('hud').textContent = 'Disconnected — reconnecting...';
+    updateConnectionStatus();
+    var hudEl = document.getElementById('wb-hud');
+    if (hudEl) hudEl.textContent = 'Disconnected — reconnecting...';
     setTimeout(connectWebSocket, RECONNECT_MS);
   };
 }
@@ -973,13 +981,15 @@ function autocentreCamera(state) {
 function updateHud(state) {
   const m = state.minerals ?? 0;
   const tier = m < 50 ? 'minerals-critical' : m < 150 ? 'minerals-low' : '';
-  // innerHTML is safe here — state.minerals is a server-computed integer through toLocaleString(),
-  // never user-controlled. Do not extend this pattern to user-supplied strings.
-  document.getElementById('hud').innerHTML =
-    `Minerals: <span id="minerals-val" class="${tier}">${m.toLocaleString('en-US')}</span>` +
-    `   Gas: ${state.vespene}` +
-    `   Supply: ${state.supplyUsed}/${state.supply}` +
-    `   Frame: ${state.gameFrame}`;
+  var hudEl = document.getElementById('wb-hud');
+  if (hudEl) {
+    hudEl.innerHTML =
+      'Minerals: <span class="' + tier + '">' + m.toLocaleString('en-US') + '</span>' +
+      '   Gas: ' + state.vespene +
+      '   Supply: ' + state.supplyUsed + '/' + state.supply;
+  }
+  var frameEl = document.getElementById('status-frame');
+  if (frameEl) frameEl.textContent = 'Frame: ' + state.gameFrame;
 }
 
 function updateFog(visibility) {
