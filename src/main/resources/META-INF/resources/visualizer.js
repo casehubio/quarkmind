@@ -772,6 +772,7 @@ async function init() {
   setupLighting();
   await loadTerrain();
   connectWebSocket();
+  connectWorkbenchSocket();
   initConfigPanel();
   initReplayControls();
   setupInspectPanel();
@@ -788,6 +789,116 @@ function setupWorkbenchTabs() {
       document.getElementById('page-' + btn.dataset.page).classList.add('active');
     });
   });
+}
+
+// ── Workbench WebSocket client ──────────────────────────────────────────────
+
+var workbenchState = { pattern: null, coaching: [], strategy: null };
+
+function connectWorkbenchSocket() {
+  var ws = new WebSocket('ws://' + window.location.host + '/ws/workbench');
+  ws.onopen = function() { wbWsConnected = true; updateConnectionStatus(); };
+  ws.onmessage = function(e) {
+    try {
+      var event = JSON.parse(e.data);
+      switch (event.type) {
+        case 'pattern': workbenchState.pattern = event.payload; renderPatternPage(); break;
+        case 'coaching': workbenchState.coaching.unshift(event.payload); if (workbenchState.coaching.length > 20) workbenchState.coaching.pop(); renderCoachingPage(); break;
+        case 'coaching_compliance': applyComplianceUpdate(event.payload); break;
+        case 'strategy': workbenchState.strategy = event.payload; renderStrategyPage(); break;
+      }
+    } catch (err) { console.warn('Bad workbench WS message', err); }
+  };
+  ws.onerror = function() { ws.close(); };
+  ws.onclose = function() { wbWsConnected = false; updateConnectionStatus(); setTimeout(connectWorkbenchSocket, 2000); };
+}
+
+function renderPatternPage() {
+  var el = document.getElementById('page-pattern');
+  var data = workbenchState.pattern;
+  if (!data || !data.assessments || data.assessments.length === 0) { el.innerHTML = 'No pattern data'; return; }
+
+  el.innerHTML = data.assessments.map(function(ea, i) {
+    var a = ea.assessment;
+    var conf = Math.round(a.confidence * 100);
+    var barColor = conf > 70 ? '#44ff44' : conf > 50 ? '#ffaa00' : '#ff4444';
+    var expanded = i === 0 ? 'block' : 'none';
+    var arrow = i === 0 ? '▼' : '▶';
+
+    var countersHtml = '';
+    if (ea.counters) {
+      var strong = (ea.counters.strongCounters || []).map(function(c) {
+        return '<li>' + c.units.map(function(u) { return '<span class="counter-unit" data-unit="' + u + '">' + u + '</span>'; }).join(', ') + ' — ' + (c.action || '') + '</li>';
+      }).join('');
+      var weak = (ea.counters.weakCounters || []).map(function(c) {
+        return '<li>' + c.units.map(function(u) { return '<span class="counter-unit" data-unit="' + u + '">' + u + '</span>'; }).join(', ') + ' — ' + (c.action || '') + '</li>';
+      }).join('');
+      if (strong) countersHtml += '<div class="counter-section"><strong>Strong Counters:</strong><ul>' + strong + '</ul></div>';
+      if (weak) countersHtml += '<div class="counter-section"><strong>Weak Counters:</strong><ul>' + weak + '</ul></div>';
+    }
+
+    return '<div class="assessment-item" data-index="' + i + '">' +
+      '<div class="assessment-header" onclick="toggleAssessment(' + i + ')">' + arrow + ' ' + a.archetype + ' (' + conf + '%)</div>' +
+      '<div class="confidence-bar"><div style="width:' + conf + '%;background:' + barColor + ';height:4px;border-radius:2px;"></div></div>' +
+      '<div class="assessment-body" id="assess-body-' + i + '" style="display:' + expanded + '">' +
+        '<div class="rationale">' + (a.rationale || '') + '</div>' +
+        countersHtml +
+      '</div></div>';
+  }).join('');
+
+  el.querySelectorAll('.counter-unit').forEach(function(span) {
+    span.addEventListener('click', function(e) {
+      e.stopPropagation();
+      selection.set({ type: 'unitType', unitType: span.dataset.unit, isEnemy: false, source: 'workbench' });
+    });
+  });
+}
+
+function toggleAssessment(index) {
+  var body = document.getElementById('assess-body-' + index);
+  if (!body) return;
+  var header = body.parentElement.querySelector('.assessment-header');
+  if (body.style.display === 'none') { body.style.display = 'block'; if (header) header.textContent = header.textContent.replace('▶', '▼'); }
+  else { body.style.display = 'none'; if (header) header.textContent = header.textContent.replace('▼', '▶'); }
+}
+
+function renderCoachingPage() {
+  var el = document.getElementById('page-coaching');
+  if (workbenchState.coaching.length === 0) { el.innerHTML = 'No coaching advice yet'; return; }
+
+  el.innerHTML = workbenchState.coaching.map(function(c) {
+    var secs = Math.floor(c.gameFrame / 22.4);
+    var mins = Math.floor(secs / 60);
+    var rem = secs % 60;
+    var time = mins + ':' + String(rem).padStart(2, '0');
+    var status = c.complianceStatus || '⏳ Pending';
+    return '<div class="coaching-item">' +
+      '<div class="coaching-header">' + time + ' [' + c.domain + '] ' + (c.urgency || '') + '</div>' +
+      '<div class="coaching-advice">' + c.advice + '</div>' +
+      '<div class="coaching-status" data-frame="' + c.gameFrame + '" data-domain="' + c.domain + '">' + status + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function applyComplianceUpdate(payload) {
+  var statusMap = { ENDORSED: '✓ Complied', CHALLENGED: '✗ Ignored', NEUTRAL: '— Neutral' };
+  var label = statusMap[payload.status] || payload.status;
+  var entry = workbenchState.coaching.find(function(c) { return c.gameFrame === payload.gameFrame && c.domain === payload.domain; });
+  if (entry) { entry.complianceStatus = label; renderCoachingPage(); }
+}
+
+function renderStrategyPage() {
+  var el = document.getElementById('page-strategy');
+  var s = workbenchState.strategy;
+  if (!s) { el.innerHTML = 'No strategy data'; return; }
+  el.innerHTML =
+    '<div class="strategy-section">' +
+    '<div class="strategy-label">Active Strategy</div>' +
+    '<div class="strategy-value">' + s.strategyId + '</div>' +
+    '<div class="strategy-row"><span>Archetype:</span> ' + s.archetype + '</div>' +
+    '<div class="strategy-row"><span>Confidence:</span> ' + (s.confidence * 100).toFixed(0) + '%</div>' +
+    '<div class="strategy-row"><span>Pivots:</span> ' + s.pivotCount + '</div>' +
+    '</div>';
 }
 
 // resize handled by ResizeObserver in init()
