@@ -29,7 +29,7 @@ class WorkbenchSerializationTest {
     @Test
     void coaching_event_serializes_to_json() throws Exception {
         var event = new WorkbenchEvent("coaching",
-            new CoachingPayload("build stalkers", CoachingDomain.MILITARY, CoachingUrgencyTier.CRISIS, 500L));
+            new CoachingPayload("build stalkers", CoachingDomain.MILITARY, CoachingUrgencyTier.CRISIS, 500L, "corr-test"));
 
         String json = mapper.writeValueAsString(event);
         assertTrue(json.contains("\"type\":\"coaching\""));
@@ -50,7 +50,7 @@ class WorkbenchSerializationTest {
     @Test
     void compliance_event_serializes_to_json() throws Exception {
         var event = new WorkbenchEvent("coaching_compliance",
-            new CoachingCompliancePayload(500L, CoachingDomain.BUILD, "ENDORSED"));
+            new CoachingCompliancePayload(500L, CoachingDomain.BUILD, "ENDORSED", "corr-test"));
 
         String json = mapper.writeValueAsString(event);
         assertTrue(json.contains("\"coaching_compliance\""));

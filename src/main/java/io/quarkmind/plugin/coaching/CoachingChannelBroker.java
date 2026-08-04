@@ -86,11 +86,11 @@ public class CoachingChannelBroker {
             adviceWithBaseline = new CoachingAdvice(adviceWithBaseline.advice(), adviceWithBaseline.domainTag(),
                                                     baselined, adviceWithBaseline.verificationWindowFrames());
         }
-        commitments.put(domain, new OpenCommitment(correlationId, adviceWithBaseline, gameFrame));
+        commitments.put(domain, new OpenCommitment(correlationId, event.workerId(), adviceWithBaseline, gameFrame));
         dispatchCount++;
 
         if (coachingAdviceEvent != null) {
-            coachingAdviceEvent.fire(new CoachingAdvicePublished(event.advice(), event.urgencyTier(), gameFrame));
+            coachingAdviceEvent.fire(new CoachingAdvicePublished(event.advice(), event.urgencyTier(), gameFrame, correlationId));
         }
 
         if (channelId == null) {return;}

@@ -41,12 +41,12 @@ public class WorkbenchEnricher {
 
     void onCoachingAdvice(@Observes CoachingAdvicePublished event) {
         broadcaster.broadcast(new WorkbenchEvent("coaching",
-            new CoachingPayload(event.advice().advice(), event.advice().domainTag(), event.urgencyTier(), event.gameFrame())));
+            new CoachingPayload(event.advice().advice(), event.advice().domainTag(), event.urgencyTier(), event.gameFrame(), event.correlationId())));
     }
 
     void onCoachingCompliance(@Observes CoachingComplianceResolved event) {
         broadcaster.broadcast(new WorkbenchEvent("coaching_compliance",
-            new CoachingCompliancePayload(event.gameFrame(), event.domain(), event.status())));
+            new CoachingCompliancePayload(event.gameFrame(), event.domain(), event.status(), event.correlationId())));
     }
 
     void onStrategySelection(@Observes StrategySelectionPublished event) {

@@ -58,7 +58,7 @@ class WorkbenchEnricherTest {
     @Test
     void coaching_advice_produces_coaching_event() {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY, null, 200);
-        enricher.onCoachingAdvice(new CoachingAdvicePublished(advice, CoachingUrgencyTier.CRISIS, 500L));
+        enricher.onCoachingAdvice(new CoachingAdvicePublished(advice, CoachingUrgencyTier.CRISIS, 500L, "corr-test"));
 
         var event = broadcaster.events.getFirst();
         assertEquals("coaching", event.type());
@@ -69,7 +69,7 @@ class WorkbenchEnricherTest {
 
     @Test
     void compliance_resolved_produces_compliance_event() {
-        enricher.onCoachingCompliance(new CoachingComplianceResolved(500L, CoachingDomain.BUILD, "ENDORSED"));
+        enricher.onCoachingCompliance(new CoachingComplianceResolved(500L, CoachingDomain.BUILD, "ENDORSED", "corr-test"));
 
         var event = broadcaster.events.getFirst();
         assertEquals("coaching_compliance", event.type());

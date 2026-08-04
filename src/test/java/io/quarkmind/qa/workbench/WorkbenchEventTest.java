@@ -28,7 +28,7 @@ class WorkbenchEventTest {
     @Test
     void coachingAdvicePublished_carriesFields() {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY, null, 200);
-        var event = new CoachingAdvicePublished(advice, CoachingUrgencyTier.CRISIS, 500L);
+        var event = new CoachingAdvicePublished(advice, CoachingUrgencyTier.CRISIS, 500L, "corr-test");
         assertEquals("build stalkers", event.advice().advice());
         assertEquals(CoachingUrgencyTier.CRISIS, event.urgencyTier());
         assertEquals(500L, event.gameFrame());
@@ -36,7 +36,7 @@ class WorkbenchEventTest {
 
     @Test
     void coachingComplianceResolved_carriesFields() {
-        var event = new CoachingComplianceResolved(500L, CoachingDomain.MILITARY, "complied");
+        var event = new CoachingComplianceResolved(500L, CoachingDomain.MILITARY, "complied", "corr-test");
         assertEquals(CoachingDomain.MILITARY, event.domain());
         assertEquals("complied", event.status());
     }

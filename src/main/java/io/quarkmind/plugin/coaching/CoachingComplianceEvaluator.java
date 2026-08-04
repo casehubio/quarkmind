@@ -63,8 +63,8 @@ public class CoachingComplianceEvaluator {
 
             if (!advice.isVerifiable()) {
                 if (currentFrame >= windowEnd) {
-                    recorder.record(commitment.correlationId(), "NEUTRAL", advice);
-                    fireComplianceResolved(currentFrame, domain, "NEUTRAL");
+                    recorder.record(commitment.correlationId(), commitment.agentId(), "NEUTRAL", advice);
+                    fireComplianceResolved(currentFrame, domain, "NEUTRAL", commitment.correlationId());
                     iterator.remove();
                 }
                 continue;
@@ -72,12 +72,12 @@ public class CoachingComplianceEvaluator {
 
             if (currentFrame >= windowEnd) {
                 if (advice.verification().isSatisfied(state, locationResolver)) {
-                    recorder.record(commitment.correlationId(), "ENDORSED", advice);
-                    fireComplianceResolved(currentFrame, domain, "ENDORSED");
+                    recorder.record(commitment.correlationId(), commitment.agentId(), "ENDORSED", advice);
+                    fireComplianceResolved(currentFrame, domain, "ENDORSED", commitment.correlationId());
                     iterator.remove();
                 } else if (currentFrame >= expireEnd) {
-                    recorder.record(commitment.correlationId(), "CHALLENGED", advice);
-                    fireComplianceResolved(currentFrame, domain, "CHALLENGED");
+                    recorder.record(commitment.correlationId(), commitment.agentId(), "CHALLENGED", advice);
+                    fireComplianceResolved(currentFrame, domain, "CHALLENGED", commitment.correlationId());
                     iterator.remove();
                 }
             }
@@ -86,13 +86,13 @@ public class CoachingComplianceEvaluator {
 
     public void withdrawAll() {
         commitments.forEach((domain, commitment) ->
-                                    recorder.record(commitment.correlationId(), "NEUTRAL", commitment.advice()));
+                                    recorder.record(commitment.correlationId(), commitment.agentId(), "NEUTRAL", commitment.advice()));
         commitments.clear();
     }
 
-    private void fireComplianceResolved(long frame, CoachingDomain domain, String status) {
+    private void fireComplianceResolved(long frame, CoachingDomain domain, String status, String correlationId) {
         if (complianceResolvedEvent != null) {
-            complianceResolvedEvent.fire(new CoachingComplianceResolved(frame, domain, status));
+            complianceResolvedEvent.fire(new CoachingComplianceResolved(frame, domain, status, correlationId));
         }
     }
 

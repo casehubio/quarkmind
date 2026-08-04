@@ -17,7 +17,7 @@ class CoachingComplianceEvaluatorTest {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
             new CountDelta(UnitType.STALKER, null, 3, 2), 200);
         commitments.put(CoachingDomain.MILITARY,
-            new OpenCommitment("corr-1", advice, 100));
+            new OpenCommitment("corr-1", "worker-1", advice, 100));
 
         var state = gameStateWithUnits(Map.of(UnitType.STALKER, 5));
         evaluator.evaluate(state, 350);
@@ -35,7 +35,7 @@ class CoachingComplianceEvaluatorTest {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
             new CountDelta(UnitType.STALKER, null, 3, 2), 200);
         commitments.put(CoachingDomain.MILITARY,
-            new OpenCommitment("corr-1", advice, 100));
+            new OpenCommitment("corr-1", "worker-1", advice, 100));
 
         var state = gameStateWithUnits(Map.of(UnitType.STALKER, 3));
         evaluator.evaluate(state, 250);
@@ -53,7 +53,7 @@ class CoachingComplianceEvaluatorTest {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
             new CountDelta(UnitType.STALKER, null, 3, 2), 200);
         commitments.put(CoachingDomain.MILITARY,
-            new OpenCommitment("corr-1", advice, 100));
+            new OpenCommitment("corr-1", "worker-1", advice, 100));
 
         var state = gameStateWithUnits(Map.of(UnitType.STALKER, 3));
         evaluator.evaluate(state, 1050);
@@ -71,7 +71,7 @@ class CoachingComplianceEvaluatorTest {
         var advice = new CoachingAdvice("improve macro", CoachingDomain.BUILD,
             null, 450);
         commitments.put(CoachingDomain.BUILD,
-            new OpenCommitment("corr-2", advice, 100));
+            new OpenCommitment("corr-2", "worker-1", advice, 100));
 
         var state = gameStateWithUnits(Map.of());
         evaluator.evaluate(state, 600);
@@ -89,7 +89,7 @@ class CoachingComplianceEvaluatorTest {
         var advice = new CoachingAdvice("expand", CoachingDomain.EXPAND,
             new CountDelta(null, BuildingType.NEXUS, 1, 1), 200);
         commitments.put(CoachingDomain.EXPAND,
-            new OpenCommitment("corr-3", advice, 100));
+            new OpenCommitment("corr-3", "worker-1", advice, 100));
 
         var state = gameStateWithBuildings(Map.of(BuildingType.NEXUS, 2));
         evaluator.evaluate(state, 350);
@@ -107,7 +107,7 @@ class CoachingComplianceEvaluatorTest {
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
             new CountDelta(UnitType.STALKER, null, 3, 2), 450);
         commitments.put(CoachingDomain.MILITARY,
-            new OpenCommitment("corr-1", advice, 100));
+            new OpenCommitment("corr-1", "worker-1", advice, 100));
 
         evaluator.withdrawAll();
 
@@ -124,12 +124,12 @@ class CoachingComplianceEvaluatorTest {
         var militaryAdvice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
             new CountDelta(UnitType.STALKER, null, 3, 2), 200);
         commitments.put(CoachingDomain.MILITARY,
-            new OpenCommitment("corr-1", militaryAdvice, 100));
+            new OpenCommitment("corr-1", "worker-1", militaryAdvice, 100));
 
         var expandAdvice = new CoachingAdvice("improve macro", CoachingDomain.EXPAND,
             null, 200);
         commitments.put(CoachingDomain.EXPAND,
-            new OpenCommitment("corr-2", expandAdvice, 100));
+            new OpenCommitment("corr-2", "worker-1", expandAdvice, 100));
 
         var state = gameStateWithUnits(Map.of(UnitType.STALKER, 5));
         evaluator.evaluate(state, 350);
@@ -167,10 +167,12 @@ class CoachingComplianceEvaluatorTest {
 
     static class TestTrustRecorder extends CoachingEffectivenessTrustRecorder {
         String lastOutcome;
+        String lastAgentId;
         Map<String, String> outcomes = new LinkedHashMap<>();
         @Override
-        public void record(String correlationId, String outcome, CoachingAdvice advice) {
+        public void record(String correlationId, String agentId, String outcome, CoachingAdvice advice) {
             this.lastOutcome = outcome;
+            this.lastAgentId = agentId;
             this.outcomes.put(correlationId, outcome);
         }
     }
