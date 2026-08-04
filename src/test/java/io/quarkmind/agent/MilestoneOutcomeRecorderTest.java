@@ -3,7 +3,8 @@ package io.quarkmind.agent;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.ledger.api.model.OutcomeRecord;
 import io.casehub.ledger.api.spi.OutcomeRecorder;
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.DominanceScore;
+import io.quarkmind.domain.GameState;
 import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.GameStarted;
 import io.quarkmind.sc2.GameStopped;
@@ -160,8 +161,13 @@ class MilestoneOutcomeRecorderTest {
         final List<OutcomeRecord> records = new ArrayList<>();
 
         @Override
-        public void record(OutcomeRecord record) {
+        public UUID record(OutcomeRecord record) {
             records.add(record);
+            return UUID.randomUUID();
+        }
+
+        @Override
+        public void addAttestation(UUID id, io.casehub.ledger.api.model.AttestationVerdict verdict, double confidence, String dimension) {
         }
     }
 }

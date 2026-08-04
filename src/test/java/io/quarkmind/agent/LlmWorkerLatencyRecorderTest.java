@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -185,13 +184,17 @@ class LlmWorkerLatencyRecorderTest {
         assertThat(record.confidence()).isEqualTo(0.7);
     }
 
-    // Test helper
     static class TestOutcomeRecorder implements OutcomeRecorder {
         final List<OutcomeRecord> records = new ArrayList<>();
 
         @Override
-        public void record(OutcomeRecord record) {
+        public UUID record(OutcomeRecord record) {
             records.add(record);
+            return UUID.randomUUID();
+        }
+
+        @Override
+        public void addAttestation(UUID id, io.casehub.ledger.api.model.AttestationVerdict verdict, double confidence, String dimension) {
         }
     }
 }
