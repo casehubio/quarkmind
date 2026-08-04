@@ -99,6 +99,9 @@ public class QuarkMindCaseHub extends CaseHub {
 
     /** JQ expression that fires when a coaching trigger is set. */
     static final String COACHING_TRIGGER = ".working[\"game.coaching.trigger\"] | . != null";
+    static final String CAPABILITY_SCOUTING_LLM_FALLBACK = "scouting-llm-fallback";
+    static final String LLM_FALLBACK_TRIGGER_JQ = ".working[\"game.scouting.llm-fallback.trigger\"] | . != null";
+
 
     private static final List<String> PHASE_ORDER = List.of(
             "scouting.",           // Phase 1: observe
@@ -276,6 +279,9 @@ public class QuarkMindCaseHub extends CaseHub {
         // Coaching capabilities, bindings, and workers — only when a ChatModel is available
         int coachingCount = wireCoaching(allCapabilities, allBindings, allWorkers);
 
+        // LLM fallback classifier — only when a ChatModel is available
+        int llmFallbackCount = wireLlmFallback(allCapabilities, allBindings, allWorkers);
+
         CaseDefinition.Builder builder = CaseDefinition.builder()
             .namespace("quarkmind")
             .name("starcraft-game")
@@ -285,15 +291,15 @@ public class QuarkMindCaseHub extends CaseHub {
             .workers(allWorkers);
 
         // Register AgentDescriptors on the CaseDefinition for routing
-        int llmWorkerCount = advisoryCount + commentaryCount + coachingCount;
+        int llmWorkerCount = advisoryCount + commentaryCount + coachingCount + llmFallbackCount;
         if (llmWorkerCount > 0 && advisorRegistrar != null) {
             for (AgentDescriptor descriptor : advisorRegistrar.descriptors()) {
                 builder.agentDescriptor(descriptor.agentId(), descriptor);
             }
         }
 
-        log.infof("[CASEHUB] Built CaseDefinition: %d capabilities, %d workers, %d bindings (advisory: %d, commentary: %d, coaching: %d)",
-            allCapabilities.size(), allWorkers.size(), allBindings.size(), advisoryCount, commentaryCount, coachingCount);
+        log.infof("[CASEHUB] Built CaseDefinition: %d capabilities, %d workers, %d bindings (advisory: %d, commentary: %d, coaching: %d, llm-fallback: %d)",
+            allCapabilities.size(), allWorkers.size(), allBindings.size(), advisoryCount, commentaryCount, coachingCount, llmFallbackCount);
 
         return builder.build();
     }
@@ -515,6 +521,50 @@ public class QuarkMindCaseHub extends CaseHub {
 
         log.infof("[CASEHUB] Wired %d coaching workers", coachingWorkers.size());
         return coachingWorkers.size();
+    }
+
+    private int wireLlmFallback(List<Capability> capabilities, List<Binding> bindings,
+                                List<Worker> workers) {
+        if (chatModelInstance == null || !chatModelInstance.isResolvable()) {
+            log.debug("[CASEHUB] No ChatModel bean available — LLM fallback omitted.");
+            return 0;
+        }
+
+        Capability llmFallback = Capability.builder()
+                                           .name(CAPABILITY_SCOUTING_LLM_FALLBACK)
+                                           .inputSchema(".working")
+                                           .outputSchema(".")
+                                           .description("LLM fallback classifier — fires when Drools confidence is low")
+                                           .build();
+
+        capabilities.add(llmFallback);
+
+        bindings.add(Binding.builder()
+                            .name(CAPABILITY_SCOUTING_LLM_FALLBACK)
+                            .capability(llmFallback)
+                            .on(new ContextChangeTrigger(LLM_FALLBACK_TRIGGER_JQ))
+                            .build());
+
+        ChatModel                 chatModel               = chatModelInstance.get();
+        Event<AdvisoryCompleted>  completedEvent          = advisoryCompletedEventInstance.get();
+        Event<LlmWorkerCompleted> llmWorkerCompletedEvent = llmWorkerCompletedEventInstance.get();
+
+        CompletionCallback completionCallback = (advisorId, capability, gameFrame,
+                                                 recommendation, confidence, latencyMs, gameStateSnapshot) -> {
+            completedEvent.fire(new AdvisoryCompleted(
+                    advisorId, capability, gameFrame, recommendation, confidence, latencyMs, gameStateSnapshot
+            ));
+            llmWorkerCompletedEvent.fire(new LlmWorkerCompleted(
+                    advisorId, capability, gameFrame, latencyMs
+            ));
+        };
+
+        Worker worker = io.quarkmind.plugin.scouting.LlmPatternClassifierWorkerFactory.createWorker(
+                chatModel, completionCallback);
+        workers.add(worker);
+
+        log.info("[CASEHUB] Wired LLM pattern fallback capability");
+        return 1;
     }
 
 

@@ -26,6 +26,21 @@ public final class ScoutingIntelPreferences {
     public static final PreferenceKey<ScoutingIntelPreference> PATTERN_ASSESSMENT_DISPATCH_ENABLED =
             new PreferenceKey<>("scouting.intel.dispatch", "pattern-assessment.enabled",
                                 ScoutingIntelPreference.ofBoolean(true), ScoutingIntelPreference::parseBoolean);
+    public static final PreferenceKey<ScoutingIntelPreference> LLM_FALLBACK_ENABLED                =
+            new PreferenceKey<>("scouting.llm-fallback", "enabled",
+                                ScoutingIntelPreference.ofBoolean(true), ScoutingIntelPreference::parseBoolean);
+
+    public static final PreferenceKey<ScoutingIntelPreference> LLM_FALLBACK_CONFIDENCE_THRESHOLD =
+            new PreferenceKey<>("scouting.llm-fallback", "confidence-threshold",
+                                ScoutingIntelPreference.ofDouble(0.5), ScoutingIntelPreference::parseDouble);
+
+    public static final PreferenceKey<ScoutingIntelPreference> LLM_FALLBACK_MIN_GAME_TIME_FRAMES =
+            new PreferenceKey<>("scouting.llm-fallback", "min-game-time-frames",
+                                ScoutingIntelPreference.ofInt(2160), ScoutingIntelPreference::parseInt);
+
+    public static final PreferenceKey<ScoutingIntelPreference> LLM_FALLBACK_COOLDOWN_FRAMES =
+            new PreferenceKey<>("scouting.llm-fallback", "cooldown-frames",
+                                ScoutingIntelPreference.ofInt(500), ScoutingIntelPreference::parseInt);
 
 
     public static PreferenceKey<ScoutingIntelPreference> consumerKey(String pluginId, ScoutingIntelType type) {

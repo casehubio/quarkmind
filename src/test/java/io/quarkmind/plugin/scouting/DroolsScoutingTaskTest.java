@@ -10,9 +10,9 @@ import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
-import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.IntentQueue;
@@ -287,5 +287,123 @@ class DroolsScoutingTaskTest {
 
     private Building nexus() {
         return new Building("n-0", BuildingType.NEXUS, new Point2d(8, 8), 1500, 1500, true);
+    }
+
+// ---- LLM fallback trigger detection ----
+
+    @Test
+    void llmFallback_firesWhenAllConfidencesBelowThreshold() {
+        var confidences = new java.util.EnumMap<>(Map.of(
+                StrategyArchetype.PROTOSS_GATEWAY_RUSH, 0.3,
+                StrategyArchetype.PROTOSS_MACRO, 0.2));
+
+        assertThat(DroolsScoutingTask.shouldFireLlmFallback(
+                confidences, 0.5, 200, 100, -1, 50)).isTrue();
+    }
+
+    @Test
+    void llmFallback_doesNotFireWhenAnyConfidenceAboveThreshold() {
+        var confidences = new java.util.EnumMap<>(Map.of(
+                StrategyArchetype.PROTOSS_GATEWAY_RUSH, 0.6,
+                StrategyArchetype.PROTOSS_MACRO, 0.2));
+
+        assertThat(DroolsScoutingTask.shouldFireLlmFallback(
+                confidences, 0.5, 200, 100, -1, 50)).isFalse();
+    }
+
+    @Test
+    void llmFallback_doesNotFireBeforeMinGameTime() {
+        var confidences = new java.util.EnumMap<>(Map.of(
+                StrategyArchetype.PROTOSS_MACRO, 0.2));
+
+        assertThat(DroolsScoutingTask.shouldFireLlmFallback(
+                confidences, 0.5, 50, 100, -1, 50)).isFalse();
+    }
+
+    @Test
+    void llmFallback_doesNotFireDuringCooldown() {
+        var confidences = new java.util.EnumMap<>(Map.of(
+                StrategyArchetype.PROTOSS_MACRO, 0.2));
+
+        assertThat(DroolsScoutingTask.shouldFireLlmFallback(
+                confidences, 0.5, 200, 100, 180, 50)).isFalse();
+    }
+
+    @Test
+    void llmFallback_firesWhenCumulativeConfidenceMapIsEmpty() {
+        var confidences = new java.util.EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
+
+        assertThat(DroolsScoutingTask.shouldFireLlmFallback(
+                confidences, 0.5, 200, 100, -1, 50)).isTrue();
+    }
+
+    @Test
+    void llmFallback_firesAfterCooldownExpires() {
+        var confidences = new java.util.EnumMap<>(Map.of(
+                StrategyArchetype.PROTOSS_MACRO, 0.2));
+
+        assertThat(DroolsScoutingTask.shouldFireLlmFallback(
+                confidences, 0.5, 300, 100, 200, 50)).isTrue();
+    }
+
+// ---- LLM fallback result integration ----
+
+    @Test
+    void llmFallback_readsResultAndOverridesCumulativeConfidence() {
+        MutableMapCaseContext ctx = new MutableMapCaseContext(new java.util.HashMap<>());
+        ctx.set(QuarkMindCaseFile.LLM_FALLBACK_ARCHETYPE, "PROTOSS_GATEWAY_RUSH");
+        ctx.set(QuarkMindCaseFile.LLM_FALLBACK_CONFIDENCE, "0.8");
+        ctx.set(QuarkMindCaseFile.LLM_FALLBACK_RATIONALE, "Early zealot pressure detected");
+
+        var cumulative = new java.util.EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
+        cumulative.put(StrategyArchetype.PROTOSS_MACRO, 0.2);
+
+        DroolsScoutingTask.processLlmFallbackResult(ctx, cumulative, null);
+
+        assertThat(cumulative.get(StrategyArchetype.PROTOSS_GATEWAY_RUSH)).isEqualTo(0.8);
+        assertThat(ctx.get(QuarkMindCaseFile.LLM_FALLBACK_ARCHETYPE)).isNull();
+    }
+
+    @Test
+    void llmFallback_doesNotReprocessSameArchetype() {
+        MutableMapCaseContext ctx = new MutableMapCaseContext(new java.util.HashMap<>());
+        ctx.set(QuarkMindCaseFile.LLM_FALLBACK_ARCHETYPE, "PROTOSS_GATEWAY_RUSH");
+        ctx.set(QuarkMindCaseFile.LLM_FALLBACK_CONFIDENCE, "0.8");
+        ctx.set(QuarkMindCaseFile.LLM_FALLBACK_RATIONALE, "test");
+
+        var cumulative = new java.util.EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
+
+        String result = DroolsScoutingTask.processLlmFallbackResult(
+                ctx, cumulative, "PROTOSS_GATEWAY_RUSH");
+
+        assertThat(result).isEqualTo("PROTOSS_GATEWAY_RUSH");
+        assertThat(cumulative).doesNotContainKey(StrategyArchetype.PROTOSS_GATEWAY_RUSH);
+    }
+
+    @Test
+    void llmFallback_invalidArchetype_clearsKeysWithoutOverride() {
+        MutableMapCaseContext ctx = new MutableMapCaseContext(new java.util.HashMap<>());
+        ctx.set(QuarkMindCaseFile.LLM_FALLBACK_ARCHETYPE, "INVALID_ARCHETYPE");
+        ctx.set(QuarkMindCaseFile.LLM_FALLBACK_CONFIDENCE, "0.8");
+        ctx.set(QuarkMindCaseFile.LLM_FALLBACK_RATIONALE, "test");
+
+        var cumulative = new java.util.EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
+
+        DroolsScoutingTask.processLlmFallbackResult(ctx, cumulative, null);
+
+        assertThat(cumulative).isEmpty();
+        assertThat(ctx.get(QuarkMindCaseFile.LLM_FALLBACK_ARCHETYPE)).isNull();
+    }
+
+    @Test
+    void llmFallback_noResult_returnsLastProcessed() {
+        MutableMapCaseContext ctx = new MutableMapCaseContext(new java.util.HashMap<>());
+
+        var cumulative = new java.util.EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
+
+        String result = DroolsScoutingTask.processLlmFallbackResult(
+                ctx, cumulative, "PREVIOUS");
+
+        assertThat(result).isEqualTo("PREVIOUS");
     }
 }

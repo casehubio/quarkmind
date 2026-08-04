@@ -134,4 +134,9 @@ public class ScoutingSessionManager {
     public int unitBufferSize()      { return unitBuffer.size(); }
     public int armyBufferSize()      { return armyBuffer.size(); }
     public int expansionBufferSize() { return expansionBuffer.size(); }
+
+    public List<io.quarkmind.plugin.scouting.events.EnemyUnitFirstSeen> unitBufferSnapshot() {
+        return List.copyOf(unitBuffer);
+    }
+
 }

@@ -45,6 +45,10 @@ public final class QuarkMindCaseFile {
     public static final String COMMENTARY_NARRATIVE_TRIGGER = "game.commentary.narrative.trigger";
     public static final String GAME_MODE                    = "game.mode";
     public static final String COACHING_TRIGGER             = "game.coaching.trigger";
+    public static final String LLM_FALLBACK_TRIGGER         = "game.scouting.llm-fallback.trigger";
+    public static final String LLM_FALLBACK_ARCHETYPE       = "agent.scouting.llm-fallback.archetype";
+    public static final String LLM_FALLBACK_CONFIDENCE      = "agent.scouting.llm-fallback.confidence";
+    public static final String LLM_FALLBACK_RATIONALE       = "agent.scouting.llm-fallback.rationale";
 
 
     public static final List<String> ALL_KEYS = List.of(
