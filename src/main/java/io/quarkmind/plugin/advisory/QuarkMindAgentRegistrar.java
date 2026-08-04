@@ -358,7 +358,7 @@ public class QuarkMindAgentRegistrar implements AgentDescriptorRegistrar {
                               .slot("coach")
                               .slotVocabulary(SLOT_VOCABULARY)
                               .disposition(AgentDisposition.builder()
-                                                           .socialOrient(ConscientiousnessTerm.COLLABORATIVE.value())
+                                                           .socialOrient(ConscientiousnessTerm.INDEPENDENT.value())
                                                            .ruleFollowing(ConscientiousnessTerm.FLEXIBLE.value())
                                                            .riskAppetite(ConscientiousnessTerm.BOLD.value())
                                                            .autonomy(ConscientiousnessTerm.SEMI_AUTONOMOUS.value())

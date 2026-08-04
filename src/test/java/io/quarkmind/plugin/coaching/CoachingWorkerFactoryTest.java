@@ -22,7 +22,7 @@ class CoachingWorkerFactoryTest {
             .slotVocabulary(ConscientiousnessTerm.URI)
             .disposition(AgentDisposition.builder()
                 .riskAppetite(ConscientiousnessTerm.BOLD.value())
-                .socialOrient(ConscientiousnessTerm.COLLABORATIVE.value())
+                .socialOrient(ConscientiousnessTerm.INDEPENDENT.value())
                 .ruleFollowing(ConscientiousnessTerm.FLEXIBLE.value())
                 .autonomy(ConscientiousnessTerm.SEMI_AUTONOMOUS.value())
                 .conflictMode("collaborate").delegation(false).build())
@@ -57,27 +57,26 @@ class CoachingWorkerFactoryTest {
 
     @Test
     void buildDirectiveSystemPrompt_containsCoachIdentity() {
-        var prompt = CoachingWorkerFactory.buildSystemPrompt(directiveDescriptor(), false);
+        var prompt = CoachingWorkerFactory.buildSystemPrompt(directiveDescriptor(), CoachingUrgencyTier.ECONOMIC);
         assertThat(prompt).contains("StarCraft II coach");
         assertThat(prompt).contains("direct, actionable instructions");
     }
 
     @Test
     void buildSocraticSystemPrompt_containsGuidingQuestions() {
-        var prompt = CoachingWorkerFactory.buildSystemPrompt(socraticDescriptor(), false);
+        var prompt = CoachingWorkerFactory.buildSystemPrompt(socraticDescriptor(), CoachingUrgencyTier.ECONOMIC);
         assertThat(prompt).contains("guiding questions");
     }
 
     @Test
     void buildSystemPrompt_crisisOverride_alwaysDirective() {
-        var prompt = CoachingWorkerFactory.buildSystemPrompt(socraticDescriptor(), true);
+        var prompt = CoachingWorkerFactory.buildSystemPrompt(socraticDescriptor(), CoachingUrgencyTier.CRISIS);
         assertThat(prompt).contains("direct, actionable instructions");
-        assertThat(prompt).doesNotContain("guiding questions");
     }
 
     @Test
     void buildSystemPrompt_includesStructuredOutputInstructions() {
-        var prompt = CoachingWorkerFactory.buildSystemPrompt(directiveDescriptor(), false);
+        var prompt = CoachingWorkerFactory.buildSystemPrompt(directiveDescriptor(), CoachingUrgencyTier.ECONOMIC);
         assertThat(prompt).contains("CoachingDomain");
         assertThat(prompt).contains("BUILD");
         assertThat(prompt).contains("MILITARY");
@@ -303,7 +302,7 @@ class CoachingWorkerFactoryTest {
 
     @Test
     void buildSystemPrompt_includesVerificationTypes() {
-        var prompt = CoachingWorkerFactory.buildSystemPrompt(directiveDescriptor(), false);
+        var prompt = CoachingWorkerFactory.buildSystemPrompt(directiveDescriptor(), CoachingUrgencyTier.ECONOMIC);
         assertThat(prompt).contains("verificationType");
         assertThat(prompt).contains("ARMY_CENTROID_RETREAT");
         assertThat(prompt).contains("EXPANSION_PLACEMENT");

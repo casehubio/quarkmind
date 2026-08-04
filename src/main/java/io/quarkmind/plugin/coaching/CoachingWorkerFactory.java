@@ -65,8 +65,8 @@ public final class CoachingWorkerFactory {
         String capabilityName = descriptor.capabilities().get(0).name();
 
         try {
-            boolean       isCrisis      = isCrisisTrigger(input);
-            SystemMessage systemMessage = new SystemMessage(buildSystemPrompt(descriptor, isCrisis));
+            CoachingUrgencyTier tier          = resolveUrgencyTier(input);
+            SystemMessage       systemMessage = new SystemMessage(buildSystemPrompt(descriptor, tier));
             UserMessage   userMessage   = new UserMessage(buildUserMessage(input, taxonomy));
 
             ChatRequest request = ChatRequest.builder()
@@ -84,7 +84,7 @@ public final class CoachingWorkerFactory {
 
             long                latencyMs = (System.nanoTime() - startNanos) / 1_000_000;
             long                gameFrame = getGameFrame(input);
-            CoachingUrgencyTier tier      = isCrisis ? CoachingUrgencyTier.CRISIS : resolveUrgencyTier(input);
+                        
 
             onCompletion.onCompleted(descriptor.agentId(), capabilityName, gameFrame,
                                      advice, tier, latencyMs, reconstructTriggerState(input));
@@ -96,20 +96,30 @@ public final class CoachingWorkerFactory {
         }
     }
 
-    static String buildSystemPrompt(AgentDescriptor descriptor, boolean crisisOverride) {
+    static String buildSystemPrompt(AgentDescriptor descriptor, CoachingUrgencyTier tier) {
         AgentDisposition disposition = descriptor.disposition();
-        boolean isDirective = crisisOverride
-                              || (disposition != null && "bold".equals(disposition.primaryTerm(DispositionAxis.RISK_APPETITE)));
+        CoachingStyle style = CoachingStyle.resolve(disposition, tier);
 
         StringBuilder sb = new StringBuilder();
         sb.append("You are a StarCraft II coach providing real-time advice to a human player.\n\n");
 
-        if (isDirective) {
-            sb.append("Style: Give direct, actionable instructions. Use imperative voice.\n");
-            sb.append("Example: \"Build 3 Stalkers immediately from your Gateways.\"\n\n");
-        } else {
-            sb.append("Style: Ask guiding questions to help the player discover the right action.\n");
-            sb.append("Example: \"What could you build to counter those Roaches?\"\n\n");
+        switch (style) {
+            case COMMANDER -> {
+                sb.append("Style: Give direct, actionable instructions. Use imperative voice. Be urgent.\n");
+                sb.append("Example: \"Build 3 Stalkers now and move your army to their natural.\"\n\n");
+            }
+            case RALLY -> {
+                sb.append("Style: Ask urgent guiding questions to help the player act quickly.\n");
+                sb.append("Example: \"Your base is under pressure — what could you warp in to defend?\"\n\n");
+            }
+            case INSTRUCTOR -> {
+                sb.append("Style: Give clear, calm instructions. Be direct but measured.\n");
+                sb.append("Example: \"You should start +1 weapons from the Forge.\"\n\n");
+            }
+            case MENTOR -> {
+                sb.append("Style: Ask guiding questions to help the player discover the right action.\n");
+                sb.append("Example: \"What tech path do you think would counter those Roaches?\"\n\n");
+            }
         }
 
         sb.append("Behavioural disposition:\n");
