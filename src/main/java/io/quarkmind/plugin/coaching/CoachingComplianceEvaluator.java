@@ -32,7 +32,7 @@ public class CoachingComplianceEvaluator {
         this.autoExpireFrames = autoExpireFrames;
     }
 
-    CoachingComplianceEvaluator(
+    public CoachingComplianceEvaluator(
             ConcurrentHashMap<CoachingDomain, OpenCommitment> commitments,
             CoachingEffectivenessTrustRecorder recorder,
             LocationResolver locationResolver) {
@@ -89,6 +89,25 @@ public class CoachingComplianceEvaluator {
                                     recorder.record(commitment.correlationId(), commitment.agentId(), "NEUTRAL", commitment.advice()));
         commitments.clear();
     }
+
+    public boolean resolveHuman(String correlationId, boolean accepted) {
+        var iterator = commitments.entrySet().iterator();
+        while (iterator.hasNext()) {
+            var entry      = iterator.next();
+            var commitment = entry.getValue();
+            if (correlationId.equals(commitment.correlationId())) {
+                if (!commitments.remove(entry.getKey(), commitment)) {
+                    return false;
+                }
+                String status = accepted ? "ENDORSED" : "CHALLENGED";
+                recorder.record(commitment.correlationId(), commitment.agentId(), status, commitment.advice());
+                fireComplianceResolved(commitment.issuedAtFrame(), entry.getKey(), status, commitment.correlationId());
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private void fireComplianceResolved(long frame, CoachingDomain domain, String status, String correlationId) {
         if (complianceResolvedEvent != null) {

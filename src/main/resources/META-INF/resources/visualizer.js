@@ -797,6 +797,7 @@ var workbenchState = { pattern: null, coaching: [], strategy: null };
 
 function connectWorkbenchSocket() {
   var ws = new WebSocket('ws://' + window.location.host + '/ws/workbench');
+  window.__workbenchWs = ws;
   ws.onopen = function() { wbWsConnected = true; updateConnectionStatus(); };
   ws.onmessage = function(e) {
     try {
@@ -872,19 +873,37 @@ function renderCoachingPage() {
     var rem = secs % 60;
     var time = mins + ':' + String(rem).padStart(2, '0');
     var status = c.complianceStatus || '⏳ Pending';
+    var isPending = !c.complianceStatus;
+    var buttons = isPending
+      ? '<button class="coaching-btn coaching-accept" data-cid="' + c.correlationId + '">✓ Accept</button>' +
+        '<button class="coaching-btn coaching-dismiss" data-cid="' + c.correlationId + '">✗ Dismiss</button>'
+      : '';
     return '<div class="coaching-item">' +
       '<div class="coaching-header">' + time + ' [' + c.domain + '] ' + (c.urgency || '') + '</div>' +
       '<div class="coaching-advice">' + c.advice + '</div>' +
-      '<div class="coaching-status" data-frame="' + c.gameFrame + '" data-domain="' + c.domain + '">' + status + '</div>' +
+      '<div class="coaching-controls">' + buttons + '<span class="coaching-status">' + status + '</span></div>' +
     '</div>';
   }).join('');
+
+  el.querySelectorAll('.coaching-accept').forEach(function(btn) {
+    btn.addEventListener('click', function() { sendCoachingResponse(btn.dataset.cid, 'DONE'); });
+  });
+  el.querySelectorAll('.coaching-dismiss').forEach(function(btn) {
+    btn.addEventListener('click', function() { sendCoachingResponse(btn.dataset.cid, 'DECLINE'); });
+  });
 }
 
 function applyComplianceUpdate(payload) {
-  var statusMap = { ENDORSED: '✓ Complied', CHALLENGED: '✗ Ignored', NEUTRAL: '— Neutral' };
+  var statusMap = { ENDORSED: '✅ Endorsed', CHALLENGED: '❌ Challenged', NEUTRAL: '⏸ Neutral', SUPERSEDED: '⏭ Superseded' };
   var label = statusMap[payload.status] || payload.status;
-  var entry = workbenchState.coaching.find(function(c) { return c.gameFrame === payload.gameFrame && c.domain === payload.domain; });
+  var entry = workbenchState.coaching.find(function(c) { return c.correlationId === payload.correlationId; });
   if (entry) { entry.complianceStatus = label; renderCoachingPage(); }
+}
+
+function sendCoachingResponse(correlationId, response) {
+  if (window.__workbenchWs && window.__workbenchWs.readyState === 1) {
+    window.__workbenchWs.send(JSON.stringify({ type: 'coaching_response', correlationId: correlationId, response: response }));
+  }
 }
 
 function renderStrategyPage() {

@@ -84,7 +84,6 @@ public final class CoachingWorkerFactory {
 
             long                latencyMs = (System.nanoTime() - startNanos) / 1_000_000;
             long                gameFrame = getGameFrame(input);
-                        
 
             onCompletion.onCompleted(descriptor.agentId(), capabilityName, gameFrame,
                                      advice, tier, latencyMs, reconstructTriggerState(input));

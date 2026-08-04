@@ -1,9 +1,19 @@
 package io.quarkmind.plugin.coaching;
 
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
 import org.junit.jupiter.api.Test;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CoachingComplianceEvaluatorTest {
@@ -138,6 +148,50 @@ class CoachingComplianceEvaluatorTest {
         assertThat(recorder.outcomes).containsEntry("corr-1", "ENDORSED");
         assertThat(recorder.outcomes).containsEntry("corr-2", "NEUTRAL");
     }
+
+    @Test
+    void resolveHuman_done_endorsedAndRemoved() {
+        var commitments = new ConcurrentHashMap<CoachingDomain, OpenCommitment>();
+        var recorder    = new TestTrustRecorder();
+        var evaluator   = new CoachingComplianceEvaluator(commitments, recorder, new LocationResolver());
+
+        var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
+                                        new CountDelta(UnitType.STALKER, null, 3, 0), 450);
+        commitments.put(CoachingDomain.MILITARY, new OpenCommitment("corr-1", "worker-1", advice, 100));
+
+        boolean result = evaluator.resolveHuman("corr-1", true);
+
+        assertThat(result).isTrue();
+        assertThat(commitments).isEmpty();
+        assertThat(recorder.lastOutcome).isEqualTo("ENDORSED");
+        assertThat(recorder.lastAgentId).isEqualTo("worker-1");
+    }
+
+    @Test
+    void resolveHuman_decline_challengedAndRemoved() {
+        var commitments = new ConcurrentHashMap<CoachingDomain, OpenCommitment>();
+        var recorder    = new TestTrustRecorder();
+        var evaluator   = new CoachingComplianceEvaluator(commitments, recorder, new LocationResolver());
+
+        var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
+                                        new CountDelta(UnitType.STALKER, null, 3, 0), 450);
+        commitments.put(CoachingDomain.MILITARY, new OpenCommitment("corr-1", "worker-1", advice, 100));
+
+        assertThat(evaluator.resolveHuman("corr-1", false)).isTrue();
+        assertThat(commitments).isEmpty();
+        assertThat(recorder.lastOutcome).isEqualTo("CHALLENGED");
+    }
+
+    @Test
+    void resolveHuman_unknownCorrelationId_returnsFalse() {
+        var commitments = new ConcurrentHashMap<CoachingDomain, OpenCommitment>();
+        var recorder    = new TestTrustRecorder();
+        var evaluator   = new CoachingComplianceEvaluator(commitments, recorder, new LocationResolver());
+
+        assertThat(evaluator.resolveHuman("nonexistent", true)).isFalse();
+        assertThat(recorder.lastOutcome).isNull();
+    }
+
 
     private GameState gameStateWithUnits(Map<UnitType, Integer> unitCounts) {
         List<Unit> units = new ArrayList<>();

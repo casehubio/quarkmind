@@ -12,11 +12,11 @@ import io.casehub.qhorus.runtime.message.MessageService;
 import io.quarkmind.sc2.GameStarted;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,6 +38,8 @@ public class CoachingChannelBroker {
     LocationResolver locationResolver;
     @Inject
     jakarta.enterprise.event.Event<CoachingAdvicePublished> coachingAdviceEvent;
+    @Inject
+    jakarta.enterprise.event.Event<CoachingComplianceResolved> complianceResolvedEvent;
 
 
     private volatile UUID                                              channelId;
@@ -86,7 +88,11 @@ public class CoachingChannelBroker {
             adviceWithBaseline = new CoachingAdvice(adviceWithBaseline.advice(), adviceWithBaseline.domainTag(),
                                                     baselined, adviceWithBaseline.verificationWindowFrames());
         }
-        commitments.put(domain, new OpenCommitment(correlationId, event.workerId(), adviceWithBaseline, gameFrame));
+        OpenCommitment old = commitments.put(domain, new OpenCommitment(correlationId, event.workerId(), adviceWithBaseline, gameFrame));
+        if (old != null && complianceResolvedEvent != null) {
+            complianceResolvedEvent.fire(new CoachingComplianceResolved(
+                old.issuedAtFrame(), domain, "SUPERSEDED", old.correlationId()));
+        }
         dispatchCount++;
 
         if (coachingAdviceEvent != null) {
