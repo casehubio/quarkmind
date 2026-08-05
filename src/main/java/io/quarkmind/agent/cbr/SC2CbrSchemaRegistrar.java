@@ -19,15 +19,27 @@ public class SC2CbrSchemaRegistrar {
 
     @PostConstruct
     void register() {
-        CbrFeatureSchema schema = CbrFeatureSchema.of(
+        CbrFeatureSchema strategySchema = CbrFeatureSchema.of(
                 SC2GameCbrCase.CBR_TYPE,
                 FeatureField.categorical("enemy_archetype"),
                 FeatureField.categorical("enemy_race"),
                 FeatureField.categorical("matchup"),
                 FeatureField.numeric("assessment_confidence", 0.0, 1.0)
-        );
-        cbrStore.registerSchema(schema);
-        log.infof("[CBR] Registered schema for case type '%s' with %d fields",
-                SC2GameCbrCase.CBR_TYPE, schema.fields().size());
+                                                             );
+        cbrStore.registerSchema(strategySchema);
+
+        CbrFeatureSchema advisorySchema = CbrFeatureSchema.of(
+                SC2AdvisoryCbrCase.CBR_TYPE,
+                FeatureField.categorical("enemy_archetype"),
+                FeatureField.categorical("enemy_race"),
+                FeatureField.categorical("matchup"),
+                FeatureField.categorical("strategy_id"),
+                FeatureField.categorical("game_phase")
+                                                             );
+        cbrStore.registerSchema(advisorySchema);
+
+        log.infof("[CBR] Registered schemas: '%s' (%d fields), '%s' (%d fields)",
+                  SC2GameCbrCase.CBR_TYPE, strategySchema.fields().size(),
+                  SC2AdvisoryCbrCase.CBR_TYPE, advisorySchema.fields().size());
     }
 }

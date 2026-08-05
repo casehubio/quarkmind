@@ -153,6 +153,119 @@ class MilestoneOutcomeRecorderTest {
 
     // --- helpers ---
 
+
+// --- proportional attribution for strategy pivots ---
+
+    @Test
+    void gameEnd_withPivot_recordsProportionalVerdicts() {
+        recorder.onGameStarted(new GameStarted());
+
+        // Strategy A selected at frame 0
+        recorder.onStrategySelected(strategyEvent("strategy.drools", 0, 0));
+        // Pivot to Strategy B at frame 6000 (out of 10000 total)
+        recorder.onStrategySelected(strategyEvent("strategy.early-pressure", 1, 6000));
+        // Track last seen frame
+        recorder.evaluateMilestones(gameStateAtFrame(10000));
+
+        recorder.onGameStopped(new GameStopped(GameResult.LOSS));
+
+        assertThat(outcomeRecorder.records).hasSize(2);
+
+        OutcomeRecord first = outcomeRecorder.records.stream()
+                                                     .filter(r -> r.actorId().equals("strategy.drools")).findFirst().orElseThrow();
+        OutcomeRecord second = outcomeRecorder.records.stream()
+                                                      .filter(r -> r.actorId().equals("strategy.early-pressure")).findFirst().orElseThrow();
+
+        assertThat(first.verdict()).isEqualTo(AttestationVerdict.CHALLENGED);
+        assertThat(first.confidence()).isCloseTo(0.6, org.assertj.core.data.Offset.offset(0.01));
+
+        assertThat(second.verdict()).isEqualTo(AttestationVerdict.CHALLENGED);
+        assertThat(second.confidence()).isCloseTo(0.4, org.assertj.core.data.Offset.offset(0.01));
+    }
+
+    @Test
+    void gameEnd_withPivot_win_recordsProportionalEndorsed() {
+        recorder.onGameStarted(new GameStarted());
+        recorder.onStrategySelected(strategyEvent("strategy.drools", 0, 0));
+        recorder.onStrategySelected(strategyEvent("strategy.early-pressure", 1, 4000));
+        recorder.evaluateMilestones(gameStateAtFrame(10000));
+
+        recorder.onGameStopped(new GameStopped(GameResult.WIN));
+
+        assertThat(outcomeRecorder.records).hasSize(2);
+
+        OutcomeRecord first = outcomeRecorder.records.stream()
+                                                     .filter(r -> r.actorId().equals("strategy.drools")).findFirst().orElseThrow();
+        OutcomeRecord second = outcomeRecorder.records.stream()
+                                                      .filter(r -> r.actorId().equals("strategy.early-pressure")).findFirst().orElseThrow();
+
+        assertThat(first.verdict()).isEqualTo(AttestationVerdict.ENDORSED);
+        assertThat(first.confidence()).isCloseTo(0.4, org.assertj.core.data.Offset.offset(0.01));
+
+        assertThat(second.verdict()).isEqualTo(AttestationVerdict.ENDORSED);
+        assertThat(second.confidence()).isCloseTo(0.6, org.assertj.core.data.Offset.offset(0.01));
+    }
+
+    @Test
+    void gameEnd_noPivot_singleSelection_recordsFullConfidence() {
+        recorder.onGameStarted(new GameStarted());
+        recorder.onStrategySelected(strategyEvent("strategy.drools", 0, 0));
+        recorder.evaluateMilestones(gameStateAtFrame(10000));
+
+        recorder.onGameStopped(new GameStopped(GameResult.WIN));
+
+        assertThat(outcomeRecorder.records).hasSize(1);
+        assertThat(outcomeRecorder.records.get(0).actorId()).isEqualTo("strategy.drools");
+        assertThat(outcomeRecorder.records.get(0).confidence()).isEqualTo(1.0);
+    }
+
+    @Test
+    void gameEnd_noSelection_fallsBackToRouterLastSelected() {
+        recorder.onGameStarted(new GameStarted());
+        // No onStrategySelected called — falls back to strategyRouter.lastSelectedId()
+        recorder.onGameStopped(new GameStopped(GameResult.WIN));
+
+        assertThat(outcomeRecorder.records).hasSize(1);
+        assertThat(outcomeRecorder.records.get(0).actorId()).isEqualTo("strategy.drools");
+        assertThat(outcomeRecorder.records.get(0).confidence()).isEqualTo(1.0);
+    }
+
+    @Test
+    void gameEnd_threePivots_recordsThreeProportionalVerdicts() {
+        recorder.onGameStarted(new GameStarted());
+        recorder.onStrategySelected(strategyEvent("A", 0, 0));
+        recorder.onStrategySelected(strategyEvent("B", 1, 3000));
+        recorder.onStrategySelected(strategyEvent("C", 2, 7000));
+        recorder.evaluateMilestones(gameStateAtFrame(10000));
+
+        recorder.onGameStopped(new GameStopped(GameResult.LOSS));
+
+        assertThat(outcomeRecorder.records).hasSize(3);
+        OutcomeRecord a = outcomeRecorder.records.stream().filter(r -> r.actorId().equals("A")).findFirst().orElseThrow();
+        OutcomeRecord b = outcomeRecorder.records.stream().filter(r -> r.actorId().equals("B")).findFirst().orElseThrow();
+        OutcomeRecord c = outcomeRecorder.records.stream().filter(r -> r.actorId().equals("C")).findFirst().orElseThrow();
+
+        assertThat(a.confidence()).isCloseTo(0.3, org.assertj.core.data.Offset.offset(0.01));
+        assertThat(b.confidence()).isCloseTo(0.4, org.assertj.core.data.Offset.offset(0.01));
+        assertThat(c.confidence()).isCloseTo(0.3, org.assertj.core.data.Offset.offset(0.01));
+    }
+
+    @Test
+    void gameStarted_resetsStrategySpans() {
+        recorder.onStrategySelected(strategyEvent("old-strategy", 0, 0));
+        recorder.onGameStarted(new GameStarted());
+        // After reset, should fall back to router — no spans
+        recorder.onGameStopped(new GameStopped(GameResult.WIN));
+
+        assertThat(outcomeRecorder.records).hasSize(1);
+        assertThat(outcomeRecorder.records.get(0).actorId()).isEqualTo("strategy.drools");
+        assertThat(outcomeRecorder.records.get(0).confidence()).isEqualTo(1.0);
+    }
+
+    private static io.quarkmind.agent.cbr.StrategySelectionPublished strategyEvent(String id, int pivotCount, long frame) {
+        return new io.quarkmind.agent.cbr.StrategySelectionPublished(id, io.quarkmind.domain.StrategyArchetype.PROTOSS_GATEWAY_RUSH, 0.8, pivotCount, frame);
+    }
+
     private static GameState gameStateAtFrame(long frame) {
         return new GameState(200, 100, 15, 6, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), frame, null);
     }

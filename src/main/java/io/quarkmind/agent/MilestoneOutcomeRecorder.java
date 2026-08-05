@@ -21,14 +21,19 @@ public class MilestoneOutcomeRecorder {
 
     private static final Logger log = Logger.getLogger(MilestoneOutcomeRecorder.class);
 
-    private final OutcomeRecorder outcomeRecorder;
+    private final OutcomeRecorder                              outcomeRecorder;
     private final io.quarkmind.agent.cbr.SC2StrategyRouterTask strategyRouter;
-    private final GameSession gameSession;
-    private final MilestoneSession milestoneSession;
-    private final DominanceAssessor dominanceAssessor;
-    private final List<MilestoneTrigger> triggers;
-    private final boolean milestonesEnabled;
-    private final double deadZoneThreshold;
+    private final GameSession                                  gameSession;
+    private final MilestoneSession                             milestoneSession;
+    private final DominanceAssessor                            dominanceAssessor;
+    private final List<MilestoneTrigger>                       triggers;
+    private final boolean                                      milestonesEnabled;
+    private final double                                       deadZoneThreshold;
+
+    private final List<StrategySpan> strategySpans = new java.util.ArrayList<>();
+    private       long               lastSeenFrame;
+
+    record StrategySpan(String strategyId, long startFrame) {}
 
     @Inject
     MilestoneOutcomeRecorder(
@@ -39,17 +44,16 @@ public class MilestoneOutcomeRecorder {
             DominanceAssessor dominanceAssessor,
             @Any Instance<MilestoneTrigger> triggerInstances,
             MilestoneConfig config) {
-        this.outcomeRecorder = outcomeRecorder;
-        this.strategyRouter = strategyRouter;
-        this.gameSession = gameSession;
-        this.milestoneSession = milestoneSession;
+        this.outcomeRecorder   = outcomeRecorder;
+        this.strategyRouter    = strategyRouter;
+        this.gameSession       = gameSession;
+        this.milestoneSession  = milestoneSession;
         this.dominanceAssessor = dominanceAssessor;
-        this.triggers = triggerInstances.stream().toList();
+        this.triggers          = triggerInstances.stream().toList();
         this.milestonesEnabled = config.enabled();
         this.deadZoneThreshold = config.deadZoneThreshold();
     }
 
-    /** Test constructor — no CDI. */
     MilestoneOutcomeRecorder(
             OutcomeRecorder outcomeRecorder,
             io.quarkmind.agent.cbr.SC2StrategyRouterTask strategyRouter,
@@ -59,55 +63,70 @@ public class MilestoneOutcomeRecorder {
             List<MilestoneTrigger> triggers,
             boolean milestonesEnabled,
             double deadZoneThreshold) {
-        this.outcomeRecorder = outcomeRecorder;
-        this.strategyRouter = strategyRouter;
-        this.gameSession = gameSession;
-        this.milestoneSession = milestoneSession;
+        this.outcomeRecorder   = outcomeRecorder;
+        this.strategyRouter    = strategyRouter;
+        this.gameSession       = gameSession;
+        this.milestoneSession  = milestoneSession;
         this.dominanceAssessor = dominanceAssessor;
-        this.triggers = triggers;
+        this.triggers          = triggers;
         this.milestonesEnabled = milestonesEnabled;
         this.deadZoneThreshold = deadZoneThreshold;
     }
 
     void onGameStarted(@Observes GameStarted event) {
         milestoneSession.reset();
+        strategySpans.clear();
+        lastSeenFrame = 0;
+    }
+
+    void onStrategySelected(@Observes io.quarkmind.agent.cbr.StrategySelectionPublished event) {
+        strategySpans.add(new StrategySpan(event.strategyId(), event.gameFrame()));
     }
 
     public void evaluateMilestones(GameState state) {
-        if (!milestonesEnabled) return;
+        lastSeenFrame = state.gameFrame();
+        if (!milestonesEnabled) {return;}
 
-        // SPI gate: milestone recording requires AttestingOutcomeRecorder (engine#648)
-        // Without it, evaluateMilestones is a no-op — game-end records via record() only.
-        // TODO: activate when engine#648 ships AttestingOutcomeRecorder sub-interface
         log.debugf("[MILESTONE] SPI not available — milestone evaluation skipped at frame %d", state.gameFrame());
     }
 
     void onGameStopped(@Observes GameStopped event) {
         if (event.result() == GameResult.UNKNOWN) {
             log.infof("[MILESTONE] Game ended with unknown result — skipped (strategy=%s)",
-                strategyRouter.lastSelectedId());
+                      strategyRouter.lastSelectedId());
             return;
         }
-        String strategyId = strategyRouter.lastSelectedId();
+
         String context = "strategy";
         AttestationVerdict verdict = switch (event.result()) {
-            case WIN     -> AttestationVerdict.ENDORSED;
-            case LOSS    -> AttestationVerdict.CHALLENGED;
-            case TIE     -> AttestationVerdict.SOUND;
+            case WIN -> AttestationVerdict.ENDORSED;
+            case LOSS -> AttestationVerdict.CHALLENGED;
+            case TIE -> AttestationVerdict.SOUND;
             case UNKNOWN -> throw new AssertionError("unreachable — guarded above");
         };
 
-        // If a milestone entry already exists for this strategy, append game-end attestation.
-        // Otherwise, create entry with game-end outcome (identical to pre-milestone behavior).
-        // Until engine#648: always creates via record() (no milestone entries exist).
-        outcomeRecorder.record(OutcomeRecord.of(
-            strategyId,
-            gameSession.id(),
-            context,
-            verdict,
-            1.0
-        ));
-        log.infof("[MILESTONE] Recorded game-end: strategy=%s context=%s result=%s verdict=%s",
-            strategyId, context, event.result(), verdict);
+        if (strategySpans.size() <= 1) {
+            String strategyId = strategySpans.size() == 1
+                                ? strategySpans.getFirst().strategyId()
+                                : strategyRouter.lastSelectedId();
+            outcomeRecorder.record(OutcomeRecord.of(strategyId, gameSession.id(), context, verdict, 1.0));
+            log.infof("[MILESTONE] Recorded game-end: strategy=%s result=%s verdict=%s confidence=1.0",
+                      strategyId, event.result(), verdict);
+        } else {
+            long totalFrames = lastSeenFrame;
+            for (int i = 0; i < strategySpans.size(); i++) {
+                StrategySpan span = strategySpans.get(i);
+                long endFrame = (i + 1 < strategySpans.size())
+                                ? strategySpans.get(i + 1).startFrame()
+                                : totalFrames;
+                double proportion = totalFrames > 0
+                                    ? (double) (endFrame - span.startFrame()) / totalFrames
+                                    : 1.0 / strategySpans.size();
+                outcomeRecorder.record(OutcomeRecord.of(
+                        span.strategyId(), gameSession.id(), context, verdict, proportion));
+                log.infof("[MILESTONE] Recorded proportional game-end: strategy=%s result=%s verdict=%s confidence=%.3f (frames %d-%d of %d)",
+                          span.strategyId(), event.result(), verdict, proportion, span.startFrame(), endFrame, totalFrames);
+            }
+        }
     }
 }

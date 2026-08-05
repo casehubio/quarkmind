@@ -1,6 +1,5 @@
 package io.quarkmind.agent;
 
-import java.util.List;
 
 public final class QuarkMindCaseFile {
     // Observation state — written by GameStateTranslator
@@ -51,17 +50,6 @@ public final class QuarkMindCaseFile {
     public static final String LLM_FALLBACK_RATIONALE       = "agent.scouting.llm-fallback.rationale";
 
 
-    public static final List<String> ALL_KEYS = List.of(
-            MINERALS, VESPENE, SUPPLY_USED, SUPPLY_CAP,
-            WORKERS, ARMY, MY_BUILDINGS, GEYSERS, ENEMY_UNITS, GAME_FRAME, READY,
-            GAME_STATE,
-            RESOURCE_BUDGET, STRATEGY, CRISIS, ENEMY_ARMY_SIZE,
-            ENEMY_BUILD_ORDER, TIMING_ATTACK_INCOMING, ENEMY_POSTURE, MOMENTS_LATEST, GAME_PHASE,
-            STRATEGY_SELECTED_ID, STRATEGY_ROUTED_CONTEXT, STRATEGY_ROUTED_ARCHETYPE,
-            STRATEGY_ROUTED_CONFIDENCE, STRATEGY_PIVOT_COUNT,
-            COMMENTARY_TRIGGER, COMMENTARY_NARRATIVE_TRIGGER,
-            GAME_MODE, COACHING_TRIGGER
-                                                       );
 
     private QuarkMindCaseFile() {}
 }

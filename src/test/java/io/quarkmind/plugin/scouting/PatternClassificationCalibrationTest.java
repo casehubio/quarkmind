@@ -223,6 +223,68 @@ class PatternClassificationCalibrationTest {
         }
     }
 
+    @Test
+    void droolsBaselinePerMinuteAccuracy() throws IOException {
+        int[]         checkpointMinutes = {1, 2, 3, 4, 5};
+        StringBuilder report            = new StringBuilder();
+        report.append("=== Drools-Only Baseline — Per-Minute Classification Accuracy ===\n");
+        report.append("Establishes reference numbers for #213 (IEM10 replay validation & accuracy benchmarking)\n\n");
+
+        Map<String, Map<Integer, int[]>> matchupAccuracy = new java.util.LinkedHashMap<>();
+        for (String m : List.of("PvT", "PvZ", "PvP")) {
+            matchupAccuracy.put(m, new java.util.LinkedHashMap<>());
+            for (int min : checkpointMinutes) {
+                matchupAccuracy.get(m).put(min, new int[]{0, 0});
+            }
+        }
+
+        List<IEM10JsonSimulatedGame> iem10Games = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP);
+        for (IEM10JsonSimulatedGame game : iem10Games) {
+            game.reset();
+            for (int min : checkpointMinutes) {
+                int targetTicks = min * (TICKS_3MIN / 3);
+                var result      = classifyGame(game, game.matchup(), game.replayName(), targetTicks, (double) min);
+                if (result != null) {
+                    int[] counts = matchupAccuracy.getOrDefault(game.matchup(), new java.util.LinkedHashMap<>())
+                                                  .get(min);
+                    if (counts != null) {
+                        counts[1]++;
+                        if (result.correct()) {counts[0]++;}
+                    }
+                }
+                game.reset();
+            }
+        }
+
+        report.append(String.format("%-6s", "Min"));
+        for (String m : matchupAccuracy.keySet()) {
+            report.append(String.format("  %-12s", m));
+        }
+        report.append("  All\n");
+
+        for (int min : checkpointMinutes) {
+            report.append(String.format("%-6d", min));
+            int allCorrect = 0, allTotal = 0;
+            for (String m : matchupAccuracy.keySet()) {
+                int[] counts = matchupAccuracy.get(m).get(min);
+                allCorrect += counts[0];
+                allTotal += counts[1];
+                if (counts[1] > 0) {
+                    report.append(String.format("  %d/%d=%.0f%%    ", counts[0], counts[1], (double) counts[0] / counts[1] * 100));
+                } else {
+                    report.append(String.format("  %-12s", "—"));
+                }
+            }
+            if (allTotal > 0) {
+                report.append(String.format("  %d/%d=%.0f%%", allCorrect, allTotal, (double) allCorrect / allTotal * 100));
+            }
+            report.append("\n");
+        }
+
+        System.out.println(report);
+    }
+
+
     private ClassificationResult classifyGame(SimulatedGame game, String matchup, String gameName,
                                               int targetTicks, double targetGameTimeMin) {
         ScoutingSessionManager             sessionManager = new ScoutingSessionManager();

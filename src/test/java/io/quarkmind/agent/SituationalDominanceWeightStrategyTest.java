@@ -9,6 +9,7 @@ import static io.quarkmind.agent.AnchorInterpolatorTest.anchor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
+@SuppressWarnings("deprecation")
 class SituationalDominanceWeightStrategyTest {
 
     private final SituationalDominanceWeightStrategy strategy =

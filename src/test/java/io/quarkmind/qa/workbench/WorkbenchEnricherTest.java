@@ -79,7 +79,7 @@ class WorkbenchEnricherTest {
 
     @Test
     void strategy_selection_produces_strategy_event() {
-        enricher.onStrategySelection(new StrategySelectionPublished("reactive-blink", StrategyArchetype.ZERG_ZERGLING_RUSH, 0.82, 1));
+        enricher.onStrategySelection(new StrategySelectionPublished("reactive-blink", StrategyArchetype.ZERG_ZERGLING_RUSH, 0.82, 1, 5000L));
 
         var event = broadcaster.events.getFirst();
         assertEquals("strategy", event.type());

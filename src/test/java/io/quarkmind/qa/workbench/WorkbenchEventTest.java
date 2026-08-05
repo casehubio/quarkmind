@@ -43,7 +43,7 @@ class WorkbenchEventTest {
 
     @Test
     void strategySelectionPublished_carriesFields() {
-        var event = new StrategySelectionPublished("reactive-blink", StrategyArchetype.ZERG_ZERGLING_RUSH, 0.82, 1);
+        var event = new StrategySelectionPublished("reactive-blink", StrategyArchetype.ZERG_ZERGLING_RUSH, 0.82, 1, 5000L);
         assertEquals("reactive-blink", event.strategyId());
         assertEquals(0.82, event.confidence());
         assertEquals(1, event.pivotCount());

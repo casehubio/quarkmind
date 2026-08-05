@@ -3,6 +3,7 @@ package io.quarkmind.plugin.advisory;
 import io.casehub.eidos.api.AgentCapability;
 import io.casehub.eidos.api.AgentDescriptor;
 import io.casehub.eidos.api.AgentDisposition;
+import io.casehub.eidos.api.DispositionAxis;
 import io.casehub.platform.api.identity.TenancyConstants;
 import org.junit.jupiter.api.Test;
 
@@ -83,11 +84,11 @@ class QuarkMindAgentRegistrarTest {
         assertThat(aggressive.tenancyId()).isEqualTo(TenancyConstants.DEFAULT_TENANT_ID);
 
         AgentDisposition aggressiveDisp = aggressive.disposition();
-        assertThat(aggressiveDisp.socialOrient()).isEqualTo("collaborative");
-        assertThat(aggressiveDisp.ruleFollowing()).isEqualTo("flexible");
-        assertThat(aggressiveDisp.riskAppetite()).isEqualTo("bold");
-        assertThat(aggressiveDisp.autonomy()).isEqualTo("semi-autonomous");
-        assertThat(aggressiveDisp.conflictMode()).isEqualTo("compete");
+        assertThat(aggressiveDisp.primaryTerm(DispositionAxis.SOCIAL_ORIENTATION)).isEqualTo("collaborative");
+        assertThat(aggressiveDisp.primaryTerm(DispositionAxis.RULE_FOLLOWING)).isEqualTo("flexible");
+        assertThat(aggressiveDisp.primaryTerm(DispositionAxis.RISK_APPETITE)).isEqualTo("bold");
+        assertThat(aggressiveDisp.primaryTerm(DispositionAxis.AUTONOMY)).isEqualTo("semi-autonomous");
+        assertThat(aggressiveDisp.primaryTerm(DispositionAxis.CONFLICT_MODE)).isEqualTo("compete");
         assertThat(aggressiveDisp.delegation()).isFalse();
 
         List<AgentCapability> aggressiveCaps = aggressive.capabilities();
@@ -113,11 +114,11 @@ class QuarkMindAgentRegistrarTest {
         assertThat(conservative.tenancyId()).isEqualTo(TenancyConstants.DEFAULT_TENANT_ID);
 
         AgentDisposition conservativeDisp = conservative.disposition();
-        assertThat(conservativeDisp.socialOrient()).isEqualTo("collaborative");
-        assertThat(conservativeDisp.ruleFollowing()).isEqualTo("strict");
-        assertThat(conservativeDisp.riskAppetite()).isEqualTo("conservative");
-        assertThat(conservativeDisp.autonomy()).isEqualTo("semi-autonomous");
-        assertThat(conservativeDisp.conflictMode()).isEqualTo("compete");
+        assertThat(conservativeDisp.primaryTerm(DispositionAxis.SOCIAL_ORIENTATION)).isEqualTo("collaborative");
+        assertThat(conservativeDisp.primaryTerm(DispositionAxis.RULE_FOLLOWING)).isEqualTo("strict");
+        assertThat(conservativeDisp.primaryTerm(DispositionAxis.RISK_APPETITE)).isEqualTo("conservative");
+        assertThat(conservativeDisp.primaryTerm(DispositionAxis.AUTONOMY)).isEqualTo("semi-autonomous");
+        assertThat(conservativeDisp.primaryTerm(DispositionAxis.CONFLICT_MODE)).isEqualTo("compete");
         assertThat(conservativeDisp.delegation()).isFalse();
 
         List<AgentCapability> conservativeCaps = conservative.capabilities();
@@ -155,11 +156,11 @@ class QuarkMindAgentRegistrarTest {
         assertThat(bold.tenancyId()).isEqualTo(TenancyConstants.DEFAULT_TENANT_ID);
 
         AgentDisposition boldDisp = bold.disposition();
-        assertThat(boldDisp.socialOrient()).isEqualTo("collaborative");
-        assertThat(boldDisp.ruleFollowing()).isEqualTo("flexible");
-        assertThat(boldDisp.riskAppetite()).isEqualTo("bold");
-        assertThat(boldDisp.autonomy()).isEqualTo("semi-autonomous");
-        assertThat(boldDisp.conflictMode()).isEqualTo("collaborate");
+        assertThat(boldDisp.primaryTerm(DispositionAxis.SOCIAL_ORIENTATION)).isEqualTo("collaborative");
+        assertThat(boldDisp.primaryTerm(DispositionAxis.RULE_FOLLOWING)).isEqualTo("flexible");
+        assertThat(boldDisp.primaryTerm(DispositionAxis.RISK_APPETITE)).isEqualTo("bold");
+        assertThat(boldDisp.primaryTerm(DispositionAxis.AUTONOMY)).isEqualTo("semi-autonomous");
+        assertThat(boldDisp.primaryTerm(DispositionAxis.CONFLICT_MODE)).isEqualTo("collaborate");
         assertThat(boldDisp.delegation()).isFalse();
 
         List<AgentCapability> boldCaps = bold.capabilities();
@@ -185,11 +186,11 @@ class QuarkMindAgentRegistrarTest {
         assertThat(measured.tenancyId()).isEqualTo(TenancyConstants.DEFAULT_TENANT_ID);
 
         AgentDisposition measuredDisp = measured.disposition();
-        assertThat(measuredDisp.socialOrient()).isEqualTo("collaborative");
-        assertThat(measuredDisp.ruleFollowing()).isEqualTo("principled");
-        assertThat(measuredDisp.riskAppetite()).isEqualTo("measured");
-        assertThat(measuredDisp.autonomy()).isEqualTo("semi-autonomous");
-        assertThat(measuredDisp.conflictMode()).isEqualTo("collaborate");
+        assertThat(measuredDisp.primaryTerm(DispositionAxis.SOCIAL_ORIENTATION)).isEqualTo("collaborative");
+        assertThat(measuredDisp.primaryTerm(DispositionAxis.RULE_FOLLOWING)).isEqualTo("principled");
+        assertThat(measuredDisp.primaryTerm(DispositionAxis.RISK_APPETITE)).isEqualTo("measured");
+        assertThat(measuredDisp.primaryTerm(DispositionAxis.AUTONOMY)).isEqualTo("semi-autonomous");
+        assertThat(measuredDisp.primaryTerm(DispositionAxis.CONFLICT_MODE)).isEqualTo("collaborate");
         assertThat(measuredDisp.delegation()).isFalse();
 
         List<AgentCapability> measuredCaps = measured.capabilities();
@@ -227,11 +228,11 @@ class QuarkMindAgentRegistrarTest {
         assertThat(expansion.tenancyId()).isEqualTo(TenancyConstants.DEFAULT_TENANT_ID);
 
         AgentDisposition expansionDisp = expansion.disposition();
-        assertThat(expansionDisp.socialOrient()).isEqualTo("collaborative");
-        assertThat(expansionDisp.ruleFollowing()).isEqualTo("flexible");
-        assertThat(expansionDisp.riskAppetite()).isEqualTo("bold");
-        assertThat(expansionDisp.autonomy()).isEqualTo("semi-autonomous");
-        assertThat(expansionDisp.conflictMode()).isEqualTo("collaborate");
+        assertThat(expansionDisp.primaryTerm(DispositionAxis.SOCIAL_ORIENTATION)).isEqualTo("collaborative");
+        assertThat(expansionDisp.primaryTerm(DispositionAxis.RULE_FOLLOWING)).isEqualTo("flexible");
+        assertThat(expansionDisp.primaryTerm(DispositionAxis.RISK_APPETITE)).isEqualTo("bold");
+        assertThat(expansionDisp.primaryTerm(DispositionAxis.AUTONOMY)).isEqualTo("semi-autonomous");
+        assertThat(expansionDisp.primaryTerm(DispositionAxis.CONFLICT_MODE)).isEqualTo("collaborate");
         assertThat(expansionDisp.delegation()).isFalse();
 
         List<AgentCapability> expansionCaps = expansion.capabilities();
@@ -257,11 +258,11 @@ class QuarkMindAgentRegistrarTest {
         assertThat(defensive.tenancyId()).isEqualTo(TenancyConstants.DEFAULT_TENANT_ID);
 
         AgentDisposition defensiveDisp = defensive.disposition();
-        assertThat(defensiveDisp.socialOrient()).isEqualTo("independent");
-        assertThat(defensiveDisp.ruleFollowing()).isEqualTo("principled");
-        assertThat(defensiveDisp.riskAppetite()).isEqualTo("conservative");
-        assertThat(defensiveDisp.autonomy()).isEqualTo("semi-autonomous");
-        assertThat(defensiveDisp.conflictMode()).isEqualTo("avoid");
+        assertThat(defensiveDisp.primaryTerm(DispositionAxis.SOCIAL_ORIENTATION)).isEqualTo("independent");
+        assertThat(defensiveDisp.primaryTerm(DispositionAxis.RULE_FOLLOWING)).isEqualTo("principled");
+        assertThat(defensiveDisp.primaryTerm(DispositionAxis.RISK_APPETITE)).isEqualTo("conservative");
+        assertThat(defensiveDisp.primaryTerm(DispositionAxis.AUTONOMY)).isEqualTo("semi-autonomous");
+        assertThat(defensiveDisp.primaryTerm(DispositionAxis.CONFLICT_MODE)).isEqualTo("avoid");
         assertThat(defensiveDisp.delegation()).isFalse();
 
         List<AgentCapability> defensiveCaps = defensive.capabilities();

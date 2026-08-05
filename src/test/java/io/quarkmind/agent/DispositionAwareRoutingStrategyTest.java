@@ -58,7 +58,7 @@ class DispositionAwareRoutingStrategyTest {
                                 .riskAppetite(ConscientiousnessTerm.BOLD.value())
                                 .ruleFollowing(ConscientiousnessTerm.FLEXIBLE.value()).build())
                         .tenancyId("default").build(),
-                new MatchDegree.Exact());
+                new MatchDegree.Exact(), null);
     }
 
     private AgentCandidate conservativeAdvisor() {
@@ -71,7 +71,7 @@ class DispositionAwareRoutingStrategyTest {
                                 .riskAppetite(ConscientiousnessTerm.CONSERVATIVE.value())
                                 .ruleFollowing(ConscientiousnessTerm.STRICT.value()).build())
                         .tenancyId("default").build(),
-                new MatchDegree.Exact());
+                new MatchDegree.Exact(), null);
     }
 
     private ObjectNode aggressiveEnemyContext() {
@@ -167,7 +167,7 @@ class DispositionAwareRoutingStrategyTest {
 
     @Test
     void nullDescriptorTreatedAsBootstrap() {
-        var noDescriptor = new AgentCandidate("no-descriptor", Set.of(CAPABILITY), 0, AgentHealth.READY, null, new MatchDegree.None());
+        var noDescriptor = new AgentCandidate("no-descriptor", Set.of(CAPABILITY), 0, AgentHealth.READY, null, new MatchDegree.None(), null);
         var bootstrapStrategy = new DispositionAwareRoutingStrategy(classifier, stubPolicyProvider(), new StubTrustScoreSource());
         var ctx = new AgentRoutingContext(CASE_ID, CAPABILITY, aggressiveEnemyContext(), "default", List.of(), null, null);
         RoutingResult result = bootstrapStrategy.select(ctx, List.of(noDescriptor));

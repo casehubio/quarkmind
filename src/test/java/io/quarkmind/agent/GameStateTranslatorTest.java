@@ -1,9 +1,14 @@
 package io.quarkmind.agent;
 
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
 import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GameStateTranslatorTest {
@@ -31,4 +36,30 @@ class GameStateTranslatorTest {
         assertThat((List<?>) map.get(QuarkMindCaseFile.WORKERS)).hasSize(1);
         assertThat((List<?>) map.get(QuarkMindCaseFile.ARMY)).hasSize(1);
     }
+
+    @Test
+    void classifiesAllRaceWorkersCorrectly() {
+        var probe    = new Unit("p1", UnitType.PROBE, new Point2d(0, 0), 20, 20, 20, 20, 0, 0);
+        var scv      = new Unit("s1", UnitType.SCV, new Point2d(1, 1), 45, 45, 45, 45, 0, 0);
+        var drone    = new Unit("d1", UnitType.DRONE, new Point2d(2, 2), 40, 40, 40, 40, 0, 0);
+        var marine   = new Unit("m1", UnitType.MARINE, new Point2d(3, 3), 45, 45, 55, 55, 0, 0);
+        var zealot   = new Unit("z1", UnitType.ZEALOT, new Point2d(4, 4), 100, 100, 50, 50, 0, 0);
+        var zergling = new Unit("zl1", UnitType.ZERGLING, new Point2d(5, 5), 35, 35, 35, 35, 0, 0);
+
+        var state = new GameState(100, 50, 30, 10,
+                                  List.of(probe, scv, drone, marine, zealot, zergling),
+                                  List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 100L, null);
+        Map<String, Object> map = translator.toMap(state);
+
+        @SuppressWarnings("unchecked")
+        List<Unit> workers = (List<Unit>) map.get(QuarkMindCaseFile.WORKERS);
+        @SuppressWarnings("unchecked")
+        List<Unit> army = (List<Unit>) map.get(QuarkMindCaseFile.ARMY);
+
+        assertThat(workers).hasSize(3).extracting(Unit::type)
+                           .containsExactlyInAnyOrder(UnitType.PROBE, UnitType.SCV, UnitType.DRONE);
+        assertThat(army).hasSize(3).extracting(Unit::type)
+                        .containsExactlyInAnyOrder(UnitType.MARINE, UnitType.ZEALOT, UnitType.ZERGLING);
+    }
+
 }

@@ -2,7 +2,6 @@ package io.quarkmind.agent;
 
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Unit;
-import io.quarkmind.domain.UnitType;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.HashMap;
@@ -23,9 +22,9 @@ public class GameStateTranslator {
         data.put(QuarkMindCaseFile.READY, Boolean.TRUE);
 
         List<Unit> workers = state.myUnits().stream()
-                                  .filter(u -> u.type() == UnitType.PROBE).toList();
+                                  .filter(u -> u.type().isWorker()).toList();
         List<Unit> army = state.myUnits().stream()
-                               .filter(u -> u.type() != UnitType.PROBE).toList();
+                               .filter(u -> !u.type().isWorker()).toList();
 
         data.put(QuarkMindCaseFile.WORKERS, workers);
         data.put(QuarkMindCaseFile.ARMY, army);

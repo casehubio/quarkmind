@@ -192,7 +192,8 @@ public class SC2StrategyRouterTask implements TaskDefinition {
         ctx.set(QuarkMindCaseFile.STRATEGY_PIVOT_COUNT, pivotCount + 1);
         lastSelectedId = winner;
         if (strategySelectionEvent != null) {
-            strategySelectionEvent.fire(new StrategySelectionPublished(winner, archetype, confidence, pivotCount + 1));
+            long gameFrame = ctx.getOrDefault(QuarkMindCaseFile.GAME_FRAME, 0L);
+            strategySelectionEvent.fire(new StrategySelectionPublished(winner, archetype, confidence, pivotCount + 1, gameFrame));
         }
 
         log.infof("[CBR-ROUTE] %s -> %s (archetype=%s confidence=%.2f experiences=%d pivot=%d)",

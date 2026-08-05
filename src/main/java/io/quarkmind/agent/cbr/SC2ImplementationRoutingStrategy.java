@@ -44,7 +44,6 @@ public class SC2ImplementationRoutingStrategy implements ImplementationRoutingSt
     public ImplementationSelection select(
             ImplementationRoutingContext context,
             List<ImplementationCandidate> candidates) {
-
         if (candidates.size() <= 1) {
             return new ImplementationSelection.RunAll();
         }
@@ -54,7 +53,7 @@ public class SC2ImplementationRoutingStrategy implements ImplementationRoutingSt
 
         List<AgentCandidate> agentCandidates = candidates.stream()
                                                          .map(c -> new AgentCandidate(c.workerName(), Set.of(c.capabilityName()),
-                                                                                      0, AgentHealth.READY, null, null))
+                                                                                      0, AgentHealth.READY, null, null, null))
                                                          .toList();
 
         List<ClassifiedCandidate> classified = classifier.classify(
