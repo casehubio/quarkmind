@@ -4,5 +4,6 @@ public record OpenCommitment(
         String correlationId,
         String agentId,
         CoachingAdvice advice,
-        long issuedAtFrame
+        long issuedAtFrame,
+        io.quarkmind.domain.GameState baselineState
 ) {}

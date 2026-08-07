@@ -106,7 +106,7 @@ class CoachingIntegrationIT {
             new CountDelta(UnitType.STALKER, null, 3, 0), 200);
 
         channelBroker.commitments().put(CoachingDomain.MILITARY,
-            new OpenCommitment("corr-test", "worker-1", advice, 100));
+            new OpenCommitment("corr-test", "worker-1", advice, 100, null));
 
         assertThat(channelBroker.commitments()).containsKey(CoachingDomain.MILITARY);
 

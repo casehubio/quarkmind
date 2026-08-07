@@ -26,7 +26,7 @@ class CoachingAcknowledgmentHandlerTest {
 
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
             new CountDelta(UnitType.STALKER, null, 3, 0), 450);
-        commitments.put(CoachingDomain.MILITARY, new OpenCommitment("corr-1", "worker-1", advice, 100));
+        commitments.put(CoachingDomain.MILITARY, new OpenCommitment("corr-1", "worker-1", advice, 100, null));
 
         var handler = new CoachingAcknowledgmentHandler(evaluator, null, null);
 
@@ -44,7 +44,7 @@ class CoachingAcknowledgmentHandlerTest {
 
         var advice = new CoachingAdvice("build stalkers", CoachingDomain.MILITARY,
             new CountDelta(UnitType.STALKER, null, 3, 0), 450);
-        commitments.put(CoachingDomain.MILITARY, new OpenCommitment("corr-1", "worker-1", advice, 100));
+        commitments.put(CoachingDomain.MILITARY, new OpenCommitment("corr-1", "worker-1", advice, 100, null));
 
         var handler = new CoachingAcknowledgmentHandler(evaluator, null, null);
 

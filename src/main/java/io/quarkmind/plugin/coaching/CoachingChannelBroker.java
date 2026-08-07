@@ -88,7 +88,8 @@ public class CoachingChannelBroker {
             adviceWithBaseline = new CoachingAdvice(adviceWithBaseline.advice(), adviceWithBaseline.domainTag(),
                                                     baselined, adviceWithBaseline.verificationWindowFrames());
         }
-        OpenCommitment old = commitments.put(domain, new OpenCommitment(correlationId, event.workerId(), adviceWithBaseline, gameFrame));
+        var baselineForLlm = !adviceWithBaseline.isVerifiable() ? event.triggerState() : null;
+        OpenCommitment old = commitments.put(domain, new OpenCommitment(correlationId, event.workerId(), adviceWithBaseline, gameFrame, baselineForLlm));
         if (old != null && complianceResolvedEvent != null) {
             complianceResolvedEvent.fire(new CoachingComplianceResolved(
                 old.issuedAtFrame(), domain, "SUPERSEDED", old.correlationId()));

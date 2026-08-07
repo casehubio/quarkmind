@@ -14,21 +14,23 @@ public class CoachingComplianceEvaluator {
     private final ConcurrentHashMap<CoachingDomain, OpenCommitment> commitments;
     private final CoachingEffectivenessTrustRecorder                recorder;
     private final LocationResolver                                  locationResolver;
+    private final ComplianceWorkerDispatcher                        dispatcher;
     private final int                                               autoExpireFrames;
     @jakarta.inject.Inject
-                  jakarta.enterprise.event.Event<CoachingComplianceResolved> complianceResolvedEvent;
-
+    jakarta.enterprise.event.Event<CoachingComplianceResolved> complianceResolvedEvent;
 
     @Inject
     CoachingComplianceEvaluator(CoachingChannelBroker broker,
                                 CoachingEffectivenessTrustRecorder recorder,
                                 LocationResolver locationResolver,
+                                jakarta.enterprise.inject.Instance<ComplianceWorkerDispatcher> dispatcherInstance,
                                 @ConfigProperty(name = "quarkmind.coaching.compliance.auto-expire-frames",
                                                 defaultValue = "900")
                                 int autoExpireFrames) {
         this.commitments      = broker.commitments();
         this.recorder         = recorder;
         this.locationResolver = locationResolver;
+        this.dispatcher       = dispatcherInstance.isResolvable() ? dispatcherInstance.get() : null;
         this.autoExpireFrames = autoExpireFrames;
     }
 
@@ -47,7 +49,20 @@ public class CoachingComplianceEvaluator {
         this.commitments      = commitments;
         this.recorder         = recorder;
         this.locationResolver = locationResolver;
+        this.dispatcher       = null;
         this.autoExpireFrames = autoExpireFrames;
+    }
+
+    CoachingComplianceEvaluator(
+            ConcurrentHashMap<CoachingDomain, OpenCommitment> commitments,
+            CoachingEffectivenessTrustRecorder recorder,
+            LocationResolver locationResolver,
+            ComplianceWorkerDispatcher dispatcher) {
+        this.commitments      = commitments;
+        this.recorder         = recorder;
+        this.locationResolver = locationResolver;
+        this.dispatcher       = dispatcher;
+        this.autoExpireFrames = DEFAULT_AUTO_EXPIRE_FRAMES;
     }
 
     public void evaluate(GameState state, long currentFrame) {
@@ -63,9 +78,15 @@ public class CoachingComplianceEvaluator {
 
             if (!advice.isVerifiable()) {
                 if (currentFrame >= windowEnd) {
-                    recorder.record(commitment.correlationId(), commitment.agentId(), "NEUTRAL", advice);
-                    fireComplianceResolved(currentFrame, domain, "NEUTRAL", commitment.correlationId());
-                    iterator.remove();
+                    if (commitment.baselineState() != null && dispatcher != null
+                        && dispatcher.isAvailable()) {
+                        dispatcher.dispatch(commitment, state);
+                        iterator.remove();
+                    } else {
+                        recorder.record(commitment.correlationId(), commitment.agentId(), "NEUTRAL", advice);
+                        fireComplianceResolved(currentFrame, domain, "NEUTRAL", commitment.correlationId());
+                        iterator.remove();
+                    }
                 }
                 continue;
             }
@@ -88,6 +109,9 @@ public class CoachingComplianceEvaluator {
         commitments.forEach((domain, commitment) ->
                                     recorder.record(commitment.correlationId(), commitment.agentId(), "NEUTRAL", commitment.advice()));
         commitments.clear();
+        if (dispatcher != null) {
+            dispatcher.cancelAll();
+        }
     }
 
     public boolean resolveHuman(String correlationId, boolean accepted) {
@@ -108,11 +132,9 @@ public class CoachingComplianceEvaluator {
         return false;
     }
 
-
     private void fireComplianceResolved(long frame, CoachingDomain domain, String status, String correlationId) {
         if (complianceResolvedEvent != null) {
             complianceResolvedEvent.fire(new CoachingComplianceResolved(frame, domain, status, correlationId));
         }
     }
-
 }
