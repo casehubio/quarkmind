@@ -1,13 +1,16 @@
 package io.quarkmind.agent;
 
 import io.quarkmind.domain.DominanceWeights;
+import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.plugin.drools.DominanceWeightRuleUnit;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitInstance;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class DroolsDominanceWeightStrategy implements DominanceWeightStrategy {
@@ -37,23 +40,22 @@ public class DroolsDominanceWeightStrategy implements DominanceWeightStrategy {
 
     @Override
     public DominanceWeights resolve(WeightContext context) {
-        DominanceWeights baseline = interpolator.interpolate(context.gameFrame());
-        DominanceWeightRuleUnit data = new DominanceWeightRuleUnit();
+        DominanceWeights        baseline = interpolator.interpolate(context.gameFrame());
+        DominanceWeightRuleUnit data     = new DominanceWeightRuleUnit();
 
         if (context.currentPhase() != null) {
             data.getTacticalPostureStore().add(context.currentPhase());
         }
-        for (var a : context.patternAssessments()) {
+        for (var a : deduplicateByCategory(context.patternAssessments())) {
             data.getPatternStore().add(a);
         }
 
         try (RuleUnitInstance<DominanceWeightRuleUnit> instance =
-                 ruleUnit.createInstance(data)) {
+                     ruleUnit.createInstance(data)) {
             instance.fire();
         }
 
-        return applyModifiers(baseline, data.getModifiers());
-    }
+        return applyModifiers(baseline, data.getModifiers());}
 
     static DominanceWeights applyModifiers(DominanceWeights baseline,
                                            List<WeightModifier> modifiers) {
@@ -80,4 +82,15 @@ public class DroolsDominanceWeightStrategy implements DominanceWeightStrategy {
         return new DominanceWeights(
             economy / sum, army / sum, tech / sum, bases / sum);
     }
+
+    static List<PatternAssessment> deduplicateByCategory(List<PatternAssessment> assessments) {
+        if (assessments.size() <= 1) {return assessments;}
+        return new ArrayList<>(assessments.stream()
+                                          .collect(Collectors.toMap(
+                                                  a -> a.archetype().category(),
+                                                  a -> a,
+                                                  (a, b) -> a.confidence() >= b.confidence() ? a : b))
+                                          .values());
+    }
+
 }

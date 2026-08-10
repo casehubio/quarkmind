@@ -1,8 +1,8 @@
 package io.quarkmind.agent;
 
 import io.quarkmind.domain.DominanceWeights;
-import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.PatternAssessment;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.plugin.drools.DominanceWeightRuleUnit;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static io.quarkmind.agent.AnchorInterpolatorTest.anchor;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 class DroolsDominanceWeightStrategyTest {
@@ -136,4 +138,35 @@ class DroolsDominanceWeightStrategyTest {
         assertEquals(1.0, result.economy() + result.army()
             + result.tech() + result.bases(), 0.001);
     }
+
+    @Test
+    void resolve_deduplicatesPerCategory() {
+        var ctx = new WeightContext(5000, null, List.of(
+                new PatternAssessment(StrategyArchetype.TERRAN_MARINE_TANK, 0.7, 5000, "test"),
+                new PatternAssessment(StrategyArchetype.TERRAN_BATTLE_MECH, 0.6, 5000, "test"),
+                new PatternAssessment(StrategyArchetype.ZERG_ROACH_HYDRA, 0.4, 5000, "test")));
+        var singleCtx = new WeightContext(5000, null, List.of(
+                new PatternAssessment(StrategyArchetype.TERRAN_MARINE_TANK, 0.7, 5000, "test")));
+        DominanceWeights multi  = createStrategy().resolve(ctx);
+        DominanceWeights single = createStrategy().resolve(singleCtx);
+        assertEquals(single.army(), multi.army(), 0.001,
+                     "3 COMPOSITION assessments should dedup to highest-confidence one");
+        assertEquals(single.economy(), multi.economy(), 0.001);
+    }
+
+    @Test
+    void resolve_keepsHighestPerCategoryAcrossCategories() {
+        var ctx = new WeightContext(5000, null, List.of(
+                new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.8, 3000, "test"),
+                new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.5, 2000, "test"),
+                new PatternAssessment(StrategyArchetype.TERRAN_BIO_TIMING, 0.6, 5000, "test")));
+        var dedupedCtx = new WeightContext(5000, null, List.of(
+                new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.8, 3000, "test"),
+                new PatternAssessment(StrategyArchetype.TERRAN_BIO_TIMING, 0.6, 5000, "test")));
+        DominanceWeights multi   = createStrategy().resolve(ctx);
+        DominanceWeights deduped = createStrategy().resolve(dedupedCtx);
+        assertEquals(deduped.army(), multi.army(), 0.001,
+                     "2 RUSH + 1 TIMING should dedup to 1 RUSH (highest) + 1 TIMING");
+    }
+
 }
