@@ -49,7 +49,7 @@ class MomentDetectionTaskTest {
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.ThreatPosition(new Point2d(50, 50)),
             100, LEVEL_1));
-        task.fireRules(100);
+        task.fireRules(100, 0, 0);
 
         assertThat(receivedMoments).isNotEmpty();
         assertThat(receivedMoments.get(0).payload().type()).isEqualTo(GameMomentType.FIRST_CONTACT);
@@ -61,7 +61,7 @@ class MomentDetectionTaskTest {
             new ScoutingIntelPayload.TimingAlert(true), 200, LEVEL_1));
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.ArmySize(8), 200, LEVEL_1));
-        task.fireRules(200);
+        task.fireRules(200, 0, 0);
 
         assertThat(receivedMoments)
             .extracting(e -> e.payload().type())
@@ -74,7 +74,7 @@ class MomentDetectionTaskTest {
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.ThreatPosition(new Point2d(50, 50)),
             100, LEVEL_1));
-        task.fireRules(100);
+        task.fireRules(100, 0, 0);
 
         assertThat(receivedMoments).hasSize(1);
         assertThat(receivedMoments.get(0).payload().type()).isEqualTo(GameMomentType.FIRST_CONTACT);
@@ -83,7 +83,7 @@ class MomentDetectionTaskTest {
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.ThreatPosition(new Point2d(60, 60)),
             200, LEVEL_1));
-        task.fireRules(200);
+        task.fireRules(200, 0, 0);
 
         // Still only one FIRST_CONTACT
         assertThat(receivedMoments)
@@ -96,7 +96,7 @@ class MomentDetectionTaskTest {
         // First tick: baseline army size
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.ArmySize(10), 100, LEVEL_1));
-        task.fireRules(100);
+        task.fireRules(100, 0, 0);
 
         // No ARMY_SHIFT on first observation
         assertThat(receivedMoments)
@@ -106,7 +106,7 @@ class MomentDetectionTaskTest {
         // Second tick: army size increases by 40% (10 → 14)
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.ArmySize(14), 200, LEVEL_1));
-        task.fireRules(200);
+        task.fireRules(200, 0, 0);
 
         assertThat(receivedMoments)
             .filteredOn(e -> e.payload().type() == GameMomentType.ARMY_SHIFT)
@@ -125,12 +125,12 @@ class MomentDetectionTaskTest {
         // First tick: baseline
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.ArmySize(10), 100, LEVEL_1));
-        task.fireRules(100);
+        task.fireRules(100, 0, 0);
 
         // Second tick: only 20% change (10 → 12)
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.ArmySize(12), 200, LEVEL_1));
-        task.fireRules(200);
+        task.fireRules(200, 0, 0);
 
         assertThat(receivedMoments)
             .filteredOn(e -> e.payload().type() == GameMomentType.ARMY_SHIFT)
@@ -142,7 +142,7 @@ class MomentDetectionTaskTest {
         // First tick: baseline posture
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.PostureUpdate("MACRO"), 100, LEVEL_1));
-        task.fireRules(100);
+        task.fireRules(100, 0, 0);
 
         // No POSTURE_CHANGE on first observation
         assertThat(receivedMoments)
@@ -152,7 +152,7 @@ class MomentDetectionTaskTest {
         // Second tick: posture changes
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.PostureUpdate("ATTACK"), 200, LEVEL_1));
-        task.fireRules(200);
+        task.fireRules(200, 0, 0);
 
         assertThat(receivedMoments)
             .filteredOn(e -> e.payload().type() == GameMomentType.POSTURE_CHANGE)
@@ -171,15 +171,64 @@ class MomentDetectionTaskTest {
         // First tick: baseline
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.PostureUpdate("MACRO"), 100, LEVEL_1));
-        task.fireRules(100);
+        task.fireRules(100, 0, 0);
 
         // Second tick: same posture
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.PostureUpdate("MACRO"), 200, LEVEL_1));
-        task.fireRules(200);
+        task.fireRules(200, 0, 0);
 
         assertThat(receivedMoments)
             .filteredOn(e -> e.payload().type() == GameMomentType.POSTURE_CHANGE)
             .isEmpty();
+    }
+
+    @Test
+    void detectsSupplyBlock_whenSupplyUsedEqualsSupplyCap() {
+        level1Bus.publish(new LevelEvent<>(
+                new ScoutingIntelPayload.ArmySize(5), 500, LEVEL_1));
+        task.fireRules(500, 46, 46);
+
+        assertThat(receivedMoments)
+                .extracting(e -> e.payload().type())
+                .contains(GameMomentType.SUPPLY_BLOCK);
+    }
+
+    @Test
+    void doesNotDetectSupplyBlock_whenNotBlocked() {
+        level1Bus.publish(new LevelEvent<>(
+                new ScoutingIntelPayload.ArmySize(5), 500, LEVEL_1));
+        task.fireRules(500, 30, 46);
+
+        assertThat(receivedMoments)
+                .extracting(e -> e.payload().type())
+                .doesNotContain(GameMomentType.SUPPLY_BLOCK);
+    }
+
+    @Test
+    void deduplicatesSupplyBlock_withinCooldownWindow() {
+        level1Bus.publish(new LevelEvent<>(
+                new ScoutingIntelPayload.ArmySize(5), 500, LEVEL_1));
+        task.fireRules(500, 46, 46);
+
+        assertThat(receivedMoments)
+                .filteredOn(e -> e.payload().type() == GameMomentType.SUPPLY_BLOCK)
+                .hasSize(1);
+
+        level1Bus.publish(new LevelEvent<>(
+                new ScoutingIntelPayload.ArmySize(5), 600, LEVEL_1));
+        task.fireRules(600, 46, 46);
+
+        assertThat(receivedMoments)
+                .filteredOn(e -> e.payload().type() == GameMomentType.SUPPLY_BLOCK)
+                .hasSize(1);
+
+        level1Bus.publish(new LevelEvent<>(
+                new ScoutingIntelPayload.ArmySize(5), 800, LEVEL_1));
+        task.fireRules(800, 46, 46);
+
+        assertThat(receivedMoments)
+                .filteredOn(e -> e.payload().type() == GameMomentType.SUPPLY_BLOCK)
+                .hasSize(2);
     }
 }

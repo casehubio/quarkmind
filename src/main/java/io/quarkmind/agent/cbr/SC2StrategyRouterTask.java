@@ -185,6 +185,16 @@ public class SC2StrategyRouterTask implements TaskDefinition {
             case ImplementationSelection.RunNone ignored -> FALLBACK;
         };
 
+        ImplementationRoutingContext trustOnlyCtx = new ImplementationRoutingContext(
+                gameSession.id(), CAPABILITY, null, "default", List.of());
+        ImplementationSelection trustOnlySelection = routingStrategy.select(trustOnlyCtx, candidates);
+        String trustOnlyWinner = switch (trustOnlySelection) {
+            case ImplementationSelection.Selected s -> s.bindingNames().getFirst();
+            case ImplementationSelection.RunAll ignored -> FALLBACK;
+            case ImplementationSelection.RunNone ignored -> FALLBACK;
+        };
+        ctx.set(QuarkMindCaseFile.CBR_INFLUENCED_SELECTION, !winner.equals(trustOnlyWinner));
+
         ctx.set(QuarkMindCaseFile.STRATEGY_SELECTED_ID, winner);
         ctx.set(QuarkMindCaseFile.STRATEGY_ROUTED_CONTEXT, contextKey);
         ctx.set(QuarkMindCaseFile.STRATEGY_ROUTED_ARCHETYPE, archetype.name());

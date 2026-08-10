@@ -62,7 +62,7 @@ class GameTickExecutorMigrationTest {
     @BeforeEach
     void setUp() {
         engine = mock(SC2Engine.class);
-        translator = new GameStateTranslator();
+        translator = new GameStateTranslator("test-opponent");
         caseHub = mock(QuarkMindCaseHub.class);
         gameSession = new GameSession();
         dispatchBroker = mock(PluginDispatchBroker.class);

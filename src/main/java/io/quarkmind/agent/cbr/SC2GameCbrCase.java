@@ -50,4 +50,43 @@ public record SC2GameCbrCase(
                         "assessment_confidence", FeatureValue.number(assessmentConfidence)
                 ));
     }
+
+    public static SC2GameCbrCase buildForGameEnriched(
+            String archetypeName, String raceName, String matchup,
+            double assessmentConfidence, String strategyId,
+            EnrichedGameData e) {
+        var features = new java.util.HashMap<String, FeatureValue>();
+        features.put("enemy_archetype", FeatureValue.string(archetypeName));
+        features.put("enemy_race", FeatureValue.string(raceName));
+        features.put("matchup", FeatureValue.string(matchup));
+        features.put("assessment_confidence", FeatureValue.number(assessmentConfidence));
+
+        features.put("phase_sequence", FeatureValue.stringList(e.phaseSequence()));
+        features.put("phase_count", FeatureValue.number(e.phaseSequence().stream().distinct().count()));
+        features.put("moment_count", FeatureValue.number(e.momentCount()));
+        if (e.arcNarrative() != null && !e.arcNarrative().isEmpty()) {
+            features.put("arc_narrative", FeatureValue.string(e.arcNarrative()));
+        }
+        features.put("game_duration_minutes", FeatureValue.number(e.gameDurationMinutes()));
+
+        features.put("battle_count", FeatureValue.number(e.battleCount()));
+        features.put("dominance_army", FeatureValue.number(e.dominanceArmy()));
+        features.put("dominance_overall", FeatureValue.number(e.dominanceOverall()));
+
+        features.put("expansion_count", FeatureValue.number(e.expansionCount()));
+        features.put("worker_count_final", FeatureValue.number(e.workerCountFinal()));
+        features.put("dominance_economy", FeatureValue.number(e.dominanceEconomy()));
+        features.put("supply_block_count", FeatureValue.number(e.supplyBlockCount()));
+
+        e.firstContactMinute().ifPresent(v -> features.put("first_contact_minute", FeatureValue.number(v)));
+        e.scoutDispatchMinute().ifPresent(v -> features.put("scout_dispatch_minute", FeatureValue.number(v)));
+        features.put("archetype_confidence", FeatureValue.number(e.archetypeConfidence()));
+
+        features.put("opponent_id", FeatureValue.string(e.opponentId()));
+
+        return new SC2GameCbrCase(
+                "vs " + archetypeName + " (" + matchup + ")",
+                strategyId, null, null, features);
+    }
+
 }

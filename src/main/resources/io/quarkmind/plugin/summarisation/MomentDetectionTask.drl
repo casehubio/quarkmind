@@ -80,5 +80,14 @@ then
         Map.of("previousPosture", previousPosture, "newPosture", ((PostureUpdate) $posture).posture())));
 end
 
+rule "Supply Block"
+    salience 130
+when
+    eval(supplyUsed > 0 && supplyUsed >= supplyCap)
+then
+    detectedMoments.add(new GameMoment(
+        GameMomentType.SUPPLY_BLOCK, currentFrame, Map.of()));
+end
+
 // GAME_ENDING: Building count data comes from CaseContext, not ScoutingIntelPayload.
 // Detection is handled directly in MomentDetectionTask.execute() via CaseContext instead of via Drools.

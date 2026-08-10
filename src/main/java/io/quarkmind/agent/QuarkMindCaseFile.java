@@ -48,7 +48,10 @@ public final class QuarkMindCaseFile {
     public static final String LLM_FALLBACK_ARCHETYPE       = "agent.scouting.llm-fallback.archetype";
     public static final String LLM_FALLBACK_CONFIDENCE      = "agent.scouting.llm-fallback.confidence";
     public static final String LLM_FALLBACK_RATIONALE       = "agent.scouting.llm-fallback.rationale";
-
+    // CBR Tier 2 enrichment — written by plugins, read by SC2CbrRetentionObserver
+    public static final String OPPONENT_ID                  = "game.opponent.id";
+    public static final String SCOUTING_DISPATCH_FRAME      = "game.scouting.dispatch.frame";
+    public static final String CBR_INFLUENCED_SELECTION     = "agent.strategy.cbr.influenced";
 
 
     private QuarkMindCaseFile() {}

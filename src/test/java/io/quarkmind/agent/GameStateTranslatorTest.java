@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GameStateTranslatorTest {
 
-    GameStateTranslator translator = new GameStateTranslator();
+    GameStateTranslator translator = new GameStateTranslator("test-opponent");
 
     @Test
     void translatesResourcesCorrectly() {
@@ -62,4 +62,11 @@ class GameStateTranslatorTest {
                         .containsExactlyInAnyOrder(UnitType.MARINE, UnitType.ZEALOT, UnitType.ZERGLING);
     }
 
+
+    @Test
+    void includesOpponentId() {
+        var                 state = new GameState(50, 0, 15, 3, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
+        Map<String, Object> map   = translator.toMap(state);
+        assertThat(map.get(QuarkMindCaseFile.OPPONENT_ID)).isEqualTo("test-opponent");
+    }
 }

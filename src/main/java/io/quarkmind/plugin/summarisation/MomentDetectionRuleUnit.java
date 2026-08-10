@@ -24,4 +24,16 @@ public class MomentDetectionRuleUnit implements RuleUnitData {
     public void setPreviousArmyValue(int previousArmyValue) { this.previousArmyValue = previousArmyValue; }
     public String getPreviousPosture() { return previousPosture; }
     public void setPreviousPosture(String previousPosture) { this.previousPosture = previousPosture; }
+
+    private int supplyUsed;
+    private int supplyCap;
+
+    public int getSupplyUsed()                {return supplyUsed;}
+
+    public void setSupplyUsed(int supplyUsed) {this.supplyUsed = supplyUsed;}
+
+    public int getSupplyCap()                 {return supplyCap;}
+
+    public void setSupplyCap(int supplyCap)   {this.supplyCap = supplyCap;}
+
 }

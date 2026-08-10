@@ -38,6 +38,8 @@ public class MomentDetectionTask implements MomentDetectionSeam {
     private boolean firstContactFired = false;
     private int previousArmyValue = 0;
     private String previousPosture = null;
+    private long   lastSupplyBlockFrame = -1;
+
 
     @Inject
     public MomentDetectionTask(RuleUnit<MomentDetectionRuleUnit> ruleUnit) {
@@ -82,23 +84,27 @@ public class MomentDetectionTask implements MomentDetectionSeam {
 
     @Override
     public void execute(CaseContext ctx) {
-        Long frameL = ctx.getAs(QuarkMindCaseFile.GAME_FRAME, Long.class);
-        long frame = frameL != null ? frameL : 0L;
-        List<GameMoment> moments = fireRules(frame);
+        Long    frameL     = ctx.getAs(QuarkMindCaseFile.GAME_FRAME, Long.class);
+        long    frame      = frameL != null ? frameL : 0L;
+        Integer supplyUsed = ctx.getAs(QuarkMindCaseFile.SUPPLY_USED, Integer.class);
+        Integer supplyCap  = ctx.getAs(QuarkMindCaseFile.SUPPLY_CAP, Integer.class);
+        List<GameMoment> moments = fireRules(frame,
+                                             supplyUsed != null ? supplyUsed : 0,
+                                             supplyCap != null ? supplyCap : 0);
 
-        // Write detected moments to CaseFile for downstream plugins
         if (!moments.isEmpty()) {
             ctx.set(QuarkMindCaseFile.MOMENTS_LATEST, moments);
-        }
-    }
+        }}
 
-    List<GameMoment> fireRules(long frame) {
-        if (pendingIntel.isEmpty()) return List.of();
+    List<GameMoment> fireRules(long frame, int supplyUsed, int supplyCap) {
+        if (pendingIntel.isEmpty()) {return List.of();}
 
         var data = new MomentDetectionRuleUnit();
         data.setCurrentFrame(frame);
         data.setPreviousArmyValue(previousArmyValue);
         data.setPreviousPosture(previousPosture);
+        data.setSupplyUsed(supplyUsed);
+        data.setSupplyCap(supplyCap);
         for (var payload : pendingIntel) {
             data.getIntelEvents().add(payload);
         }
@@ -107,7 +113,6 @@ public class MomentDetectionTask implements MomentDetectionSeam {
             instance.fire();
         }
 
-        // Update state from pendingIntel before clearing
         for (var payload : pendingIntel) {
             if (payload instanceof ScoutingIntelPayload.ArmySize armySize) {
                 previousArmyValue = armySize.count();
@@ -117,13 +122,15 @@ public class MomentDetectionTask implements MomentDetectionSeam {
         }
         pendingIntel.clear();
 
-        // Apply deduplication after Drools fires
         List<GameMoment> deduplicated = new ArrayList<>();
         for (var moment : data.getDetectedMoments()) {
-            // FIRST_CONTACT: only fire once per game
             if (moment.type() == GameMomentType.FIRST_CONTACT) {
-                if (firstContactFired) continue;
+                if (firstContactFired) {continue;}
                 firstContactFired = true;
+            }
+            if (moment.type() == GameMomentType.SUPPLY_BLOCK) {
+                if (lastSupplyBlockFrame >= 0 && frame - lastSupplyBlockFrame < 224) {continue;}
+                lastSupplyBlockFrame = frame;
             }
 
             deduplicated.add(moment);
@@ -138,9 +145,9 @@ public class MomentDetectionTask implements MomentDetectionSeam {
 
     void onGameStarted(@Observes GameStarted event) {
         pendingIntel.clear();
-        firstContactFired = false;
-        previousArmyValue = 0;
-        previousPosture = null;
-    }
+        firstContactFired    = false;
+        previousArmyValue    = 0;
+        previousPosture      = null;
+        lastSupplyBlockFrame = -1;}
 
 }

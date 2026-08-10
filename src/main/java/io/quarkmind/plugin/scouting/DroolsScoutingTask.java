@@ -33,9 +33,9 @@ import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.PhaseResolver;
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.StrategyArchetype;
-import io.quarkmind.domain.Race;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.IntentQueue;
@@ -118,6 +118,8 @@ public class DroolsScoutingTask implements ScoutingTask {
     private volatile int prevEnemyHash = 0;
     private volatile String scoutProbeTag;
     private long lastFrame = -1;
+    private long scoutFirstDispatchFrame = -1;
+
 
     private final EnumMap<StrategyArchetype, Double> cumulativeConfidence =
         new EnumMap<>(StrategyArchetype.class);
@@ -135,19 +137,19 @@ public class DroolsScoutingTask implements ScoutingTask {
     }
 
     public void resetDispatchState() {
-        prevThreatPos   = null;
-        prevArmySize    = -1;
-        prevPosture     = null;
-        prevTimingAlert = null;
-        prevBuildOrder  = null;
-        prevEnemyHash   = 0;
-        scoutProbeTag   = null;
-        lastFrame       = -1;
+        prevThreatPos           = null;
+        prevArmySize            = -1;
+        prevPosture             = null;
+        prevTimingAlert         = null;
+        prevBuildOrder          = null;
+        prevEnemyHash           = 0;
+        scoutProbeTag           = null;
+        lastFrame               = -1;
+        scoutFirstDispatchFrame = -1;
         cumulativeConfidence.clear();
         prevAssessments           = List.of();
         lastLlmFallbackFrame      = -1;
-        lastProcessedLlmArchetype = null;
-    }
+        lastProcessedLlmArchetype = null;}
 
     @PostConstruct
     void initThresholds() {
@@ -377,6 +379,11 @@ public class DroolsScoutingTask implements ScoutingTask {
         } else {
             scoutProbeTag = null;
         }
+
+        if (scoutFirstDispatchFrame >= 0
+                && ctx.getAs(QuarkMindCaseFile.SCOUTING_DISPATCH_FRAME, Long.class) == null) {
+            ctx.set(QuarkMindCaseFile.SCOUTING_DISPATCH_FRAME, scoutFirstDispatchFrame);
+        }
     }
 
     @Override
@@ -390,20 +397,22 @@ public class DroolsScoutingTask implements ScoutingTask {
     }
 
     private void maybeSendScout(long frame, List<Unit> workers, Point2d target) {
-        if (frame < SCOUT_DELAY_TICKS) return;
-        if (workers.isEmpty()) return;
+        if (frame < SCOUT_DELAY_TICKS) {return;}
+        if (workers.isEmpty()) {return;}
 
         if (scoutProbeTag != null) {
             boolean alive = workers.stream().anyMatch(w -> w.tag().equals(scoutProbeTag));
-            if (alive) return;
+            if (alive) {return;}
             scoutProbeTag = null;
         }
 
         Unit scout = workers.get(workers.size() - 1);
         scoutProbeTag = scout.tag();
+        if (scoutFirstDispatchFrame < 0) {
+            scoutFirstDispatchFrame = frame;
+        }
         intentQueue.add(new MoveIntent(scout.tag(), target));
-        log.infof("[SCOUTING] Scout probe %s dispatched toward %s", scoutProbeTag, target);
-    }
+        log.infof("[SCOUTING] Scout probe %s dispatched toward %s", scoutProbeTag, target);}
 
     static Point2d estimatedEnemyBase(Point2d ourBase, int mapWidth) {
         int margin    = mapWidth / 8;

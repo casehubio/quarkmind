@@ -3,6 +3,8 @@ package io.quarkmind.agent;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Unit;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,14 @@ import java.util.Map;
 
 @ApplicationScoped
 public class GameStateTranslator {
+
+    private final String opponentId;
+
+    @Inject
+    public GameStateTranslator(
+            @ConfigProperty(name = "quarkmind.opponent.id", defaultValue = "unknown") String opponentId) {
+        this.opponentId = opponentId;
+    }
 
     public Map<String, Object> toMap(GameState state) {
         Map<String, Object> data = new HashMap<>();
@@ -20,6 +30,7 @@ public class GameStateTranslator {
         data.put(QuarkMindCaseFile.SUPPLY_USED, state.supplyUsed());
         data.put(QuarkMindCaseFile.GAME_FRAME, state.gameFrame());
         data.put(QuarkMindCaseFile.READY, Boolean.TRUE);
+        data.put(QuarkMindCaseFile.OPPONENT_ID, opponentId);
 
         List<Unit> workers = state.myUnits().stream()
                                   .filter(u -> u.type().isWorker()).toList();
