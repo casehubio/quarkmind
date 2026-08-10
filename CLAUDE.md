@@ -67,14 +67,13 @@ Before starting any branch: `git fetch origin && git rebase origin/main` to sync
 | Artifact   | Destination | Notes |
 |------------|-------------|-------|
 | adr        | project     | lands in `docs/adr/` — promoted at epic close |
-| specs      | project     | lands in `docs/superpowers/specs/` — promoted at epic close |
-| blog       | workspace   | staged here; published via publish-blog (destination in ~/.claude/blog-routing.yaml) |
+| specs      | project     | lands in `docs/specs/` — promoted at epic close |
+| blog       | project     | lands in `docs/blog/` — promoted at work end |
 | plans      | workspace   | stay in workspace permanently |
 | design     | workspace   | epic journal stays in workspace |
 | snapshots  | workspace   | stay in workspace permanently |
 | handover   | workspace   | |
 
-**Blog directory:** `/Users/mdproctor/claude/public/quarkmind/blog/`
 
 ## Context Management
 
@@ -109,7 +108,7 @@ proactively suggest writing a handover before continuing.
 
 Deep-dive: `https://raw.githubusercontent.com/casehubio/parent/main/docs/repos/quarkmind.md`
 
-See `docs/superpowers/specs/` for the design spec and `docs/library-research.md` for the library evaluation log.
+See `docs/specs/` for the design spec and `docs/library-research.md` for the library evaluation log.
 
 ---
 
