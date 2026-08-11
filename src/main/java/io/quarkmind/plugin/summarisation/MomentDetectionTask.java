@@ -9,6 +9,8 @@ import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.MomentDetectionSeam;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
+import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.Unit;
 import io.quarkmind.sc2.GameStarted;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -20,6 +22,7 @@ import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -39,6 +42,22 @@ public class MomentDetectionTask implements MomentDetectionSeam {
     private int previousArmyValue = 0;
     private String previousPosture = null;
     private long   lastSupplyBlockFrame = -1;
+
+    enum BattleState {IDLE, IN_BATTLE, QUIESCENT}
+
+    private static final double BATTLE_START_THRESHOLD  = 0.15;
+    private static final double BATTLE_STABLE_THRESHOLD = 0.05;
+    static final         int    QUIESCENCE_FRAMES       = 224;
+
+    private BattleState battleState           = BattleState.IDLE;
+    private long        quiescenceStartFrame  = -1;
+    private long        battleStartFrame      = -1;
+    private int         previousOwnArmyValue  = 0;
+    private int         previousOwnArmyCount  = 0;
+    private int         battleStartOwnValue   = 0;
+    private int         battleStartEnemyValue = 0;
+    private int         battleStartOwnCount   = 0;
+    private int         battleStartEnemyCount = 0;
 
 
     @Inject
@@ -67,10 +86,10 @@ public class MomentDetectionTask implements MomentDetectionSeam {
     @Override
     public Set<String> requires() {
         return Set.of(
-            QuarkMindCaseFile.ENEMY_UNITS,
-            QuarkMindCaseFile.ENEMY_POSTURE,
-            QuarkMindCaseFile.TIMING_ATTACK_INCOMING);
-    }
+                QuarkMindCaseFile.ENEMY_UNITS,
+                QuarkMindCaseFile.ENEMY_POSTURE,
+                QuarkMindCaseFile.TIMING_ATTACK_INCOMING,
+                QuarkMindCaseFile.ARMY);}
 
     @Override
     public Predicate<CaseContext> activateIf() {
@@ -91,6 +110,14 @@ public class MomentDetectionTask implements MomentDetectionSeam {
         List<GameMoment> moments = fireRules(frame,
                                              supplyUsed != null ? supplyUsed : 0,
                                              supplyCap != null ? supplyCap : 0);
+
+        @SuppressWarnings("unchecked")
+        List<Unit> ownArmy = (List<Unit>) ctx.get(QuarkMindCaseFile.ARMY);
+        @SuppressWarnings("unchecked")
+        List<Unit> enemyUnits = (List<Unit>) ctx.get(QuarkMindCaseFile.ENEMY_UNITS);
+        if (ownArmy != null && enemyUnits != null) {
+            updateBattleFSM(frame, ownArmy, enemyUnits, moments);
+        }
 
         if (!moments.isEmpty()) {
             ctx.set(QuarkMindCaseFile.MOMENTS_LATEST, moments);
@@ -143,11 +170,75 @@ public class MomentDetectionTask implements MomentDetectionSeam {
         return deduplicated;
     }
 
+
+    void updateBattleFSM(long frame, List<Unit> ownArmy, List<Unit> enemyUnits,
+                         List<GameMoment> moments) {
+        int currentOwnValue   = armyValue(ownArmy);
+        int currentEnemyValue = armyValue(enemyUnits);
+
+        switch (battleState) {
+            case IDLE -> {
+                if (previousOwnArmyValue > 0 && currentOwnValue < previousOwnArmyValue * (1 - BATTLE_START_THRESHOLD)) {
+                    battleState           = BattleState.IN_BATTLE;
+                    battleStartFrame      = frame;
+                    battleStartOwnValue   = previousOwnArmyValue;
+                    battleStartEnemyValue = currentEnemyValue;
+                    battleStartOwnCount   = previousOwnArmyCount;
+                    battleStartEnemyCount = enemyUnits.size();
+                }
+            }
+            case IN_BATTLE -> {
+                if (previousOwnArmyValue > 0
+                    && Math.abs(currentOwnValue - previousOwnArmyValue) <= previousOwnArmyValue * BATTLE_STABLE_THRESHOLD) {
+                    battleState          = BattleState.QUIESCENT;
+                    quiescenceStartFrame = frame;
+                }
+            }
+            case QUIESCENT -> {
+                if (previousOwnArmyValue > 0
+                    && currentOwnValue < previousOwnArmyValue * (1 - BATTLE_START_THRESHOLD)) {
+                    battleState = BattleState.IN_BATTLE;
+                } else if (frame - quiescenceStartFrame >= QUIESCENCE_FRAMES) {
+                    int ownValueLost   = Math.max(0, battleStartOwnValue - currentOwnValue);
+                    int enemyValueLost = Math.max(0, battleStartEnemyValue - currentEnemyValue);
+                    int ownUnitsLost   = Math.max(0, battleStartOwnCount - ownArmy.size());
+                    int enemyUnitsLost = Math.max(0, battleStartEnemyCount - enemyUnits.size());
+
+                    EngagementOutcome engagement = EngagementOutcome.of(
+                            battleStartFrame, frame,
+                            ownUnitsLost, enemyUnitsLost, ownValueLost, enemyValueLost);
+                    moments.add(new GameMoment(GameMomentType.BATTLE_ENDED, frame,
+                                               Map.of("engagement", engagement)));
+                    battleState = BattleState.IDLE;
+                }
+            }
+        }
+        previousOwnArmyValue = currentOwnValue;
+        previousOwnArmyCount = ownArmy.size();
+    }
+
+    BattleState battleState() {return battleState;}
+
+    static int armyValue(List<Unit> units) {
+        return units.stream()
+                    .mapToInt(u -> SC2Data.mineralCost(u.type()) + SC2Data.gasCost(u.type()))
+                    .sum();
+    }
+
     void onGameStarted(@Observes GameStarted event) {
         pendingIntel.clear();
-        firstContactFired    = false;
-        previousArmyValue    = 0;
-        previousPosture      = null;
-        lastSupplyBlockFrame = -1;}
+        firstContactFired     = false;
+        previousArmyValue     = 0;
+        previousPosture       = null;
+        lastSupplyBlockFrame  = -1;
+        battleState           = BattleState.IDLE;
+        quiescenceStartFrame  = -1;
+        battleStartFrame      = -1;
+        previousOwnArmyValue  = 0;
+        previousOwnArmyCount  = 0;
+        battleStartOwnValue   = 0;
+        battleStartEnemyValue = 0;
+        battleStartOwnCount   = 0;
+        battleStartEnemyCount = 0;}
 
 }

@@ -15,6 +15,7 @@ import io.quarkmind.domain.DominanceScore;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.StrategyArchetype;
+import io.quarkmind.plugin.summarisation.EngagementOutcome;
 import io.quarkmind.plugin.summarisation.GameArc;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;
@@ -151,6 +152,21 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
         double  gameDurationMinutes = gameState != null ? gameState.gameTimeMinutes() : 0.0;
         String  opponentId          = (String) snapshot.getOrDefault(QuarkMindCaseFile.OPPONENT_ID, "unknown");
 
+        List<EngagementOutcome> engagements = moments.stream()
+                .filter(m -> m.type() == GameMomentType.BATTLE_ENDED)
+                .map(m -> (EngagementOutcome) m.context().get("engagement"))
+                .filter(java.util.Objects::nonNull)
+                .toList();
+        int engagementsWon = (int) engagements.stream()
+                .filter(e -> e.outcome() == EngagementOutcome.Outcome.WON).count();
+        int engagementsLost = (int) engagements.stream()
+                .filter(e -> e.outcome() == EngagementOutcome.Outcome.LOST).count();
+        int totalOwnValueLost = engagements.stream().mapToInt(EngagementOutcome::ownValueLost).sum();
+        int totalEnemyValueLost = engagements.stream().mapToInt(EngagementOutcome::enemyValueLost).sum();
+        double unitTradeRatio = totalOwnValueLost == 0
+                ? (totalEnemyValueLost > 0 ? Double.MAX_VALUE : 0.0)
+                : (double) totalEnemyValueLost / totalOwnValueLost;
+
         var enrichment = new EnrichedGameData(
                 phaseSequence, momentCount, arcNarrative, gameDurationMinutes,
                 battleCount, dominance.factors().getOrDefault("army", 0.0), dominance.overall(),
@@ -158,7 +174,8 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
                 dominance.factors().getOrDefault("economy", 0.0), supplyBlockCount,
                 firstContactMinute, scoutDispatchMinute,
                 confidence != null ? confidence : 0.0,
-                opponentId);
+                opponentId,
+                engagementsWon, engagementsLost, unitTradeRatio);
 
         SC2GameCbrCase cbrCase = SC2GameCbrCase.buildForGameEnriched(
                 archetype, raceName, matchup,

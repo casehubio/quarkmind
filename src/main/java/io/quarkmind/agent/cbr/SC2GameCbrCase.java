@@ -84,6 +84,10 @@ public record SC2GameCbrCase(
 
         features.put("opponent_id", FeatureValue.string(e.opponentId()));
 
+        features.put("engagements_won", FeatureValue.number(e.engagementsWon()));
+        features.put("engagements_lost", FeatureValue.number(e.engagementsLost()));
+        features.put("unit_trade_ratio", FeatureValue.number(e.unitTradeRatio()));
+
         return new SC2GameCbrCase(
                 "vs " + archetypeName + " (" + matchup + ")",
                 strategyId, null, null, features);

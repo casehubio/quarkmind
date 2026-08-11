@@ -18,7 +18,10 @@ public record EnrichedGameData(
         OptionalDouble firstContactMinute,
         OptionalDouble scoutDispatchMinute,
         double archetypeConfidence,
-        String opponentId
+        String opponentId,
+        int engagementsWon,
+        int engagementsLost,
+        double unitTradeRatio
 ) {
     public EnrichedGameData {
         phaseSequence = List.copyOf(phaseSequence);
