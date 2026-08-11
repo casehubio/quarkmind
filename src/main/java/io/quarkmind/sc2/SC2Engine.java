@@ -54,4 +54,12 @@ public interface SC2Engine {
     default String getMapName()   { return null; }
     default int    getMapWidth()  { return 0; }
     default int    getMapHeight() { return 0; }
+
+    default String opponentRace()       {return "UNKNOWN";}
+
+    default String opponentType()       {return "UNKNOWN";}
+
+    default String opponentDifficulty() {return null;}
+
+    default String opponentPlayerId()   {return null;}
 }

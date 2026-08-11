@@ -5,6 +5,7 @@ import io.quarkmind.agent.plugin.SummarisationTickable;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.plugin.commentary.CommentaryAccumulator;
 import io.quarkmind.plugin.commentary.CommentaryTriggerBuilder;
+import io.quarkmind.sc2.GameStarted;
 import io.quarkmind.sc2.SC2Engine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,8 @@ class GameTickExecutorMigrationTest {
     @BeforeEach
     void setUp() {
         engine = mock(SC2Engine.class);
-        translator = new GameStateTranslator("test-opponent");
+        translator = new GameStateTranslator();
+        translator.onGameStarted(new GameStarted("PROTOSS", "COMPUTER", "VeryEasy", null));
         caseHub = mock(QuarkMindCaseHub.class);
         gameSession = new GameSession();
         dispatchBroker = mock(PluginDispatchBroker.class);

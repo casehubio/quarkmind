@@ -1,4 +1,8 @@
 package io.quarkmind.sc2;
 
-/** CDI event fired when a game begins. Observed by EconomicsLifecycle. */
-public record GameStarted() {}
+public record GameStarted(String opponentRace, String opponentType,
+                          String opponentDifficulty, String opponentPlayerId) {
+    public GameStarted() {
+        this("UNKNOWN", "UNKNOWN", null, null);
+    }
+}
