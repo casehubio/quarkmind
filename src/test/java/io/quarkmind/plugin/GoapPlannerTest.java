@@ -1,8 +1,8 @@
 package io.quarkmind.plugin;
 
-import io.casehub.engine.plan.goap.GoapAction;
-import io.casehub.engine.plan.goap.GoapPlanner;
-import io.casehub.engine.plan.goap.GoapGoapWorldState;
+import io.quarkmind.plugin.tactics.GoapAction;
+import io.quarkmind.plugin.tactics.GoapPlanner;
+import io.quarkmind.plugin.tactics.WorldState;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -13,31 +13,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GoapPlannerTest {
 
-    // ---- GoapWorldState ----
+    // ---- WorldState ----
 
     @Test
     void worldStateWithReturnsCopyWithNewValue() {
-        GoapWorldState original = new GoapWorldState(Map.of("inRange", false));
-        GoapWorldState updated  = original.with("inRange", true);
+        WorldState original = new WorldState(Map.of("inRange", false));
+        WorldState updated  = original.with("inRange", true);
         assertThat(updated.get("inRange")).isTrue();
         assertThat(original.get("inRange")).isFalse(); // immutable
     }
 
     @Test
     void worldStateSatisfiesReturnsTrueWhenConditionIsTrue() {
-        GoapWorldState state = new GoapWorldState(Map.of("unitSafe", true));
+        WorldState state = new WorldState(Map.of("unitSafe", true));
         assertThat(state.satisfies("unitSafe")).isTrue();
     }
 
     @Test
     void worldStateSatisfiesReturnsFalseWhenConditionIsFalse() {
-        GoapWorldState state = new GoapWorldState(Map.of("unitSafe", false));
+        WorldState state = new WorldState(Map.of("unitSafe", false));
         assertThat(state.satisfies("unitSafe")).isFalse();
     }
 
     @Test
     void worldStateSatisfiesReturnsFalseForAbsentCondition() {
-        GoapWorldState state = new GoapWorldState(new HashMap<>());
+        WorldState state = new WorldState(new HashMap<>());
         assertThat(state.satisfies("unknown")).isFalse();
     }
 
@@ -45,9 +45,9 @@ class GoapPlannerTest {
     void worldStateIsImmutableToExternalMapMutation() {
         Map<String, Boolean> mutable = new HashMap<>();
         mutable.put("inRange", false);
-        GoapWorldState state = new GoapWorldState(mutable);
+        WorldState state = new WorldState(mutable);
         mutable.put("inRange", true);  // mutate the original map
-        assertThat(state.get("inRange")).isFalse();  // GoapWorldState must be unaffected
+        assertThat(state.get("inRange")).isFalse();  // WorldState must be unaffected
     }
 
     // ---- GoapAction ----
@@ -55,22 +55,22 @@ class GoapPlannerTest {
     @Test
     void goapActionIsApplicableWhenPreconditionsMet() {
         GoapAction attack = attack();
-        GoapWorldState state  = new GoapWorldState(Map.of("inRange", true, "enemyVisible", true));
+        WorldState state  = new WorldState(Map.of("inRange", true, "enemyVisible", true));
         assertThat(attack.isApplicable(state)).isTrue();
     }
 
     @Test
     void goapActionNotApplicableWhenPreconditionUnmet() {
         GoapAction attack = attack();
-        GoapWorldState state  = new GoapWorldState(Map.of("inRange", false, "enemyVisible", true));
+        WorldState state  = new WorldState(Map.of("inRange", false, "enemyVisible", true));
         assertThat(attack.isApplicable(state)).isFalse();
     }
 
     @Test
     void goapActionApplyToProducesNewStateWithEffects() {
         GoapAction move = moveToEngage();
-        GoapWorldState state = new GoapWorldState(Map.of("inRange", false, "enemyVisible", true));
-        GoapWorldState result = move.applyTo(state);
+        WorldState state = new WorldState(Map.of("inRange", false, "enemyVisible", true));
+        WorldState result = move.applyTo(state);
         assertThat(result.get("inRange")).isTrue();
         assertThat(state.get("inRange")).isFalse(); // original unchanged
     }
@@ -80,7 +80,7 @@ class GoapPlannerTest {
     @Test
     void plannerReturnsEmptyWhenGoalAlreadySatisfied() {
         GoapPlanner planner = new GoapPlanner();
-        GoapWorldState state = new GoapWorldState(Map.of("enemyEliminated", true));
+        WorldState state = new WorldState(Map.of("enemyEliminated", true));
         List<GoapAction> plan = planner.plan(state, "enemyEliminated", List.of(attack()));
         assertThat(plan).isEmpty();
     }
@@ -88,7 +88,7 @@ class GoapPlannerTest {
     @Test
     void plannerReturnsEmptyWhenGoalUnreachable() {
         GoapPlanner planner = new GoapPlanner();
-        GoapWorldState state = new GoapWorldState(Map.of("inRange", false, "enemyVisible", false));
+        WorldState state = new WorldState(Map.of("inRange", false, "enemyVisible", false));
         List<GoapAction> plan = planner.plan(state, "enemyEliminated", List.of(attack()));
         assertThat(plan).isEmpty();
     }
@@ -96,7 +96,7 @@ class GoapPlannerTest {
     @Test
     void plannerFindsDirectPlanForInRangeUnit() {
         GoapPlanner planner = new GoapPlanner();
-        GoapWorldState state = new GoapWorldState(Map.of("inRange", true, "enemyVisible", true,
+        WorldState state = new WorldState(Map.of("inRange", true, "enemyVisible", true,
                                                   "lowHealth", false, "enemyEliminated", false));
         List<GoapAction> plan = planner.plan(state, "enemyEliminated", List.of(moveToEngage(), attack()));
         assertThat(plan).extracting(GoapAction::name).containsExactly("ATTACK");
@@ -105,7 +105,7 @@ class GoapPlannerTest {
     @Test
     void plannerFindsChainedPlanForOutOfRangeUnit() {
         GoapPlanner planner = new GoapPlanner();
-        GoapWorldState state = new GoapWorldState(Map.of("inRange", false, "enemyVisible", true,
+        WorldState state = new WorldState(Map.of("inRange", false, "enemyVisible", true,
                                                   "lowHealth", false, "enemyEliminated", false));
         List<GoapAction> plan = planner.plan(state, "enemyEliminated", List.of(moveToEngage(), attack()));
         assertThat(plan).extracting(GoapAction::name).containsExactly("MOVE_TO_ENGAGE", "ATTACK");
@@ -114,7 +114,7 @@ class GoapPlannerTest {
     @Test
     void plannerFindsRetreatForLowHealthUnit() {
         GoapPlanner planner = new GoapPlanner();
-        GoapWorldState state = new GoapWorldState(Map.of("lowHealth", true, "unitSafe", false));
+        WorldState state = new WorldState(Map.of("lowHealth", true, "unitSafe", false));
         List<GoapAction> plan = planner.plan(state, "unitSafe", List.of(retreat(), attack(), moveToEngage()));
         assertThat(plan).extracting(GoapAction::name).containsExactly("RETREAT");
     }
@@ -127,7 +127,7 @@ class GoapPlannerTest {
             Map.of("inRange", true, "enemyVisible", true), Map.of("enemyEliminated", true), 1);
         GoapAction expensive   = new GoapAction("EXPENSIVE_ATTACK",
             Map.of("inRange", true, "enemyVisible", true), Map.of("enemyEliminated", true), 10);
-        GoapWorldState state = new GoapWorldState(Map.of("inRange", true, "enemyVisible", true,
+        WorldState state = new WorldState(Map.of("inRange", true, "enemyVisible", true,
                                                   "enemyEliminated", false));
         GoapPlanner planner = new GoapPlanner();
         List<GoapAction> plan = planner.plan(state, "enemyEliminated",
