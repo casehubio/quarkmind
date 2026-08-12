@@ -148,6 +148,30 @@ class SC2StrategyRouterTaskTest {
         verify(cbrStore, never()).retrieveSimilar(any(), any());
     }
 
+    @Test
+    void firstRouting_writesInitialArchetype() {
+        setArchetype(StrategyArchetype.ZERG_ROACH_RUSH, 0.85);
+        MutableMapCaseContext ctx = new MutableMapCaseContext(new HashMap<>(Map.of(QuarkMindCaseFile.READY, true)));
+
+        router.execute(ctx);
+
+        assertThat(ctx.getString(QuarkMindCaseFile.STRATEGY_INITIAL_ARCHETYPE))
+                .isEqualTo("ZERG_ROACH_RUSH");
+    }
+
+    @Test
+    void secondRouting_doesNotOverwriteInitialArchetype() {
+        setArchetype(StrategyArchetype.ZERG_ROACH_RUSH, 0.85);
+        MutableMapCaseContext ctx = new MutableMapCaseContext(new HashMap<>(Map.of(QuarkMindCaseFile.READY, true)));
+        router.execute(ctx);
+
+        setArchetype(StrategyArchetype.TERRAN_MARINE_RUSH, 0.9);
+        router.execute(ctx);
+
+        assertThat(ctx.getString(QuarkMindCaseFile.STRATEGY_INITIAL_ARCHETYPE))
+                .isEqualTo("ZERG_ROACH_RUSH");
+    }
+
     private void setArchetype(StrategyArchetype archetype, double confidence) {
         var assessment = new PatternAssessment(archetype, confidence, 1000, "test");
         when(broker.current(ScoutingIntelType.PATTERN_ASSESSMENT))

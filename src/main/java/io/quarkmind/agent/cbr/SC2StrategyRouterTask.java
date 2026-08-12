@@ -102,7 +102,8 @@ public class SC2StrategyRouterTask implements TaskDefinition {
 
     @Override
     public Set<String> produces() {
-        return Set.of(QuarkMindCaseFile.STRATEGY_SELECTED_ID, QuarkMindCaseFile.STRATEGY_ROUTED_CONTEXT);
+        return Set.of(QuarkMindCaseFile.STRATEGY_SELECTED_ID, QuarkMindCaseFile.STRATEGY_ROUTED_CONTEXT,
+                      QuarkMindCaseFile.STRATEGY_INITIAL_ARCHETYPE);
     }
 
     @Override
@@ -199,6 +200,9 @@ public class SC2StrategyRouterTask implements TaskDefinition {
         ctx.set(QuarkMindCaseFile.STRATEGY_ROUTED_CONTEXT, contextKey);
         ctx.set(QuarkMindCaseFile.STRATEGY_ROUTED_ARCHETYPE, archetype.name());
         ctx.set(QuarkMindCaseFile.STRATEGY_ROUTED_CONFIDENCE, confidence);
+        if (ctx.getString(QuarkMindCaseFile.STRATEGY_INITIAL_ARCHETYPE) == null) {
+            ctx.set(QuarkMindCaseFile.STRATEGY_INITIAL_ARCHETYPE, archetype.name());
+        }
         ctx.set(QuarkMindCaseFile.STRATEGY_PIVOT_COUNT, pivotCount + 1);
         lastSelectedId = winner;
         if (strategySelectionEvent != null) {

@@ -84,7 +84,7 @@ class SC2GameCbrCaseTest {
                 3, 0.4, 0.3,
                 2, 42, 0.5, 1,
                 OptionalDouble.of(2.1), OptionalDouble.of(1.5), 0.82,
-                "ZERG_ROACH_RUSH", 0, 0, 0.0);
+                "ZERG_ROACH_RUSH", 0, 0, 0.0, 0.0, false);
         var c = SC2GameCbrCase.buildForGameEnriched(
                 "ZERG_ROACH_RUSH", "ZERG", "PvZ", 0.82, "strategy.early-pressure", enrichment);
 
@@ -112,7 +112,7 @@ class SC2GameCbrCaseTest {
                 0, 0.0, 0.0,
                 1, 22, 0.0, 0,
                 OptionalDouble.empty(), OptionalDouble.empty(), 0.5,
-                "mock-opponent", 0, 0, 0.0);
+                "mock-opponent", 0, 0, 0.0, 0.0, false);
         var c = SC2GameCbrCase.buildForGameEnriched(
                 "TERRAN_2RAX_MARINE", "TERRAN", "PvT", 0.5, "strategy.drools", enrichment);
 
@@ -130,7 +130,7 @@ class SC2GameCbrCaseTest {
                 2, 0.3, 0.2,
                 1, 30, 0.1, 0,
                 OptionalDouble.of(3.0), OptionalDouble.empty(), 0.7,
-                "ZERG_MASS_LING", 0, 0, 0.0);
+                "ZERG_MASS_LING", 0, 0, 0.0, 0.0, false);
         var c = SC2GameCbrCase.buildForGameEnriched(
                 "ZERG_MASS_LING", "ZERG", "PvZ", 0.7, "strategy.early-pressure", enrichment);
         var updated = (SC2GameCbrCase) c.withOutcome("WIN", 0.9);
@@ -147,7 +147,7 @@ class SC2GameCbrCaseTest {
                 List.of("PASSIVE"), 3, "arc", 10.0,
                 2, 0.6, 0.5, 1, 12, 0.4, 0,
                 OptionalDouble.of(2.0), OptionalDouble.of(1.0), 0.8, "opp-hash",
-                2, 1, 1.5);
+                2, 1, 1.5, 0.0, false);
 
         var cbrCase = SC2GameCbrCase.buildForGameEnriched(
                 "ZERG_ROACH_RUSH", "ZERG", "PvZ", 0.8, "adaptive", enrichment);

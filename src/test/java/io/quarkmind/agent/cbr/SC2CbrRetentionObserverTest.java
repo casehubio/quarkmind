@@ -6,6 +6,8 @@ import io.quarkmind.agent.MultiFactorDominanceAssessor;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.DominanceScore;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PatternAssessment;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.plugin.summarisation.MomentBroker;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
@@ -218,6 +220,49 @@ class SC2CbrRetentionObserverTest {
         assertThat(observer.moments()).isEmpty();
         assertThat(observer.phases()).isEmpty();
         assertThat(observer.latestArc()).isNull();
+    }
+
+    @Test
+    void onOutcome_includesConvergenceFeatures_whenBothKeysPresent() {
+        var assessments = List.of(
+                new PatternAssessment(StrategyArchetype.ZERG_ROACH_RUSH, 0.85, 8000, "final"));
+
+        CaseOutcomeEvent event = buildEvent("WIN", Map.of(
+                QuarkMindCaseFile.STRATEGY_SELECTED_ID, "strategy.early-pressure",
+                QuarkMindCaseFile.STRATEGY_ROUTED_ARCHETYPE, "ZERG_ROACH_RUSH",
+                QuarkMindCaseFile.STRATEGY_ROUTED_CONFIDENCE, 0.85,
+                QuarkMindCaseFile.STRATEGY_INITIAL_ARCHETYPE, "ZERG_ROACH_RUSH",
+                QuarkMindCaseFile.SCOUTING_FINAL_ASSESSMENT, assessments));
+
+        observer.onOutcome(event);
+
+        verify(store).store(
+                argThat(c -> {
+                    var f = c.features();
+                    return f.containsKey("scouting_convergence")
+                           && ((Number) f.get("scouting_convergence").toRawValue()).doubleValue() == 1.0
+                           && ((Number) f.get("assessment_stable").toRawValue()).doubleValue() == 1.0;
+                }),
+                any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void onOutcome_defaultsConvergenceToZero_whenInitialArchetypeMissing() {
+        CaseOutcomeEvent event = buildEvent("WIN", Map.of(
+                QuarkMindCaseFile.STRATEGY_SELECTED_ID, "strategy.drools",
+                QuarkMindCaseFile.STRATEGY_ROUTED_ARCHETYPE, "ZERG_ROACH_RUSH",
+                QuarkMindCaseFile.STRATEGY_ROUTED_CONFIDENCE, 0.7));
+
+        observer.onOutcome(event);
+
+        verify(store).store(
+                argThat(c -> {
+                    var f = c.features();
+                    return f.containsKey("scouting_convergence")
+                           && ((Number) f.get("scouting_convergence").toRawValue()).doubleValue() == 0.0
+                           && ((Number) f.get("assessment_stable").toRawValue()).doubleValue() == 0.0;
+                }),
+                any(), any(), any(), any(), any(), any());
     }
 
     private static List<Unit> buildWorkers(int count) {

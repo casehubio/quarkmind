@@ -319,6 +319,7 @@ public class DroolsScoutingTask implements ScoutingTask {
             PatternClassifier.applyRevisions(cumulativeConfidence, patternData.getRevisions(), framesElapsed);
 
             var assessments = PatternClassifier.allAssessments(cumulativeConfidence, frame);
+            ctx.set(QuarkMindCaseFile.SCOUTING_FINAL_ASSESSMENT, assessments);
             if (!assessments.isEmpty()) {
                 boolean changed = assessmentsChanged(prevAssessments, assessments);
                 if (changed && patternAssessmentDispatchEnabled
@@ -393,7 +394,8 @@ public class DroolsScoutingTask implements ScoutingTask {
             QuarkMindCaseFile.ENEMY_BUILD_ORDER,
             QuarkMindCaseFile.TIMING_ATTACK_INCOMING,
             QuarkMindCaseFile.ENEMY_POSTURE,
-            QuarkMindCaseFile.GAME_PHASE);
+            QuarkMindCaseFile.GAME_PHASE,
+            QuarkMindCaseFile.SCOUTING_FINAL_ASSESSMENT);
     }
 
     private void maybeSendScout(long frame, List<Unit> workers, Point2d target) {

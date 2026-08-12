@@ -52,6 +52,8 @@ public final class QuarkMindCaseFile {
     public static final String OPPONENT_ID                  = "game.opponent.id";
     public static final String SCOUTING_DISPATCH_FRAME      = "game.scouting.dispatch.frame";
     public static final String CBR_INFLUENCED_SELECTION     = "agent.strategy.cbr.influenced";
+    public static final String STRATEGY_INITIAL_ARCHETYPE  = "agent.strategy.initial.archetype";
+    public static final String SCOUTING_FINAL_ASSESSMENT   = "agent.scouting.final.assessment";
 
 
     private QuarkMindCaseFile() {}

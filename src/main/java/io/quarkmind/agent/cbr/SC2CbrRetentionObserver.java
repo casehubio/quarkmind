@@ -10,6 +10,8 @@ import io.casehub.neocortex.memory.cbr.FeatureValue;
 import io.casehub.platform.api.path.Path;
 import io.quarkmind.agent.MultiFactorDominanceAssessor;
 import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agent.ScoutingConvergenceEvaluator;
+import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.DominanceScore;
 import io.quarkmind.domain.GameState;
@@ -167,6 +169,20 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
                 ? (totalEnemyValueLost > 0 ? Double.MAX_VALUE : 0.0)
                 : (double) totalEnemyValueLost / totalOwnValueLost;
 
+        String initialArchetypeStr = (String) snapshot.get(QuarkMindCaseFile.STRATEGY_INITIAL_ARCHETYPE);
+        @SuppressWarnings("unchecked")
+        List<PatternAssessment> finalAssessments =
+                (List<PatternAssessment>) snapshot.get(QuarkMindCaseFile.SCOUTING_FINAL_ASSESSMENT);
+
+        double scoutingConvergence = 0.0;
+        boolean assessmentStable = false;
+        if (initialArchetypeStr != null && finalAssessments != null && !finalAssessments.isEmpty()) {
+            var convergenceResult = ScoutingConvergenceEvaluator.evaluate(
+                    StrategyArchetype.valueOf(initialArchetypeStr), finalAssessments);
+            scoutingConvergence = convergenceResult.convergence();
+            assessmentStable = convergenceResult.stable();
+        }
+
         var enrichment = new EnrichedGameData(
                 phaseSequence, momentCount, arcNarrative, gameDurationMinutes,
                 battleCount, dominance.factors().getOrDefault("army", 0.0), dominance.overall(),
@@ -175,7 +191,8 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
                 firstContactMinute, scoutDispatchMinute,
                 confidence != null ? confidence : 0.0,
                 opponentId,
-                engagementsWon, engagementsLost, unitTradeRatio);
+                engagementsWon, engagementsLost, unitTradeRatio,
+                scoutingConvergence, assessmentStable);
 
         SC2GameCbrCase cbrCase = SC2GameCbrCase.buildForGameEnriched(
                 archetype, raceName, matchup,

@@ -50,3 +50,5 @@ wksp
 .claude
 package-lock.json
 proj
+data/
+replays/sc2egset/
