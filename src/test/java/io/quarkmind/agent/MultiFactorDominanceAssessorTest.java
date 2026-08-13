@@ -14,10 +14,10 @@ class MultiFactorDominanceAssessorTest {
 
     private static final DominanceWeightStrategy FIXED_WEIGHTS =
         new TemporalDominanceWeightStrategy(List.of(
-            anchor(0, 0.30, 0.35, 0.20, 0.15)));
+            anchor(0, 0.30, 0.35, 0.20, 0.05, 0.10)));
 
     private final MultiFactorDominanceAssessor assessor = new MultiFactorDominanceAssessor(
-        FIXED_WEIGHTS, 25.0, 3000, 2.0, 3, 3, null);
+        FIXED_WEIGHTS, 25.0, 3000, 2.0, 3, 4, 3, null);
 
     // --- fog-of-war combined threshold ---
 
@@ -176,7 +176,8 @@ class MultiFactorDominanceAssessorTest {
         double expectedOverall = score.factors().get("economy") * w.economy()
             + score.factors().get("army") * w.army()
             + score.factors().get("tech") * w.tech()
-            + score.factors().get("bases") * w.bases();
+            + score.factors().get("bases") * w.bases()
+            + score.factors().get("mapControl") * w.mapControl();
         assertThat(score.overall()).isCloseTo(
             Math.max(-1.0, Math.min(1.0, expectedOverall)), offset(0.001));
     }
@@ -185,7 +186,7 @@ class MultiFactorDominanceAssessorTest {
     void assess_overallClampedToOne() {
         // Extreme advantage in all factors
         MultiFactorDominanceAssessor smallDelta = new MultiFactorDominanceAssessor(
-            FIXED_WEIGHTS, 1.0, 100, 0.5, 1, 3, null);
+            FIXED_WEIGHTS, 1.0, 100, 0.5, 1, 1, 3, null);
         GameState state = gameState(200, 100, 15, 20,
             armyOf(10, UnitType.ZEALOT), List.of(nexus(), nexus(), nexus(), gateway(), roboFacility(), fleetBeacon()),
             List.of(probe()), List.of(nexus()));
@@ -202,7 +203,7 @@ class MultiFactorDominanceAssessorTest {
             List.of(probe(), probe(), probe()), List.of(nexus()),
             List.of(probe(), probe(), probe()), List.of(nexus()));
         DominanceScore score = assessor.assess(state);
-        assertThat(score.factors()).containsOnlyKeys("economy", "army", "tech", "bases");
+        assertThat(score.factors()).containsOnlyKeys("economy", "army", "tech", "bases", "mapControl");
     }
 
     // --- phase-adaptive weights ---
@@ -210,9 +211,9 @@ class MultiFactorDominanceAssessorTest {
     @Test
     void assess_weightsChangeWithGameFrame() {
         var multiAnchor = new TemporalDominanceWeightStrategy(List.of(
-            anchor(0, 0.40, 0.20, 0.25, 0.15),
-            anchor(10000, 0.20, 0.40, 0.25, 0.15)));
-        var adaptiveAssessor = new MultiFactorDominanceAssessor(multiAnchor, 25.0, 3000, 2.0, 3, 3, null);
+            anchor(0, 0.40, 0.20, 0.20, 0.05, 0.15),
+            anchor(10000, 0.20, 0.40, 0.20, 0.05, 0.15)));
+        var adaptiveAssessor = new MultiFactorDominanceAssessor(multiAnchor, 25.0, 3000, 2.0, 3, 4, 3, null);
         GameState earlyState = gameState(200, 100, 15, 10,
             List.of(probe(), probe(), probe(), probe(), probe()), List.of(nexus()),
             List.of(probe(), probe(), zealot()), List.of(nexus()), 1000);
@@ -222,6 +223,59 @@ class MultiFactorDominanceAssessorTest {
         DominanceScore earlyScore = adaptiveAssessor.assess(earlyState);
         DominanceScore lateScore = adaptiveAssessor.assess(lateState);
         assertThat(earlyScore.overall()).isNotCloseTo(lateScore.overall(), offset(0.01));
+    }
+
+    // --- map control factor ---
+
+    @Test
+    void mapControl_ownControlsMore_positive() {
+        var expansions = List.of(
+            expansion(0, 30, 30), expansion(1, 60, 60), expansion(2, 90, 90));
+        MapInfo map = mapWithExpansions(expansions);
+        GameState state = gameStateWithMap(200, 100, 15, 10,
+            List.of(probe(), probe(), probe()),
+            List.of(nexusAt(new Point2d(30, 30)), nexusAt(new Point2d(60, 60))),
+            List.of(probe(), probe(), probe()),
+            List.of(nexusAt(new Point2d(90, 90))), map);
+        DominanceScore score = assessor.assess(state);
+        assertThat(score.factors().get("mapControl")).isGreaterThan(0.0);
+    }
+
+    @Test
+    void mapControl_noExpansions_returnsZero() {
+        MapInfo map = mapWithExpansions(List.of());
+        GameState state = gameStateWithMap(200, 100, 15, 10,
+            List.of(probe(), probe(), probe()), List.of(nexus()),
+            List.of(probe(), probe(), probe()), List.of(nexus()), map);
+        DominanceScore score = assessor.assess(state);
+        assertThat(score.factors().get("mapControl")).isEqualTo(0.0);
+    }
+
+    @Test
+    void mapControl_enemyBuildingsEmpty_returnsZero() {
+        var expansions = List.of(expansion(0, 30, 30), expansion(1, 60, 60));
+        MapInfo map = mapWithExpansions(expansions);
+        GameState state = gameStateWithMap(200, 100, 15, 10,
+            List.of(probe(), probe(), probe()),
+            List.of(nexusAt(new Point2d(30, 30))),
+            List.of(probe(), probe(), probe()),
+            List.of(), map);
+        DominanceScore score = assessor.assess(state);
+        assertThat(score.factors().get("mapControl")).isEqualTo(0.0);
+    }
+
+    @Test
+    void mapControl_equalControl_zero() {
+        var expansions = List.of(
+            expansion(0, 30, 30), expansion(1, 90, 90));
+        MapInfo map = mapWithExpansions(expansions);
+        GameState state = gameStateWithMap(200, 100, 15, 10,
+            List.of(probe(), probe(), probe()),
+            List.of(nexusAt(new Point2d(30, 30))),
+            List.of(probe(), probe(), probe()),
+            List.of(nexusAt(new Point2d(90, 90))), map);
+        DominanceScore score = assessor.assess(state);
+        assertThat(score.factors().get("mapControl")).isCloseTo(0.0, offset(0.001));
     }
 
     // --- helpers ---
@@ -239,6 +293,27 @@ class MultiFactorDominanceAssessorTest {
         return new GameState(minerals, vespene, supply, supplyUsed,
             myUnits, myBuildings, enemyUnits, enemyBuildings,
             List.of(), List.of(), List.of(), gameFrame, null);
+    }
+
+    private static GameState gameStateWithMap(int minerals, int vespene, int supply, int supplyUsed,
+            List<Unit> myUnits, List<Building> myBuildings,
+            List<Unit> enemyUnits, List<Building> enemyBuildings, MapInfo mapInfo) {
+        return new GameState(minerals, vespene, supply, supplyUsed,
+            myUnits, myBuildings, enemyUnits, enemyBuildings,
+            List.of(), List.of(), List.of(), 5000, mapInfo);
+    }
+
+    private static MapInfo mapWithExpansions(List<ExpansionLocation> expansions) {
+        return new MapInfo(new Point2d(30, 30), new Point2d(130, 130),
+            160, 160, expansions, List.of(), List.of());
+    }
+
+    private static Building nexusAt(Point2d pos) {
+        return new Building("tag-nexus-" + pos, BuildingType.NEXUS, pos, 1000, 1000, true);
+    }
+
+    private static ExpansionLocation expansion(int ordinal, float x, float y) {
+        return new ExpansionLocation(ordinal, new Point2d(x, y));
     }
 
     private static Unit probe() { return unit(UnitType.PROBE); }

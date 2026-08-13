@@ -14,15 +14,15 @@ class TemporalDominanceWeightStrategyTest {
     @Test
     void id_returnsTemporal() {
         var strategy = new TemporalDominanceWeightStrategy(List.of(
-            anchor(0, 0.30, 0.35, 0.20, 0.15)));
+            anchor(0, 0.30, 0.35, 0.20, 0.05, 0.10)));
         assertThat(strategy.id()).isEqualTo("temporal");
     }
 
     @Test
     void resolve_delegatesToInterpolator() {
         var strategy = new TemporalDominanceWeightStrategy(List.of(
-            anchor(0, 0.40, 0.20, 0.25, 0.15),
-            anchor(10000, 0.20, 0.40, 0.25, 0.15)));
+            anchor(0, 0.40, 0.20, 0.20, 0.05, 0.15),
+            anchor(10000, 0.20, 0.40, 0.20, 0.05, 0.15)));
         DominanceWeights w = strategy.resolve(new WeightContext(5000, null, List.of()));
         assertThat(w.economy()).isCloseTo(0.30, offset(0.001));
         assertThat(w.army()).isCloseTo(0.30, offset(0.001));
@@ -31,8 +31,8 @@ class TemporalDominanceWeightStrategyTest {
     @Test
     void resolve_ignoresPhase() {
         var strategy = new TemporalDominanceWeightStrategy(List.of(
-            anchor(0, 0.40, 0.20, 0.25, 0.15),
-            anchor(10000, 0.20, 0.40, 0.25, 0.15)));
+            anchor(0, 0.40, 0.20, 0.20, 0.05, 0.15),
+            anchor(10000, 0.20, 0.40, 0.20, 0.05, 0.15)));
         DominanceWeights withPhase = strategy.resolve(new WeightContext(5000, "DEFENSIVE_HOLD", List.of()));
         DominanceWeights noPhase = strategy.resolve(new WeightContext(5000, null, List.of()));
         assertThat(withPhase).isEqualTo(noPhase);

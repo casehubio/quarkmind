@@ -358,12 +358,13 @@ Each plugin seam (`StrategyTask`, `EconomicsTask`, `TacticsTask`, `ScoutingTask`
 
 ## Performance Benchmarking
 
-Four benchmark tests run via `mvn test -Pbenchmark`:
+Six benchmark tests run via `mvn test -Pbenchmark`:
 - `GameLoopBenchmarkTest` — per-phase tick timings across the full plugin chain (MockEngine, %test profile). Run before/after any change that could affect game loop latency; paste results into `docs/benchmarks/`.
 - `EmulatedGameBenchmarkTest` — EmulatedGame full-tick throughput with realistic combat load (PROTOSS_4GATE, A* pathfinding active). Plain JUnit — measures physics tick rate, not harness dispatch. Package: `io.quarkmind.sc2.emulated`. Run via `mvn test -Pbenchmark -Dtest=EmulatedGameBenchmarkTest`.
 - `ScoutingCalibrationTest` — runs all replay datasets to 3-min mark and prints enemy unit count statistics per matchup.
 - `PatternClassificationCalibrationTest` — `@QuarkusTest` that runs `PatternClassificationRuleUnit` against AI Arena + IEM10 replays, asserts ≥ 70% accuracy for rush and air-threat archetypes at 3-min mark.
 - `ExpansionLocationCalibrationTest` — validates `CLUSTER_RADIUS=12.0` against 59 replays (30 IEM10 + 29 AI Arena); asserts each map produces 4-20 expansion locations.
+- `MapControlCalibrationTest` — validates `EXPANSION_CONTROL_RADIUS=10.0` against IEM10 + AI Arena replays; measures base-building-to-expansion-centroid distances, asserts ≥ 90% match rate.
 
 **When to run `GameLoopBenchmarkTest`:**
 - Adding or modifying a plugin

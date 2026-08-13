@@ -28,8 +28,11 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
     private final int maxExpectedArmyDelta;
     private final double maxExpectedTechDelta;
     private final int maxExpectedBaseDelta;
+    private final int maxExpectedMapControlDelta;
     private final int minEnemyVisibility;
     private final ScoutingIntelBroker broker;
+
+    static final double EXPANSION_CONTROL_RADIUS = 10.0;
 
     private final Instance<SummarisationLifecycle> lazyLifecycle;
     private volatile TacticalPosture cachedPhase;
@@ -55,6 +58,7 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
         this.maxExpectedArmyDelta = config.dominance().maxExpectedArmyDelta();
         this.maxExpectedTechDelta = config.dominance().maxExpectedTechDelta();
         this.maxExpectedBaseDelta = config.dominance().maxExpectedBaseDelta();
+        this.maxExpectedMapControlDelta = config.dominance().maxExpectedMapControlDelta();
         this.minEnemyVisibility = config.dominance().minEnemyVisibility();
     }
 
@@ -62,7 +66,7 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
             DominanceWeightStrategy strategy,
             double maxExpectedEconomyDelta, int maxExpectedArmyDelta,
             double maxExpectedTechDelta, int maxExpectedBaseDelta,
-            int minEnemyVisibility,
+            int maxExpectedMapControlDelta, int minEnemyVisibility,
             ScoutingIntelBroker broker) {
         this.strategy = strategy;
         this.lazyLifecycle = null;
@@ -72,6 +76,7 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
         this.maxExpectedArmyDelta = maxExpectedArmyDelta;
         this.maxExpectedTechDelta = maxExpectedTechDelta;
         this.maxExpectedBaseDelta = maxExpectedBaseDelta;
+        this.maxExpectedMapControlDelta = maxExpectedMapControlDelta;
         this.minEnemyVisibility = minEnemyVisibility;
     }
 
@@ -92,7 +97,7 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
     }
 
     private static final DominanceScore NEUTRAL = new DominanceScore(0.0,
-        Map.of("economy", 0.0, "army", 0.0, "tech", 0.0, "bases", 0.0));
+        Map.of("economy", 0.0, "army", 0.0, "tech", 0.0, "bases", 0.0, "mapControl", 0.0));
 
     @Override
     public DominanceScore assess(GameState state) {
@@ -106,6 +111,7 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
         double army = armyFactor(state);
         double tech = techFactor(state);
         double bases = basesFactor(state);
+        double mapControl = mapControlFactor(state);
 
         TacticalPosture phase = cachedPhase;
         List<PatternAssessment> assessments = broker != null
@@ -123,21 +129,24 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
                 Math.abs(weights.economy() - lastWeights.economy()) > 0.01
                 || Math.abs(weights.army() - lastWeights.army()) > 0.01
                 || Math.abs(weights.tech() - lastWeights.tech()) > 0.01
-                || Math.abs(weights.bases() - lastWeights.bases()) > 0.01)) {
-            log.debugf("[DOMINANCE] Weights shifted: economy=%.2f army=%.2f tech=%.2f bases=%.2f (strategy=%s frame=%d phase=%s)",
-                weights.economy(), weights.army(), weights.tech(), weights.bases(),
+                || Math.abs(weights.bases() - lastWeights.bases()) > 0.01
+                || Math.abs(weights.mapControl() - lastWeights.mapControl()) > 0.01)) {
+            log.debugf("[DOMINANCE] Weights shifted: economy=%.2f army=%.2f tech=%.2f bases=%.2f mapControl=%.2f (strategy=%s frame=%d phase=%s)",
+                weights.economy(), weights.army(), weights.tech(), weights.bases(), weights.mapControl(),
                 strategy.id(), state.gameFrame(), ctx.currentPhase());
         }
         lastWeights = weights;
 
         double overall = clamp(economy * weights.economy() + army * weights.army()
-            + tech * weights.tech() + bases * weights.bases());
+            + tech * weights.tech() + bases * weights.bases()
+            + mapControl * weights.mapControl());
 
-        Map<String, Double> factors = new LinkedHashMap<>(4);
+        Map<String, Double> factors = new LinkedHashMap<>(5);
         factors.put("economy", economy);
         factors.put("army", army);
         factors.put("tech", tech);
         factors.put("bases", bases);
+        factors.put("mapControl", mapControl);
 
         return new DominanceScore(overall, factors);
     }
@@ -198,6 +207,25 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
         long enemyBases = state.enemyBuildings().stream()
             .filter(b -> b.isComplete() && SC2Data.isBase(b.type())).count();
         return clamp((double) (ownBases - enemyBases) / maxExpectedBaseDelta);
+    }
+
+    private double mapControlFactor(GameState state) {
+        if (state.enemyBuildings().isEmpty()) return 0.0;
+        List<ExpansionLocation> expansions = state.mapInfo() != null
+            ? state.mapInfo().expansions() : List.of();
+        if (expansions.isEmpty()) return 0.0;
+
+        long ownControlled = expansions.stream()
+            .filter(exp -> controlledBy(state.myBuildings(), exp)).count();
+        long enemyControlled = expansions.stream()
+            .filter(exp -> controlledBy(state.enemyBuildings(), exp)).count();
+        return clamp((double) (ownControlled - enemyControlled) / maxExpectedMapControlDelta);
+    }
+
+    private static boolean controlledBy(List<Building> buildings, ExpansionLocation exp) {
+        return buildings.stream().anyMatch(b ->
+            b.isComplete() && SC2Data.isBase(b.type())
+            && b.position().distanceTo(exp.position()) <= EXPANSION_CONTROL_RADIUS);
     }
 
     private static double clamp(double value) {

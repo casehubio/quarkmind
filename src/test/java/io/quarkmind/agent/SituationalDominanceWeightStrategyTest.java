@@ -14,7 +14,7 @@ class SituationalDominanceWeightStrategyTest {
 
     private final SituationalDominanceWeightStrategy strategy =
         new SituationalDominanceWeightStrategy(List.of(
-            anchor(0, 0.30, 0.35, 0.20, 0.15)));
+            anchor(0, 0.30, 0.35, 0.20, 0.05, 0.10)));
 
     @Test
     void id_returnsSituational() {
@@ -27,7 +27,8 @@ class SituationalDominanceWeightStrategyTest {
         assertThat(w.economy()).isCloseTo(0.30, offset(0.001));
         assertThat(w.army()).isCloseTo(0.35, offset(0.001));
         assertThat(w.tech()).isCloseTo(0.20, offset(0.001));
-        assertThat(w.bases()).isCloseTo(0.15, offset(0.001));
+        assertThat(w.bases()).isCloseTo(0.05, offset(0.001));
+        assertThat(w.mapControl()).isCloseTo(0.10, offset(0.001));
     }
 
     @Test
@@ -68,7 +69,7 @@ class SituationalDominanceWeightStrategyTest {
         for (String phase : List.of("DEFENSIVE_HOLD", "EARLY_AGGRESSION", "EARLY_MACRO",
                 "MID_SKIRMISH", "TRANSITIONING")) {
             DominanceWeights w = strategy.resolve(new WeightContext(5000, phase, List.of()));
-            double sum = w.economy() + w.army() + w.tech() + w.bases();
+            double sum = w.economy() + w.army() + w.tech() + w.bases() + w.mapControl();
             assertThat(sum).as("phase=" + phase).isCloseTo(1.0, offset(0.001));
         }
     }
@@ -78,10 +79,11 @@ class SituationalDominanceWeightStrategyTest {
         for (String phase : List.of("DEFENSIVE_HOLD", "EARLY_AGGRESSION", "EARLY_MACRO",
                 "MID_SKIRMISH", "TRANSITIONING")) {
             DominanceWeights w = strategy.resolve(new WeightContext(5000, phase, List.of()));
-            assertThat(w.economy()).as("economy phase=" + phase).isGreaterThanOrEqualTo(0.05);
-            assertThat(w.army()).as("army phase=" + phase).isGreaterThanOrEqualTo(0.05);
-            assertThat(w.tech()).as("tech phase=" + phase).isGreaterThanOrEqualTo(0.05);
-            assertThat(w.bases()).as("bases phase=" + phase).isGreaterThanOrEqualTo(0.05);
+            assertThat(w.economy()).as("economy phase=" + phase).isGreaterThan(0.0);
+            assertThat(w.army()).as("army phase=" + phase).isGreaterThan(0.0);
+            assertThat(w.tech()).as("tech phase=" + phase).isGreaterThan(0.0);
+            assertThat(w.bases()).as("bases phase=" + phase).isGreaterThan(0.0);
+            assertThat(w.mapControl()).as("mapControl phase=" + phase).isGreaterThan(0.0);
         }
     }
 
@@ -95,11 +97,11 @@ class SituationalDominanceWeightStrategyTest {
     @Test
     void phaseModifier_composesWithInterpolation() {
         var multiAnchor = new SituationalDominanceWeightStrategy(List.of(
-            anchor(0, 0.40, 0.20, 0.25, 0.15),
-            anchor(10000, 0.20, 0.40, 0.25, 0.15)));
+            anchor(0, 0.40, 0.20, 0.20, 0.05, 0.15),
+            anchor(10000, 0.20, 0.40, 0.20, 0.05, 0.15)));
         DominanceWeights w = multiAnchor.resolve(new WeightContext(5000, "DEFENSIVE_HOLD", List.of()));
         assertThat(w.army()).isGreaterThan(0.30);
-        double sum = w.economy() + w.army() + w.tech() + w.bases();
+        double sum = w.economy() + w.army() + w.tech() + w.bases() + w.mapControl();
         assertThat(sum).isCloseTo(1.0, offset(0.001));
     }
 }

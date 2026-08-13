@@ -38,14 +38,15 @@ class AnchorInterpolator {
                     lerp(lo.economyWeight(), hi.economyWeight(), t),
                     lerp(lo.armyWeight(), hi.armyWeight(), t),
                     lerp(lo.techWeight(), hi.techWeight(), t),
-                    lerp(lo.basesWeight(), hi.basesWeight(), t));
+                    lerp(lo.basesWeight(), hi.basesWeight(), t),
+                    lerp(lo.mapControlWeight(), hi.mapControlWeight(), t));
             }
         }
         return toWeights(anchors.get(anchors.size() - 1));
     }
 
     private static DominanceWeights toWeights(MilestoneConfig.Dominance.WeightAnchor a) {
-        return new DominanceWeights(a.economyWeight(), a.armyWeight(), a.techWeight(), a.basesWeight());
+        return new DominanceWeights(a.economyWeight(), a.armyWeight(), a.techWeight(), a.basesWeight(), a.mapControlWeight());
     }
 
     private static double lerp(double a, double b, double t) {

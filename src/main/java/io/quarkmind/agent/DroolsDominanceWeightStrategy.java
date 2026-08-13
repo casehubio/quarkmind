@@ -61,26 +61,29 @@ public class DroolsDominanceWeightStrategy implements DominanceWeightStrategy {
                                            List<WeightModifier> modifiers) {
         if (modifiers.isEmpty()) return baseline;
 
-        double economy = baseline.economy();
-        double army = baseline.army();
-        double tech = baseline.tech();
-        double bases = baseline.bases();
+        double economy    = baseline.economy();
+        double army       = baseline.army();
+        double tech       = baseline.tech();
+        double bases      = baseline.bases();
+        double mapControl = baseline.mapControl();
 
         for (WeightModifier mod : modifiers) {
-            economy += mod.economyDelta();
-            army += mod.armyDelta();
-            tech += mod.techDelta();
-            bases += mod.basesDelta();
+            economy    += mod.economyDelta();
+            army       += mod.armyDelta();
+            tech       += mod.techDelta();
+            bases      += mod.basesDelta();
+            mapControl += mod.mapControlDelta();
         }
 
-        economy = Math.max(DominanceWeightStrategy.MINIMUM_WEIGHT, economy);
-        army = Math.max(DominanceWeightStrategy.MINIMUM_WEIGHT, army);
-        tech = Math.max(DominanceWeightStrategy.MINIMUM_WEIGHT, tech);
-        bases = Math.max(DominanceWeightStrategy.MINIMUM_WEIGHT, bases);
+        economy    = Math.max(DominanceWeightStrategy.MINIMUM_WEIGHT, economy);
+        army       = Math.max(DominanceWeightStrategy.MINIMUM_WEIGHT, army);
+        tech       = Math.max(DominanceWeightStrategy.MINIMUM_WEIGHT, tech);
+        bases      = Math.max(DominanceWeightStrategy.MINIMUM_WEIGHT, bases);
+        mapControl = Math.max(DominanceWeightStrategy.MINIMUM_WEIGHT, mapControl);
 
-        double sum = economy + army + tech + bases;
+        double sum = economy + army + tech + bases + mapControl;
         return new DominanceWeights(
-            economy / sum, army / sum, tech / sum, bases / sum);
+            economy / sum, army / sum, tech / sum, bases / sum, mapControl / sum);
     }
 
     static List<PatternAssessment> deduplicateByCategory(List<PatternAssessment> assessments) {

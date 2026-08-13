@@ -5,5 +5,6 @@ public record WeightModifier(
     double armyDelta,
     double techDelta,
     double basesDelta,
+    double mapControlDelta,
     String reason
 ) {}

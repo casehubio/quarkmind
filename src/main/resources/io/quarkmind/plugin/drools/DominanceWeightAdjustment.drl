@@ -11,7 +11,7 @@ when
     /patternStore[$arch: archetype(), confidence >= 0.6,
                   archetype().category() == ArchetypeCategory.RUSH]
 then
-    modifiers.add(new WeightModifier(-0.10, +0.15, -0.05, 0.00,
+    modifiers.add(new WeightModifier(-0.10, +0.15, -0.05, 0.00, 0.00,
         "High-confidence rush: " + $arch));
 end
 
@@ -20,7 +20,7 @@ when
     /patternStore[$arch: archetype(), confidence >= 0.3, confidence < 0.6,
                   archetype().category() == ArchetypeCategory.RUSH]
 then
-    modifiers.add(new WeightModifier(-0.05, +0.08, -0.03, 0.00,
+    modifiers.add(new WeightModifier(-0.05, +0.08, -0.03, 0.00, 0.00,
         "Moderate rush: " + $arch));
 end
 
@@ -31,7 +31,7 @@ when
     /patternStore[$arch: archetype(), confidence >= 0.6,
                   archetype().category() == ArchetypeCategory.TIMING]
 then
-    modifiers.add(new WeightModifier(-0.10, +0.10, +0.05, -0.05,
+    modifiers.add(new WeightModifier(-0.10, +0.10, +0.05, -0.05, 0.00,
         "High-confidence timing: " + $arch));
 end
 
@@ -40,7 +40,7 @@ when
     /patternStore[$arch: archetype(), confidence >= 0.3, confidence < 0.6,
                   archetype().category() == ArchetypeCategory.TIMING]
 then
-    modifiers.add(new WeightModifier(-0.05, +0.05, +0.03, -0.03,
+    modifiers.add(new WeightModifier(-0.05, +0.05, +0.03, -0.03, 0.00,
         "Moderate timing: " + $arch));
 end
 
@@ -51,7 +51,7 @@ when
     /patternStore[$arch: archetype(), confidence >= 0.6,
                   archetype().category() == ArchetypeCategory.HARASS]
 then
-    modifiers.add(new WeightModifier(-0.10, +0.05, +0.10, -0.05,
+    modifiers.add(new WeightModifier(-0.10, +0.05, +0.10, -0.05, 0.00,
         "High-confidence harass: " + $arch));
 end
 
@@ -60,7 +60,7 @@ when
     /patternStore[$arch: archetype(), confidence >= 0.3, confidence < 0.6,
                   archetype().category() == ArchetypeCategory.HARASS]
 then
-    modifiers.add(new WeightModifier(-0.05, +0.03, +0.05, -0.03,
+    modifiers.add(new WeightModifier(-0.05, +0.03, +0.05, -0.03, 0.00,
         "Moderate harass: " + $arch));
 end
 
@@ -71,7 +71,7 @@ when
     /patternStore[$arch: archetype(), confidence >= 0.6,
                   archetype().category() == ArchetypeCategory.MACRO]
 then
-    modifiers.add(new WeightModifier(+0.08, -0.10, +0.05, -0.03,
+    modifiers.add(new WeightModifier(+0.08, -0.10, +0.05, -0.03, 0.00,
         "High-confidence macro: " + $arch));
 end
 
@@ -80,7 +80,7 @@ when
     /patternStore[$arch: archetype(), confidence >= 0.3, confidence < 0.6,
                   archetype().category() == ArchetypeCategory.MACRO]
 then
-    modifiers.add(new WeightModifier(+0.05, -0.05, +0.03, -0.03,
+    modifiers.add(new WeightModifier(+0.05, -0.05, +0.03, -0.03, 0.00,
         "Moderate macro: " + $arch));
 end
 
@@ -91,7 +91,7 @@ when
     /patternStore[$arch: archetype(), confidence >= 0.6,
                   archetype().category() == ArchetypeCategory.TECH]
 then
-    modifiers.add(new WeightModifier(-0.05, -0.05, +0.15, -0.05,
+    modifiers.add(new WeightModifier(-0.05, -0.05, +0.15, -0.05, 0.00,
         "High-confidence tech: " + $arch));
 end
 
@@ -100,7 +100,7 @@ when
     /patternStore[$arch: archetype(), confidence >= 0.3, confidence < 0.6,
                   archetype().category() == ArchetypeCategory.TECH]
 then
-    modifiers.add(new WeightModifier(-0.03, -0.03, +0.08, -0.02,
+    modifiers.add(new WeightModifier(-0.03, -0.03, +0.08, -0.02, 0.00,
         "Moderate tech: " + $arch));
 end
 
@@ -111,7 +111,7 @@ when
     /patternStore[$arch: archetype(), confidence >= 0.6,
                   archetype().category() == ArchetypeCategory.COMPOSITION]
 then
-    modifiers.add(new WeightModifier(-0.05, +0.10, +0.05, -0.10,
+    modifiers.add(new WeightModifier(-0.05, +0.10, +0.05, -0.10, 0.00,
         "High-confidence composition: " + $arch));
 end
 
@@ -120,7 +120,7 @@ when
     /patternStore[$arch: archetype(), confidence >= 0.3, confidence < 0.6,
                   archetype().category() == ArchetypeCategory.COMPOSITION]
 then
-    modifiers.add(new WeightModifier(-0.03, +0.05, +0.03, -0.05,
+    modifiers.add(new WeightModifier(-0.03, +0.05, +0.03, -0.05, 0.00,
         "Moderate composition: " + $arch));
 end
 
@@ -130,7 +130,7 @@ rule "Phase: DEFENSIVE_HOLD"
 when
     /tacticalPostureStore[this == "DEFENSIVE_HOLD"]
 then
-    modifiers.add(new WeightModifier(-0.10, +0.15, -0.05, 0.00,
+    modifiers.add(new WeightModifier(-0.10, +0.15, -0.05, 0.00, 0.00,
         "Phase: DEFENSIVE_HOLD"));
 end
 
@@ -138,7 +138,7 @@ rule "Phase: EARLY_AGGRESSION"
 when
     /tacticalPostureStore[this == "EARLY_AGGRESSION"]
 then
-    modifiers.add(new WeightModifier(-0.05, +0.10, -0.05, 0.00,
+    modifiers.add(new WeightModifier(-0.05, +0.10, -0.05, 0.00, 0.00,
         "Phase: EARLY_AGGRESSION"));
 end
 
@@ -146,7 +146,7 @@ rule "Phase: EARLY_MACRO"
 when
     /tacticalPostureStore[this == "EARLY_MACRO"]
 then
-    modifiers.add(new WeightModifier(+0.10, -0.10, +0.05, -0.05,
+    modifiers.add(new WeightModifier(+0.10, -0.10, +0.05, -0.05, 0.00,
         "Phase: EARLY_MACRO"));
 end
 
@@ -154,7 +154,7 @@ rule "Phase: MID_SKIRMISH"
 when
     /tacticalPostureStore[this == "MID_SKIRMISH"]
 then
-    modifiers.add(new WeightModifier(-0.05, +0.10, -0.05, 0.00,
+    modifiers.add(new WeightModifier(-0.05, +0.10, -0.05, 0.00, 0.00,
         "Phase: MID_SKIRMISH"));
 end
 
@@ -165,7 +165,7 @@ when
     /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.RUSH]
     /tacticalPostureStore[this == "DEFENSIVE_HOLD"]
 then
-    modifiers.add(new WeightModifier(0.00, +0.05, 0.00, 0.00,
+    modifiers.add(new WeightModifier(0.00, +0.05, 0.00, 0.00, 0.00,
         "Combined: rush + defensive hold"));
 end
 
@@ -174,7 +174,7 @@ when
     /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.MACRO]
     /tacticalPostureStore[this == "EARLY_MACRO"]
 then
-    modifiers.add(new WeightModifier(+0.05, 0.00, 0.00, 0.00,
+    modifiers.add(new WeightModifier(+0.05, 0.00, 0.00, 0.00, 0.00,
         "Combined: macro + early macro"));
 end
 
@@ -183,7 +183,7 @@ when
     /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.TIMING]
     /tacticalPostureStore[this == "MID_SKIRMISH"]
 then
-    modifiers.add(new WeightModifier(0.00, +0.05, +0.03, 0.00,
+    modifiers.add(new WeightModifier(0.00, +0.05, +0.03, 0.00, 0.00,
         "Combined: timing + mid skirmish"));
 end
 
@@ -192,7 +192,7 @@ when
     /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.RUSH]
     /tacticalPostureStore[this == "EARLY_AGGRESSION"]
 then
-    modifiers.add(new WeightModifier(+0.03, +0.03, 0.00, 0.00,
+    modifiers.add(new WeightModifier(+0.03, +0.03, 0.00, 0.00, 0.00,
         "Combined: rush + early aggression"));
 end
 
@@ -201,7 +201,7 @@ when
     /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.HARASS]
     /tacticalPostureStore[this == "DEFENSIVE_HOLD"]
 then
-    modifiers.add(new WeightModifier(+0.05, 0.00, +0.03, 0.00,
+    modifiers.add(new WeightModifier(+0.05, 0.00, +0.03, 0.00, 0.00,
         "Combined: harass + defensive hold"));
 end
 
@@ -210,7 +210,7 @@ when
     /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.HARASS]
     /tacticalPostureStore[this == "EARLY_MACRO"]
 then
-    modifiers.add(new WeightModifier(0.00, 0.00, +0.05, 0.00,
+    modifiers.add(new WeightModifier(0.00, 0.00, +0.05, 0.00, 0.00,
         "Combined: harass + early macro"));
 end
 
@@ -219,7 +219,7 @@ when
     /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.TECH]
     /tacticalPostureStore[this == "EARLY_MACRO"]
 then
-    modifiers.add(new WeightModifier(+0.03, 0.00, +0.05, 0.00,
+    modifiers.add(new WeightModifier(+0.03, 0.00, +0.05, 0.00, 0.00,
         "Combined: tech + early macro"));
 end
 
@@ -228,7 +228,7 @@ when
     /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.COMPOSITION]
     /tacticalPostureStore[this == "MID_SKIRMISH"]
 then
-    modifiers.add(new WeightModifier(0.00, +0.05, 0.00, -0.03,
+    modifiers.add(new WeightModifier(0.00, +0.05, 0.00, -0.03, 0.00,
         "Combined: composition + mid skirmish"));
 end
 
@@ -237,6 +237,6 @@ when
     /patternStore[confidence >= 0.5, archetype().category() == ArchetypeCategory.COMPOSITION]
     /tacticalPostureStore[this == "DEFENSIVE_HOLD"]
 then
-    modifiers.add(new WeightModifier(0.00, +0.08, +0.03, 0.00,
+    modifiers.add(new WeightModifier(0.00, +0.08, +0.03, 0.00, 0.00,
         "Combined: composition + defensive hold"));
 end

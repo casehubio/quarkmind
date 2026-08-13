@@ -57,6 +57,10 @@ public interface MilestoneConfig {
         @WithDefault("3")
         int maxExpectedBaseDelta();
 
+        @WithName("max-expected-map-control-delta")
+        @WithDefault("4")
+        int maxExpectedMapControlDelta();
+
         @WithName("min-enemy-visibility")
         @WithDefault("3")
         int minEnemyVisibility();
@@ -73,6 +77,7 @@ public interface MilestoneConfig {
             @WithName("army-weight") double armyWeight();
             @WithName("tech-weight") double techWeight();
             @WithName("bases-weight") double basesWeight();
+            @WithName("map-control-weight") double mapControlWeight();
         }
     }
 }
