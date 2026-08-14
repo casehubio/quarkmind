@@ -60,4 +60,25 @@ class AdvisoryCompletionObserverTest {
             "claude:strategic-cautious@v1"
         );
     }
+
+    @Test
+    void onAdvisoryCompleted_recordsFirstInvocationFrame() {
+        AdvisoryInvocationCounter  counter  = new AdvisoryInvocationCounter();
+        AdvisoryCompletionObserver observer = new AdvisoryCompletionObserver(counter);
+
+        AdvisoryCompleted first = new AdvisoryCompleted(
+                "claude:crisis-aggressive@v1", "advisory-crisis", 1000L,
+                "First rec", 0.85, 120L, Map.of()
+        );
+        AdvisoryCompleted second = new AdvisoryCompleted(
+                "claude:crisis-aggressive@v1", "advisory-crisis", 5000L,
+                "Second rec", 0.90, 100L, Map.of()
+        );
+
+        observer.onAdvisoryCompleted(first);
+        observer.onAdvisoryCompleted(second);
+
+        assertThat(counter.firstFrame("claude:crisis-aggressive@v1"))
+                .isEqualTo(java.util.OptionalLong.of(1000L));
+    }
 }

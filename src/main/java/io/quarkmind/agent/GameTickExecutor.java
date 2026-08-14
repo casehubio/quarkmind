@@ -39,6 +39,9 @@ class GameTickExecutor {
     @Inject
     MilestoneOutcomeRecorder    milestoneOutcomeRecorder;
     @Inject
+    AdvisoryMilestoneOutcomeRecorder advisoryMilestoneOutcomeRecorder;
+
+    @Inject
     CommentaryTriggerBuilder    commentaryTriggerBuilder;
     @Inject
     CommentaryAccumulator       commentaryAccumulator;
@@ -82,6 +85,7 @@ class GameTickExecutor {
         // Milestone evaluation: only in AI mode
         if (!isCoachMode) {
             milestoneOutcomeRecorder.evaluateMilestones(gameState);
+            advisoryMilestoneOutcomeRecorder.evaluateMilestones(gameState);
         }
 
         // Deferred advisory evaluation: only in AI mode

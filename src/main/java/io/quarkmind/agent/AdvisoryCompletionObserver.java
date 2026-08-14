@@ -34,6 +34,6 @@ public class AdvisoryCompletionObserver {
      * <p>Uses {@code @Observes} (synchronous) per protocol PP-20260610-88dbbd.
      */
     void onAdvisoryCompleted(@Observes AdvisoryCompleted event) {
-        invocationCounter.record(event.advisorId());
+        invocationCounter.record(event.advisorId(), event.gameFrame());
     }
 }

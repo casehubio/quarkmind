@@ -142,8 +142,8 @@ class AdvisoryIntegrationIT {
     @Test
     void invocationCounter_tracksAcrossGameLifecycle() {
         // Record some advisory invocations
-        invocationCounter.record("claude:crisis-aggressive@v1");
-        invocationCounter.record("claude:strategic-bold@v1");
+        invocationCounter.record("claude:crisis-aggressive@v1", 0L);
+        invocationCounter.record("claude:strategic-bold@v1", 0L);
 
         Set<String> snapshot = invocationCounter.snapshot();
         assertThat(snapshot)
@@ -159,9 +159,9 @@ class AdvisoryIntegrationIT {
 
     @Test
     void invocationCounter_deduplicatesAdvisors() {
-        invocationCounter.record("claude:crisis-aggressive@v1");
-        invocationCounter.record("claude:crisis-aggressive@v1");
-        invocationCounter.record("claude:crisis-aggressive@v1");
+        invocationCounter.record("claude:crisis-aggressive@v1", 0L);
+        invocationCounter.record("claude:crisis-aggressive@v1", 0L);
+        invocationCounter.record("claude:crisis-aggressive@v1", 0L);
 
         assertThat(invocationCounter.snapshot())
             .as("Set-based: duplicate advisorIds are deduplicated")

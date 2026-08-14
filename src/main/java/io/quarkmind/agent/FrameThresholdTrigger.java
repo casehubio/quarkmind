@@ -28,12 +28,12 @@ public class FrameThresholdTrigger implements MilestoneTrigger {
     }
 
     @Override
-    public List<MilestoneEvent> check(long gameFrame, MilestoneSession session) {
+    public List<MilestoneEvent> check(long gameFrame, MilestoneTracker tracker) {
         List<MilestoneEvent> events = new ArrayList<>();
         for (Threshold t : thresholds) {
             String milestoneId = "frame:" + t.frame();
-            if (gameFrame >= t.frame() && !session.hasFired(milestoneId)) {
-                session.markFired(milestoneId);
+            if (gameFrame >= t.frame() && !tracker.hasFired(milestoneId)) {
+                tracker.markFired(milestoneId);
                 events.add(new MilestoneEvent(milestoneId, t.weight()));
             }
         }

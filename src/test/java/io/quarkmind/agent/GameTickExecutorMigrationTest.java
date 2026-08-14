@@ -53,6 +53,8 @@ class GameTickExecutorMigrationTest {
     private SummarisationTickable summarisation;
     private DeferredAdvisoryEvaluator deferredAdvisoryEvaluator;
     private MilestoneOutcomeRecorder milestoneOutcomeRecorder;
+    private AdvisoryMilestoneOutcomeRecorder advisoryMilestoneOutcomeRecorder;
+
     private CommentaryTriggerBuilder commentaryTriggerBuilder;
     private CommentaryAccumulator commentaryAccumulator;
     private io.quarkmind.plugin.coaching.CoachingTriggerBuilder coachingTriggerBuilder;
@@ -71,6 +73,7 @@ class GameTickExecutorMigrationTest {
         summarisation = mock(SummarisationTickable.class);
         deferredAdvisoryEvaluator = mock(DeferredAdvisoryEvaluator.class);
         milestoneOutcomeRecorder = mock(MilestoneOutcomeRecorder.class);
+        advisoryMilestoneOutcomeRecorder = mock(AdvisoryMilestoneOutcomeRecorder.class);
         commentaryTriggerBuilder = mock(CommentaryTriggerBuilder.class);
         commentaryAccumulator = mock(CommentaryAccumulator.class);
         coachingTriggerBuilder = mock(io.quarkmind.plugin.coaching.CoachingTriggerBuilder.class);
@@ -92,6 +95,7 @@ class GameTickExecutorMigrationTest {
         executor.summarisationLifecycle = summarisation;
         executor.deferredAdvisoryEvaluator = deferredAdvisoryEvaluator;
         executor.milestoneOutcomeRecorder = milestoneOutcomeRecorder;
+        executor.advisoryMilestoneOutcomeRecorder = advisoryMilestoneOutcomeRecorder;
         executor.commentaryTriggerBuilder = commentaryTriggerBuilder;
         executor.commentaryAccumulator = commentaryAccumulator;
         executor.coachingTriggerBuilder = coachingTriggerBuilder;
@@ -226,6 +230,18 @@ class GameTickExecutorMigrationTest {
     }
 
     @Test
+    void execute_callsAdvisoryMilestoneEvaluationInAiMode() {
+        GameState state = stubGameState(5000L, 200, 100);
+        when(engine.observe()).thenReturn(state);
+        when(caseHub.signalAndAwaitSync(any(), any(), any())).thenReturn(mock(CaseContext.class));
+
+        executor.execute();
+
+        verify(advisoryMilestoneOutcomeRecorder).evaluateMilestones(state);
+    }
+
+
+    @Test
     void execute_coachMode_skipsMilestonesAndAdvisory() {
         executor.gameMode = "coach";
         GameState state = stubGameState(100L, 400, 200);
@@ -237,6 +253,7 @@ class GameTickExecutorMigrationTest {
         executor.execute();
 
         verify(milestoneOutcomeRecorder, never()).evaluateMilestones(any());
+        verify(advisoryMilestoneOutcomeRecorder, never()).evaluateMilestones(any());
         verify(deferredAdvisoryEvaluator, never()).evaluate(any(), anyLong());
         verify(coachingComplianceEvaluator).evaluate(state, 100L);
     }

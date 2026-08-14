@@ -50,15 +50,15 @@ public class GamePhaseTrigger implements MilestoneTrigger {
     }
 
     @Override
-    public List<MilestoneEvent> check(long gameFrame, MilestoneSession session) {
+    public List<MilestoneEvent> check(long gameFrame, MilestoneTracker tracker) {
         ensureSubscribed();
         TacticalPosture phase = lastSeenPhase;
         if (phase == null) return List.of();
 
         String milestoneId = "phase:" + phase.posture();
-        if (session.hasFired(milestoneId)) return List.of();
+        if (tracker.hasFired(milestoneId)) return List.of();
 
-        session.markFired(milestoneId);
+        tracker.markFired(milestoneId);
         double raw = (double) gameFrame / expectedGameLength;
         double weight = Math.max(minWeight, Math.min(maxWeight, raw));
         return List.of(new MilestoneEvent(milestoneId, weight));

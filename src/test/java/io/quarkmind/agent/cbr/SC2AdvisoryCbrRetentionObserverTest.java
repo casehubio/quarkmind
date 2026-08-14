@@ -33,8 +33,8 @@ class SC2AdvisoryCbrRetentionObserverTest {
 
     @Test
     void storesOneCase_perInvokedAdvisor() {
-        invocationCounter.record("claude:crisis-aggressive@v1");
-        invocationCounter.record("claude:strategic-bold@v1");
+        invocationCounter.record("claude:crisis-aggressive@v1", 0L);
+        invocationCounter.record("claude:strategic-bold@v1", 0L);
 
         observer.onOutcome(outcomeEvent("WIN"));
 
@@ -45,7 +45,7 @@ class SC2AdvisoryCbrRetentionObserverTest {
 
     @Test
     void capturesCorrectFeatures() {
-        invocationCounter.record("claude:crisis-aggressive@v1");
+        invocationCounter.record("claude:crisis-aggressive@v1", 0L);
 
         observer.onOutcome(outcomeEvent("WIN"));
 
@@ -60,7 +60,7 @@ class SC2AdvisoryCbrRetentionObserverTest {
 
     @Test
     void recordsOutcome_win() {
-        invocationCounter.record("claude:crisis-aggressive@v1");
+        invocationCounter.record("claude:crisis-aggressive@v1", 0L);
 
         observer.onOutcome(outcomeEvent("WIN"));
 
@@ -71,7 +71,7 @@ class SC2AdvisoryCbrRetentionObserverTest {
 
     @Test
     void recordsOutcome_loss() {
-        invocationCounter.record("claude:crisis-aggressive@v1");
+        invocationCounter.record("claude:crisis-aggressive@v1", 0L);
 
         observer.onOutcome(outcomeEvent("LOSS"));
 
@@ -87,7 +87,7 @@ class SC2AdvisoryCbrRetentionObserverTest {
 
     @Test
     void skipsWhenUnknownOutcome() {
-        invocationCounter.record("claude:crisis-aggressive@v1");
+        invocationCounter.record("claude:crisis-aggressive@v1", 0L);
 
         observer.onOutcome(outcomeEvent("UNKNOWN"));
 
@@ -96,7 +96,7 @@ class SC2AdvisoryCbrRetentionObserverTest {
 
     @Test
     void skipsWhenNoArchetypeInSnapshot() {
-        invocationCounter.record("claude:crisis-aggressive@v1");
+        invocationCounter.record("claude:crisis-aggressive@v1", 0L);
 
         CaseOutcomeEvent event = new CaseOutcomeEvent(
                 "starcraft-game", "test-tenant", UUID.randomUUID(),
@@ -110,7 +110,7 @@ class SC2AdvisoryCbrRetentionObserverTest {
 
     @Test
     void usesCorrectCbrType() {
-        invocationCounter.record("claude:crisis-aggressive@v1");
+        invocationCounter.record("claude:crisis-aggressive@v1", 0L);
 
         observer.onOutcome(outcomeEvent("WIN"));
 
