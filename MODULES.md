@@ -1,20 +1,31 @@
 # Module Structure
 
-Currently a single Maven module (`quarkmind-agent`). The planned split into
-`starcraft-sc2` / `starcraft-domain` / `starcraft-agent` has been **deferred
-indefinitely** — the R&D iteration pace makes splitting premature. Extract when
-a plugin implementation is stable enough to version independently.
+Multi-module Maven project. Dependencies flow one way: each world module depends
+on `quarkmind-core`. No world depends on another world. `quarkmind-core` depends
+on CaseHub foundations.
 
-## Potential future split
+## Modules
 
-| Module | Extract when | Contains |
+| Module | Status | Contains |
 |---|---|---|
-| `starcraft-domain` | Domain model stabilises | `domain/` |
-| `starcraft-sc2` | Engine seam freezes | `sc2/`, `sc2/mock/`, `sc2/real/`, `sc2/emulated/`, `sc2/replay/` |
-| `starcraft-agent` | Plugin interfaces freeze | `agent/`, `agent/plugin/` |
-| `starcraft-agent-drools` | Drools plugin matures | Drools `TaskDefinition` implementations |
-| `starcraft-agent-flow` | Flow plugin matures | Quarkus Flow worker implementations |
+| `quarkmind-core` | Active | Agency framework — SPIs (WorldBridge, Intent, IntentQueue), NeedState, AgencyLoop, spatial/interaction/moment contracts |
+| `quarkmind-sc2` | Active | StarCraft II agent — all SC2-specific code (domain, engine, plugins, visualizer, replay harness) |
+| `quarkmind-town` | Stub | Sims-like 3D life simulation — Godot 4 client, Quarkus backend |
+| `quarkmind-minecraft` | Stub | Minecraft agent — Mineflayer bridge, Luanti CI |
+| `quarkmind-evennia` | Stub | MUD agent — Evennia bridge, text-based spatial model |
+| `quarkmind-sonaria` | Stub | Roblox/Sonaria agent — creature in ecosystem |
+| `quarkmind-godot-mcp` | Stub | Godot EditorPlugin MCP — visual world building tooling |
 
-**Current status (2026-05-07):** All phases through Phase 5 (EmulatedEngine)
-are complete in a single module. No concrete plans to split — revisit when
-preparing for Maven Central publication or native image milestone.
+## Dependency Graph
+
+```
+casehub-parent
+  └── quarkmind (parent POM)
+       ├── quarkmind-core ← casehub-engine-api, casehub-eidos-api
+       ├── quarkmind-sc2  ← quarkmind-core + all SC2 dependencies
+       ├── quarkmind-town ← quarkmind-core
+       ├── quarkmind-minecraft ← quarkmind-core
+       ├── quarkmind-evennia ← quarkmind-core
+       ├── quarkmind-sonaria ← quarkmind-core
+       └── quarkmind-godot-mcp ← quarkmind-core
+```

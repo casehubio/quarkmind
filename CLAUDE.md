@@ -171,9 +171,9 @@ Read these **before designing**, not after. The concern column tells you when ea
 | Concern | Read first |
 |---------|-----------|
 | Unit test vs `@QuarkusTest` | Testing Patterns in this CLAUDE.md — never `@QuarkusTest` for tests that can be plain JUnit; boot cost is significant |
-| EmulatedGame physics change | Run `mvn test -Pbenchmark` before and after — `GameLoopBenchmarkTest`; paste results in `docs/benchmarks/` |
-| Replay validation accuracy | Run `mvn test -Preport` for the full divergence report before closing any issue that changes EmulatedGame physics |
-| Playwright visual tests | `mvn test -Pplaywright` — requires Chromium; run after any change to `visualizer.js`, `GameState`, or the domain model |
+| EmulatedGame physics change | Run `mvn test -pl quarkmind-sc2 -Pbenchmark` before and after — `GameLoopBenchmarkTest`; paste results in `docs/benchmarks/` |
+| Replay validation accuracy | Run `mvn test -pl quarkmind-sc2 -Preport` for the full divergence report before closing any issue that changes EmulatedGame physics |
+| Playwright visual tests | `mvn test -pl quarkmind-sc2 -Pplaywright` — requires Chromium; run after any change to `visualizer.js`, `GameState`, or the domain model |
 
 ---
 
@@ -187,36 +187,51 @@ Read these **before designing**, not after. The concern column tells you when ea
 
 ## Development Commands
 
-**Build:**
+**Build (all modules):**
 ```bash
 mvn compile
 ```
 
-**Test (all):**
+**Build (SC2 only):**
+```bash
+mvn compile -pl quarkmind-sc2
+```
+
+**Test (all modules):**
 ```bash
 mvn test
 ```
 
+**Test (SC2 only):**
+```bash
+mvn test -pl quarkmind-sc2
+```
+
+**Test (core only):**
+```bash
+mvn test -pl quarkmind-core
+```
+
 **Test (single class):**
 ```bash
-mvn test -Dtest=SimulatedGameTest -q
+mvn test -pl quarkmind-sc2 -Dtest=SimulatedGameTest -q
 ```
 
 **Run (mock mode, no SC2 needed):**
 ```bash
-mvn quarkus:dev
+mvn quarkus:dev -pl quarkmind-sc2
 # Game loop starts automatically on boot (MockStartupBean)
 ```
 
 **Run (replay mode, no SC2 needed):**
 ```bash
-mvn quarkus:dev -Dquarkus.profile=replay
+mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=replay
 # Default replay: Nothing_4720936.SC2Replay — override with -Dstarcraft.replay.file=...
 ```
 
 **Build jar for Electron viewer (must use replay profile — @IfBuildProfile("replay") is build-time):**
 ```bash
-mvn package -DskipTests -Dquarkus.profile=replay -q
+mvn package -pl quarkmind-sc2 -DskipTests -Dquarkus.profile=replay -q
 ```
 
 **Launch Electron viewer:**
@@ -233,7 +248,7 @@ The game loop logs every tick; an overnight run fills the disk.
 
 **Run (emulated physics, no SC2 needed):**
 ```bash
-mvn quarkus:dev -Dquarkus.profile=emulated
+mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=emulated
 # Opens visualizer at http://localhost:8080/visualizer.html
 # Logs to /tmp/quarkmind-emulated.log (rotation configured — max 20M, 3 backups)
 ```
@@ -249,7 +264,7 @@ pkill -f 'quarkus:dev' && sleep 2 && rm -f /tmp/quarkmind-emulated.log*
 
 **Run (real SC2):**
 ```bash
-mvn quarkus:dev -Dquarkus.profile=sc2
+mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 ```
 
 **If `quarkus:dev` fails with `ClassTooLargeException`:** run `mvn clean` first. Occurs after large additions to enums or switch statements cause the Quarkus-generated startup class to exceed JVM bytecode limits. Clean removes the stale augmentation cache.
@@ -287,12 +302,12 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 - `VisualizerRenderTest` — asserts sprite counts
 - `WorkbenchRenderTest` — asserts workbench shell rendering, tab switching, pattern page population, selection ring correlation, positions, HUD text, on-screen projection, and pixel colour via `window.__test` API
 - **For tests that click specific sprites:** get the unit/building tag from `simulatedGame.snapshot()` *before* calling `engine.observe()`, then wait with `unitHasTag(tag)` / `buildingHasTag(tag)`.
-- Install Chromium once: `mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chromium"`
-- Run mock-mode visual tests: `mvn test -Pplaywright`
+- Install Chromium once: `mvn exec:java -pl quarkmind-sc2 -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chromium"`
+- Run mock-mode visual tests: `mvn test -pl quarkmind-sc2 -Pplaywright`
 - Excluded from default surefire run via `excludedGroups=benchmark,browser,report,diagnostic`
 
 **Replay visual pixel tests** (`ReplayVisualizerIT`, `@Tag("browser")`):
-- Run with: `mvn test -Pplaywright-replay`
+- Run with: `mvn test -pl quarkmind-sc2 -Pplaywright-replay`
 - **Run after any change to `visualizer.js`, `GameState`, or the domain model**
 
 **WebSocket integration tests** (`@QuarkusTest`, run in normal suite):
@@ -301,11 +316,11 @@ mvn quarkus:dev -Dquarkus.profile=sc2
 **Replay divergence report** (`@Tag("report")`, excluded from default surefire run):
 - `ReplayValidationReportTest` — runs `ReplayValidationHarness` against the default AI Arena binary replay; prints full economic divergence report to stdout
 - `IEM10MultiGameValidationTest` — runs `ReplayValidationHarness` across all 30 IEM10 JSON games; prints per-matchup aggregate divergence stats (PvT/PvZ/PvP)
-- Run with: `mvn test -Preport`
+- Run with: `mvn test -pl quarkmind-sc2 -Preport`
 
 **Diagnostic tests** (`@Tag("diagnostic")`, excluded from default surefire run):
 - `IEM10AbilityDiscoveryTest` — prints abilLink→unit correlation table across all 30 IEM10 games using narrow-window modal matching; documents how IEM10 2016 constants in `IEM10CommandExtractor` were derived
-- Run with: `mvn test -Pdiagnostic`
+- Run with: `mvn test -pl quarkmind-sc2 -Pdiagnostic`
 
 **Never use `@QuarkusTest` for tests that can be plain JUnit** — boot cost is significant.
 
@@ -325,23 +340,39 @@ See `NATIVE.md` for the per-dependency compatibility tracker.
 ## Code Organisation
 
 ```
-src/main/java/io/quarkmind/
-  domain/              Plain Java records — no framework deps, always native-safe
-  sc2/                 SC2Engine seam — IntentQueue, GameStarted/GameStopped events, sealed Intent interface, SC2WebSocketCodec
-  sc2/real/            Live SC2 implementation — QuarkusSC2Transport (raw Socket WebSocket), SC2FrameCallback, RealSC2Engine, SC2BotAgent, ObservationTranslator, ActionTranslator
-  sc2/emulated/server/ EmulatedSC2Server — SC2 protocol wrapper over EmulatedGame, GameStateToProtobuf, ProtobufToIntent
-  sc2/mock/            Mock SC2 implementation — SimulatedGame, MockGameObserver, MockCommandDispatcher
-  sc2/mock/scenario/   ScenarioLibrary — living specification of SC2 behaviour
-  agent/               CaseHub intelligence layer — QuarkMindCaseFile keys, GameStateTranslator, AgentOrchestrator
-  agent/plugin/        Plugin seam interfaces (StrategyTask, EconomicsTask, TacticsTask, ScoutingTask)
-  plugin/              Active plugin implementations (DroolsStrategyTask, FlowEconomicsTask, DroolsTacticsTask, BasicScoutingTask)
-  plugin/scouting/     Drools CEP scouting — DroolsScoutingTask, ScoutingSessionManager, event records, LlmPatternClassifierWorkerFactory
-  plugin/tactics/      GOAP planning + CDI strategy interfaces
-  agent/cbr/           CBR (Case-Based Reasoning) — SC2GameCbrCase, SC2CbrRetentionObserver, SC2AdvisoryCbrCase, SC2AdvisoryCbrRetentionObserver, SC2ImplementationRoutingStrategy, SC2StrategyRouterTask, SC2CbrSchemaRegistrar
-  plugin/coaching/     Coach mode — CoachingTriggerBuilder, CoachingWorkerFactory, CoachingChannelBroker, CoachingComplianceEvaluator, CoachingStyle (4-quadrant disposition model), VerificationPredicate (sealed hierarchy), LocationReference + LocationResolver
-  plugin/flow/         Quarkus Flow integration — EconomicsFlow, EconomicsDecisionService, EconomicsLifecycle
-  qa/                  QA REST endpoints — dev/test only (@UnlessBuildProfile("prod"))
-  qa/workbench/        Workbench WebSocket — WorkbenchEnricher, WorkbenchBroadcaster, WorkbenchSocket (bidirectional), CoachingAcknowledgmentHandler, typed payload records
+quarkmind/                           ← parent POM
+├── quarkmind-core/                  ← agency framework (SPIs, needs, intents)
+│   src/main/java/io/quarkmind/agency/
+│     AgencyLoop, AgencyContext, AgencyPhase
+│     spi/          WorldBridge<P,I>, WorldPerception
+│     intent/       Intent (marker), IntentQueue<I>
+│     needs/        NeedState, NeedDefinition, DispositionNeedModifier
+│     spatial/      NavigationSPI, VisibilitySPI, SpatialMemory
+│     interaction/  InteractionTrigger, InteractionPipeline
+│     moment/       MomentDetector
+│     llm/          LlmRequestQueue
+├── quarkmind-sc2/                   ← StarCraft II (all SC2-specific code)
+│   src/main/java/io/quarkmind/
+│     domain/              Plain Java records — no framework deps
+│     sc2/                 SC2Engine seam — IntentQueue, sealed Intent, SC2WebSocketCodec
+│     sc2/real/            Live SC2 — QuarkusSC2Transport, SC2BotAgent, ObservationTranslator
+│     sc2/emulated/server/ EmulatedSC2Server — SC2 protocol over EmulatedGame
+│     sc2/mock/            SimulatedGame, MockGameObserver, ScenarioLibrary
+│     agent/               QuarkMindCaseFile, GameStateTranslator, AgentOrchestrator
+│     agent/plugin/        Plugin seam interfaces (StrategyTask, EconomicsTask, etc.)
+│     agent/cbr/           SC2GameCbrCase, SC2CbrRetentionObserver, SC2StrategyRouterTask
+│     plugin/              DroolsStrategyTask, FlowEconomicsTask, DroolsTacticsTask
+│     plugin/scouting/     DroolsScoutingTask, PatternClassificationRuleUnit
+│     plugin/tactics/      GOAP planning + CDI strategy interfaces
+│     plugin/coaching/     CoachingTriggerBuilder, CoachingWorkerFactory, CoachingStyle
+│     plugin/flow/         EconomicsFlow, EconomicsDecisionService
+│     qa/                  QA REST endpoints (@UnlessBuildProfile("prod"))
+│     qa/workbench/        WorkbenchSocket, CoachingAcknowledgmentHandler
+├── quarkmind-town/                  ← Sims-like 3D life simulation (stub)
+├── quarkmind-minecraft/             ← Minecraft agent (stub)
+├── quarkmind-evennia/               ← MUD agent (stub)
+├── quarkmind-sonaria/               ← Roblox/Sonaria agent (stub)
+└── quarkmind-godot-mcp/             ← Godot EditorPlugin MCP (stub)
 ```
 
 ## Plugin Architecture
@@ -358,9 +389,9 @@ Each plugin seam (`StrategyTask`, `EconomicsTask`, `TacticsTask`, `ScoutingTask`
 
 ## Performance Benchmarking
 
-Six benchmark tests run via `mvn test -Pbenchmark`:
+Six benchmark tests run via `mvn test -pl quarkmind-sc2 -Pbenchmark`:
 - `GameLoopBenchmarkTest` — per-phase tick timings across the full plugin chain (MockEngine, %test profile). Run before/after any change that could affect game loop latency; paste results into `docs/benchmarks/`.
-- `EmulatedGameBenchmarkTest` — EmulatedGame full-tick throughput with realistic combat load (PROTOSS_4GATE, A* pathfinding active). Plain JUnit — measures physics tick rate, not harness dispatch. Package: `io.quarkmind.sc2.emulated`. Run via `mvn test -Pbenchmark -Dtest=EmulatedGameBenchmarkTest`.
+- `EmulatedGameBenchmarkTest` — EmulatedGame full-tick throughput with realistic combat load (PROTOSS_4GATE, A* pathfinding active). Plain JUnit — measures physics tick rate, not harness dispatch. Package: `io.quarkmind.sc2.emulated`. Run via `mvn test -pl quarkmind-sc2 -Pbenchmark -Dtest=EmulatedGameBenchmarkTest`.
 - `ScoutingCalibrationTest` — runs all replay datasets to 3-min mark and prints enemy unit count statistics per matchup.
 - `PatternClassificationCalibrationTest` — `@QuarkusTest` that runs `PatternClassificationRuleUnit` against AI Arena + IEM10 replays, asserts ≥ 70% accuracy for rush and air-threat archetypes at 3-min mark.
 - `ExpansionLocationCalibrationTest` — validates `CLUSTER_RADIUS=12.0` against 59 replays (30 IEM10 + 29 AI Arena); asserts each map produces 4-20 expansion locations.
