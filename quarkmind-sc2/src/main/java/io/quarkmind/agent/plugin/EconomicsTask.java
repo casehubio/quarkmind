@@ -1,3 +1,5 @@
 package io.quarkmind.agent.plugin;
 
-public interface EconomicsTask extends io.quarkmind.agent.TaskDefinition {}
+import io.quarkmind.agency.task.TaskDefinition;
+
+public interface EconomicsTask extends TaskDefinition {}

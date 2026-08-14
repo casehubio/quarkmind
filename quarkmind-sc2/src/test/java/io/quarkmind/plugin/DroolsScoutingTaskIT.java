@@ -3,7 +3,7 @@ package io.quarkmind.plugin;
 import io.casehub.qhorus.api.store.MessageStore;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import io.quarkmind.agent.MutableMapCaseContext;
+import io.quarkmind.agency.context.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;

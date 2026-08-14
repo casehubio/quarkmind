@@ -1,5 +1,6 @@
 package io.quarkmind.agent;
 
+import io.quarkmind.agency.milestone.MilestoneTracker;
 import io.quarkmind.sc2.GameStarted;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;

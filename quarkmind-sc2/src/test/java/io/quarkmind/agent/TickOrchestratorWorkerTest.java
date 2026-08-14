@@ -8,12 +8,12 @@ import io.casehub.worker.api.WorkerOutcome;
 import io.casehub.worker.api.WorkerResult;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import io.quarkmind.agency.task.TaskDefinition;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -35,7 +35,7 @@ class TickOrchestratorWorkerTest {
             recordingPlugin("strategy", executionOrder),
             recordingPlugin("tactics", executionOrder),
             recordingPlugin("economics", executionOrder)
-        );
+                                              );
 
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(plugins);
         WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1), null);

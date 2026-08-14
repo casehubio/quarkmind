@@ -2,15 +2,14 @@ package io.quarkmind.plugin;
 
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import io.quarkmind.agent.MapCaseContext;
-import io.quarkmind.agent.MutableMapCaseContext;
+import io.quarkmind.agency.context.MapCaseContext;
+import io.quarkmind.agency.context.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ResourceBudget;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.cbr.SC2StrategyRouterTask;
-import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.BuildIntent;

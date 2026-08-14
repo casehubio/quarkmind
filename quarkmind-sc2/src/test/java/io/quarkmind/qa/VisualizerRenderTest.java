@@ -243,6 +243,7 @@ class VisualizerRenderTest {
      * 2 geysers).
      */
     @Test
+    @Tag("browser")
     void initialSpriteCounts() {
         Page page = openPage();
         observeAndWait(page, "unit", 12);
@@ -263,6 +264,7 @@ class VisualizerRenderTest {
      * Uses SimulatedGame.removeUnit() to simulate death.
      */
     @Test
+    @Tag("browser")
     void unitDisappearsWhenRemovedFromGameState() {
         Page page = openPage();
         observeAndWait(page, "unit", 12);
@@ -292,6 +294,7 @@ class VisualizerRenderTest {
      * exact coordinates impractical to compute on the Java side).
      */
     @Test
+    @Tag("browser")
     void nexusIsAtCorrectCanvasPosition() {
         Page page = openPage();
         observeAndWait(page, "building", 1);
@@ -321,6 +324,7 @@ class VisualizerRenderTest {
      * Probe at tile (9,9): world = (9*0.7 - 22.4, 9*0.7 - 22.4) = (-16.1, -16.1).
      */
     @Test
+    @Tag("browser")
     void probeZeroIsAtCorrectCanvasPosition() {
         Page page = openPage();
         observeAndWait(page, "unit", 12);
@@ -351,6 +355,7 @@ class VisualizerRenderTest {
      * Enemy Zealot at tile (14,14): world = (14*0.7 - 22.4, 14*0.7 - 22.4) = (-12.6, -12.6).
      */
     @Test
+    @Tag("browser")
     void enemyUnitRendersAtCorrectCanvasPosition() {
         Page page = openPage();
 
@@ -388,6 +393,7 @@ class VisualizerRenderTest {
      * Catches transparency bugs without pixel comparison.
      */
     @Test
+    @Tag("browser")
     void unitSpritesAreVisible() {
         Page page = openPage();
         observeAndWait(page, "unit", 12);
@@ -408,6 +414,7 @@ class VisualizerRenderTest {
      * after the first observe.
      */
     @Test
+    @Tag("browser")
     void hudTextContainsAllFields() {
         Page page = openPage();
         engine.observe();
@@ -473,6 +480,7 @@ class VisualizerRenderTest {
      * MockEngine adds +5 minerals per tick. Uses waitForFunction so no sleep needed.
      */
     @Test
+    @Tag("browser")
     void hudMineralCountIncreasesWithTicks() {
         Page page = openPage();
         engine.observe();
@@ -502,6 +510,7 @@ class VisualizerRenderTest {
      * Uses SimulatedGame.addStagedUnitForTesting() to inject a staged enemy.
      */
     @Test
+    @Tag("browser")
     void enemyStagedUnitsRenderAtSpawn() {
         Page page = openPage();
 
@@ -523,6 +532,7 @@ class VisualizerRenderTest {
      * Staging count matches game state: two different unit types staged → two sprites.
      */
     @Test
+    @Tag("browser")
     void stagedUnitCountMatchesGameState() {
         Page page = openPage();
 
@@ -546,6 +556,7 @@ class VisualizerRenderTest {
      * Simulates an attack being sent (staging → enemy).
      */
     @Test
+    @Tag("browser")
     void stagedUnitsDisappearWhenStagingClears() {
         Page page = openPage();
 

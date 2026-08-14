@@ -3,6 +3,7 @@ package io.quarkmind.agent;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.ledger.api.model.OutcomeRecord;
 import io.casehub.ledger.api.spi.OutcomeRecorder;
+import io.quarkmind.agency.milestone.MilestoneSession;
 import io.quarkmind.domain.DominanceScore;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.sc2.GameResult;
@@ -22,8 +23,8 @@ class MilestoneOutcomeRecorderTest {
 
     private RecordingOutcomeRecorder outcomeRecorder;
     private io.quarkmind.agent.cbr.SC2StrategyRouterTask strategyRouter;
-    private GameSession gameSession;
-    private MilestoneSession milestoneSession;
+    private GameSession              gameSession;
+    private MilestoneSession         milestoneSession;
     private MilestoneOutcomeRecorder recorder;
 
     @BeforeEach

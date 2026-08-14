@@ -24,7 +24,7 @@ QuarkMind is a single-module Quarkus application (`quarkmind-agent`). Key struct
 | Area | What it covers |
 |------|---------------|
 | `domain/` | SC2 domain model -- game state, units, buildings, actions, intents; `SC2Data` (all game constants); `StrategyArchetype` (58 archetypes across all 3 races and 3 phases); `TechTree` prerequisite graph; `PhaseResolver` |
-| `agent/` | CaseHub intelligence layer -- `QuarkMindCaseFile` keys, `GameStateTranslator`, `AgentOrchestrator`, `QuarkMindCaseHub`, `TickOrchestratorWorker`, `MutableMapCaseContext` |
+| `agent/` | CaseHub intelligence layer -- `QuarkMindCaseFile` keys, `GameStateTranslator`, `AgentOrchestrator`, `QuarkMindCaseHub`, `TickOrchestratorWorker` |
 | `agent/plugin/` | Plugin seam interfaces -- `StrategyTask`, `EconomicsTask`, `TacticsTask`, `ScoutingTask`; scouting intel types (`ScoutingIntelType`, `ScoutingIntelPayload`, `ScoutingIntelConsumer`) |
 | `agent/cbr/` | CBR strategy routing -- `SC2StrategyRouterTask`, `SC2GameCbrCase`, `SC2CbrRetentionObserver`, `SC2ImplementationRoutingStrategy` |
 | `plugin/` | Active plugin implementations -- Drools and Flow-based |

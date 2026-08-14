@@ -1,6 +1,6 @@
 package io.quarkmind.plugin;
 
-import io.quarkmind.agent.MapCaseContext;
+import io.quarkmind.agency.context.MapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;

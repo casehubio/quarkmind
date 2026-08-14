@@ -1,4 +1,4 @@
-package io.quarkmind.agent;
+package io.quarkmind.agency.context;
 
 import org.junit.jupiter.api.Test;
 
@@ -74,13 +74,13 @@ class MapCaseContextTest {
     void setThrowsUnsupportedOperationException() {
         var ctx = new MapCaseContext(Map.of());
         assertThatThrownBy(() -> ctx.set("K", "V"))
-            .isInstanceOf(UnsupportedOperationException.class);
+                  .isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
     void removeThrowsUnsupportedOperationException() {
         var ctx = new MapCaseContext(Map.of());
         assertThatThrownBy(() -> ctx.remove("K"))
-            .isInstanceOf(UnsupportedOperationException.class);
+                  .isInstanceOf(UnsupportedOperationException.class);
     }
 }

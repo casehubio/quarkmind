@@ -3,6 +3,8 @@ package io.quarkmind.agent;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
+
+import io.quarkmind.agency.context.MutableMapCaseContext;
 import org.junit.jupiter.api.Test;
 
 /**

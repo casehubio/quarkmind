@@ -1,7 +1,7 @@
 package io.quarkmind.plugin;
 
-import io.quarkmind.agent.MapCaseContext;
-import io.quarkmind.agent.MutableMapCaseContext;
+import io.quarkmind.agency.context.MapCaseContext;
+import io.quarkmind.agency.context.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,3 +1,5 @@
 package io.quarkmind.agent.plugin;
 
-public interface ScoutingTask extends io.quarkmind.agent.TaskDefinition {}
+import io.quarkmind.agency.task.TaskDefinition;
+
+public interface ScoutingTask extends TaskDefinition {}

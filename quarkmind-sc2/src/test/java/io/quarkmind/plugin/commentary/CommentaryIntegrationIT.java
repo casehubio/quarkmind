@@ -2,17 +2,13 @@ package io.quarkmind.plugin.commentary;
 
 import io.casehub.api.context.CaseContext;
 import io.casehub.api.spi.routing.TrustRoutingPolicy;
-import io.quarkmind.agent.MapCaseContext;
-import io.quarkmind.agent.QuarkMindCaseFile;
+import io.quarkmind.agency.context.MapCaseContext;
 import io.quarkmind.agent.QuarkMindTrustRoutingPolicyProvider;
 import io.quarkmind.plugin.advisory.QuarkMindAgentRegistrar;
-import io.quarkmind.plugin.summarisation.GameMoment;
-import io.quarkmind.plugin.summarisation.GameMomentType;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;

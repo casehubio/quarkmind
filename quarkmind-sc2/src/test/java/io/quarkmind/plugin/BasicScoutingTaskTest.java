@@ -1,6 +1,6 @@
 package io.quarkmind.plugin;
 
-import io.quarkmind.agent.MutableMapCaseContext;
+import io.quarkmind.agency.context.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.*;
 import io.quarkmind.sc2.IntentQueue;

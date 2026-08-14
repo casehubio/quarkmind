@@ -4,6 +4,7 @@ import io.casehub.api.context.CaseContext;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.ledger.api.model.OutcomeRecord;
 import io.casehub.ledger.api.spi.OutcomeRecorder;
+import io.quarkmind.agency.context.MapCaseContext;
 import io.quarkmind.sc2.GameStarted;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +50,7 @@ class DeferredAdvisoryEvaluatorTest {
             QuarkMindCaseFile.MINERALS, 500,
             QuarkMindCaseFile.SUPPLY_USED, 40,
             QuarkMindCaseFile.ARMY, 15
-        ));
+                                                   ));
 
         evaluator.onAdvisoryCompleted(event);
         evaluator.evaluate(ctx, 1100L);  // 100 frames later

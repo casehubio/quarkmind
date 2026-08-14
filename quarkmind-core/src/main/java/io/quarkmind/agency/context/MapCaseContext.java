@@ -1,4 +1,4 @@
-package io.quarkmind.agent;
+package io.quarkmind.agency.context;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.casehub.api.context.CaseContext;

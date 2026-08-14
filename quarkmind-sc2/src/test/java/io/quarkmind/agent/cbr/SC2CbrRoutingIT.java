@@ -2,7 +2,7 @@ package io.quarkmind.agent.cbr;
 
 import io.casehub.api.spi.CaseOutcomeEvent;
 import io.quarkmind.agent.GameSession;
-import io.quarkmind.agent.MutableMapCaseContext;
+import io.quarkmind.agency.context.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;

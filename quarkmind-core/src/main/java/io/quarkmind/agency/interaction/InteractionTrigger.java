@@ -1,3 +1,8 @@
 package io.quarkmind.agency.interaction;
 
-public interface InteractionTrigger {}
+import io.quarkmind.agency.AgencyContext;
+import java.util.Optional;
+
+public interface InteractionTrigger {
+    Optional<TriggerEvent> evaluate(AgencyContext context);
+}

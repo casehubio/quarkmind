@@ -4,6 +4,9 @@ import io.casehub.worker.api.WorkerFunction;
 import io.casehub.worker.api.WorkerResult;
 import java.util.List;
 import java.util.Map;
+
+import io.quarkmind.agency.context.MutableMapCaseContext;
+import io.quarkmind.agency.task.TaskDefinition;
 import org.jboss.logging.Logger;
 
 /**

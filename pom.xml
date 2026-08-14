@@ -31,6 +31,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.quarkmind</groupId>
+                <artifactId>quarkmind-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- Drools BOM — Apache KIE; governs all org.drools:* versions -->
             <dependency>
                 <groupId>org.drools</groupId>

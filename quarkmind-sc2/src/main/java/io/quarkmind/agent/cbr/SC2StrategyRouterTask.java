@@ -18,7 +18,7 @@ import io.casehub.platform.api.path.Path;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
-import io.quarkmind.agent.TaskDefinition;
+import io.quarkmind.agency.task.TaskDefinition;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;

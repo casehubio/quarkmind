@@ -1,6 +1,7 @@
 package io.quarkmind.agent;
 
 import io.casehub.api.context.CaseContext;
+import io.quarkmind.agency.context.MapCaseContext;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ class AdvisoryTriggerBuilderTest {
         CaseContext ctx = new MapCaseContext(Map.of(
             QuarkMindCaseFile.MOMENTS_LATEST,
             List.of(new GameMoment(GameMomentType.NEXUS_UNDER_ATTACK, 4200L, Map.of()))
-        ));
+                                                   ));
 
         Map<String, Object> triggers = AdvisoryTriggerBuilder.buildTriggers(ctx, 4200L);
 

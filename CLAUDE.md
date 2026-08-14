@@ -347,10 +347,14 @@ quarkmind/                           ← parent POM
 │     spi/          WorldBridge<P,I>, WorldPerception
 │     intent/       Intent (marker), IntentQueue<I>
 │     needs/        NeedState, NeedDefinition, DispositionNeedModifier
-│     spatial/      NavigationSPI, VisibilitySPI, SpatialMemory
-│     interaction/  InteractionTrigger, InteractionPipeline
-│     moment/       MomentDetector
-│     llm/          LlmRequestQueue
+│     task/         TaskDefinition (plugin contract — requires/activateIf/execute/produces)
+│     context/      MapCaseContext (read-only), MutableMapCaseContext (writable + mutations)
+│     milestone/    MilestoneTracker, MilestoneSession (fire-once tracking)
+│     session/      AgencySession (UUID session identity)
+│     spatial/      NavigationSPI, VisibilitySPI<E>, SpatialMemory
+│     interaction/  InteractionTrigger, InteractionPipeline, TriggerEvent
+│     moment/       MomentDetector, MomentEvent
+│     llm/          LlmRequestQueue, LlmRequest, LlmPriority
 ├── quarkmind-sc2/                   ← StarCraft II (all SC2-specific code)
 │   src/main/java/io/quarkmind/
 │     domain/              Plain Java records — no framework deps
@@ -358,7 +362,7 @@ quarkmind/                           ← parent POM
 │     sc2/real/            Live SC2 — QuarkusSC2Transport, SC2BotAgent, ObservationTranslator
 │     sc2/emulated/server/ EmulatedSC2Server — SC2 protocol over EmulatedGame
 │     sc2/mock/            SimulatedGame, MockGameObserver, ScenarioLibrary
-│     agent/               QuarkMindCaseFile, GameStateTranslator, AgentOrchestrator
+│     agent/               QuarkMindCaseHub, QuarkMindCaseFile, GameStateTranslator, AgentOrchestrator
 │     agent/plugin/        Plugin seam interfaces (StrategyTask, EconomicsTask, etc.)
 │     agent/cbr/           SC2GameCbrCase, SC2CbrRetentionObserver, SC2StrategyRouterTask
 │     plugin/              DroolsStrategyTask, FlowEconomicsTask, DroolsTacticsTask

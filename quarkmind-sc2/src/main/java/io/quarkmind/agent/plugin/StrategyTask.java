@@ -1,3 +1,5 @@
 package io.quarkmind.agent.plugin;
 
-public interface StrategyTask extends io.quarkmind.agent.TaskDefinition {}
+import io.quarkmind.agency.task.TaskDefinition;
+
+public interface StrategyTask extends TaskDefinition {}

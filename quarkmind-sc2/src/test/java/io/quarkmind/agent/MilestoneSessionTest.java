@@ -1,5 +1,6 @@
 package io.quarkmind.agent;
 
+import io.quarkmind.agency.milestone.MilestoneSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

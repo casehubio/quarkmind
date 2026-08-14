@@ -15,9 +15,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+
+import io.quarkmind.agency.task.TaskDefinition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +43,7 @@ class QuarkMindCaseHubTest {
             stubPlugin("tactics.drools-goap", "Drools GOAP Tactics", false),
             stubPlugin("economics.flow", "Flow Economics", false),
             stubPlugin("summarisation.moment-detection", "Moment Detection", false)
-        );
+                                              );
 
         hub = new QuarkMindCaseHub(plugins);
     }

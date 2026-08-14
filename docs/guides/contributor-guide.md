@@ -62,8 +62,7 @@ src/main/java/io/quarkmind/
   sc2/map/             MapDownloader, SC2MapCache, SC2MapTerrainExtractor
   agent/               AgentOrchestrator, GameStateTranslator, GameTickExecutor,
                        QuarkMindCaseHub, QuarkMindCaseFile, TickOrchestratorWorker,
-                       MutableMapCaseContext, MapCaseContext, PluginDispatchBroker,
-                       PluginOutcomeAuditor, GameSession, ResourceBudget
+                       PluginDispatchBroker, PluginOutcomeAuditor, GameSession, ResourceBudget
   agent/plugin/        StrategyTask, EconomicsTask, TacticsTask, ScoutingTask,
                        ScoutingIntelConsumer, ScoutingIntelPayload, ScoutingIntelType,
                        MomentDetectionSeam, SummarisationTickable
@@ -75,7 +74,7 @@ src/main/java/io/quarkmind/
                        WeightContext, WeightModifier,
                        DispositionAwareRoutingStrategy, StrategyTaxonomy,
                        StateBasedPhaseResolver, PhaseResolverProducer,
-                       MilestoneOutcomeRecorder, MilestoneConfig, MilestoneSession,
+                       MilestoneOutcomeRecorder, MilestoneConfig,
                        MilestoneTrigger, MilestoneEvent,
                        ScoutingIntelBroker, PluginDecisionEvent, AdvisoryTriggerBuilder
   plugin/              DroolsStrategyTask, BasicEconomicsTask, BasicScoutingTask,

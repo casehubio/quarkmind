@@ -1,10 +1,10 @@
 package io.quarkmind.agent;
 
-import io.casehub.platform.api.identity.ActorType;
 import io.casehub.qhorus.api.message.DispatchResult;
 import io.casehub.qhorus.api.message.MessageDispatch;
 import io.casehub.qhorus.api.message.MessageType;
 import io.casehub.qhorus.runtime.message.MessageService;
+import io.quarkmind.agency.task.TaskDefinition;
 import io.quarkmind.sc2.GameStarted;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

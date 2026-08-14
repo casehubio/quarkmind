@@ -8,7 +8,7 @@ import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import io.quarkmind.agent.AgentOrchestrator;
-import io.quarkmind.agent.MapCaseContext;
+import io.quarkmind.agency.context.MapCaseContext;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.cbr.SC2StrategyRouterTask;

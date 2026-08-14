@@ -3,7 +3,7 @@ package io.quarkmind.plugin.coaching;
 import io.casehub.api.context.CaseContext;
 import io.casehub.api.spi.routing.TrustRoutingPolicy;
 import io.casehub.eidos.api.AgentDescriptor;
-import io.quarkmind.agent.MapCaseContext;
+import io.quarkmind.agency.context.MapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.QuarkMindTrustRoutingPolicyProvider;
 import io.quarkmind.domain.*;
@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

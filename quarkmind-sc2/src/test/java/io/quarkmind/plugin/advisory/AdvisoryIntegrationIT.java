@@ -6,7 +6,7 @@ import io.casehub.eidos.api.AgentDescriptor;
 import io.quarkmind.agent.AdvisoryInvocationCounter;
 import io.quarkmind.agent.AdvisoryTriggerBuilder;
 import io.quarkmind.agent.DeferredAdvisoryEvaluator;
-import io.quarkmind.agent.MapCaseContext;
+import io.quarkmind.agency.context.MapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.QuarkMindTrustRoutingPolicyProvider;
 import io.quarkmind.plugin.summarisation.GameMoment;

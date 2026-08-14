@@ -1,4 +1,4 @@
-package io.quarkmind.agent;
+package io.quarkmind.agency.context;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.casehub.api.context.CaseContext;
@@ -39,7 +39,7 @@ public final class MutableMapCaseContext implements CaseContext {
     }
 
     /** Returns all keys set during execution (the delta). */
-    Map<String, Object> mutations() {
+    public Map<String, Object> mutations() {
         return Map.copyOf(mutations);
     }
 

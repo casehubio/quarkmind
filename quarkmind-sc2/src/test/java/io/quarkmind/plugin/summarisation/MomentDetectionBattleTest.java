@@ -3,6 +3,7 @@ package io.quarkmind.plugin.summarisation;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
+import jakarta.enterprise.inject.Vetoed;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -111,6 +112,7 @@ class MomentDetectionBattleTest {
         return units;
     }
 
+    @Vetoed
     static class TestMomentDetectionTask extends MomentDetectionTask {
         private final List<GameMoment> emitted;
 

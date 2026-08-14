@@ -1,4 +1,4 @@
-package io.quarkmind.agent;
+package io.quarkmind.agency.task;
 
 import io.casehub.api.context.CaseContext;
 

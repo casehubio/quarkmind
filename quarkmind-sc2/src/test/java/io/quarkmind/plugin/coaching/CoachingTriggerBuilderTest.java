@@ -1,6 +1,6 @@
 package io.quarkmind.plugin.coaching;
 
-import io.quarkmind.agent.MapCaseContext;
+import io.quarkmind.agency.context.MapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;

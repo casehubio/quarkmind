@@ -1,3 +1,8 @@
 package io.quarkmind.agency.spatial;
 
-public interface VisibilitySPI {}
+import java.util.Set;
+
+public interface VisibilitySPI<E> {
+    Set<E> visible();
+    Set<E> remembered();
+}

@@ -1,7 +1,7 @@
 package io.quarkmind.plugin.commentary;
 
 import io.casehub.api.context.CaseContext;
-import io.quarkmind.agent.MapCaseContext;
+import io.quarkmind.agency.context.MapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;

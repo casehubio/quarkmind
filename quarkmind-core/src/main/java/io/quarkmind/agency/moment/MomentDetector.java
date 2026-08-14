@@ -1,3 +1,8 @@
 package io.quarkmind.agency.moment;
 
-public interface MomentDetector {}
+import io.quarkmind.agency.AgencyContext;
+import java.util.List;
+
+public interface MomentDetector {
+    List<MomentEvent> detect(AgencyContext context);
+}

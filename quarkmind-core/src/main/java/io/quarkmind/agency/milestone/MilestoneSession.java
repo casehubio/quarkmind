@@ -1,4 +1,4 @@
-package io.quarkmind.agent;
+package io.quarkmind.agency.milestone;
 
 import jakarta.enterprise.context.ApplicationScoped;
 

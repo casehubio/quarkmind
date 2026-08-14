@@ -8,6 +8,8 @@ import io.casehub.qhorus.api.message.MessageDispatch;
 import io.casehub.qhorus.api.message.MessageType;
 import io.casehub.qhorus.runtime.channel.ChannelService;
 import io.casehub.qhorus.runtime.message.MessageService;
+import io.quarkmind.agency.context.MapCaseContext;
+import io.quarkmind.agency.task.TaskDefinition;
 import io.quarkmind.sc2.GameStarted;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.annotation.PostConstruct;
@@ -48,8 +50,8 @@ public class PluginDispatchBroker {
 
     private static final Logger log = Logger.getLogger(PluginDispatchBroker.class);
 
-    private final List<TaskDefinition>    plugins;
-    private final MessageService         messageService;
+    private final List<TaskDefinition> plugins;
+    private final MessageService       messageService;
     private final ChannelService         channelService;
 
     private final ConcurrentHashMap<String, Boolean> priorActivation = new ConcurrentHashMap<>();

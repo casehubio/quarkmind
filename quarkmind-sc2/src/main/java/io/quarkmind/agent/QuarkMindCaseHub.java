@@ -13,6 +13,7 @@ import io.casehub.worker.api.Worker;
 import io.casehub.worker.api.WorkerFunction;
 import io.casehub.worker.api.WorkerResult;
 import io.casehub.worker.api.WorkerScope;
+import io.quarkmind.agency.task.TaskDefinition;
 import io.quarkmind.plugin.advisory.AdvisoryWorkerFactory;
 import io.quarkmind.plugin.advisory.CompletionCallback;
 import io.quarkmind.plugin.advisory.QuarkMindAgentRegistrar;

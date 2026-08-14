@@ -1,3 +1,7 @@
 package io.quarkmind.agency.interaction;
 
-public interface InteractionPipeline {}
+import io.quarkmind.agency.AgencyContext;
+
+public interface InteractionPipeline {
+    void evaluate(AgencyContext context);
+}

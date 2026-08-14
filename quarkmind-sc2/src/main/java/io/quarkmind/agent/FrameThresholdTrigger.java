@@ -1,5 +1,6 @@
 package io.quarkmind.agent;
 
+import io.quarkmind.agency.milestone.MilestoneTracker;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
