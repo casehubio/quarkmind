@@ -16,7 +16,7 @@
     <modules>
         <module>quarkmind-core</module>
         <module>quarkmind-sc2</module>
-        <module>quarkmind-town</module>
+        <module>quarkmind-ville</module>
         <module>quarkmind-minecraft</module>
         <module>quarkmind-evennia</module>
         <module>quarkmind-sonaria</module>

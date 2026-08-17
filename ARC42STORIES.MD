@@ -209,6 +209,34 @@ C4Container
   Rel(registrar, seams, "injects at startup")
 ```
 
+### QuarkVille Module Structure (quarkmind-ville)
+
+First non-SC2 consumer of quarkmind-core agency SPIs. Client/server architecture — central Quarkus game server owns world state, AI agent clients connect via WebSocket.
+
+```
+quarkmind-ville/                          ← parent POM (aggregator)
+├── quarkmind-ville-protocol/             ← shared message types
+│   io.quarkmind.ville.protocol/
+│     VilleIntent (sealed: Move, Talk, Rest, Emote) implements Intent
+│     VillePerception implements WorldPerception
+│     CharacterSnapshot, Position, VilleEvent
+│     VilleClientMessage (sealed: Connect, IntentMessage, Thought)
+│     VilleServerMessage (sealed: Perception, ObserverPerception, Result, ThoughtBroadcast)
+├── quarkmind-ville-server/               ← game server (Quarkus)
+│   io.quarkmind.ville.server/
+│     WorldState, CharacterState, GameTick, VilleNeedDefinition
+│     VilleSocket (@WebSocket /ws/ville), VilleServer (@ApplicationScoped)
+│     PerceptionBuilder (range-filtered agent perception, observer perception)
+├── quarkmind-ville-agent/                ← agent client (standalone)
+│   io.quarkmind.ville.agent/
+│     VilleWorldBridge implements WorldBridge<VillePerception, VilleIntent>
+│     VilleAgencyLoop implements AgencyLoop (LLM-driven, no CaseEngine)
+│     AgentRunner (main entry, virtual-thread multi-agent)
+└── godot/                                ← Godot 4 visual client (observer)
+```
+
+quarkmind-core SPIs exercised: `WorldBridge`, `AgencyLoop`, `NeedState`, `NeedDefinition`, `DispositionNeedModifier`, `Intent`, `IntentQueue`, `AgencyContext`, `WorldPerception`.
+
 ### Single-Module Package Structure
 
 ```

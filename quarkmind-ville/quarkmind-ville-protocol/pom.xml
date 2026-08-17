@@ -4,17 +4,28 @@
 
     <parent>
         <groupId>io.quarkmind</groupId>
-        <artifactId>quarkmind</artifactId>
+        <artifactId>quarkmind-ville</artifactId>
         <version>0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>quarkmind-town</artifactId>
+    <artifactId>quarkmind-ville-protocol</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>io.quarkmind</groupId>
             <artifactId>quarkmind-core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.27.7</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

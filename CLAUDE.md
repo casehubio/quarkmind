@@ -212,6 +212,22 @@ mvn test -pl quarkmind-sc2
 mvn test -pl quarkmind-core
 ```
 
+**Test (QuarkVille — all modules):**
+```bash
+mvn test -pl quarkmind-ville
+```
+
+**Test (QuarkVille server only):**
+```bash
+mvn test -pl quarkmind-ville/quarkmind-ville-server
+```
+
+**Run (QuarkVille server):**
+```bash
+mvn quarkus:dev -pl quarkmind-ville/quarkmind-ville-server
+# WebSocket endpoint at ws://localhost:8090/ws/ville
+```
+
 **Test (single class):**
 ```bash
 mvn test -pl quarkmind-sc2 -Dtest=SimulatedGameTest -q
@@ -289,6 +305,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `IEM10CommandExtractorTest`, `IEM10CommandExtractorSelectionDeltaTest`, `SelectionStateTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `DroolsStrategyTaskStaticTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TerranEmulatedGameTest`, `ZergEmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `PhysicsStateTest`, `PlayerStateTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`, `ObservationTranslatorTest`, `ObservationTranslatorIntegrationTest`, `QuarkusSC2TransportTest`, `AbilityDiscoveryTest`, `AbilityMappingTest`, `ReplayCommandExtractorTest`, `TerranReplayCommandExtractorTest`, `ReplayValidationTest`, `ReplayValidationHarnessTest`, `ReplaySimulatedGameMovementTest`, `SC2DataTest`, `SC2TrainTimeCalibrationTest`, `SC2BuildTimeCalibrationTest`, `GameEventStreamTest`, `UnitOrderTrackerTest`, `DispositionAwareRoutingStrategyTest`, `EarlyPressureStrategyTaskTest`, `EarlyPressureStrategyTaskMigrationTest`, `EconomicExpansionStrategyTaskTest`, `RealSC2EngineTest`, `MapCaseContextTest`, `PluginDispatchBrokerTest`, `EmulatedSC2ServerTest`, `GameStateRoundTripTest`, `EventAccumulatorTest`, `EventStreamBusTest`, `SummarisationRunnerTest`, `GamePhaseSummariserTest`, `GameArcSummariserTest`, `SummarisationPipelineTest`, `DroolsStrategyL2L3Test`, `AdvisoryWorkerFactoryTest`, `QuarkMindAdvisorRegistrarTest`, `AdvisoryTriggerBuilderTest`, `AdvisoryCompletionObserverTest`, `AdvisoryInvocationCounterTest`, `AdvisoryLatencyRecorderTest`, `DeferredAdvisoryEvaluatorTest`, `AdvisoryMilestoneOutcomeRecorderTest`, `AdvisoryMilestoneSessionTest`, `AdvisoryChannelBrokerTest`, `AdvisoryChannelBackendTest`, `QuarkMindTrustRoutingPolicyProviderTest`, `QuarkMindCaseHubTest`, `GameTickExecutorMigrationTest`, `TickOrchestratorWorkerTest`, `MilestoneSessionTest`, `FrameThresholdTriggerTest`, `GamePhaseTriggerTest`, `DominanceScoreTest`, `MultiFactorDominanceAssessorTest`, `MilestoneOutcomeRecorderTest`, `WorkbenchEventTest`, `WorkbenchEnricherTest`, `WorkbenchSerializationTest`, `EngagementOutcomeTest`, `MomentDetectionBattleTest`
 - Tests: (continued) `PatternConfidenceTest`, `DominanceWeightsTest`, `AnchorInterpolatorTest`, `TemporalDominanceWeightStrategyTest`, `SituationalDominanceWeightStrategyTest`, `DroolsDominanceWeightStrategyTest`, `UnitTypeTest`, `StrategyArchetypeTest`, `GamePhaseTest`, `ArchetypeCategoryTest`, `StrategyTaxonomyTest`, `TimeBasedPhaseResolverTest`, `StateBasedPhaseResolverTest`, `PhaseResolverProducerTest`, `SC2GameCbrCaseTest`, `SC2CbrRetentionObserverTest`, `SC2AdvisoryCbrRetentionObserverTest`, `SC2ImplementationRoutingStrategyTest`, `SC2StrategyRouterTaskTest`, `ScoutingConvergenceEvaluatorTest`
 - Tests: (continued) `CoachingAdviceTest`, `CoachingDispositionTermTest`, `CoachingTriggerBuilderTest`, `CoachingSessionSelectorTest`, `CoachingWorkerFactoryTest`, `CoachingChannelBrokerTest`, `CoachingComplianceEvaluatorTest`, `CoachingStyleTest`, `CoachingAcknowledgmentHandlerTest`, `Point2dCentroidTest`, `UnitTypeWorkerTest`, `ExpansionLocationTest`, `TerrainGridRampTest`, `LocationResolverTest`, `CountDeltaTest`, `ArmyCentroidMovementTest`, `ExpansionPlacementTest`, `UnitsNearLocationTest`, `LlmPatternClassifierWorkerFactoryTest`, `ComplianceVerdictTest`, `ComplianceWorkerDispatcherTest`, `LlmComplianceWorkerFactoryTest`, `CbrLearningCurveEndpointTest`
+- QuarkVille unit tests: `VilleIntentTest`, `VillePerceptionTest`, `WorldStateTest`, `GameTickTest`, `PerceptionBuilderTest`, `VilleAgencyLoopTest`, `VilleWorldBridgeTest`
 - Package-private static methods on CDI beans are tested from the same package without CDI — make them `static` (not `private`) to enable this.
 
 **Integration tests** (`@QuarkusTest`, full CDI context):
@@ -296,6 +313,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - Tests: `QaEndpointsTest`, `FullMockPipelineIT`, `DroolsStrategyTaskTest`, `EconomicsFlowTest`, `DroolsTacticsRuleUnitTest`, `DroolsTacticsTaskIT`, `DroolsScoutingRulesTest`, `DroolsScoutingTaskIT`, `LedgerAuditIT`, `TrustWeightedStrategyIT`, `StrategyOutcomeRecordIT`, `AdaptivePluginSelectionIT`, `MomentDetectionTaskTest`, `MomentBrokerIT`, `SummarisationPipelineIT`, `AdvisoryIntegrationIT`, `LlmComplianceIT`
 - Tests: (continued) `PatternClassificationRuleUnitTest`, `PatternClassificationCalibrationTest`, `DominanceWeightRuleUnitTest`, `SC2CbrRetentionIT`, `SC2CbrRoutingIT`, `WorkbenchSocketIT`, `LlmPatternFallbackIT`, `CbrLearningCurveIT`
 - L6 @QuarkusTest note: `DroolsStrategyTaskTest`, `LedgerAuditIT`, `AdaptivePluginSelectionIT` inject `@CaseType("starcraft-game") DroolsStrategyTask` directly (not the `StrategyTask` interface) — three competing `StrategyTask` implementations make the interface injection ambiguous. Always use the concrete type when a specific strategy impl is the subject under test.
+- QuarkVille integration tests: `VilleServerIT`, `EndToEndIT` — WebSocket connect/perception/intent/thought tests; use `@TestHTTPResource` for port resolution
 - Flow integration tests emit to a SmallRye channel and assert after `Thread.sleep(300)` — the flow processes asynchronously
 
 **Playwright render tests** (`@QuarkusTest` + `@Tag("browser")`, excluded from default surefire run — need Chromium installed):
@@ -372,7 +390,11 @@ quarkmind/                           ← parent POM
 │     plugin/flow/         EconomicsFlow, EconomicsDecisionService
 │     qa/                  QA REST endpoints (@UnlessBuildProfile("prod"))
 │     qa/workbench/        WorkbenchSocket, CoachingAcknowledgmentHandler
-├── quarkmind-town/                  ← Sims-like 3D life simulation (stub)
+├── quarkmind-ville/                 ← QuarkVille — Sims-like 3D life simulation
+│   ├── quarkmind-ville-protocol/    ← shared message types (VilleIntent, VillePerception)
+│   ├── quarkmind-ville-server/      ← game server (world state, game tick, WebSocket)
+│   ├── quarkmind-ville-agent/       ← agent client (AgencyLoop, WorldBridge, LLM)
+│   └── godot/                       ← Godot 4 visual client
 ├── quarkmind-minecraft/             ← Minecraft agent (stub)
 ├── quarkmind-evennia/               ← MUD agent (stub)
 ├── quarkmind-sonaria/               ← Roblox/Sonaria agent (stub)
