@@ -21,6 +21,7 @@
         <module>quarkmind-evennia</module>
         <module>quarkmind-sonaria</module>
         <module>quarkmind-godot-mcp</module>
+        <module>quarkmind-chat</module>
     </modules>
 
     <properties>
