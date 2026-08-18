@@ -298,7 +298,7 @@ class DroolsScoutingTaskTest {
                 StrategyArchetype.PROTOSS_GATEWAY_RUSH, 0.3,
                 StrategyArchetype.PROTOSS_MACRO, 0.2));
 
-        assertThat(DroolsScoutingTask.shouldFireLlmFallback(
+        assertThat(CascadingPatternClassifier.shouldFireLlmFallback(
                 confidences, 0.5, 200, 100, -1, 50)).isTrue();
     }
 
@@ -308,7 +308,7 @@ class DroolsScoutingTaskTest {
                 StrategyArchetype.PROTOSS_GATEWAY_RUSH, 0.6,
                 StrategyArchetype.PROTOSS_MACRO, 0.2));
 
-        assertThat(DroolsScoutingTask.shouldFireLlmFallback(
+        assertThat(CascadingPatternClassifier.shouldFireLlmFallback(
                 confidences, 0.5, 200, 100, -1, 50)).isFalse();
     }
 
@@ -317,7 +317,7 @@ class DroolsScoutingTaskTest {
         var confidences = new java.util.EnumMap<>(Map.of(
                 StrategyArchetype.PROTOSS_MACRO, 0.2));
 
-        assertThat(DroolsScoutingTask.shouldFireLlmFallback(
+        assertThat(CascadingPatternClassifier.shouldFireLlmFallback(
                 confidences, 0.5, 50, 100, -1, 50)).isFalse();
     }
 
@@ -326,7 +326,7 @@ class DroolsScoutingTaskTest {
         var confidences = new java.util.EnumMap<>(Map.of(
                 StrategyArchetype.PROTOSS_MACRO, 0.2));
 
-        assertThat(DroolsScoutingTask.shouldFireLlmFallback(
+        assertThat(CascadingPatternClassifier.shouldFireLlmFallback(
                 confidences, 0.5, 200, 100, 180, 50)).isFalse();
     }
 
@@ -334,7 +334,7 @@ class DroolsScoutingTaskTest {
     void llmFallback_firesWhenCumulativeConfidenceMapIsEmpty() {
         var confidences = new java.util.EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
 
-        assertThat(DroolsScoutingTask.shouldFireLlmFallback(
+        assertThat(CascadingPatternClassifier.shouldFireLlmFallback(
                 confidences, 0.5, 200, 100, -1, 50)).isTrue();
     }
 
@@ -343,7 +343,7 @@ class DroolsScoutingTaskTest {
         var confidences = new java.util.EnumMap<>(Map.of(
                 StrategyArchetype.PROTOSS_MACRO, 0.2));
 
-        assertThat(DroolsScoutingTask.shouldFireLlmFallback(
+        assertThat(CascadingPatternClassifier.shouldFireLlmFallback(
                 confidences, 0.5, 300, 100, 200, 50)).isTrue();
     }
 
@@ -359,7 +359,7 @@ class DroolsScoutingTaskTest {
         var cumulative = new java.util.EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
         cumulative.put(StrategyArchetype.PROTOSS_MACRO, 0.2);
 
-        DroolsScoutingTask.processLlmFallbackResult(ctx, cumulative, null);
+        CascadingPatternClassifier.processLlmFallbackResult(ctx, cumulative, null);
 
         assertThat(cumulative.get(StrategyArchetype.PROTOSS_GATEWAY_RUSH)).isEqualTo(0.8);
         assertThat(ctx.get(QuarkMindCaseFile.LLM_FALLBACK_ARCHETYPE)).isNull();
@@ -374,7 +374,7 @@ class DroolsScoutingTaskTest {
 
         var cumulative = new java.util.EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
 
-        String result = DroolsScoutingTask.processLlmFallbackResult(
+        String result = CascadingPatternClassifier.processLlmFallbackResult(
                 ctx, cumulative, "PROTOSS_GATEWAY_RUSH");
 
         assertThat(result).isEqualTo("PROTOSS_GATEWAY_RUSH");
@@ -390,7 +390,7 @@ class DroolsScoutingTaskTest {
 
         var cumulative = new java.util.EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
 
-        DroolsScoutingTask.processLlmFallbackResult(ctx, cumulative, null);
+        CascadingPatternClassifier.processLlmFallbackResult(ctx, cumulative, null);
 
         assertThat(cumulative).isEmpty();
         assertThat(ctx.get(QuarkMindCaseFile.LLM_FALLBACK_ARCHETYPE)).isNull();
@@ -402,7 +402,7 @@ class DroolsScoutingTaskTest {
 
         var cumulative = new java.util.EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
 
-        String result = DroolsScoutingTask.processLlmFallbackResult(
+        String result = CascadingPatternClassifier.processLlmFallbackResult(
                 ctx, cumulative, "PREVIOUS");
 
         assertThat(result).isEqualTo("PREVIOUS");

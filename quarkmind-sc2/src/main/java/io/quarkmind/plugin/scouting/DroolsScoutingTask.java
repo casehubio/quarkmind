@@ -84,6 +84,7 @@ public class DroolsScoutingTask implements ScoutingTask {
     @Inject GameSession gameSession;
 
     @Inject ScoutingIntelBroker broker;
+    @Inject CascadingPatternClassifier cascadingClassifier;
     @Inject MessageService messageService;
     @Inject ObjectMapper objectMapper;
     @Inject PreferenceProvider preferenceProvider;
@@ -109,12 +110,6 @@ public class DroolsScoutingTask implements ScoutingTask {
     volatile boolean buildOrderDispatchEnabled;
     volatile boolean patternAssessmentDispatchEnabled;
     volatile boolean llmFallbackEnabled;
-    volatile double  llmFallbackConfidenceThreshold;
-    volatile long    llmFallbackMinGameTimeFrames;
-    volatile long    llmFallbackCooldownFrames;
-    private  long    lastLlmFallbackFrame = -1;
-    String lastProcessedLlmArchetype = null;
-
 
     private volatile int prevEnemyHash = 0;
     private volatile String scoutProbeTag;
@@ -122,8 +117,6 @@ public class DroolsScoutingTask implements ScoutingTask {
     private long scoutFirstDispatchFrame = -1;
 
 
-    private final EnumMap<StrategyArchetype, Double> cumulativeConfidence =
-        new EnumMap<>(StrategyArchetype.class);
     volatile List<PatternAssessment> prevAssessments = List.of();
 
     @Inject
@@ -147,10 +140,9 @@ public class DroolsScoutingTask implements ScoutingTask {
         scoutProbeTag           = null;
         lastFrame               = -1;
         scoutFirstDispatchFrame = -1;
-        cumulativeConfidence.clear();
+        cascadingClassifier.reset();
         prevAssessments           = List.of();
-        lastLlmFallbackFrame      = -1;
-        lastProcessedLlmArchetype = null;}
+    }
 
     @PostConstruct
     void initThresholds() {
@@ -169,9 +161,11 @@ public class DroolsScoutingTask implements ScoutingTask {
         buildOrderDispatchEnabled        = prefs.getOrDefault(ScoutingIntelPreferences.BUILD_ORDER_DISPATCH_ENABLED).asBoolean();
         patternAssessmentDispatchEnabled = prefs.getOrDefault(ScoutingIntelPreferences.PATTERN_ASSESSMENT_DISPATCH_ENABLED).asBoolean();
         llmFallbackEnabled               = prefs.getOrDefault(ScoutingIntelPreferences.LLM_FALLBACK_ENABLED).asBoolean();
-        llmFallbackConfidenceThreshold   = prefs.getOrDefault(ScoutingIntelPreferences.LLM_FALLBACK_CONFIDENCE_THRESHOLD).asDouble();
-        llmFallbackMinGameTimeFrames     = prefs.getOrDefault(ScoutingIntelPreferences.LLM_FALLBACK_MIN_GAME_TIME_FRAMES).asInt();
-        llmFallbackCooldownFrames        = prefs.getOrDefault(ScoutingIntelPreferences.LLM_FALLBACK_COOLDOWN_FRAMES).asInt();
+        cascadingClassifier.setLlmFallbackConfig(
+                llmFallbackEnabled,
+                prefs.getOrDefault(ScoutingIntelPreferences.LLM_FALLBACK_CONFIDENCE_THRESHOLD).asDouble(),
+                prefs.getOrDefault(ScoutingIntelPreferences.LLM_FALLBACK_MIN_GAME_TIME_FRAMES).asInt(),
+                prefs.getOrDefault(ScoutingIntelPreferences.LLM_FALLBACK_COOLDOWN_FRAMES).asInt());
     }
 
     @Override public String getId()   { return "scouting.drools-cep"; }
@@ -214,10 +208,8 @@ public class DroolsScoutingTask implements ScoutingTask {
             prevPosture      = null;
             prevTimingAlert  = null;
             prevBuildOrder   = null;
-            cumulativeConfidence.clear();
+            cascadingClassifier.reset();
             prevAssessments  = List.of();
-            lastLlmFallbackFrame = -1;
-            lastProcessedLlmArchetype = null;
         }
         long prevFrame = lastFrame;
         lastFrame = frame;
@@ -303,7 +295,7 @@ public class DroolsScoutingTask implements ScoutingTask {
             }
         }
 
-        // --- Pattern classification ---
+        // --- Pattern classification (delegated to cascade) ---
         if (needsCep) {
             GameState gameState = ctx.getAs(QuarkMindCaseFile.GAME_STATE, GameState.class);
             double gameTimeMin = gameState.gameTimeMinutes();
@@ -314,12 +306,12 @@ public class DroolsScoutingTask implements ScoutingTask {
                     patternRuleUnit.createInstance(patternData)) {
                 pInstance.fire();
             }
-            var allConf = PatternClassifier.computeAllConfidences(patternData.getEvidence());
-            PatternClassifier.mergeCumulative(cumulativeConfidence, allConf, frame, prevFrame);
-            long framesElapsed = prevFrame >= 0 ? frame - prevFrame : 0;
-            PatternClassifier.applyRevisions(cumulativeConfidence, patternData.getRevisions(), framesElapsed);
 
-            var assessments = PatternClassifier.allAssessments(cumulativeConfidence, frame);
+            CascadeResult cascadeResult = cascadingClassifier.classify(
+                    patternData.getEvidence(), patternData.getRevisions(),
+                    null, frame, prevFrame, ctx);
+
+            var assessments = cascadeResult.assessments();
             ctx.set(QuarkMindCaseFile.SCOUTING_FINAL_ASSESSMENT, assessments);
             if (!assessments.isEmpty()) {
                 boolean changed = assessmentsChanged(prevAssessments, assessments);
@@ -331,50 +323,6 @@ public class DroolsScoutingTask implements ScoutingTask {
             } else if (!prevAssessments.isEmpty()) {
                 prevAssessments = List.of();
             }
-        }
-
-        // --- LLM fallback trigger ---
-        if (llmFallbackEnabled && shouldFireLlmFallback(cumulativeConfidence,
-                llmFallbackConfidenceThreshold, frame, llmFallbackMinGameTimeFrames,
-                lastLlmFallbackFrame, llmFallbackCooldownFrames)) {
-            lastLlmFallbackFrame = frame;
-            Race enemyRace = enemies.stream()
-                .map(Unit::type)
-                .map(UnitType::race)
-                .filter(r -> r != null)
-                .findFirst()
-                .orElse(Race.PROTOSS);
-
-            List<Map<String, Object>> unitTimeline = sessionManager.unitBufferSnapshot().stream()
-                .map(e -> Map.<String, Object>of("unitType", e.type().name(), "gameTimeMs", e.gameTimeMs()))
-                .toList();
-
-            Map<String, Double> confSnapshot = new java.util.HashMap<>();
-            cumulativeConfidence.forEach((arch, conf) -> confSnapshot.put(arch.name(), conf));
-
-            ctx.set(QuarkMindCaseFile.LLM_FALLBACK_TRIGGER, Map.of(
-                "gameFrame", frame,
-                "enemyRace", enemyRace.name(),
-                "unitTimeline", unitTimeline,
-                "cumulativeConfidences", confSnapshot
-            ));
-            log.infof("[SCOUTING] LLM fallback triggered at frame %d — all confidences below %.2f",
-                frame, llmFallbackConfidenceThreshold);
-        }
-
-        // --- LLM fallback result integration ---
-        String prevLlmArch = lastProcessedLlmArchetype;
-        lastProcessedLlmArchetype = processLlmFallbackResult(ctx, cumulativeConfidence, lastProcessedLlmArchetype);
-        if (!java.util.Objects.equals(prevLlmArch, lastProcessedLlmArchetype) && lastProcessedLlmArchetype != null) {
-            try {
-                StrategyArchetype arch = StrategyArchetype.valueOf(lastProcessedLlmArchetype);
-                double conf = cumulativeConfidence.getOrDefault(arch, 0.6);
-                var assessment = new PatternAssessment(arch, conf, frame,
-                    "LLM fallback: " + lastProcessedLlmArchetype + " (confidence " + String.format("%.2f", conf) + ")",
-                    AssessmentSource.LLM);
-                publishIntel(new ScoutingIntelPayload.PatternAssessmentPayload(List.of(assessment)));
-                log.infof("[SCOUTING] LLM fallback result integrated: %s @ %.2f", arch, conf);
-            } catch (IllegalArgumentException ignored) {}
         }
 
         if (enemies.isEmpty()) {
@@ -486,48 +434,6 @@ public class DroolsScoutingTask implements ScoutingTask {
         }
         return false;
     }
-
-    static boolean shouldFireLlmFallback(EnumMap<StrategyArchetype, Double> cumulativeConfidence,
-                                         double threshold, long currentFrame, long minGameTimeFrames,
-                                         long lastFallbackFrame, long cooldownFrames) {
-        if (currentFrame < minGameTimeFrames) {return false;}
-        if (lastFallbackFrame >= 0 && currentFrame - lastFallbackFrame < cooldownFrames) {return false;}
-        for (double conf : cumulativeConfidence.values()) {
-            if (conf >= threshold) {return false;}
-        }
-        return true;
-    }
-
-    static String processLlmFallbackResult(io.casehub.api.context.CaseContext ctx,
-                                           EnumMap<StrategyArchetype, Double> cumulativeConfidence,
-                                           String lastProcessedArchetype) {
-        String archetypeName = ctx.getAs(QuarkMindCaseFile.LLM_FALLBACK_ARCHETYPE, String.class);
-        if (archetypeName == null) {return lastProcessedArchetype;}
-        if (archetypeName.equals(lastProcessedArchetype)) {return lastProcessedArchetype;}
-
-        String confStr = ctx.getAs(QuarkMindCaseFile.LLM_FALLBACK_CONFIDENCE, String.class);
-
-        ctx.set(QuarkMindCaseFile.LLM_FALLBACK_ARCHETYPE, null);
-        ctx.set(QuarkMindCaseFile.LLM_FALLBACK_CONFIDENCE, null);
-        ctx.set(QuarkMindCaseFile.LLM_FALLBACK_RATIONALE, null);
-
-        StrategyArchetype archetype;
-        try {
-            archetype = StrategyArchetype.valueOf(archetypeName);
-        } catch (IllegalArgumentException e) {
-            log.warnf("[SCOUTING] Invalid LLM fallback archetype: '%s'", archetypeName);
-            return archetypeName;
-        }
-
-        double confidence = 0.6;
-        if (confStr != null) {
-            try {confidence = Double.parseDouble(confStr);} catch (NumberFormatException ignored) {}
-        }
-
-        cumulativeConfidence.put(archetype, confidence);
-        return archetypeName;
-    }
-
 
     private static boolean crossedAnyThreshold(double prev, double curr) {
         for (double t : THRESHOLDS) {

@@ -1,5 +1,6 @@
 package io.quarkmind.plugin.scouting;
 
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.SC2Data;
@@ -306,11 +307,11 @@ class PatternClassificationCalibrationTest {
             try (RuleUnitInstance<PatternClassificationRuleUnit> instance = ruleUnit.createInstance(data)) {
                 instance.fire();
             }
-            var  tickConf  = PatternClassifier.computeAllConfidences(data.getEvidence());
+            var  tickConf  = CascadingPatternClassifier.computeAllConfidences(data.getEvidence());
             long prevFrame = tick == 0 ? -1 : state.gameFrame() - 1;
-            PatternClassifier.mergeCumulative(cumulative, tickConf, state.gameFrame(), prevFrame);
+            CascadingPatternClassifier.mergeCumulative(cumulative, tickConf, state.gameFrame(), prevFrame);
             long framesElapsed = prevFrame >= 0 ? state.gameFrame() - prevFrame : 0;
-            PatternClassifier.applyRevisions(cumulative, data.getRevisions(), framesElapsed);
+            CascadingPatternClassifier.applyRevisions(cumulative, data.getRevisions(), framesElapsed);
         }
 
         GameState           finalState = game.snapshot();
@@ -321,7 +322,7 @@ class PatternClassificationCalibrationTest {
         StrategyArchetype groundTruth = deriveGroundTruth(counts, targetGameTimeMin);
         if (groundTruth == null) {return null;}
 
-        var               assessments = PatternClassifier.allAssessments(cumulative, targetTicks);
+        var               assessments = CascadingPatternClassifier.allAssessments(cumulative, targetTicks, AssessmentSource.DROOLS);
         StrategyArchetype predicted   = assessments.isEmpty() ? null : assessments.get(0).archetype();
         boolean           correct     = groundTruth == predicted;
 

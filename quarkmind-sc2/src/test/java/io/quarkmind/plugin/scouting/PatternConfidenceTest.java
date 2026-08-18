@@ -1,5 +1,6 @@
 package io.quarkmind.plugin.scouting;
 
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.StrategyArchetype;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,7 @@ class PatternConfidenceTest {
     @Test
     void singleWeight_returnsWeight() {
         var markers = List.of(new EvidenceMarker(StrategyArchetype.TERRAN_MARINE_RUSH, 0.5, "test"));
-        double conf = PatternClassifier.computeTickConfidence(markers);
+        double conf = CascadingPatternClassifier.computeTickConfidence(markers);
         assertThat(conf).isCloseTo(0.5, within(0.001));
     }
 
@@ -24,13 +25,13 @@ class PatternConfidenceTest {
         var markers = List.of(
             new EvidenceMarker(StrategyArchetype.TERRAN_MARINE_RUSH, 0.5, "a"),
             new EvidenceMarker(StrategyArchetype.TERRAN_MARINE_RUSH, 0.5, "b"));
-        double conf = PatternClassifier.computeTickConfidence(markers);
+        double conf = CascadingPatternClassifier.computeTickConfidence(markers);
         assertThat(conf).isCloseTo(0.75, within(0.001));
     }
 
     @Test
     void emptyMarkers_returnsZero() {
-        double conf = PatternClassifier.computeTickConfidence(List.of());
+        double conf = CascadingPatternClassifier.computeTickConfidence(List.of());
         assertThat(conf).isEqualTo(0.0);
     }
 
@@ -40,7 +41,7 @@ class PatternConfidenceTest {
             new EvidenceMarker(StrategyArchetype.TERRAN_MARINE_RUSH, 0.3, "a"),
             new EvidenceMarker(StrategyArchetype.TERRAN_MARINE_RUSH, 0.3, "b"),
             new EvidenceMarker(StrategyArchetype.TERRAN_MARINE_RUSH, 0.3, "c"));
-        double conf = PatternClassifier.computeTickConfidence(markers);
+        double conf = CascadingPatternClassifier.computeTickConfidence(markers);
         assertThat(conf).isCloseTo(1.0 - 0.7 * 0.7 * 0.7, within(0.001));
     }
 
@@ -50,7 +51,7 @@ class PatternConfidenceTest {
             new EvidenceMarker(StrategyArchetype.TERRAN_MARINE_RUSH, 0.5, "marines"),
             new EvidenceMarker(StrategyArchetype.TERRAN_MARINE_RUSH, 0.3, "no expansion"),
             new EvidenceMarker(StrategyArchetype.TERRAN_BIO_TIMING, 0.4, "medivac"));
-        var confidences = PatternClassifier.computeAllConfidences(markers);
+        var confidences = CascadingPatternClassifier.computeAllConfidences(markers);
 
         assertThat(confidences).containsKeys(StrategyArchetype.TERRAN_MARINE_RUSH, StrategyArchetype.TERRAN_BIO_TIMING);
         assertThat(confidences.get(StrategyArchetype.TERRAN_MARINE_RUSH)).isCloseTo(0.65, within(0.001));
@@ -62,7 +63,7 @@ class PatternConfidenceTest {
         var cumulative = new EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
         cumulative.put(StrategyArchetype.TERRAN_MARINE_RUSH, 0.4);
 
-        PatternClassifier.mergeCumulative(cumulative, Map.of(StrategyArchetype.TERRAN_MARINE_RUSH, 0.6), 100, 100);
+        CascadingPatternClassifier.mergeCumulative(cumulative, Map.of(StrategyArchetype.TERRAN_MARINE_RUSH, 0.6), 100, 100);
 
         assertThat(cumulative.get(StrategyArchetype.TERRAN_MARINE_RUSH)).isEqualTo(0.6);
     }
@@ -72,7 +73,7 @@ class PatternConfidenceTest {
         var cumulative = new EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
         cumulative.put(StrategyArchetype.TERRAN_MARINE_RUSH, 0.8);
 
-        PatternClassifier.mergeCumulative(cumulative, Map.of(StrategyArchetype.TERRAN_MARINE_RUSH, 0.3), 100, 100);
+        CascadingPatternClassifier.mergeCumulative(cumulative, Map.of(StrategyArchetype.TERRAN_MARINE_RUSH, 0.3), 100, 100);
 
         assertThat(cumulative.get(StrategyArchetype.TERRAN_MARINE_RUSH)).isEqualTo(0.8);
     }
@@ -82,7 +83,7 @@ class PatternConfidenceTest {
         var cumulative = new EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
         cumulative.put(StrategyArchetype.TERRAN_MARINE_RUSH, 0.5);
 
-        PatternClassifier.mergeCumulative(cumulative, Map.of(StrategyArchetype.ZERG_ROACH_RUSH, 0.7), 100, 100);
+        CascadingPatternClassifier.mergeCumulative(cumulative, Map.of(StrategyArchetype.ZERG_ROACH_RUSH, 0.7), 100, 100);
 
         assertThat(cumulative).containsKeys(StrategyArchetype.TERRAN_MARINE_RUSH, StrategyArchetype.ZERG_ROACH_RUSH);
     }
@@ -92,7 +93,7 @@ class PatternConfidenceTest {
         var cumulative = new EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
         cumulative.put(StrategyArchetype.TERRAN_MARINE_RUSH, 0.8);
 
-        PatternClassifier.mergeCumulative(cumulative, Map.of(), 1344, 0);
+        CascadingPatternClassifier.mergeCumulative(cumulative, Map.of(), 1344, 0);
 
         assertThat(cumulative.get(StrategyArchetype.TERRAN_MARINE_RUSH))
                 .isCloseTo(0.4, within(0.02));
@@ -103,7 +104,7 @@ class PatternConfidenceTest {
         var cumulative = new EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
         cumulative.put(StrategyArchetype.TERRAN_MARINE_RUSH, 0.02);
 
-        PatternClassifier.mergeCumulative(cumulative, Map.of(), 2000, 0);
+        CascadingPatternClassifier.mergeCumulative(cumulative, Map.of(), 2000, 0);
 
         assertThat(cumulative).doesNotContainKey(StrategyArchetype.TERRAN_MARINE_RUSH);
     }
@@ -113,7 +114,7 @@ class PatternConfidenceTest {
         var cumulative = new EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
         cumulative.put(StrategyArchetype.TERRAN_MARINE_RUSH, 0.8);
 
-        PatternClassifier.mergeCumulative(cumulative, Map.of(), 100, -1);
+        CascadingPatternClassifier.mergeCumulative(cumulative, Map.of(), 100, -1);
 
         assertThat(cumulative.get(StrategyArchetype.TERRAN_MARINE_RUSH)).isEqualTo(0.8);
     }
@@ -123,7 +124,7 @@ class PatternConfidenceTest {
         var cumulative = new EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
         cumulative.put(StrategyArchetype.TERRAN_MARINE_RUSH, 0.65);
 
-        PatternClassifier.mergeCumulative(cumulative,
+        CascadingPatternClassifier.mergeCumulative(cumulative,
                                           Map.of(StrategyArchetype.TERRAN_MARINE_RUSH, 0.65), 200, 100);
 
         assertThat(cumulative.get(StrategyArchetype.TERRAN_MARINE_RUSH)).isEqualTo(0.65);
@@ -136,7 +137,7 @@ class PatternConfidenceTest {
 
         var revisions = List.of(new ConfidenceRevision(
                 StrategyArchetype.ZERG_ZERGLING_RUSH, 0.997, "expansion detected"));
-        PatternClassifier.applyRevisions(cumulative, revisions, 1344);
+        CascadingPatternClassifier.applyRevisions(cumulative, revisions, 1344);
 
         assertThat(cumulative.get(StrategyArchetype.ZERG_ZERGLING_RUSH))
                 .isLessThan(0.5);
@@ -150,7 +151,7 @@ class PatternConfidenceTest {
         var revisions = List.of(
                 new ConfidenceRevision(StrategyArchetype.TERRAN_MARINE_RUSH, 0.997, "expansion"),
                 new ConfidenceRevision(StrategyArchetype.TERRAN_MARINE_RUSH, 0.998, "tech"));
-        PatternClassifier.applyRevisions(cumulative, revisions, 100);
+        CascadingPatternClassifier.applyRevisions(cumulative, revisions, 100);
 
         double singleFactor = Math.pow(0.997, 100) * Math.pow(0.998, 100);
         assertThat(cumulative.get(StrategyArchetype.TERRAN_MARINE_RUSH))
@@ -164,7 +165,7 @@ class PatternConfidenceTest {
 
         var revisions = List.of(new ConfidenceRevision(
                 StrategyArchetype.ZERG_ZERGLING_RUSH, 0.5, "strong counter"));
-        PatternClassifier.applyRevisions(cumulative, revisions, 100);
+        CascadingPatternClassifier.applyRevisions(cumulative, revisions, 100);
 
         assertThat(cumulative.get(StrategyArchetype.ZERG_ZERGLING_RUSH))
                 .isGreaterThanOrEqualTo(0.0);
@@ -175,7 +176,7 @@ class PatternConfidenceTest {
         var cumulative = new EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
         cumulative.put(StrategyArchetype.TERRAN_MARINE_RUSH, 0.7);
 
-        PatternClassifier.applyRevisions(cumulative, List.of(), 100);
+        CascadingPatternClassifier.applyRevisions(cumulative, List.of(), 100);
 
         assertThat(cumulative.get(StrategyArchetype.TERRAN_MARINE_RUSH)).isEqualTo(0.7);
     }
@@ -187,7 +188,7 @@ class PatternConfidenceTest {
 
         var revisions = List.of(new ConfidenceRevision(
                 StrategyArchetype.ZERG_ZERGLING_RUSH, 0.997, "expansion"));
-        PatternClassifier.applyRevisions(cumulative, revisions, 100);
+        CascadingPatternClassifier.applyRevisions(cumulative, revisions, 100);
 
         assertThat(cumulative.get(StrategyArchetype.TERRAN_MARINE_RUSH)).isEqualTo(0.7);
     }
@@ -199,7 +200,7 @@ class PatternConfidenceTest {
         cumulative.put(StrategyArchetype.TERRAN_BIO_TIMING, 0.4);
         cumulative.put(StrategyArchetype.ZERG_MACRO, 0.1);
 
-        var assessments = PatternClassifier.allAssessments(cumulative, 100L);
+        var assessments = CascadingPatternClassifier.allAssessments(cumulative, 100L, AssessmentSource.DROOLS);
 
         assertThat(assessments).hasSize(2);
         assertThat(assessments.get(0).archetype()).isEqualTo(StrategyArchetype.TERRAN_MARINE_RUSH);
@@ -213,7 +214,7 @@ class PatternConfidenceTest {
         cumulative.put(StrategyArchetype.TERRAN_MARINE_RUSH, 0.8);
         cumulative.put(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.6);
 
-        var assessments = PatternClassifier.allAssessments(cumulative, 100L);
+        var assessments = CascadingPatternClassifier.allAssessments(cumulative, 100L, AssessmentSource.DROOLS);
 
         assertThat(assessments).extracting("confidence")
                                .containsExactly(0.8, 0.6, 0.5);
@@ -224,7 +225,7 @@ class PatternConfidenceTest {
         var cumulative = new EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
         cumulative.put(StrategyArchetype.TERRAN_MARINE_RUSH, 0.2);
 
-        var assessments = PatternClassifier.allAssessments(cumulative, 100L);
+        var assessments = CascadingPatternClassifier.allAssessments(cumulative, 100L, AssessmentSource.DROOLS);
 
         assertThat(assessments).isEmpty();
     }
@@ -232,7 +233,7 @@ class PatternConfidenceTest {
     @Test
     void allAssessments_emptyMapReturnsEmpty() {
         var cumulative  = new EnumMap<StrategyArchetype, Double>(StrategyArchetype.class);
-        var assessments = PatternClassifier.allAssessments(cumulative, 100L);
+        var assessments = CascadingPatternClassifier.allAssessments(cumulative, 100L, AssessmentSource.DROOLS);
         assertThat(assessments).isEmpty();
     }
 
