@@ -12,6 +12,7 @@ import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.StrategyTask;
 import io.quarkmind.domain.StrategyArchetype;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -173,7 +174,7 @@ class SC2StrategyRouterTaskTest {
     }
 
     private void setArchetype(StrategyArchetype archetype, double confidence) {
-        var assessment = new PatternAssessment(archetype, confidence, 1000, "test");
+        var assessment = new PatternAssessment(archetype, confidence, 1000, "test", AssessmentSource.DROOLS);
         when(broker.current(ScoutingIntelType.PATTERN_ASSESSMENT))
                 .thenReturn(Optional.of(new PatternAssessmentPayload(List.of(assessment))));
     }

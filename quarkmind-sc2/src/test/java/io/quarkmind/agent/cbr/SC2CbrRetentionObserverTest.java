@@ -6,6 +6,7 @@ import io.quarkmind.agent.MultiFactorDominanceAssessor;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.DominanceScore;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.plugin.summarisation.MomentBroker;
@@ -225,7 +226,7 @@ class SC2CbrRetentionObserverTest {
     @Test
     void onOutcome_includesConvergenceFeatures_whenBothKeysPresent() {
         var assessments = List.of(
-                new PatternAssessment(StrategyArchetype.ZERG_ROACH_RUSH, 0.85, 8000, "final"));
+                new PatternAssessment(StrategyArchetype.ZERG_ROACH_RUSH, 0.85, 8000, "final", AssessmentSource.DROOLS));
 
         CaseOutcomeEvent event = buildEvent("WIN", Map.of(
                 QuarkMindCaseFile.STRATEGY_SELECTED_ID, "strategy.early-pressure",

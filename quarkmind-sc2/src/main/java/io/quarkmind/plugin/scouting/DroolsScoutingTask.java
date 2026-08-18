@@ -27,6 +27,7 @@ import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.ScoutingTask;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
@@ -369,7 +370,8 @@ public class DroolsScoutingTask implements ScoutingTask {
                 StrategyArchetype arch = StrategyArchetype.valueOf(lastProcessedLlmArchetype);
                 double conf = cumulativeConfidence.getOrDefault(arch, 0.6);
                 var assessment = new PatternAssessment(arch, conf, frame,
-                    "LLM fallback: " + lastProcessedLlmArchetype + " (confidence " + String.format("%.2f", conf) + ")");
+                    "LLM fallback: " + lastProcessedLlmArchetype + " (confidence " + String.format("%.2f", conf) + ")",
+                    AssessmentSource.LLM);
                 publishIntel(new ScoutingIntelPayload.PatternAssessmentPayload(List.of(assessment)));
                 log.infof("[SCOUTING] LLM fallback result integrated: %s @ %.2f", arch, conf);
             } catch (IllegalArgumentException ignored) {}

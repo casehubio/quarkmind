@@ -2,6 +2,7 @@ package io.quarkmind.qa.workbench;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkmind.agent.plugin.PatternAssessmentPublished;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.StrategyArchetype;
 import jakarta.enterprise.event.Event;
@@ -40,7 +41,7 @@ class WorkbenchSocketIT {
         broadcaster.waitForSession(5000);
 
         patternEvent.fire(new PatternAssessmentPublished(
-            List.of(new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.87, 1000, "6+ lings"))));
+            List.of(new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.87, 1000, "6+ lings", AssessmentSource.DROOLS))));
 
         String json = received.get(5, TimeUnit.SECONDS);
         assertTrue(json.contains("\"type\":\"pattern\""));
@@ -52,7 +53,7 @@ class WorkbenchSocketIT {
     @Test
     void reconnect_receives_snapshot() throws Exception {
         patternEvent.fire(new PatternAssessmentPublished(
-            List.of(new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.5, 500, "snap"))));
+            List.of(new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.5, 500, "snap", AssessmentSource.DROOLS))));
 
         var received = new CompletableFuture<String>();
         var ws = HttpClient.newHttpClient().newWebSocketBuilder()

@@ -7,6 +7,7 @@ import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.domain.StrategyArchetype;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -41,7 +42,7 @@ class SC2CbrRoutingIT {
         }
 
         var assessment = new PatternAssessment(
-                StrategyArchetype.ZERG_ROACH_RUSH, 0.9, 1000, "test");
+                StrategyArchetype.ZERG_ROACH_RUSH, 0.9, 1000, "test", AssessmentSource.DROOLS);
         broker.update(new PatternAssessmentPayload(List.of(assessment)));
 
         MutableMapCaseContext ctx = new MutableMapCaseContext(
@@ -56,7 +57,7 @@ class SC2CbrRoutingIT {
     @Test
     void pivotLimit_preventsUnboundedRerouting() {
         var assessment1 = new PatternAssessment(
-                StrategyArchetype.ZERG_ROACH_RUSH, 0.9, 1000, "test");
+                StrategyArchetype.ZERG_ROACH_RUSH, 0.9, 1000, "test", AssessmentSource.DROOLS);
         broker.update(new PatternAssessmentPayload(List.of(assessment1)));
 
         MutableMapCaseContext ctx = new MutableMapCaseContext(
@@ -67,13 +68,13 @@ class SC2CbrRoutingIT {
         assertThat(ctx.getInt(QuarkMindCaseFile.STRATEGY_PIVOT_COUNT)).isEqualTo(0);
 
         var assessment2 = new PatternAssessment(
-                StrategyArchetype.TERRAN_MARINE_RUSH, 0.9, 2000, "test");
+                StrategyArchetype.TERRAN_MARINE_RUSH, 0.9, 2000, "test", AssessmentSource.DROOLS);
         broker.update(new PatternAssessmentPayload(List.of(assessment2)));
         routerTask.execute(ctx);
         assertThat(ctx.getInt(QuarkMindCaseFile.STRATEGY_PIVOT_COUNT)).isEqualTo(1);
 
         var assessment3 = new PatternAssessment(
-                StrategyArchetype.ZERG_MACRO, 0.9, 3000, "test");
+                StrategyArchetype.ZERG_MACRO, 0.9, 3000, "test", AssessmentSource.DROOLS);
         broker.update(new PatternAssessmentPayload(List.of(assessment3)));
         routerTask.execute(ctx);
         assertThat(ctx.getInt(QuarkMindCaseFile.STRATEGY_PIVOT_COUNT))

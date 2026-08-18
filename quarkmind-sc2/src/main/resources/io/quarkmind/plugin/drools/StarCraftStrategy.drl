@@ -3,6 +3,7 @@ unit StrategyRuleUnit;
 
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;

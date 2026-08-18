@@ -1,6 +1,7 @@
 package io.quarkmind.qa.workbench;
 
 import io.quarkmind.agent.plugin.PatternAssessmentPublished;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.plugin.coaching.CoachingAdvicePublished;
@@ -19,7 +20,7 @@ class WorkbenchEventTest {
 
     @Test
     void patternAssessmentPublished_carriesAssessments() {
-        var a = new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.87, 1000, "6+ lings");
+        var a = new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.87, 1000, "6+ lings", AssessmentSource.DROOLS);
         var event = new PatternAssessmentPublished(List.of(a));
         assertEquals(1, event.assessments().size());
         assertEquals(StrategyArchetype.ZERG_ZERGLING_RUSH, event.assessments().getFirst().archetype());

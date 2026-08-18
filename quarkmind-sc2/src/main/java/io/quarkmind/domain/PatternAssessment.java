@@ -4,5 +4,6 @@ public record PatternAssessment(
     StrategyArchetype archetype,
     double confidence,
     long detectedAtFrame,
-    String rationale
+    String rationale,
+    AssessmentSource source
 ) {}

@@ -1,5 +1,6 @@
 package io.quarkmind.plugin.scouting;
 
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.PatternAssessment;
 
@@ -60,7 +61,8 @@ public final class PatternClassifier {
                          .sorted(Map.Entry.<StrategyArchetype, Double>comparingByValue().reversed())
                          .map(e -> new PatternAssessment(e.getKey(), e.getValue(), frame,
                                                               e.getKey().name() + " (confidence " +
-                                                              String.format("%.2f", e.getValue()) + ")"))
+                                                              String.format("%.2f", e.getValue()) + ")",
+                                                              AssessmentSource.DROOLS))
                          .toList();
     }
 

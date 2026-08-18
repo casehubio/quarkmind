@@ -1,6 +1,7 @@
 package io.quarkmind.agent;
 
 import io.quarkmind.domain.DominanceWeights;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.plugin.drools.DominanceWeightRuleUnit;
@@ -120,7 +121,7 @@ class DroolsDominanceWeightStrategyTest {
     void resolve_withRush_shiftsToArmy() {
         var ctx = new WeightContext(5000, null, List.of(
             new PatternAssessment(
-                StrategyArchetype.TERRAN_MARINE_RUSH, 0.7, 3000, "test")));
+                StrategyArchetype.TERRAN_MARINE_RUSH, 0.7, 3000, "test", AssessmentSource.DROOLS)));
         DominanceWeights baseline = new AnchorInterpolator(ANCHORS)
             .interpolate(5000);
         DominanceWeights result = createStrategy().resolve(ctx);
@@ -133,7 +134,7 @@ class DroolsDominanceWeightStrategyTest {
     void resolve_withPhaseAndPattern_composesAll() {
         var ctx = new WeightContext(5000, "DEFENSIVE_HOLD", List.of(
             new PatternAssessment(
-                StrategyArchetype.ZERG_ZERGLING_RUSH, 0.6, 2000, "test")));
+                StrategyArchetype.ZERG_ZERGLING_RUSH, 0.6, 2000, "test", AssessmentSource.DROOLS)));
         DominanceWeights result = createStrategy().resolve(ctx);
         assertTrue(result.army() > 0.40, "Army should dominate: " + result.army());
         assertEquals(1.0, result.economy() + result.army()
@@ -143,11 +144,11 @@ class DroolsDominanceWeightStrategyTest {
     @Test
     void resolve_deduplicatesPerCategory() {
         var ctx = new WeightContext(5000, null, List.of(
-                new PatternAssessment(StrategyArchetype.TERRAN_MARINE_TANK, 0.7, 5000, "test"),
-                new PatternAssessment(StrategyArchetype.TERRAN_BATTLE_MECH, 0.6, 5000, "test"),
-                new PatternAssessment(StrategyArchetype.ZERG_ROACH_HYDRA, 0.4, 5000, "test")));
+                new PatternAssessment(StrategyArchetype.TERRAN_MARINE_TANK, 0.7, 5000, "test", AssessmentSource.DROOLS),
+                new PatternAssessment(StrategyArchetype.TERRAN_BATTLE_MECH, 0.6, 5000, "test", AssessmentSource.DROOLS),
+                new PatternAssessment(StrategyArchetype.ZERG_ROACH_HYDRA, 0.4, 5000, "test", AssessmentSource.DROOLS)));
         var singleCtx = new WeightContext(5000, null, List.of(
-                new PatternAssessment(StrategyArchetype.TERRAN_MARINE_TANK, 0.7, 5000, "test")));
+                new PatternAssessment(StrategyArchetype.TERRAN_MARINE_TANK, 0.7, 5000, "test", AssessmentSource.DROOLS)));
         DominanceWeights multi  = createStrategy().resolve(ctx);
         DominanceWeights single = createStrategy().resolve(singleCtx);
         assertEquals(single.army(), multi.army(), 0.001,
@@ -158,12 +159,12 @@ class DroolsDominanceWeightStrategyTest {
     @Test
     void resolve_keepsHighestPerCategoryAcrossCategories() {
         var ctx = new WeightContext(5000, null, List.of(
-                new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.8, 3000, "test"),
-                new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.5, 2000, "test"),
-                new PatternAssessment(StrategyArchetype.TERRAN_BIO_TIMING, 0.6, 5000, "test")));
+                new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.8, 3000, "test", AssessmentSource.DROOLS),
+                new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.5, 2000, "test", AssessmentSource.DROOLS),
+                new PatternAssessment(StrategyArchetype.TERRAN_BIO_TIMING, 0.6, 5000, "test", AssessmentSource.DROOLS)));
         var dedupedCtx = new WeightContext(5000, null, List.of(
-                new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.8, 3000, "test"),
-                new PatternAssessment(StrategyArchetype.TERRAN_BIO_TIMING, 0.6, 5000, "test")));
+                new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.8, 3000, "test", AssessmentSource.DROOLS),
+                new PatternAssessment(StrategyArchetype.TERRAN_BIO_TIMING, 0.6, 5000, "test", AssessmentSource.DROOLS)));
         DominanceWeights multi   = createStrategy().resolve(ctx);
         DominanceWeights deduped = createStrategy().resolve(dedupedCtx);
         assertEquals(deduped.army(), multi.army(), 0.001,

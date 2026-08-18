@@ -1,6 +1,7 @@
 package io.quarkmind.qa.workbench;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.plugin.coaching.CoachingDomain;
@@ -17,7 +18,7 @@ class WorkbenchSerializationTest {
 
     @Test
     void pattern_event_serializes_to_json() throws Exception {
-        var assessment = new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.87, 1000, "6+ lings");
+        var assessment = new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.87, 1000, "6+ lings", AssessmentSource.DROOLS);
         var event = new WorkbenchEvent("pattern", new PatternPayload(List.of(new EnrichedAssessment(assessment, null))));
 
         String json = mapper.writeValueAsString(event);

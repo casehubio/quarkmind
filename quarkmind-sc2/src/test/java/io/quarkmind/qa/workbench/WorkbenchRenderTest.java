@@ -6,6 +6,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkmind.agent.plugin.PatternAssessmentPublished;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.StrategyArchetype;
 import jakarta.enterprise.event.Event;
@@ -76,7 +77,7 @@ class WorkbenchRenderTest {
     void pattern_event_populates_page() throws Exception {
         broadcaster.waitForSession(5000);
         patternEvent.fire(new PatternAssessmentPublished(
-            List.of(new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.87, 1000, "6+ lings"))));
+            List.of(new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.87, 1000, "6+ lings", AssessmentSource.DROOLS))));
         page.waitForFunction("() => window.__test.workbenchPatternCount() > 0", null,
             new Page.WaitForFunctionOptions().setTimeout(5000));
         int count = ((Number) page.evaluate("() => window.__test.workbenchPatternCount()")).intValue();

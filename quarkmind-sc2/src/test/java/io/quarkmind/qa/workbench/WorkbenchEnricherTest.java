@@ -3,6 +3,7 @@ package io.quarkmind.qa.workbench;
 import io.quarkmind.agent.StrategyTaxonomy;
 import io.quarkmind.agent.cbr.StrategySelectionPublished;
 import io.quarkmind.agent.plugin.PatternAssessmentPublished;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.plugin.coaching.CoachingAdvice;
@@ -33,7 +34,7 @@ class WorkbenchEnricherTest {
 
     @Test
     void enriches_pattern_assessments_with_counter_info() {
-        var assessment = new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.87, 1000, "6+ lings");
+        var assessment = new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.87, 1000, "6+ lings", AssessmentSource.DROOLS);
         enricher.onPatternAssessment(new PatternAssessmentPublished(List.of(assessment)));
 
         assertEquals(1, broadcaster.events.size());
@@ -46,8 +47,8 @@ class WorkbenchEnricherTest {
 
     @Test
     void enrichment_failure_for_one_archetype_still_produces_event() {
-        var a1 = new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.87, 1000, "rush");
-        var a2 = new PatternAssessment(StrategyArchetype.ZERG_MACRO, 0.31, 1000, "macro");
+        var a1 = new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.87, 1000, "rush", AssessmentSource.DROOLS);
+        var a2 = new PatternAssessment(StrategyArchetype.ZERG_MACRO, 0.31, 1000, "macro", AssessmentSource.DROOLS);
         enricher.onPatternAssessment(new PatternAssessmentPublished(List.of(a1, a2)));
 
         var event = broadcaster.events.getFirst();

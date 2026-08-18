@@ -1,5 +1,6 @@
 package io.quarkmind.agent;
 
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.StrategyArchetype;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ class ScoutingConvergenceEvaluatorTest {
     void exactMatch_returnsOnePointZero() {
         var result = ScoutingConvergenceEvaluator.evaluate(
                 StrategyArchetype.ZERG_ROACH_RUSH,
-                List.of(new PatternAssessment(StrategyArchetype.ZERG_ROACH_RUSH, 0.8, 5000, "test")));
+                List.of(new PatternAssessment(StrategyArchetype.ZERG_ROACH_RUSH, 0.8, 5000, "test", AssessmentSource.DROOLS)));
         assertThat(result.convergence()).isEqualTo(1.0);
         assertThat(result.stable()).isTrue();
     }
@@ -23,7 +24,7 @@ class ScoutingConvergenceEvaluatorTest {
     void sameCategorySamePhase_returnsHalf() {
         var result = ScoutingConvergenceEvaluator.evaluate(
                 StrategyArchetype.ZERG_ZERGLING_RUSH,
-                List.of(new PatternAssessment(StrategyArchetype.ZERG_ROACH_RUSH, 0.7, 5000, "test")));
+                List.of(new PatternAssessment(StrategyArchetype.ZERG_ROACH_RUSH, 0.7, 5000, "test", AssessmentSource.DROOLS)));
         assertThat(result.convergence()).isEqualTo(0.5);
         assertThat(result.stable()).isTrue();
     }
@@ -32,7 +33,7 @@ class ScoutingConvergenceEvaluatorTest {
     void sameCategoryCrossPhase_returnsHalf() {
         var result = ScoutingConvergenceEvaluator.evaluate(
                 StrategyArchetype.TERRAN_MARINE_TANK,
-                List.of(new PatternAssessment(StrategyArchetype.TERRAN_MECH_LATE, 0.6, 10000, "test")));
+                List.of(new PatternAssessment(StrategyArchetype.TERRAN_MECH_LATE, 0.6, 10000, "test", AssessmentSource.DROOLS)));
         assertThat(result.convergence()).isEqualTo(0.5);
         assertThat(result.stable()).isTrue();
     }
@@ -41,7 +42,7 @@ class ScoutingConvergenceEvaluatorTest {
     void differentCategory_returnsZero() {
         var result = ScoutingConvergenceEvaluator.evaluate(
                 StrategyArchetype.ZERG_ZERGLING_RUSH,
-                List.of(new PatternAssessment(StrategyArchetype.ZERG_MACRO, 0.8, 5000, "test")));
+                List.of(new PatternAssessment(StrategyArchetype.ZERG_MACRO, 0.8, 5000, "test", AssessmentSource.DROOLS)));
         assertThat(result.convergence()).isEqualTo(0.0);
         assertThat(result.stable()).isFalse();
     }
@@ -58,7 +59,7 @@ class ScoutingConvergenceEvaluatorTest {
     void crossRaceDifferentCategory_returnsZero() {
         var result = ScoutingConvergenceEvaluator.evaluate(
                 StrategyArchetype.TERRAN_MARINE_RUSH,
-                List.of(new PatternAssessment(StrategyArchetype.ZERG_BROOD_LORD, 0.7, 10000, "test")));
+                List.of(new PatternAssessment(StrategyArchetype.ZERG_BROOD_LORD, 0.7, 10000, "test", AssessmentSource.DROOLS)));
         assertThat(result.convergence()).isEqualTo(0.0);
         assertThat(result.stable()).isFalse();
     }
@@ -67,7 +68,7 @@ class ScoutingConvergenceEvaluatorTest {
     void crossRaceSameCategory_returnsZero() {
         var result = ScoutingConvergenceEvaluator.evaluate(
                 StrategyArchetype.TERRAN_MARINE_RUSH,
-                List.of(new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.7, 5000, "test")));
+                List.of(new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.7, 5000, "test", AssessmentSource.DROOLS)));
         assertThat(result.convergence()).isEqualTo(0.0);
         assertThat(result.stable()).isFalse();
     }
@@ -77,8 +78,8 @@ class ScoutingConvergenceEvaluatorTest {
         var result = ScoutingConvergenceEvaluator.evaluate(
                 StrategyArchetype.ZERG_ROACH_RUSH,
                 List.of(
-                    new PatternAssessment(StrategyArchetype.ZERG_MACRO, 0.9, 5000, "first"),
-                    new PatternAssessment(StrategyArchetype.ZERG_ROACH_RUSH, 0.4, 5000, "second")));
+                    new PatternAssessment(StrategyArchetype.ZERG_MACRO, 0.9, 5000, "first", AssessmentSource.DROOLS),
+                    new PatternAssessment(StrategyArchetype.ZERG_ROACH_RUSH, 0.4, 5000, "second", AssessmentSource.DROOLS)));
         assertThat(result.convergence()).isEqualTo(0.0);
     }
 }

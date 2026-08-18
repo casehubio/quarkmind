@@ -10,6 +10,7 @@ import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.StrategyArchetype;
@@ -238,29 +239,29 @@ class DroolsScoutingTaskTest {
 
     @Test
     void assessmentsChanged_differentSize_returnsTrue() {
-        var prev = List.of(new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.6, 100, "test"));
+        var prev = List.of(new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.6, 100, "test", AssessmentSource.DROOLS));
         var curr = List.<PatternAssessment>of();
         assertThat(DroolsScoutingTask.assessmentsChanged(prev, curr)).isTrue();
     }
 
     @Test
     void assessmentsChanged_differentArchetype_returnsTrue() {
-        var prev = List.of(new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.6, 100, "test"));
-        var curr = List.of(new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.6, 200, "test"));
+        var prev = List.of(new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.6, 100, "test", AssessmentSource.DROOLS));
+        var curr = List.of(new PatternAssessment(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.6, 200, "test", AssessmentSource.DROOLS));
         assertThat(DroolsScoutingTask.assessmentsChanged(prev, curr)).isTrue();
     }
 
     @Test
     void assessmentsChanged_crossesThreshold_returnsTrue() {
-        var prev = List.of(new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.49, 100, "test"));
-        var curr = List.of(new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.51, 200, "test"));
+        var prev = List.of(new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.49, 100, "test", AssessmentSource.DROOLS));
+        var curr = List.of(new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.51, 200, "test", AssessmentSource.DROOLS));
         assertThat(DroolsScoutingTask.assessmentsChanged(prev, curr)).isTrue();
     }
 
     @Test
     void assessmentsChanged_sameArchetypeSameBand_returnsFalse() {
-        var prev = List.of(new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.55, 100, "test"));
-        var curr = List.of(new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.59, 200, "test"));
+        var prev = List.of(new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.55, 100, "test", AssessmentSource.DROOLS));
+        var curr = List.of(new PatternAssessment(StrategyArchetype.TERRAN_MARINE_RUSH, 0.59, 200, "test", AssessmentSource.DROOLS));
         assertThat(DroolsScoutingTask.assessmentsChanged(prev, curr)).isFalse();
     }
 
