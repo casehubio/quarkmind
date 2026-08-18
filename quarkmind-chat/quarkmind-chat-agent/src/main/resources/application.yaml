@@ -1,0 +1,21 @@
+quarkmind:
+  chat:
+    bot-user-id: ${DISCORD_BOT_USER_ID:}
+    channels: general
+    heartbeat-seconds: 60
+    needs:
+      social:
+        decay-rate: 0.5
+      curiosity:
+        decay-rate: 0.1
+      expression:
+        build-rate: 0.2
+    governor:
+      max-unprompted-per-window: 1
+      window-seconds: 300
+      min-interval-seconds: 30
+
+"%discord":
+  casehub:
+    discord:
+      token: ${DISCORD_BOT_TOKEN:}
