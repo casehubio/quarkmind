@@ -1,20 +1,30 @@
 package io.quarkmind.plugin.scouting;
 
 import io.casehub.api.context.CaseContext;
+import io.casehub.neocortex.inference.InferenceModel;
+import io.casehub.neocortex.inference.quarkus.Inference;
+import io.casehub.neocortex.inference.tasks.ClassificationResult;
+import io.casehub.neocortex.inference.tasks.TensorClassifier;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
-import io.quarkmind.domain.Race;
 import io.quarkmind.domain.StrategyArchetype;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
+import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -28,6 +38,7 @@ public class CascadingPatternClassifier {
 
     private final double droolsThreshold;
     private final double onnxThreshold;
+    private final TensorClassifier onnxClassifier;
     private final EnumMap<StrategyArchetype, Double> cumulativeConfidence =
             new EnumMap<>(StrategyArchetype.class);
 
@@ -37,15 +48,65 @@ public class CascadingPatternClassifier {
     private long llmFallbackCooldownFrames = 500;
     private long lastLlmFallbackFrame = -1;
     private String lastProcessedLlmArchetype;
+    @Inject
+    MeterRegistry registry;
+
+    private Counter droolsInvocations, onnxInvocations, llmInvocations;
+    private Counter droolsResolutions, onnxResolutions, llmResolutions;
+
+    @PostConstruct
+    void initMetrics() {
+        if (registry == null) {return;}
+        droolsInvocations = registry.counter("quarkmind.classifier.invocations", "tier", "drools");
+        onnxInvocations   = registry.counter("quarkmind.classifier.invocations", "tier", "onnx");
+        llmInvocations    = registry.counter("quarkmind.classifier.invocations", "tier", "llm");
+        droolsResolutions = registry.counter("quarkmind.classifier.resolutions", "tier", "drools");
+        onnxResolutions   = registry.counter("quarkmind.classifier.resolutions", "tier", "onnx");
+        llmResolutions    = registry.counter("quarkmind.classifier.resolutions", "tier", "llm");
+    }
+
+    private void inc(Counter counter) {
+        if (counter != null) {counter.increment();}
+    }
+
 
     @Inject
     public CascadingPatternClassifier(
             @ConfigProperty(name = "quarkmind.classifier.drools.confidence-threshold", defaultValue = "0.7")
             double droolsThreshold,
             @ConfigProperty(name = "quarkmind.classifier.onnx.confidence-threshold", defaultValue = "0.5")
-            double onnxThreshold) {
+            double onnxThreshold,
+            @Inference("strategy-classifier")
+            Instance<InferenceModel> onnxModelInstance) {
         this.droolsThreshold = droolsThreshold;
         this.onnxThreshold = onnxThreshold;
+        TensorClassifier resolved = null;
+        if (onnxModelInstance.isResolvable()) {
+            try {
+                var model = onnxModelInstance.get();
+                var labels = Arrays.stream(StrategyArchetype.values())
+                        .map(Enum::name)
+                        .toList();
+                resolved = new TensorClassifier(model, labels);
+                log.info("[CASCADE] ONNX tier available — strategy-classifier model loaded");
+            } catch (Exception e) {
+                log.warnf("[CASCADE] ONNX tier unavailable — %s", e.getMessage());
+            }
+        } else {
+            log.info("[CASCADE] ONNX tier unavailable — no InferenceModel bean for 'strategy-classifier'");
+        }
+        this.onnxClassifier = resolved;
+    }
+
+    public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold) {
+        this(droolsThreshold, onnxThreshold, (TensorClassifier) null);
+    }
+
+    public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold,
+                                      TensorClassifier onnxClassifier) {
+        this.droolsThreshold = droolsThreshold;
+        this.onnxThreshold = onnxThreshold;
+        this.onnxClassifier = onnxClassifier;
     }
 
     public void setLlmFallbackConfig(boolean enabled, double confidenceThreshold,
@@ -70,7 +131,8 @@ public class CascadingPatternClassifier {
         if (ctx != null) {
             String prevLlmArch = lastProcessedLlmArchetype;
             lastProcessedLlmArchetype = processLlmFallbackResult(ctx, cumulativeConfidence, lastProcessedLlmArchetype);
-            if (!java.util.Objects.equals(prevLlmArch, lastProcessedLlmArchetype) && lastProcessedLlmArchetype != null) {
+            if (!Objects.equals(prevLlmArch, lastProcessedLlmArchetype) && lastProcessedLlmArchetype != null) {
+                inc(llmResolutions);
                 return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.LLM), false);
             }
         }
@@ -78,17 +140,41 @@ public class CascadingPatternClassifier {
         double maxConfidence = cumulativeConfidence.values().stream()
                 .mapToDouble(Double::doubleValue).max().orElse(0.0);
 
+        // Tier 1: Drools — high confidence from rule evidence
+        inc(droolsInvocations);
         if (maxConfidence >= droolsThreshold) {
+            inc(droolsResolutions);
             return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.DROOLS), false);
         }
 
-        // ONNX tier placeholder — wired in Task 5
+        // Tier 2: ONNX — learned classifier on game state features
+        if (onnxClassifier != null && onnxFeatures != null) {
+            inc(onnxInvocations);
+            try {
+                ClassificationResult onnxResult = onnxClassifier.classify(onnxFeatures);
+                StrategyArchetype onnxArchetype;
+                try {
+                    onnxArchetype = StrategyArchetype.valueOf(onnxResult.label());
+                } catch (IllegalArgumentException e) {
+                    log.warnf("[CASCADE] ONNX returned unknown label: '%s'", onnxResult.label());
+                    onnxArchetype = null;
+                }
+                if (onnxArchetype != null && onnxResult.confidence() >= onnxThreshold) {
+                    cumulativeConfidence.merge(onnxArchetype, (double) onnxResult.confidence(), Math::max);
+                    inc(onnxResolutions);
+                    return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.ONNX), false);
+                }
+            } catch (Exception e) {
+                log.warnf("[CASCADE] ONNX inference failed: %s", e.getMessage());
+            }
+        }
 
-        // LLM fallback trigger
+        // Tier 3: LLM fallback trigger
         boolean llmTriggered = false;
         if (llmFallbackEnabled && ctx != null && shouldFireLlmFallback(
                 cumulativeConfidence, llmFallbackConfidenceThreshold, frame,
                 llmFallbackMinGameTimeFrames, lastLlmFallbackFrame, llmFallbackCooldownFrames)) {
+            inc(llmInvocations);
             lastLlmFallbackFrame = frame;
             ctx.set(QuarkMindCaseFile.LLM_FALLBACK_TRIGGER, Map.of(
                     "gameFrame", frame,
@@ -108,7 +194,7 @@ public class CascadingPatternClassifier {
     }
 
     Map<String, Double> snapshotConfidences() {
-        var snapshot = new java.util.HashMap<String, Double>();
+        var snapshot = new HashMap<String, Double>();
         cumulativeConfidence.forEach((arch, conf) -> snapshot.put(arch.name(), conf));
         return snapshot;
     }

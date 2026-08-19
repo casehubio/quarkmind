@@ -31,7 +31,7 @@ QuarkMind is a single-module Quarkus application (`quarkmind-agent`). Key struct
 | `plugin/advisory/` | LLM advisory team -- `AdvisoryWorkerFactory`, `AdvisoryChannelBroker`, `QuarkMindAgentRegistrar` (12 eidos agent descriptors) |
 | `plugin/coaching/` | Coach mode -- `CoachingWorkerFactory`, `CoachingTriggerBuilder`, `CoachingComplianceEvaluator`, position-based verification |
 | `plugin/commentary/` | Commentator mode -- `CommentaryWorkerFactory`, `CommentaryAccumulator`, dual-pattern narration (reactive + narrative) |
-| `plugin/scouting/` | Drools CEP scouting -- `DroolsScoutingTask`, `PatternClassifier`, `ConfidenceRevision`, enemy strategy detection |
+| `plugin/scouting/` | Drools CEP scouting -- `DroolsScoutingTask`, `CascadingPatternClassifier`, `ConfidenceRevision`, enemy strategy detection |
 | `plugin/tactics/` | GOAP planning -- `GoapPlanner`, focus fire strategies (`FocusFireStrategy`, `LowestHpFocusFireStrategy`, `OverkillRedirectFocusFireStrategy`), kite strategies (`KiteStrategy`, `DirectKiteStrategy`, `TerrainAwareKiteStrategy`) |
 | `plugin/summarisation/` | Hierarchical event summarisation -- `MomentDetectionTask`, `GamePhaseSummariser`, `GameArcSummariser`; four-level temporal abstraction |
 | `plugin/flow/` | Quarkus Flow economics -- `EconomicsFlow`, `FlowEconomicsTask`, `EconomicsDecisionService`, `GameStateTick` |

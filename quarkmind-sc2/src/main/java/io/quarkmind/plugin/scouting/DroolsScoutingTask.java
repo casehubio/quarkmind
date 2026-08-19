@@ -27,18 +27,14 @@ import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.ScoutingTask;
-import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.PhaseResolver;
 import io.quarkmind.domain.Point2d;
-import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
-import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.Unit;
-import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.MoveIntent;
 import jakarta.annotation.PostConstruct;
@@ -51,9 +47,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -90,6 +84,7 @@ public class DroolsScoutingTask implements ScoutingTask {
     @Inject PreferenceProvider preferenceProvider;
     @Inject StrategyTaxonomy taxonomy;
     @Inject PhaseResolver phaseResolver;
+    private final StrategyFeatureExtractor featureExtractor = new StrategyFeatureExtractor();
 
 
     @Inject
@@ -307,9 +302,10 @@ public class DroolsScoutingTask implements ScoutingTask {
                 pInstance.fire();
             }
 
+            var features = featureExtractor.extract(sessionManager.unitBufferSnapshot(), gameTimeMin);
             CascadeResult cascadeResult = cascadingClassifier.classify(
                     patternData.getEvidence(), patternData.getRevisions(),
-                    null, frame, prevFrame, ctx);
+                    features, frame, prevFrame, ctx);
 
             var assessments = cascadeResult.assessments();
             ctx.set(QuarkMindCaseFile.SCOUTING_FINAL_ASSESSMENT, assessments);
