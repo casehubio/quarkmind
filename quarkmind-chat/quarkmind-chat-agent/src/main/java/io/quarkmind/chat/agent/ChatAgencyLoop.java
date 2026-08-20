@@ -15,6 +15,9 @@ import io.quarkmind.agency.chat.ChatDeltaReport;
 import io.quarkmind.agency.llm.LlmPriority;
 import io.quarkmind.agency.llm.LlmRequest;
 import io.quarkmind.agency.llm.LlmRequestQueue;
+import io.casehub.eidos.api.AgentDescriptor;
+import io.casehub.eidos.api.DispositionEvolution;
+import io.quarkmind.agency.personality.PersonalityEvolutionPipeline;
 import io.quarkmind.agency.schedule.IdleReflectionTrigger;
 import io.quarkmind.chat.protocol.ChatIntent;
 import io.quarkmind.chat.protocol.ChatPerception;
@@ -48,6 +51,10 @@ public class ChatAgencyLoop implements AgencyLoop {
     private final ChatMemoryFacade memoryFacade;
     private final IdleReflectionTrigger reflectionTrigger;
     private final ReflectionOrchestrator reflectionOrchestrator;
+    private PersonalityEvolutionPipeline evolutionPipeline;
+    private java.util.function.Supplier<AgentDescriptor> descriptorSupplier;
+    private       LlmReflectionDispositionActivator dispositionActivator;
+
     private String systemPrompt = "";
     private String agentId = "chat-agent";
     private String tenantId = "default";
@@ -86,9 +93,29 @@ public class ChatAgencyLoop implements AgencyLoop {
         this.reflectionOrchestrator = reflectionOrchestrator;
     }
 
+    public ChatAgencyLoop(LlmInvoker llmInvoker, BotIdentityDetector identityDetector,
+                          LlmRequestQueue llmQueue, ObjectMapper mapper,
+                          ChatPerceptionBridge perceptionBridge,
+                          ChatMemoryFacade memoryFacade,
+                          IdleReflectionTrigger reflectionTrigger,
+                          ReflectionOrchestrator reflectionOrchestrator,
+                          PersonalityEvolutionPipeline evolutionPipeline,
+                          java.util.function.Supplier<AgentDescriptor> descriptorSupplier) {
+        this(llmInvoker, identityDetector, llmQueue, mapper, perceptionBridge,
+             memoryFacade, reflectionTrigger, reflectionOrchestrator);
+        this.evolutionPipeline  = evolutionPipeline;
+        this.descriptorSupplier = descriptorSupplier;
+    }
+
+
     public void setSystemPrompt(String prompt) { this.systemPrompt = prompt; }
     public void setAgentId(String id) { this.agentId = id; }
     public void setTenantId(String id) { this.tenantId = id; }
+
+    public void setDispositionActivator(LlmReflectionDispositionActivator activator) {
+        this.dispositionActivator = activator;
+    }
+
 
     @Override
     public void tick(AgencyContext context) {
@@ -98,6 +125,7 @@ public class ChatAgencyLoop implements AgencyLoop {
         if (perception.reason() == WakeReason.HEARTBEAT && !perception.hasActivity()) {
             consecutiveIdleTicks++;
             checkReflection();
+            checkEvolution();
             context.put("intents", List.of());
             return;
         }
@@ -216,6 +244,27 @@ public class ChatAgencyLoop implements AgencyLoop {
             LOG.warn("Reflection failed", e);
         }
     }
+
+    private void checkEvolution() {
+        if (evolutionPipeline == null || descriptorSupplier == null) {return;}
+        try {
+            var descriptor = descriptorSupplier.get();
+            var result     = evolutionPipeline.checkEvolution(descriptor);
+            result.ifPresent(r -> {
+                if (r instanceof DispositionEvolution.EvolutionResult.Evolved evolved) {
+                    LOG.infof("Personality evolved: %s → %s", evolved.previousTypeLabel(), evolved.newTypeLabel());
+                    if (dispositionActivator != null) {
+                        dispositionActivator.updateProfile(evolved.newProfile());
+                    }
+                } else if (r instanceof DispositionEvolution.EvolutionResult.Dampened dampened) {
+                    LOG.infof("Personality evolution dampened (decay=%.2f)", dampened.decayFactor());
+                }
+            });
+        } catch (Exception e) {
+            LOG.warn("Evolution check failed", e);
+        }
+    }
+
 
     private void submitImportanceScoring(String memoryId, String observation) {
         String prompt = "Rate the importance of this experience on a scale of 0.0 to 1.0, " +

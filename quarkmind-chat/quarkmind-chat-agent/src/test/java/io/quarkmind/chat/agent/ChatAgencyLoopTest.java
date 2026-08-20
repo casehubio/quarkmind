@@ -299,6 +299,98 @@ class ChatAgencyLoopTest {
         assertFalse(trigger.shouldReflect(10));
     }
 
+    @Test
+    void idleTickChecksPersonalityEvolution() {
+        var store   = new ChatMemoryFacadeTest.RecordingMemoryStore();
+        var facade  = new ChatMemoryFacade(store, store, false);
+        var trigger = new IdleReflectionTrigger(100.0, 100);
+
+        var evolutionChecked = new AtomicBoolean(false);
+        var pipeline = new io.quarkmind.agency.personality.PersonalityEvolutionPipeline(
+                (desc, ctx) -> {
+                    evolutionChecked.set(true);
+                    return new io.casehub.eidos.api.DispositionHealth.DispositionStatus.Aligned(Map.of());
+                },
+                (desc, pending) -> {throw new AssertionError("should not be called");},
+                new LlmReflectionDispositionActivatorTest.RecordingSignalStore());
+
+        var descriptor = io.casehub.eidos.api.AgentDescriptor.builder()
+                                                             .agentId("agent-1").name("Test").slot("chat").tenancyId("t1")
+                                                             .disposition(io.casehub.eidos.api.AgentDisposition.builder()
+                                                                                                               .dispositionProfile(new io.casehub.eidos.api.DispositionValue("empathetic", 0.5))
+                                                                                                               .build())
+                                                             .build();
+
+        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
+                                                      "{\"action\":\"WAIT\",\"observation\":\"idle\"}";
+        var loop = new ChatAgencyLoop(llm, detector, llmQueue, mapper,
+                                      new DefaultChatPerceptionBridge(new io.quarkmind.agency.chat.ChatObservationRenderer(10)),
+                                      facade, trigger, null, pipeline, () -> descriptor);
+
+        var heartbeat = new ChatPerception(Map.of(), Map.of(), WakeReason.HEARTBEAT);
+        loop.tick(contextWith(heartbeat));
+
+        assertTrue(evolutionChecked.get());
+    }
+
+    @Test
+    void evolvedResultUpdatesActivatorProfile() {
+        var store       = new ChatMemoryFacadeTest.RecordingMemoryStore();
+        var facade      = new ChatMemoryFacade(store, store, false);
+        var trigger     = new IdleReflectionTrigger(100.0, 100);
+        var signalStore = new LlmReflectionDispositionActivatorTest.RecordingSignalStore();
+
+        var newProfile = List.of(
+                new io.casehub.eidos.api.DispositionValue("curious", 0.6),
+                new io.casehub.eidos.api.DispositionValue("empathetic", 0.4));
+
+        var pipeline = new io.quarkmind.agency.personality.PersonalityEvolutionPipeline(
+                (desc, ctx) -> new io.casehub.eidos.api.DispositionHealth.DispositionStatus.EvolutionPending(
+                        () -> "DOMINANT_AUXILIARY_SWAP", "curious", Map.of()),
+                (desc, pending) -> new io.casehub.eidos.api.DispositionEvolution.EvolutionResult.Evolved(
+                        newProfile, "EMPATHETIC-CURIOUS", "CURIOUS-EMPATHETIC"),
+                signalStore);
+
+        var submitted = new ArrayList<io.quarkmind.agency.llm.LlmRequest>();
+        var activatorQueue = new LlmRequestQueue() {
+            @Override
+            public void submit(io.quarkmind.agency.llm.LlmRequest r) {submitted.add(r);}
+
+            @Override
+            public int pendingCount()                                {return 0;}
+
+            @Override
+            public boolean hasCapacity()                             {return true;}
+        };
+        var activator = new LlmReflectionDispositionActivator(
+                activatorQueue, signalStore,
+                List.of(new io.casehub.eidos.api.DispositionValue("empathetic", 0.6)));
+
+        var descriptor = io.casehub.eidos.api.AgentDescriptor.builder()
+                                                             .agentId("agent-1").name("Test").slot("chat").tenancyId("t1")
+                                                             .disposition(io.casehub.eidos.api.AgentDisposition.builder()
+                                                                                                               .dispositionProfile(new io.casehub.eidos.api.DispositionValue("empathetic", 0.6),
+                                                                                                                                   new io.casehub.eidos.api.DispositionValue("curious", 0.4))
+                                                                                                               .build())
+                                                             .build();
+
+        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
+                                                      "{\"action\":\"WAIT\",\"observation\":\"idle\"}";
+        var loop = new ChatAgencyLoop(llm, detector, llmQueue, mapper,
+                                      new DefaultChatPerceptionBridge(new io.quarkmind.agency.chat.ChatObservationRenderer(10)),
+                                      facade, trigger, null, pipeline, () -> descriptor);
+        loop.setDispositionActivator(activator);
+
+        var heartbeat = new ChatPerception(Map.of(), Map.of(), WakeReason.HEARTBEAT);
+        loop.tick(contextWith(heartbeat));
+
+        // After evolution, activator profile should be updated — verify by triggering a classification
+        activator.onReflection("agent-1", "t1", "test insight");
+        assertFalse(submitted.isEmpty());
+        assertTrue(submitted.get(0).prompt().contains("curious"));
+    }
+
+
     private ChatAgencyLoop createLoop(ChatAgencyLoop.LlmInvoker llm) {
         return new ChatAgencyLoop(llm, detector, llmQueue, mapper,
                 new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)));
