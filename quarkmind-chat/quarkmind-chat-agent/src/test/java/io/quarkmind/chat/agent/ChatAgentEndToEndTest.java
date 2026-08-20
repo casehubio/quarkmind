@@ -2,25 +2,41 @@ package io.quarkmind.chat.agent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.casehub.connectors.chat.degraded.NoOpReactions;
-import io.casehub.connectors.chat.model.*;
+import io.casehub.connectors.chat.model.ChatChannelRef;
+import io.casehub.connectors.chat.model.ChatContent;
+import io.casehub.connectors.chat.model.ChatMessageRef;
+import io.casehub.connectors.chat.model.MemberRef;
+import io.casehub.connectors.chat.model.ReceivedMessage;
+import io.casehub.connectors.chat.model.SendResult;
+import io.casehub.neocortex.memory.Memory;
+import io.casehub.neocortex.memory.experience.ExperienceEvents;
 import io.quarkmind.agency.AgencyContext;
 import io.quarkmind.agency.chat.BotIdentityDetector;
 import io.quarkmind.agency.chat.ChatObservationRenderer;
 import io.quarkmind.agency.intent.IntentQueue;
+import io.quarkmind.agency.llm.LlmPriority;
 import io.quarkmind.agency.llm.LlmRequest;
 import io.quarkmind.agency.llm.LlmRequestQueue;
 import io.quarkmind.agency.needs.NeedState;
+import io.quarkmind.agency.schedule.IdleReflectionTrigger;
 import io.quarkmind.agency.schedule.OutputGovernor;
 import io.quarkmind.chat.agent.discord.DiscordGatewayMessageHistory;
-import io.quarkmind.chat.protocol.*;
+import io.quarkmind.chat.protocol.ChatIntent;
+import io.quarkmind.chat.protocol.ChatPerception;
+import io.quarkmind.chat.protocol.WakeReason;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ChatAgentEndToEndTest {
 
@@ -147,6 +163,77 @@ class ChatAgentEndToEndTest {
         }
 
         assertEquals(1, dispatched.get());
+    }
+
+
+    @Test
+    void memoryIntegrationEndToEnd() {
+        var mapper            = new ObjectMapper();
+        var store             = new ChatMemoryFacadeTest.RecordingMemoryStore();
+        var facade            = new ChatMemoryFacade(store, store, false);
+        var reflectionTrigger = new IdleReflectionTrigger(3.0, 5);
+        var scoringRequests   = new ArrayList<LlmRequest>();
+        var queue = new LlmRequestQueue() {
+            @Override
+            public void submit(LlmRequest r) {scoringRequests.add(r);}
+
+            @Override
+            public int pendingCount()        {return 0;}
+
+            @Override
+            public boolean hasCapacity()     {return true;}
+        };
+
+        var llm = (ChatAgencyLoop.LlmInvoker) (sys, usr, id) ->
+                                                      "{\"action\":\"SEND\",\"channel\":\"ch-1\",\"text\":\"I remember!\","
+                                                      + "\"observation\":\"Bob asked about ML. I helped.\"}";
+
+        var loop = new ChatAgencyLoop(llm, stubDetector(), queue, mapper,
+                                      new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)),
+                                      facade, reflectionTrigger);
+        loop.setSystemPrompt("You are a friendly bot.");
+        loop.setAgentId("agent-1");
+
+        var perception = new ChatPerception(
+                Map.of("ch-1", List.of(new ReceivedMessage("discord", new ChatChannelRef("ch-1"),
+                                                           new ChatMessageRef(new ChatChannelRef("ch-1"), "m1"), null,
+                                                           new MemberRef("bob"), new ChatContent("tell me about ML"), Instant.now()))),
+                Map.of(), WakeReason.MESSAGE);
+        var context = new AgencyContext(new NeedState());
+        context.put("perception", perception);
+        loop.tick(context);
+
+        // Verify observation was stored
+        assertEquals(1, store.stored.size());
+        assertTrue(store.stored.get(0).text().contains("Bob asked about ML"));
+        assertNull(store.stored.get(0).importance());
+
+        // Verify async scoring was submitted
+        assertTrue(scoringRequests.stream()
+                                  .anyMatch(r -> r.priority() == LlmPriority.LOW && r.responseHandler() != null));
+
+        // Simulate scoring callback
+        var scoringReq = scoringRequests.stream()
+                                        .filter(r -> r.responseHandler() != null).findFirst().orElseThrow();
+        scoringReq.responseHandler().accept("0.7");
+        assertEquals("mem-1", store.lastUpdatedMemoryId);
+        assertEquals(0.7, store.lastUpdatedImportance, 0.001);
+
+        // Tick 2: memory should be recalled
+        store.queryResults = List.of(
+                new Memory("mem-1", "agent-1", ExperienceEvents.DOMAIN, "t1", null,
+                           "Bob asked about ML. I helped.", Map.of(), Instant.now(), 0.7));
+
+        var perception2 = new ChatPerception(
+                Map.of("ch-1", List.of(new ReceivedMessage("discord", new ChatChannelRef("ch-1"),
+                                                           new ChatMessageRef(new ChatChannelRef("ch-1"), "m2"), null,
+                                                           new MemberRef("bob"), new ChatContent("what did we talk about?"), Instant.now()))),
+                Map.of(), WakeReason.MESSAGE);
+        var context2 = new AgencyContext(new NeedState());
+        context2.put("perception", perception2);
+        loop.tick(context2);
+
+        assertNotNull(store.lastQuery);
     }
 
     private BotIdentityDetector stubDetector() {
