@@ -269,6 +269,36 @@ class ChatAgencyLoopTest {
         assertTrue(capturedPrompt.get());
     }
 
+
+    @Test
+    void heartbeatTriggersReflectionWhenThresholdMet() {
+        var store   = new ChatMemoryFacadeTest.RecordingMemoryStore();
+        var facade  = new ChatMemoryFacade(store, store, false);
+        var trigger = new IdleReflectionTrigger(1.0, 2);
+        trigger.accumulate(1.5);
+
+        var reflectCalled = new AtomicBoolean(false);
+        io.casehub.neocortex.memory.reflection.ReflectionOrchestrator orchestrator =
+                (agentId, tenantId, since, max) -> {
+                    reflectCalled.set(true);
+                    return List.of();
+                };
+
+        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
+                                                      "{\"action\":\"WAIT\",\"observation\":\"idle\"}";
+        var loop = new ChatAgencyLoop(llm, detector, llmQueue, mapper,
+                                      new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)),
+                                      facade, trigger, orchestrator);
+
+        var heartbeat = new ChatPerception(Map.of(), Map.of(), WakeReason.HEARTBEAT);
+        for (int i = 0; i < 3; i++) {
+            loop.tick(contextWith(heartbeat));
+        }
+
+        assertTrue(reflectCalled.get());
+        assertFalse(trigger.shouldReflect(10));
+    }
+
     private ChatAgencyLoop createLoop(ChatAgencyLoop.LlmInvoker llm) {
         return new ChatAgencyLoop(llm, detector, llmQueue, mapper,
                 new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)));

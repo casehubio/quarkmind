@@ -7,6 +7,7 @@ import io.casehub.connectors.chat.model.ChatContent;
 import io.casehub.connectors.chat.model.ChatMessageRef;
 import io.casehub.neocortex.memory.Memory;
 import io.casehub.neocortex.memory.personality.PersonalityWeights;
+import io.casehub.neocortex.memory.reflection.ReflectionOrchestrator;
 import io.quarkmind.agency.AgencyContext;
 import io.quarkmind.agency.AgencyLoop;
 import io.quarkmind.agency.chat.BotIdentityDetector;
@@ -21,7 +22,12 @@ import io.quarkmind.chat.protocol.WakeReason;
 import org.jboss.logging.Logger;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ChatAgencyLoop implements AgencyLoop {
 
@@ -41,16 +47,18 @@ public class ChatAgencyLoop implements AgencyLoop {
     private final ChatPerceptionBridge perceptionBridge;
     private final ChatMemoryFacade memoryFacade;
     private final IdleReflectionTrigger reflectionTrigger;
+    private final ReflectionOrchestrator reflectionOrchestrator;
     private String systemPrompt = "";
     private String agentId = "chat-agent";
     private String tenantId = "default";
     private final Set<String> participatedThreadIds = new HashSet<>();
     private int consecutiveIdleTicks = 0;
+    private Instant lastReflectionTimestamp = Instant.now();
 
     public ChatAgencyLoop(LlmInvoker llmInvoker, BotIdentityDetector identityDetector,
                           LlmRequestQueue llmQueue, ObjectMapper mapper,
                           ChatPerceptionBridge perceptionBridge) {
-        this(llmInvoker, identityDetector, llmQueue, mapper, perceptionBridge, null, null);
+        this(llmInvoker, identityDetector, llmQueue, mapper, perceptionBridge, null, null, null);
     }
 
     public ChatAgencyLoop(LlmInvoker llmInvoker, BotIdentityDetector identityDetector,
@@ -58,6 +66,16 @@ public class ChatAgencyLoop implements AgencyLoop {
                           ChatPerceptionBridge perceptionBridge,
                           ChatMemoryFacade memoryFacade,
                           IdleReflectionTrigger reflectionTrigger) {
+        this(llmInvoker, identityDetector, llmQueue, mapper, perceptionBridge,
+                memoryFacade, reflectionTrigger, null);
+    }
+
+    public ChatAgencyLoop(LlmInvoker llmInvoker, BotIdentityDetector identityDetector,
+                          LlmRequestQueue llmQueue, ObjectMapper mapper,
+                          ChatPerceptionBridge perceptionBridge,
+                          ChatMemoryFacade memoryFacade,
+                          IdleReflectionTrigger reflectionTrigger,
+                          ReflectionOrchestrator reflectionOrchestrator) {
         this.llmInvoker = llmInvoker;
         this.identityDetector = identityDetector;
         this.llmQueue = llmQueue;
@@ -65,6 +83,7 @@ public class ChatAgencyLoop implements AgencyLoop {
         this.perceptionBridge = perceptionBridge;
         this.memoryFacade = memoryFacade;
         this.reflectionTrigger = reflectionTrigger;
+        this.reflectionOrchestrator = reflectionOrchestrator;
     }
 
     public void setSystemPrompt(String prompt) { this.systemPrompt = prompt; }
@@ -78,6 +97,7 @@ public class ChatAgencyLoop implements AgencyLoop {
 
         if (perception.reason() == WakeReason.HEARTBEAT && !perception.hasActivity()) {
             consecutiveIdleTicks++;
+            checkReflection();
             context.put("intents", List.of());
             return;
         }
@@ -182,6 +202,19 @@ public class ChatAgencyLoop implements AgencyLoop {
             LOG.debug("LLM response parse failure", e);
         }
         return new ParsedResponse(intents, observation);
+    }
+
+
+    private void checkReflection() {
+        if (reflectionTrigger == null || reflectionOrchestrator == null) {return;}
+        if (!reflectionTrigger.shouldReflect(consecutiveIdleTicks)) {return;}
+        try {
+            reflectionOrchestrator.reflect(agentId, tenantId, lastReflectionTimestamp, 50);
+            lastReflectionTimestamp = Instant.now();
+            reflectionTrigger.reset();
+        } catch (Exception e) {
+            LOG.warn("Reflection failed", e);
+        }
     }
 
     private void submitImportanceScoring(String memoryId, String observation) {
