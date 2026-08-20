@@ -1,22 +1,39 @@
 package io.quarkmind.chat.agent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.casehub.connectors.chat.model.*;
+import io.casehub.connectors.chat.model.ChatChannelRef;
+import io.casehub.connectors.chat.model.ChatContent;
+import io.casehub.connectors.chat.model.ChatMessageRef;
+import io.casehub.connectors.chat.model.MemberRef;
+import io.casehub.connectors.chat.model.ReceivedMessage;
+import io.casehub.neocortex.memory.Memory;
+import io.casehub.neocortex.memory.experience.ExperienceEvents;
+import io.casehub.neocortex.memory.personality.PersonalityWeights;
 import io.quarkmind.agency.AgencyContext;
 import io.quarkmind.agency.chat.BotIdentityDetector;
 import io.quarkmind.agency.chat.ChatObservationRenderer;
+import io.quarkmind.agency.llm.LlmPriority;
 import io.quarkmind.agency.llm.LlmRequest;
 import io.quarkmind.agency.llm.LlmRequestQueue;
 import io.quarkmind.agency.needs.NeedState;
-import io.quarkmind.chat.protocol.*;
+import io.quarkmind.agency.schedule.IdleReflectionTrigger;
+import io.quarkmind.chat.protocol.ChatIntent;
+import io.quarkmind.chat.protocol.ChatPerception;
+import io.quarkmind.chat.protocol.WakeReason;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ChatAgencyLoopTest {
 
@@ -151,10 +168,118 @@ class ChatAgencyLoopTest {
         assertFalse(invoked.get());
     }
 
+
+    @Test
+    void tickRetrievesMemoriesBeforeLlm() {
+        var recallCalled = new AtomicBoolean(false);
+        var store        = new ChatMemoryFacadeTest.RecordingMemoryStore();
+        var facade = new ChatMemoryFacade(store, store, false) {
+            @Override
+            public List<Memory> recall(String agentId, String tenantId,
+                                       String ctx, Set<String> pids, PersonalityWeights w, Instant now) {
+                recallCalled.set(true);
+                return List.of();
+            }
+        };
+
+        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
+                                                      "{\"action\":\"WAIT\",\"observation\":\"Saw a greeting\"}";
+        var loop = createLoopWithMemory(llm, facade);
+        loop.tick(contextWith(perceptionWithMessage("hi", "ch")));
+        assertTrue(recallCalled.get());
+    }
+
+    @Test
+    void tickIngestsObservationFromLlmResponse() {
+        var store  = new ChatMemoryFacadeTest.RecordingMemoryStore();
+        var facade = new ChatMemoryFacade(store, store, false);
+
+        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
+                                                      "{\"action\":\"SEND\",\"channel\":\"ch-1\",\"text\":\"hi\",\"observation\":\"Greeted the channel\"}";
+        var loop = createLoopWithMemory(llm, facade);
+        loop.setAgentId("agent-1");
+        loop.tick(contextWith(perceptionWithMessage("hello", "ch-1")));
+
+        assertEquals(1, store.stored.size());
+        assertTrue(store.stored.get(0).text().contains("Greeted the channel"));
+    }
+
+    @Test
+    void tickSubmitsAsyncImportanceScoring() {
+        var store     = new ChatMemoryFacadeTest.RecordingMemoryStore();
+        var facade    = new ChatMemoryFacade(store, store, false);
+        var submitted = new ArrayList<LlmRequest>();
+        var queue = new LlmRequestQueue() {
+            @Override
+            public void submit(LlmRequest r) {submitted.add(r);}
+
+            @Override
+            public int pendingCount()        {return 0;}
+
+            @Override
+            public boolean hasCapacity()     {return true;}
+        };
+
+        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
+                                                      "{\"action\":\"WAIT\",\"observation\":\"Nothing happened\"}";
+        var loop = new ChatAgencyLoop(llm, detector, queue, mapper,
+                                      new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)),
+                                      facade, new IdleReflectionTrigger(3.0, 5));
+        loop.setAgentId("agent-1");
+        loop.tick(contextWith(perceptionWithMessage("hey", "ch")));
+
+        assertTrue(submitted.stream().anyMatch(r ->
+                                                       r.priority() == LlmPriority.LOW && r.responseHandler() != null));
+    }
+
+    @Test
+    void tickCapturesObservationOnWait() {
+        var store  = new ChatMemoryFacadeTest.RecordingMemoryStore();
+        var facade = new ChatMemoryFacade(store, store, false);
+
+        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
+                                                      "{\"action\":\"WAIT\",\"observation\":\"Everyone was quiet, I decided to observe\"}";
+        var loop = createLoopWithMemory(llm, facade);
+        loop.setAgentId("agent-1");
+        loop.tick(contextWith(perceptionWithMessage("...", "ch")));
+
+        assertEquals(1, store.stored.size());
+        assertTrue(store.stored.get(0).text().contains("decided to observe"));
+    }
+
+    @Test
+    void memoryIncludedInUserPrompt() {
+        var store = new ChatMemoryFacadeTest.RecordingMemoryStore();
+        store.queryResults = List.of(
+                new Memory("m1", "agent-1", ExperienceEvents.DOMAIN, "t1", null,
+                           "Bob likes NLP", Map.of(), Instant.now().minusSeconds(3600), 0.8));
+        var facade = new ChatMemoryFacade(store, store, false);
+
+        var capturedPrompt = new AtomicBoolean(false);
+        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) -> {
+            if (user.contains("What I remember") && user.contains("Bob likes NLP")) {
+                capturedPrompt.set(true);
+            }
+            return "{\"action\":\"WAIT\",\"observation\":\"Recalled memories\"}";
+        };
+        var loop = createLoopWithMemory(llm, facade);
+        loop.setAgentId("agent-1");
+        loop.tick(contextWith(perceptionWithMessage("hello", "ch")));
+
+        assertTrue(capturedPrompt.get());
+    }
+
     private ChatAgencyLoop createLoop(ChatAgencyLoop.LlmInvoker llm) {
         return new ChatAgencyLoop(llm, detector, llmQueue, mapper,
                 new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)));
     }
+
+    private ChatAgencyLoop createLoopWithMemory(ChatAgencyLoop.LlmInvoker llm, ChatMemoryFacade facade) {
+        return new ChatAgencyLoop(llm, detector, llmQueue, mapper,
+                                  new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)),
+                                  facade, new IdleReflectionTrigger(3.0, 5));
+    }
+
 
     private ChatPerception perceptionWithMessage(String text, String channelId) {
         var msg = new ReceivedMessage("discord", new ChatChannelRef(channelId),
