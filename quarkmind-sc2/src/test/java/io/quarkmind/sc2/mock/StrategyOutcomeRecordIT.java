@@ -9,10 +9,13 @@ import jakarta.inject.Inject;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
 import io.quarkmind.agent.cbr.SC2StrategyRouterTask;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.GameStarted;
 import io.quarkmind.sc2.GameStopped;
 import io.casehub.platform.api.identity.TenancyConstants;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -174,11 +177,7 @@ class StrategyOutcomeRecordIT {
         // Simulate a tick at frame 5000 (past the 4032 frame threshold)
         // This should be a no-op without AttestingOutcomeRecorder
         milestoneOutcomeRecorder.evaluateMilestones(
-            new io.quarkmind.domain.GameState(
-                200, 100, 15, 6,
-                java.util.List.of(), java.util.List.of(), java.util.List.of(),
-                java.util.List.of(), java.util.List.of(), java.util.List.of(),
-                java.util.List.of(), 5000, null));
+            new GameState(200, 100, 15, 6, java.util.List.of(), java.util.List.of(), java.util.List.of(), java.util.List.of(), java.util.List.of(), java.util.List.of(), java.util.List.of(), 5000, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of()));
 
         gameStoppedEvent.fire(new GameStopped(GameResult.WIN));
 

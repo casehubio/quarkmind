@@ -233,6 +233,12 @@ class DeferredAdvisoryEvaluatorTest {
         }
 
         @Override
+        public UUID record(OutcomeRecord record, String source) {
+            return record(record);
+        }
+
+
+        @Override
         public void addAttestation(UUID id, io.casehub.ledger.api.model.AttestationVerdict verdict, double confidence, String dimension) {
         }
     }

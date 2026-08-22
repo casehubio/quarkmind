@@ -15,11 +15,14 @@ import io.casehub.worker.api.WorkerFunction;
 import io.casehub.worker.api.WorkerResult;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.UnitType;
 import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 public final class CoachingWorkerFactory {
@@ -370,9 +373,7 @@ public final class CoachingWorkerFactory {
             int  supplyCap  = input.get(io.quarkmind.agent.QuarkMindCaseFile.SUPPLY_CAP) instanceof Number n ? n.intValue() : 0;
             int  supplyUsed = input.get(io.quarkmind.agent.QuarkMindCaseFile.SUPPLY_USED) instanceof Number n ? n.intValue() : 0;
             long frame      = getGameFrame(input);
-            return new io.quarkmind.domain.GameState(minerals, vespene, supplyCap, supplyUsed,
-                                                     allUnits, buildings, java.util.List.of(), java.util.List.of(), java.util.List.of(),
-                                                     java.util.List.of(), java.util.List.of(), frame, null);
+            return new GameState(minerals, vespene, supplyCap, supplyUsed, allUnits, buildings, List.of(), List.of(), List.of(), List.of(), List.of(), frame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
         } catch (Exception e) {
             log.debugf("Failed to reconstruct trigger state: %s", e.getMessage());
             return null;

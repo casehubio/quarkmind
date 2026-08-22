@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -81,7 +82,6 @@ class ReplayValidationHarnessTest {
     }
 
     private static GameState gameState(List<Unit> units, List<Building> buildings) {
-        return new GameState(0, 0, 0, 0, units, buildings,
-            List.of(), List.of(), List.of(), List.of(), List.of(), 0, null);
+        return new GameState(0, 0, 0, 0, units, buildings, List.of(), List.of(), List.of(), List.of(), List.of(), 0, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 }

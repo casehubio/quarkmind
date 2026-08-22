@@ -3,6 +3,7 @@ package io.quarkmind.agent;
 import io.casehub.api.context.CaseContext;
 import io.quarkmind.agent.plugin.SummarisationTickable;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.plugin.commentary.CommentaryAccumulator;
 import io.quarkmind.plugin.commentary.CommentaryTriggerBuilder;
 import io.quarkmind.sc2.GameStarted;
@@ -14,6 +15,7 @@ import org.mockito.ArgumentCaptor;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
 
@@ -295,11 +297,7 @@ class GameTickExecutorMigrationTest {
     // ------------------------------------------------------------------
 
     private static GameState stubGameState(long frame, int minerals, int vespene) {
-        return new GameState(
-            minerals, vespene, 15, 6,
-            List.of(), List.of(), List.of(), List.of(), List.of(),
-            List.of(), List.of(), frame, null
-        );
+        return new GameState(minerals, vespene, 15, 6, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), frame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 
     @SuppressWarnings("unchecked")

@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,9 +93,7 @@ class CoachingIntegrationIT {
     void complianceEvaluator_injectedAndFunctional() {
         assertThat(complianceEvaluator).isNotNull();
 
-        var state = new GameState(400, 200, 62, 44,
-            List.of(), List.of(), List.of(), List.of(), List.of(),
-            List.of(), List.of(), 350, null);
+        var state = new GameState(400, 200, 62, 44, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 350, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
 
         complianceEvaluator.evaluate(state, 350);
     }
@@ -114,9 +113,7 @@ class CoachingIntegrationIT {
             units.add(new Unit("u" + i, UnitType.STALKER, new Point2d(0f, 0f),
                 100, 100, 50, 50, 0, 0));
         }
-        var state = new GameState(400, 200, 62, 44,
-            units, List.of(), List.of(), List.of(), List.of(),
-            List.of(), List.of(), 350, null);
+        var state = new GameState(400, 200, 62, 44, units, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 350, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
 
         var manualEvaluator = new CoachingComplianceEvaluator(
             channelBroker.commitments(), trustRecorder, new LocationResolver());

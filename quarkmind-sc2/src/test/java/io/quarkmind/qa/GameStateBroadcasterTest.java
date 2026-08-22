@@ -5,6 +5,7 @@ import io.quarkmind.domain.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,17 +17,7 @@ class GameStateBroadcasterTest {
         broadcaster.objectMapper = new ObjectMapper();
         broadcaster.visibilityHolder = new io.quarkmind.sc2.emulated.VisibilityHolder();
 
-        var state = new GameState(
-            500, 25, 23, 14,
-            List.of(new Unit("probe-0", UnitType.PROBE, new Point2d(9f, 9f), 45, 45, 20, 20, 0, 0)),
-            List.of(new Building("nexus-0", BuildingType.NEXUS, new Point2d(8f, 8f), 1500, 1500, true)),
-            List.of(),
-            List.of(),   // enemyStagingArea
-            List.of(),   // enemyBuildings
-            List.of(new Resource("geyser-0", new Point2d(5f, 11f), 2250)),
-            List.of(),   // mineralPatches
-            42L, null
-        );
+        var state = new GameState(500, 25, 23, 14, List.of(new Unit("probe-0", UnitType.PROBE, new Point2d(9f, 9f), 45, 45, 20, 20, 0, 0)), List.of(new Building("nexus-0", BuildingType.NEXUS, new Point2d(8f, 8f), 1500, 1500, true)), List.of(), List.of(), List.of(), List.of(new Resource("geyser-0", new Point2d(5f, 11f), 2250)), List.of(), 42L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
 
         String json = broadcaster.toJson(state);
 

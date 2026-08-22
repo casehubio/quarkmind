@@ -4,12 +4,14 @@ import io.quarkus.arc.profile.IfBuildProfile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.SC2Engine;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.jboss.logging.Logger;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
@@ -118,7 +120,6 @@ public class RealSC2Engine implements SC2Engine {
     // --- Helpers ---
 
     private static GameState emptyState() {
-        return new GameState(0, 0, 0, 0,
-            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
+        return new GameState(0, 0, 0, 0, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 }

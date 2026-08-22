@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,9 +15,7 @@ class StateBasedPhaseResolverTest {
     private final StateBasedPhaseResolver resolver = new StateBasedPhaseResolver();
 
     static GameState state(long frame, int supplyUsed, List<Building> buildings) {
-        return new GameState(0, 0, 200, supplyUsed,
-            List.of(), buildings, List.of(), List.of(), List.of(),
-            List.of(), List.of(), frame, null);
+        return new GameState(0, 0, 200, supplyUsed, List.of(), buildings, List.of(), List.of(), List.of(), List.of(), List.of(), frame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 
     static Building building(BuildingType type) {

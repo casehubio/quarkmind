@@ -3,6 +3,7 @@ package io.quarkmind.plugin.coaching;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -200,8 +202,7 @@ class CoachingComplianceEvaluatorTest {
         var evaluator   = new CoachingComplianceEvaluator(commitments, recorder, new LocationResolver(), dispatcher);
 
         var advice = new CoachingAdvice("Improve your macro", CoachingDomain.BUILD, null, 200);
-        var baselineState = new GameState(400, 200, 46, 38, List.of(), List.of(),
-                                          List.of(), List.of(), List.of(), List.of(), List.of(), 100, null);
+        var baselineState = new GameState(400, 200, 46, 38, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 100, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
         commitments.put(CoachingDomain.BUILD, new OpenCommitment("corr-1", "worker-1", advice, 100, baselineState));
 
         var currentState = gameStateWithUnits(Map.of());
@@ -279,8 +280,7 @@ class CoachingComplianceEvaluatorTest {
                     100, 100, 50, 50, 0, 0));
             }
         }
-        return new GameState(400, 200, 62, 44, units, List.of(),
-            List.of(), List.of(), List.of(), List.of(), List.of(), 350, null);
+        return new GameState(400, 200, 62, 44, units, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 350, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 
     private GameState gameStateWithBuildings(Map<BuildingType, Integer> buildingCounts) {
@@ -292,8 +292,7 @@ class CoachingComplianceEvaluatorTest {
                     1000, 1000, true));
             }
         }
-        return new GameState(400, 200, 62, 44, List.of(), buildings,
-            List.of(), List.of(), List.of(), List.of(), List.of(), 350, null);
+        return new GameState(400, 200, 62, 44, List.of(), buildings, List.of(), List.of(), List.of(), List.of(), List.of(), 350, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 
     static class TestTrustRecorder extends CoachingEffectivenessTrustRecorder {

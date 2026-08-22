@@ -134,21 +134,7 @@ public final class ObservationTranslator {
                                                     .toList();
 
         PlayerCommon common = obs.getPlayerCommon();
-        return new GameState(
-                common.getMinerals(),
-                common.getVespene(),
-                common.getFoodCap(),
-                common.getFoodUsed(),
-                myUnits,
-                myBuildings,
-                enemies,
-                List.of(),   // enemyBuildings: enemy building detection deferred
-                List.of(),   // enemyStagingArea: not applicable for real SC2
-                geysers,
-                mineralPatches,
-                obs.getGameLoop(),
-                mapInfo
-        );}
+        return new GameState(common.getMinerals(), common.getVespene(), common.getFoodCap(), common.getFoodUsed(), myUnits, myBuildings, enemies, List.of(), List.of(), geysers, mineralPatches, obs.getGameLoop(), mapInfo, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());}
 
     public static List<NeutralFeature> extractNeutralFeatures(
             Set<com.github.ocraft.s2client.protocol.unit.Unit> allUnits) {

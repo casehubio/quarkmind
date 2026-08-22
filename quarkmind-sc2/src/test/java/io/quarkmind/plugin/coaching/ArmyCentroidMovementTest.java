@@ -3,6 +3,7 @@ package io.quarkmind.plugin.coaching;
 import io.quarkmind.domain.*;
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ArmyCentroidMovementTest {
@@ -60,7 +61,7 @@ class ArmyCentroidMovementTest {
             5.0,
             new Point2d(30f, 30f)
         );
-        var state = new GameState(0, 0, 0, 0, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
+        var state = new GameState(0, 0, 0, 0, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
         assertThat(pred.isSatisfied(state, resolver)).isFalse();
     }
 
@@ -75,7 +76,7 @@ class ArmyCentroidMovementTest {
             5.0,
             new Point2d(40f, 40f)
         );
-        var state = new GameState(0, 0, 0, 0, units, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
+        var state = new GameState(0, 0, 0, 0, units, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
         assertThat(pred.isSatisfied(state, resolver)).isTrue();
     }
 
@@ -100,6 +101,6 @@ class ArmyCentroidMovementTest {
 
     private GameState stateWithArmyAt(Point2d pos) {
         var units = List.of(new Unit("u1", UnitType.STALKER, pos, 100, 100, 50, 50, 0, 0));
-        return new GameState(0, 0, 0, 0, units, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
+        return new GameState(0, 0, 0, 0, units, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 }

@@ -7,7 +7,14 @@ import hu.scelight.sc2.rep.s2prot.Event;
 import hu.scelightapi.sc2.rep.model.trackerevents.IBaseUnitEvent;
 import hu.scelightapi.sc2.rep.model.trackerevents.IPlayerStatsEvent;
 import hu.scelightapi.sc2.rep.model.trackerevents.ITrackerEvents;
-import io.quarkmind.domain.*;
+import hu.scelightapi.sc2.rep.model.trackerevents.IUpgradeEvent;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.PlayerEconomyStats;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Resource;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.intent.Intent;
 import io.quarkmind.sc2.replay.UnitOrder;
 import io.quarkmind.sc2.replay.UnitOrderTracker;
@@ -114,24 +121,62 @@ public class ReplaySimulatedGame extends SimulatedGame {
             case ITrackerEvents.ID_UNIT_DIED    -> applyUnitDied(event);
             case ITrackerEvents.ID_UNIT_INIT    -> applyUnitInit(event);
             case ITrackerEvents.ID_UNIT_DONE    -> applyUnitDone(event);
+            case ITrackerEvents.ID_UPGRADE      -> applyUpgrade(event);
         }
     }
 
     private void applyPlayerStats(Event rawEvent) {
-        // Tracker events always have userId=-1; player is identified by getPlayerId() (1-indexed)
         Integer playerId = rawEvent.getPlayerId();
-        if (playerId == null || playerId != watchedPlayerId) return;
-        IPlayerStatsEvent event = (IPlayerStatsEvent) rawEvent;
-        Integer mins     = event.getMineralsCurrent();
-        Integer gas      = event.getGasCurrent();
-        Integer foodUsed = event.getFoodUsed();
-        Integer foodMade = event.getFoodMade();
-        if (mins     != null) setMinerals(mins);
-        if (gas      != null) setVespene(gas);
-        // Food values are fixed-point ×4096
-        if (foodUsed != null) setSupplyUsed(foodUsed / 4096);
-        if (foodMade != null) setSupply(foodMade / 4096);
+        if (playerId == null) {return;}
+        IPlayerStatsEvent event    = (IPlayerStatsEvent) rawEvent;
+        Integer           mins     = event.getMineralsCurrent();
+        Integer           gas      = event.getGasCurrent();
+        Integer           foodUsed = event.getFoodUsed();
+        Integer           foodMade = event.getFoodMade();
+
+        PlayerEconomyStats eco = new PlayerEconomyStats(
+                mins != null ? mins : 0,
+                gas != null ? gas : 0,
+                safe(event.getMinsCollRate()),
+                safe(event.getGasCollRate()),
+                foodMade != null ? foodMade / 4096 : 0,
+                foodUsed != null ? foodUsed / 4096 : 0,
+                safe(event.getWorkersActiveCount()),
+                safe(event.getMinsUsedInCurrentArmy()),
+                safe(event.getMinsUsedInCurrentEcon()),
+                safe(event.getMinsUsedInCurrentTech()),
+                safe(event.getGasUsedInCurrentArmy()),
+                safe(event.getGasUsedInCurrentEcon()),
+                safe(event.getGasUsedInCurrentTech())
+        );
+
+        if (playerId == watchedPlayerId) {
+            if (mins != null) {setMinerals(mins);}
+            if (gas != null) {setVespene(gas);}
+            if (foodUsed != null) {setSupplyUsed(foodUsed / 4096);}
+            if (foodMade != null) {setSupply(foodMade / 4096);}
+            playerEconomy = eco;
+        } else {
+            enemyEconomy = eco;
+        }
     }
+
+    private static int safe(Integer v) {
+        return v != null ? v : 0;
+    }
+
+    private void applyUpgrade(Event rawEvent) {
+        Integer playerId = rawEvent.getPlayerId();
+        if (playerId == null) {return;}
+        IUpgradeEvent event       = (IUpgradeEvent) rawEvent;
+        String        upgradeName = event.getUpgradeTypeName().toString();
+        if (playerId == watchedPlayerId) {
+            playerUpgrades.add(upgradeName);
+        } else {
+            enemyUpgrades.add(upgradeName);
+        }
+    }
+
 
     private void applyUnitBorn(Event rawEvent) {
         IBaseUnitEvent event = (IBaseUnitEvent) rawEvent;

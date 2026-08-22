@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Resource;
 import io.quarkmind.domain.Unit;
@@ -177,6 +178,7 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
             case "UnitDied"    -> applyUnitDied(e);
             case "UnitInit"    -> applyUnitInit(e);
             case "UnitDone"    -> applyUnitDone(e);
+            case "UpgradeEvent" -> applyUpgradeEvent(e);
         }
     }
 
@@ -215,14 +217,55 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
     }
 
     private void applyPlayerStats(JsonNode e) {
-        if (e.get("playerId").asInt() != watchedPlayerId) return;
-        JsonNode stats = e.get("stats");
-        setMinerals(stats.get("scoreValueMineralsCurrent").asInt());
-        setVespene(stats.get("scoreValueVespeneCurrent").asInt());
-        // SC2EGSet JSON food values are raw integers — no ×4096 fixed-point unlike Scelight binary
-        setSupplyUsed(stats.get("scoreValueFoodUsed").asInt());
-        setSupply(stats.get("scoreValueFoodMade").asInt());
+        int      pid          = e.get("playerId").asInt();
+        JsonNode stats        = e.get("stats");
+        int      mineralsCurr = stats.get("scoreValueMineralsCurrent").asInt();
+        int      vespeneCurr  = stats.get("scoreValueVespeneCurrent").asInt();
+        int      foodUsed     = stats.get("scoreValueFoodUsed").asInt();
+        int      foodMade     = stats.get("scoreValueFoodMade").asInt();
+
+        PlayerEconomyStats eco = new PlayerEconomyStats(
+                mineralsCurr,
+                vespeneCurr,
+                safeInt(stats, "scoreValueMineralsCollectionRate"),
+                safeInt(stats, "scoreValueVespeneCollectionRate"),
+                foodMade,
+                foodUsed,
+                safeInt(stats, "scoreValueWorkersActiveCount"),
+                safeInt(stats, "scoreValueMineralsUsedCurrentArmy"),
+                safeInt(stats, "scoreValueMineralsUsedCurrentEconomy"),
+                safeInt(stats, "scoreValueMineralsUsedCurrentTechnology"),
+                safeInt(stats, "scoreValueVespeneUsedCurrentArmy"),
+                safeInt(stats, "scoreValueVespeneUsedCurrentEconomy"),
+                safeInt(stats, "scoreValueVespeneUsedCurrentTechnology")
+        );
+
+        if (pid == watchedPlayerId) {
+            setMinerals(mineralsCurr);
+            setVespene(vespeneCurr);
+            setSupplyUsed(foodUsed);
+            setSupply(foodMade);
+            playerEconomy = eco;
+        } else {
+            enemyEconomy = eco;
+        }
     }
+
+    private static int safeInt(JsonNode node, String field) {
+        JsonNode v = node.get(field);
+        return v != null ? v.asInt() : 0;
+    }
+
+    private void applyUpgradeEvent(JsonNode e) {
+        int    pid         = e.get("playerId").asInt();
+        String upgradeName = e.get("upgradeTypeName").asText();
+        if (pid == watchedPlayerId) {
+            playerUpgrades.add(upgradeName);
+        } else {
+            enemyUpgrades.add(upgradeName);
+        }
+    }
+
 
     private void applyUnitDied(JsonNode e) {
         String tag = makeTag(e.get("unitTagIndex").asInt(), e.get("unitTagRecycle").asInt());

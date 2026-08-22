@@ -1,6 +1,7 @@
 package io.quarkmind.domain;
 
 import java.util.List;
+import java.util.Set;
 
 public record GameState(
         int minerals,
@@ -15,7 +16,11 @@ public record GameState(
         List<Resource> geysers,
         List<Resource> mineralPatches,
         long gameFrame,
-        MapInfo mapInfo
+        MapInfo mapInfo,
+        PlayerEconomyStats playerEconomy,
+        PlayerEconomyStats enemyEconomy,
+        Set<String> playerUpgrades,
+        Set<String> enemyUpgrades
 ) {
     public GameState {
         myUnits          = List.copyOf(myUnits);
@@ -25,6 +30,8 @@ public record GameState(
         enemyStagingArea = List.copyOf(enemyStagingArea);
         geysers          = List.copyOf(geysers);
         mineralPatches   = List.copyOf(mineralPatches);
+        playerUpgrades   = Set.copyOf(playerUpgrades);
+        enemyUpgrades    = Set.copyOf(enemyUpgrades);
     }
 
     public double gameTimeMinutes() {

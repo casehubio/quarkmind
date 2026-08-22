@@ -6,6 +6,7 @@ import io.quarkmind.agent.MultiFactorDominanceAssessor;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.DominanceScore;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.StrategyArchetype;
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
 
@@ -167,11 +169,7 @@ class SC2CbrRetentionObserverTest {
                 5000, new EventLevel("arc", 4)));
 
         // Build game state with 2 nexus, 30 workers
-        GameState gameState = new GameState(
-                500, 200, 46, 44,
-                buildWorkers(30), buildBases(2),
-                List.of(), List.of(), List.of(), List.of(), List.of(),
-                8000L, null);
+        GameState gameState = new GameState(500, 200, 46, 44, buildWorkers(30), buildBases(2), List.of(), List.of(), List.of(), List.of(), List.of(), 8000L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
 
         when(dominanceAssessor.assess(gameState))
                 .thenReturn(new DominanceScore(0.3, Map.of("economy", 0.5, "army", 0.4)));

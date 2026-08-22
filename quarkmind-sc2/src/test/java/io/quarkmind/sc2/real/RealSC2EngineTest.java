@@ -1,11 +1,13 @@
 package io.quarkmind.sc2.real;
 
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.sc2.GameResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -49,8 +51,7 @@ class RealSC2EngineTest {
         var engine   = new RealSC2Engine();
         engine.botAgent = botAgent;
 
-        GameState state = new GameState(100, 50, 12, 0,
-            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 42L, null);
+        GameState state = new GameState(100, 50, 12, 0, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 42L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
         botAgent.latestGameState.set(state);
 
         List<GameState> captured = new ArrayList<>();
@@ -83,8 +84,7 @@ class RealSC2EngineTest {
         var engine   = new RealSC2Engine();
         engine.botAgent = botAgent;
 
-        GameState state = new GameState(100, 50, 12, 0,
-            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 1L, null);
+        GameState state = new GameState(100, 50, 12, 0, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 1L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
         botAgent.latestGameState.set(state);
 
         List<GameState> captured1 = new ArrayList<>();

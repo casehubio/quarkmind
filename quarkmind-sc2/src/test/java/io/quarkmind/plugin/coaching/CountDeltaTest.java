@@ -3,6 +3,7 @@ package io.quarkmind.plugin.coaching;
 import io.quarkmind.domain.*;
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CountDeltaTest {
@@ -45,7 +46,7 @@ class CountDeltaTest {
         for (int i = 0; i < count; i++) {
             units.add(new Unit("u" + i, type, new Point2d(0f, 0f), 100, 100, 50, 50, 0, 0));
         }
-        return new GameState(0, 0, 0, 0, units, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
+        return new GameState(0, 0, 0, 0, units, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 
     private GameState stateWithBuildings(BuildingType type, int count) {
@@ -53,6 +54,6 @@ class CountDeltaTest {
         for (int i = 0; i < count; i++) {
             buildings.add(new Building("b" + i, type, new Point2d(0f, 0f), 1000, 1000, true));
         }
-        return new GameState(0, 0, 0, 0, List.of(), buildings, List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
+        return new GameState(0, 0, 0, 0, List.of(), buildings, List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 }

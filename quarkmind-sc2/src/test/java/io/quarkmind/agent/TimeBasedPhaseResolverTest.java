@@ -2,11 +2,13 @@ package io.quarkmind.agent;
 
 import io.quarkmind.domain.GamePhase;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.SC2Data;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,9 +24,7 @@ class TimeBasedPhaseResolverTest {
     })
     void resolve_mapsTimeToPhase(double minutes, GamePhase expected) {
         long frame = Math.round(minutes * 60 * SC2Data.GAME_LOOPS_PER_SECOND);
-        GameState state = new GameState(0, 0, 0, 0,
-                                        List.of(), List.of(), List.of(), List.of(), List.of(),
-                                        List.of(), List.of(), frame, null);
+        GameState state = new GameState(0, 0, 0, 0, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), frame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
         assertThat(resolver.resolve(state)).isEqualTo(expected);
     }
 }

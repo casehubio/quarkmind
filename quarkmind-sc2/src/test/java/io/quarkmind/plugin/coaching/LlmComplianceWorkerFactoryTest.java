@@ -3,6 +3,7 @@ package io.quarkmind.plugin.coaching;
 import io.quarkmind.domain.*;
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LlmComplianceWorkerFactoryTest {
@@ -102,7 +103,6 @@ class LlmComplianceWorkerFactoryTest {
 
     private static GameState state(int minerals, int vespene, int supply, int supplyUsed,
                                    List<Unit> units, List<Building> buildings, long frame) {
-        return new GameState(minerals, vespene, supply, supplyUsed,
-            units, buildings, List.of(), List.of(), List.of(), List.of(), List.of(), frame, null);
+        return new GameState(minerals, vespene, supply, supplyUsed, units, buildings, List.of(), List.of(), List.of(), List.of(), List.of(), frame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 }

@@ -3,6 +3,7 @@ package io.quarkmind.plugin.coaching;
 import io.quarkmind.domain.*;
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import java.util.Set;
 import static org.assertj.core.api.Assertions.*;
 
 class LocationResolverTest {
@@ -93,6 +94,6 @@ class LocationResolverTest {
     }
 
     private GameState stateWithMapInfo(MapInfo info) {
-        return new GameState(0, 0, 0, 0, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, info);
+        return new GameState(0, 0, 0, 0, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, info, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 }

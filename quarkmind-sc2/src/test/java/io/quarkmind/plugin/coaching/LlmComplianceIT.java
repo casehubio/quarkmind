@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,8 +21,7 @@ class LlmComplianceIT {
     @Test
     void nonVerifiableAdvice_baselineCaptured_evaluatorRemovesCommitment() {
         var advice = new CoachingAdvice("Improve your macro", CoachingDomain.BUILD, null, 200);
-        var triggerState = new GameState(400, 200, 46, 38, List.of(), List.of(),
-            List.of(), List.of(), List.of(), List.of(), List.of(), 100, null);
+        var triggerState = new GameState(400, 200, 46, 38, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 100, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
 
         broker.onCoachingCompleted(new CoachingCompleted(
             "test-worker", "coaching", 100, advice,
@@ -34,9 +34,7 @@ class LlmComplianceIT {
         assertThat(commitment.baselineState()).isNotNull();
         assertThat(commitment.baselineState().minerals()).isEqualTo(400);
 
-        var currentState = new GameState(300, 150, 54, 44,
-            List.of(new Unit("u1", UnitType.STALKER, new Point2d(10, 10), 100, 100, 50, 50, 0, 0)),
-            List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 400, null);
+        var currentState = new GameState(300, 150, 54, 44, List.of(new Unit("u1", UnitType.STALKER, new Point2d(10, 10), 100, 100, 50, 50, 0, 0)), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 400, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
 
         evaluator.evaluate(currentState, 400);
 
@@ -47,8 +45,7 @@ class LlmComplianceIT {
     void verifiableAdvice_baselineNotCaptured() {
         var advice = new CoachingAdvice("Build 3 stalkers", CoachingDomain.MILITARY,
             new CountDelta(UnitType.STALKER, null, 3, 0), 200);
-        var triggerState = new GameState(400, 200, 46, 38, List.of(), List.of(),
-            List.of(), List.of(), List.of(), List.of(), List.of(), 200, null);
+        var triggerState = new GameState(400, 200, 46, 38, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 200, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
 
         broker.onCoachingCompleted(new CoachingCompleted(
             "test-worker", "coaching", 200, advice,

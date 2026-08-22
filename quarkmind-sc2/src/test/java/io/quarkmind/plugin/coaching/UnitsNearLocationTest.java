@@ -3,6 +3,7 @@ package io.quarkmind.plugin.coaching;
 import io.quarkmind.domain.*;
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UnitsNearLocationTest {
@@ -67,6 +68,6 @@ class UnitsNearLocationTest {
     }
 
     private GameState stateWithUnitsAt(Unit... units) {
-        return new GameState(0, 0, 0, 0, List.of(units), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
+        return new GameState(0, 0, 0, 0, List.of(units), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 }

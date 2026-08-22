@@ -79,6 +79,6 @@ class ExpansionPlacementTest {
     }
 
     private GameState stateWithBuildings(Building... buildings) {
-        return new GameState(0, 0, 0, 0, List.of(), List.of(buildings), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
+        return new GameState(0, 0, 0, 0, List.of(), List.of(buildings), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 }

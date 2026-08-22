@@ -25,15 +25,11 @@ class EnemyBehaviorTest {
     }
 
     static GameState emptyState() {
-        return new GameState(50, 0, 15, 12,
-            List.of(), List.of(), List.of(), List.of(), List.of(),
-            List.of(), List.of(), 0L, null);
+        return new GameState(50, 0, 15, 12, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 
     static GameState stateWithFrame(long frame) {
-        return new GameState(50, 0, 15, 12,
-            List.of(), List.of(), List.of(), List.of(), List.of(),
-            List.of(), List.of(), frame, null);
+        return new GameState(50, 0, 15, 12, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), frame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 
     /** Permissive TechTree — always allows training, never requires a prereq building. */

@@ -1,11 +1,23 @@
 package io.quarkmind.sc2.mock;
 
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PlayerEconomyStats;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Resource;
+import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
+import io.quarkmind.sc2.intent.BuildIntent;
+import io.quarkmind.sc2.intent.Intent;
+import io.quarkmind.sc2.intent.TrainIntent;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import jakarta.enterprise.context.ApplicationScoped;
-import io.quarkmind.domain.*;
-import io.quarkmind.sc2.intent.*;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -28,6 +40,11 @@ public class SimulatedGame {
     // E4: staging test helper — lets VisualizerRenderTest inject staged units
     private final List<Unit> testStagingArea = new CopyOnWriteArrayList<>();
     private int nextTag = 200;
+    protected volatile PlayerEconomyStats playerEconomy = PlayerEconomyStats.EMPTY;
+    protected volatile PlayerEconomyStats enemyEconomy = PlayerEconomyStats.EMPTY;
+    protected final Set<String> playerUpgrades = Collections.synchronizedSet(new java.util.HashSet<>());
+    protected final Set<String> enemyUpgrades = Collections.synchronizedSet(new java.util.HashSet<>());
+
 
     private record PendingCompletion(long completesAtTick, Runnable action) {}
 
@@ -45,6 +62,10 @@ public class SimulatedGame {
         mineralPatches.clear();
         pendingCompletions.clear();
         testStagingArea.clear();
+        playerEconomy = PlayerEconomyStats.EMPTY;
+        enemyEconomy = PlayerEconomyStats.EMPTY;
+        playerUpgrades.clear();
+        enemyUpgrades.clear();
         nextTag = 200;
 
         for (int i = 0; i < SC2Data.INITIAL_PROBES; i++) {
@@ -95,11 +116,7 @@ public class SimulatedGame {
     }
 
     public synchronized GameState snapshot() {
-        return new GameState(minerals, vespene, supply, supplyUsed,
-            List.copyOf(myUnits), List.copyOf(myBuildings), List.copyOf(enemyUnits),
-            List.copyOf(enemyBuildings),
-            List.copyOf(testStagingArea),   // enemyStagingArea — populated by test helpers
-            List.copyOf(geysers), List.copyOf(mineralPatches), gameFrame.get(), null);
+        return new GameState(minerals, vespene, supply, supplyUsed, List.copyOf(myUnits), List.copyOf(myBuildings), List.copyOf(enemyUnits), List.copyOf(enemyBuildings), List.copyOf(testStagingArea), List.copyOf(geysers), List.copyOf(mineralPatches), gameFrame.get(), null, playerEconomy, enemyEconomy, Set.copyOf(playerUpgrades), Set.copyOf(enemyUpgrades));
     }
 
     /**

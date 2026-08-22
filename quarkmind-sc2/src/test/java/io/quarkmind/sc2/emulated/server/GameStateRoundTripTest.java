@@ -13,6 +13,7 @@ import io.quarkmind.sc2.real.ObservationTranslator;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -63,17 +64,7 @@ class GameStateRoundTripTest {
 
     @Test
     void observationRoundTrip_preservesUnitPositionAndHealth() {
-        GameState original = new GameState(
-            400, 200, 30, 22,
-            List.of(new Unit("1", UnitType.STALKER, new Point2d(10f, 20f), 80, 80, 80, 80, 0, 0)),
-            List.of(new Building("2", BuildingType.NEXUS, new Point2d(30f, 30f), 1000, 1000, true)),
-            List.of(new Unit("3", UnitType.ZEALOT, new Point2d(40f, 40f), 100, 100, 50, 50, 0, 0)),
-            List.of(),
-            List.of(),
-            List.of(),
-            List.of(),
-            150L, null
-        );
+        GameState original = new GameState(400, 200, 30, 22, List.of(new Unit("1", UnitType.STALKER, new Point2d(10f, 20f), 80, 80, 80, 80, 0, 0)), List.of(new Building("2", BuildingType.NEXUS, new Point2d(30f, 30f), 1000, 1000, true)), List.of(new Unit("3", UnitType.ZEALOT, new Point2d(40f, 40f), 100, 100, 50, 50, 0, 0)), List.of(), List.of(), List.of(), List.of(), 150L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
 
         Sc2Api.ResponseObservation protoObs = GameStateToProtobuf.translate(original);
         Sc2Api.Response response = Sc2Api.Response.newBuilder()

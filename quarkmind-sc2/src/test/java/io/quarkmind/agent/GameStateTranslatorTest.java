@@ -1,6 +1,7 @@
 package io.quarkmind.agent;
 
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
@@ -8,6 +9,7 @@ import io.quarkmind.sc2.GameStarted;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +24,7 @@ class GameStateTranslatorTest {
 
     @Test
     void translatesResourcesCorrectly() {
-        var                 state = new GameState(150, 75, 23, 14, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 42L, null);
+        var                 state = new GameState(150, 75, 23, 14, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 42L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
         Map<String, Object> map   = translator.toMap(state);
         assertThat(map.get(QuarkMindCaseFile.MINERALS)).isEqualTo(150);
         assertThat(map.get(QuarkMindCaseFile.VESPENE)).isEqualTo(75);
@@ -36,7 +38,7 @@ class GameStateTranslatorTest {
     void separatesWorkersFromArmy() {
         var                 probe  = new Unit("p1", UnitType.PROBE, new Point2d(0, 0), 45, 45, 20, 20, 0, 0);
         var                 zealot = new Unit("z1", UnitType.ZEALOT, new Point2d(1, 1), 100, 100, 50, 50, 0, 0);
-        var                 state  = new GameState(50, 0, 15, 3, List.of(probe, zealot), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
+        var                 state  = new GameState(50, 0, 15, 3, List.of(probe, zealot), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
         Map<String, Object> map    = translator.toMap(state);
         assertThat((List<?>) map.get(QuarkMindCaseFile.WORKERS)).hasSize(1);
         assertThat((List<?>) map.get(QuarkMindCaseFile.ARMY)).hasSize(1);
@@ -51,9 +53,7 @@ class GameStateTranslatorTest {
         var zealot   = new Unit("z1", UnitType.ZEALOT, new Point2d(4, 4), 100, 100, 50, 50, 0, 0);
         var zergling = new Unit("zl1", UnitType.ZERGLING, new Point2d(5, 5), 35, 35, 35, 35, 0, 0);
 
-        var state = new GameState(100, 50, 30, 10,
-                                  List.of(probe, scv, drone, marine, zealot, zergling),
-                                  List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 100L, null);
+        var state = new GameState(100, 50, 30, 10, List.of(probe, scv, drone, marine, zealot, zergling), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 100L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
         Map<String, Object> map = translator.toMap(state);
 
         @SuppressWarnings("unchecked")
@@ -69,7 +69,7 @@ class GameStateTranslatorTest {
 
     @Test
     void includesOpponentId() {
-        var                 state = new GameState(50, 0, 15, 3, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
+        var                 state = new GameState(50, 0, 15, 3, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
         Map<String, Object> map   = translator.toMap(state);
         assertThat(map.get(QuarkMindCaseFile.OPPONENT_ID)).isNotNull();
         assertThat((String) map.get(QuarkMindCaseFile.OPPONENT_ID)).hasSize(64);
@@ -78,7 +78,7 @@ class GameStateTranslatorTest {
     @Test
     void toMap_defaultsToUnknownBeforeGameStarted() {
         var                 fresh = new GameStateTranslator();
-        var                 state = new GameState(50, 0, 15, 3, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null);
+        var                 state = new GameState(50, 0, 15, 3, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
         Map<String, Object> map   = fresh.toMap(state);
         assertThat(map.get(QuarkMindCaseFile.OPPONENT_ID)).isEqualTo("unknown");
     }

@@ -4,6 +4,7 @@ import io.quarkmind.domain.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 import static io.quarkmind.agent.AnchorInterpolatorTest.anchor;
@@ -290,17 +291,13 @@ class MultiFactorDominanceAssessorTest {
     private static GameState gameState(int minerals, int vespene, int supply, int supplyUsed,
             List<Unit> myUnits, List<Building> myBuildings,
             List<Unit> enemyUnits, List<Building> enemyBuildings, long gameFrame) {
-        return new GameState(minerals, vespene, supply, supplyUsed,
-            myUnits, myBuildings, enemyUnits, enemyBuildings,
-            List.of(), List.of(), List.of(), gameFrame, null);
+        return new GameState(minerals, vespene, supply, supplyUsed, myUnits, myBuildings, enemyUnits, enemyBuildings, List.of(), List.of(), List.of(), gameFrame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 
     private static GameState gameStateWithMap(int minerals, int vespene, int supply, int supplyUsed,
             List<Unit> myUnits, List<Building> myBuildings,
             List<Unit> enemyUnits, List<Building> enemyBuildings, MapInfo mapInfo) {
-        return new GameState(minerals, vespene, supply, supplyUsed,
-            myUnits, myBuildings, enemyUnits, enemyBuildings,
-            List.of(), List.of(), List.of(), 5000, mapInfo);
+        return new GameState(minerals, vespene, supply, supplyUsed, myUnits, myBuildings, enemyUnits, enemyBuildings, List.of(), List.of(), List.of(), 5000, mapInfo, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 
     private static MapInfo mapWithExpansions(List<ExpansionLocation> expansions) {

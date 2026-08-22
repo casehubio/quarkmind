@@ -601,37 +601,14 @@ public class EmulatedGame {
             List<Unit> visibleStaging = stagingArea.stream()
                 .filter(u -> visibility.isVisible(u.position()))
                 .toList();
-            return new GameState(
-                (int) friendly.minerals(),
-                friendly.vespene(), friendly.supply(), friendly.supplyUsed(),
-                friendlyWithCooldown, List.copyOf(friendly.buildings()),
-                visibleEnemies,
-                List.copyOf(enemy.buildings()),
-                visibleStaging,
-                List.copyOf(geysers),
-                List.of(),   // mineralPatches: not modelled in emulated physics
-                gameFrame,
-                null);       // mapInfo: not yet wired in emulated
+            return new GameState((int) friendly.minerals(), friendly.vespene(), friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), visibleEnemies, List.copyOf(enemy.buildings()), visibleStaging, List.copyOf(geysers), List.of(), gameFrame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());       // mapInfo: not yet wired in emulated
         }
-        return new GameState(
-            (int) friendly.minerals(), // floor: fractional minerals accumulate silently
-            friendly.vespene(), friendly.supply(), friendly.supplyUsed(),
-            friendlyWithCooldown, List.copyOf(friendly.buildings()),
-            List.copyOf(enemy.units()),
-            List.copyOf(enemy.buildings()),
-            List.copyOf(stagingArea),
-            List.copyOf(geysers),
-            List.of(),   // mineralPatches: not modelled in emulated physics
-            gameFrame,
-            null);       // mapInfo: not yet wired in emulated
+        return new GameState((int) friendly.minerals(), friendly.vespene(), friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), List.copyOf(enemy.units()), List.copyOf(enemy.buildings()), List.copyOf(stagingArea), List.copyOf(geysers), List.of(), gameFrame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());       // mapInfo: not yet wired in emulated
     }
 
     private GameState snapshotForEnemy() {
         // Enemy sees friendly units as their "enemies"
-        return new GameState(0, 0, 0, 0,
-            List.of(), List.of(),
-            List.copyOf(friendly.units()), List.of(), List.of(),
-            List.of(), List.of(), gameFrame, null);
+        return new GameState(0, 0, 0, 0, List.of(), List.of(), List.copyOf(friendly.units()), List.of(), List.of(), List.of(), List.of(), gameFrame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 
     /** Returns the current visibility grid — used by EmulatedEngine to update VisibilityHolder. */

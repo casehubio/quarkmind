@@ -6,6 +6,7 @@ import io.casehub.ledger.api.spi.OutcomeRecorder;
 import io.quarkmind.agency.milestone.MilestoneSession;
 import io.quarkmind.domain.DominanceScore;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.GameStarted;
 import io.quarkmind.sc2.GameStopped;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -268,7 +270,7 @@ class MilestoneOutcomeRecorderTest {
     }
 
     private static GameState gameStateAtFrame(long frame) {
-        return new GameState(200, 100, 15, 6, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), frame, null);
+        return new GameState(200, 100, 15, 6, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), frame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
     }
 
     static class RecordingOutcomeRecorder implements OutcomeRecorder {
@@ -279,6 +281,12 @@ class MilestoneOutcomeRecorderTest {
             records.add(record);
             return UUID.randomUUID();
         }
+
+        @Override
+        public UUID record(OutcomeRecord record, String source) {
+            return record(record);
+        }
+
 
         @Override
         public void addAttestation(UUID id, io.casehub.ledger.api.model.AttestationVerdict verdict, double confidence, String dimension) {
