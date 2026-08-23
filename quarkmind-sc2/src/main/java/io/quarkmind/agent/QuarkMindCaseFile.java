@@ -12,6 +12,7 @@ public final class QuarkMindCaseFile {
     public static final String MY_BUILDINGS    = "game.units.buildings";
     public static final String GEYSERS         = "game.resources.geysers";
     public static final String ENEMY_UNITS     = "game.intel.enemy.units";
+    public static final String ENEMY_RACE      = "game.intel.enemy.race";
     public static final String GAME_FRAME      = "game.frame";
     public static final String READY           = "game.ready";
     public static final String GAME_STATE      = "game.state";

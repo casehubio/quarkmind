@@ -85,6 +85,7 @@ public class DroolsScoutingTask implements ScoutingTask {
     @Inject StrategyTaxonomy taxonomy;
     @Inject PhaseResolver phaseResolver;
     private final StrategyFeatureExtractor featureExtractor = new StrategyFeatureExtractor();
+    private final TemporalWindowAccumulator windowAccumulator = new TemporalWindowAccumulator();
 
 
     @Inject
@@ -136,6 +137,7 @@ public class DroolsScoutingTask implements ScoutingTask {
         lastFrame               = -1;
         scoutFirstDispatchFrame = -1;
         cascadingClassifier.reset();
+        windowAccumulator.reset();
         prevAssessments           = List.of();
     }
 
@@ -204,6 +206,7 @@ public class DroolsScoutingTask implements ScoutingTask {
             prevTimingAlert  = null;
             prevBuildOrder   = null;
             cascadingClassifier.reset();
+            windowAccumulator.reset();
             prevAssessments  = List.of();
         }
         long prevFrame = lastFrame;
@@ -302,11 +305,13 @@ public class DroolsScoutingTask implements ScoutingTask {
                 pInstance.fire();
             }
 
-            var emptyAcc = new TemporalWindowAccumulator();
-            var features = featureExtractor.extract(emptyAcc.getWindowedFeatures(), MapCharacteristics.DEFAULT);
+            windowAccumulator.addSnapshot(buildSnapshot(gameState));
+            var features = featureExtractor.extract(
+                    windowAccumulator.getWindowedFeatures(), MapCharacteristics.DEFAULT);
+            io.quarkmind.domain.Race enemyRace = resolveEnemyRace(ctx);
             CascadeResult cascadeResult = cascadingClassifier.classify(
                     patternData.getEvidence(), patternData.getRevisions(),
-                    features, null, frame, prevFrame, ctx);
+                    features, enemyRace, frame, prevFrame, ctx);
 
             var assessments = cascadeResult.assessments();
             ctx.set(QuarkMindCaseFile.SCOUTING_FINAL_ASSESSMENT, assessments);
@@ -446,5 +451,62 @@ public class DroolsScoutingTask implements ScoutingTask {
             .findFirst()
             .map(Building::position)
             .orElse(new Point2d(0, 0));
+    }
+
+    static WindowSnapshot buildSnapshot(GameState gs) {
+        float[] player = new float[FeatureIndexMaps.N_FEATURES_PER_PLAYER];
+        float[] opponent = new float[FeatureIndexMaps.N_FEATURES_PER_PLAYER];
+
+        for (var b : gs.myBuildings()) {
+            Integer idx = FeatureIndexMaps.BUILDING_INDEX.get(b.type());
+            if (idx != null) player[idx]++;
+        }
+        for (var u : gs.myUnits()) {
+            Integer idx = FeatureIndexMaps.UNIT_INDEX.get(u.type());
+            if (idx != null) player[FeatureIndexMaps.N_BUILDINGS + idx]++;
+        }
+        float[] ecoArray = gs.playerEconomy().toFeatureVector();
+        System.arraycopy(ecoArray, 0, player,
+                FeatureIndexMaps.N_BUILDINGS + FeatureIndexMaps.N_UNITS, ecoArray.length);
+        for (int i = 0; i < FeatureIndexMaps.UPGRADE_NAMES.size(); i++) {
+            if (gs.playerUpgrades().contains(FeatureIndexMaps.UPGRADE_NAMES.get(i))) {
+                player[FeatureIndexMaps.N_BUILDINGS + FeatureIndexMaps.N_UNITS
+                        + FeatureIndexMaps.N_STATS + i] = 1.0f;
+            }
+        }
+
+        for (var b : gs.enemyBuildings()) {
+            Integer idx = FeatureIndexMaps.BUILDING_INDEX.get(b.type());
+            if (idx != null) opponent[idx]++;
+        }
+        for (var u : gs.enemyUnits()) {
+            Integer idx = FeatureIndexMaps.UNIT_INDEX.get(u.type());
+            if (idx != null) opponent[FeatureIndexMaps.N_BUILDINGS + idx]++;
+        }
+        float[] enemyEcoArray = gs.enemyEconomy().toFeatureVector();
+        System.arraycopy(enemyEcoArray, 0, opponent,
+                FeatureIndexMaps.N_BUILDINGS + FeatureIndexMaps.N_UNITS, enemyEcoArray.length);
+        for (int i = 0; i < FeatureIndexMaps.UPGRADE_NAMES.size(); i++) {
+            if (gs.enemyUpgrades().contains(FeatureIndexMaps.UPGRADE_NAMES.get(i))) {
+                opponent[FeatureIndexMaps.N_BUILDINGS + FeatureIndexMaps.N_UNITS
+                        + FeatureIndexMaps.N_STATS + i] = 1.0f;
+            }
+        }
+
+        int uniqueEnemyTypes = (int) gs.enemyUnits().stream()
+                .map(Unit::type).distinct().count();
+        float visibility = Math.min(1.0f, uniqueEnemyTypes / 5.0f);
+
+        return new WindowSnapshot(player, opponent, visibility);
+    }
+
+    static io.quarkmind.domain.Race resolveEnemyRace(CaseContext ctx) {
+        String raceName = ctx.getAs(QuarkMindCaseFile.ENEMY_RACE, String.class);
+        if (raceName == null) return null;
+        try {
+            return io.quarkmind.domain.Race.valueOf(raceName);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }

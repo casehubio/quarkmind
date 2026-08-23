@@ -407,4 +407,99 @@ class DroolsScoutingTaskTest {
 
         assertThat(result).isEqualTo("PREVIOUS");
     }
+
+    // ---- buildSnapshot ----
+
+    @Test
+    void buildSnapshot_populatesPlayerBuildingFeatures() {
+        var gs = gameState(
+            List.of(),
+            List.of(nexus(), new Building("f-1", BuildingType.FORGE, new Point2d(10, 10), 400, 400, true)),
+            List.of(),
+            List.of());
+        var snap = DroolsScoutingTask.buildSnapshot(gs);
+        assertThat(snap.playerFeatures()[FeatureIndexMaps.BUILDING_INDEX.get(BuildingType.NEXUS)])
+            .isEqualTo(1.0f);
+        assertThat(snap.playerFeatures()[FeatureIndexMaps.BUILDING_INDEX.get(BuildingType.FORGE)])
+            .isEqualTo(1.0f);
+    }
+
+    @Test
+    void buildSnapshot_populatesPlayerUnitFeatures() {
+        var gs = gameState(
+            List.of(new Unit("z-1", UnitType.ZEALOT, new Point2d(5, 5), 100, 100, 0, 0, 0, 0),
+                    new Unit("z-2", UnitType.ZEALOT, new Point2d(6, 6), 100, 100, 0, 0, 0, 0)),
+            List.of(),
+            List.of(),
+            List.of());
+        var snap = DroolsScoutingTask.buildSnapshot(gs);
+        int zealotIdx = FeatureIndexMaps.N_BUILDINGS + FeatureIndexMaps.UNIT_INDEX.get(UnitType.ZEALOT);
+        assertThat(snap.playerFeatures()[zealotIdx]).isEqualTo(2.0f);
+    }
+
+    @Test
+    void buildSnapshot_populatesOpponentFeatures() {
+        var gs = gameState(
+            List.of(),
+            List.of(),
+            List.of(enemy(10, 10)),
+            List.of());
+        var snap = DroolsScoutingTask.buildSnapshot(gs);
+        int zealotIdx = FeatureIndexMaps.N_BUILDINGS + FeatureIndexMaps.UNIT_INDEX.get(UnitType.ZEALOT);
+        assertThat(snap.opponentFeatures()[zealotIdx]).isEqualTo(1.0f);
+    }
+
+    @Test
+    void buildSnapshot_scoutingVisibility_scalesWithUniqueTypes() {
+        var gs = gameState(
+            List.of(),
+            List.of(),
+            List.of(enemy(10, 10)),
+            List.of());
+        var snap = DroolsScoutingTask.buildSnapshot(gs);
+        assertThat(snap.scoutingVisibility()).isCloseTo(0.2f, org.assertj.core.data.Offset.offset(0.01f));
+    }
+
+    @Test
+    void buildSnapshot_featureVectorLength() {
+        var gs = gameState(List.of(), List.of(), List.of(), List.of());
+        var snap = DroolsScoutingTask.buildSnapshot(gs);
+        assertThat(snap.playerFeatures()).hasSize(134);
+        assertThat(snap.opponentFeatures()).hasSize(134);
+    }
+
+    // ---- resolveEnemyRace ----
+
+    @Test
+    void resolveEnemyRace_validRace_returnsRace() {
+        var ctx = new MutableMapCaseContext(Map.of(QuarkMindCaseFile.ENEMY_RACE, "PROTOSS"));
+        assertThat(DroolsScoutingTask.resolveEnemyRace(ctx))
+            .isEqualTo(io.quarkmind.domain.Race.PROTOSS);
+    }
+
+    @Test
+    void resolveEnemyRace_noKey_returnsNull() {
+        var ctx = new MutableMapCaseContext(Map.of());
+        assertThat(DroolsScoutingTask.resolveEnemyRace(ctx)).isNull();
+    }
+
+    @Test
+    void resolveEnemyRace_invalidValue_returnsNull() {
+        var ctx = new MutableMapCaseContext(Map.of(QuarkMindCaseFile.ENEMY_RACE, "INVALID"));
+        assertThat(DroolsScoutingTask.resolveEnemyRace(ctx)).isNull();
+    }
+
+    // ---- Helpers for buildSnapshot tests ----
+
+    private io.quarkmind.domain.GameState gameState(
+            List<Unit> myUnits, List<Building> myBuildings,
+            List<Unit> enemyUnits, List<Building> enemyBuildings) {
+        return new io.quarkmind.domain.GameState(
+            400, 200, 46, 38,
+            myUnits, myBuildings, enemyUnits, enemyBuildings,
+            List.of(), List.of(), List.of(), 5000, null,
+            io.quarkmind.domain.PlayerEconomyStats.EMPTY,
+            io.quarkmind.domain.PlayerEconomyStats.EMPTY,
+            java.util.Set.of(), java.util.Set.of());
+    }
 }
