@@ -302,10 +302,11 @@ public class DroolsScoutingTask implements ScoutingTask {
                 pInstance.fire();
             }
 
-            var features = featureExtractor.extract(sessionManager.unitBufferSnapshot(), gameTimeMin);
+            var emptyAcc = new TemporalWindowAccumulator();
+            var features = featureExtractor.extract(emptyAcc.getWindowedFeatures(), MapCharacteristics.DEFAULT);
             CascadeResult cascadeResult = cascadingClassifier.classify(
                     patternData.getEvidence(), patternData.getRevisions(),
-                    features, frame, prevFrame, ctx);
+                    features.tensors(), frame, prevFrame, ctx);
 
             var assessments = cascadeResult.assessments();
             ctx.set(QuarkMindCaseFile.SCOUTING_FINAL_ASSESSMENT, assessments);
