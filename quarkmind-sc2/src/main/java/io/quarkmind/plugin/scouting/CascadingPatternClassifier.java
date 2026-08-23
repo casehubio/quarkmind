@@ -8,6 +8,7 @@ import io.casehub.neocortex.inference.tasks.TensorClassifier;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
+import io.quarkmind.domain.Race;
 import io.quarkmind.domain.StrategyArchetype;
 
 import io.micrometer.core.instrument.Counter;
@@ -19,7 +20,6 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +38,7 @@ public class CascadingPatternClassifier {
 
     private final double droolsThreshold;
     private final double onnxThreshold;
-    private final TensorClassifier onnxClassifier;
+    private final EnumMap<Race, TensorClassifier> onnxClassifiers;
     private final EnumMap<StrategyArchetype, Double> cumulativeConfidence =
             new EnumMap<>(StrategyArchetype.class);
 
@@ -76,37 +76,42 @@ public class CascadingPatternClassifier {
             double droolsThreshold,
             @ConfigProperty(name = "quarkmind.classifier.onnx.confidence-threshold", defaultValue = "0.5")
             double onnxThreshold,
-            @Inference("strategy-classifier")
-            Instance<InferenceModel> onnxModelInstance) {
+            @Inference("strategy-vs-terran") Instance<InferenceModel> terranModel,
+            @Inference("strategy-vs-zerg") Instance<InferenceModel> zergModel,
+            @Inference("strategy-vs-protoss") Instance<InferenceModel> protossModel) {
         this.droolsThreshold = droolsThreshold;
         this.onnxThreshold = onnxThreshold;
-        TensorClassifier resolved = null;
-        if (onnxModelInstance.isResolvable()) {
-            try {
-                var model = onnxModelInstance.get();
-                var labels = Arrays.stream(StrategyArchetype.values())
-                        .map(Enum::name)
-                        .toList();
-                resolved = new TensorClassifier(model, labels);
-                log.info("[CASCADE] ONNX tier available — strategy-classifier model loaded");
-            } catch (Exception e) {
-                log.warnf("[CASCADE] ONNX tier unavailable — %s", e.getMessage());
-            }
+        this.onnxClassifiers = new EnumMap<>(Race.class);
+        resolveModel(terranModel, Race.TERRAN);
+        resolveModel(zergModel, Race.ZERG);
+        resolveModel(protossModel, Race.PROTOSS);
+        if (onnxClassifiers.isEmpty()) {
+            log.info("[CASCADE] ONNX tier unavailable — no per-race models resolved");
         } else {
-            log.info("[CASCADE] ONNX tier unavailable — no InferenceModel bean for 'strategy-classifier'");
+            log.infof("[CASCADE] ONNX tier available — %d per-race model(s) loaded", onnxClassifiers.size());
         }
-        this.onnxClassifier = resolved;
+    }
+
+    private void resolveModel(Instance<InferenceModel> modelInstance, Race race) {
+        if (!modelInstance.isResolvable()) return;
+        try {
+            var model = modelInstance.get();
+            var labels = OnnxLabelMapping.labelsForRace(race);
+            onnxClassifiers.put(race, new TensorClassifier(model, labels));
+        } catch (Exception e) {
+            log.warnf("[CASCADE] ONNX model for %s unavailable — %s", race, e.getMessage());
+        }
     }
 
     public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold) {
-        this(droolsThreshold, onnxThreshold, (TensorClassifier) null);
+        this(droolsThreshold, onnxThreshold, new EnumMap<>(Race.class));
     }
 
     public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold,
-                                      TensorClassifier onnxClassifier) {
+                                      EnumMap<Race, TensorClassifier> onnxClassifiers) {
         this.droolsThreshold = droolsThreshold;
         this.onnxThreshold = onnxThreshold;
-        this.onnxClassifier = onnxClassifier;
+        this.onnxClassifiers = onnxClassifiers;
     }
 
     public void setLlmFallbackConfig(boolean enabled, double confidenceThreshold,
@@ -119,7 +124,8 @@ public class CascadingPatternClassifier {
 
     public CascadeResult classify(List<EvidenceMarker> evidence,
                                   List<ConfidenceRevision> revisions,
-                                  Map<String, float[][]> onnxFeatures,
+                                  StrategyFeatures onnxFeatures,
+                                  Race enemyRace,
                                   long frame, long prevFrame,
                                   CaseContext ctx) {
         long framesElapsed = prevFrame >= 0 ? frame - prevFrame : 0;
@@ -147,17 +153,16 @@ public class CascadingPatternClassifier {
             return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.DROOLS), false);
         }
 
-        // Tier 2: ONNX — learned classifier on game state features
-        if (onnxClassifier != null && onnxFeatures != null) {
+        // Tier 2: ONNX — per-race learned classifier
+        TensorClassifier raceClassifier = enemyRace != null ? onnxClassifiers.get(enemyRace) : null;
+        if (raceClassifier != null && onnxFeatures != null) {
             inc(onnxInvocations);
             try {
-                ClassificationResult onnxResult = onnxClassifier.classify(onnxFeatures);
-                StrategyArchetype onnxArchetype;
-                try {
-                    onnxArchetype = StrategyArchetype.valueOf(onnxResult.label());
-                } catch (IllegalArgumentException e) {
-                    log.warnf("[CASCADE] ONNX returned unknown label: '%s'", onnxResult.label());
-                    onnxArchetype = null;
+                ClassificationResult onnxResult = raceClassifier.classify(onnxFeatures.tensors());
+                StrategyArchetype onnxArchetype = OnnxLabelMapping.resolve(onnxResult.label(), enemyRace);
+                if (onnxArchetype == null) {
+                    log.warnf("[CASCADE] ONNX returned unmapped label: '%s' for race %s",
+                            onnxResult.label(), enemyRace);
                 }
                 if (onnxArchetype != null && onnxResult.confidence() >= onnxThreshold) {
                     cumulativeConfidence.merge(onnxArchetype, (double) onnxResult.confidence(), Math::max);
@@ -165,7 +170,7 @@ public class CascadingPatternClassifier {
                     return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.ONNX), false);
                 }
             } catch (Exception e) {
-                log.warnf("[CASCADE] ONNX inference failed: %s", e.getMessage());
+                log.warnf("[CASCADE] ONNX inference failed for race %s: %s", enemyRace, e.getMessage());
             }
         }
 
