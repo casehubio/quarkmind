@@ -47,6 +47,7 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
     private final SummarisationLifecycle       summarisationLifecycle;
     private final MomentBroker                 momentBroker;
     private final MultiFactorDominanceAssessor dominanceAssessor;
+    private final TimelineSampler              timelineSampler;
 
     private final List<GameMoment>         moments   = new CopyOnWriteArrayList<>();
     private final List<TacticalPosture>    phases    = new CopyOnWriteArrayList<>();
@@ -56,11 +57,13 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
     public SC2CbrRetentionObserver(CbrCaseMemoryStore cbrStore,
                                    SummarisationLifecycle summarisationLifecycle,
                                    MomentBroker momentBroker,
-                                   MultiFactorDominanceAssessor dominanceAssessor) {
+                                   MultiFactorDominanceAssessor dominanceAssessor,
+                                   TimelineSampler timelineSampler) {
         this.cbrStore               = cbrStore;
         this.summarisationLifecycle = summarisationLifecycle;
         this.momentBroker           = momentBroker;
         this.dominanceAssessor      = dominanceAssessor;
+        this.timelineSampler        = timelineSampler;
     }
 
     @PostConstruct
@@ -196,7 +199,8 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
 
         SC2GameCbrCase cbrCase = SC2GameCbrCase.buildForGameEnriched(
                 archetype, raceName, matchup,
-                confidence != null ? confidence : 0.0, strategyId, enrichment);
+                confidence != null ? confidence : 0.0, strategyId, enrichment,
+                timelineSampler.getTimeline());
 
         Boolean cbrInfluenced = (Boolean) snapshot.get(QuarkMindCaseFile.CBR_INFLUENCED_SELECTION);
         if (cbrInfluenced != null) {

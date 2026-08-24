@@ -55,6 +55,10 @@ public final class QuarkMindCaseFile {
     public static final String CBR_INFLUENCED_SELECTION     = "agent.strategy.cbr.influenced";
     public static final String STRATEGY_INITIAL_ARCHETYPE  = "agent.strategy.initial.archetype";
     public static final String SCOUTING_FINAL_ASSESSMENT   = "agent.scouting.final.assessment";
+    // Temporal CBR (#222)
+    public static final String TEMPORAL_PREDICTION         = "agent.temporal.prediction";
+    public static final String TEMPORAL_SIMILAR_COUNT      = "agent.temporal.similar.count";
+    public static final String TEMPORAL_SIMILAR_BEST_SCORE = "agent.temporal.similar.best.score";
 
 
     private QuarkMindCaseFile() {}

@@ -1,40 +1,40 @@
 package io.quarkmind.agent.cbr;
 
 import io.casehub.api.spi.CaseOutcomeEvent;
+import io.casehub.blocks.summarisation.EventLevel;
+import io.casehub.blocks.summarisation.LevelEvent;
 import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
+import io.casehub.neocortex.memory.cbr.FeatureValue;
 import io.quarkmind.agent.MultiFactorDominanceAssessor;
 import io.quarkmind.agent.QuarkMindCaseFile;
-import io.quarkmind.domain.DominanceScore;
-import io.quarkmind.domain.GameState;
-import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.AssessmentSource;
-import io.quarkmind.domain.PatternAssessment;
-import io.quarkmind.domain.StrategyArchetype;
-import io.quarkmind.plugin.summarisation.MomentBroker;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.DominanceScore;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PatternAssessment;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.plugin.summarisation.GameArc;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;
+import io.quarkmind.plugin.summarisation.MomentBroker;
 import io.quarkmind.plugin.summarisation.SummarisationLifecycle;
 import io.quarkmind.plugin.summarisation.TacticalPosture;
 import io.quarkmind.sc2.GameStarted;
-import io.casehub.blocks.summarisation.EventLevel;
-import io.casehub.blocks.summarisation.LevelEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.eq;
@@ -60,7 +60,7 @@ class SC2CbrRetentionObserverTest {
         momentBroker = mock(MomentBroker.class);
         dominanceAssessor = mock(MultiFactorDominanceAssessor.class);
         when(dominanceAssessor.assess(any())).thenReturn(new DominanceScore(0.0, Map.of()));
-        observer = new SC2CbrRetentionObserver(store, summarisationLifecycle, momentBroker, dominanceAssessor);
+        observer = new SC2CbrRetentionObserver(store, summarisationLifecycle, momentBroker, dominanceAssessor, new TimelineSampler());
     }
 
     @Test
@@ -263,6 +263,39 @@ class SC2CbrRetentionObserverTest {
                 }),
                 any(), any(), any(), any(), any(), any());
     }
+
+    @Test
+    void onOutcome_storesTimeline() {
+        var sampler = new TimelineSampler();
+        observer = new SC2CbrRetentionObserver(store, summarisationLifecycle, momentBroker, dominanceAssessor, sampler);
+
+        GameState gs0 = new GameState(50, 0, 12, 12, buildWorkers(12), buildBases(1), List.of(), List.of(), List.of(), List.of(), List.of(), 0L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
+        GameState gs1 = new GameState(100, 0, 14, 14, buildWorkers(14), buildBases(1), List.of(), List.of(), List.of(), List.of(), List.of(), 672L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
+        GameState gs2 = new GameState(150, 0, 16, 16, buildWorkers(16), buildBases(1), List.of(), List.of(), List.of(), List.of(), List.of(), 1344L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
+        sampler.tick(gs0);
+        sampler.tick(gs1);
+        sampler.tick(gs2);
+
+        when(dominanceAssessor.assess(any())).thenReturn(new DominanceScore(0.0, Map.of()));
+
+        CaseOutcomeEvent event = buildEvent("WIN", Map.of(
+                QuarkMindCaseFile.STRATEGY_SELECTED_ID, "strategy.early-pressure",
+                QuarkMindCaseFile.STRATEGY_ROUTED_ARCHETYPE, "ZERG_ROACH_RUSH",
+                QuarkMindCaseFile.STRATEGY_ROUTED_CONFIDENCE, 0.85,
+                QuarkMindCaseFile.GAME_STATE, gs2));
+
+        observer.onOutcome(event);
+
+        verify(store).store(
+                argThat(c -> {
+                    var f = c.features();
+                    if (!f.containsKey("timeline")) {return false;}
+                    var timeline = (FeatureValue.StructListVal) f.get("timeline");
+                    return timeline.items().size() == 3;
+                }),
+                any(), any(), any(), any(), any(), any());
+    }
+
 
     private static List<Unit> buildWorkers(int count) {
         var workers = new java.util.ArrayList<Unit>();

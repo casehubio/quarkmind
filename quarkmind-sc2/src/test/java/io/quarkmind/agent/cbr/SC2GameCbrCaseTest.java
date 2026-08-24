@@ -1,6 +1,7 @@
 package io.quarkmind.agent.cbr;
 
 import io.casehub.neocortex.memory.cbr.FeatureValue;
+import io.quarkmind.domain.TimelineObservation;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -156,4 +157,49 @@ class SC2GameCbrCaseTest {
         assertThat(cbrCase.features()).containsEntry("engagements_lost", FeatureValue.number(1));
         assertThat(cbrCase.features()).containsEntry("unit_trade_ratio", FeatureValue.number(1.5));
     }
+
+    @Test
+    void buildForGameEnriched_withTimeline_includesTimelineFeature() {
+        var timeline = List.of(
+                new TimelineObservation(0.5, 12, 50, 0),
+                new TimelineObservation(1.0, 14, 100, 4),
+                new TimelineObservation(1.5, 16, 150, 8));
+        var enrichment = new EnrichedGameData(
+                List.of("EARLY_MACRO"), 2, "", 5.0,
+                0, 0.0, 0.0, 1, 22, 0.0, 0,
+                OptionalDouble.empty(), OptionalDouble.empty(), 0.5,
+                "mock-opponent", 0, 0, 0.0, 0.0, false);
+
+        var c = SC2GameCbrCase.buildForGameEnriched(
+                "ZERG_ROACH_RUSH", "ZERG", "PvZ", 0.82, "strategy.early-pressure",
+                enrichment, timeline);
+
+        assertThat(c.features()).containsKey("timeline");
+        var timelineVal = c.features().get("timeline");
+        assertThat(timelineVal).isInstanceOf(FeatureValue.StructListVal.class);
+        var observations = ((FeatureValue.StructListVal) timelineVal).items();
+        assertThat(observations).hasSize(3);
+        var first = observations.get(0);
+        assertThat(((FeatureValue.NumberVal) first.get("minute")).value()).isEqualTo(0.5);
+        assertThat(((FeatureValue.NumberVal) first.get("our_workers")).value()).isEqualTo(12.0);
+        assertThat(((FeatureValue.NumberVal) first.get("our_minerals")).value()).isEqualTo(50.0);
+        assertThat(((FeatureValue.NumberVal) first.get("our_army_supply")).value()).isEqualTo(0.0);
+    }
+
+    @Test
+    void buildForGameEnriched_emptyTimeline_noTimelineFeature() {
+        var enrichment = new EnrichedGameData(
+                List.of("EARLY_MACRO"), 2, "", 5.0,
+                0, 0.0, 0.0, 1, 22, 0.0, 0,
+                OptionalDouble.empty(), OptionalDouble.empty(), 0.5,
+                "mock-opponent", 0, 0, 0.0, 0.0, false);
+
+        var c = SC2GameCbrCase.buildForGameEnriched(
+                "ZERG_ROACH_RUSH", "ZERG", "PvZ", 0.82, "strategy.early-pressure",
+                enrichment, List.of());
+
+        assertThat(c.features()).doesNotContainKey("timeline");
+    }
+
+
 }

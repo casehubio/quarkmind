@@ -2,7 +2,9 @@ package io.quarkmind.agent.cbr;
 
 import io.casehub.neocortex.memory.cbr.CbrCase;
 import io.casehub.neocortex.memory.cbr.FeatureValue;
+import io.quarkmind.domain.TimelineObservation;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -23,19 +25,6 @@ public record SC2GameCbrCase(
         features = Map.copyOf(features);
     }
 
-    @Override
-    public String cbrType() { return CBR_TYPE; }
-
-    @Override
-    public CbrCase withOutcome(String outcome, Double confidence) {
-        return new SC2GameCbrCase(problem, solution, outcome, confidence, features);
-    }
-
-    @Override
-    public CbrCase withFeatures(Map<String, FeatureValue> features) {
-        return new SC2GameCbrCase(problem, solution, outcome, confidence, features);
-    }
-
     public static SC2GameCbrCase buildForGame(
             String archetypeName, String raceName, String matchup,
             double assessmentConfidence, String strategyId) {
@@ -48,7 +37,7 @@ public record SC2GameCbrCase(
                         "enemy_race", FeatureValue.string(raceName),
                         "matchup", FeatureValue.string(matchup),
                         "assessment_confidence", FeatureValue.number(assessmentConfidence)
-                ));
+                      ));
     }
 
     public static SC2GameCbrCase buildForGameEnriched(
@@ -95,5 +84,41 @@ public record SC2GameCbrCase(
                 "vs " + archetypeName + " (" + matchup + ")",
                 strategyId, null, null, features);
     }
+
+    public static SC2GameCbrCase buildForGameEnriched(
+            String archetypeName, String raceName, String matchup,
+            double assessmentConfidence, String strategyId,
+            EnrichedGameData e, List<TimelineObservation> timeline) {
+        SC2GameCbrCase base = buildForGameEnriched(
+                archetypeName, raceName, matchup,
+                assessmentConfidence, strategyId, e);
+        if (timeline == null || timeline.isEmpty()) {
+            return base;
+        }
+        var features = new java.util.HashMap<>(base.features());
+        List<Map<String, FeatureValue>> observations = timeline.stream()
+                                                               .map(t -> Map.<String, FeatureValue>of(
+                                                                       "minute", FeatureValue.number(t.minute()),
+                                                                       "our_workers", FeatureValue.number(t.ourWorkers()),
+                                                                       "our_minerals", FeatureValue.number(t.ourMinerals()),
+                                                                       "our_army_supply", FeatureValue.number(t.ourArmySupply())))
+                                                               .toList();
+        features.put("timeline", FeatureValue.structList(observations));
+        return (SC2GameCbrCase) base.withFeatures(features);
+    }
+
+    @Override
+    public String cbrType() {return CBR_TYPE;}
+
+    @Override
+    public CbrCase withOutcome(String outcome, Double confidence) {
+        return new SC2GameCbrCase(problem, solution, outcome, confidence, features);
+    }
+
+    @Override
+    public CbrCase withFeatures(Map<String, FeatureValue> features) {
+        return new SC2GameCbrCase(problem, solution, outcome, confidence, features);
+    }
+
 
 }
