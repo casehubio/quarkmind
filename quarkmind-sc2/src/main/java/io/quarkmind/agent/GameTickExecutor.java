@@ -1,6 +1,7 @@
 package io.quarkmind.agent;
 
 import io.casehub.api.context.CaseContext;
+import io.quarkmind.agent.cbr.TimelineSampler;
 import io.quarkmind.agent.plugin.SummarisationTickable;
 import io.quarkmind.plugin.coaching.CoachingComplianceEvaluator;
 import io.quarkmind.plugin.coaching.CoachingTriggerBuilder;
@@ -23,21 +24,21 @@ class GameTickExecutor {
     private static final Duration TICK_TIMEOUT = Duration.ofSeconds(5);
 
     @Inject
-    SC2Engine                   engine;
+    SC2Engine                        engine;
     @Inject
-    GameStateTranslator         translator;
+    GameStateTranslator              translator;
     @Inject
-    QuarkMindCaseHub            caseHub;
+    QuarkMindCaseHub                 caseHub;
     @Inject
-    GameSession                 gameSession;
+    GameSession                      gameSession;
     @Inject
-    PluginDispatchBroker        pluginDispatchBroker;
+    PluginDispatchBroker             pluginDispatchBroker;
     @Inject
-    SummarisationTickable       summarisationLifecycle;
+    SummarisationTickable            summarisationLifecycle;
     @Inject
-    DeferredAdvisoryEvaluator   deferredAdvisoryEvaluator;
+    DeferredAdvisoryEvaluator        deferredAdvisoryEvaluator;
     @Inject
-    MilestoneOutcomeRecorder    milestoneOutcomeRecorder;
+    MilestoneOutcomeRecorder         milestoneOutcomeRecorder;
     @Inject
     AdvisoryMilestoneOutcomeRecorder advisoryMilestoneOutcomeRecorder;
 
@@ -50,7 +51,7 @@ class GameTickExecutor {
     @Inject
     CoachingComplianceEvaluator coachingComplianceEvaluator;
     @Inject
-    io.quarkmind.agent.cbr.TimelineSampler timelineSampler;
+    TimelineSampler             timelineSampler;
 
 
     @ConfigProperty(name = "quarkmind.game.mode", defaultValue = "ai")
@@ -59,9 +60,9 @@ class GameTickExecutor {
     AgentOrchestrator.TickResult execute() {
         long t0 = System.currentTimeMillis();
         engine.tick();
-        var  gameState = engine.observe();
+        var gameState = engine.observe();
         timelineSampler.tick(gameState);
-        long t1        = System.currentTimeMillis();        // physics end: engine.tick + observe
+        long t1 = System.currentTimeMillis();        // physics end: engine.tick + observe
 
         Map<String, Object> caseData = translator.toMap(gameState);
         caseData = new HashMap<>(caseData);
