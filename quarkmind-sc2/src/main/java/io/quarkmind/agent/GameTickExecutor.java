@@ -49,6 +49,9 @@ class GameTickExecutor {
     CoachingTriggerBuilder      coachingTriggerBuilder;
     @Inject
     CoachingComplianceEvaluator coachingComplianceEvaluator;
+    @Inject
+    io.quarkmind.agent.cbr.TimelineSampler timelineSampler;
+
 
     @ConfigProperty(name = "quarkmind.game.mode", defaultValue = "ai")
     String gameMode;
@@ -57,6 +60,7 @@ class GameTickExecutor {
         long t0 = System.currentTimeMillis();
         engine.tick();
         var  gameState = engine.observe();
+        timelineSampler.tick(gameState);
         long t1        = System.currentTimeMillis();        // physics end: engine.tick + observe
 
         Map<String, Object> caseData = translator.toMap(gameState);

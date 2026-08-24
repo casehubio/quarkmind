@@ -102,6 +102,7 @@ class GameTickExecutorMigrationTest {
         executor.commentaryAccumulator = commentaryAccumulator;
         executor.coachingTriggerBuilder = coachingTriggerBuilder;
         executor.coachingComplianceEvaluator = coachingComplianceEvaluator;
+        executor.timelineSampler = new io.quarkmind.agent.cbr.TimelineSampler();
         executor.gameMode = "ai";
     }
 
