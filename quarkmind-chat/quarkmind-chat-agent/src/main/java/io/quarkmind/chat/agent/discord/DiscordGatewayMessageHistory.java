@@ -27,4 +27,10 @@ public class DiscordGatewayMessageHistory implements MessageHistory {
                 .filter(m -> m.receivedAt().isAfter(since))
                 .toList();
     }
+
+    public void drain(Instant before) {
+        for (var messages : buffer.values()) {
+            messages.removeIf(m -> !m.receivedAt().isAfter(before));
+        }
+    }
 }

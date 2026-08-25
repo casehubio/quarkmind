@@ -1,11 +1,16 @@
 package io.quarkmind.chat.agent.discord;
 
-import io.casehub.connectors.chat.model.*;
+import io.casehub.connectors.chat.model.ChatChannelRef;
+import io.casehub.connectors.chat.model.ChatContent;
+import io.casehub.connectors.chat.model.ChatMessageRef;
+import io.casehub.connectors.chat.model.MemberRef;
+import io.casehub.connectors.chat.model.ReceivedMessage;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DiscordGatewayMessageHistoryTest {
 
@@ -61,5 +66,26 @@ class DiscordGatewayMessageHistoryTest {
 
         assertEquals(1, history.messages(new ChatChannelRef("ch-1"), Instant.EPOCH).size());
         assertEquals(1, history.messages(new ChatChannelRef("ch-2"), Instant.EPOCH).size());
+    }
+
+    @Test
+    void drainRemovesMessagesBeforeTimestamp() {
+        var history = new DiscordGatewayMessageHistory();
+        var old = new ReceivedMessage("discord", new ChatChannelRef("ch-1"),
+                                      new ChatMessageRef(new ChatChannelRef("ch-1"), "m1"), null,
+                                      new MemberRef("user-1"), new ChatContent("old"),
+                                      Instant.parse("2026-01-01T00:00:00Z"));
+        var recent = new ReceivedMessage("discord", new ChatChannelRef("ch-1"),
+                                         new ChatMessageRef(new ChatChannelRef("ch-1"), "m2"), null,
+                                         new MemberRef("user-1"), new ChatContent("recent"),
+                                         Instant.parse("2026-08-01T00:00:00Z"));
+        history.accumulate(old);
+        history.accumulate(recent);
+
+        history.drain(Instant.parse("2026-06-01T00:00:00Z"));
+
+        var result = history.messages(new ChatChannelRef("ch-1"), Instant.EPOCH);
+        assertEquals(1, result.size());
+        assertEquals("recent", result.get(0).content().text());
     }
 }
