@@ -76,6 +76,88 @@ class CbrLearningCurveEndpointTest {
         assertThat(strategies).hasSize(2);
     }
 
+
+    @Test
+    void learningCurve_detectsImprovingTrend() {
+        // 15 games: first 10 have 30% win rate, last 10 have 80% win rate (delta > 0.1)
+        when(store.retrieveSimilar(any(), eq(SC2GameCbrCase.class)))
+                .thenReturn(List.of(
+                        scored("LOSS", "PvZ", "strategy.a", 1),
+                        scored("LOSS", "PvZ", "strategy.a", 2),
+                        scored("LOSS", "PvZ", "strategy.a", 3),
+                        scored("LOSS", "PvT", "strategy.a", 4),
+                        scored("LOSS", "PvT", "strategy.a", 5),
+                        scored("WIN", "PvZ", "strategy.b", 6),
+                        scored("LOSS", "PvZ", "strategy.b", 7),
+                        scored("WIN", "PvZ", "strategy.b", 8),
+                        scored("LOSS", "PvT", "strategy.b", 9),
+                        scored("WIN", "PvT", "strategy.b", 10),
+                        scored("WIN", "PvZ", "strategy.b", 11),
+                        scored("WIN", "PvZ", "strategy.b", 12),
+                        scored("WIN", "PvT", "strategy.b", 13),
+                        scored("WIN", "PvT", "strategy.b", 14),
+                        scored("WIN", "PvZ", "strategy.b", 15)));
+
+        Response r = endpoint.learningCurve();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = (Map<String, Object>) r.getEntity();
+        assertThat(body.get("totalGames")).isEqualTo(15);
+        assertThat(body.get("trend")).isEqualTo("IMPROVING");
+
+        // first 10: 3W/7L = 0.3, last 10: 8W/2L = 0.8
+        assertThat((double) body.get("last10WinRate")).isCloseTo(0.8, org.assertj.core.data.Offset.offset(0.01));
+    }
+
+
+    @Test
+    void learningCurve_detectsDecliningTrend() {
+        // 12 games: first 10 win heavily, last 10 lose heavily
+        when(store.retrieveSimilar(any(), eq(SC2GameCbrCase.class)))
+                .thenReturn(List.of(
+                        scored("WIN", "PvZ", "strategy.a", 1),
+                        scored("WIN", "PvZ", "strategy.a", 2),
+                        scored("WIN", "PvZ", "strategy.a", 3),
+                        scored("WIN", "PvZ", "strategy.a", 4),
+                        scored("WIN", "PvZ", "strategy.a", 5),
+                        scored("WIN", "PvZ", "strategy.a", 6),
+                        scored("WIN", "PvZ", "strategy.a", 7),
+                        scored("LOSS", "PvZ", "strategy.a", 8),
+                        scored("LOSS", "PvZ", "strategy.b", 9),
+                        scored("LOSS", "PvZ", "strategy.b", 10),
+                        scored("LOSS", "PvZ", "strategy.b", 11),
+                        scored("LOSS", "PvZ", "strategy.b", 12)));
+
+        Response r = endpoint.learningCurve();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = (Map<String, Object>) r.getEntity();
+        assertThat(body.get("trend")).isEqualTo("DECLINING");
+    }
+
+
+    @Test
+    void learningCurve_perMatchup_reflectsImprovement() {
+        when(store.retrieveSimilar(any(), eq(SC2GameCbrCase.class)))
+                .thenReturn(List.of(
+                        scored("LOSS", "PvZ", "strategy.a", 1),
+                        scored("LOSS", "PvZ", "strategy.a", 2),
+                        scored("LOSS", "PvZ", "strategy.a", 3),
+                        scored("WIN", "PvZ", "strategy.b", 4),
+                        scored("WIN", "PvZ", "strategy.b", 5),
+                        scored("WIN", "PvZ", "strategy.b", 6),
+                        scored("WIN", "PvT", "strategy.a", 7),
+                        scored("LOSS", "PvT", "strategy.a", 8)));
+
+        Response r = endpoint.learningCurve();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = (Map<String, Object>) r.getEntity();
+        @SuppressWarnings("unchecked")
+        Map<String, Map<String, Object>> perMatchup = (Map<String, Map<String, Object>>) body.get("perMatchup");
+
+        assertThat(perMatchup).containsKeys("PvZ", "PvT");
+        assertThat((double) perMatchup.get("PvZ").get("winRate")).isCloseTo(0.5, org.assertj.core.data.Offset.offset(0.01));
+        assertThat(perMatchup.get("PvZ").get("games")).isEqualTo(6);
+    }
+
     @Test
     void caseStats_reportsTier2Coverage() {
         var tier1Case = new SC2GameCbrCase("p", "s", "WIN", null, Map.of(
