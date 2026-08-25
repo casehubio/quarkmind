@@ -121,6 +121,19 @@ public class CommentaryAccumulator {
         triggerPayload.put("batch", batch);
         triggerPayload.put("context", context);
 
+        // Promote CBR fields from context snapshot to cbrContext map at root level
+        // so appendCbrContext() finds them (same structure as reactive triggers)
+        String cbrCount = context.get("cbr_similar_count");
+        String cbrPred  = context.get("cbr_prediction");
+        String cbrInfl  = context.get("cbr_influenced");
+        if (cbrCount != null || cbrPred != null) {
+            var cbrCtx = new HashMap<String, Object>();
+            if (cbrCount != null) cbrCtx.put("similarCount", Integer.parseInt(cbrCount));
+            if (cbrPred != null)  cbrCtx.put("prediction", cbrPred);
+            if ("true".equals(cbrInfl)) cbrCtx.put("influenced", true);
+            triggerPayload.put("cbrContext", cbrCtx);
+        }
+
         return Map.of(QuarkMindCaseFile.COMMENTARY_NARRATIVE_TRIGGER, triggerPayload);
     }
 

@@ -2,8 +2,10 @@ package io.quarkmind.plugin.commentary;
 
 import io.casehub.blocks.summarisation.EventStreamBus;
 import io.quarkmind.plugin.summarisation.GameArc;
-import io.quarkmind.plugin.summarisation.TacticalPosture;
 import io.quarkmind.plugin.summarisation.SummarisationLifecycle;
+import io.quarkmind.plugin.summarisation.TacticalPosture;
+import io.casehub.api.context.CaseContext;
+import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.sc2.GameStarted;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -36,6 +38,10 @@ public class NarrativeContextHolder {
 
     private volatile TacticalPosture latestPosture;
     private volatile GameArc         latestArc;
+    private volatile Boolean         cbrInfluenced;
+    private volatile Integer         cbrSimilarCount;
+    private volatile String          cbrPrediction;
+
 
     @Inject SummarisationLifecycle summarisationLifecycle;
 
@@ -68,6 +74,18 @@ public class NarrativeContextHolder {
         arcBus.subscribe(a -> true, event -> latestArc = event.payload());
     }
 
+
+    /**
+     * Update CBR context from the latest CaseContext after engine settle.
+     * Called from {@link io.quarkmind.agent.GameTickExecutor} each tick.
+     */
+    public void updateCbr(CaseContext ctx) {
+        if (ctx == null) {return;}
+        this.cbrInfluenced   = ctx.getAs(QuarkMindCaseFile.CBR_INFLUENCED_SELECTION, Boolean.class);
+        this.cbrSimilarCount = ctx.getAs(QuarkMindCaseFile.TEMPORAL_SIMILAR_COUNT, Integer.class);
+        this.cbrPrediction   = ctx.getAs(QuarkMindCaseFile.TEMPORAL_PREDICTION, String.class);
+    }
+
     /**
      * Snapshot current L3/L4 context for CaseFile serialization.
      *
@@ -85,6 +103,15 @@ public class NarrativeContextHolder {
         if (latestArc != null) {
             snapshot.put("arc_narrative", latestArc.narrative());
         }
+        if (cbrInfluenced != null && cbrInfluenced) {
+            snapshot.put("cbr_influenced", "true");
+        }
+        if (cbrSimilarCount != null && cbrSimilarCount > 0) {
+            snapshot.put("cbr_similar_count", String.valueOf(cbrSimilarCount));
+        }
+        if (cbrPrediction != null) {
+            snapshot.put("cbr_prediction", cbrPrediction);
+        }
         return snapshot;
     }
 
@@ -95,8 +122,11 @@ public class NarrativeContextHolder {
      * (application-scoped lifecycle).
      */
     void onGameStarted(@Observes GameStarted event) {
-        latestPosture = null;
-        latestArc     = null;
+        latestPosture  = null;
+        latestArc      = null;
+        cbrInfluenced  = null;
+        cbrSimilarCount = null;
+        cbrPrediction  = null;
     }
 
     /** Package-private accessor for testing */

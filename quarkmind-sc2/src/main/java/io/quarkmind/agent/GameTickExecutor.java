@@ -7,6 +7,7 @@ import io.quarkmind.plugin.coaching.CoachingComplianceEvaluator;
 import io.quarkmind.plugin.coaching.CoachingTriggerBuilder;
 import io.quarkmind.plugin.commentary.CommentaryAccumulator;
 import io.quarkmind.plugin.commentary.CommentaryTriggerBuilder;
+import io.quarkmind.plugin.commentary.NarrativeContextHolder;
 import io.quarkmind.sc2.SC2Engine;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -47,6 +48,9 @@ class GameTickExecutor {
     @Inject
     CommentaryAccumulator       commentaryAccumulator;
     @Inject
+    NarrativeContextHolder narrativeContextHolder;
+
+    @Inject
     CoachingTriggerBuilder      coachingTriggerBuilder;
     @Inject
     CoachingComplianceEvaluator coachingComplianceEvaluator;
@@ -78,6 +82,9 @@ class GameTickExecutor {
                        gameState.gameFrame(), e.getMessage());
         }
         long t2 = System.currentTimeMillis();        // plugins end: signalAndAwaitSync
+
+        // Update narrative context holder with CBR data (after settle, before commentary)
+        narrativeContextHolder.updateCbr(ctx);
 
         // Summarisation: tick L2→L3 and L3→L4 runners (after engine settle, before dispatch)
         summarisationLifecycle.tick(gameState.gameFrame());

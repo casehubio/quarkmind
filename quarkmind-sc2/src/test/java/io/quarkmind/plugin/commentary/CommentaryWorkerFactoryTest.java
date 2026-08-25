@@ -305,6 +305,60 @@ class CommentaryWorkerFactoryTest {
         assertThat(msg).contains("0.85");
     }
 
+    @Test
+    void reactiveSystemPrompt_containsCbrGuidance() {
+        AgentDescriptor descriptor = buildReactiveDescriptor(
+                "claude:commentator-energetic@v1", "Energetic Commentator", "bold");
+        String prompt = CommentaryWorkerFactory.buildReactiveSystemPrompt(descriptor);
+        assertThat(prompt).contains("CBR_CONTEXT");
+        assertThat(prompt).contains("past games");
+    }
+
+    @Test
+    void narrativeSystemPrompt_containsCbrGuidance() {
+        AgentDescriptor descriptor = buildNarrativeDescriptor(
+                "claude:narrator-dramatic@v1", "Dramatic Narrator", "flexible");
+        String prompt = CommentaryWorkerFactory.buildNarrativeSystemPrompt(descriptor);
+        assertThat(prompt).contains("CBR_CONTEXT");
+        assertThat(prompt).contains("past game experience");
+    }
+
+    @Test
+    void reactiveUserMessage_includesCbrContext_whenPresent() {
+        String msg = CommentaryWorkerFactory.buildReactiveUserMessage(
+                Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of(
+                        "gameFrame", 1500L,
+                        "cbrContext", Map.of(
+                                "similarCount", 3,
+                                "prediction", "WIN",
+                                "influenced", true))));
+        assertThat(msg).contains("PAST GAME EXPERIENCE:");
+        assertThat(msg).contains("3 similar past games found");
+        assertThat(msg).contains("predicted outcome: WIN");
+        assertThat(msg).contains("[CBR influenced strategy selection]");
+    }
+
+    @Test
+    void reactiveUserMessage_omitsCbrContext_whenAbsent() {
+        String msg = CommentaryWorkerFactory.buildReactiveUserMessage(
+                Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of("gameFrame", 1500L)));
+        assertThat(msg).doesNotContain("PAST GAME EXPERIENCE");
+    }
+
+    @Test
+    void narrativeUserMessage_includesCbrContext_whenPresent() {
+        String msg = CommentaryWorkerFactory.buildNarrativeUserMessage(
+                Map.of(QuarkMindCaseFile.COMMENTARY_NARRATIVE_TRIGGER, Map.of(
+                        "cbrContext", Map.of(
+                                "similarCount", 5,
+                                "prediction", "LOSS"))));
+        assertThat(msg).contains("PAST GAME EXPERIENCE:");
+        assertThat(msg).contains("5 similar past games found");
+        assertThat(msg).contains("predicted outcome: LOSS");
+        assertThat(msg).doesNotContain("[CBR influenced strategy selection]");
+    }
+
+
     private static CommentaryCompletionCallback noOpCallback() {
         return (workerId, capability, gameFrame, text, type, latencyMs) -> {
             // No-op for tests that don't care about completion events

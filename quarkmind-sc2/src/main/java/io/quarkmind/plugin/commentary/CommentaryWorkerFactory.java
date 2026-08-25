@@ -203,7 +203,10 @@ public final class CommentaryWorkerFactory {
         sb.append("\nIntel types you may receive:\n");
         sb.append("- PATTERN_ASSESSMENT: enemy strategy classification with archetype name ");
         sb.append("(e.g. ZERG_ROACH_RUSH) and confidence score (0.0–1.0). ");
-        sb.append("When present, call out the classification naturally.\n\n");
+        sb.append("When present, call out the classification naturally.\n");
+        sb.append("- CBR_CONTEXT: case-based reasoning from past games — similar game count, ");
+        sb.append("predicted outcome, whether CBR influenced strategy selection. ");
+        sb.append("When present, reference past game experience naturally.\n\n");
         sb.append("React with energy to the game moment. Keep it to 1-2 sentences.\n");
         sb.append("Your response should be plain text commentary (no labels or structure).\n");
         return sb.toString();
@@ -228,7 +231,10 @@ public final class CommentaryWorkerFactory {
         sb.append("\nIntel types you may receive:\n");
         sb.append("- PATTERN_ASSESSMENT: enemy strategy classification with archetype name ");
         sb.append("and confidence score (0.0–1.0). ");
-        sb.append("When present, weave the strategic implications into your narrative.\n\n");
+        sb.append("When present, weave the strategic implications into your narrative.\n");
+        sb.append("- CBR_CONTEXT: case-based reasoning from past games — similar game count, ");
+        sb.append("predicted outcome, whether CBR influenced strategy selection. ");
+        sb.append("When present, weave past game experience into your narrative.\n\n");
         sb.append("Narrate the strategic arc. Do NOT repeat moments just announced.\n");
         sb.append("Provide context and analysis. Keep it to 2-3 sentences.\n");
         sb.append("Your response should be plain text commentary (no labels or structure).\n");
@@ -250,6 +256,28 @@ public final class CommentaryWorkerFactory {
                 sb.append("\nENEMY PATTERN: ").append(archetype);
                 if (confidence != null) {
                     sb.append(" (confidence: ").append(confidence).append(")");
+                }
+                sb.append("\n");
+            }
+        }
+    }
+
+    private static void appendCbrContext(StringBuilder sb, Map<?, ?> triggerMap) {
+        Object cbr = triggerMap.get("cbrContext");
+        if (cbr instanceof Map<?, ?> cbrMap) {
+            Object similarCount = cbrMap.get("similarCount");
+            Object prediction   = cbrMap.get("prediction");
+            Object influenced   = cbrMap.get("influenced");
+            if (similarCount != null || prediction != null) {
+                sb.append("\nPAST GAME EXPERIENCE:");
+                if (similarCount != null) {
+                    sb.append(" ").append(similarCount).append(" similar past games found");
+                }
+                if (prediction != null) {
+                    sb.append(", predicted outcome: ").append(prediction);
+                }
+                if (Boolean.TRUE.equals(influenced)) {
+                    sb.append(" [CBR influenced strategy selection]");
                 }
                 sb.append("\n");
             }
@@ -288,6 +316,7 @@ public final class CommentaryWorkerFactory {
             }
 
             appendPatternAssessment(sb, triggerMap);
+            appendCbrContext(sb, triggerMap);
         }
 
         sb.append("\nProvide your immediate commentary on this moment.");
@@ -312,6 +341,7 @@ public final class CommentaryWorkerFactory {
             }
 
             appendPatternAssessment(sb, triggerMap);
+            appendCbrContext(sb, triggerMap);
         }
 
         sb.append("\nProvide contextual narration of the strategic arc.");

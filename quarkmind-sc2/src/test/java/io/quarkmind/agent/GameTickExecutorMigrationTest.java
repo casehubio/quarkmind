@@ -6,6 +6,7 @@ import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.plugin.commentary.CommentaryAccumulator;
 import io.quarkmind.plugin.commentary.CommentaryTriggerBuilder;
+import io.quarkmind.plugin.commentary.NarrativeContextHolder;
 import io.quarkmind.sc2.GameStarted;
 import io.quarkmind.sc2.SC2Engine;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,6 +101,7 @@ class GameTickExecutorMigrationTest {
         executor.advisoryMilestoneOutcomeRecorder = advisoryMilestoneOutcomeRecorder;
         executor.commentaryTriggerBuilder = commentaryTriggerBuilder;
         executor.commentaryAccumulator = commentaryAccumulator;
+        executor.narrativeContextHolder = new NarrativeContextHolder();
         executor.coachingTriggerBuilder = coachingTriggerBuilder;
         executor.coachingComplianceEvaluator = coachingComplianceEvaluator;
         executor.timelineSampler = new io.quarkmind.agent.cbr.TimelineSampler();

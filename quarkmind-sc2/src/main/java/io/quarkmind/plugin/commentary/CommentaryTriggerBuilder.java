@@ -7,6 +7,7 @@ import io.quarkmind.sc2.GameStarted;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,14 +62,20 @@ public class CommentaryTriggerBuilder {
         int supplyCap = getIntOrZero(ctx, QuarkMindCaseFile.SUPPLY_CAP);
         int army = getIntOrZero(ctx, QuarkMindCaseFile.ARMY);
 
-        return Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, Map.of(
-            "gameFrame", gameFrame,
-            "momentTypes", typeNames,
-            "minerals", minerals,
-            "supplyUsed", supplyUsed,
-            "supplyCap", supplyCap,
-            "army", army
-        ));
+        var trigger = new LinkedHashMap<String, Object>();
+        trigger.put("gameFrame", gameFrame);
+        trigger.put("momentTypes", typeNames);
+        trigger.put("minerals", minerals);
+        trigger.put("supplyUsed", supplyUsed);
+        trigger.put("supplyCap", supplyCap);
+        trigger.put("army", army);
+
+        Map<String, Object> cbrContext = extractCbrContext(ctx);
+        if (cbrContext != null) {
+            trigger.put("cbrContext", cbrContext);
+        }
+
+        return Map.of(QuarkMindCaseFile.COMMENTARY_TRIGGER, trigger);
     }
 
     /**
@@ -82,4 +89,19 @@ public class CommentaryTriggerBuilder {
         Integer value = ctx.getAs(key, Integer.class);
         return value != null ? value : 0;
     }
+
+    private static Map<String, Object> extractCbrContext(CaseContext ctx) {
+        Boolean influenced   = ctx.getAs(QuarkMindCaseFile.CBR_INFLUENCED_SELECTION, Boolean.class);
+        Integer similarCount = ctx.getAs(QuarkMindCaseFile.TEMPORAL_SIMILAR_COUNT, Integer.class);
+        String  prediction   = ctx.getAs(QuarkMindCaseFile.TEMPORAL_PREDICTION, String.class);
+        if (influenced == null && similarCount == null && prediction == null) {
+            return null;
+        }
+        var cbr = new LinkedHashMap<String, Object>();
+        if (influenced != null) {cbr.put("influenced", influenced);}
+        if (similarCount != null) {cbr.put("similarCount", similarCount);}
+        if (prediction != null) {cbr.put("prediction", prediction);}
+        return cbr;
+    }
+
 }
