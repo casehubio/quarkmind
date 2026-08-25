@@ -52,3 +52,5 @@ package-lock.json
 proj
 **/data/
 **/replays/sc2egset/
+.mvn/maven.config
+.mvn/slot-settings.xml
