@@ -2,23 +2,22 @@ package io.quarkmind.chat.agent;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.casehub.blocks.agentic.social.InnerLifeOrchestrator;
+import io.casehub.blocks.agentic.social.InnerLifeTick;
+import io.casehub.blocks.agentic.social.drive.DriveOrchestrator;
+import io.casehub.blocks.summarisation.EventLevel;
+import io.casehub.blocks.summarisation.LevelEvent;
 import io.casehub.connectors.chat.model.ChatChannelRef;
 import io.casehub.connectors.chat.model.ChatContent;
 import io.casehub.connectors.chat.model.ChatMessageRef;
 import io.casehub.neocortex.memory.Memory;
 import io.casehub.neocortex.memory.personality.PersonalityWeights;
-import io.casehub.neocortex.memory.reflection.ReflectionOrchestrator;
 import io.quarkmind.agency.AgencyContext;
 import io.quarkmind.agency.AgencyLoop;
-import io.quarkmind.agency.chat.BotIdentityDetector;
 import io.quarkmind.agency.chat.ChatDeltaReport;
 import io.quarkmind.agency.llm.LlmPriority;
 import io.quarkmind.agency.llm.LlmRequest;
 import io.quarkmind.agency.llm.LlmRequestQueue;
-import io.casehub.eidos.api.AgentDescriptor;
-import io.casehub.eidos.api.DispositionEvolution;
-import io.quarkmind.agency.personality.PersonalityEvolutionPipeline;
-import io.quarkmind.agency.schedule.IdleReflectionTrigger;
 import io.quarkmind.chat.protocol.ChatIntent;
 import io.quarkmind.chat.protocol.ChatPerception;
 import io.quarkmind.chat.protocol.WakeReason;
@@ -34,7 +33,8 @@ import java.util.Set;
 
 public class ChatAgencyLoop implements AgencyLoop {
 
-    private static final Logger LOG = Logger.getLogger(ChatAgencyLoop.class);
+    private static final Logger     LOG        = Logger.getLogger(ChatAgencyLoop.class);
+    private static final EventLevel CHAT_LEVEL = new EventLevel("chat", 0);
 
     @FunctionalInterface
     public interface LlmInvoker {
@@ -43,90 +43,38 @@ public class ChatAgencyLoop implements AgencyLoop {
 
     record ParsedResponse(List<ChatIntent> intents, String observation) {}
 
-    private final LlmInvoker llmInvoker;
-    private final BotIdentityDetector identityDetector;
-    private final LlmRequestQueue llmQueue;
-    private final ObjectMapper mapper;
-    private final ChatPerceptionBridge perceptionBridge;
-    private final ChatMemoryFacade memoryFacade;
-    private final IdleReflectionTrigger reflectionTrigger;
-    private final ReflectionOrchestrator reflectionOrchestrator;
-    private PersonalityEvolutionPipeline evolutionPipeline;
-    private java.util.function.Supplier<AgentDescriptor> descriptorSupplier;
-    private       LlmReflectionDispositionActivator dispositionActivator;
+    private final LlmInvoker            llmInvoker;
+    private final LlmRequestQueue       llmQueue;
+    private final ObjectMapper          mapper;
+    private final ChatPerceptionBridge  perceptionBridge;
+    private final ChatMemoryFacade      memoryFacade;
+    private final InnerLifeOrchestrator innerLifeOrchestrator;
+    private final DriveOrchestrator     driveOrchestrator;
 
-    private String systemPrompt = "";
-    private String agentId = "chat-agent";
-    private String tenantId = "default";
-    private final Set<String> participatedThreadIds = new HashSet<>();
-    private int consecutiveIdleTicks = 0;
-    private Instant lastReflectionTimestamp = Instant.now();
-
-    public ChatAgencyLoop(LlmInvoker llmInvoker, BotIdentityDetector identityDetector,
-                          LlmRequestQueue llmQueue, ObjectMapper mapper,
-                          ChatPerceptionBridge perceptionBridge) {
-        this(llmInvoker, identityDetector, llmQueue, mapper, perceptionBridge, null, null, null);
-    }
-
-    public ChatAgencyLoop(LlmInvoker llmInvoker, BotIdentityDetector identityDetector,
-                          LlmRequestQueue llmQueue, ObjectMapper mapper,
-                          ChatPerceptionBridge perceptionBridge,
+    public ChatAgencyLoop(LlmInvoker llmInvoker, LlmRequestQueue llmQueue,
+                          ObjectMapper mapper, ChatPerceptionBridge perceptionBridge,
                           ChatMemoryFacade memoryFacade,
-                          IdleReflectionTrigger reflectionTrigger) {
-        this(llmInvoker, identityDetector, llmQueue, mapper, perceptionBridge,
-                memoryFacade, reflectionTrigger, null);
+                          InnerLifeOrchestrator innerLifeOrchestrator,
+                          DriveOrchestrator driveOrchestrator) {
+        this.llmInvoker            = llmInvoker;
+        this.llmQueue              = llmQueue;
+        this.mapper                = mapper;
+        this.perceptionBridge      = perceptionBridge;
+        this.memoryFacade          = memoryFacade;
+        this.innerLifeOrchestrator = innerLifeOrchestrator;
+        this.driveOrchestrator     = driveOrchestrator;
     }
-
-    public ChatAgencyLoop(LlmInvoker llmInvoker, BotIdentityDetector identityDetector,
-                          LlmRequestQueue llmQueue, ObjectMapper mapper,
-                          ChatPerceptionBridge perceptionBridge,
-                          ChatMemoryFacade memoryFacade,
-                          IdleReflectionTrigger reflectionTrigger,
-                          ReflectionOrchestrator reflectionOrchestrator) {
-        this.llmInvoker = llmInvoker;
-        this.identityDetector = identityDetector;
-        this.llmQueue = llmQueue;
-        this.mapper = mapper;
-        this.perceptionBridge = perceptionBridge;
-        this.memoryFacade = memoryFacade;
-        this.reflectionTrigger = reflectionTrigger;
-        this.reflectionOrchestrator = reflectionOrchestrator;
-    }
-
-    public ChatAgencyLoop(LlmInvoker llmInvoker, BotIdentityDetector identityDetector,
-                          LlmRequestQueue llmQueue, ObjectMapper mapper,
-                          ChatPerceptionBridge perceptionBridge,
-                          ChatMemoryFacade memoryFacade,
-                          IdleReflectionTrigger reflectionTrigger,
-                          ReflectionOrchestrator reflectionOrchestrator,
-                          PersonalityEvolutionPipeline evolutionPipeline,
-                          java.util.function.Supplier<AgentDescriptor> descriptorSupplier) {
-        this(llmInvoker, identityDetector, llmQueue, mapper, perceptionBridge,
-             memoryFacade, reflectionTrigger, reflectionOrchestrator);
-        this.evolutionPipeline  = evolutionPipeline;
-        this.descriptorSupplier = descriptorSupplier;
-    }
-
-
-    public void setSystemPrompt(String prompt) { this.systemPrompt = prompt; }
-    public void setAgentId(String id) { this.agentId = id; }
-    public void setTenantId(String id) { this.tenantId = id; }
-
-    public void setDispositionActivator(LlmReflectionDispositionActivator activator) {
-        this.dispositionActivator = activator;
-    }
-
 
     @Override
     public void tick(AgencyContext context) {
         var perception = context.getAs("perception", ChatPerception.class);
-        if (perception == null) return;
+        if (perception == null) {return;}
+
+        var character = context.getAs("character", CharacterContext.class);
+        if (character == null) {return;}
 
         if (perception.reason() == WakeReason.HEARTBEAT && !perception.hasActivity()) {
-            consecutiveIdleTicks++;
-            checkReflection();
-            checkEvolution();
-            context.put("intents", List.of());
+            handleProactiveTick(context, character);
             return;
         }
 
@@ -135,40 +83,89 @@ public class ChatAgencyLoop implements AgencyLoop {
             return;
         }
 
-        consecutiveIdleTicks = 0;
+        handleReactiveTick(context, perception, character);
+    }
+
+    private void handleReactiveTick(AgencyContext context, ChatPerception perception,
+                                    CharacterContext character) {
+        var descriptor = character.descriptorSupplier() != null
+                         ? character.descriptorSupplier().get() : null;
+
+        if (innerLifeOrchestrator != null && descriptor != null) {
+            var event = new LevelEvent<>(renderPerceptionSummary(perception), System.currentTimeMillis(), CHAT_LEVEL);
+            innerLifeOrchestrator.observe(event, descriptor);
+        }
 
         ChatDeltaReport report = perceptionBridge.buildDelta(
-                perception, identityDetector, participatedThreadIds);
+                perception, character.identityDetector(), character.participatedThreadIds());
         String renderedContext = perceptionBridge.renderForLlm(report);
 
         List<Memory> memories = List.of();
         if (memoryFacade != null) {
             var participantIds = extractParticipantIds(perception);
-            memories = memoryFacade.recall(agentId, tenantId, renderedContext,
-                    participantIds, new PersonalityWeights(Map.of()), Instant.now());
+            memories = memoryFacade.recall(character.agentId(), character.tenantId(),
+                                           renderedContext, participantIds, new PersonalityWeights(Map.of()), Instant.now());
         }
 
-        String userPrompt = buildUserPrompt(renderedContext, context, memories);
-        String response = llmInvoker.invoke(systemPrompt, userPrompt, agentId);
-        ParsedResponse parsed = parseResponse(response);
+        String         userPrompt = buildUserPrompt(renderedContext, character, memories);
+        String         response   = llmInvoker.invoke(character.systemPrompt(), userPrompt, character.agentId());
+        ParsedResponse parsed     = parseResponse(response);
         context.put("intents", parsed.intents());
 
+        if (innerLifeOrchestrator != null && descriptor != null && !parsed.intents().isEmpty()) {
+            innerLifeOrchestrator.observeResponse(descriptor);
+        }
+
         if (memoryFacade != null && parsed.observation() != null && !parsed.observation().isBlank()) {
-            var sourceRefs = buildSourceRefs(perception);
+            var sourceRefs     = buildSourceRefs(perception);
             var participantIds = extractParticipantIds(perception);
-            String memoryId = memoryFacade.ingest(agentId, tenantId,
-                    parsed.observation(), sourceRefs, participantIds);
-            submitImportanceScoring(memoryId, parsed.observation());
+            String memoryId = memoryFacade.ingest(character.agentId(), character.tenantId(),
+                                                  parsed.observation(), sourceRefs, participantIds);
+            submitImportanceScoring(character, memoryId, parsed.observation());
         }
     }
 
-    private String buildUserPrompt(String renderedContext, AgencyContext context,
-                                    List<Memory> memories) {
+    private void handleProactiveTick(AgencyContext context, CharacterContext character) {
+        if (innerLifeOrchestrator == null) {
+            context.put("intents", List.of());
+            return;
+        }
+        var descriptor = character.descriptorSupplier() != null
+                         ? character.descriptorSupplier().get() : null;
+        if (descriptor == null) {
+            context.put("intents", List.of());
+            return;
+        }
+        String channelContext = character.worldBridge() != null
+                                ? "Watched channels: " + String.join(", ", character.worldBridge().watchedChannels())
+                                : null;
+        var result = innerLifeOrchestrator.tick(descriptor, channelContext);
+        if (result instanceof InnerLifeTick.Initiated initiated) {
+            String channel = initiated.channelHint();
+            if (channel == null && character.worldBridge() != null
+                && !character.worldBridge().watchedChannels().isEmpty()) {
+                channel = character.worldBridge().watchedChannels().get(0);
+            }
+            if (channel != null) {
+                var intents = List.<ChatIntent>of(
+                        new ChatIntent.Send(channel, new ChatContent(initiated.content())));
+                context.put("intents", intents);
+            } else {
+                context.put("intents", List.of());
+            }
+        } else {
+            context.put("intents", List.of());
+        }
+    }
+
+    private String buildUserPrompt(String renderedContext, CharacterContext character,
+                                   List<Memory> memories) {
         var sb = new StringBuilder();
-        sb.append("Needs: SOCIAL=%.0f, CURIOSITY=%.0f, EXPRESSION=%.0f\n".formatted(
-                context.needState().get("SOCIAL"),
-                context.needState().get("CURIOSITY"),
-                context.needState().get("EXPRESSION")));
+
+        if (driveOrchestrator != null) {
+            var drives = driveOrchestrator.currentDrives(character.agentId(), character.tenantId());
+            drives.ifPresent(dp -> sb.append("Drives: ").append(dp).append("\n"));
+        }
 
         if (!memories.isEmpty()) {
             sb.append("\nWhat I remember:\n");
@@ -179,16 +176,16 @@ public class ChatAgencyLoop implements AgencyLoop {
 
         sb.append("\n").append(renderedContext);
         sb.append("""
-
-                Respond with JSON:
-                {"action":"SEND|REPLY|REACT|WAIT","channel":"channel-id","text":"message","emoji":"emoji","messageId":"id-to-react-to","replyTo":"message-id","observation":"what I observed this tick"}
-                Always include the observation field. Only include other fields relevant to the action.
-                """);
+                  
+                  Respond with JSON:
+                  {"action":"SEND|REPLY|REACT|WAIT","channel":"channel-id","text":"message","emoji":"emoji","messageId":"id-to-react-to","replyTo":"message-id","observation":"what I observed this tick"}
+                  Always include the observation field. Only include other fields relevant to the action.
+                  """);
         return sb.toString();
     }
 
     ParsedResponse parseResponse(String response) {
-        var intents = new ArrayList<ChatIntent>();
+        var    intents     = new ArrayList<ChatIntent>();
         String observation = null;
         try {
             JsonNode root = mapper.readTree(response);
@@ -203,14 +200,14 @@ public class ChatAgencyLoop implements AgencyLoop {
             switch (action.toUpperCase()) {
                 case "SEND" -> {
                     String channel = root.has("channel") ? root.get("channel").asText() : null;
-                    String text = root.has("text") ? root.get("text").asText() : null;
+                    String text    = root.has("text") ? root.get("text").asText() : null;
                     if (channel != null && text != null) {
                         intents.add(new ChatIntent.Send(channel, new ChatContent(text)));
                     }
                 }
                 case "REPLY" -> {
                     String replyTo = root.has("replyTo") ? root.get("replyTo").asText() : null;
-                    String text = root.has("text") ? root.get("text").asText() : null;
+                    String text    = root.has("text") ? root.get("text").asText() : null;
                     if (replyTo != null && text != null) {
                         var parentRef = new ChatMessageRef(new ChatChannelRef(""), replyTo);
                         intents.add(new ChatIntent.Reply(parentRef, new ChatContent(text)));
@@ -232,57 +229,31 @@ public class ChatAgencyLoop implements AgencyLoop {
         return new ParsedResponse(intents, observation);
     }
 
-
-    private void checkReflection() {
-        if (reflectionTrigger == null || reflectionOrchestrator == null) {return;}
-        if (!reflectionTrigger.shouldReflect(consecutiveIdleTicks)) {return;}
-        try {
-            reflectionOrchestrator.reflect(agentId, tenantId, lastReflectionTimestamp, 50);
-            lastReflectionTimestamp = Instant.now();
-            reflectionTrigger.reset();
-        } catch (Exception e) {
-            LOG.warn("Reflection failed", e);
-        }
-    }
-
-    private void checkEvolution() {
-        if (evolutionPipeline == null || descriptorSupplier == null) {return;}
-        try {
-            var descriptor = descriptorSupplier.get();
-            var result     = evolutionPipeline.checkEvolution(descriptor);
-            result.ifPresent(r -> {
-                if (r instanceof DispositionEvolution.EvolutionResult.Evolved evolved) {
-                    LOG.infof("Personality evolved: %s → %s", evolved.previousTypeLabel(), evolved.newTypeLabel());
-                    if (dispositionActivator != null) {
-                        dispositionActivator.updateProfile(evolved.newProfile());
-                    }
-                } else if (r instanceof DispositionEvolution.EvolutionResult.Dampened dampened) {
-                    LOG.infof("Personality evolution dampened (decay=%.2f)", dampened.decayFactor());
-                }
-            });
-        } catch (Exception e) {
-            LOG.warn("Evolution check failed", e);
-        }
-    }
-
-
-    private void submitImportanceScoring(String memoryId, String observation) {
+    private void submitImportanceScoring(CharacterContext character, String memoryId, String observation) {
         String prompt = "Rate the importance of this experience on a scale of 0.0 to 1.0, " +
-                "where 0.0 is mundane and 1.0 is life-changing. Respond with a single number.\n\n" +
-                "Experience: " + observation;
+                        "where 0.0 is mundane and 1.0 is life-changing. Respond with a single number.\n\n" +
+                        "Experience: " + observation;
         llmQueue.submit(new LlmRequest(prompt, LlmPriority.LOW, Map.of(), response -> {
             try {
                 double score = Double.parseDouble(response.trim());
-                if (score >= 0.0 && score <= 1.0) {
-                    memoryFacade.scoreImportance(memoryId, tenantId, score);
-                    if (reflectionTrigger != null) {
-                        reflectionTrigger.accumulate(score);
-                    }
+                if (score >= 0.0 && score <= 1.0 && memoryFacade != null) {
+                    memoryFacade.scoreImportance(memoryId, character.tenantId(), score);
                 }
             } catch (Exception e) {
                 LOG.warn("Importance scoring failed for memory " + memoryId, e);
             }
         }));
+    }
+
+    private String renderPerceptionSummary(ChatPerception perception) {
+        var sb = new StringBuilder();
+        for (var entry : perception.channelDeltas().entrySet()) {
+            for (var msg : entry.getValue()) {
+                sb.append(msg.sender() != null ? msg.sender().id() : "unknown")
+                  .append(": ").append(msg.content().text()).append("\n");
+            }
+        }
+        return sb.toString();
     }
 
     private Set<String> extractParticipantIds(ChatPerception perception) {

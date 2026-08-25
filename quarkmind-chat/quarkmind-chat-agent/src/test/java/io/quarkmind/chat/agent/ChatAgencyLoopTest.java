@@ -16,7 +16,6 @@ import io.quarkmind.agency.llm.LlmPriority;
 import io.quarkmind.agency.llm.LlmRequest;
 import io.quarkmind.agency.llm.LlmRequestQueue;
 import io.quarkmind.agency.needs.NeedState;
-import io.quarkmind.agency.schedule.IdleReflectionTrigger;
 import io.quarkmind.chat.protocol.ChatIntent;
 import io.quarkmind.chat.protocol.ChatPerception;
 import io.quarkmind.chat.protocol.WakeReason;
@@ -37,20 +36,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ChatAgencyLoopTest {
 
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final BotIdentityDetector detector = stubDetector();
+    private final ObjectMapper    mapper   = new ObjectMapper();
     private final LlmRequestQueue llmQueue = stubLlmQueue(true);
 
     @Test
     void tickProducesIntentsFromLlmResponse() {
         var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                "{\"action\":\"SEND\",\"channel\":\"ch-1\",\"text\":\"hello back\"}";
+                                                      "{\"action\":\"SEND\",\"channel\":\"ch-1\",\"text\":\"hello back\"}";
 
-        var loop = createLoop(llm);
-        loop.setSystemPrompt("You are a friendly bot.");
-
+        var loop       = createLoop(llm);
         var perception = perceptionWithMessage("hello", "ch-1");
-        var context = contextWith(perception);
+        var context    = contextWith(perception);
         loop.tick(context);
 
         @SuppressWarnings("unchecked")
@@ -63,12 +59,9 @@ class ChatAgencyLoopTest {
 
     @Test
     void heartbeatWithNoActivityProducesNoIntents() {
-        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                "{\"action\":\"WAIT\"}";
-
-        var loop = createLoop(llm);
+        var loop       = createLoop((s, u, id) -> "{\"action\":\"WAIT\"}");
         var perception = new ChatPerception(Map.of(), Map.of(), WakeReason.HEARTBEAT);
-        var context = contextWith(perception);
+        var context    = contextWith(perception);
         loop.tick(context);
 
         @SuppressWarnings("unchecked")
@@ -84,11 +77,12 @@ class ChatAgencyLoopTest {
             return "{\"action\":\"WAIT\"}";
         };
 
-        var loop = new ChatAgencyLoop(llm, detector, stubLlmQueue(false), mapper,
-                new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)));
+        var loop = new ChatAgencyLoop(llm, stubLlmQueue(false), mapper,
+                                      new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)),
+                                      null, null, null);
 
         var perception = perceptionWithMessage("hi", "ch");
-        var context = contextWith(perception);
+        var context    = contextWith(perception);
         loop.tick(context);
         assertFalse(invoked.get());
     }
@@ -96,10 +90,10 @@ class ChatAgencyLoopTest {
     @Test
     void parsesReactIntent() {
         var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                "{\"action\":\"REACT\",\"messageId\":\"m1\",\"emoji\":\"👀\"}";
-        var loop = createLoop(llm);
+                                                      "{\"action\":\"REACT\",\"messageId\":\"m1\",\"emoji\":\"👀\"}";
+        var loop       = createLoop(llm);
         var perception = perceptionWithMessage("interesting", "ch");
-        var context = contextWith(perception);
+        var context    = contextWith(perception);
         loop.tick(context);
 
         @SuppressWarnings("unchecked")
@@ -112,10 +106,10 @@ class ChatAgencyLoopTest {
     @Test
     void parsesReplyIntent() {
         var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                "{\"action\":\"REPLY\",\"replyTo\":\"m1\",\"text\":\"sure thing\"}";
-        var loop = createLoop(llm);
+                                                      "{\"action\":\"REPLY\",\"replyTo\":\"m1\",\"text\":\"sure thing\"}";
+        var loop       = createLoop(llm);
         var perception = perceptionWithMessage("can you help?", "ch");
-        var context = contextWith(perception);
+        var context    = contextWith(perception);
         loop.tick(context);
 
         @SuppressWarnings("unchecked")
@@ -127,11 +121,9 @@ class ChatAgencyLoopTest {
 
     @Test
     void waitActionProducesEmptyIntents() {
-        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                "{\"action\":\"WAIT\"}";
-        var loop = createLoop(llm);
+        var loop       = createLoop((s, u, id) -> "{\"action\":\"WAIT\"}");
         var perception = perceptionWithMessage("hey", "ch");
-        var context = contextWith(perception);
+        var context    = contextWith(perception);
         loop.tick(context);
 
         @SuppressWarnings("unchecked")
@@ -142,11 +134,9 @@ class ChatAgencyLoopTest {
 
     @Test
     void malformedJsonProducesEmptyIntents() {
-        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                "this is not json at all";
-        var loop = createLoop(llm);
+        var loop       = createLoop((s, u, id) -> "this is not json at all");
         var perception = perceptionWithMessage("hey", "ch");
-        var context = contextWith(perception);
+        var context    = contextWith(perception);
         loop.tick(context);
 
         @SuppressWarnings("unchecked")
@@ -158,16 +148,28 @@ class ChatAgencyLoopTest {
     @Test
     void noPerceptionSkipsTick() {
         var invoked = new AtomicBoolean(false);
-        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) -> {
+        var loop = createLoop((s, u, id) -> {
             invoked.set(true);
             return "{\"action\":\"WAIT\"}";
-        };
-        var loop = createLoop(llm);
+        });
         var context = new AgencyContext(new NeedState());
+        context.put("character", stubCharacter());
         loop.tick(context);
         assertFalse(invoked.get());
     }
 
+    @Test
+    void noCharacterSkipsTick() {
+        var invoked = new AtomicBoolean(false);
+        var loop = createLoop((s, u, id) -> {
+            invoked.set(true);
+            return "{\"action\":\"WAIT\"}";
+        });
+        var context = new AgencyContext(new NeedState());
+        context.put("perception", perceptionWithMessage("hi", "ch"));
+        loop.tick(context);
+        assertFalse(invoked.get());
+    }
 
     @Test
     void tickRetrievesMemoriesBeforeLlm() {
@@ -182,9 +184,8 @@ class ChatAgencyLoopTest {
             }
         };
 
-        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                                                      "{\"action\":\"WAIT\",\"observation\":\"Saw a greeting\"}";
-        var loop = createLoopWithMemory(llm, facade);
+        var loop = createLoopWithMemory((s, u, id) ->
+                                                "{\"action\":\"WAIT\",\"observation\":\"Saw a greeting\"}", facade);
         loop.tick(contextWith(perceptionWithMessage("hi", "ch")));
         assertTrue(recallCalled.get());
     }
@@ -194,10 +195,8 @@ class ChatAgencyLoopTest {
         var store  = new ChatMemoryFacadeTest.RecordingMemoryStore();
         var facade = new ChatMemoryFacade(store, store, false);
 
-        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                                                      "{\"action\":\"SEND\",\"channel\":\"ch-1\",\"text\":\"hi\",\"observation\":\"Greeted the channel\"}";
-        var loop = createLoopWithMemory(llm, facade);
-        loop.setAgentId("agent-1");
+        var loop = createLoopWithMemory((s, u, id) ->
+                                                "{\"action\":\"SEND\",\"channel\":\"ch-1\",\"text\":\"hi\",\"observation\":\"Greeted the channel\"}", facade);
         loop.tick(contextWith(perceptionWithMessage("hello", "ch-1")));
 
         assertEquals(1, store.stored.size());
@@ -220,12 +219,11 @@ class ChatAgencyLoopTest {
             public boolean hasCapacity()     {return true;}
         };
 
-        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                                                      "{\"action\":\"WAIT\",\"observation\":\"Nothing happened\"}";
-        var loop = new ChatAgencyLoop(llm, detector, queue, mapper,
+        var loop = new ChatAgencyLoop((s, u, id) ->
+                                              "{\"action\":\"WAIT\",\"observation\":\"Nothing happened\"}",
+                                      queue, mapper,
                                       new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)),
-                                      facade, new IdleReflectionTrigger(3.0, 5));
-        loop.setAgentId("agent-1");
+                                      facade, null, null);
         loop.tick(contextWith(perceptionWithMessage("hey", "ch")));
 
         assertTrue(submitted.stream().anyMatch(r ->
@@ -237,10 +235,8 @@ class ChatAgencyLoopTest {
         var store  = new ChatMemoryFacadeTest.RecordingMemoryStore();
         var facade = new ChatMemoryFacade(store, store, false);
 
-        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                                                      "{\"action\":\"WAIT\",\"observation\":\"Everyone was quiet, I decided to observe\"}";
-        var loop = createLoopWithMemory(llm, facade);
-        loop.setAgentId("agent-1");
+        var loop = createLoopWithMemory((s, u, id) ->
+                                                "{\"action\":\"WAIT\",\"observation\":\"Everyone was quiet, I decided to observe\"}", facade);
         loop.tick(contextWith(perceptionWithMessage("...", "ch")));
 
         assertEquals(1, store.stored.size());
@@ -256,179 +252,90 @@ class ChatAgencyLoopTest {
         var facade = new ChatMemoryFacade(store, store, false);
 
         var capturedPrompt = new AtomicBoolean(false);
-        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) -> {
+        var loop = createLoopWithMemory((system, user, id) -> {
             if (user.contains("What I remember") && user.contains("Bob likes NLP")) {
                 capturedPrompt.set(true);
             }
             return "{\"action\":\"WAIT\",\"observation\":\"Recalled memories\"}";
-        };
-        var loop = createLoopWithMemory(llm, facade);
-        loop.setAgentId("agent-1");
+        }, facade);
         loop.tick(contextWith(perceptionWithMessage("hello", "ch")));
 
         assertTrue(capturedPrompt.get());
     }
 
-
     @Test
-    void heartbeatTriggersReflectionWhenThresholdMet() {
-        var store   = new ChatMemoryFacadeTest.RecordingMemoryStore();
-        var facade  = new ChatMemoryFacade(store, store, false);
-        var trigger = new IdleReflectionTrigger(1.0, 2);
-        trigger.accumulate(1.5);
-
-        var reflectCalled = new AtomicBoolean(false);
-        io.casehub.neocortex.memory.reflection.ReflectionOrchestrator orchestrator =
-                (agentId, tenantId, since, max) -> {
-                    reflectCalled.set(true);
-                    return List.of();
-                };
-
-        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                                                      "{\"action\":\"WAIT\",\"observation\":\"idle\"}";
-        var loop = new ChatAgencyLoop(llm, detector, llmQueue, mapper,
-                                      new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)),
-                                      facade, trigger, orchestrator);
-
-        var heartbeat = new ChatPerception(Map.of(), Map.of(), WakeReason.HEARTBEAT);
-        for (int i = 0; i < 3; i++) {
-            loop.tick(contextWith(heartbeat));
-        }
-
-        assertTrue(reflectCalled.get());
-        assertFalse(trigger.shouldReflect(10));
-    }
-
-    @Test
-    void idleTickChecksPersonalityEvolution() {
-        var store   = new ChatMemoryFacadeTest.RecordingMemoryStore();
-        var facade  = new ChatMemoryFacade(store, store, false);
-        var trigger = new IdleReflectionTrigger(100.0, 100);
-
-        var evolutionChecked = new AtomicBoolean(false);
-        var pipeline = new io.quarkmind.agency.personality.PersonalityEvolutionPipeline(
-                (desc, ctx) -> {
-                    evolutionChecked.set(true);
-                    return new io.casehub.eidos.api.DispositionHealth.DispositionStatus.Aligned(Map.of());
-                },
-                (desc, pending) -> {throw new AssertionError("should not be called");},
-                new LlmReflectionDispositionActivatorTest.RecordingSignalStore());
-
-        var descriptor = io.casehub.eidos.api.AgentDescriptor.builder()
-                                                             .agentId("agent-1").name("Test").slot("chat").tenancyId("t1")
-                                                             .disposition(io.casehub.eidos.api.AgentDisposition.builder()
-                                                                                                               .dispositionProfile(new io.casehub.eidos.api.DispositionValue("empathetic", 0.5))
-                                                                                                               .build())
-                                                             .build();
-
-        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                                                      "{\"action\":\"WAIT\",\"observation\":\"idle\"}";
-        var loop = new ChatAgencyLoop(llm, detector, llmQueue, mapper,
-                                      new DefaultChatPerceptionBridge(new io.quarkmind.agency.chat.ChatObservationRenderer(10)),
-                                      facade, trigger, null, pipeline, () -> descriptor);
-
-        var heartbeat = new ChatPerception(Map.of(), Map.of(), WakeReason.HEARTBEAT);
-        loop.tick(contextWith(heartbeat));
-
-        assertTrue(evolutionChecked.get());
-    }
-
-    @Test
-    void evolvedResultUpdatesActivatorProfile() {
-        var store       = new ChatMemoryFacadeTest.RecordingMemoryStore();
-        var facade      = new ChatMemoryFacade(store, store, false);
-        var trigger     = new IdleReflectionTrigger(100.0, 100);
-        var signalStore = new LlmReflectionDispositionActivatorTest.RecordingSignalStore();
-
-        var newProfile = List.of(
-                new io.casehub.eidos.api.DispositionValue("curious", 0.6),
-                new io.casehub.eidos.api.DispositionValue("empathetic", 0.4));
-
-        var pipeline = new io.quarkmind.agency.personality.PersonalityEvolutionPipeline(
-                (desc, ctx) -> new io.casehub.eidos.api.DispositionHealth.DispositionStatus.EvolutionPending(
-                        () -> "DOMINANT_AUXILIARY_SWAP", "curious", Map.of()),
-                (desc, pending) -> new io.casehub.eidos.api.DispositionEvolution.EvolutionResult.Evolved(
-                        newProfile, "EMPATHETIC-CURIOUS", "CURIOUS-EMPATHETIC"),
-                signalStore);
-
-        var submitted = new ArrayList<io.quarkmind.agency.llm.LlmRequest>();
-        var activatorQueue = new LlmRequestQueue() {
-            @Override
-            public void submit(io.quarkmind.agency.llm.LlmRequest r) {submitted.add(r);}
-
-            @Override
-            public int pendingCount()                                {return 0;}
-
-            @Override
-            public boolean hasCapacity()                             {return true;}
-        };
-        var activator = new LlmReflectionDispositionActivator(
-                activatorQueue, signalStore,
-                List.of(new io.casehub.eidos.api.DispositionValue("empathetic", 0.6)));
-
-        var descriptor = io.casehub.eidos.api.AgentDescriptor.builder()
-                                                             .agentId("agent-1").name("Test").slot("chat").tenancyId("t1")
-                                                             .disposition(io.casehub.eidos.api.AgentDisposition.builder()
-                                                                                                               .dispositionProfile(new io.casehub.eidos.api.DispositionValue("empathetic", 0.6),
-                                                                                                                                   new io.casehub.eidos.api.DispositionValue("curious", 0.4))
-                                                                                                               .build())
-                                                             .build();
-
-        var llm = (ChatAgencyLoop.LlmInvoker) (system, user, id) ->
-                                                      "{\"action\":\"WAIT\",\"observation\":\"idle\"}";
-        var loop = new ChatAgencyLoop(llm, detector, llmQueue, mapper,
-                                      new DefaultChatPerceptionBridge(new io.quarkmind.agency.chat.ChatObservationRenderer(10)),
-                                      facade, trigger, null, pipeline, () -> descriptor);
-        loop.setDispositionActivator(activator);
-
-        var heartbeat = new ChatPerception(Map.of(), Map.of(), WakeReason.HEARTBEAT);
-        loop.tick(contextWith(heartbeat));
-
-        // After evolution, activator profile should be updated — verify by triggering a classification
-        activator.onReflection("agent-1", "t1", "test insight");
-        assertFalse(submitted.isEmpty());
-        assertTrue(submitted.get(0).prompt().contains("curious"));
+    void agentIdFromCharacterContextPassedToLlm() {
+        var capturedId = new java.util.concurrent.atomic.AtomicReference<String>();
+        var loop = createLoop((system, user, id) -> {
+            capturedId.set(id);
+            return "{\"action\":\"WAIT\",\"observation\":\"idle\"}";
+        });
+        var character = new CharacterContext("luna", "server-1", "You are Luna.",
+                                             null, stubDetector());
+        var context = contextWith(perceptionWithMessage("hi", "ch"), character);
+        loop.tick(context);
+        assertEquals("luna", capturedId.get());
     }
 
 
     private ChatAgencyLoop createLoop(ChatAgencyLoop.LlmInvoker llm) {
-        return new ChatAgencyLoop(llm, detector, llmQueue, mapper,
-                new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)));
+        return new ChatAgencyLoop(llm, llmQueue, mapper,
+                                  new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)),
+                                  null, null, null);
     }
 
     private ChatAgencyLoop createLoopWithMemory(ChatAgencyLoop.LlmInvoker llm, ChatMemoryFacade facade) {
-        return new ChatAgencyLoop(llm, detector, llmQueue, mapper,
+        return new ChatAgencyLoop(llm, llmQueue, mapper,
                                   new DefaultChatPerceptionBridge(new ChatObservationRenderer(10)),
-                                  facade, new IdleReflectionTrigger(3.0, 5));
+                                  facade, null, null);
     }
 
+    private CharacterContext stubCharacter() {
+        return new CharacterContext("chat-agent", "default", "You are a bot.",
+                                    null, stubDetector());
+    }
 
     private ChatPerception perceptionWithMessage(String text, String channelId) {
         var msg = new ReceivedMessage("discord", new ChatChannelRef(channelId),
-                new ChatMessageRef(new ChatChannelRef(channelId), "m1"), null,
-                new MemberRef("user-1"), new ChatContent(text), Instant.now());
+                                      new ChatMessageRef(new ChatChannelRef(channelId), "m1"), null,
+                                      new MemberRef("user-1"), new ChatContent(text), Instant.now());
         return new ChatPerception(Map.of(channelId, List.of(msg)), Map.of(), WakeReason.MESSAGE);
     }
 
     private AgencyContext contextWith(ChatPerception perception) {
+        return contextWith(perception, stubCharacter());
+    }
+
+    private AgencyContext contextWith(ChatPerception perception, CharacterContext character) {
         var context = new AgencyContext(new NeedState());
         context.put("perception", perception);
+        context.put("character", character);
         return context;
     }
 
     private BotIdentityDetector stubDetector() {
         return new BotIdentityDetector() {
-            @Override public boolean isMention(ReceivedMessage msg) { return false; }
-            @Override public boolean isReplyToBot(ReceivedMessage msg) { return false; }
-            @Override public String botUserId() { return "bot-id"; }
+            @Override
+            public boolean isMention(ReceivedMessage msg)    {return false;}
+
+            @Override
+            public boolean isReplyToBot(ReceivedMessage msg) {return false;}
+
+            @Override
+            public String botUserId()                        {return "bot-id";}
         };
     }
 
     private LlmRequestQueue stubLlmQueue(boolean hasCapacity) {
         return new LlmRequestQueue() {
-            @Override public void submit(LlmRequest request) {}
-            @Override public int pendingCount() { return hasCapacity ? 0 : 100; }
-            @Override public boolean hasCapacity() { return hasCapacity; }
+            @Override
+            public void submit(LlmRequest request) {}
+
+            @Override
+            public int pendingCount()              {return hasCapacity ? 0 : 100;}
+
+            @Override
+            public boolean hasCapacity()           {return hasCapacity;}
         };
     }
 }

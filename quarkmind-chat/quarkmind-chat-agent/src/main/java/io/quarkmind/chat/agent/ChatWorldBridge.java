@@ -39,6 +39,9 @@ public class ChatWorldBridge implements WorldBridge<ChatPerception, ChatIntent> 
     public void setThreading(Threading threading) { this.threading = threading; }
     public void setReactions(Reactions reactions) { this.reactions = reactions; }
 
+    public List<String> watchedChannels()         {return watchedChannels;}
+
+
     @Override
     public void connect() {}
 
