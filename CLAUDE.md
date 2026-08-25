@@ -316,7 +316,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - Tests: (continued) `PatternConfidenceTest`, `DominanceWeightsTest`, `AnchorInterpolatorTest`, `TemporalDominanceWeightStrategyTest`, `SituationalDominanceWeightStrategyTest`, `DroolsDominanceWeightStrategyTest`, `UnitTypeTest`, `StrategyArchetypeTest`, `GamePhaseTest`, `ArchetypeCategoryTest`, `StrategyTaxonomyTest`, `TimeBasedPhaseResolverTest`, `StateBasedPhaseResolverTest`, `PhaseResolverProducerTest`, `SC2GameCbrCaseTest`, `SC2CbrRetentionObserverTest`, `SC2AdvisoryCbrRetentionObserverTest`, `SC2ImplementationRoutingStrategyTest`, `SC2StrategyRouterTaskTest`, `ScoutingConvergenceEvaluatorTest`
 - Tests: (continued) `CoachingAdviceTest`, `CoachingDispositionTermTest`, `CoachingTriggerBuilderTest`, `CoachingSessionSelectorTest`, `CoachingWorkerFactoryTest`, `CoachingChannelBrokerTest`, `CoachingComplianceEvaluatorTest`, `CoachingStyleTest`, `CoachingAcknowledgmentHandlerTest`, `Point2dCentroidTest`, `UnitTypeWorkerTest`, `ExpansionLocationTest`, `TerrainGridRampTest`, `LocationResolverTest`, `CountDeltaTest`, `ArmyCentroidMovementTest`, `ExpansionPlacementTest`, `UnitsNearLocationTest`, `LlmPatternClassifierWorkerFactoryTest`, `ComplianceVerdictTest`, `ComplianceWorkerDispatcherTest`, `LlmComplianceWorkerFactoryTest`, `CbrLearningCurveEndpointTest`
 - Chat protocol tests: `ChatIntentTest`, `ChatPerceptionTest`
-- Chat agent tests: `DiscordIdentityDetectorTest`, `DiscordEventSourceTest`, `DiscordGatewayMessageHistoryTest`, `ChatWorldBridgeTest`, `ChatAgencyLoopTest`, `ChatNeedDefinitionsTest`, `ChatChannelPacingTest`, `ChatAgentEndToEndTest`, `ChatMemoryFacadeTest`, `LlmReflectionSynthesizerTest`, `LlmReflectionDispositionActivatorTest`, `DispositionAwareReflectionSynthesizerTest`
+- Chat agent tests: `DiscordIdentityDetectorTest`, `DiscordEventSourceTest`, `DiscordGatewayMessageHistoryTest`, `ChatWorldBridgeTest`, `ChatAgencyLoopTest`, `ChatAgentEndToEndTest`, `ChatMemoryFacadeTest`, `ChatCharacterManagerTest`
 - quarkmind-core chat tests: `AttentionClassifierTest`, `ChatDeltaReportTest`, `ChatObservationRendererTest`, `IdleReflectionTriggerTest`, `PersonalityEvolutionPipelineTest`
 - QuarkVille unit tests: `VilleIntentTest`, `VillePerceptionTest`, `WorldStateTest`, `GameTickTest`, `PerceptionBuilderTest`, `VilleAgencyLoopTest`, `VilleWorldBridgeTest`
 - Package-private static methods on CDI beans are tested from the same package without CDI — make them `static` (not `private`) to enable this.
@@ -410,7 +410,11 @@ quarkmind/                           ← parent POM
 │   └── godot/                       ← Godot 4 visual client
 ├── quarkmind-chat/                  ← Platform-agnostic chat bot harness (#279)
 │   ├── quarkmind-chat-protocol/     ← shared types (ChatIntent, ChatPerception, WakeReason)
-│   └── quarkmind-chat-agent/        ← agency loop, world bridge, Discord adapters
+│   └── quarkmind-chat-agent/        ← agency loop, world bridge, Discord adapters, multi-character manager
+│       CharacterContext             ← per-character identity + perception state
+│       ChatCharacterManager         ← manages N characters, routes ticks per agentId
+│       ChatAgencyLoop               ← stateless loop — reactive (LLM) + proactive (InnerLifeOrchestrator)
+│       CharacterConfig              ← per-character config record (agentId, token, channels)
 ├── quarkmind-minecraft/             ← Minecraft agent (stub)
 ├── quarkmind-evennia/               ← MUD agent (stub)
 ├── quarkmind-sonaria/               ← Roblox/Sonaria agent (stub)
