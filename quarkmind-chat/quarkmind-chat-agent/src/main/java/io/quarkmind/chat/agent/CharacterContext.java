@@ -3,7 +3,6 @@ package io.quarkmind.chat.agent;
 import io.casehub.eidos.api.AgentDescriptor;
 import io.quarkmind.agency.chat.BotIdentityDetector;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -14,7 +13,7 @@ public class CharacterContext {
     private final String systemPrompt;
     private final Supplier<AgentDescriptor> descriptorSupplier;
     private final BotIdentityDetector identityDetector;
-    private final Set<String> participatedThreadIds = new HashSet<>();
+    private final Set<String> participatedThreadIds = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private final ChatWorldBridge worldBridge;
 
     public CharacterContext(String agentId, String tenantId, String systemPrompt,
