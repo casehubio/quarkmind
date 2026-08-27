@@ -50,7 +50,7 @@ class CommentaryWorkerFactoryTest {
 
         assertThat(workers).hasSize(2); // Only the two reactive descriptors
         workers.forEach(w ->
-            assertThat(w.capabilityNames()).containsExactly("commentary-reactive"));
+            assertThat(w.capabilities()).containsExactly("commentary-reactive"));
     }
 
     @Test
@@ -67,7 +67,7 @@ class CommentaryWorkerFactoryTest {
 
         assertThat(workers).hasSize(2); // Only the two narrative descriptors
         workers.forEach(w ->
-            assertThat(w.capabilityNames()).containsExactly("commentary-narrative"));
+            assertThat(w.capabilities()).containsExactly("commentary-narrative"));
     }
 
     @Test

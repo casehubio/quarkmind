@@ -86,7 +86,7 @@ class QuarkMindCaseHubTest {
         Worker tickOrchestrator = def.getWorkers().stream()
             .filter(w -> w.name().equals("tick-orchestrator"))
             .findFirst().orElseThrow();
-        assertThat(tickOrchestrator.capabilityNames()).containsExactly("tick-decision");
+        assertThat(tickOrchestrator.capabilities()).containsExactly("tick-decision");
     }
 
     @Test
@@ -96,7 +96,7 @@ class QuarkMindCaseHubTest {
         CaseDefinition def = hub.getDefinition();
 
         List<Worker> strategyWorkers = def.getWorkers().stream()
-            .filter(w -> w.capabilityNames().contains("strategy"))
+            .filter(w -> w.capabilities().contains("strategy"))
             .toList();
 
         assertThat(strategyWorkers).isEmpty();

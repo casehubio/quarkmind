@@ -30,6 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -4183,10 +4184,13 @@ class VisualizerRenderTest {
              var page = context.newPage()) {
             page.navigate(pageUrl.toString());
             page.waitForFunction("() => window.__test && window.__test.terrainReady()");
-            // Use the Three.js renderer canvas (first canvas, direct child of body)
-            var box = page.locator("body > canvas").boundingBox();
-            assertThat(box.width).isGreaterThanOrEqualTo(1270.0);   // allow 1px rounding
-            assertThat(box.height).isGreaterThanOrEqualTo(710.0);
+            var container = page.locator("#wb-canvas").boundingBox();
+            var canvas = page.locator("#wb-canvas canvas:not([id])").boundingBox();
+            assertThat(canvas).as("Three.js canvas must exist inside #wb-canvas").isNotNull();
+            assertThat(canvas.width).as("canvas width must fill container")
+                .isCloseTo(container.width, within(2.0));
+            assertThat(canvas.height).as("canvas height must fill container")
+                .isCloseTo(container.height, within(2.0));
         }
     }
 

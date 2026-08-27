@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  *       -D exec.args="install chromium"
  */
 @QuarkusTest
-@Tag("browser")
+@Tag("diagnostic")
 class LiveServerScreenshotTest {
 
     private static final String LIVE_URL     = "http://localhost:8080/visualizer.html";
@@ -61,6 +61,15 @@ class LiveServerScreenshotTest {
 
     @Test
     void findOutlierObjects() throws Exception {
+        try {
+            java.net.HttpURLConnection c = (java.net.HttpURLConnection)
+                java.net.URI.create(LIVE_URL).toURL().openConnection();
+            c.setConnectTimeout(1000);
+            c.connect();
+            c.disconnect();
+        } catch (Exception e) {
+            assumeTrue(false, "Live dev server not running at " + LIVE_URL + " — skipping");
+        }
         Page page = browser.newPage();
 
         // 1. Open visualizer and wait for wsConnected

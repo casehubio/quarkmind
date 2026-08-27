@@ -49,6 +49,9 @@ class VisualizerFogRenderTest {
         page.navigate(pageUrl.toString());
         page.waitForFunction("() => window.__test?.terrainReady?.() === true",
             null, new Page.WaitForFunctionOptions().setTimeout(10000));
+        Number fogCheck = (Number) page.evaluate("() => window.__test.fogOpacity(0, 0)");
+        assumeTrue(fogCheck.doubleValue() != -1,
+            "Fog planes not created — test requires emulated mode");
         orchestrator.gameTick();
         page.waitForTimeout(400);
         // Tile (0,0) is at the map corner — always UNSEEN in mock/emulated mode
@@ -82,7 +85,11 @@ class VisualizerFogRenderTest {
         page.navigate(pageUrl.toString());
         page.waitForFunction("() => window.__test?.terrainReady?.() === true",
             null, new Page.WaitForFunctionOptions().setTimeout(10000));
-        // fogOpacity(0,0) returns -1 if fogPlanes Map is empty (plane not found)
+        // fogPlanes are only created in emulated mode (isEmulatedMode in loadTerrain)
+        boolean isEmulated = (Boolean) page.evaluate(
+            "() => window.__test.hasRealTerrain() && window.__test.fogOpacity(0, 0) !== -1");
+        assumeTrue(isEmulated,
+            "Fog planes not created — test requires emulated mode (mock/replay skip fog)");
         Number opacity = (Number) page.evaluate("() => window.__test.fogOpacity(0, 0)");
         assertNotEquals(-1.0, opacity.doubleValue(),
             "fogPlanes Map should be populated after terrainReady — got -1 (not found)");

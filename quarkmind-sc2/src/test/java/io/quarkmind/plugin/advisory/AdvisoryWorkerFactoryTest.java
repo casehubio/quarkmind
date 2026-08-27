@@ -82,12 +82,12 @@ class AdvisoryWorkerFactoryTest {
         List<Worker> workers = AdvisoryWorkerFactory.createWorkers(
                 advisoryDescriptors, stubModel, noOpCallback());
 
-        // Each worker's capabilityNames set should contain the descriptor's first capability name
+        // Each worker's capabilities set should contain the descriptor's first capability name
         for (int i = 0; i < workers.size(); i++) {
             Worker worker = workers.get(i);
             AgentDescriptor descriptor = advisoryDescriptors.get(i);
             String expectedCapability = descriptor.capabilities().get(0).name();
-            assertThat(worker.capabilityNames())
+            assertThat(worker.capabilities())
                     .as("Worker %s capability", worker.name())
                     .containsExactly(expectedCapability);
         }
