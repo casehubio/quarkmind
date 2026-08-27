@@ -17,7 +17,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class WorkbenchEnricherTest {
 
@@ -96,5 +97,26 @@ class WorkbenchEnricherTest {
         public void broadcast(WorkbenchEvent event) {
             events.add(event);
         }
+    }
+
+    @Test
+    void broadcasts_commentary_completed_event() {
+        var event = new io.quarkmind.plugin.commentary.CommentaryCompleted(
+                "commentator-atlas", "commentary.reactive",
+                1500, "Great expansion timing!",
+                io.quarkmind.plugin.commentary.CommentaryType.REACTIVE, 120L);
+        enricher.onCommentaryCompleted(event);
+
+        assertEquals(1, broadcaster.events.size());
+        var wbEvent = broadcaster.events.getFirst();
+        assertEquals("commentary", wbEvent.type());
+        var payload = (CommentaryPayload) wbEvent.payload();
+        assertEquals("Great expansion timing!", payload.text());
+        assertEquals("commentary.reactive", payload.capability());
+        assertEquals("REACTIVE", payload.commentaryType());
+        assertEquals(1500, payload.gameFrame());
+        assertEquals("commentator-atlas", payload.workerId());
+        assertEquals(120L, payload.latencyMs());
+        assertNotNull(payload.createdAt());
     }
 }

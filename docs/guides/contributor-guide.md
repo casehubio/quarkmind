@@ -293,8 +293,10 @@ Three.js 3D visualizer renders game state each tick, served over WebSocket, wrap
 | Component | Role |
 |-----------|------|
 | `GameStateBroadcaster` | `SC2Engine` frame listener; pushes JSON to all WebSocket clients per tick |
-| `visualizer.js` | Three.js WebGL: 3D terrain, directional canvas-2D sprite textures, fog of war, health tinting, unit/building inspect panel, SC2-style and free-orbit camera |
-| `visualizer.html` | Loads three.min.js + visualizer.js; no build step |
+| `visualizer.js` | Three.js WebGL: 3D terrain, directional canvas-2D sprite textures, fog of war, health tinting, unit/building inspect panel overlay, SC2-style and free-orbit camera |
+| `visualizer.html` | Loads `blocks/workbench-blocks.js` (Vite-built Lit components), three.min.js, and visualizer.js; Quinoa manages the webui build |
+| `src/main/webui/` | Vite + Lit project: `qm-pattern-page`, `qm-coaching-page`, `qm-strategy-page`, `qm-commentary-page` render inside `<blocks-detail-pane>` Shadow DOM |
+| `WorkbenchSocket` | WebSocket endpoint (`/ws/workbench`); pushes pattern/strategy/coaching/commentary events and commentary history-on-connect |
 | `electron/main.js` | Spawns Quarkus as subprocess, health-polls, opens OS window |
 
 **Renderer migration:** PixiJS 8 (E1-E13) replaced by Three.js (E14) for 3D orbiting camera, terrain height, directional sprite sheets.

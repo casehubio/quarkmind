@@ -45,6 +45,11 @@ nb-configuration.xml
 .certs/
 .worktrees/
 node_modules/
+quarkmind-sc2/src/main/webui/.casehub-packages/
+quarkmind-sc2/src/main/webui/dist/
+quarkmind-sc2/src/main/webui/.yarn/
+quarkmind-sc2/src/main/webui/yarn.lock
+quarkmind-sc2/.quinoa/
 electron-app/package-lock.json
 wksp
 .claude

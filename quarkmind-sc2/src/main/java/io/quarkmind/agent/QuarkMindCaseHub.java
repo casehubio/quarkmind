@@ -162,6 +162,8 @@ public class QuarkMindCaseHub extends CaseHub {
     CaseHubRuntime caseHubRuntime;
     @Inject
     StrategyTaxonomy strategyTaxonomy;
+    @org.eclipse.microprofile.config.inject.ConfigProperty(name = "quarkmind.commentary.enabled", defaultValue = "false")
+    boolean          commentaryEnabled;
 
 
     /**
@@ -405,6 +407,10 @@ public class QuarkMindCaseHub extends CaseHub {
      */
     private int wireCommentary(List<Capability> capabilities, List<Binding> bindings,
                                List<Worker> workers) {
+        if (!commentaryEnabled) {
+            log.info("[CASEHUB] Commentary disabled via quarkmind.commentary.enabled=false");
+            return 0;
+        }
         if (chatModelInstance == null || !chatModelInstance.isResolvable()) {
             log.warn("[CASEHUB] No ChatModel bean available — commentary workers omitted. "
                     + "Configure an LLM provider (e.g. quarkus-langchain4j-anthropic) to enable commentary.");

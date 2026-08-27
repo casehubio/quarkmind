@@ -1,20 +1,21 @@
 package io.quarkmind.qa.workbench;
 
+import io.quarkmind.agent.cbr.StrategySelectionPublished;
 import io.quarkmind.agent.plugin.PatternAssessmentPublished;
 import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.StrategyArchetype;
+import io.quarkmind.plugin.coaching.CoachingAdvice;
 import io.quarkmind.plugin.coaching.CoachingAdvicePublished;
 import io.quarkmind.plugin.coaching.CoachingComplianceResolved;
-import io.quarkmind.plugin.coaching.CoachingAdvice;
 import io.quarkmind.plugin.coaching.CoachingDomain;
 import io.quarkmind.plugin.coaching.CoachingUrgencyTier;
-import io.quarkmind.agent.cbr.StrategySelectionPublished;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkbenchEventTest {
 
@@ -48,5 +49,22 @@ class WorkbenchEventTest {
         assertEquals("reactive-blink", event.strategyId());
         assertEquals(0.82, event.confidence());
         assertEquals(1, event.pivotCount());
+    }
+
+    @Test
+    void commentary_payload_serializes_correctly() throws Exception {
+        var objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        var payload = new CommentaryPayload("Great expansion!", "commentary.reactive",
+                                            "REACTIVE", 1500, "commentator-atlas", 120L, java.time.Instant.parse("2026-08-26T12:00:00Z"));
+        var    event = new WorkbenchEvent("commentary", payload);
+        String json  = objectMapper.writeValueAsString(event);
+        assertTrue(json.contains("\"type\":\"commentary\""));
+        assertTrue(json.contains("\"text\":\"Great expansion!\""));
+        assertTrue(json.contains("\"gameFrame\":1500"));
+        assertTrue(json.contains("\"workerId\":\"commentator-atlas\""));
+        assertTrue(json.contains("\"commentaryType\":\"REACTIVE\""));
+        assertTrue(json.contains("\"capability\":\"commentary.reactive\""));
+        assertTrue(json.contains("\"latencyMs\":120"));
     }
 }

@@ -91,7 +91,7 @@ window.__test = {
   // gameFrame in SimulatedGame is the outer tick count (SC2Data.LOOPS_PER_TICK = 22 loops/tick).
   // Multiply by 22 before dividing by 22.4 (SC2Data.GAME_LOOPS_PER_SECOND — Faster speed).
   gameTimeSeconds: () => ((lastState?.gameFrame ?? 0) * 22) / 22.4,
-  hudText:       () => document.getElementById('hud')?.textContent ?? '',
+  hudText:       () => (document.getElementById('wb-hud')?.textContent ?? '') + '  ' + (document.getElementById('wb-status')?.textContent ?? ''),
   unitCount:     () => unitSprites.size,
   enemyCount:    () => enemySprites.size,
   buildingCount:      () => buildingMeshes.size,
@@ -422,9 +422,10 @@ window.__test = {
   },
   cameraMode:         () => cameraMode,
   enemyLayerVisible:  () => enemyVisible,
-  workbenchPage:      () => { var t = document.querySelector('.wb-tab.active'); return t ? t.dataset.page : null; },
+  workbenchReady:     () => { var dp = document.querySelector('blocks-detail-pane'); return wbWsConnected && dp && typeof dp.tabs !== 'undefined' && dp.tabs.length > 0 && !!dp._activeTabId; },
+  workbenchPage:      () => { var dp = document.querySelector('blocks-detail-pane'); return dp ? (dp._activeTabId || null) : null; },
   unitDetailName:     () => document.getElementById('up-name')?.textContent || '',
-  workbenchPatternCount: () => document.querySelectorAll('#page-pattern .assessment-item').length,
+  workbenchPatternCount: () => { var pp = findPageElement('qm-pattern-page'); return pp && pp.data ? pp.data.assessments.length : 0; },
   selectionRingCount: () => selectionRings.size,
   selectionState:     () => ({ type: selection.type, tag: selection.tag, unitType: selection.unitType, isEnemy: selection.isEnemy, source: selection.source }),
 };
@@ -485,7 +486,9 @@ const raycaster = new THREE.Raycaster();
 const ndcMouse  = new THREE.Vector2();
 
 function setupInspectPanel() {
-  var detail = document.getElementById('wb-detail');
+  var detail = document.createElement('div');
+  detail.id = 'wb-inspect';
+  detail.style.cssText = 'position:absolute;bottom:12px;left:12px;z-index:100;background:rgba(10,10,26,0.92);border:1px solid #445;border-radius:6px;padding:10px;color:#ccc;font-family:monospace;font-size:12px;min-width:220px;max-width:300px;display:none;pointer-events:auto;';
   detail.innerHTML =
     '<div style="display:flex;gap:10px">' +
     '<canvas id="up-portrait" width="64" height="64" style="border-radius:3px;flex-shrink:0;width:64px;height:64px"></canvas>' +
@@ -500,6 +503,7 @@ function setupInspectPanel() {
     '<span id="up-sh-txt" style="font-size:11px"></span></div>' +
     '<div id="up-pos" style="font-size:10px;color:#666;margin-top:4px"></div>' +
     '</div></div>';
+  document.getElementById('wb-canvas').appendChild(detail);
   detail.querySelector('#up-name').textContent = '';
   detail.querySelector('#up-team').textContent = '';
 
@@ -564,6 +568,8 @@ async function showBuildingPanelAsync(tag, isEnemy) {
     data = r.ok ? await r.json() : null;
   }
   if (!data) return;
+  var inspectEl = document.getElementById('wb-inspect');
+  if (inspectEl) inspectEl.style.display = 'block';
   document.getElementById('up-name').textContent = data.type.replace(/_/g, ' ');
   document.getElementById('up-team').textContent = isEnemy ? '⚔ Enemy' : '🛡 Friendly';
   const hpPct = data.maxHealth > 0 ? (data.health / data.maxHealth * 100) : 0;
@@ -588,6 +594,8 @@ async function showUnitPanelAsync(tag, isEnemy) {
 }
 
 function _populateUnitPanel(data, isEnemy) {
+  var inspectEl = document.getElementById('wb-inspect');
+  if (inspectEl) inspectEl.style.display = 'block';
   document.getElementById('up-name').textContent = data.type.replace(/_/g, ' ');
   document.getElementById('up-team').textContent = isEnemy ? '⚔ Enemy' : '🛡 Friendly';
   const hpPct = data.maxHealth > 0 ? (data.health / data.maxHealth * 100) : 0;
@@ -616,6 +624,8 @@ function _populateUnitPanel(data, isEnemy) {
 }
 
 function hideUnitPanel() {
+  var inspectEl = document.getElementById('wb-inspect');
+  if (inspectEl) inspectEl.style.display = 'none';
   var nameEl = document.getElementById('up-name');
   var teamEl = document.getElementById('up-team');
   if (nameEl) nameEl.textContent = '';
@@ -770,30 +780,40 @@ async function init() {
   setupKeyboardControls();
   applyLayoutCss();
   setupLighting();
+  setupDetailPane();
   await loadTerrain();
   connectWebSocket();
   connectWorkbenchSocket();
   initConfigPanel();
   initReplayControls();
   setupInspectPanel();
-  setupWorkbenchTabs();
   animate();
 }
 
-function setupWorkbenchTabs() {
-  document.querySelectorAll('.wb-tab').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      document.querySelector('.wb-tab.active').classList.remove('active');
-      btn.classList.add('active');
-      document.querySelectorAll('.wb-page').forEach(function(p) { p.classList.remove('active'); });
-      document.getElementById('page-' + btn.dataset.page).classList.add('active');
-    });
-  });
+function setupDetailPane() {
+  var detailPane = document.querySelector('blocks-detail-pane');
+  if (detailPane) {
+    detailPane.tabs = [
+      { id: 'pattern',    label: 'Pattern',    tagName: 'qm-pattern-page',    order: 0 },
+      { id: 'coaching',   label: 'Coaching',   tagName: 'qm-coaching-page',   order: 1 },
+      { id: 'strategy',   label: 'Strategy',   tagName: 'qm-strategy-page',   order: 2 },
+      { id: 'commentary', label: 'Commentary', tagName: 'qm-commentary-page', order: 3 },
+    ];
+    detailPane.emptyMessage = '';
+  }
 }
 
 // ── Workbench WebSocket client ──────────────────────────────────────────────
 
-var workbenchState = { pattern: null, coaching: [], strategy: null };
+var workbenchState = { pattern: null, coaching: [], strategy: null, commentary: [] };
+var commentaryCounter = 0;
+
+function findPageElement(tagName) {
+  var dp = document.querySelector('blocks-detail-pane');
+  if (!dp) return null;
+  if (dp.shadowRoot) { var el = dp.shadowRoot.querySelector(tagName); if (el) return el; }
+  return dp._tabElements ? dp._tabElements.get(tagName.replace('qm-', '').replace('-page', '')) : null;
+}
 
 function connectWorkbenchSocket() {
   var ws = new WebSocket('ws://' + window.location.host + '/ws/workbench');
@@ -803,10 +823,46 @@ function connectWorkbenchSocket() {
     try {
       var event = JSON.parse(e.data);
       switch (event.type) {
-        case 'pattern': workbenchState.pattern = event.payload; renderPatternPage(); break;
-        case 'coaching': workbenchState.coaching.unshift(event.payload); if (workbenchState.coaching.length > 20) workbenchState.coaching.pop(); renderCoachingPage(); break;
-        case 'coaching_compliance': applyComplianceUpdate(event.payload); break;
-        case 'strategy': workbenchState.strategy = event.payload; renderStrategyPage(); break;
+        case 'pattern': workbenchState.pattern = event.payload; var pp = findPageElement('qm-pattern-page'); if (pp) pp.data = event.payload; break;
+        case 'coaching':
+          workbenchState.coaching.unshift(event.payload);
+          if (workbenchState.coaching.length > 20) workbenchState.coaching.pop();
+          var cp = findPageElement('qm-coaching-page');
+          if (cp) cp.data = [...workbenchState.coaching];
+          break;
+        case 'coaching_compliance':
+          var statusMap = { ENDORSED: '✅ Endorsed', CHALLENGED: '❌ Challenged', NEUTRAL: '⏸ Neutral', SUPERSEDED: '⏭ Superseded' };
+          var clabel = statusMap[event.payload.status] || event.payload.status;
+          var centry = workbenchState.coaching.find(function(c) { return c.correlationId === event.payload.correlationId; });
+          if (centry) { centry.complianceStatus = clabel; var cp2 = findPageElement('qm-coaching-page'); if (cp2) cp2.data = [...workbenchState.coaching]; }
+          break;
+        case 'strategy':
+          workbenchState.strategy = event.payload;
+          var sp = findPageElement('qm-strategy-page');
+          if (sp) sp.data = event.payload;
+          break;
+        case 'commentary':
+        case 'commentary_snapshot':
+          var qm = {
+            id: 'commentary-' + (commentaryCounter++),
+            channelId: 'quarkmind-commentary',
+            sender: event.payload.workerId,
+            messageType: 'STATUS',
+            actorType: 'AGENT',
+            content: event.payload.text,
+            topic: event.payload.commentaryType,
+            topicId: '',
+            replyCount: 0,
+            artefactRefs: [],
+            createdAt: event.payload.createdAt,
+          };
+          workbenchState.commentary = [...workbenchState.commentary, qm];
+          if (workbenchState.commentary.length > 200) {
+            workbenchState.commentary = workbenchState.commentary.slice(-200);
+          }
+          var commentaryPage = findPageElement('qm-commentary-page');
+          if (commentaryPage) commentaryPage.messages = workbenchState.commentary;
+          break;
       }
     } catch (err) { console.warn('Bad workbench WS message', err); }
   };
@@ -814,111 +870,16 @@ function connectWorkbenchSocket() {
   ws.onclose = function() { wbWsConnected = false; updateConnectionStatus(); setTimeout(connectWorkbenchSocket, 2000); };
 }
 
-function renderPatternPage() {
-  var el = document.getElementById('page-pattern');
-  var data = workbenchState.pattern;
-  if (!data || !data.assessments || data.assessments.length === 0) { el.innerHTML = 'No pattern data'; return; }
-
-  el.innerHTML = data.assessments.map(function(ea, i) {
-    var a = ea.assessment;
-    var conf = Math.round(a.confidence * 100);
-    var barColor = conf > 70 ? '#44ff44' : conf > 50 ? '#ffaa00' : '#ff4444';
-    var expanded = i === 0 ? 'block' : 'none';
-    var arrow = i === 0 ? '▼' : '▶';
-
-    var countersHtml = '';
-    if (ea.counters) {
-      var strong = (ea.counters.strongCounters || []).map(function(c) {
-        return '<li>' + c.units.map(function(u) { return '<span class="counter-unit" data-unit="' + u + '">' + u + '</span>'; }).join(', ') + ' — ' + (c.action || '') + '</li>';
-      }).join('');
-      var weak = (ea.counters.weakCounters || []).map(function(c) {
-        return '<li>' + c.units.map(function(u) { return '<span class="counter-unit" data-unit="' + u + '">' + u + '</span>'; }).join(', ') + ' — ' + (c.action || '') + '</li>';
-      }).join('');
-      if (strong) countersHtml += '<div class="counter-section"><strong>Strong Counters:</strong><ul>' + strong + '</ul></div>';
-      if (weak) countersHtml += '<div class="counter-section"><strong>Weak Counters:</strong><ul>' + weak + '</ul></div>';
-    }
-
-    return '<div class="assessment-item" data-index="' + i + '">' +
-      '<div class="assessment-header" onclick="toggleAssessment(' + i + ')">' + arrow + ' ' + a.archetype + ' (' + conf + '%)</div>' +
-      '<div class="confidence-bar"><div style="width:' + conf + '%;background:' + barColor + ';height:4px;border-radius:2px;"></div></div>' +
-      '<div class="assessment-body" id="assess-body-' + i + '" style="display:' + expanded + '">' +
-        '<div class="rationale">' + (a.rationale || '') + '</div>' +
-        countersHtml +
-      '</div></div>';
-  }).join('');
-
-  el.querySelectorAll('.counter-unit').forEach(function(span) {
-    span.addEventListener('click', function(e) {
-      e.stopPropagation();
-      selection.set({ type: 'unitType', unitType: span.dataset.unit, isEnemy: false, source: 'workbench' });
-    });
-  });
-}
-
-function toggleAssessment(index) {
-  var body = document.getElementById('assess-body-' + index);
-  if (!body) return;
-  var header = body.parentElement.querySelector('.assessment-header');
-  if (body.style.display === 'none') { body.style.display = 'block'; if (header) header.textContent = header.textContent.replace('▶', '▼'); }
-  else { body.style.display = 'none'; if (header) header.textContent = header.textContent.replace('▼', '▶'); }
-}
-
-function renderCoachingPage() {
-  var el = document.getElementById('page-coaching');
-  if (workbenchState.coaching.length === 0) { el.innerHTML = 'No coaching advice yet'; return; }
-
-  el.innerHTML = workbenchState.coaching.map(function(c) {
-    var secs = Math.floor(c.gameFrame / 22.4);
-    var mins = Math.floor(secs / 60);
-    var rem = secs % 60;
-    var time = mins + ':' + String(rem).padStart(2, '0');
-    var status = c.complianceStatus || '⏳ Pending';
-    var isPending = !c.complianceStatus;
-    var buttons = isPending
-      ? '<button class="coaching-btn coaching-accept" data-cid="' + c.correlationId + '">✓ Accept</button>' +
-        '<button class="coaching-btn coaching-dismiss" data-cid="' + c.correlationId + '">✗ Dismiss</button>'
-      : '';
-    return '<div class="coaching-item">' +
-      '<div class="coaching-header">' + time + ' [' + c.domain + '] ' + (c.urgency || '') + '</div>' +
-      '<div class="coaching-advice">' + c.advice + '</div>' +
-      '<div class="coaching-controls">' + buttons + '<span class="coaching-status">' + status + '</span></div>' +
-    '</div>';
-  }).join('');
-
-  el.querySelectorAll('.coaching-accept').forEach(function(btn) {
-    btn.addEventListener('click', function() { sendCoachingResponse(btn.dataset.cid, 'DONE'); });
-  });
-  el.querySelectorAll('.coaching-dismiss').forEach(function(btn) {
-    btn.addEventListener('click', function() { sendCoachingResponse(btn.dataset.cid, 'DECLINE'); });
-  });
-}
-
-function applyComplianceUpdate(payload) {
-  var statusMap = { ENDORSED: '✅ Endorsed', CHALLENGED: '❌ Challenged', NEUTRAL: '⏸ Neutral', SUPERSEDED: '⏭ Superseded' };
-  var label = statusMap[payload.status] || payload.status;
-  var entry = workbenchState.coaching.find(function(c) { return c.correlationId === payload.correlationId; });
-  if (entry) { entry.complianceStatus = label; renderCoachingPage(); }
-}
-
-function sendCoachingResponse(correlationId, response) {
+// Coaching response listener
+document.addEventListener('coaching-response', function(e) {
   if (window.__workbenchWs && window.__workbenchWs.readyState === 1) {
-    window.__workbenchWs.send(JSON.stringify({ type: 'coaching_response', correlationId: correlationId, response: response }));
+    window.__workbenchWs.send(JSON.stringify({
+      type: 'coaching_response',
+      correlationId: e.detail.correlationId,
+      response: e.detail.response,
+    }));
   }
-}
-
-function renderStrategyPage() {
-  var el = document.getElementById('page-strategy');
-  var s = workbenchState.strategy;
-  if (!s) { el.innerHTML = 'No strategy data'; return; }
-  el.innerHTML =
-    '<div class="strategy-section">' +
-    '<div class="strategy-label">Active Strategy</div>' +
-    '<div class="strategy-value">' + s.strategyId + '</div>' +
-    '<div class="strategy-row"><span>Archetype:</span> ' + s.archetype + '</div>' +
-    '<div class="strategy-row"><span>Confidence:</span> ' + (s.confidence * 100).toFixed(0) + '%</div>' +
-    '<div class="strategy-row"><span>Pivots:</span> ' + s.pivotCount + '</div>' +
-    '</div>';
-}
+});
 
 // resize handled by ResizeObserver in init()
 
@@ -1193,7 +1154,7 @@ function updateHud(state) {
   var hudEl = document.getElementById('wb-hud');
   if (hudEl) {
     hudEl.innerHTML =
-      'Minerals: <span class="' + tier + '">' + m.toLocaleString('en-US') + '</span>' +
+      'Minerals: <span id="minerals-val" class="' + tier + '">' + m.toLocaleString('en-US') + '</span>' +
       '   Gas: ' + state.vespene +
       '   Supply: ' + state.supplyUsed + '/' + state.supply;
   }

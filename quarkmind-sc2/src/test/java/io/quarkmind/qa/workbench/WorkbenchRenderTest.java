@@ -4,6 +4,7 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkmind.agent.plugin.PatternAssessmentPublished;
 import io.quarkmind.domain.AssessmentSource;
@@ -13,6 +14,7 @@ import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.*;
 
+import java.net.URI;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,6 +25,9 @@ class WorkbenchRenderTest {
 
     @Inject Event<PatternAssessmentPublished> patternEvent;
     @Inject WorkbenchBroadcaster broadcaster;
+
+    @TestHTTPResource("/visualizer.html")
+    URI visualizerUri;
 
     static Playwright playwright;
     static Browser browser;
@@ -45,8 +50,8 @@ class WorkbenchRenderTest {
     void newPage() {
         context = browser.newContext();
         page = context.newPage();
-        page.navigate("http://localhost:8081/visualizer.html");
-        page.waitForFunction("() => window.__test && window.__test.threeReady()");
+        page.navigate(visualizerUri.toString());
+        page.waitForFunction("() => window.__test && window.__test.threeReady() && window.__test.workbenchReady()");
     }
 
     @AfterEach
@@ -55,21 +60,21 @@ class WorkbenchRenderTest {
     }
 
     @Test
-    void shell_renders_with_toolbar_and_pages() {
-        assertNotNull(page.querySelector("#wb-toolbar"));
-        assertNotNull(page.querySelector("#wb-pages"));
-        assertNotNull(page.querySelector("#wb-detail"));
+    void shell_renders_with_blocks_ui_layout() {
+        assertNotNull(page.querySelector("blocks-split-workbench"));
+        assertNotNull(page.querySelector("blocks-detail-pane"));
+        assertNotNull(page.querySelector("#wb-canvas"));
         assertNotNull(page.querySelector("#wb-status"));
         assertEquals("pattern", page.evaluate("() => window.__test.workbenchPage()"));
     }
 
     @Test
     void tab_switching_shows_correct_page() {
-        page.click("[data-page='coaching']");
+        page.evaluate("() => document.querySelector('blocks-detail-pane').shadowRoot.querySelector('[aria-controls=\"panel-coaching\"]').click()");
         assertEquals("coaching", page.evaluate("() => window.__test.workbenchPage()"));
-        page.click("[data-page='strategy']");
+        page.evaluate("() => document.querySelector('blocks-detail-pane').shadowRoot.querySelector('[aria-controls=\"panel-strategy\"]').click()");
         assertEquals("strategy", page.evaluate("() => window.__test.workbenchPage()"));
-        page.click("[data-page='pattern']");
+        page.evaluate("() => document.querySelector('blocks-detail-pane').shadowRoot.querySelector('[aria-controls=\"panel-pattern\"]').click()");
         assertEquals("pattern", page.evaluate("() => window.__test.workbenchPage()"));
     }
 

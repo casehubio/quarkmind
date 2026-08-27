@@ -1,5 +1,6 @@
 package io.quarkmind.qa.workbench;
 
+import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkmind.agent.plugin.PatternAssessmentPublished;
 import io.quarkmind.domain.AssessmentSource;
@@ -25,12 +26,19 @@ class WorkbenchSocketIT {
     @Inject Event<PatternAssessmentPublished> patternEvent;
     @Inject WorkbenchBroadcaster broadcaster;
 
+    @TestHTTPResource("/ws/workbench")
+    URI wsUri;
+
+    private URI wsEndpoint() {
+        return URI.create(wsUri.toString().replace("http://", "ws://"));
+    }
+
     @Test
     void pattern_event_arrives_via_websocket() throws Exception {
         var received = new CompletableFuture<String>();
 
         var ws = HttpClient.newHttpClient().newWebSocketBuilder()
-            .buildAsync(URI.create("ws://localhost:8081/ws/workbench"), new WebSocket.Listener() {
+            .buildAsync(wsEndpoint(), new WebSocket.Listener() {
                 @Override
                 public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
                     received.complete(data.toString());
@@ -57,7 +65,7 @@ class WorkbenchSocketIT {
 
         var received = new CompletableFuture<String>();
         var ws = HttpClient.newHttpClient().newWebSocketBuilder()
-            .buildAsync(URI.create("ws://localhost:8081/ws/workbench"), new WebSocket.Listener() {
+            .buildAsync(wsEndpoint(), new WebSocket.Listener() {
                 @Override
                 public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
                     received.complete(data.toString());

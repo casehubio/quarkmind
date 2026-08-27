@@ -153,6 +153,21 @@
             <groupId>io.casehub</groupId>
             <artifactId>casehub-blocks</artifactId>
         </dependency>
+        <!-- CaseHub npm packages (unpacked by maven-dependency-plugin) -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-pages-npm</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-blocks-ui-npm</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.quinoa</groupId>
+            <artifactId>quarkus-quinoa</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jdbc-h2</artifactId>
@@ -238,6 +253,35 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-casehub-packages</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>io.casehub</groupId>
+                                    <artifactId>casehub-pages-npm</artifactId>
+                                    <version>0.2-SNAPSHOT</version>
+                                    <outputDirectory>${project.basedir}/src/main/webui/.casehub-packages</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>io.casehub</groupId>
+                                    <artifactId>casehub-blocks-ui-npm</artifactId>
+                                    <version>0.1-SNAPSHOT</version>
+                                    <outputDirectory>${project.basedir}/src/main/webui/.casehub-packages</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>io.quarkus.platform</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
@@ -390,6 +434,50 @@
             <id>playwright</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>npm-install</id>
+                                <phase>generate-test-resources</phase>
+                                <goals><goal>exec</goal></goals>
+                                <configuration>
+                                    <executable>npm</executable>
+                                    <workingDirectory>${project.basedir}/src/main/webui</workingDirectory>
+                                    <arguments><argument>install</argument></arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>vite-build</id>
+                                <phase>generate-test-resources</phase>
+                                <goals><goal>exec</goal></goals>
+                                <configuration>
+                                    <executable>npm</executable>
+                                    <workingDirectory>${project.basedir}/src/main/webui</workingDirectory>
+                                    <arguments><argument>run</argument><argument>build</argument></arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-vite-build</id>
+                                <phase>process-test-resources</phase>
+                                <goals><goal>copy-resources</goal></goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/META-INF/resources</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/main/webui/dist</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration combine.self="override">

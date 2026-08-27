@@ -265,6 +265,11 @@ mvn package -pl quarkmind-sc2 -DskipTests -Dquarkus.profile=replay -q
 cd electron-app && npm start
 ```
 
+**Rebuild webui (Lit components only — Quinoa auto-rebuilds on `quarkus:dev`):**
+```bash
+cd quarkmind-sc2/src/main/webui && npm run build
+```
+
 **NEVER redirect Quarkus server stdout to a file without size limits.**
 The game loop logs every tick; an overnight run fills the disk.
 - Wrong: `mvn quarkus:dev ... > /tmp/server.log 2>&1 &`
@@ -403,6 +408,8 @@ quarkmind/                           ← parent POM
 │     plugin/flow/         EconomicsFlow, EconomicsDecisionService
 │     qa/                  QA REST endpoints (@UnlessBuildProfile("prod"))
 │     qa/workbench/        WorkbenchSocket, CoachingAcknowledgmentHandler
+│   src/main/webui/        Vite + Lit components (Quinoa-managed)
+│     workbench/           qm-pattern-page, qm-coaching-page, qm-strategy-page, qm-commentary-page
 ├── quarkmind-ville/                 ← QuarkVille — Sims-like 3D life simulation
 │   ├── quarkmind-ville-protocol/    ← shared message types (VilleIntent, VillePerception)
 │   ├── quarkmind-ville-server/      ← game server (world state, game tick, WebSocket)

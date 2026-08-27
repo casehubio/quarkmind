@@ -1,12 +1,12 @@
 package io.quarkmind.qa.workbench;
 
-import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.quarkmind.agent.StrategyTaxonomy;
 import io.quarkmind.agent.cbr.StrategySelectionPublished;
 import io.quarkmind.agent.plugin.PatternAssessmentPublished;
 import io.quarkmind.domain.CounterInfo;
 import io.quarkmind.plugin.coaching.CoachingAdvicePublished;
 import io.quarkmind.plugin.coaching.CoachingComplianceResolved;
+import io.quarkus.arc.profile.UnlessBuildProfile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -53,4 +53,12 @@ public class WorkbenchEnricher {
         broadcaster.broadcast(new WorkbenchEvent("strategy",
             new StrategyPayload(event.strategyId(), event.archetype(), event.confidence(), event.pivotCount())));
     }
+
+    void onCommentaryCompleted(@Observes io.quarkmind.plugin.commentary.CommentaryCompleted event) {
+        broadcaster.broadcast(new WorkbenchEvent("commentary",
+                                                 new CommentaryPayload(event.text(), event.capability(),
+                                                                       event.commentaryType().name(), event.gameFrame(),
+                                                                       event.workerId(), event.latencyMs(), java.time.Instant.now())));
+    }
+
 }

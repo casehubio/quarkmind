@@ -47,13 +47,13 @@ public class WorkbenchBroadcaster {
 
     public void broadcast(WorkbenchEvent event) {
         updateSnapshot(event);
-        if (sessions.isEmpty()) return;
+        if (sessions.isEmpty()) {return;}
         try {
             String json = objectMapper.writeValueAsString(event);
             sessions.forEach(s -> s.sendText(json)
-                .subscribe().with(
-                    ignored -> {},
-                    err -> log.warnf("[WORKBENCH] Send failed: %s", err.getMessage())));
+                                   .subscribe().with(
+                            ignored -> {},
+                            err -> log.warnf("[WORKBENCH] Send failed: %s", err.getMessage())));
         } catch (Exception e) {
             log.warnf(e, "[WORKBENCH] Serialisation failed: %s", e.getMessage());
         }
@@ -61,18 +61,19 @@ public class WorkbenchBroadcaster {
 
     private void updateSnapshot(WorkbenchEvent event) {
         switch (event.type()) {
-            case "pattern"  -> latestPattern  = event;
+            case "pattern" -> latestPattern = event;
             case "strategy" -> latestStrategy = event;
             case "coaching" -> latestCoaching = event;
-            default -> {} // coaching_compliance does not replace snapshot
+            case "commentary", "commentary_snapshot" -> {}
+            default -> {}
         }
     }
 
     private void pushSnapshot(WebSocketConnection connection) {
         try {
-            if (latestPattern != null) sendOne(connection, latestPattern);
-            if (latestStrategy != null) sendOne(connection, latestStrategy);
-            if (latestCoaching != null) sendOne(connection, latestCoaching);
+            if (latestPattern != null) {sendOne(connection, latestPattern);}
+            if (latestStrategy != null) {sendOne(connection, latestStrategy);}
+            if (latestCoaching != null) {sendOne(connection, latestCoaching);}
         } catch (Exception e) {
             log.warnf(e, "[WORKBENCH] Snapshot push failed: %s", e.getMessage());
         }
