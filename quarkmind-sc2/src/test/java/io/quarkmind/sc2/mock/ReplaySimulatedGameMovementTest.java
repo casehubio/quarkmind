@@ -52,4 +52,42 @@ class ReplaySimulatedGameMovementTest {
             assertThat(u.position().y()).as("y in bounds for %s", u.tag()).isBetween(0f, 256f);
         });
     }
+
+    @Test
+    void probesMoveTowardMineralPatchesAfterMiningOrders() {
+        ReplaySimulatedGame game   = new ReplaySimulatedGame(REPLAY, 1);
+        List<UnitOrder>     orders = ReplayCommandExtractor.extract(REPLAY, 1).movementOrders();
+        game.loadOrders(orders);
+
+        // Advance 200 ticks (~100 seconds at Faster speed)
+        for (int i = 0; i < 200; i++) {game.tick();}
+
+        var state = game.snapshot();
+        var probes = state.myUnits().stream()
+                          .filter(u -> u.type() == io.quarkmind.domain.UnitType.PROBE)
+                          .toList();
+        var nexus = state.myBuildings().stream()
+                         .filter(b -> b.type() == io.quarkmind.domain.BuildingType.NEXUS)
+                         .toList();
+        var minerals = state.mineralPatches();
+
+        assertThat(probes).as("probes exist").isNotEmpty();
+        assertThat(nexus).as("nexus exists").isNotEmpty();
+
+        // Count probes within 15 tiles of any Nexus or mineral patch
+        long nearBase = probes.stream().filter(p -> {
+            float px = p.position().x(), py = p.position().y();
+            boolean nearNexus = nexus.stream().anyMatch(n ->
+                                                                Math.abs(px - n.position().x()) < 15 && Math.abs(py - n.position().y()) < 15);
+            boolean nearMineral = minerals.stream().anyMatch(m ->
+                                                                     Math.abs(px - m.position().x()) < 8 && Math.abs(py - m.position().y()) < 8);
+            return nearNexus || nearMineral;
+        }).count();
+
+        // At least 50% of probes should be near a base or mineral (mining)
+        assertThat(nearBase)
+                .as("probes near base/minerals: %d/%d", nearBase, probes.size())
+                .isGreaterThanOrEqualTo((long) (probes.size() * 0.5));
+    }
 }
+

@@ -234,20 +234,21 @@ public class AbilityMapping {
     }
 
     private List<ReplayCommand> moveOrders(CmdEvent event, long loop) {
-        var tp = event.getTargetPoint();
-        var tu = event.getTargetUnit();
+        var                 tu     = event.getTargetUnit();
+        var                 tp     = event.getTargetPoint();
         List<ReplayCommand> orders = new ArrayList<>(selection.size());
         for (String tag : selection.snapshot()) {
-            if (tp != null) {
-                float x = tp.getXFloat();
-                float y = tp.getYFloat();
-                if (x >= 0 && x <= 256 && y >= 0 && y <= 256) {
+            if (tu != null && tu.getTag() != null) {
+                orders.add(new ReplayCommand.Movement(
+                        new UnitOrder(tag, loop, null, GameEventStream.decodeTag(tu.getTag()))));
+            } else if (tp != null) {
+                // Game event target points are at half the tracker event coordinate scale
+                float x = tp.getXFloat() * 2;
+                float y = tp.getYFloat() * 2;
+                if (x >= 0 && x <= 512 && y >= 0 && y <= 512) {
                     orders.add(new ReplayCommand.Movement(
                             new UnitOrder(tag, loop, new Point2d(x, y), null)));
                 }
-            } else if (tu != null && tu.getTag() != null) {
-                orders.add(new ReplayCommand.Movement(
-                        new UnitOrder(tag, loop, null, GameEventStream.decodeTag(tu.getTag()))));
             } else {
                 log.debugf("[ABILITY] Move cmd at loop %d has no target — skipped for %s", loop, tag);
             }

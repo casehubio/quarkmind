@@ -71,6 +71,15 @@
             <groupId>io.casehub</groupId>
             <artifactId>casehub-platform</artifactId>
         </dependency>
+        <!-- AgentProvider → ChatModel bridge for commentary LLM (Claude via Vertex AI) -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-platform-agent-claude</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-platform-agent-langchain4j</artifactId>
+        </dependency>
         <!-- casehub-engine-api: CaseContext, CaseHub, CaseHubRuntime, CaseDefinition -->
         <dependency>
             <groupId>io.casehub</groupId>

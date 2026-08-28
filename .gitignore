@@ -59,3 +59,4 @@ proj
 **/replays/sc2egset/
 .mvn/maven.config
 .mvn/slot-settings.xml
+.playwright-mcp/

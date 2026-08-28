@@ -1,13 +1,13 @@
 package io.quarkmind.sc2.replay;
 
-import io.quarkus.arc.profile.IfBuildProfile;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.SC2Engine;
 import io.quarkmind.sc2.mock.ReplaySimulatedGame;
+import io.quarkus.arc.profile.IfBuildProfile;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
@@ -48,6 +48,9 @@ public class ReplayEngine implements SC2Engine {
 
     @Inject
     IntentQueue intentQueue;
+    @Inject
+    io.quarkmind.sc2.map.SC2MapCache mapCache;
+
 
     private ReplaySimulatedGame game;
     private boolean connected = false;
@@ -64,11 +67,16 @@ public class ReplayEngine implements SC2Engine {
         parseMapMetadata(Path.of(replayFile));
         ReplayCommandStream commands = ReplayCommandExtractor.extract(Path.of(replayFile), watchedPlayerId);
         game.loadOrders(commands.movementOrders());
+        if (mapName != null) {
+            mapCache.get(mapName).ifPresent(terrain ->
+                                                    game.setTerrain(new io.quarkmind.domain.TerrainGrid(
+                                                            terrain.width(), terrain.height(), toHeightGrid(terrain))));
+        }
         log.infof("[REPLAY] Loaded %d movement orders, %d intents from GAME_EVENTS",
                   commands.movementOrders().size(), commands.intents().size());
         connected = true;
         log.infof("[REPLAY] Replay loaded — %d tracker events ready, map=%s (%dx%d)",
-                game.eventCount(), mapName, mapWidth, mapHeight);
+                  game.eventCount(), mapName, mapWidth, mapHeight);
     }
 
     private void parseMapMetadata(Path replayPath) {
@@ -94,6 +102,16 @@ public class ReplayEngine implements SC2Engine {
             log.warnf("[REPLAY] Cannot parse map metadata: %s", e.getMessage());
         }
     }
+
+    private static io.quarkmind.domain.TerrainGrid.Height[][] toHeightGrid(io.quarkmind.qa.TerrainResponse resp) {
+        var grid = new io.quarkmind.domain.TerrainGrid.Height[resp.width()][resp.height()];
+        for (var row : grid) {java.util.Arrays.fill(row, io.quarkmind.domain.TerrainGrid.Height.LOW);}
+        for (int[] p : resp.walls()) {grid[p[0]][p[1]] = io.quarkmind.domain.TerrainGrid.Height.WALL;}
+        for (int[] p : resp.highGround()) {grid[p[0]][p[1]] = io.quarkmind.domain.TerrainGrid.Height.HIGH;}
+        for (int[] p : resp.ramps()) {grid[p[0]][p[1]] = io.quarkmind.domain.TerrainGrid.Height.RAMP;}
+        return grid;
+    }
+
 
     @Override public String getMapName()   { return mapName; }
     @Override public int    getMapWidth()  { return mapWidth; }

@@ -61,7 +61,7 @@ class AbilityMappingTest {
                 .map(r -> ((ReplayCommand.Movement) r).order()).toList();
         assertThat(orders).allMatch(o -> o.loop() == 200);
         assertThat(orders).allMatch(o -> o.targetPos() != null
-                && o.targetPos().x() == 45f && o.targetPos().y() == 55f);
+                && o.targetPos().x() == 90f && o.targetPos().y() == 110f);
         assertThat(orders.stream().map(UnitOrder::unitTag).toList())
                 .containsExactlyInAnyOrder("r-1-1", "r-2-1", "r-3-1");
     }

@@ -59,6 +59,9 @@ public class WorkbenchBroadcaster {
         }
     }
 
+    WorkbenchEvent latestPatternSnapshot() {return latestPattern;}
+
+
     private void updateSnapshot(WorkbenchEvent event) {
         switch (event.type()) {
             case "pattern" -> latestPattern = event;

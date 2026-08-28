@@ -251,4 +251,7 @@ public class SimulatedGame {
     protected void removeMineralPatchByTag(String tag) { mineralPatches.removeIf(r -> r.tag().equals(tag)); }
 
     public List<Resource> getGeysers() { return List.copyOf(geysers); }
+
+    public List<Resource> getMineralPatches() {return List.copyOf(mineralPatches);}
+
 }

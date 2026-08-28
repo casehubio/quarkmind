@@ -13,6 +13,7 @@ import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Resource;
+import io.quarkmind.domain.TerrainGrid;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.intent.Intent;
@@ -279,6 +280,11 @@ public class ReplaySimulatedGame extends SimulatedGame {
         this.orderTracker.loadOrders(orders);
     }
 
+    public void setTerrain(TerrainGrid terrain) {
+        if (orderTracker != null) {orderTracker.setTerrain(terrain);}
+    }
+
+
     public long totalLoops()  { return totalLoops; }
     public long currentLoop() { return currentLoop; }
 
@@ -295,8 +301,16 @@ public class ReplaySimulatedGame extends SimulatedGame {
     private void advanceMovement() {
         Map<String, Point2d> positions = new HashMap<>();
         Map<String, UnitType> types    = new HashMap<>();
-        for (var u : getMyUnits())    { positions.put(u.tag(), u.position()); types.put(u.tag(), u.type()); }
-        for (var u : getEnemyUnits()) { positions.put(u.tag(), u.position()); types.put(u.tag(), u.type()); }
+        for (var u : getMyUnits()) {
+            positions.put(u.tag(), u.position());
+            types.put(u.tag(), u.type());
+        }
+        for (var u : getEnemyUnits()) {
+            positions.put(u.tag(), u.position());
+            types.put(u.tag(), u.type());
+        }
+        for (var r : getMineralPatches()) {positions.put(r.tag(), r.position());}
+        for (var r : getGeysers()) {positions.put(r.tag(), r.position());}
 
         orderTracker.advance(currentLoop, positions, types);
 
