@@ -174,6 +174,45 @@ quarkmind
   -> Playwright 1.49.0                      (E2E visualizer testing, test scope)
 ```
 
+## Chat Agency System (quarkmind-chat)
+
+Multi-character AI orchestration for Discord-based social gameplay.
+
+### ChatAgencyLoop
+
+Core orchestration loop managing multi-character AI agents in Discord channels. Stateless design with `CharacterContext` per character (thread-safe via `ConcurrentHashMap.newKeySet()` for `participatedThreadIds`). Bounded buffers for message history and identity detection.
+
+### Chat Protocol
+
+- `ChatIntent` sealed interface + `ChatPerception` + `WakeReason` — core chat abstractions
+- `AttentionClassifier`, `ChatDeltaReport`, `OutputGovernor`, `ProactiveDecisionGate` — perception pipeline
+- `ChatNeedDefinitions` + `ChatChannelPacing` — configurable need thresholds and channel timing
+- `ChatObservationRenderer` + `ChatWorldBridge` — Discord adapter layer
+
+### Character Management
+
+`ChatCharacterManager` orchestrates multiple AI characters with distinct personalities.
+
+### Personality Evolution
+
+Personalities evolve based on gameplay reflections:
+- `ReflectionDispositionActivator` SPI + `PersonalityEvolutionPipeline`
+- `LlmReflectionDispositionActivator` — async LLM-based trait classification
+- `DispositionAwareReflectionSynthesizer` — intercepts insights for activation
+
+### Memory Integration
+
+- `ChatMemoryFacade` — recall, ingest, `scoreImportance`
+- `LlmReflectionSynthesizer` — LLM-based memory consolidation from heartbeat reflections
+- `IdleReflectionTrigger` — triggers reflection during idle periods
+- Commentary-CBR integration for narrating learning from past games
+
+### Blocks-UI Migration
+
+Workbench migrated to Lit web components via blocks-ui integration. Commentary pipeline and Playwright test suite rewritten for the new component architecture.
+
+---
+
 ## What It Does NOT Do
 
 Everything below belongs in the foundation:
