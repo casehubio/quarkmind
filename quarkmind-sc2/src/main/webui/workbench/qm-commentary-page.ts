@@ -18,6 +18,9 @@ export class QmCommentaryPage extends LitElement {
   };
 
   override render() {
+    if (!this.messages.length) {
+      return html`<div style="padding:10px;font-size:12px;color:#888;">Waiting for commentary — requires a configured LLM provider</div>`;
+    }
     return html`
       <blocks-channel-feed
         .messages=${this.messages}

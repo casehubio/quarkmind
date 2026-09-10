@@ -165,7 +165,7 @@ public class SC2StrategyRouterTask implements TaskDefinition {
         List<RetrievedExperience> experiences = retrieved.stream()
                 .map(sc -> new RetrievedExperience(
                         sc.cbrCase().problem(), sc.cbrCase().solution(),
-                        sc.cbrCase().outcome(), sc.cbrCase().confidence(),
+                        sc.cbrCase().outcome(), sc.cbrCase().confidence() != null ? sc.cbrCase().confidence().value() : null,
                         sc.score(),
                         FeatureValue.toRawMap(sc.cbrCase().features()),
                         List.of(), sc.featureSimilarities()))

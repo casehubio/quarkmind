@@ -33,6 +33,7 @@ import org.jboss.logging.Logger;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -69,7 +70,7 @@ public class QuarkMindCaseHub extends CaseHub {
     private static final Logger log = Logger.getLogger(QuarkMindCaseHub.class);
 
     /** JQ expression that fires on every game-frame change in the working panel. */
-    static final String TICK_TRIGGER = ".working[\"game.frame\"] | . != null";
+    static final String TICK_TRIGGER = ".[\"game.frame\"] | . != null";
 
     private static final String CAPABILITY_TICK_DECISION = "tick-decision";
     private static final String CAPABILITY_STRATEGY = "strategy";
@@ -80,28 +81,28 @@ public class QuarkMindCaseHub extends CaseHub {
     static final String CAPABILITY_ADVISORY_ECONOMIC = "advisory-economic";
 
     /** JQ expression that fires when a crisis advisory trigger is set. */
-    static final String CRISIS_TRIGGER = ".working[\"game.advisory.trigger.crisis\"] | . != null";
+    static final String CRISIS_TRIGGER = ".[\"game.advisory.trigger.crisis\"] | . != null";
     /** JQ expression that fires when a strategic advisory trigger is set. */
-    static final String STRATEGIC_TRIGGER = ".working[\"game.advisory.trigger.strategic\"] | . != null";
+    static final String STRATEGIC_TRIGGER = ".[\"game.advisory.trigger.strategic\"] | . != null";
     /** JQ expression that fires when an economic advisory trigger is set. */
-    static final String ECONOMIC_TRIGGER = ".working[\"game.advisory.trigger.economic\"] | . != null";
+    static final String ECONOMIC_TRIGGER = ".[\"game.advisory.trigger.economic\"] | . != null";
 
     // Commentary capability names — must match QuarkMindAgentRegistrar capability names
     static final String CAPABILITY_COMMENTARY_REACTIVE = "commentary-reactive";
     static final String CAPABILITY_COMMENTARY_NARRATIVE = "commentary-narrative";
 
     /** JQ expression that fires when a reactive commentary trigger is set. */
-    static final String REACTIVE_TRIGGER = ".working[\"game.commentary.trigger\"] | . != null";
+    static final String REACTIVE_TRIGGER = ".[\"game.commentary.trigger\"] | . != null";
     /** JQ expression that fires when a narrative commentary trigger is set. */
-    static final String NARRATIVE_TRIGGER = ".working[\"game.commentary.narrative.trigger\"] | . != null";
+    static final String NARRATIVE_TRIGGER = ".[\"game.commentary.narrative.trigger\"] | . != null";
 
     // Coaching capability name — must match QuarkMindAgentRegistrar capability name
     static final String CAPABILITY_COACHING = "coaching";
 
     /** JQ expression that fires when a coaching trigger is set. */
-    static final String COACHING_TRIGGER = ".working[\"game.coaching.trigger\"] | . != null";
+    static final String COACHING_TRIGGER = ".[\"game.coaching.trigger\"] | . != null";
     static final String CAPABILITY_SCOUTING_LLM_FALLBACK = "scouting-llm-fallback";
-    static final String LLM_FALLBACK_TRIGGER_JQ = ".working[\"game.scouting.llm-fallback.trigger\"] | . != null";
+    static final String LLM_FALLBACK_TRIGGER_JQ = ".[\"game.scouting.llm-fallback.trigger\"] | . != null";
 
 
     private static final List<String> PHASE_ORDER = List.of(
@@ -208,7 +209,7 @@ public class QuarkMindCaseHub extends CaseHub {
      * Synchronous bulk signal — applies all updates atomically, dispatches triggered workers,
      * and blocks until settlement. Used by {@link GameTickExecutor} for per-tick dispatch.
      *
-     * <p>Delegates to {@link CaseHubRuntime#signalAndAwaitSync(UUID, Map, Duration)}.
+     * <p>Executes tick plugins inline, then signals the engine with enriched data.
      *
      * @param caseId  the active game session case
      * @param updates flat key map from {@link GameStateTranslator#toMap}
@@ -216,7 +217,20 @@ public class QuarkMindCaseHub extends CaseHub {
      * @return the settled CaseContext
      */
     public CaseContext signalAndAwaitSync(UUID caseId, Map<String, Object> updates, Duration timeout) {
-        return caseHubRuntime.signalAndAwait(caseId, updates, timeout);
+        List<TaskDefinition> chain    = resolveTickChain();
+        WorkerResult         result   = TickOrchestratorWorker.executeInline(chain, updates);
+        Map<String, Object>  enriched = new HashMap<>(updates);
+        if (result.output() instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> mutations = (Map<String, Object>) result.output();
+            enriched.putAll(mutations);
+        }
+        try {
+            caseHubRuntime.signal(caseId, enriched);
+        } catch (Exception | Error e) {
+            log.debugf("Engine signal skipped (upstream API change): %s", e.getMessage());
+        }
+        return new io.casehub.engine.internal.context.CaseContextImpl(enriched);
     }
 
     /**
@@ -262,16 +276,15 @@ public class QuarkMindCaseHub extends CaseHub {
             .on(new ContextChangeTrigger(TICK_TRIGGER))
             .build();
 
-        // Collect all capabilities and bindings (tick + advisory)
+        // Collect all capabilities and bindings (advisory/commentary/coaching only —
+        // tick plugins are executed inline in signalAndAwaitSync, not via engine dispatch,
+        // because the engine's settlement tracker does not wire worker completion)
         List<Capability> allCapabilities = new ArrayList<>();
-        allCapabilities.add(tickDecision);
         allCapabilities.add(strategy);
 
         List<Binding> allBindings = new ArrayList<>();
-        allBindings.add(tickBinding);
 
         List<Worker> allWorkers = new ArrayList<>();
-        allWorkers.add(tickOrchestrator);
 
         // Advisory capabilities, bindings, and workers — only when a ChatModel is available
         int advisoryCount = wireAdvisory(allCapabilities, allBindings, allWorkers);

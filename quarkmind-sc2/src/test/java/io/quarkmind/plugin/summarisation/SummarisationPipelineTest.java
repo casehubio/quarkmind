@@ -41,7 +41,7 @@ class SummarisationPipelineTest {
         for (int i = 0; i < 5; i++) {
             momentBus.publish(new LevelEvent<>(
                 new GameMoment(GameMomentType.BATTLE_STARTED, 100 + i, Map.of()),
-                100 + i, LEVEL_2));
+                100 + i, LEVEL_2, "default"));
         }
 
         // Verify runner collected

@@ -1,0 +1,533 @@
+[ {
+  "frame" : 3696,
+  "evidenceMarkers" : [ ],
+  "revisions" : [ {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  } ]
+}, {
+  "frame" : 7392,
+  "evidenceMarkers" : [ {
+    "signal" : "6 ROACH in window",
+    "weight" : 0.55,
+    "archetype" : "ZERG_ROACH_RAVAGER"
+  }, {
+    "signal" : "6 ROACH in window",
+    "weight" : 0.55,
+    "archetype" : "ZERG_ROACH_HYDRA"
+  }, {
+    "signal" : "6 ROACH in window",
+    "weight" : 0.5,
+    "archetype" : "ZERG_RAVAGER_PUSH"
+  } ],
+  "revisions" : [ {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.998,
+    "reason" : "Past 5min with no attack",
+    "archetype" : "TERRAN_MARINE_RUSH"
+  }, {
+    "dampingFactor" : 0.998,
+    "reason" : "Past 5min with no attack",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.998,
+    "reason" : "Past 5min with no attack",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.998,
+    "reason" : "Past 5min with no attack",
+    "archetype" : "PROTOSS_GATEWAY_RUSH"
+  }, {
+    "dampingFactor" : 0.998,
+    "reason" : "Past 5min with no attack",
+    "archetype" : "PROTOSS_CANNON_RUSH"
+  } ]
+}, {
+  "frame" : 11088,
+  "evidenceMarkers" : [ {
+    "signal" : "3 ROACH in window",
+    "weight" : 0.55,
+    "archetype" : "ZERG_ROACH_HYDRA"
+  } ],
+  "revisions" : [ {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.997,
+    "reason" : "Expansion detected — rush unlikely",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.998,
+    "reason" : "Past 5min with no attack",
+    "archetype" : "TERRAN_MARINE_RUSH"
+  }, {
+    "dampingFactor" : 0.998,
+    "reason" : "Past 5min with no attack",
+    "archetype" : "ZERG_ZERGLING_RUSH"
+  }, {
+    "dampingFactor" : 0.998,
+    "reason" : "Past 5min with no attack",
+    "archetype" : "ZERG_ROACH_RUSH"
+  }, {
+    "dampingFactor" : 0.998,
+    "reason" : "Past 5min with no attack",
+    "archetype" : "PROTOSS_GATEWAY_RUSH"
+  }, {
+    "dampingFactor" : 0.998,
+    "reason" : "Past 5min with no attack",
+    "archetype" : "PROTOSS_CANNON_RUSH"
+  } ]
+} ]

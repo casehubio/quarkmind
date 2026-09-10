@@ -53,6 +53,11 @@ public enum StrategyArchetype {
     PROTOSS_STORM(Race.PROTOSS, GamePhase.MID, ArchetypeCategory.COMPOSITION),
     PROTOSS_WARP_PRISM_HARASS(Race.PROTOSS, GamePhase.MID, ArchetypeCategory.HARASS),
 
+    // Fallback — cascade returned empty with enemies visible
+    TERRAN_COMPOSITION_UNKNOWN(Race.TERRAN, GamePhase.MID, ArchetypeCategory.COMPOSITION),
+    ZERG_COMPOSITION_UNKNOWN(Race.ZERG, GamePhase.MID, ArchetypeCategory.COMPOSITION),
+    PROTOSS_COMPOSITION_UNKNOWN(Race.PROTOSS, GamePhase.MID, ArchetypeCategory.COMPOSITION),
+
     // Late game — data-driven generic rules
     TERRAN_BC_TRANSITION(Race.TERRAN, GamePhase.LATE, ArchetypeCategory.TECH),
     TERRAN_GHOST_NUKE(Race.TERRAN, GamePhase.LATE, ArchetypeCategory.TECH),

@@ -196,8 +196,8 @@ class TemporalCbrTaskTest {
         features.put("timeline", FeatureValue.structList(timeline));
         features.put("phase_sequence", FeatureValue.stringList("EARLY_MACRO", "MID_SKIRMISH"));
         var cbrCase = new SC2GameCbrCase("vs ZERG_ROACH_RUSH (PvZ)", "strategy.drools",
-                "WIN", 0.9, features);
-        return new ScoredCbrCase<>(cbrCase, 0.85);
+                "WIN", io.casehub.neocortex.cognitive.Confidence.unknown(0.9), features);
+        return new ScoredCbrCase<>(cbrCase, "sc2-game", 0.85);
     }
 
     private static List<Unit> buildWorkers(int count) {

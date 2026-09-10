@@ -1,24 +1,21 @@
 package io.quarkmind.agent;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.casehub.api.context.CaseContext;
-import io.casehub.api.model.Binding;
 import io.casehub.api.model.CaseDefinition;
-import io.casehub.api.model.ContextChangeTrigger;
 import io.casehub.worker.api.Capability;
 import io.casehub.worker.api.Worker;
-import io.casehub.worker.api.WorkerFunction;
 import io.casehub.worker.api.WorkerOutcome;
 import io.casehub.worker.api.WorkerResult;
+import io.quarkmind.agency.task.TaskDefinition;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import io.quarkmind.agency.task.TaskDefinition;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit test for {@link QuarkMindCaseHub#getDefinition()}.
@@ -60,10 +57,9 @@ class QuarkMindCaseHubTest {
     @Test
     void definition_hasTickDecisionCapability() {
         CaseDefinition def = hub.getDefinition();
-
         assertThat(def.getCapabilities())
-            .extracting(Capability::name)
-            .contains("tick-decision");
+                .extracting(Capability::name)
+                .doesNotContain("tick-decision");
     }
 
     @Test
@@ -78,15 +74,9 @@ class QuarkMindCaseHubTest {
     @Test
     void definition_hasTickOrchestratorWorker() {
         CaseDefinition def = hub.getDefinition();
-
         assertThat(def.getWorkers())
-            .extracting(Worker::name)
-            .contains("tick-orchestrator");
-
-        Worker tickOrchestrator = def.getWorkers().stream()
-            .filter(w -> w.name().equals("tick-orchestrator"))
-            .findFirst().orElseThrow();
-        assertThat(tickOrchestrator.capabilities()).containsExactly("tick-decision");
+                .extracting(Worker::name)
+                .doesNotContain("tick-orchestrator");
     }
 
     @Test
@@ -105,54 +95,25 @@ class QuarkMindCaseHubTest {
     @Test
     void definition_hasTickDecisionBinding() {
         CaseDefinition def = hub.getDefinition();
-
-        assertThat(def.getBindings()).hasSize(1);
-
-        Binding binding = def.getBindings().get(0);
-        assertThat(binding.getName()).isEqualTo("tick-decision");
-        assertThat(binding.getOn()).isInstanceOf(ContextChangeTrigger.class);
+        assertThat(def.getBindings()).isEmpty();
     }
 
     @Test
     void definition_tickDecisionBindingTargetsTickDecisionCapability() {
-        CaseDefinition def = hub.getDefinition();
-
-        Binding binding = def.getBindings().get(0);
-        Capability tickDecision = def.getCapabilities().stream()
-            .filter(c -> c.name().equals("tick-decision"))
-            .findFirst().orElseThrow();
-
-        // The binding's target wraps the tick-decision capability
-        assertThat(binding.target())
-            .isInstanceOf(io.casehub.api.model.CapabilityTarget.class);
-        io.casehub.api.model.CapabilityTarget target =
-            (io.casehub.api.model.CapabilityTarget) binding.target();
-        assertThat(target.capability()).isSameAs(tickDecision);
+        List<TaskDefinition> chain = hub.resolveTickChain();
+        assertThat(chain).isNotEmpty();
     }
 
     @Test
     void definition_totalWorkerCount() {
         CaseDefinition def = hub.getDefinition();
-
-        // 1 tick-orchestrator only — strategy workers deferred to Phase 2
-        assertThat(def.getWorkers()).hasSize(1);
+        assertThat(def.getWorkers()).isEmpty();
     }
 
     @Test
     void tickOrchestratorFunction_isNotPlaceholder() {
-        CaseDefinition def = hub.getDefinition();
-
-        Worker tickOrchestrator = def.getWorkers().stream()
-            .filter(w -> w.name().equals("tick-orchestrator"))
-            .findFirst().orElseThrow();
-
-        // The function should be a Sync that actually chains plugins
-        assertThat(tickOrchestrator.function()).isInstanceOf(WorkerFunction.Sync.class);
-
-        WorkerFunction.Sync fn = (WorkerFunction.Sync) tickOrchestrator.function();
-        WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1), null);
-
-        // Stub plugins are no-ops, but the function should still return Success
+        WorkerResult result = TickOrchestratorWorker.executeInline(
+                hub.resolveTickChain(), Map.of("game.frame", 1));
         assertThat(result.outcome()).isInstanceOf(WorkerOutcome.Success.class);
     }
 
@@ -183,24 +144,18 @@ class QuarkMindCaseHubTest {
         List<String> executionOrder = Collections.synchronizedList(new ArrayList<>());
 
         List<TaskDefinition> recordingPlugins = List.of(
-            recordingPlugin("scouting.test", "Scouting", executionOrder),
-            recordingPlugin("strategy.test", "Strategy", executionOrder),
-            recordingPlugin("tactics.test", "Tactics", executionOrder),
-            recordingPlugin("economics.test", "Economics", executionOrder)
-        );
+                recordingPlugin("scouting.test", "Scouting", executionOrder),
+                recordingPlugin("strategy.test", "Strategy", executionOrder),
+                recordingPlugin("tactics.test", "Tactics", executionOrder),
+                recordingPlugin("economics.test", "Economics", executionOrder)
+                                                       );
 
-        QuarkMindCaseHub testHub = new QuarkMindCaseHub(recordingPlugins);
-        CaseDefinition def = testHub.getDefinition();
+        WorkerResult result = TickOrchestratorWorker.executeInline(
+                recordingPlugins, Map.of("game.frame", 1));
 
-        Worker tickOrchestrator = def.getWorkers().stream()
-            .filter(w -> w.name().equals("tick-orchestrator"))
-            .findFirst().orElseThrow();
-
-        WorkerFunction.Sync fn = (WorkerFunction.Sync) tickOrchestrator.function();
-        fn.fn().apply(Map.of("game.frame", 1), null);
-
+        assertThat(result.outcome()).isInstanceOf(WorkerOutcome.Success.class);
         assertThat(executionOrder)
-            .containsExactly("scouting.test", "strategy.test", "tactics.test", "economics.test");
+                .containsExactly("scouting.test", "strategy.test", "tactics.test", "economics.test");
     }
 
     // ------------------------------------------------------------------

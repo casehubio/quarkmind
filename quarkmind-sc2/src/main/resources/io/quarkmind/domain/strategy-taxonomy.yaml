@@ -1311,8 +1311,10 @@ archetypes:
       units:
         - type: ROACH
           minCount: 3
+          weight: 0.55
         - type: HYDRALISK
           minCount: 2
+          weight: 0.55
     counters:
       PROTOSS:
         strong:
@@ -1349,6 +1351,7 @@ archetypes:
       units:
         - type: MUTALISK
           minCount: 3
+          weight: 0.6
     counters:
       PROTOSS:
         strong:
@@ -1421,8 +1424,10 @@ archetypes:
       units:
         - type: ZERGLING
           minCount: 8
+          weight: 0.55
         - type: BANELING
           minCount: 4
+          weight: 0.55
     counters:
       PROTOSS:
         strong:
@@ -1460,8 +1465,10 @@ archetypes:
       units:
         - type: ROACH
           minCount: 4
+          weight: 0.55
         - type: RAVAGER
           minCount: 2
+          weight: 0.55
     counters:
       PROTOSS:
         strong:
@@ -2207,6 +2214,66 @@ archetypes:
     detectionSignals:
       - "Warp Prism with warp-ins between 5-12 minutes"
       - "Warp Prism phasing near base"
+
+  TERRAN_COMPOSITION_UNKNOWN:
+    displayName: "Unknown Terran Composition"
+    race: TERRAN
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [0.0, 30.0]
+    handAuthored: true
+    counters:
+      PROTOSS:
+        strong: []
+        weak: []
+      TERRAN:
+        strong: []
+        weak: []
+      ZERG:
+        strong: []
+        weak: []
+    detectionSignals:
+      - "Terran units visible but no archetype matched"
+
+  ZERG_COMPOSITION_UNKNOWN:
+    displayName: "Unknown Zerg Composition"
+    race: ZERG
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [0.0, 30.0]
+    handAuthored: true
+    counters:
+      PROTOSS:
+        strong: []
+        weak: []
+      TERRAN:
+        strong: []
+        weak: []
+      ZERG:
+        strong: []
+        weak: []
+    detectionSignals:
+      - "Zerg units visible but no archetype matched"
+
+  PROTOSS_COMPOSITION_UNKNOWN:
+    displayName: "Unknown Protoss Composition"
+    race: PROTOSS
+    phase: MID
+    category: COMPOSITION
+    phaseWindow: [0.0, 30.0]
+    handAuthored: true
+    counters:
+      PROTOSS:
+        strong: []
+        weak: []
+      TERRAN:
+        strong: []
+        weak: []
+      ZERG:
+        strong: []
+        weak: []
+    detectionSignals:
+      - "Protoss units visible but no archetype matched"
 
   PROTOSS_CARRIER:
     displayName: "Carrier Composition"

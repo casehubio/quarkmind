@@ -41,7 +41,7 @@ class NarrativeContextHolderTest {
     @Test
     void publishesPhase_updatesLatestPosture() {
         var phase = new TacticalPosture("Opening", 100L, "Economy priority");
-        phaseBus.publish(new LevelEvent<>(phase, 100L, LEVEL_3));
+        phaseBus.publish(new LevelEvent<>(phase, 100L, LEVEL_3, "default"));
 
         assertThat(holder.latestPosture()).isEqualTo(phase);
     }
@@ -49,7 +49,7 @@ class NarrativeContextHolderTest {
     @Test
     void publishesArc_updatesLatestArc() {
         var arc = new GameArc("Bot establishes macro advantage", 500L);
-        arcBus.publish(new LevelEvent<>(arc, 500L, LEVEL_4));
+        arcBus.publish(new LevelEvent<>(arc, 500L, LEVEL_4, "default"));
 
         assertThat(holder.latestArc()).isEqualTo(arc);
     }
@@ -58,9 +58,9 @@ class NarrativeContextHolderTest {
     void gameStarted_clearsBothFields() {
         // Given — context populated
         phaseBus.publish(new LevelEvent<>(
-            new TacticalPosture("Mid-game", 200L, "Skirmish"), 200L, LEVEL_3));
+            new TacticalPosture("Mid-game", 200L, "Skirmish"), 200L, LEVEL_3, "default"));
         arcBus.publish(new LevelEvent<>(
-            new GameArc("Narrative arc", 400L), 400L, LEVEL_4));
+            new GameArc("Narrative arc", 400L), 400L, LEVEL_4, "default"));
 
         // When
         holder.onGameStarted(new GameStarted());
@@ -75,8 +75,8 @@ class NarrativeContextHolderTest {
         // Given
         var phase = new TacticalPosture("Late-game", 300L, "Tech race");
         var arc = new GameArc("Strategic pivot to air", 600L);
-        phaseBus.publish(new LevelEvent<>(phase, 300L, LEVEL_3));
-        arcBus.publish(new LevelEvent<>(arc, 600L, LEVEL_4));
+        phaseBus.publish(new LevelEvent<>(phase, 300L, LEVEL_3, "default"));
+        arcBus.publish(new LevelEvent<>(arc, 600L, LEVEL_4, "default"));
 
         // When
         Map<String, String> snapshot = holder.snapshot();
@@ -91,7 +91,7 @@ class NarrativeContextHolderTest {
     void snapshot_nullPhase_returnsPartialMap() {
         // Given — only arc populated
         var arc = new GameArc("Early aggression", 100L);
-        arcBus.publish(new LevelEvent<>(arc, 100L, LEVEL_4));
+        arcBus.publish(new LevelEvent<>(arc, 100L, LEVEL_4, "default"));
 
         // When
         Map<String, String> snapshot = holder.snapshot();
@@ -105,7 +105,7 @@ class NarrativeContextHolderTest {
     void snapshot_nullArc_returnsPartialMap() {
         // Given — only phase populated
         var phase = new TacticalPosture("Opening", 50L, "Scout rush");
-        phaseBus.publish(new LevelEvent<>(phase, 50L, LEVEL_3));
+        phaseBus.publish(new LevelEvent<>(phase, 50L, LEVEL_3, "default"));
 
         // When
         Map<String, String> snapshot = holder.snapshot();

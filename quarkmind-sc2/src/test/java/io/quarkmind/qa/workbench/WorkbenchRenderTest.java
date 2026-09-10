@@ -4,20 +4,27 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
-import io.quarkus.test.common.http.TestHTTPResource;
-import io.quarkus.test.junit.QuarkusTest;
 import io.quarkmind.agent.plugin.PatternAssessmentPublished;
 import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.StrategyArchetype;
+import io.quarkus.test.common.http.TestHTTPResource;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 @Tag("browser")
@@ -25,6 +32,13 @@ class WorkbenchRenderTest {
 
     @Inject Event<PatternAssessmentPublished> patternEvent;
     @Inject WorkbenchBroadcaster broadcaster;
+    @Inject
+            io.quarkmind.agent.AgentOrchestrator orchestrator;
+    @Inject
+            io.quarkmind.sc2.mock.SimulatedGame simulatedGame;
+    @Inject
+            io.quarkmind.sc2.ScenarioRunner scenarioRunner;
+
 
     @TestHTTPResource("/visualizer.html")
     URI visualizerUri;
@@ -88,6 +102,79 @@ class WorkbenchRenderTest {
         int count = ((Number) page.evaluate("() => window.__test.workbenchPatternCount()")).intValue();
         assertTrue(count >= 1);
     }
+
+    @Test
+    void full_pipeline_populates_pattern_tab_with_screenshot() throws Exception {
+        simulatedGame.reset();
+        orchestrator.startGame();
+        broadcaster.waitForSession(5000);
+
+        scenarioRunner.run("spawn-enemy-attack");
+        for (int i = 0; i < 3; i++) {orchestrator.gameTick();}
+
+        page.waitForFunction("() => window.__test.workbenchPatternCount() > 0", null,
+                             new Page.WaitForFunctionOptions().setTimeout(5000));
+
+        String patternText = (String) page.evaluate(
+                "() => document.querySelector('blocks-detail-pane').shadowRoot.querySelector('qm-pattern-page').shadowRoot.textContent");
+        org.assertj.core.api.Assertions.assertThat(patternText).as("Pattern tab should have data").doesNotContain("No pattern data");
+        org.assertj.core.api.Assertions.assertThat(patternText).as("Pattern tab should show confidence").contains("%");
+
+        page.screenshot(new Page.ScreenshotOptions().setPath(java.nio.file.Paths.get("/tmp/workbench-pattern.png")).setFullPage(true));
+
+        page.evaluate("() => document.querySelector('blocks-detail-pane').shadowRoot.querySelector('[aria-controls=\"panel-strategy\"]').click()");
+        Thread.sleep(200);
+        page.screenshot(new Page.ScreenshotOptions().setPath(java.nio.file.Paths.get("/tmp/workbench-strategy.png")).setFullPage(true));
+
+        page.evaluate("() => document.querySelector('blocks-detail-pane').shadowRoot.querySelector('[aria-controls=\"panel-coaching\"]').click()");
+        Thread.sleep(200);
+        page.screenshot(new Page.ScreenshotOptions().setPath(java.nio.file.Paths.get("/tmp/workbench-coaching.png")).setFullPage(true));
+    }
+
+    @Test
+    void strategy_tab_shows_data_after_pipeline() throws Exception {
+        simulatedGame.reset();
+        orchestrator.startGame();
+        broadcaster.waitForSession(5000);
+
+        scenarioRunner.run("spawn-enemy-attack");
+        for (int i = 0; i < 3; i++) {orchestrator.gameTick();}
+
+        // Strategy event has fired — workbenchState.strategy is set.
+        // Click strategy tab — element is created lazily.
+        page.evaluate("() => document.querySelector('blocks-detail-pane').shadowRoot.querySelector('[aria-controls=\"panel-strategy\"]').click()");
+
+        page.waitForFunction(
+                "() => { var dp = document.querySelector('blocks-detail-pane'); if (!dp || !dp.shadowRoot) return false;" +
+                " var sp = dp.shadowRoot.querySelector('qm-strategy-page'); if (!sp || !sp.shadowRoot) return false;" +
+                " return sp.shadowRoot.textContent.indexOf('Active Strategy') !== -1; }",
+                null, new Page.WaitForFunctionOptions().setTimeout(5000));
+
+        String text = (String) page.evaluate(
+                "() => document.querySelector('blocks-detail-pane').shadowRoot.querySelector('qm-strategy-page').shadowRoot.textContent");
+        org.assertj.core.api.Assertions.assertThat(text).contains("Active Strategy");
+    }
+
+    @Test
+    void coaching_tab_shows_mode_info_without_llm_events() throws Exception {
+        page.evaluate("() => document.querySelector('blocks-detail-pane').shadowRoot.querySelector('[aria-controls=\"panel-coaching\"]').click()");
+        Thread.sleep(300);
+
+        String text = (String) page.evaluate(
+                "() => document.querySelector('blocks-detail-pane').shadowRoot.querySelector('qm-coaching-page').shadowRoot.textContent");
+        org.assertj.core.api.Assertions.assertThat(text).as("Coaching tab should show status text").isNotBlank();
+    }
+
+    @Test
+    void commentary_tab_shows_status_text() throws Exception {
+        page.evaluate("() => document.querySelector('blocks-detail-pane').shadowRoot.querySelector('[aria-controls=\"panel-commentary\"]').click()");
+        Thread.sleep(300);
+
+        String text = (String) page.evaluate(
+                "() => document.querySelector('blocks-detail-pane').shadowRoot.querySelector('qm-commentary-page').shadowRoot.textContent");
+        org.assertj.core.api.Assertions.assertThat(text).as("Commentary tab should show status text").isNotBlank();
+    }
+
 
     @Test
     void empty_canvas_click_clears_selection() {

@@ -1,0 +1,16 @@
+[ {
+  "frame" : 3696,
+  "gameTimeMinutes" : 2.75,
+  "enemyCount" : 26,
+  "enemyRace" : "ZERG"
+}, {
+  "frame" : 7392,
+  "gameTimeMinutes" : 5.5,
+  "enemyCount" : 38,
+  "enemyRace" : "ZERG"
+}, {
+  "frame" : 11088,
+  "gameTimeMinutes" : 8.25,
+  "enemyCount" : 2,
+  "enemyRace" : "ZERG"
+} ]

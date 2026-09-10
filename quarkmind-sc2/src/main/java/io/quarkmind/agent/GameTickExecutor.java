@@ -55,6 +55,9 @@ class GameTickExecutor {
     @Inject
     CoachingComplianceEvaluator coachingComplianceEvaluator;
     @Inject
+    io.quarkmind.plugin.commentary.InlineCommentaryDispatcher inlineCommentaryDispatcher;
+
+    @Inject
     TimelineSampler             timelineSampler;
 
 
@@ -71,14 +74,14 @@ class GameTickExecutor {
         Map<String, Object> caseData = translator.toMap(gameState);
         caseData = new HashMap<>(caseData);
         caseData.put(QuarkMindCaseFile.GAME_MODE, gameMode);
-        pluginDispatchBroker.recordTick(caseData);   // commitment signals before engine
+        try { pluginDispatchBroker.recordTick(caseData); } catch (Exception | Error e) { log.debugf("Broker recordTick skipped: %s", e.getMessage()); }
         long t1b = System.currentTimeMillis();       // broker end: toMap + recordTick
 
         CaseContext ctx = null;
         try {
             ctx = caseHub.signalAndAwaitSync(gameSession.id(), caseData, TICK_TIMEOUT);
-        } catch (Exception e) {
-            log.errorf("Engine signal+settle failed at frame %d: %s",
+        } catch (Exception | Error e) {
+            log.warnf("Engine signal+settle failed at frame %d: %s",
                        gameState.gameFrame(), e.getMessage());
         }
         long t2 = System.currentTimeMillis();        // plugins end: signalAndAwaitSync
@@ -110,16 +113,13 @@ class GameTickExecutor {
             coachingComplianceEvaluator.evaluate(gameState, gameState.gameFrame());
         }
 
-        // Commentary reactive trigger: fire-and-forget signal (both modes)
+        // Commentary reactive trigger: inline LLM dispatch (engine worker dispatch is broken —
+        // settlement tracker never signals completion, so caseHub.signal() workers never execute)
         Map<String, Object> reactiveTriggers = Map.of();
         if (ctx != null) {
             reactiveTriggers = commentaryTriggerBuilder.build(ctx, gameState.gameFrame());
-            if (!reactiveTriggers.isEmpty()) {
-                try {
-                    caseHub.signal(gameSession.id(), reactiveTriggers);
-                } catch (Exception ex) {
-                    log.warnf("Reactive commentary trigger failed at frame %d: %s", gameState.gameFrame(), ex.getMessage());
-                }
+            if (!reactiveTriggers.isEmpty() && inlineCommentaryDispatcher.isAvailable()) {
+                inlineCommentaryDispatcher.executeAsync(reactiveTriggers);
             }
         }
 

@@ -1,88 +1,6 @@
-# quarkmind Workspace
+# CLAUDE.md
 
 **Name:** quarkmind
-
-**Physical path:** `/Users/mdproctor/claude/casehub/quarkmind/CLAUDE.md`
-**Symlinked at:** `/Users/mdproctor/claude/public/quarkmind/CLAUDE.md`
-**Project repo:** `/Users/mdproctor/claude/casehub/quarkmind`
-**Workspace:** `/Users/mdproctor/claude/public/quarkmind`
-**Workspace type:** public
-
-## Session Start
-
-Run `add-dir /Users/mdproctor/claude/casehub/quarkmind` before any other work.
-
-## Artifact Locations
-
-| Skill | Writes to |
-|-------|-----------|
-| brainstorming (specs) | `specs/` |
-| writing-plans (plans) | `plans/` |
-| handover | `HANDOFF.md` |
-| idea-log | `IDEAS.md` |
-| design-snapshot | `snapshots/` |
-| java-update-design / update-primary-doc | `design/JOURNAL.md` (created by `epic`) |
-| adr | `adr/` |
-| write-blog | `blog/` |
-
-## Structure
-
-- `HANDOFF.md` — session handover (single file, overwritten each session)
-- `IDEAS.md` — idea log (single file)
-- `specs/` — brainstorming / design specs (superpowers output)
-- `plans/` — implementation plans (superpowers output)
-- `snapshots/` — design snapshots with INDEX.md (auto-pruned, max 10)
-- `adr/` — architecture decision records with INDEX.md
-- `blog/` — project diary entries with INDEX.md
-
-## Git Discipline
-
-Two git repositories are active in every session:
-- **Workspace** (`/Users/mdproctor/claude/public/quarkmind`) — plans, blog (staging), snapshots, handover
-- **Project repo** (`/Users/mdproctor/claude/casehub/quarkmind`) — source code, ADRs (`docs/adr/`), specs
-
-Never rely on CWD for git operations — the session may have started in either repo. Always use explicit paths:
-```bash
-git -C /Users/mdproctor/claude/public/quarkmind ...     # workspace artifacts
-git -C /Users/mdproctor/claude/casehub/quarkmind ...    # project artifacts
-```
-The file path determines the repo: if the file lives under `Workspace`, use the workspace path; if under `Project repo`, use the project path.
-
-## Git workflow
-
-```
-origin   → casehubio/quarkmind   (git remote get-url origin)
-```
-
-Before starting any branch: `git fetch origin && git rebase origin/main` to sync local main. At work-end: rebase the branch onto local main, push to `origin`. PRs are created on demand — never automatically at work-end.
-
-## Rules
-
-- All methodology artifacts go here, not in the project repo
-- Promotion to project repo is always explicit — never automatic
-- Workspace branches mirror project branches — switch both together
-
-## Routing
-
-| Artifact   | Destination | Notes |
-|------------|-------------|-------|
-| adr        | project     | lands in `docs/adr/` — promoted at epic close |
-| specs      | project     | lands in `docs/specs/` — promoted at epic close |
-| blog       | project     | lands in `docs/blog/` — promoted at work end |
-| plans      | workspace   | stay in workspace permanently |
-| design     | workspace   | epic journal stays in workspace |
-| snapshots  | workspace   | stay in workspace permanently |
-| handover   | workspace   | |
-
-
-## Context Management
-
-If the conversation is getting very long or you notice context pressure,
-proactively suggest writing a handover before continuing.
-
----
-
-# QuarkMind Project
 
 ## Project Type
 
@@ -317,7 +235,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 
 **Unit tests** (no Quarkus, fast):
 - Instantiate classes directly via `new` — no CDI
-- Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `IEM10CommandExtractorTest`, `IEM10CommandExtractorSelectionDeltaTest`, `SelectionStateTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `DroolsStrategyTaskStaticTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TerranEmulatedGameTest`, `ZergEmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `PhysicsStateTest`, `PlayerStateTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`, `ObservationTranslatorTest`, `ObservationTranslatorIntegrationTest`, `QuarkusSC2TransportTest`, `AbilityDiscoveryTest`, `AbilityMappingTest`, `ReplayCommandExtractorTest`, `TerranReplayCommandExtractorTest`, `ReplayValidationTest`, `ReplayValidationHarnessTest`, `ReplaySimulatedGameMovementTest`, `SC2DataTest`, `SC2TrainTimeCalibrationTest`, `SC2BuildTimeCalibrationTest`, `GameEventStreamTest`, `UnitOrderTrackerTest`, `DispositionAwareRoutingStrategyTest`, `EarlyPressureStrategyTaskTest`, `EarlyPressureStrategyTaskMigrationTest`, `EconomicExpansionStrategyTaskTest`, `RealSC2EngineTest`, `MapCaseContextTest`, `PluginDispatchBrokerTest`, `EmulatedSC2ServerTest`, `GameStateRoundTripTest`, `EventAccumulatorTest`, `EventStreamBusTest`, `SummarisationRunnerTest`, `GamePhaseSummariserTest`, `GameArcSummariserTest`, `SummarisationPipelineTest`, `DroolsStrategyL2L3Test`, `AdvisoryWorkerFactoryTest`, `QuarkMindAdvisorRegistrarTest`, `AdvisoryTriggerBuilderTest`, `AdvisoryCompletionObserverTest`, `AdvisoryInvocationCounterTest`, `AdvisoryLatencyRecorderTest`, `DeferredAdvisoryEvaluatorTest`, `AdvisoryMilestoneOutcomeRecorderTest`, `AdvisoryMilestoneSessionTest`, `AdvisoryChannelBrokerTest`, `AdvisoryChannelBackendTest`, `QuarkMindTrustRoutingPolicyProviderTest`, `QuarkMindCaseHubTest`, `GameTickExecutorMigrationTest`, `TickOrchestratorWorkerTest`, `MilestoneSessionTest`, `FrameThresholdTriggerTest`, `GamePhaseTriggerTest`, `DominanceScoreTest`, `MultiFactorDominanceAssessorTest`, `MilestoneOutcomeRecorderTest`, `WorkbenchEventTest`, `WorkbenchEnricherTest`, `WorkbenchSerializationTest`, `EngagementOutcomeTest`, `MomentDetectionBattleTest`
+- Tests: `SimulatedGameTest`, `ReplaySimulatedGameTest`, `IEM10JsonSimulatedGameTest`, `IEM10CommandExtractorTest`, `IEM10CommandExtractorSelectionDeltaTest`, `SelectionStateTest`, `ReplaySimulatedGameUnitTypeTest`, `ReplayEngineTest`, `BasicEconomicsTaskTest`, `DroolsStrategyTaskStaticTest`, `IntentQueueTest`, `MockPipelineTest`, `ScenarioLibraryTest`, `GameStateTranslatorTest`, `GameStateTest`, `DroolsTacticsTaskTest`, `DroolsScoutingTaskTest`, `BlinkMechanicsTest`, `GameStateInvariantTest`, `EmulatedGameTest`, `TerranEmulatedGameTest`, `ZergEmulatedGameTest`, `TechTreeTest`, `EnemyBehaviorTest`, `PhysicsStateTest`, `PlayerStateTest`, `FixedBuildOrderStrategyTest`, `ReactiveStrategyTest`, `TerrainGridTest`, `AStarPathfinderTest`, `PathfindingMovementTest`, `SC2BotAgentTerrainTest`, `ObservationTranslatorTest`, `ObservationTranslatorIntegrationTest`, `QuarkusSC2TransportTest`, `AbilityDiscoveryTest`, `AbilityMappingTest`, `ReplayCommandExtractorTest`, `TerranReplayCommandExtractorTest`, `ReplayValidationTest`, `ReplayValidationHarnessTest`, `ReplaySimulatedGameMovementTest`, `SC2DataTest`, `SC2TrainTimeCalibrationTest`, `SC2BuildTimeCalibrationTest`, `GameEventStreamTest`, `UnitOrderTrackerTest`, `DispositionAwareRoutingStrategyTest`, `EarlyPressureStrategyTaskTest`, `EarlyPressureStrategyTaskMigrationTest`, `EconomicExpansionStrategyTaskTest`, `RealSC2EngineTest`, `MapCaseContextTest`, `PluginDispatchBrokerTest`, `EmulatedSC2ServerTest`, `GameStateRoundTripTest`, `EventAccumulatorTest`, `EventStreamBusTest`, `SummarisationRunnerTest`, `GamePhaseSummariserTest`, `GameArcSummariserTest`, `SummarisationPipelineTest`, `DroolsStrategyL2L3Test`, `AdvisoryWorkerFactoryTest`, `QuarkMindAdvisorRegistrarTest`, `AdvisoryTriggerBuilderTest`, `AdvisoryCompletionObserverTest`, `AdvisoryInvocationCounterTest`, `AdvisoryLatencyRecorderTest`, `DeferredAdvisoryEvaluatorTest`, `AdvisoryMilestoneOutcomeRecorderTest`, `AdvisoryMilestoneSessionTest`, `AdvisoryChannelBrokerTest`, `AdvisoryChannelBackendTest`, `QuarkMindTrustRoutingPolicyProviderTest`, `QuarkMindCaseHubTest`, `GameTickExecutorMigrationTest`, `TickOrchestratorWorkerTest`, `MilestoneSessionTest`, `FrameThresholdTriggerTest`, `GamePhaseTriggerTest`, `DominanceScoreTest`, `MultiFactorDominanceAssessorTest`, `MilestoneOutcomeRecorderTest`, `WorkbenchEventTest`, `WorkbenchEnricherTest`, `WorkbenchSerializationTest`, `EngagementOutcomeTest`, `MomentDetectionBattleTest`, `ReplayEnemyPositionUpdateTest`, `ReplayDataSmokeTest`
 - Tests: (continued) `PatternConfidenceTest`, `DominanceWeightsTest`, `AnchorInterpolatorTest`, `TemporalDominanceWeightStrategyTest`, `SituationalDominanceWeightStrategyTest`, `DroolsDominanceWeightStrategyTest`, `UnitTypeTest`, `StrategyArchetypeTest`, `GamePhaseTest`, `ArchetypeCategoryTest`, `StrategyTaxonomyTest`, `TimeBasedPhaseResolverTest`, `StateBasedPhaseResolverTest`, `PhaseResolverProducerTest`, `SC2GameCbrCaseTest`, `SC2CbrRetentionObserverTest`, `SC2AdvisoryCbrRetentionObserverTest`, `SC2ImplementationRoutingStrategyTest`, `SC2StrategyRouterTaskTest`, `ScoutingConvergenceEvaluatorTest`
 - Tests: (continued) `CoachingAdviceTest`, `CoachingDispositionTermTest`, `CoachingTriggerBuilderTest`, `CoachingSessionSelectorTest`, `CoachingWorkerFactoryTest`, `CoachingChannelBrokerTest`, `CoachingComplianceEvaluatorTest`, `CoachingStyleTest`, `CoachingAcknowledgmentHandlerTest`, `Point2dCentroidTest`, `UnitTypeWorkerTest`, `ExpansionLocationTest`, `TerrainGridRampTest`, `LocationResolverTest`, `CountDeltaTest`, `ArmyCentroidMovementTest`, `ExpansionPlacementTest`, `UnitsNearLocationTest`, `LlmPatternClassifierWorkerFactoryTest`, `ComplianceVerdictTest`, `ComplianceWorkerDispatcherTest`, `LlmComplianceWorkerFactoryTest`, `CbrLearningCurveEndpointTest`
 - Chat protocol tests: `ChatIntentTest`, `ChatPerceptionTest`
@@ -329,7 +247,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 **Integration tests** (`@QuarkusTest`, full CDI context):
 - Use `@Inject` to get beans; scheduler is disabled — call `orchestrator.gameTick()` directly
 - Tests: `QaEndpointsTest`, `FullMockPipelineIT`, `DroolsStrategyTaskTest`, `EconomicsFlowTest`, `DroolsTacticsRuleUnitTest`, `DroolsTacticsTaskIT`, `DroolsScoutingRulesTest`, `DroolsScoutingTaskIT`, `LedgerAuditIT`, `TrustWeightedStrategyIT`, `StrategyOutcomeRecordIT`, `AdaptivePluginSelectionIT`, `MomentDetectionTaskTest`, `MomentBrokerIT`, `SummarisationPipelineIT`, `AdvisoryIntegrationIT`, `LlmComplianceIT`
-- Tests: (continued) `PatternClassificationRuleUnitTest`, `PatternClassificationCalibrationTest`, `DominanceWeightRuleUnitTest`, `SC2CbrRetentionIT`, `SC2CbrRoutingIT`, `WorkbenchSocketIT`, `LlmPatternFallbackIT`, `CbrLearningCurveIT`
+- Tests: (continued) `PatternClassificationRuleUnitTest`, `PatternClassificationCalibrationTest`, `DominanceWeightRuleUnitTest`, `SC2CbrRetentionIT`, `SC2CbrRoutingIT`, `WorkbenchSocketIT`, `LlmPatternFallbackIT`, `CbrLearningCurveIT`, `PipelineSmokeIT`
 - L6 @QuarkusTest note: `DroolsStrategyTaskTest`, `LedgerAuditIT`, `AdaptivePluginSelectionIT` inject `@CaseType("starcraft-game") DroolsStrategyTask` directly (not the `StrategyTask` interface) — three competing `StrategyTask` implementations make the interface injection ambiguous. Always use the concrete type when a specific strategy impl is the subject under test.
 - QuarkVille integration tests: `VilleServerIT`, `EndToEndIT` — WebSocket connect/perception/intent/thought tests; use `@TestHTTPResource` for port resolution
 - Flow integration tests emit to a SmallRye channel and assert after `Thread.sleep(300)` — the flow processes asynchronously
@@ -376,8 +294,8 @@ See `NATIVE.md` for the per-dependency compatibility tracker.
 ## Code Organisation
 
 ```
-quarkmind/                           ← parent POM
-├── quarkmind-core/                  ← agency framework (SPIs, needs, intents)
+quarkmind/                           <- parent POM
+├── quarkmind-core/                  <- agency framework (SPIs, needs, intents)
 │   src/main/java/io/quarkmind/agency/
 │     AgencyLoop, AgencyContext, AgencyPhase
 │     spi/          WorldBridge<P,I>, WorldPerception
@@ -391,7 +309,7 @@ quarkmind/                           ← parent POM
 │     interaction/  InteractionTrigger, InteractionPipeline, TriggerEvent
 │     moment/       MomentDetector, MomentEvent
 │     llm/          LlmRequestQueue, LlmRequest, LlmPriority
-├── quarkmind-sc2/                   ← StarCraft II (all SC2-specific code)
+├── quarkmind-sc2/                   <- StarCraft II (all SC2-specific code)
 │   src/main/java/io/quarkmind/
 │     domain/              Plain Java records — no framework deps
 │     sc2/                 SC2Engine seam — IntentQueue, sealed Intent, SC2WebSocketCodec
@@ -410,22 +328,22 @@ quarkmind/                           ← parent POM
 │     qa/workbench/        WorkbenchSocket, CoachingAcknowledgmentHandler
 │   src/main/webui/        Vite + Lit components (Quinoa-managed)
 │     workbench/           qm-pattern-page, qm-coaching-page, qm-strategy-page, qm-commentary-page
-├── quarkmind-ville/                 ← QuarkVille — Sims-like 3D life simulation
-│   ├── quarkmind-ville-protocol/    ← shared message types (VilleIntent, VillePerception)
-│   ├── quarkmind-ville-server/      ← game server (world state, game tick, WebSocket)
-│   ├── quarkmind-ville-agent/       ← agent client (AgencyLoop, WorldBridge, LLM)
-│   └── godot/                       ← Godot 4 visual client
-├── quarkmind-chat/                  ← Platform-agnostic chat bot harness (#279)
-│   ├── quarkmind-chat-protocol/     ← shared types (ChatIntent, ChatPerception, WakeReason)
-│   └── quarkmind-chat-agent/        ← agency loop, world bridge, Discord adapters, multi-character manager
-│       CharacterContext             ← per-character identity + perception state
-│       ChatCharacterManager         ← manages N characters, routes ticks per agentId
-│       ChatAgencyLoop               ← stateless loop — reactive (LLM) + proactive (InnerLifeOrchestrator)
-│       CharacterConfig              ← per-character config record (agentId, token, channels)
-├── quarkmind-minecraft/             ← Minecraft agent (stub)
-├── quarkmind-evennia/               ← MUD agent (stub)
-├── quarkmind-sonaria/               ← Roblox/Sonaria agent (stub)
-└── quarkmind-godot-mcp/             ← Godot EditorPlugin MCP (stub)
+├── quarkmind-ville/                 <- QuarkVille — Sims-like 3D life simulation
+│   ├── quarkmind-ville-protocol/    <- shared message types (VilleIntent, VillePerception)
+│   ├── quarkmind-ville-server/      <- game server (world state, game tick, WebSocket)
+│   ├── quarkmind-ville-agent/       <- agent client (AgencyLoop, WorldBridge, LLM)
+│   └── godot/                       <- Godot 4 visual client
+├── quarkmind-chat/                  <- Platform-agnostic chat bot harness (#279)
+│   ├── quarkmind-chat-protocol/     <- shared types (ChatIntent, ChatPerception, WakeReason)
+│   └── quarkmind-chat-agent/        <- agency loop, world bridge, Discord adapters, multi-character manager
+│       CharacterContext             <- per-character identity + perception state
+│       ChatCharacterManager         <- manages N characters, routes ticks per agentId
+│       ChatAgencyLoop               <- stateless loop — reactive (LLM) + proactive (InnerLifeOrchestrator)
+│       CharacterConfig              <- per-character config record (agentId, token, channels)
+├── quarkmind-minecraft/             <- Minecraft agent (stub)
+├── quarkmind-evennia/               <- MUD agent (stub)
+├── quarkmind-sonaria/               <- Roblox/Sonaria agent (stub)
+└── quarkmind-godot-mcp/             <- Godot EditorPlugin MCP (stub)
 ```
 
 ## Plugin Architecture
@@ -446,9 +364,9 @@ Six benchmark tests run via `mvn test -pl quarkmind-sc2 -Pbenchmark`:
 - `GameLoopBenchmarkTest` — per-phase tick timings across the full plugin chain (MockEngine, %test profile). Run before/after any change that could affect game loop latency; paste results into `docs/benchmarks/`.
 - `EmulatedGameBenchmarkTest` — EmulatedGame full-tick throughput with realistic combat load (PROTOSS_4GATE, A* pathfinding active). Plain JUnit — measures physics tick rate, not harness dispatch. Package: `io.quarkmind.sc2.emulated`. Run via `mvn test -pl quarkmind-sc2 -Pbenchmark -Dtest=EmulatedGameBenchmarkTest`.
 - `ScoutingCalibrationTest` — runs all replay datasets to 3-min mark and prints enemy unit count statistics per matchup.
-- `PatternClassificationCalibrationTest` — `@QuarkusTest` that runs `PatternClassificationRuleUnit` against AI Arena + IEM10 replays, asserts ≥ 70% accuracy for rush and air-threat archetypes at 3-min mark.
+- `PatternClassificationCalibrationTest` — `@QuarkusTest` that runs `PatternClassificationRuleUnit` against AI Arena + IEM10 replays, asserts >= 70% accuracy for rush and air-threat archetypes at 3-min mark.
 - `ExpansionLocationCalibrationTest` — validates `CLUSTER_RADIUS=12.0` against 59 replays (30 IEM10 + 29 AI Arena); asserts each map produces 4-20 expansion locations.
-- `MapControlCalibrationTest` — validates `EXPANSION_CONTROL_RADIUS=10.0` against IEM10 + AI Arena replays; measures base-building-to-expansion-centroid distances, asserts ≥ 90% match rate.
+- `MapControlCalibrationTest` — validates `EXPANSION_CONTROL_RADIUS=10.0` against IEM10 + AI Arena replays; measures base-building-to-expansion-centroid distances, asserts >= 90% match rate.
 
 **When to run `GameLoopBenchmarkTest`:**
 - Adding or modifying a plugin

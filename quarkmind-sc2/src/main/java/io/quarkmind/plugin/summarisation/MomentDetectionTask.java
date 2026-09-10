@@ -124,7 +124,7 @@ public class MomentDetectionTask implements MomentDetectionSeam {
         }}
 
     List<GameMoment> fireRules(long frame, int supplyUsed, int supplyCap) {
-        if (pendingIntel.isEmpty()) {return List.of();}
+        if (pendingIntel.isEmpty()) {return new ArrayList<>();}
 
         var data = new MomentDetectionRuleUnit();
         data.setCurrentFrame(frame);
@@ -162,7 +162,7 @@ public class MomentDetectionTask implements MomentDetectionSeam {
 
             deduplicated.add(moment);
             if (momentBus != null) {
-                momentBus.publish(new LevelEvent<>(moment, frame, LEVEL_2));
+                momentBus.publish(new LevelEvent<>(moment, frame, LEVEL_2, "default"));
             }
             log.debugf("[MOMENT] %s at frame %d", moment.type(), frame);
         }

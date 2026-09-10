@@ -800,6 +800,8 @@ function setupDetailPane() {
       { id: 'commentary', label: 'Commentary', tagName: 'qm-commentary-page', order: 3 },
     ];
     detailPane.emptyMessage = '';
+    // Poll to apply cached workbench state when tabs switch (element creation is async)
+    setInterval(function() { applyWorkbenchSnapshot(); }, 500);
   }
 }
 
@@ -815,10 +817,23 @@ function findPageElement(tagName) {
   return dp._tabElements ? dp._tabElements.get(tagName.replace('qm-', '').replace('-page', '')) : null;
 }
 
+function applyWorkbenchSnapshot() {
+  if (workbenchState.pattern) { var pp = findPageElement('qm-pattern-page'); if (pp && !pp.data) pp.data = workbenchState.pattern; }
+  if (workbenchState.strategy) { var sp = findPageElement('qm-strategy-page'); if (sp && !sp.data) sp.data = workbenchState.strategy; }
+  if (workbenchState.coaching.length) { var cp = findPageElement('qm-coaching-page'); if (cp && !cp.data.length) cp.data = [...workbenchState.coaching]; }
+  if (workbenchState.commentary.length) { var comp = findPageElement('qm-commentary-page'); if (comp && comp.messages != null && !comp.messages.length) comp.messages = workbenchState.commentary; }
+}
+
 function connectWorkbenchSocket() {
   var ws = new WebSocket('ws://' + window.location.host + '/ws/workbench');
   window.__workbenchWs = ws;
-  ws.onopen = function() { wbWsConnected = true; updateConnectionStatus(); };
+  ws.onopen = function() {
+    wbWsConnected = true; updateConnectionStatus();
+    workbenchState.commentary = [];
+    commentaryCounter = 0;
+    var retries = 0;
+    var applyInterval = setInterval(function() { applyWorkbenchSnapshot(); if (++retries >= 10) clearInterval(applyInterval); }, 200);
+  };
   ws.onmessage = function(e) {
     try {
       var event = JSON.parse(e.data);
@@ -1214,6 +1229,7 @@ function syncBuildings(buildings) {
       sp.scale.set(TILE * w, TILE * h, 1);
       const wp = gw(b.position.x, b.position.y);
       sp.position.set(wp.x, TERRAIN_SURFACE_Y + TILE * h * 0.5, wp.z);
+      sp.renderOrder = 3;  // above creep (2), below fog (5)
       sp.userData.buildingTag = b.tag;
       sp.userData.isEnemy     = false;
       scene.add(sp);
@@ -1325,6 +1341,7 @@ function syncEnemyBuildings(buildings) {
       sp.material = mat.clone();
       sp.material.color.setHex(0xff4422);
       sp.visible = enemyVisible;
+      sp.renderOrder = 3;  // above creep (2), below fog (5)
       sp.userData.buildingTag = b.tag;
       sp.userData.isEnemy     = true;
       scene.add(sp);
@@ -1359,13 +1376,13 @@ function syncCreep(enemyBuildings) {
         new THREE.MeshBasicMaterial({
           // Bright SC2-style purple — visible on sandy terrain at any opacity.
           // Real terrain ground plane sits at y=0.04; creep must be above it.
-          color: 0x9030c0, transparent: true, opacity: 0.7,
+          color: 0x9030c0, transparent: true, opacity: 0.45,
           depthWrite: false, depthTest: false, side: THREE.DoubleSide
         })
       );
       const wp = gw(tx, tz);
       mesh.rotation.x = -Math.PI / 2;
-      mesh.renderOrder = 10;  // render after opaque terrain
+      mesh.renderOrder = 2;  // above ground (0), below units (3) and fog (5)
       mesh.position.set(wp.x, 0.08, wp.z); // above ground plane (y=0.04)
       scene.add(mesh);
       creepMeshes.set(key, mesh);
@@ -1415,6 +1432,7 @@ function syncUnitLayer(spriteMap, meshMap, units, isEnemy) {
       const flyingY = TERRAIN_SURFACE_Y + TILE * 1.1;
       const unitY   = FLYING_UNITS.has(u.type) ? flyingY : groundY;
       sp.position.set(wp.x, unitY, wp.z);
+      sp.renderOrder = 3;  // above creep (2), below fog (5)
       if (isEnemy) sp.visible = enemyVisible;
       group2d.add(sp);
       spriteMap.set(u.tag, sp);
@@ -9379,6 +9397,7 @@ async function initReplayControls() {
   const bar = document.createElement('div');
   bar.id = 'replay-bar';
   bar.innerHTML = `
+    <button id="rb-reset" title="Reset — rewind + clear workbench + play">↺ Reset</button>
     <button id="rb-rewind" title="Rewind to start">⏮</button>
     <button id="rb-pp" title="Play / Pause">⏸</button>
     <input id="rb-scrub" type="range" min="0" max="${totalLoops}" value="0" step="22">
@@ -9411,11 +9430,33 @@ async function initReplayControls() {
 
   let playing = true;
 
+  function clearWorkbenchState() {
+    workbenchState.pattern = null;
+    workbenchState.strategy = null;
+    workbenchState.coaching = [];
+    workbenchState.commentary = [];
+    commentaryCounter = 0;
+    var pp = findPageElement('qm-pattern-page'); if (pp) pp.data = null;
+    var sp = findPageElement('qm-strategy-page'); if (sp) sp.data = null;
+    var cp = findPageElement('qm-coaching-page'); if (cp) cp.data = [];
+    var comp = findPageElement('qm-commentary-page'); if (comp) comp.messages = [];
+  }
+
+  document.getElementById('rb-reset').onclick = async () => {
+    await fetch('/qa/replay/reset', { method: 'POST' });
+    clearWorkbenchState();
+    playing = true;
+    document.getElementById('rb-pp').textContent = '⏸';
+    document.getElementById('rb-scrub').value = 0;
+    document.getElementById('rb-time').textContent = `0:00 / ${fmtLoop(totalLoops)}`;
+  };
+
   document.getElementById('rb-rewind').onclick = async () => {
     playing = false;
     document.getElementById('rb-pp').textContent = '▶';
     await fetch('/qa/replay/pause', { method: 'POST' });
     await fetch('/qa/replay/seek?loop=0', { method: 'POST' });
+    clearWorkbenchState();
     document.getElementById('rb-scrub').value = 0;
     document.getElementById('rb-time').textContent = `0:00 / ${fmtLoop(totalLoops)}`;
   };
@@ -9463,3 +9504,6 @@ function fmtLoop(loop) {
 }
 
 init();
+
+// Top-level poll — apply cached workbench state to lazily-rendered tab elements
+setInterval(function() { if (typeof applyWorkbenchSnapshot === 'function') applyWorkbenchSnapshot(); }, 500);

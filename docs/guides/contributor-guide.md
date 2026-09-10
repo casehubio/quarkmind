@@ -275,7 +275,7 @@ Enables full agent stack testing against emulated physics using the real SC2 pro
 | Component | Role |
 |-----------|------|
 | `ReplayEngine` | `SC2Engine` for `%replay` profile -- observe-only, records agent intents |
-| `ReplaySimulatedGame` | Replay-driven variant driven from real `.SC2Replay` tracker events (PlayerStats, UnitBorn, UnitDied, UnitInit, UnitDone) |
+| `ReplaySimulatedGame` | Replay-driven variant driven from real `.SC2Replay` tracker events (PlayerStats, UnitBorn, UnitDied, UnitInit, UnitDone, UnitPositions) |
 | `GameEventStream` | Thin MPQ reader: `events(Path) -> List<Event>` |
 | `AbilityMapping` | Stateful `CmdEvent` -> `Intent` translator; owns selection state per player |
 | `ReplayCommandExtractor` | Orchestrates `GameEventStream` + `AbilityMapping` -> `ReplayCommandStream` |

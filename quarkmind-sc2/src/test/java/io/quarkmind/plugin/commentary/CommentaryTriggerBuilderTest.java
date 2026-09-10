@@ -170,7 +170,7 @@ class CommentaryTriggerBuilderTest {
             QuarkMindCaseFile.MINERALS, 450,
             QuarkMindCaseFile.SUPPLY_USED, 35,
             QuarkMindCaseFile.SUPPLY_CAP, 46,
-            QuarkMindCaseFile.ARMY, 12
+            QuarkMindCaseFile.ARMY, java.util.Collections.nCopies(12, "unit")
         ));
 
         Map<String, Object> result = builder.build(ctx, 2240L);

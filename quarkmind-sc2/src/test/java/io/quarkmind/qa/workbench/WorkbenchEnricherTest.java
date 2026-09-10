@@ -90,6 +90,21 @@ class WorkbenchEnricherTest {
         assertEquals(0.82, payload.confidence());
     }
 
+    @Test
+    void composition_unknown_produces_pattern_event_with_empty_counters() {
+        var assessment = new PatternAssessment(StrategyArchetype.ZERG_COMPOSITION_UNKNOWN, 0.35, 3000,
+                                               "Enemies visible but no archetype matched", AssessmentSource.DROOLS);
+        enricher.onPatternAssessment(new PatternAssessmentPublished(List.of(assessment)));
+
+        assertEquals(1, broadcaster.events.size());
+        var event = broadcaster.events.getFirst();
+        assertEquals("pattern", event.type());
+        var payload = (PatternPayload) event.payload();
+        assertEquals(1, payload.assessments().size());
+        assertEquals(StrategyArchetype.ZERG_COMPOSITION_UNKNOWN, payload.assessments().getFirst().assessment().archetype());
+    }
+
+
     private static class CapturingBroadcaster extends WorkbenchBroadcaster {
         final List<WorkbenchEvent> events = new ArrayList<>();
 

@@ -1,11 +1,15 @@
 package io.quarkmind.qa;
 
-import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.quarkmind.agent.AgentOrchestrator;
 import io.quarkmind.sc2.SC2Engine;
 import io.quarkmind.sc2.replay.ReplayEngine;
+import io.quarkus.arc.profile.UnlessBuildProfile;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -53,6 +57,26 @@ public class ReplayControlsResource {
         }
         return Response.noContent().build();
     }
+
+    @POST
+    @Path("/reset")
+    public Response reset() {
+        if (!(engine instanceof ReplayEngine re)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        orchestrator.pauseScheduler();
+        orchestrator.stopGame();
+        broadcaster.setSuppressed(true);
+        try {
+            re.seekTo(0);
+        } finally {
+            broadcaster.setSuppressed(false);
+        }
+        orchestrator.startGame();
+        orchestrator.resumeScheduler();
+        return Response.noContent().build();
+    }
+
 
     @GET @Path("/snapshot") @Produces(MediaType.APPLICATION_JSON)
     public Response snapshot() {

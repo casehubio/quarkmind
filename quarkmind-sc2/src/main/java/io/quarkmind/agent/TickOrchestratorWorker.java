@@ -2,12 +2,12 @@ package io.quarkmind.agent;
 
 import io.casehub.worker.api.WorkerFunction;
 import io.casehub.worker.api.WorkerResult;
-import java.util.List;
-import java.util.Map;
-
 import io.quarkmind.agency.context.MutableMapCaseContext;
 import io.quarkmind.agency.task.TaskDefinition;
 import org.jboss.logging.Logger;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Factory for the tick-orchestrator {@link WorkerFunction.Sync} that chains plugin execution
@@ -59,6 +59,11 @@ public final class TickOrchestratorWorker {
         return new WorkerFunction.Sync<>(Map.class, Map.class, (input, scope) -> executeChain(chain, input));
     }
 
+    public static WorkerResult executeInline(List<TaskDefinition> plugins, Map<String, Object> input) {
+        return executeChain(List.copyOf(plugins), input);
+    }
+
+
     private static WorkerResult executeChain(List<TaskDefinition> chain, Map<String, Object> input) {
         MutableMapCaseContext ctx = new MutableMapCaseContext(input);
 
@@ -71,11 +76,9 @@ public final class TickOrchestratorWorker {
             try {
                 log.debugf("[TICK] Executing %s", plugin.getId());
                 plugin.execute(ctx);
-            } catch (Exception e) {
+            } catch (Exception | Error e) {
                 log.errorf(e, "[TICK] Plugin %s failed: %s", plugin.getId(), e.getMessage());
-                return WorkerResult.failed(
-                    "Plugin " + plugin.getId() + " failed: " + e.getMessage(),
-                    ctx.mutations());
+                // Continue chain — don't let one broken plugin block the rest
             }
         }
 

@@ -47,6 +47,8 @@ public class ReplaySimulatedGame extends SimulatedGame {
 
     /** Tags of buildings that started construction (UnitInit) awaiting UnitDone. */
     private final Map<String, Building> pendingBuildings = new HashMap<>();
+    private final Map<Integer, String>  tagIndexToTag    = new HashMap<>();
+
 
     private int eventCursor;
     private long currentLoop;
@@ -83,6 +85,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
         clearAll();
         setGameFrame(0);
         pendingBuildings.clear();
+        tagIndexToTag.clear();
         if (orderTracker != null) orderTracker.reset();
         eventCursor = 0;
         currentLoop = 0;
@@ -118,11 +121,12 @@ public class ReplaySimulatedGame extends SimulatedGame {
     private void applyTrackerEvent(Event event) {
         switch (event.getId()) {
             case ITrackerEvents.ID_PLAYER_STATS -> applyPlayerStats(event);
-            case ITrackerEvents.ID_UNIT_BORN    -> applyUnitBorn(event);
-            case ITrackerEvents.ID_UNIT_DIED    -> applyUnitDied(event);
-            case ITrackerEvents.ID_UNIT_INIT    -> applyUnitInit(event);
-            case ITrackerEvents.ID_UNIT_DONE    -> applyUnitDone(event);
-            case ITrackerEvents.ID_UPGRADE      -> applyUpgrade(event);
+            case ITrackerEvents.ID_UNIT_BORN -> applyUnitBorn(event);
+            case ITrackerEvents.ID_UNIT_DIED -> applyUnitDied(event);
+            case ITrackerEvents.ID_UNIT_INIT -> applyUnitInit(event);
+            case ITrackerEvents.ID_UNIT_DONE -> applyUnitDone(event);
+            case ITrackerEvents.ID_UPGRADE -> applyUpgrade(event);
+            case ITrackerEvents.ID_UNIT_POSITIONS -> applyUnitPositions(event);
         }
     }
 
@@ -184,6 +188,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
         String unitName = event.getUnitTypeName().toString();
         String tag      = Sc2ReplayShared.makeTag(event.getUnitTagIndex(), event.getUnitTagRecycle());
         Integer ctrlId  = event.getControlPlayerId();
+        tagIndexToTag.put(event.getUnitTagIndex(), tag);
 
         if (ctrlId != null && ctrlId == 0) {
             // Neutral unit — mineral patches and geysers
@@ -237,6 +242,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
         removeGeyserByTag(tag);
         removeMineralPatchByTag(tag);
         pendingBuildings.remove(tag);
+        tagIndexToTag.remove(tagIndex);
         if (orderTracker != null) orderTracker.removeUnit(tag);
     }
 
@@ -246,6 +252,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
         if (ctrlId == null) return;
         String       unitName = event.getUnitTypeName().toString();
         String       tag      = Sc2ReplayShared.makeTag(event.getUnitTagIndex(), event.getUnitTagRecycle());
+        tagIndexToTag.put(event.getUnitTagIndex(), tag);
         BuildingType bt       = toBuildingType(unitName);
         Point2d      pos      = new Point2d(event.getXCoord(), event.getYCoord());
         if (ctrlId == watchedPlayerId) {
@@ -272,6 +279,26 @@ public class ReplaySimulatedGame extends SimulatedGame {
             markEnemyBuildingComplete(tag);
         }
     }
+
+    private void applyUnitPositions(Event event) {
+        Integer   firstIndex = event.get("firstUnitIndex");
+        Integer[] items      = event.get("items");
+        if (firstIndex == null || items == null) {return;}
+
+        int runningIndex = firstIndex;
+        for (int i = 0; i + 2 < items.length; i += 3) {
+            runningIndex += items[i];
+            int    x   = items[i + 1];
+            int    y   = items[i + 2];
+            String tag = tagIndexToTag.get(runningIndex);
+            if (tag != null) {
+                Point2d pos = new Point2d(x, y);
+                replaceUnitPosition(tag, pos);
+                replaceEnemyPosition(tag, pos);
+            }
+        }
+    }
+
 
     // --- Movement integration ---
 

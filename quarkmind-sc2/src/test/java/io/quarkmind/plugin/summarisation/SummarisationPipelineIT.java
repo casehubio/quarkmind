@@ -45,7 +45,7 @@ class SummarisationPipelineIT {
         for (int i = 0; i < SummarisationLifecycle.PHASE_WINDOW_COUNT; i++) {
             bus.publish(new LevelEvent<>(
                 new GameMoment(GameMomentType.BATTLE_STARTED, 100 + i, Map.of()),
-                100 + i, level2));
+                100 + i, level2, "default"));
         }
 
         // Tick the lifecycle — should trigger phase summarisation
@@ -74,7 +74,7 @@ class SummarisationPipelineIT {
         for (int i = 0; i < SummarisationLifecycle.PHASE_WINDOW_COUNT; i++) {
             bus.publish(new LevelEvent<>(
                 new GameMoment(GameMomentType.BATTLE_STARTED, 100 + i, Map.of()),
-                100 + i, level2));
+                100 + i, level2, "default"));
         }
         lifecycle.tick(200);
         assertThat(receivedPhases).as("First game: phases should appear").isNotEmpty();
@@ -87,7 +87,7 @@ class SummarisationPipelineIT {
         for (int i = 0; i < SummarisationLifecycle.PHASE_WINDOW_COUNT; i++) {
             bus.publish(new LevelEvent<>(
                 new GameMoment(GameMomentType.TECH_TRANSITION_DETECTED, 300 + i, Map.of()),
-                300 + i, level2));
+                300 + i, level2, "default"));
         }
         lifecycle.tick(400);
 

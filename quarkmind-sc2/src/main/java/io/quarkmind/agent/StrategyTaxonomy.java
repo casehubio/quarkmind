@@ -147,8 +147,11 @@ public class StrategyTaxonomy {
         for (Map<String, Object> unitSpec : units) {
             UnitType unitType = UnitType.valueOf((String) unitSpec.get("type"));
             int minCount = ((Number) unitSpec.get("minCount")).intValue();
+            double weight = unitSpec.containsKey("weight")
+                    ? ((Number) unitSpec.get("weight")).doubleValue()
+                    : 0.5;
             specs.add(new SignatureSpec(archetype, unitType, minCount,
-                phaseWindow[0], phaseWindow[1], 0.5, noExpansion, archetype.race()));
+                phaseWindow[0], phaseWindow[1], weight, noExpansion, archetype.race()));
         }
         return specs;
     }

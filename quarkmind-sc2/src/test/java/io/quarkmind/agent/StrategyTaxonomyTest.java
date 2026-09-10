@@ -44,7 +44,7 @@ class StrategyTaxonomyTest {
     }
 
     @ParameterizedTest
-    @EnumSource(StrategyArchetype.class)
+    @EnumSource(value = StrategyArchetype.class, names = {"TERRAN_COMPOSITION_UNKNOWN", "ZERG_COMPOSITION_UNKNOWN", "PROTOSS_COMPOSITION_UNKNOWN"}, mode = EnumSource.Mode.EXCLUDE)
     void everyArchetype_hasStrongCounters(StrategyArchetype arch) {
         CounterInfo counters = taxonomy.countersFor(arch);
         assertThat(counters).isNotNull();
@@ -52,7 +52,7 @@ class StrategyTaxonomyTest {
     }
 
     @ParameterizedTest
-    @EnumSource(StrategyArchetype.class)
+    @EnumSource(value = StrategyArchetype.class, names = {"TERRAN_COMPOSITION_UNKNOWN", "ZERG_COMPOSITION_UNKNOWN", "PROTOSS_COMPOSITION_UNKNOWN"}, mode = EnumSource.Mode.EXCLUDE)
     void everyArchetype_hasCountersForAllThreeRaces(StrategyArchetype arch) {
         for (Race playerRace : Race.values()) {
             CounterInfo counters = taxonomy.countersFor(arch, playerRace);
@@ -145,4 +145,17 @@ class StrategyTaxonomyTest {
         assertThat(sigs).anyMatch(s -> s.archetype().phase() == io.quarkmind.domain.GamePhase.LATE);
     }
 
+
+    @Test
+    void signatureSpec_readsWeightFromYaml_whenPresent() {
+        var sigs = taxonomy.activeSignatures(7.0);
+        var roachHydra = sigs.stream()
+                             .filter(s -> s.archetype() == StrategyArchetype.ZERG_ROACH_HYDRA)
+                             .toList();
+        assertThat(roachHydra).isNotEmpty();
+        for (var spec : roachHydra) {
+            assertThat(spec.weight()).as("weight for " + spec.unitType())
+                                     .isGreaterThan(0.5);
+        }
+    }
 }

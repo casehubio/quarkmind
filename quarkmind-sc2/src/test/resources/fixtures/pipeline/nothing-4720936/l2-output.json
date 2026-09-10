@@ -1,0 +1,41 @@
+[ {
+  "frame" : 3696,
+  "assessments" : [ {
+    "confidence" : 0.35,
+    "source" : "DROOLS",
+    "archetype" : "ZERG_COMPOSITION_UNKNOWN"
+  } ],
+  "llmTriggered" : false
+}, {
+  "frame" : 7392,
+  "assessments" : [ {
+    "confidence" : 0.55,
+    "source" : "DROOLS",
+    "archetype" : "ZERG_ROACH_HYDRA"
+  }, {
+    "confidence" : 0.55,
+    "source" : "DROOLS",
+    "archetype" : "ZERG_ROACH_RAVAGER"
+  }, {
+    "confidence" : 0.5,
+    "source" : "DROOLS",
+    "archetype" : "ZERG_RAVAGER_PUSH"
+  } ],
+  "llmTriggered" : false
+}, {
+  "frame" : 11088,
+  "assessments" : [ {
+    "confidence" : 0.55,
+    "source" : "DROOLS",
+    "archetype" : "ZERG_ROACH_HYDRA"
+  }, {
+    "confidence" : 0.5437422355186392,
+    "source" : "DROOLS",
+    "archetype" : "ZERG_ROACH_RAVAGER"
+  }, {
+    "confidence" : 0.49431112319876286,
+    "source" : "DROOLS",
+    "archetype" : "ZERG_RAVAGER_PUSH"
+  } ],
+  "llmTriggered" : false
+} ]

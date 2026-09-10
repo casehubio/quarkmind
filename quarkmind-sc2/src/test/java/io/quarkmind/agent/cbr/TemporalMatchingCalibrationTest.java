@@ -77,8 +77,8 @@ class TemporalMatchingCalibrationTest {
         features.put("timeline", FeatureValue.structList(toObservationMaps(caseTimeline)));
         features.put("phase_sequence", FeatureValue.stringList("EARLY_MACRO", "MID_SKIRMISH"));
         features.put("enemy_archetype", FeatureValue.string("ZERG_ROACH_RUSH"));
-        var storedCase = new SC2GameCbrCase("vs ZERG (PvZ)", "strategy.drools", "WIN", 0.9, features);
-        var scored = new ScoredCbrCase<>(storedCase, 0.85);
+        var storedCase = new SC2GameCbrCase("vs ZERG (PvZ)", "strategy.drools", "WIN", io.casehub.neocortex.cognitive.Confidence.unknown(0.9), features);
+        var scored = new ScoredCbrCase<>(storedCase, "sc2-game", 0.85);
 
         var task = new TemporalCbrTask(null, null, null);
         var prediction = task.extractPrediction(queryTimeline, List.of(scored));

@@ -64,10 +64,10 @@ class SC2CbrRetentionIT {
         // Accumulate some data via collector methods
         retentionObserver.collectMoment(new LevelEvent<>(
                 new GameMoment(GameMomentType.FIRST_CONTACT, 2000, Map.of()),
-                2000, new EventLevel("moment", 2)));
+                2000, new EventLevel("moment", 2), "default"));
         retentionObserver.collectPhase(new LevelEvent<>(
                 new TacticalPosture("EARLY_MACRO", 0, "no combat"),
-                0, new EventLevel("phase", 3)));
+                0, new EventLevel("phase", 3), "default"));
 
         GameState gameState = new GameState(200, 100, 30, 28, List.of(new Unit("p1", UnitType.PROBE, new Point2d(10, 10), 20, 20, 20, 20, 0, 0)), List.of(new Building("b1", BuildingType.NEXUS, new Point2d(20, 20), 1000, 1000, true)), List.of(), List.of(), List.of(), List.of(), List.of(), 5000L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
 

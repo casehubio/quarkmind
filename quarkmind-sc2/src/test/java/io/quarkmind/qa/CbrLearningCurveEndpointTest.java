@@ -168,8 +168,8 @@ class CbrLearningCurveEndpointTest {
 
         when(store.retrieveSimilar(any(), eq(SC2GameCbrCase.class)))
                 .thenReturn(List.of(
-                        new ScoredCbrCase<>(tier1Case, 0.5),
-                        new ScoredCbrCase<>(tier2Case, 0.5)));
+                        new ScoredCbrCase<>(tier1Case, "sc2-game", 0.5),
+                        new ScoredCbrCase<>(tier2Case, "sc2-game", 0.5)));
 
         Response r = endpoint.caseStats();
         @SuppressWarnings("unchecked")
@@ -182,7 +182,7 @@ class CbrLearningCurveEndpointTest {
         var c = new SC2GameCbrCase("problem", strategy, outcome, null, Map.of(
                 "matchup", FeatureValue.string(matchup),
                 "enemy_archetype", FeatureValue.string("ARCH_" + order)));
-        return new ScoredCbrCase<>(c, "case-" + order, 0.5, false, Map.of(),
-                Instant.EPOCH.plusSeconds(order * 3600L), null, null);
+        return new ScoredCbrCase<>(c, "case-" + order, "sc2-game", 0.5, false, Map.of(),
+                Instant.EPOCH.plusSeconds(order * 3600L), io.casehub.platform.api.path.Path.root(), null);
     }
 }

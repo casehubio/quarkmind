@@ -24,9 +24,9 @@ class SC2GameCbrCaseTest {
     void withOutcome() {
         var c = new SC2GameCbrCase("vs ZERG_ROACH_RUSH (PvZ)", "strategy.early-pressure",
                                    null, null, Map.of());
-        var updated = c.withOutcome("WIN", 0.85);
+        var updated = c.withOutcome("WIN", io.casehub.neocortex.cognitive.Confidence.unknown(0.85));
         assertThat(updated.outcome()).isEqualTo("WIN");
-        assertThat(updated.confidence()).isEqualTo(0.85);
+        assertThat(updated.confidence().value()).isEqualTo(0.85);
         assertThat(updated.problem()).isEqualTo("vs ZERG_ROACH_RUSH (PvZ)");
         assertThat(updated.solution()).isEqualTo("strategy.early-pressure");
     }
@@ -134,7 +134,7 @@ class SC2GameCbrCaseTest {
                 "ZERG_MASS_LING", 0, 0, 0.0, 0.0, false);
         var c = SC2GameCbrCase.buildForGameEnriched(
                 "ZERG_MASS_LING", "ZERG", "PvZ", 0.7, "strategy.early-pressure", enrichment);
-        var updated = (SC2GameCbrCase) c.withOutcome("WIN", 0.9);
+        var updated = (SC2GameCbrCase) c.withOutcome("WIN", io.casehub.neocortex.cognitive.Confidence.unknown(0.9));
 
         assertThat(updated.outcome()).isEqualTo("WIN");
         assertThat(updated.features()).containsEntry("battle_count", FeatureValue.number(2));

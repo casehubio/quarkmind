@@ -61,6 +61,16 @@ public class CommentaryChannelBroker {
 
     public UUID channelId() { return channelId; }
 
+    private volatile java.time.Instant sessionStart = java.time.Instant.now();
+
+    public java.time.Instant sessionStart() {return sessionStart;}
+
+    void onGameStarted(@Observes io.quarkmind.sc2.GameStarted event) {
+        sessionStart = java.time.Instant.now();
+        log.infof("[COMMENTARY-BROKER] Session start reset: %s", sessionStart);
+    }
+
+
     /**
      * Observes {@link CommentaryCompleted} events and dispatches STATUS message with commentary JSON.
      *

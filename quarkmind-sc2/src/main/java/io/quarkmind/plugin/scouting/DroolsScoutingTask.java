@@ -311,7 +311,7 @@ public class DroolsScoutingTask implements ScoutingTask {
             io.quarkmind.domain.Race enemyRace = resolveEnemyRace(ctx);
             CascadeResult cascadeResult = cascadingClassifier.classify(
                     patternData.getEvidence(), patternData.getRevisions(),
-                    features, enemyRace, frame, prevFrame, ctx);
+                    features, enemyRace, frame, prevFrame, ctx, enemies.size());
 
             var assessments = cascadeResult.assessments();
             ctx.set(QuarkMindCaseFile.SCOUTING_FINAL_ASSESSMENT, assessments);
@@ -382,7 +382,7 @@ public class DroolsScoutingTask implements ScoutingTask {
         if (broker.isSubscribed(payload.type())) {
             broker.update(payload);
         }
-        broker.level1Bus().publish(new LevelEvent<>(payload, lastFrame, LEVEL_1));
+        broker.level1Bus().publish(new LevelEvent<>(payload, lastFrame, LEVEL_1, "default"));
         dispatchToAdvisory(payload);
         if (payload instanceof PatternAssessmentPayload pa && patternAssessmentPublished != null) {
             patternAssessmentPublished.fire(new PatternAssessmentPublished(pa.assessments()));

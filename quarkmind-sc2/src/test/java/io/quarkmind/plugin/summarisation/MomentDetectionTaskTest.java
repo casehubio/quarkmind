@@ -48,7 +48,7 @@ class MomentDetectionTaskTest {
     void detectsFirstContact_whenThreatPositionArrives() {
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.ThreatPosition(new Point2d(50, 50)),
-            100, LEVEL_1));
+            100, LEVEL_1, "default"));
         task.fireRules(100, 0, 0);
 
         assertThat(receivedMoments).isNotEmpty();
@@ -58,9 +58,9 @@ class MomentDetectionTaskTest {
     @Test
     void detectsNexusUnderAttack_whenTimingAlertAndHighArmySize() {
         level1Bus.publish(new LevelEvent<>(
-            new ScoutingIntelPayload.TimingAlert(true), 200, LEVEL_1));
+            new ScoutingIntelPayload.TimingAlert(true), 200, LEVEL_1, "default"));
         level1Bus.publish(new LevelEvent<>(
-            new ScoutingIntelPayload.ArmySize(8), 200, LEVEL_1));
+            new ScoutingIntelPayload.ArmySize(8), 200, LEVEL_1, "default"));
         task.fireRules(200, 0, 0);
 
         assertThat(receivedMoments)
@@ -73,7 +73,7 @@ class MomentDetectionTaskTest {
         // First tick: FIRST_CONTACT fires
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.ThreatPosition(new Point2d(50, 50)),
-            100, LEVEL_1));
+            100, LEVEL_1, "default"));
         task.fireRules(100, 0, 0);
 
         assertThat(receivedMoments).hasSize(1);
@@ -82,7 +82,7 @@ class MomentDetectionTaskTest {
         // Second tick: same event, should NOT fire again
         level1Bus.publish(new LevelEvent<>(
             new ScoutingIntelPayload.ThreatPosition(new Point2d(60, 60)),
-            200, LEVEL_1));
+            200, LEVEL_1, "default"));
         task.fireRules(200, 0, 0);
 
         // Still only one FIRST_CONTACT
@@ -95,7 +95,7 @@ class MomentDetectionTaskTest {
     void detectsArmyShift_whenArmySizeChangesBy30Percent() {
         // First tick: baseline army size
         level1Bus.publish(new LevelEvent<>(
-            new ScoutingIntelPayload.ArmySize(10), 100, LEVEL_1));
+            new ScoutingIntelPayload.ArmySize(10), 100, LEVEL_1, "default"));
         task.fireRules(100, 0, 0);
 
         // No ARMY_SHIFT on first observation
@@ -105,7 +105,7 @@ class MomentDetectionTaskTest {
 
         // Second tick: army size increases by 40% (10 → 14)
         level1Bus.publish(new LevelEvent<>(
-            new ScoutingIntelPayload.ArmySize(14), 200, LEVEL_1));
+            new ScoutingIntelPayload.ArmySize(14), 200, LEVEL_1, "default"));
         task.fireRules(200, 0, 0);
 
         assertThat(receivedMoments)
@@ -124,12 +124,12 @@ class MomentDetectionTaskTest {
     void doesNotDetectArmyShift_whenChangeUnder30Percent() {
         // First tick: baseline
         level1Bus.publish(new LevelEvent<>(
-            new ScoutingIntelPayload.ArmySize(10), 100, LEVEL_1));
+            new ScoutingIntelPayload.ArmySize(10), 100, LEVEL_1, "default"));
         task.fireRules(100, 0, 0);
 
         // Second tick: only 20% change (10 → 12)
         level1Bus.publish(new LevelEvent<>(
-            new ScoutingIntelPayload.ArmySize(12), 200, LEVEL_1));
+            new ScoutingIntelPayload.ArmySize(12), 200, LEVEL_1, "default"));
         task.fireRules(200, 0, 0);
 
         assertThat(receivedMoments)
@@ -141,7 +141,7 @@ class MomentDetectionTaskTest {
     void detectsPostureChange_whenPostureChanges() {
         // First tick: baseline posture
         level1Bus.publish(new LevelEvent<>(
-            new ScoutingIntelPayload.PostureUpdate("MACRO"), 100, LEVEL_1));
+            new ScoutingIntelPayload.PostureUpdate("MACRO"), 100, LEVEL_1, "default"));
         task.fireRules(100, 0, 0);
 
         // No POSTURE_CHANGE on first observation
@@ -151,7 +151,7 @@ class MomentDetectionTaskTest {
 
         // Second tick: posture changes
         level1Bus.publish(new LevelEvent<>(
-            new ScoutingIntelPayload.PostureUpdate("ATTACK"), 200, LEVEL_1));
+            new ScoutingIntelPayload.PostureUpdate("ATTACK"), 200, LEVEL_1, "default"));
         task.fireRules(200, 0, 0);
 
         assertThat(receivedMoments)
@@ -170,12 +170,12 @@ class MomentDetectionTaskTest {
     void doesNotDetectPostureChange_whenPostureStaysSame() {
         // First tick: baseline
         level1Bus.publish(new LevelEvent<>(
-            new ScoutingIntelPayload.PostureUpdate("MACRO"), 100, LEVEL_1));
+            new ScoutingIntelPayload.PostureUpdate("MACRO"), 100, LEVEL_1, "default"));
         task.fireRules(100, 0, 0);
 
         // Second tick: same posture
         level1Bus.publish(new LevelEvent<>(
-            new ScoutingIntelPayload.PostureUpdate("MACRO"), 200, LEVEL_1));
+            new ScoutingIntelPayload.PostureUpdate("MACRO"), 200, LEVEL_1, "default"));
         task.fireRules(200, 0, 0);
 
         assertThat(receivedMoments)
@@ -186,7 +186,7 @@ class MomentDetectionTaskTest {
     @Test
     void detectsSupplyBlock_whenSupplyUsedEqualsSupplyCap() {
         level1Bus.publish(new LevelEvent<>(
-                new ScoutingIntelPayload.ArmySize(5), 500, LEVEL_1));
+                new ScoutingIntelPayload.ArmySize(5), 500, LEVEL_1, "default"));
         task.fireRules(500, 46, 46);
 
         assertThat(receivedMoments)
@@ -197,7 +197,7 @@ class MomentDetectionTaskTest {
     @Test
     void doesNotDetectSupplyBlock_whenNotBlocked() {
         level1Bus.publish(new LevelEvent<>(
-                new ScoutingIntelPayload.ArmySize(5), 500, LEVEL_1));
+                new ScoutingIntelPayload.ArmySize(5), 500, LEVEL_1, "default"));
         task.fireRules(500, 30, 46);
 
         assertThat(receivedMoments)
@@ -208,7 +208,7 @@ class MomentDetectionTaskTest {
     @Test
     void deduplicatesSupplyBlock_withinCooldownWindow() {
         level1Bus.publish(new LevelEvent<>(
-                new ScoutingIntelPayload.ArmySize(5), 500, LEVEL_1));
+                new ScoutingIntelPayload.ArmySize(5), 500, LEVEL_1, "default"));
         task.fireRules(500, 46, 46);
 
         assertThat(receivedMoments)
@@ -216,7 +216,7 @@ class MomentDetectionTaskTest {
                 .hasSize(1);
 
         level1Bus.publish(new LevelEvent<>(
-                new ScoutingIntelPayload.ArmySize(5), 600, LEVEL_1));
+                new ScoutingIntelPayload.ArmySize(5), 600, LEVEL_1, "default"));
         task.fireRules(600, 46, 46);
 
         assertThat(receivedMoments)
@@ -224,7 +224,7 @@ class MomentDetectionTaskTest {
                 .hasSize(1);
 
         level1Bus.publish(new LevelEvent<>(
-                new ScoutingIntelPayload.ArmySize(5), 800, LEVEL_1));
+                new ScoutingIntelPayload.ArmySize(5), 800, LEVEL_1, "default"));
         task.fireRules(800, 46, 46);
 
         assertThat(receivedMoments)

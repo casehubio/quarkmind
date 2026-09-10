@@ -5,14 +5,13 @@ import io.casehub.neocortex.inference.InferenceModel;
 import io.casehub.neocortex.inference.quarkus.Inference;
 import io.casehub.neocortex.inference.tasks.ClassificationResult;
 import io.casehub.neocortex.inference.tasks.TensorClassifier;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.StrategyArchetype;
-
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
@@ -35,6 +34,17 @@ public class CascadingPatternClassifier {
     static final double DISPATCH_THRESHOLD = 0.3;
     static final double DECAY_PER_FRAME    = 0.99948;
     static final double NOISE_FLOOR        = 0.01;
+    static final double FALLBACK_CONFIDENCE = 0.35;
+
+    static StrategyArchetype unknownForRace(Race race) {
+        return switch (race) {
+            case TERRAN -> StrategyArchetype.TERRAN_COMPOSITION_UNKNOWN;
+            case ZERG -> StrategyArchetype.ZERG_COMPOSITION_UNKNOWN;
+            case PROTOSS -> StrategyArchetype.PROTOSS_COMPOSITION_UNKNOWN;
+            default -> StrategyArchetype.PROTOSS_COMPOSITION_UNKNOWN;
+        };
+    }
+
 
     private final double droolsThreshold;
     private final double onnxThreshold;
@@ -191,6 +201,25 @@ public class CascadingPatternClassifier {
 
         return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.DROOLS), llmTriggered);
     }
+
+    public CascadeResult classify(List<EvidenceMarker> evidence,
+                                  List<ConfidenceRevision> revisions,
+                                  StrategyFeatures onnxFeatures,
+                                  Race enemyRace,
+                                  long frame, long prevFrame,
+                                  CaseContext ctx, int enemyCount) {
+        CascadeResult result = classify(evidence, revisions, onnxFeatures,
+                                        enemyRace, frame, prevFrame, ctx);
+        if (result.assessments().isEmpty() && enemyCount > 0 && enemyRace != null) {
+            StrategyArchetype unknown = unknownForRace(enemyRace);
+            return new CascadeResult(List.of(new PatternAssessment(
+                    unknown, FALLBACK_CONFIDENCE, frame,
+                    "Enemies visible but no archetype matched — composition unrecognised",
+                    AssessmentSource.DROOLS)), result.llmTriggered());
+        }
+        return result;
+    }
+
 
     public void reset() {
         cumulativeConfidence.clear();

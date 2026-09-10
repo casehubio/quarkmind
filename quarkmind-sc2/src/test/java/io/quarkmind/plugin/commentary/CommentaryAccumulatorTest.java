@@ -56,7 +56,7 @@ class CommentaryAccumulatorTest {
 
         // Context populated
         phaseBus.publish(new LevelEvent<>(
-            new TacticalPosture("Mid-game", 300L, "Combat"), 300L, new EventLevel("phase", 3)));
+            new TacticalPosture("Mid-game", 300L, "Combat"), 300L, new EventLevel("phase", 3), "default"));
 
         // When — tick at frame >= minimum floor (672)
         Map<String, Object> result = accumulator.tick(FRAME_672);
@@ -159,9 +159,9 @@ class CommentaryAccumulatorTest {
         publishMoment(400, GameMomentType.SUPPLY_BLOCK);
 
         phaseBus.publish(new LevelEvent<>(
-            new TacticalPosture("Late-game", 300L, "Tech race"), 300L, new EventLevel("phase", 3)));
+            new TacticalPosture("Late-game", 300L, "Tech race"), 300L, new EventLevel("phase", 3), "default"));
         arcBus.publish(new LevelEvent<>(
-            new GameArc("Narrative arc content", 600L), 600L, new EventLevel("arc", 4)));
+            new GameArc("Narrative arc content", 600L), 600L, new EventLevel("arc", 4), "default"));
 
         // When
         Map<String, Object> result = accumulator.tick(FRAME_672);
@@ -192,6 +192,6 @@ class CommentaryAccumulatorTest {
 
     private void publishMoment(long frame, GameMomentType type) {
         var moment = new GameMoment(type, frame, Map.of());
-        momentBus.publish(new LevelEvent<>(moment, frame, LEVEL_2));
+        momentBus.publish(new LevelEvent<>(moment, frame, LEVEL_2, "default"));
     }
 }

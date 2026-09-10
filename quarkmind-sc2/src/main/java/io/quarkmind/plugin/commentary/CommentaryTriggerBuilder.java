@@ -60,7 +60,7 @@ public class CommentaryTriggerBuilder {
         int minerals = getIntOrZero(ctx, QuarkMindCaseFile.MINERALS);
         int supplyUsed = getIntOrZero(ctx, QuarkMindCaseFile.SUPPLY_USED);
         int supplyCap = getIntOrZero(ctx, QuarkMindCaseFile.SUPPLY_CAP);
-        int army = getIntOrZero(ctx, QuarkMindCaseFile.ARMY);
+        int army = getListSize(ctx, QuarkMindCaseFile.ARMY);
 
         var trigger = new LinkedHashMap<String, Object>();
         trigger.put("gameFrame", gameFrame);
@@ -89,6 +89,12 @@ public class CommentaryTriggerBuilder {
         Integer value = ctx.getAs(key, Integer.class);
         return value != null ? value : 0;
     }
+
+    private static int getListSize(CaseContext ctx, String key) {
+        Object value = ctx.get(key);
+        return value instanceof java.util.List<?> list ? list.size() : 0;
+    }
+
 
     private static Map<String, Object> extractCbrContext(CaseContext ctx) {
         Boolean influenced   = ctx.getAs(QuarkMindCaseFile.CBR_INFLUENCED_SELECTION, Boolean.class);

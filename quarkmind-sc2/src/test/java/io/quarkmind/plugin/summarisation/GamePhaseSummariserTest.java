@@ -18,9 +18,9 @@ class GamePhaseSummariserTest {
     @Test
     void multipleBattles_classifiesAsMidSkirmish() {
         var batch = List.of(
-            new LevelEvent<>(moment(GameMomentType.BATTLE_STARTED, 100), 100, L2),
-            new LevelEvent<>(moment(GameMomentType.BATTLE_ENDED, 150), 150, L2),
-            new LevelEvent<>(moment(GameMomentType.BATTLE_STARTED, 180), 180, L2));
+            new LevelEvent<>(moment(GameMomentType.BATTLE_STARTED, 100), 100, L2, "default"),
+            new LevelEvent<>(moment(GameMomentType.BATTLE_ENDED, 150), 150, L2, "default"),
+            new LevelEvent<>(moment(GameMomentType.BATTLE_STARTED, 180), 180, L2, "default"));
         var phases = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(phases).hasSize(1);
         assertThat(phases.get(0).posture()).isEqualTo("MID_SKIRMISH");
@@ -29,7 +29,7 @@ class GamePhaseSummariserTest {
     @Test
     void nexusUnderAttack_classifiesAsDefensiveHold() {
         var batch = List.of(
-            new LevelEvent<>(moment(GameMomentType.NEXUS_UNDER_ATTACK, 200), 200, L2));
+            new LevelEvent<>(moment(GameMomentType.NEXUS_UNDER_ATTACK, 200), 200, L2, "default"));
         var phases = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(phases).hasSize(1);
         assertThat(phases.get(0).posture()).isEqualTo("DEFENSIVE_HOLD");
@@ -38,7 +38,7 @@ class GamePhaseSummariserTest {
     @Test
     void noCombatMoments_classifiesAsEarlyMacro() {
         var batch = List.of(
-            new LevelEvent<>(moment(GameMomentType.TECH_TRANSITION_DETECTED, 50), 50, L2));
+            new LevelEvent<>(moment(GameMomentType.TECH_TRANSITION_DETECTED, 50), 50, L2, "default"));
         var phases = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(phases).hasSize(1);
         assertThat(phases.get(0).posture()).isEqualTo("EARLY_MACRO");
@@ -47,8 +47,8 @@ class GamePhaseSummariserTest {
     @Test
     void economicCrisis_classifiesAsEarlyAggression() {
         var batch = List.of(
-            new LevelEvent<>(moment(GameMomentType.ECONOMIC_CRISIS, 100), 100, L2),
-            new LevelEvent<>(moment(GameMomentType.BATTLE_STARTED, 120), 120, L2));
+            new LevelEvent<>(moment(GameMomentType.ECONOMIC_CRISIS, 100), 100, L2, "default"),
+            new LevelEvent<>(moment(GameMomentType.BATTLE_STARTED, 120), 120, L2, "default"));
         var phases = summariser.summarise(batch).toCompletableFuture().join();
         assertThat(phases).hasSize(1);
         assertThat(phases.get(0).posture()).isEqualTo("EARLY_AGGRESSION");

@@ -149,24 +149,24 @@ class SC2CbrRetentionObserverTest {
         // Accumulate moments
         observer.collectMoment(new LevelEvent<>(
                 new GameMoment(GameMomentType.FIRST_CONTACT, 2800, Map.of()),
-                2800, new EventLevel("moment", 2)));
+                2800, new EventLevel("moment", 2), "default"));
         observer.collectMoment(new LevelEvent<>(
                 new GameMoment(GameMomentType.BATTLE_STARTED, 5000, Map.of()),
-                5000, new EventLevel("moment", 2)));
+                5000, new EventLevel("moment", 2), "default"));
         observer.collectMoment(new LevelEvent<>(
                 new GameMoment(GameMomentType.SUPPLY_BLOCK, 3000, Map.of()),
-                3000, new EventLevel("moment", 2)));
+                3000, new EventLevel("moment", 2), "default"));
         // Accumulate phases
         observer.collectPhase(new LevelEvent<>(
                 new TacticalPosture("EARLY_MACRO", 0, "no combat"),
-                0, new EventLevel("phase", 3)));
+                0, new EventLevel("phase", 3), "default"));
         observer.collectPhase(new LevelEvent<>(
                 new TacticalPosture("MID_SKIRMISH", 5000, "combat"),
-                5000, new EventLevel("phase", 3)));
+                5000, new EventLevel("phase", 3), "default"));
         // Accumulate arc
         observer.collectArc(new LevelEvent<>(
                 new GameArc("Game progression: EARLY_MACRO -> MID_SKIRMISH", 5000),
-                5000, new EventLevel("arc", 4)));
+                5000, new EventLevel("arc", 4), "default"));
 
         // Build game state with 2 nexus, 30 workers
         GameState gameState = new GameState(500, 200, 46, 44, buildWorkers(30), buildBases(2), List.of(), List.of(), List.of(), List.of(), List.of(), 8000L, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());
@@ -206,13 +206,13 @@ class SC2CbrRetentionObserverTest {
     void gameStarted_clearsAccumulators() {
         observer.collectMoment(new LevelEvent<>(
                 new GameMoment(GameMomentType.BATTLE_STARTED, 100, Map.of()),
-                100, new EventLevel("moment", 2)));
+                100, new EventLevel("moment", 2), "default"));
         observer.collectPhase(new LevelEvent<>(
                 new TacticalPosture("MID_SKIRMISH", 100, "test"),
-                100, new EventLevel("phase", 3)));
+                100, new EventLevel("phase", 3), "default"));
         observer.collectArc(new LevelEvent<>(
                 new GameArc("narrative", 100),
-                100, new EventLevel("arc", 4)));
+                100, new EventLevel("arc", 4), "default"));
 
         observer.onGameStarted(new GameStarted());
 

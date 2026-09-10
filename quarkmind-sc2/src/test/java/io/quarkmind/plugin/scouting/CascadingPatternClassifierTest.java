@@ -157,4 +157,54 @@ class CascadingPatternClassifierTest {
         assertFalse(result.assessments().isEmpty());
         assertEquals(AssessmentSource.DROOLS, result.assessments().get(0).source());
     }
+
+// --- COMPOSITION_UNKNOWN fallback tests ---
+
+    @Test
+    void classify_emptyEvidence_withEnemiesVisible_returnsFallbackAssessment() {
+        var classifier = new CascadingPatternClassifier(0.7, 0.5);
+        CascadeResult result = classifier.classify(
+                List.of(), List.of(), null, Race.ZERG, 3000, 2900, null, 5);
+        assertFalse(result.assessments().isEmpty());
+        assertEquals(StrategyArchetype.ZERG_COMPOSITION_UNKNOWN, result.assessments().get(0).archetype());
+        assertEquals(0.35, result.assessments().get(0).confidence(), 0.001);
+        assertEquals(AssessmentSource.DROOLS, result.assessments().get(0).source());
+    }
+
+    @Test
+    void classify_emptyEvidence_noEnemies_returnsEmpty() {
+        var classifier = new CascadingPatternClassifier(0.7, 0.5);
+        CascadeResult result = classifier.classify(
+                List.of(), List.of(), null, Race.ZERG, 3000, 2900, null, 0);
+        assertTrue(result.assessments().isEmpty());
+    }
+
+    @Test
+    void classify_sufficientEvidence_noFallback() {
+        var classifier = new CascadingPatternClassifier(0.7, 0.5);
+        var evidence = List.of(
+                new EvidenceMarker(StrategyArchetype.ZERG_ROACH_HYDRA, 0.8, "test"));
+        CascadeResult result = classifier.classify(
+                evidence, List.of(), null, Race.ZERG, 3000, 2900, null, 5);
+        assertFalse(result.assessments().isEmpty());
+        assertFalse(result.assessments().get(0).archetype().name().endsWith("_COMPOSITION_UNKNOWN"));
+    }
+
+    @Test
+    void classify_terranEnemies_returnsTerranUnknown() {
+        var classifier = new CascadingPatternClassifier(0.7, 0.5);
+        CascadeResult result = classifier.classify(
+                List.of(), List.of(), null, Race.TERRAN, 3000, 2900, null, 3);
+        assertFalse(result.assessments().isEmpty());
+        assertEquals(StrategyArchetype.TERRAN_COMPOSITION_UNKNOWN, result.assessments().get(0).archetype());
+    }
+
+    @Test
+    void classify_protossEnemies_returnsProtossUnknown() {
+        var classifier = new CascadingPatternClassifier(0.7, 0.5);
+        CascadeResult result = classifier.classify(
+                List.of(), List.of(), null, Race.PROTOSS, 3000, 2900, null, 3);
+        assertFalse(result.assessments().isEmpty());
+        assertEquals(StrategyArchetype.PROTOSS_COMPOSITION_UNKNOWN, result.assessments().get(0).archetype());
+    }
 }

@@ -147,5 +147,8 @@
 <script type="module" src="/blocks/workbench-blocks.js"></script>
 <script src="/sprites/three.min.js"></script>
 <script src="/visualizer.js"></script>
+<script>
+setInterval(function() { if (typeof applyWorkbenchSnapshot === 'function') applyWorkbenchSnapshot(); }, 500);
+</script>
 </body>
 </html>

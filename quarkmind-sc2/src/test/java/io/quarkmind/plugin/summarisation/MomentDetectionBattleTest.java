@@ -1,5 +1,6 @@
 package io.quarkmind.plugin.summarisation;
 
+import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
@@ -93,6 +94,44 @@ class MomentDetectionBattleTest {
         task.tickBattle(800 + MomentDetectionTask.QUIESCENCE_FRAMES, stalkers(5), zealots(1));
         assertThat(emittedMoments).hasSize(2);
     }
+
+    @Test
+    void battleEndedWithEmptyPendingIntel_doesNotThrowOnImmutableList() {
+        // Regression: fireRules() returned List.of() (immutable) when pendingIntel was empty,
+        // causing UnsupportedOperationException when updateBattleFSM tried to add BATTLE_ENDED.
+        MomentDetectionTask realTask = new MomentDetectionTask(null);
+
+        // Drive the FSM through IDLE → IN_BATTLE → QUIESCENT → BATTLE_ENDED via execute()
+        io.quarkmind.agency.context.MutableMapCaseContext ctx = new io.quarkmind.agency.context.MutableMapCaseContext(
+                new java.util.HashMap<>(java.util.Map.of(
+                        QuarkMindCaseFile.GAME_FRAME, 100L,
+                        QuarkMindCaseFile.SUPPLY_USED, 30,
+                        QuarkMindCaseFile.SUPPLY_CAP, 46,
+                        QuarkMindCaseFile.ARMY, stalkers(10),
+                        QuarkMindCaseFile.ENEMY_UNITS, zealots(5),
+                        QuarkMindCaseFile.ENEMY_POSTURE, "MACRO",
+                        QuarkMindCaseFile.TIMING_ATTACK_INCOMING, false
+                                                        )));
+        realTask.execute(ctx); // tick 1: baseline
+
+        ctx.set(QuarkMindCaseFile.GAME_FRAME, 200L);
+        ctx.set(QuarkMindCaseFile.ARMY, stalkers(7));
+        realTask.execute(ctx); // tick 2: battle starts
+
+        ctx.set(QuarkMindCaseFile.GAME_FRAME, 300L);
+        realTask.execute(ctx); // tick 3: quiescent
+
+        ctx.set(QuarkMindCaseFile.GAME_FRAME, (long) (300 + MomentDetectionTask.QUIESCENCE_FRAMES));
+        ctx.set(QuarkMindCaseFile.ENEMY_UNITS, zealots(3));
+        realTask.execute(ctx); // tick 4: BATTLE_ENDED — would throw before fix
+
+        assertThat(realTask.battleState()).isEqualTo(MomentDetectionTask.BattleState.IDLE);
+        @SuppressWarnings("unchecked")
+        List<GameMoment> moments = (List<GameMoment>) ctx.get(QuarkMindCaseFile.MOMENTS_LATEST);
+        assertThat(moments).isNotNull();
+        assertThat(moments).extracting(GameMoment::type).contains(GameMomentType.BATTLE_ENDED);
+    }
+
 
     static List<Unit> stalkers(int n) {
         List<Unit> units = new ArrayList<>();

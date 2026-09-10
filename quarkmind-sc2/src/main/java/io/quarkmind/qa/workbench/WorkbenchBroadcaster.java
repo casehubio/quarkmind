@@ -61,6 +61,8 @@ public class WorkbenchBroadcaster {
 
     WorkbenchEvent latestPatternSnapshot() {return latestPattern;}
 
+    WorkbenchEvent latestStrategySnapshot() {return latestStrategy;}
+
 
     private void updateSnapshot(WorkbenchEvent event) {
         switch (event.type()) {

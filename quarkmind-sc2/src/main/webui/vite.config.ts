@@ -10,6 +10,7 @@ export default defineConfig({
       output: {
         entryFileNames: 'blocks/workbench-blocks.js',
       },
+      external: [],
     },
   },
   resolve: {
@@ -18,11 +19,13 @@ export default defineConfig({
       { find: '@casehubio/blocks-ui-detail-pane', replacement: resolve(__dirname, '.casehub-packages/packages/detail-pane/src') },
       { find: '@casehubio/blocks-ui-channel-activity', replacement: resolve(__dirname, '.casehub-packages/packages/channel-activity/src') },
       { find: '@casehubio/blocks-ui-core', replacement: resolve(__dirname, '.casehub-packages/packages/blocks-ui-core/src') },
-      { find: '@casehubio/pages-component', replacement: resolve(__dirname, '.casehub-packages/packages/pages-component/dist') },
+      { find: '@casehubio/pages-component', replacement: resolve(__dirname, 'shims/pages-component') },
       { find: '@casehubio/pages-primitives', replacement: resolve(__dirname, '.casehub-packages/packages/pages-primitives/src') },
       { find: /^@casehubio\/pages-data\/dist\/(.*)/, replacement: resolve(__dirname, '.casehub-packages/packages/pages-data/src/$1') },
       { find: '@casehubio/pages-data', replacement: resolve(__dirname, '.casehub-packages/packages/pages-data/src') },
       { find: '@casehubio/pages-table', replacement: resolve(__dirname, '.casehub-packages/packages/pages-table/src') },
+      { find: /^@casehubio\/pages-ui-components.*/, replacement: resolve(__dirname, 'shims/pages-ui-components') },
+      { find: '@casehubio/pages-filter-bar', replacement: resolve(__dirname, 'shims/pages-filter-bar') },
     ],
   },
   esbuild: {

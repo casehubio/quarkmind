@@ -28,8 +28,8 @@ public class WorkbenchSocket {
     @io.smallrye.common.annotation.Blocking
     @OnOpen
     public void onOpen(WebSocketConnection connection) {
-        sendCommentaryHistory(connection);
         broadcaster.addSession(connection);
+        try {sendCommentaryHistory(connection);} catch (Exception e) { /* broker not ready — skip history */ }
     }
 
     @OnClose
@@ -58,10 +58,14 @@ public class WorkbenchSocket {
     private void sendCommentaryHistory(WebSocketConnection connection) {
         java.util.UUID channelId = commentaryChannelBroker.channelId();
         if (channelId == null) {return;}
+        var sessionStart = commentaryChannelBroker.sessionStart();
         try {
             var all    = messageService.history(channelId, 0L, 500);
             var recent = all.size() > 100 ? all.subList(all.size() - 100, all.size()) : all;
             for (var msg : recent) {
+                if (msg.createdAt() != null && sessionStart != null && msg.createdAt().isBefore(sessionStart)) {
+                    continue;
+                }
                 try {
                     var completed = objectMapper.readValue(msg.content(),
                                                            io.quarkmind.plugin.commentary.CommentaryCompleted.class);
