@@ -1,6 +1,10 @@
 package io.quarkmind.plugin;
 
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.plugin.scouting.ScoutingSessionManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,6 +91,105 @@ class ScoutingSessionManagerTest {
         manager.processFrame(List.of(farUnit2), 2000L, nexus(), enemyBase());
         assertThat(manager.expansionBufferSize()).isEqualTo(1);
     }
+
+    @Test
+    void processBuildings_confirmsExpansionAtNonStartingLocation() {
+        Building mainBase = new Building("nexus-0", BuildingType.NEXUS,
+                                         new Point2d(224, 224), 1000, 1000, true);
+        Building expansion = new Building("nexus-1", BuildingType.NEXUS,
+                                          new Point2d(180, 180), 1000, 1000, true);
+
+        manager.processBuildings(List.of(mainBase, expansion), enemyBase(),
+                                 List.of(), List.of());
+
+        assertThat(manager.hasEverConfirmed()).isTrue();
+        assertThat(manager.confirmedExpansionCount()).isEqualTo(1);
+    }
+
+    @Test
+    void processBuildings_ignoresMainBaseBuilding() {
+        Building mainBase = new Building("nexus-0", BuildingType.NEXUS,
+                                         new Point2d(224, 224), 1000, 1000, true);
+
+        manager.processBuildings(List.of(mainBase), enemyBase(), List.of(), List.of());
+
+        assertThat(manager.hasEverConfirmed()).isFalse();
+        assertThat(manager.confirmedExpansionCount()).isEqualTo(0);
+    }
+
+    @Test
+    void processBuildings_retractsWhenBuildingAbsentAndVisionAvailable() {
+        Building mainBase = new Building("nexus-0", BuildingType.NEXUS,
+                                         new Point2d(224, 224), 1000, 1000, true);
+        Building expansion = new Building("nexus-1", BuildingType.NEXUS,
+                                          new Point2d(180, 180), 1000, 1000, true);
+
+        manager.processBuildings(List.of(mainBase, expansion), enemyBase(),
+                                 List.of(), List.of());
+        assertThat(manager.confirmedExpansionCount()).isEqualTo(1);
+
+        Unit friendlyNearExpansion = new Unit("stalker-1", UnitType.STALKER,
+                                              new Point2d(182, 182), 160, 160, 80, 80, 0, 0);
+        manager.processBuildings(List.of(mainBase), enemyBase(),
+                                 List.of(friendlyNearExpansion), List.of());
+
+        assertThat(manager.confirmedExpansionCount())
+                .as("Expansion retracted — building absent + vision available")
+                .isEqualTo(0);
+    }
+
+    @Test
+    void processBuildings_retainsWhenBuildingAbsentButNoVision() {
+        Building mainBase = new Building("nexus-0", BuildingType.NEXUS,
+                                         new Point2d(224, 224), 1000, 1000, true);
+        Building expansion = new Building("nexus-1", BuildingType.NEXUS,
+                                          new Point2d(180, 180), 1000, 1000, true);
+
+        manager.processBuildings(List.of(mainBase, expansion), enemyBase(),
+                                 List.of(), List.of());
+        assertThat(manager.confirmedExpansionCount()).isEqualTo(1);
+
+        manager.processBuildings(List.of(mainBase), enemyBase(),
+                                 List.of(), List.of());
+
+        assertThat(manager.confirmedExpansionCount())
+                .as("Expansion retained — no vision of location (fog)")
+                .isEqualTo(1);
+    }
+
+    @Test
+    void processBuildings_mainBaseIsClosestToEstimate() {
+        Building natural = new Building("nexus-nat", BuildingType.NEXUS,
+                                        new Point2d(200, 200), 1000, 1000, true);
+        Building mainBase = new Building("nexus-main", BuildingType.NEXUS,
+                                         new Point2d(223, 223), 1000, 1000, true);
+
+        manager.processBuildings(List.of(natural, mainBase), enemyBase(),
+                                 List.of(), List.of());
+
+        assertThat(manager.hasEverConfirmed())
+                .as("Natural at (200,200) confirmed as expansion — beyond 25f from main at (223,223)")
+                .isTrue();
+        assertThat(manager.confirmedExpansionCount()).isEqualTo(1);
+    }
+
+    @Test
+    void reset_clearsConfirmedExpansions() {
+        Building mainBase = new Building("nexus-0", BuildingType.NEXUS,
+                                         new Point2d(224, 224), 1000, 1000, true);
+        Building expansion = new Building("nexus-1", BuildingType.NEXUS,
+                                          new Point2d(180, 180), 1000, 1000, true);
+
+        manager.processBuildings(List.of(mainBase, expansion), enemyBase(),
+                                 List.of(), List.of());
+        assertThat(manager.hasEverConfirmed()).isTrue();
+
+        manager.reset();
+
+        assertThat(manager.hasEverConfirmed()).isFalse();
+        assertThat(manager.confirmedExpansionCount()).isEqualTo(0);
+    }
+
 
     private Unit roach(String tag, float x, float y) {
         return new Unit(tag, UnitType.ROACH, new Point2d(x, y), 100, 100, 0, 0, 0, 0);

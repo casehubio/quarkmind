@@ -52,6 +52,18 @@ public class ScoutingSessionManager {
     private final Deque<EnemyUnitFirstSeen> unitBuffer         = new ArrayDeque<>();
     private final Deque<EnemyArmyNearBase>  armyBuffer         = new ArrayDeque<>();
     private final List<EnemyExpansionSeen>  expansionBuffer    = new ArrayList<>();
+    public static final float               CONFIRMED_EXPANSION_DISTANCE = 25f;
+    private static final float              VISION_RANGE = 9.0f;
+
+    private static final java.util.Set<io.quarkmind.domain.BuildingType> BASE_TYPES = java.util.Set.of(
+            io.quarkmind.domain.BuildingType.NEXUS, io.quarkmind.domain.BuildingType.HATCHERY, io.quarkmind.domain.BuildingType.COMMAND_CENTER,
+            io.quarkmind.domain.BuildingType.LAIR, io.quarkmind.domain.BuildingType.HIVE, io.quarkmind.domain.BuildingType.ORBITAL_COMMAND,
+            io.quarkmind.domain.BuildingType.PLANETARY_FORTRESS);
+
+    private final java.util.Map<String, Point2d> confirmedExpansions = new java.util.LinkedHashMap<>();
+    private       boolean                        hasEverConfirmed    = false;
+    private       Point2d                        confirmedMainBase   = null;
+
 
     /** Clears all buffers. Call when a new game starts. */
     public void reset() {
@@ -60,6 +72,9 @@ public class ScoutingSessionManager {
         unitBuffer.clear();
         armyBuffer.clear();
         expansionBuffer.clear();
+        confirmedExpansions.clear();
+        hasEverConfirmed = false;
+        confirmedMainBase = null;
     }
 
     /**
@@ -104,6 +119,52 @@ public class ScoutingSessionManager {
         armyBuffer.removeIf(e -> currentGameTimeMs - e.gameTimeMs() > ARMY_WINDOW_MS);
     }
 
+    public void processBuildings(java.util.List<io.quarkmind.domain.Building> enemyBuildings, Point2d estimatedEnemyBase,
+                                 java.util.List<Unit> friendlyUnits, java.util.List<io.quarkmind.domain.Building> friendlyBuildings) {
+        java.util.List<io.quarkmind.domain.Building> baseBldgs = enemyBuildings.stream()
+                                                                               .filter(b -> BASE_TYPES.contains(b.type()))
+                                                                               .toList();
+
+        if (confirmedMainBase == null) {
+            baseBldgs.stream()
+                     .filter(b -> b.position().distanceTo(estimatedEnemyBase) <= EXPANSION_DISTANCE_THRESHOLD)
+                     .min(java.util.Comparator.comparingDouble(b -> b.position().distanceTo(estimatedEnemyBase)))
+                     .ifPresent(b -> confirmedMainBase = b.position());
+        }
+
+        Point2d reference = confirmedMainBase != null ? confirmedMainBase : estimatedEnemyBase;
+        float   threshold = confirmedMainBase != null ? CONFIRMED_EXPANSION_DISTANCE : EXPANSION_DISTANCE_THRESHOLD;
+
+        for (io.quarkmind.domain.Building b : baseBldgs) {
+            if (b.position().distanceTo(reference) > threshold) {
+                confirmedExpansions.put(b.tag(), b.position());
+                hasEverConfirmed = true;
+            }
+        }
+
+        confirmedExpansions.entrySet().removeIf(entry -> {
+            String  tag             = entry.getKey();
+            Point2d location        = entry.getValue();
+            boolean buildingPresent = enemyBuildings.stream().anyMatch(b -> b.tag().equals(tag));
+            if (!buildingPresent && hasVisionOf(location, friendlyUnits, friendlyBuildings)) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private boolean hasVisionOf(Point2d location, java.util.List<Unit> friendlyUnits,
+                                java.util.List<io.quarkmind.domain.Building> friendlyBuildings) {
+        for (Unit u : friendlyUnits) {
+            if (u.position().distanceTo(location) < VISION_RANGE) {return true;}
+        }
+        for (io.quarkmind.domain.Building b : friendlyBuildings) {
+            if (b.position().distanceTo(location) < VISION_RANGE) {return true;}
+        }
+        return false;
+    }
+
+
     /**
      * Builds a fresh {@link ScoutingRuleUnit} populated from the current buffer contents.
      * Call after {@link #evict} so the rule unit only sees events within their windows.
@@ -138,5 +199,10 @@ public class ScoutingSessionManager {
     public List<io.quarkmind.plugin.scouting.events.EnemyUnitFirstSeen> unitBufferSnapshot() {
         return List.copyOf(unitBuffer);
     }
+
+    public int confirmedExpansionCount() {return confirmedExpansions.size();}
+
+    public boolean hasEverConfirmed()    {return hasEverConfirmed;}
+
 
 }

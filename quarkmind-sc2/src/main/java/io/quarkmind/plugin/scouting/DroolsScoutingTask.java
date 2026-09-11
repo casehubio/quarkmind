@@ -237,6 +237,11 @@ public class DroolsScoutingTask implements ScoutingTask {
         if (needsCep) {
             sessionManager.processFrame(enemies, gameTimeMs, ourNexus, estimatedBase);
             sessionManager.evict(gameTimeMs);
+            GameState gameState = ctx.getAs(QuarkMindCaseFile.GAME_STATE, GameState.class);
+            if (gameState != null) {
+                sessionManager.processBuildings(gameState.enemyBuildings(), estimatedBase,
+                                                gameState.myUnits(), buildings);
+            }
             data = sessionManager.buildRuleUnit();
             try (RuleUnitInstance<ScoutingRuleUnit> instance = ruleUnit.createInstance(data)) {
                 instance.fire();
@@ -248,7 +253,9 @@ public class DroolsScoutingTask implements ScoutingTask {
         ctx.set(QuarkMindCaseFile.ENEMY_BUILD_ORDER, build);
         boolean timing = data != null && !data.getTimingAlerts().isEmpty();
         ctx.set(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, timing);
-        if (data != null && !data.getPostureDecisions().isEmpty()) {
+        if (sessionManager.hasEverConfirmed()) {
+            cachedPosture = sessionManager.confirmedExpansionCount() > 0 ? "MACRO" : "ALL_IN";
+        } else if (data != null && !data.getPostureDecisions().isEmpty()) {
             cachedPosture = data.getPostureDecisions().get(0);
         }
         String posture = cachedPosture;
