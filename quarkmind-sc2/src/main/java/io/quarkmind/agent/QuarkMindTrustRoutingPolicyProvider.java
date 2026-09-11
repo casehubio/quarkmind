@@ -98,7 +98,9 @@ public class QuarkMindTrustRoutingPolicyProvider implements TrustRoutingPolicyPr
 
     private TrustRoutingPolicy buildCommentaryPolicy(int minimumObservations, double latencyFloor) {
         Map<String, Double> qualityFloors = Map.of(
-                "response-latency", latencyFloor
+                "response-latency", latencyFloor,
+                "timing-quality", 0.3,
+                "accuracy", 0.4
                                                   );
 
         return new TrustRoutingPolicy(
