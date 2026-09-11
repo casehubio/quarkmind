@@ -14,7 +14,6 @@ import io.casehub.platform.api.preferences.SettingsScope;
 import io.casehub.qhorus.api.message.MessageDispatch;
 import io.casehub.qhorus.api.message.MessageType;
 import io.casehub.qhorus.runtime.message.MessageService;
-import io.quarkmind.agent.EnemyPostureClassifiedEvent;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.PluginDecisionEvent;
 import io.quarkmind.agent.QuarkMindCapabilityTag;
@@ -71,7 +70,6 @@ public class DroolsScoutingTask implements ScoutingTask {
     int mapWidth;
 
     @Inject Event<PluginDecisionEvent> decisionEvents;
-    @Inject Event<EnemyPostureClassifiedEvent> postureClassified;
     @Inject
             Event<PatternAssessmentPublished>  patternAssessmentPublished;
 
@@ -98,6 +96,8 @@ public class DroolsScoutingTask implements ScoutingTask {
     volatile String  prevPosture     = null;
     volatile Boolean prevTimingAlert = null;
     volatile String  prevBuildOrder  = null;
+    volatile String  cachedPosture   = "UNKNOWN";
+
 
     volatile double  minThreatDistance;
     volatile int     minArmySizeDelta;
@@ -139,6 +139,7 @@ public class DroolsScoutingTask implements ScoutingTask {
         cascadingClassifier.reset();
         windowAccumulator.reset();
         prevAssessments           = List.of();
+        cachedPosture             = "UNKNOWN";
     }
 
     @PostConstruct
@@ -205,6 +206,7 @@ public class DroolsScoutingTask implements ScoutingTask {
             prevPosture      = null;
             prevTimingAlert  = null;
             prevBuildOrder   = null;
+            cachedPosture    = "UNKNOWN";
             cascadingClassifier.reset();
             windowAccumulator.reset();
             prevAssessments  = List.of();
@@ -246,8 +248,10 @@ public class DroolsScoutingTask implements ScoutingTask {
         ctx.set(QuarkMindCaseFile.ENEMY_BUILD_ORDER, build);
         boolean timing = data != null && !data.getTimingAlerts().isEmpty();
         ctx.set(QuarkMindCaseFile.TIMING_ATTACK_INCOMING, timing);
-        String posture = data != null && !data.getPostureDecisions().isEmpty()
-            ? data.getPostureDecisions().get(0) : "UNKNOWN";
+        if (data != null && !data.getPostureDecisions().isEmpty()) {
+            cachedPosture = data.getPostureDecisions().get(0);
+        }
+        String posture = cachedPosture;
         ctx.set(QuarkMindCaseFile.ENEMY_POSTURE, posture);
 
         log.debugf("[SCOUTING] enemies=%d | build=%s | timing=%b | posture=%s",
@@ -272,9 +276,6 @@ public class DroolsScoutingTask implements ScoutingTask {
                 if (postureDispatchEnabled
                         && (broker.isSubscribed(ScoutingIntelType.POSTURE) || advisoryEnabled)) {
                     publishIntel(new ScoutingIntelPayload.PostureUpdate(posture));
-                }
-                if (!"UNKNOWN".equals(posture)) {
-                    postureClassified.fire(new EnemyPostureClassifiedEvent(posture));
                 }
             }
 

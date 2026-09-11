@@ -59,7 +59,6 @@ class DroolsScoutingTaskTest {
         task.gameSession = gameSession;
         task.broker = broker;
         task.decisionEvents = mock(jakarta.enterprise.event.Event.class);
-        task.postureClassified = mock(jakarta.enterprise.event.Event.class);
         task.objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
         task.messageService = mock(io.casehub.qhorus.runtime.message.MessageService.class);
         task.advisoryEnabled = false; // Disable advisory to avoid CEP gate

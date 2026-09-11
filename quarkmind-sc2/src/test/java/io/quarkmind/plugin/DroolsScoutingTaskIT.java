@@ -1,24 +1,31 @@
 package io.quarkmind.plugin;
 
 import io.casehub.qhorus.api.store.MessageStore;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
 import io.quarkmind.agency.context.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.MapInfo;
+import io.quarkmind.domain.PlayerEconomyStats;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.plugin.scouting.DroolsScoutingTask;
 import io.quarkmind.plugin.scouting.ScoutingSessionManager;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.MoveIntent;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -163,14 +170,74 @@ class DroolsScoutingTaskIT {
 
     // ---- Helpers ----
 
+
+    @Test
+    void posturePersistsAfterBufferEviction() {
+        // Tick 1: see enemy near enemy base (no expansion) → ALL_IN
+        var ctx1 = caseContext(List.of(enemy(200, 200)), List.of(), 100L);
+        scoutingTask.execute(ctx1);
+        assertThat(ctx1.getAs(QuarkMindCaseFile.ENEMY_POSTURE, String.class))
+                .isEqualTo("ALL_IN");
+
+        // Tick 2: 4 minutes later, no enemies visible → buffer evicted
+        long fourMinFrames = (long) (4L * 60 * SC2Data.GAME_LOOPS_PER_SECOND);
+        var  ctx2          = caseContext(List.of(), List.of(), fourMinFrames);
+        scoutingTask.execute(ctx2);
+
+        // Posture should persist as ALL_IN, not revert to UNKNOWN
+        assertThat(ctx2.getAs(QuarkMindCaseFile.ENEMY_POSTURE, String.class))
+                .isEqualTo("ALL_IN");
+    }
+
+    @Test
+    void postureTransitionsToMacroAfterEviction() {
+        // Tick 1: enemy near enemy base, no expansion → ALL_IN
+        var ctx1 = caseContext(List.of(enemy(200, 200)), List.of(), 100L);
+        scoutingTask.execute(ctx1);
+        assertThat(ctx1.getAs(QuarkMindCaseFile.ENEMY_POSTURE, String.class))
+                .isEqualTo("ALL_IN");
+
+        // Tick 2: 4 minutes later, enemy far from their base (expansion signal)
+        long fourMinFrames = (long) (4L * 60 * SC2Data.GAME_LOOPS_PER_SECOND);
+        var ctx2 = caseContext(
+                List.of(new Unit("e-exp", UnitType.ZEALOT, new Point2d(100, 100), 100, 100, 50, 50, 0, 0)),
+                List.of(), fourMinFrames);
+        scoutingTask.execute(ctx2);
+
+        // Expansion detected → MACRO overrides cached ALL_IN
+        assertThat(ctx2.getAs(QuarkMindCaseFile.ENEMY_POSTURE, String.class))
+                .isEqualTo("MACRO");
+    }
+
+    @Test
+    void postureResetsOnGameRestart() {
+        // Tick 1: classify as ALL_IN
+        var ctx1 = caseContext(List.of(enemy(200, 200)), List.of(), 100L);
+        scoutingTask.execute(ctx1);
+        assertThat(ctx1.getAs(QuarkMindCaseFile.ENEMY_POSTURE, String.class))
+                .isEqualTo("ALL_IN");
+
+        // Reset (simulates game restart)
+        scoutingTask.resetDispatchState();
+        sessionManager.reset();
+
+        // Tick 2: no enemies → should be UNKNOWN (fresh game)
+        var ctx2 = caseContext(List.of(), List.of(), 100L);
+        scoutingTask.execute(ctx2);
+        assertThat(ctx2.getAs(QuarkMindCaseFile.ENEMY_POSTURE, String.class))
+                .isEqualTo("UNKNOWN");
+    }
+
+
     private MutableMapCaseContext caseContext(List<Unit> enemies, List<Unit> workers, long frame) {
-        return new MutableMapCaseContext(Map.of(
-            QuarkMindCaseFile.ENEMY_UNITS, enemies,
-            QuarkMindCaseFile.WORKERS, workers,
-            QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus()),
-            QuarkMindCaseFile.GAME_FRAME, frame,
-            QuarkMindCaseFile.READY, Boolean.TRUE
-        ));
+        var map = new java.util.HashMap<String, Object>();
+        map.put(QuarkMindCaseFile.ENEMY_UNITS, enemies);
+        map.put(QuarkMindCaseFile.WORKERS, workers);
+        map.put(QuarkMindCaseFile.MY_BUILDINGS, List.of(nexus()));
+        map.put(QuarkMindCaseFile.GAME_FRAME, frame);
+        map.put(QuarkMindCaseFile.READY, Boolean.TRUE);
+        map.put(QuarkMindCaseFile.GAME_STATE, gameState(enemies, frame));
+        return new MutableMapCaseContext(map);
     }
 
     private Unit enemy(float x, float y) {
@@ -184,4 +251,18 @@ class DroolsScoutingTaskIT {
     private Building nexus() {
         return new Building("n-0", BuildingType.NEXUS, new Point2d(8, 8), 1500, 1500, true);
     }
+
+    private GameState gameState(List<Unit> enemies, long frame) {
+        return new GameState(
+                200, 0, 15, 6,
+                List.of(), List.of(nexus()),
+                enemies, List.of(), List.of(),
+                List.of(), List.of(),
+                frame,
+                new MapInfo(new Point2d(8, 8), new Point2d(224, 224), 256, 256, List.of(), List.of(), List.of()),
+                PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY,
+                java.util.Set.of(), java.util.Set.of()
+        );
+    }
+
 }

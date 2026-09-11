@@ -18,7 +18,7 @@ The strategy ATTACK rule fires when posture is neither `"ALL_IN"` nor under an a
 `ENEMY_POSTURE = "UNKNOWN"` arises from:
 
 1. **Pre-contact** — no enemy units have been scouted yet (`unitBuffer` in `ScoutingSessionManager` is empty because nothing has been seen)
-2. **Post-eviction** — units were scouted but `evict()` removed events older than `UNIT_WINDOW_MS` (3 minutes). Additionally: `seenUnitTags` is a permanent `HashSet` — re-sighting the same tagged unit after eviction does not re-add an event, making post-eviction UNKNOWN stickier than pre-contact UNKNOWN.
+2. ~~**Post-eviction** — units were scouted but `evict()` removed events older than `UNIT_WINDOW_MS` (3 minutes).~~ **Resolved by #300:** `DroolsScoutingTask` now caches the last DRL classification. Post-eviction UNKNOWN no longer occurs — the conclusion persists after evidence expires. `seenUnitTags` stickiness remains for build-order classification but no longer affects posture.
 
 ## Why ATTACK under UNKNOWN is acceptable
 
@@ -28,7 +28,7 @@ The C2 improvement is that `"ALL_IN"` posture triggers DEFEND even when no units
 
 ## Known edge case where equivalence breaks
 
-`seenUnitTags` stickiness can produce `"UNKNOWN"` posture while units remain visible in the current observation. If a previously-scouted unit reappears after its event has evicted, its presence does not re-populate `unitBuffer`. In that state the old rule would see enemies (DEFEND) but this rule sees UNKNOWN (ATTACK with 4+ stalkers). This is accepted as a known limitation of the `seenUnitTags` de-duplication architecture.
+~~`seenUnitTags` stickiness can produce `"UNKNOWN"` posture while units remain visible in the current observation.~~ **Resolved by #300:** posture is now cached after first classification. The `seenUnitTags` stickiness still prevents re-entry into `unitBuffer`, but posture no longer falls to UNKNOWN because the cached conclusion persists.
 
 ## The assumption this rule rests on
 
