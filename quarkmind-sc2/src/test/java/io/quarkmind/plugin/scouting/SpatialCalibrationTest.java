@@ -12,6 +12,8 @@ import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;
 import io.quarkmind.plugin.summarisation.GamePhaseSummariser;
 import io.quarkmind.plugin.summarisation.TacticalPosture;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.mock.IEM10JsonSimulatedGame;
 import io.quarkmind.sc2.mock.ReplaySimulatedGame;
@@ -137,6 +139,8 @@ class SpatialCalibrationTest {
             int prevArmyBuffer = mgr.armyBufferSize();
             mgr.processFrame(enemies, gameTimeMs, ourNexus, estimatedEnemyBase);
             mgr.evict(gameTimeMs);
+            mgr.processBuildings(state.enemyBuildings(), estimatedEnemyBase,
+                state.myUnits(), state.myBuildings());
 
             if (mgr.armyBufferSize() > prevArmyBuffer) {
                 armyNearBase++;
@@ -152,7 +156,9 @@ class SpatialCalibrationTest {
             } else {
                 drlPosture = null;
             }
-            if (drlPosture != null) {
+            if (mgr.hasEverConfirmed()) {
+                cachedPosture = mgr.confirmedExpansionCount() > 0 ? "MACRO" : "ALL_IN";
+            } else if (drlPosture != null) {
                 cachedPosture = drlPosture;
             }
             String posture = cachedPosture;
@@ -272,6 +278,104 @@ class SpatialCalibrationTest {
         System.out.printf("ALL_IN persist: PostTrn=%d Unk%%=%.1f%% TacTrn=%d Tac=%s%n",
             m.postureTransitions(), m.unknownRate() * 100,
             m.tacticalTransitions(), m.tacticalSequence());
+    }
+
+    @Test
+    void macroRevertsToAllInOnExpansionSacrifice() {
+        SimulatedGame game = new SimulatedGame();
+        game.reset();
+        game.spawnEnemyBuildingForTesting(BuildingType.NEXUS, new Point2d(224, 224));
+        game.spawnEnemyBuildingForTesting(BuildingType.NEXUS, new Point2d(180, 180));
+        game.spawnFriendlyUnitForTesting(UnitType.STALKER, new Point2d(182, 182));
+
+        ScoutingSessionManager mgr = new ScoutingSessionManager();
+        Point2d ourNexus = new Point2d(8, 8);
+        Point2d estimatedEnemyBase = new Point2d(224, 224);
+        String cachedPosture = "UNKNOWN";
+        boolean sawMacro = false;
+        boolean sawAllIn = false;
+        int transitions = 0;
+        String lastPosture = "UNKNOWN";
+        String expansionTag = null;
+
+        for (int tick = 0; tick < TICKS_FULL_GAME; tick++) {
+            game.tick();
+            GameState state = game.snapshot();
+
+            if (tick == 5 && expansionTag == null) {
+                expansionTag = state.enemyBuildings().stream()
+                    .filter(b -> b.position().distanceTo(new Point2d(180, 180)) < 1.0f)
+                    .findFirst().map(Building::tag).orElse(null);
+            }
+            if (tick == 300 && expansionTag != null) {
+                game.removeEnemyBuildingForTesting(expansionTag);
+            }
+
+            state = game.snapshot();
+            long gameTimeMs = (long)(state.gameFrame() * (1000.0 / 22.4));
+
+            mgr.processFrame(state.enemyUnits(), gameTimeMs, ourNexus, estimatedEnemyBase);
+            mgr.evict(gameTimeMs);
+            mgr.processBuildings(state.enemyBuildings(), estimatedEnemyBase,
+                state.myUnits(), state.myBuildings());
+
+            if (mgr.hasEverConfirmed()) {
+                cachedPosture = mgr.confirmedExpansionCount() > 0 ? "MACRO" : "ALL_IN";
+            }
+
+            if ("MACRO".equals(cachedPosture)) sawMacro = true;
+            if ("ALL_IN".equals(cachedPosture) && sawMacro) sawAllIn = true;
+
+            if (!cachedPosture.equals(lastPosture)) {
+                transitions++;
+                lastPosture = cachedPosture;
+            }
+        }
+
+        assertThat(sawMacro).as("MACRO detected while expansion alive").isTrue();
+        assertThat(sawAllIn).as("ALL_IN detected after expansion sacrifice").isTrue();
+        assertThat(transitions).as("UNKNOWN→MACRO→ALL_IN").isEqualTo(2);
+
+        System.out.printf("MACRO→ALL_IN pivot: transitions=%d sawMacro=%b sawAllIn=%b%n",
+            transitions, sawMacro, sawAllIn);
+    }
+
+    @Test
+    void macroStableWhenExpansionPersists() {
+        SimulatedGame game = new SimulatedGame();
+        game.reset();
+        game.spawnEnemyBuildingForTesting(BuildingType.NEXUS, new Point2d(224, 224));
+        game.spawnEnemyBuildingForTesting(BuildingType.NEXUS, new Point2d(180, 180));
+
+        ScoutingSessionManager mgr = new ScoutingSessionManager();
+        Point2d estimatedEnemyBase = new Point2d(224, 224);
+        String cachedPosture = "UNKNOWN";
+        int transitions = 0;
+        String lastPosture = "UNKNOWN";
+
+        for (int tick = 0; tick < TICKS_FULL_GAME; tick++) {
+            game.tick();
+            GameState state = game.snapshot();
+            long gameTimeMs = (long)(state.gameFrame() * (1000.0 / 22.4));
+
+            mgr.processFrame(state.enemyUnits(), gameTimeMs,
+                new Point2d(8, 8), estimatedEnemyBase);
+            mgr.evict(gameTimeMs);
+            mgr.processBuildings(state.enemyBuildings(), estimatedEnemyBase,
+                state.myUnits(), state.myBuildings());
+
+            if (mgr.hasEverConfirmed()) {
+                cachedPosture = mgr.confirmedExpansionCount() > 0 ? "MACRO" : "ALL_IN";
+            }
+
+            if (!cachedPosture.equals(lastPosture)) {
+                transitions++;
+                lastPosture = cachedPosture;
+            }
+        }
+
+        assertThat(transitions).as("One transition: UNKNOWN→MACRO, then stable").isEqualTo(1);
+        assertThat(cachedPosture).isEqualTo("MACRO");
     }
 
     @Test
