@@ -12,6 +12,7 @@ import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;
 import io.quarkmind.plugin.summarisation.GamePhaseSummariser;
 import io.quarkmind.plugin.summarisation.TacticalPosture;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.mock.IEM10JsonSimulatedGame;
 import io.quarkmind.sc2.mock.ReplaySimulatedGame;
 import io.quarkmind.sc2.mock.SimulatedGame;
@@ -107,6 +108,7 @@ class SpatialCalibrationTest {
         int armyNearBase = 0;
         int postureTransitions = 0;
         String lastPosture = "UNKNOWN";
+        String cachedPosture = "UNKNOWN";
 
         EventLevel level2 = new EventLevel("moment", 2);
         EventLevel level3 = new EventLevel("phase", 3);
@@ -142,14 +144,18 @@ class SpatialCalibrationTest {
 
             boolean hasUnits = mgr.unitBufferSize() > 0;
             boolean hasExpansions = mgr.expansionBufferSize() > 0;
-            String posture;
+            String drlPosture;
             if (hasUnits && !hasExpansions) {
-                posture = "ALL_IN";
+                drlPosture = "ALL_IN";
             } else if (hasExpansions) {
-                posture = "MACRO";
+                drlPosture = "MACRO";
             } else {
-                posture = "UNKNOWN";
+                drlPosture = null;
             }
+            if (drlPosture != null) {
+                cachedPosture = drlPosture;
+            }
+            String posture = cachedPosture;
 
             if (!posture.equals("UNKNOWN") && !firstClassified) {
                 firstClassified = true;
@@ -244,6 +250,93 @@ class SpatialCalibrationTest {
         }
 
         return sb.toString();
+    }
+
+    @Test
+    void allInPosturePersistsInSimulatedScenario() {
+        SimulatedGame game = new SimulatedGame();
+        game.reset();
+        game.spawnEnemyUnit(UnitType.ZEALOT, new Point2d(220, 220));
+        game.spawnEnemyUnit(UnitType.ZEALOT, new Point2d(221, 221));
+        game.spawnEnemyUnit(UnitType.STALKER, new Point2d(219, 222));
+
+        SpatialMetrics m = measureReplay(game, "sim-all-in-persist", "SIM");
+
+        assertThat(m.postureTransitions())
+            .as("ALL_IN should be detected (1 transition: UNKNOWN→ALL_IN)")
+            .isEqualTo(1);
+        assertThat(m.unknownRate())
+            .as("cachedPosture should hold ALL_IN after buffer eviction — 0%% UNKNOWN")
+            .isEqualTo(0.0);
+
+        System.out.printf("ALL_IN persist: PostTrn=%d Unk%%=%.1f%% TacTrn=%d Tac=%s%n",
+            m.postureTransitions(), m.unknownRate() * 100,
+            m.tacticalTransitions(), m.tacticalSequence());
+    }
+
+    @Test
+    void allInTransitionsToMacroOnLateExpansion() {
+        SimulatedGame game = new SimulatedGame();
+        game.reset();
+        game.spawnEnemyUnit(UnitType.ZEALOT, new Point2d(220, 220));
+        game.spawnEnemyUnit(UnitType.STALKER, new Point2d(221, 221));
+
+        ScoutingSessionManager mgr = new ScoutingSessionManager();
+        Point2d ourNexus = new Point2d(8, 8);
+        Point2d estimatedEnemyBase = new Point2d(224, 224);
+        String cachedPosture = "UNKNOWN";
+        boolean sawAllIn = false;
+        boolean sawMacro = false;
+        int transitions = 0;
+        String lastPosture = "UNKNOWN";
+
+        for (int tick = 0; tick < TICKS_FULL_GAME; tick++) {
+            if (tick == 400) {
+                game.spawnEnemyUnit(UnitType.PROBE, new Point2d(100, 100));
+            }
+
+            game.tick();
+            GameState state = game.snapshot();
+            long gameTimeMs = (long)(state.gameFrame() * (1000.0 / 22.4));
+
+            mgr.processFrame(state.enemyUnits(), gameTimeMs, ourNexus, estimatedEnemyBase);
+            mgr.evict(gameTimeMs);
+
+            boolean hasUnits = mgr.unitBufferSize() > 0;
+            boolean hasExpansions = mgr.expansionBufferSize() > 0;
+            String drlPosture;
+            if (hasUnits && !hasExpansions) {
+                drlPosture = "ALL_IN";
+            } else if (hasExpansions) {
+                drlPosture = "MACRO";
+            } else {
+                drlPosture = null;
+            }
+            if (drlPosture != null) {
+                cachedPosture = drlPosture;
+            }
+
+            if ("ALL_IN".equals(cachedPosture)) sawAllIn = true;
+            if ("MACRO".equals(cachedPosture) && sawAllIn) sawMacro = true;
+
+            if (!cachedPosture.equals(lastPosture)) {
+                transitions++;
+                lastPosture = cachedPosture;
+            }
+        }
+
+        assertThat(sawAllIn)
+            .as("ALL_IN should be detected before expansion")
+            .isTrue();
+        assertThat(sawMacro)
+            .as("MACRO should be detected after late expansion at tick 400")
+            .isTrue();
+        assertThat(transitions)
+            .as("Two transitions: UNKNOWN→ALL_IN→MACRO")
+            .isEqualTo(2);
+
+        System.out.printf("ALL_IN→MACRO: transitions=%d sawAllIn=%b sawMacro=%b%n",
+            transitions, sawAllIn, sawMacro);
     }
 
     private static String truncate(String s, int max) {
