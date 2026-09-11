@@ -896,6 +896,18 @@ document.addEventListener('coaching-response', function(e) {
   }
 });
 
+// Commentary feedback listener
+document.addEventListener('commentary-feedback', function(e) {
+  if (window.__workbenchWs && window.__workbenchWs.readyState === 1) {
+    window.__workbenchWs.send(JSON.stringify({
+      type: 'commentary_feedback',
+      workerId: e.detail.workerId,
+      dimension: e.detail.dimension,
+      positive: e.detail.positive,
+    }));
+  }
+});
+
 // resize handled by ResizeObserver in init()
 
 function animate() {
