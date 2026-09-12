@@ -1,19 +1,18 @@
 package io.quarkmind.agent;
 
 import io.casehub.api.context.CaseContext;
-import io.quarkus.scheduler.Scheduled;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Event;
-import jakarta.inject.Inject;
 import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.GameStarted;
 import io.quarkmind.sc2.GameStopped;
 import io.quarkmind.sc2.SC2Engine;
+import io.quarkus.scheduler.Scheduled;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -61,6 +60,13 @@ public class AgentOrchestrator {
     public boolean isSchedulerPaused() { return schedulerPaused; }
     public void setSpeedMultiplier(int x) { speedMultiplier = Math.max(0, Math.min(8, x)); }
     public int getSpeedMultiplier() { return speedMultiplier; }
+
+    public void setSyncMode(String mode) {tickExecutor.setSyncMode(mode);}
+
+    public String getSyncMode() {return tickExecutor.getSyncMode();}
+
+    public int getSyncTimeoutSeconds() {return tickExecutor.getSyncTimeoutSeconds();}
+
 
     public TickResult getLastTickResult() { return lastTickResult.get(); }
 

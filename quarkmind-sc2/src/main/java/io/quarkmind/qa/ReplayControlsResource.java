@@ -1,6 +1,7 @@
 package io.quarkmind.qa;
 
 import io.quarkmind.agent.AgentOrchestrator;
+
 import io.quarkmind.sc2.SC2Engine;
 import io.quarkmind.sc2.replay.ReplayEngine;
 import io.quarkus.arc.profile.UnlessBuildProfile;
@@ -113,4 +114,27 @@ public class ReplayControlsResource {
         orchestrator.setSpeedMultiplier(multiplier);
         return Response.noContent().build();
     }
+
+    @GET
+    @Path("/sync")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response syncStatus() {
+        return Response.ok(new ReplaySyncResponse(
+                orchestrator.getSyncMode(), orchestrator.getSyncTimeoutSeconds()
+        )).build();
+    }
+
+    @POST
+    @Path("/sync")
+    public Response setSyncMode(@QueryParam("mode") String mode) {
+        if (mode == null || (!mode.equals("full") && !mode.equals("reactive-only") && !mode.equals("none"))) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                           .entity("mode must be full, reactive-only, or none").build();
+        }
+        orchestrator.setSyncMode(mode);
+        return Response.noContent().build();
+    }
+
+    record ReplaySyncResponse(String mode, int timeoutSeconds) {}
+
 }

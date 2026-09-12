@@ -22,9 +22,9 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -399,6 +399,28 @@ class GameTickExecutorMigrationTest {
                 eq(reactiveMap), eq(io.quarkmind.plugin.commentary.CommentaryType.REACTIVE), eq(15));
         verify(inlineCommentaryDispatcher).executeAsync(
                 eq(narrativeMap), eq(io.quarkmind.plugin.commentary.CommentaryType.NARRATIVE));
+    }
+
+    @Test
+    void setSyncMode_overridesConfigProperty() {
+        executor.replaySyncMode = "none";
+        executor.setSyncMode("full");
+        assertThat(executor.getSyncMode()).isEqualTo("full");
+
+        GameState state = stubGameState(500L, 200, 100);
+        when(engine.observe()).thenReturn(state);
+        CaseContext ctx = mock(CaseContext.class);
+        when(caseHub.signalAndAwaitSync(any(), any(), any())).thenReturn(ctx);
+
+        Map<String, Object> reactiveMap = Map.of(
+                QuarkMindCaseFile.COMMENTARY_TRIGGER,
+                Map.of("gameFrame", 500L, "momentTypes", "FIRST_CONTACT"));
+        when(commentaryTriggerBuilder.build(any(CaseContext.class), anyLong())).thenReturn(reactiveMap);
+
+        executor.execute(1);
+
+        verify(inlineCommentaryDispatcher).executeWithTimeout(
+                eq(reactiveMap), eq(io.quarkmind.plugin.commentary.CommentaryType.REACTIVE), eq(15));
     }
 
 

@@ -68,6 +68,20 @@ class GameTickExecutor {
 
     @ConfigProperty(name = "quarkmind.replay.sync.timeout-seconds", defaultValue = "15")
     int replaySyncTimeoutSeconds;
+    private volatile String syncModeOverride;
+
+    public void setSyncMode(String mode) {
+        this.syncModeOverride = mode;
+    }
+
+    public String getSyncMode() {
+        String override = syncModeOverride;
+        return override != null ? override : replaySyncMode;
+    }
+
+    public int getSyncTimeoutSeconds() {
+        return replaySyncTimeoutSeconds;
+    }
 
 
     AgentOrchestrator.TickResult execute() {return execute(1);}
@@ -177,10 +191,11 @@ class GameTickExecutor {
     }
 
     private boolean syncReactive() {
-        return "full".equals(replaySyncMode) || "reactive-only".equals(replaySyncMode);
+        String mode = getSyncMode();
+        return "full".equals(mode) || "reactive-only".equals(mode);
     }
 
     private boolean syncNarrative() {
-        return "full".equals(replaySyncMode);
+        return "full".equals(getSyncMode());
     }
 }
