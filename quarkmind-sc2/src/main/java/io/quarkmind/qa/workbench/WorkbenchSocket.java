@@ -20,6 +20,8 @@ public class WorkbenchSocket {
     @Inject
     CoachingAcknowledgmentHandler                          acknowledgmentHandler;
     @Inject
+    CommentaryFeedbackHandler                              feedbackHandler;
+    @Inject
     io.quarkmind.plugin.commentary.CommentaryChannelBroker commentaryChannelBroker;
     @Inject
     io.casehub.qhorus.runtime.message.MessageService       messageService;
@@ -42,6 +44,17 @@ public class WorkbenchSocket {
         try {
             var    node = objectMapper.readTree(message);
             String type = node.path("type").asText(null);
+
+            if ("commentary_feedback".equals(type)) {
+                String workerId  = node.path("workerId").asText(null);
+                String dimension = node.path("dimension").asText(null);
+                boolean positive = node.path("positive").asBoolean();
+                if (workerId != null && dimension != null) {
+                    feedbackHandler.recordFeedback(workerId, dimension, positive);
+                }
+                return;
+            }
+
             if (!"coaching_response".equals(type)) {return;}
 
             String correlationId = node.path("correlationId").asText(null);

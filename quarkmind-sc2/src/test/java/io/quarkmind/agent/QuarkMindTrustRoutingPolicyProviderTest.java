@@ -158,14 +158,18 @@ class QuarkMindTrustRoutingPolicyProviderTest {
         TrustRoutingPolicy policy = provider.forCapability("commentary-reactive");
 
         Map<String, Double> qualityFloors = policy.qualityFloors();
-        assertEquals(1, qualityFloors.size(),
-                "Reactive commentary should only have response-latency quality floor");
+        assertEquals(3, qualityFloors.size(),
+                "Reactive commentary should have response-latency, timing-quality, accuracy floors");
         assertEquals(0.4, qualityFloors.get("response-latency"),
                 "reactive commentary response-latency floor should be 0.4");
+        assertEquals(0.3, qualityFloors.get("timing-quality"),
+                "reactive commentary timing-quality floor should be 0.3");
+        assertEquals(0.4, qualityFloors.get("accuracy"),
+                "reactive commentary accuracy floor should be 0.4");
     }
 
     @Test
-    void commentaryNarrative_hasResponseLatencyFloorOnly() {
+    void commentaryNarrative_hasAllThreeCommentaryFloors() {
         var provider = new QuarkMindTrustRoutingPolicyProvider(
                 5, 10, 10, 5,
                 0.3, 0.2, 0.2
@@ -174,10 +178,14 @@ class QuarkMindTrustRoutingPolicyProviderTest {
         TrustRoutingPolicy policy = provider.forCapability("commentary-narrative");
 
         Map<String, Double> qualityFloors = policy.qualityFloors();
-        assertEquals(1, qualityFloors.size(),
-                "Narrative commentary should only have response-latency quality floor");
+        assertEquals(3, qualityFloors.size(),
+                "Narrative commentary should have response-latency, timing-quality, accuracy floors");
         assertEquals(0.3, qualityFloors.get("response-latency"),
                 "narrative commentary response-latency floor should be 0.3");
+        assertEquals(0.3, qualityFloors.get("timing-quality"),
+                "narrative commentary timing-quality floor should be 0.3");
+        assertEquals(0.4, qualityFloors.get("accuracy"),
+                "narrative commentary accuracy floor should be 0.4");
     }
 
     @Test
