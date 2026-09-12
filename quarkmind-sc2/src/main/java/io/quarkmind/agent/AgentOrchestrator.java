@@ -114,7 +114,7 @@ public class AgentOrchestrator {
         if (schedulerPaused) return;
         if (engine.isConnected()) {
             engineWasConnected = true;                          // game is running
-            lastTickResult.set(tickExecutor.execute());
+            lastTickResult.set(tickExecutor.execute(speedMultiplier));
         } else if (engineWasConnected) {
             engineWasConnected = false;
             fireGameStoppedOnce(engine.lastOutcome());          // natural game end

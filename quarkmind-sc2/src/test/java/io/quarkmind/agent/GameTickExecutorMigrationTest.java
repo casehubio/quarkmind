@@ -16,17 +16,19 @@ import org.mockito.ArgumentCaptor;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,6 +64,8 @@ class GameTickExecutorMigrationTest {
     private CommentaryAccumulator commentaryAccumulator;
     private io.quarkmind.plugin.coaching.CoachingTriggerBuilder coachingTriggerBuilder;
     private io.quarkmind.plugin.coaching.CoachingComplianceEvaluator coachingComplianceEvaluator;
+    private io.quarkmind.plugin.commentary.InlineCommentaryDispatcher inlineCommentaryDispatcher;
+
     private GameTickExecutor executor;
     private UUID sessionId;
 
@@ -105,6 +109,11 @@ class GameTickExecutorMigrationTest {
         executor.coachingTriggerBuilder = coachingTriggerBuilder;
         executor.coachingComplianceEvaluator = coachingComplianceEvaluator;
         executor.timelineSampler = new io.quarkmind.agent.cbr.TimelineSampler();
+        inlineCommentaryDispatcher = mock(io.quarkmind.plugin.commentary.InlineCommentaryDispatcher.class);
+        when(inlineCommentaryDispatcher.isAvailable()).thenReturn(true);
+        executor.inlineCommentaryDispatcher = inlineCommentaryDispatcher;
+        executor.replaySyncMode = "none";
+        executor.replaySyncTimeoutSeconds = 15;
         executor.gameMode = "ai";
     }
 
@@ -292,6 +301,104 @@ class GameTickExecutorMigrationTest {
 
         verify(milestoneOutcomeRecorder).evaluateMilestones(state);
         verify(coachingComplianceEvaluator, never()).evaluate(any(), anyLong());
+    }
+
+    @Test
+    void execute_speedMultiplier_callsTickNTimes() {
+        GameState state = stubGameState(42L, 200, 100);
+        when(engine.observe()).thenReturn(state);
+        when(caseHub.signalAndAwaitSync(any(), any(), any())).thenReturn(mock(CaseContext.class));
+
+        executor.execute(4);
+
+        verify(engine, times(4)).tick();
+        verify(engine, times(1)).observe();
+    }
+
+    @Test
+    void execute_syncModeFull_callsExecuteWithTimeout() {
+        executor.replaySyncMode           = "full";
+        executor.replaySyncTimeoutSeconds = 15;
+        GameState state = stubGameState(500L, 200, 100);
+        when(engine.observe()).thenReturn(state);
+        CaseContext ctx = mock(CaseContext.class);
+        when(caseHub.signalAndAwaitSync(any(), any(), any())).thenReturn(ctx);
+
+        Map<String, Object> reactiveMap = Map.of(
+                QuarkMindCaseFile.COMMENTARY_TRIGGER,
+                Map.of("gameFrame", 500L, "momentTypes", "FIRST_CONTACT"));
+        when(commentaryTriggerBuilder.build(any(CaseContext.class), anyLong())).thenReturn(reactiveMap);
+
+        executor.execute(1);
+
+        verify(inlineCommentaryDispatcher).executeWithTimeout(
+                eq(reactiveMap), eq(io.quarkmind.plugin.commentary.CommentaryType.REACTIVE), eq(15));
+        verify(inlineCommentaryDispatcher, never()).executeAsync(any(), any());
+    }
+
+    @Test
+    void execute_syncModeNone_callsExecuteAsync() {
+        executor.replaySyncMode = "none";
+        GameState state = stubGameState(500L, 200, 100);
+        when(engine.observe()).thenReturn(state);
+        CaseContext ctx = mock(CaseContext.class);
+        when(caseHub.signalAndAwaitSync(any(), any(), any())).thenReturn(ctx);
+
+        Map<String, Object> reactiveMap = Map.of(
+                QuarkMindCaseFile.COMMENTARY_TRIGGER,
+                Map.of("gameFrame", 500L, "momentTypes", "FIRST_CONTACT"));
+        when(commentaryTriggerBuilder.build(any(CaseContext.class), anyLong())).thenReturn(reactiveMap);
+
+        executor.execute(1);
+
+        verify(inlineCommentaryDispatcher).executeAsync(eq(reactiveMap), eq(io.quarkmind.plugin.commentary.CommentaryType.REACTIVE));
+        verify(inlineCommentaryDispatcher, never()).executeWithTimeout(any(), any(), anyInt());
+    }
+
+    @Test
+    void execute_syncModeFull_narrativeUsesInlineDispatcher() {
+        executor.replaySyncMode           = "full";
+        executor.replaySyncTimeoutSeconds = 15;
+        GameState state = stubGameState(2000L, 300, 100);
+        when(engine.observe()).thenReturn(state);
+        when(caseHub.signalAndAwaitSync(any(), any(), any())).thenReturn(mock(CaseContext.class));
+
+        Map<String, Object> narrativeMap = Map.of(
+                QuarkMindCaseFile.COMMENTARY_NARRATIVE_TRIGGER,
+                Map.of("gameFrame", 2000L, "moments", "accumulated"));
+        when(commentaryAccumulator.tick(anyLong())).thenReturn(narrativeMap);
+
+        executor.execute(1);
+
+        verify(inlineCommentaryDispatcher).executeWithTimeout(
+                eq(narrativeMap), eq(io.quarkmind.plugin.commentary.CommentaryType.NARRATIVE), eq(15));
+        verify(caseHub, never()).signal(any(), eq(narrativeMap));
+    }
+
+    @Test
+    void execute_syncModeReactiveOnly_narrativeIsAsync() {
+        executor.replaySyncMode           = "reactive-only";
+        executor.replaySyncTimeoutSeconds = 15;
+        GameState state = stubGameState(2000L, 300, 100);
+        when(engine.observe()).thenReturn(state);
+        when(caseHub.signalAndAwaitSync(any(), any(), any())).thenReturn(mock(CaseContext.class));
+
+        Map<String, Object> narrativeMap = Map.of(
+                QuarkMindCaseFile.COMMENTARY_NARRATIVE_TRIGGER,
+                Map.of("gameFrame", 2000L, "moments", "accumulated"));
+        when(commentaryAccumulator.tick(anyLong())).thenReturn(narrativeMap);
+
+        Map<String, Object> reactiveMap = Map.of(
+                QuarkMindCaseFile.COMMENTARY_TRIGGER,
+                Map.of("gameFrame", 2000L, "momentTypes", "BATTLE_ENDED"));
+        when(commentaryTriggerBuilder.build(any(CaseContext.class), anyLong())).thenReturn(reactiveMap);
+
+        executor.execute(1);
+
+        verify(inlineCommentaryDispatcher).executeWithTimeout(
+                eq(reactiveMap), eq(io.quarkmind.plugin.commentary.CommentaryType.REACTIVE), eq(15));
+        verify(inlineCommentaryDispatcher).executeAsync(
+                eq(narrativeMap), eq(io.quarkmind.plugin.commentary.CommentaryType.NARRATIVE));
     }
 
 
