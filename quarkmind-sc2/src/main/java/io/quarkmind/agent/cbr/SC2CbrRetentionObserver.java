@@ -11,12 +11,14 @@ import io.casehub.platform.api.path.Path;
 import io.quarkmind.agent.MultiFactorDominanceAssessor;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingConvergenceEvaluator;
-import io.quarkmind.domain.PatternAssessment;
+import io.quarkmind.agent.plugin.StrategyTransitionPublished;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.DominanceScore;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.StrategyArchetype;
+import io.quarkmind.domain.StrategyTransition;
 import io.quarkmind.plugin.summarisation.EngagementOutcome;
 import io.quarkmind.plugin.summarisation.GameArc;
 import io.quarkmind.plugin.summarisation.GameMoment;
@@ -52,6 +54,7 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
     private final List<GameMoment>         moments   = new CopyOnWriteArrayList<>();
     private final List<TacticalPosture>    phases    = new CopyOnWriteArrayList<>();
     private final AtomicReference<GameArc> latestArc = new AtomicReference<>();
+    private final List<StrategyTransition> transitions = new CopyOnWriteArrayList<>();
 
     @Inject
     public SC2CbrRetentionObserver(CbrCaseMemoryStore cbrStore,
@@ -93,6 +96,11 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
         latestArc.set(event.payload());
     }
 
+    void onStrategyTransition(@Observes StrategyTransitionPublished event) {
+        transitions.add(event.transition());
+    }
+
+
     List<GameMoment> moments()     {return List.copyOf(moments);}
 
     List<TacticalPosture> phases() {return List.copyOf(phases);}
@@ -103,6 +111,7 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
         moments.clear();
         phases.clear();
         latestArc.set(null);
+        transitions.clear();
     }
 
     @Override
@@ -203,9 +212,18 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
                 timelineSampler.getTimeline());
 
         Boolean cbrInfluenced = (Boolean) snapshot.get(QuarkMindCaseFile.CBR_INFLUENCED_SELECTION);
-        if (cbrInfluenced != null) {
+        if (cbrInfluenced != null || !transitions.isEmpty()) {
             var enrichedFeatures = new java.util.HashMap<>(cbrCase.features());
-            enrichedFeatures.put("cbr_influenced", FeatureValue.string(cbrInfluenced.toString()));
+            if (cbrInfluenced != null) {
+                enrichedFeatures.put("cbr_influenced", FeatureValue.string(cbrInfluenced.toString()));
+            }
+            enrichedFeatures.put("transition_count", FeatureValue.number(transitions.size()));
+            if (!transitions.isEmpty()) {
+                List<String> transitionNames = transitions.stream()
+                    .map(t -> t.from().name() + "->" + t.to().name())
+                    .toList();
+                enrichedFeatures.put("transitions", FeatureValue.stringList(transitionNames));
+            }
             cbrCase = (SC2GameCbrCase) cbrCase.withFeatures(enrichedFeatures);
         }
 

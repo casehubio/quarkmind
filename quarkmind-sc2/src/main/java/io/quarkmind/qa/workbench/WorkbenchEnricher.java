@@ -3,6 +3,7 @@ package io.quarkmind.qa.workbench;
 import io.quarkmind.agent.StrategyTaxonomy;
 import io.quarkmind.agent.cbr.StrategySelectionPublished;
 import io.quarkmind.agent.plugin.PatternAssessmentPublished;
+import io.quarkmind.agent.plugin.StrategyTransitionPublished;
 import io.quarkmind.domain.CounterInfo;
 import io.quarkmind.plugin.coaching.CoachingAdvicePublished;
 import io.quarkmind.plugin.coaching.CoachingComplianceResolved;
@@ -53,6 +54,18 @@ public class WorkbenchEnricher {
         broadcaster.broadcast(new WorkbenchEvent("strategy",
             new StrategyPayload(event.strategyId(), event.archetype(), event.confidence(), event.pivotCount())));
     }
+
+    void onStrategyTransition(@Observes StrategyTransitionPublished event) {
+        var t = event.transition();
+        broadcaster.broadcast(new WorkbenchEvent("transition",
+                                                 new TransitionPayload(
+                                                         t.from().name(), t.to().name(),
+                                                         t.fromConfidence(), t.toConfidence(),
+                                                         t.detectedAtFrame(),
+                                                         t.path() != null ? t.path().displayName() : null,
+                                                         t.path() != null ? t.path().coachingAdvice() : null)));
+    }
+
 
     void onCommentaryCompleted(@Observes io.quarkmind.plugin.commentary.CommentaryCompleted event) {
         broadcaster.broadcast(new WorkbenchEvent("commentary",

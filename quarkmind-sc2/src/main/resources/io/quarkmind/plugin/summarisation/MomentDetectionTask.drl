@@ -7,6 +7,7 @@ import io.quarkmind.agent.plugin.ScoutingIntelPayload.TimingAlert;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload.ArmySize;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload.PostureUpdate;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload.BuildOrder;
+import io.quarkmind.agent.plugin.ScoutingIntelPayload.TransitionDetected;
 import java.util.Map;
 
 rule "First Contact"
@@ -78,6 +79,17 @@ then
     detectedMoments.add(new GameMoment(
         GameMomentType.POSTURE_CHANGE, currentFrame,
         Map.of("previousPosture", previousPosture, "newPosture", ((PostureUpdate) $posture).posture())));
+end
+
+rule "Strategy Transition"
+    salience 155
+when
+    $transition : /intelEvents[this instanceof TransitionDetected]
+then
+    detectedMoments.add(new GameMoment(
+        GameMomentType.STRATEGY_TRANSITION, currentFrame,
+        Map.of("from", ((TransitionDetected) $transition).transition().from().name(),
+               "to",   ((TransitionDetected) $transition).transition().to().name())));
 end
 
 rule "Supply Block"

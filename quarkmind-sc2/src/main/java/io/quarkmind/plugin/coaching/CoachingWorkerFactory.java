@@ -190,6 +190,25 @@ public final class CoachingWorkerFactory {
         Object phase = input.get(QuarkMindCaseFile.GAME_PHASE);
         if (phase != null) {sb.append("GAME PHASE: ").append(phase).append("\n");}
 
+        Object transitionObj = input.get(QuarkMindCaseFile.STRATEGY_TRANSITION);
+        if (transitionObj instanceof io.quarkmind.domain.StrategyTransition transition) {
+            sb.append("\nSTRATEGY TRANSITION: ")
+              .append(transition.from().name()).append(" → ").append(transition.to().name())
+              .append(" (confidence: ")
+              .append(String.format("%.2f", transition.fromConfidence()))
+              .append(" → ").append(String.format("%.2f", transition.toConfidence()))
+              .append(")\n");
+            if (transition.path() != null) {
+                sb.append("COACHING: ").append(transition.path().coachingAdvice()).append("\n");
+            }
+            if (taxonomy != null) {
+                var counters = taxonomy.countersFor(transition.to());
+                if (counters != null) {
+                    appendCounters(sb, "COUNTERS FOR NEW STRATEGY", counters.strongCounters());
+                }
+            }
+        }
+
         sb.append("\nGame state:\n");
         appendField(sb, "Minerals", input.get(QuarkMindCaseFile.MINERALS));
         appendField(sb, "Vespene", input.get(QuarkMindCaseFile.VESPENE));

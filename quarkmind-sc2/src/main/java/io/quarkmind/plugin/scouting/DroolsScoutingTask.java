@@ -21,6 +21,9 @@ import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.StrategyTaxonomy;
 import io.quarkmind.agent.plugin.PatternAssessmentPublished;
+import io.quarkmind.agent.plugin.StrategyTransitionPublished;
+import io.quarkmind.domain.StrategyTransition;
+import io.quarkmind.domain.TransitionPath;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
@@ -72,6 +75,7 @@ public class DroolsScoutingTask implements ScoutingTask {
     @Inject Event<PluginDecisionEvent> decisionEvents;
     @Inject
             Event<PatternAssessmentPublished>  patternAssessmentPublished;
+    @Inject Event<StrategyTransitionPublished> strategyTransitionPublished;
 
     @Inject GameSession gameSession;
 
@@ -333,6 +337,16 @@ public class DroolsScoutingTask implements ScoutingTask {
             } else if (!prevAssessments.isEmpty()) {
                 prevAssessments = List.of();
             }
+
+            if (cascadeResult.transition() != null) {
+                StrategyTransition raw = cascadeResult.transition();
+                TransitionPath path = taxonomy.transitionPath(raw.from(), raw.to()).orElse(null);
+                StrategyTransition enriched = new StrategyTransition(
+                    raw.from(), raw.to(), raw.fromConfidence(), raw.toConfidence(),
+                    raw.detectedAtFrame(), path);
+                ctx.set(QuarkMindCaseFile.STRATEGY_TRANSITION, enriched);
+                publishIntel(new ScoutingIntelPayload.TransitionDetected(enriched));
+            }
         }
 
         if (enemies.isEmpty()) {
@@ -355,7 +369,8 @@ public class DroolsScoutingTask implements ScoutingTask {
             QuarkMindCaseFile.TIMING_ATTACK_INCOMING,
             QuarkMindCaseFile.ENEMY_POSTURE,
             QuarkMindCaseFile.GAME_PHASE,
-            QuarkMindCaseFile.SCOUTING_FINAL_ASSESSMENT);
+            QuarkMindCaseFile.SCOUTING_FINAL_ASSESSMENT,
+            QuarkMindCaseFile.STRATEGY_TRANSITION);
     }
 
     private void maybeSendScout(long frame, List<Unit> workers, Point2d target) {
@@ -394,6 +409,10 @@ public class DroolsScoutingTask implements ScoutingTask {
         dispatchToAdvisory(payload);
         if (payload instanceof PatternAssessmentPayload pa && patternAssessmentPublished != null) {
             patternAssessmentPublished.fire(new PatternAssessmentPublished(pa.assessments()));
+        }
+        if (payload instanceof ScoutingIntelPayload.TransitionDetected td
+                && strategyTransitionPublished != null) {
+            strategyTransitionPublished.fire(new StrategyTransitionPublished(td.transition()));
         }
     }
 

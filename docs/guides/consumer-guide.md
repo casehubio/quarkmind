@@ -88,7 +88,7 @@ Four implementations:
 
 ### Scouting Intel System
 
-`ScoutingIntelBroker` publishes intel to `quarkmind-scouting-intel` via `casehub-qhorus`. Intel types defined in `ScoutingIntelType`: enemy army composition, threat position, build order detection, pattern assessments. Consumers implement `ScoutingIntelConsumer` with `ScoutingIntelPreferences` to declare interest.
+`ScoutingIntelBroker` publishes intel to `quarkmind-scouting-intel` via `casehub-qhorus`. Intel types defined in `ScoutingIntelType`: enemy army composition, threat position, build order detection, pattern assessments, and strategy transitions. Consumers implement `ScoutingIntelConsumer` with `ScoutingIntelPreferences` to declare interest. `StrategyTaxonomy.transitionPath(from, to)` looks up curated coaching advice for known archetype transitions (e.g., Marine Rush → Bio Timing) from `strategy-taxonomy.yaml`.
 
 ### LLM Advisory and Coaching
 
