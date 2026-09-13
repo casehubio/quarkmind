@@ -1,0 +1,10 @@
+tournaments:
+  - sc2egset_name: "2016_IEM_10_Taipei"
+    display_name: "IEM Season 10 Taipei"
+    year: 2016
+    youtube_channels:
+      - channel_name: "ESL Archives"
+        playlist_url: "https://www.youtube.com/playlist?list=PLhCH_nPE4JTqKvJvmCrfR5Jk"
+    liquipedia_url: "https://liquipedia.net/starcraft2/IEM_Season_X_-_Taipei"
+    game_speed: "Faster"
+    notes: "30 replays in quarkmind-sc2/replays/2016_IEM_10_Taipei.zip"
