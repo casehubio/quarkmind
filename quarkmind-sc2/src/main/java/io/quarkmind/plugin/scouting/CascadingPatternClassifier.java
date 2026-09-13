@@ -12,6 +12,7 @@ import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.StrategyArchetype;
+import io.quarkmind.domain.StrategyTransition;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
@@ -35,6 +36,8 @@ public class CascadingPatternClassifier {
     static final double DECAY_PER_FRAME    = 0.99948;
     static final double NOISE_FLOOR        = 0.01;
     static final double FALLBACK_CONFIDENCE = 0.35;
+    static final double TRANSITION_MIN_CONFIDENCE = 0.4;
+    static final double TRANSITION_GAP_MARGIN = 0.15;
 
     static StrategyArchetype unknownForRace(Race race) {
         return switch (race) {
@@ -58,6 +61,7 @@ public class CascadingPatternClassifier {
     private long llmFallbackCooldownFrames = 500;
     private long lastLlmFallbackFrame = -1;
     private String lastProcessedLlmArchetype;
+    private StrategyArchetype prevDominant;
     @Inject
     MeterRegistry registry;
 
@@ -143,13 +147,31 @@ public class CascadingPatternClassifier {
         mergeCumulative(cumulativeConfidence, computeAllConfidences(evidence), frame, prevFrame);
         applyRevisions(cumulativeConfidence, revisions, framesElapsed);
 
+        // Transition detection — after cumulative update, before tier routing
+        StrategyArchetype currentDominant = findDominant(cumulativeConfidence);
+        StrategyTransition transition = null;
+        if (currentDominant != null && currentDominant != prevDominant) {
+            if (prevDominant == null) {
+                prevDominant = currentDominant;
+            } else {
+                double currentConf = cumulativeConfidence.getOrDefault(currentDominant, 0.0);
+                double prevConf = cumulativeConfidence.getOrDefault(prevDominant, 0.0);
+                if (currentConf >= TRANSITION_MIN_CONFIDENCE
+                        && currentConf > prevConf + TRANSITION_GAP_MARGIN) {
+                    transition = new StrategyTransition(
+                        prevDominant, currentDominant, prevConf, currentConf, frame, null);
+                    prevDominant = currentDominant;
+                }
+            }
+        }
+
         // Integrate LLM result from previous tick (if any)
         if (ctx != null) {
             String prevLlmArch = lastProcessedLlmArchetype;
             lastProcessedLlmArchetype = processLlmFallbackResult(ctx, cumulativeConfidence, lastProcessedLlmArchetype);
             if (!Objects.equals(prevLlmArch, lastProcessedLlmArchetype) && lastProcessedLlmArchetype != null) {
                 inc(llmResolutions);
-                return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.LLM), false);
+                return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.LLM), false, transition);
             }
         }
 
@@ -160,7 +182,7 @@ public class CascadingPatternClassifier {
         inc(droolsInvocations);
         if (maxConfidence >= droolsThreshold) {
             inc(droolsResolutions);
-            return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.DROOLS), false);
+            return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.DROOLS), false, transition);
         }
 
         // Tier 2: ONNX — per-race learned classifier
@@ -177,7 +199,7 @@ public class CascadingPatternClassifier {
                 if (onnxArchetype != null && onnxResult.confidence() >= onnxThreshold) {
                     cumulativeConfidence.merge(onnxArchetype, (double) onnxResult.confidence(), Math::max);
                     inc(onnxResolutions);
-                    return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.ONNX), false);
+                    return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.ONNX), false, transition);
                 }
             } catch (Exception e) {
                 log.warnf("[CASCADE] ONNX inference failed for race %s: %s", enemyRace, e.getMessage());
@@ -199,7 +221,7 @@ public class CascadingPatternClassifier {
             llmTriggered = true;
         }
 
-        return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.DROOLS), llmTriggered);
+        return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.DROOLS), llmTriggered, transition);
     }
 
     public CascadeResult classify(List<EvidenceMarker> evidence,
@@ -215,7 +237,7 @@ public class CascadingPatternClassifier {
             return new CascadeResult(List.of(new PatternAssessment(
                     unknown, FALLBACK_CONFIDENCE, frame,
                     "Enemies visible but no archetype matched — composition unrecognised",
-                    AssessmentSource.DROOLS)), result.llmTriggered());
+                    AssessmentSource.DROOLS)), result.llmTriggered(), result.transition());
         }
         return result;
     }
@@ -225,6 +247,7 @@ public class CascadingPatternClassifier {
         cumulativeConfidence.clear();
         lastLlmFallbackFrame = -1;
         lastProcessedLlmArchetype = null;
+        prevDominant = null;
     }
 
     Map<String, Double> snapshotConfidences() {
@@ -324,4 +347,17 @@ public class CascadingPatternClassifier {
                         source))
                 .toList();
     }
+
+    static StrategyArchetype findDominant(EnumMap<StrategyArchetype, Double> cumulative) {
+        StrategyArchetype best     = null;
+        double            bestConf = NOISE_FLOOR;
+        for (var e : cumulative.entrySet()) {
+            if (e.getValue() > bestConf) {
+                bestConf = e.getValue();
+                best     = e.getKey();
+            }
+        }
+        return best;
+    }
+
 }

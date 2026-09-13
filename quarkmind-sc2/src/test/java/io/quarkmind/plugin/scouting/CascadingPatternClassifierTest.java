@@ -207,4 +207,79 @@ class CascadingPatternClassifierTest {
         assertFalse(result.assessments().isEmpty());
         assertEquals(StrategyArchetype.PROTOSS_COMPOSITION_UNKNOWN, result.assessments().get(0).archetype());
     }
+
+    @org.junit.jupiter.api.Test
+    void transitionDoesNotFire_onFirstDominant() {
+        var           classifier = new CascadingPatternClassifier(0.3, 0.8);
+        var           evidence   = java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, 0.6, "rush signal"));
+        CascadeResult result     = classifier.classify(evidence, java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 100, 0, null, 5);
+        org.junit.jupiter.api.Assertions.assertNull(result.transition());
+    }
+
+    @org.junit.jupiter.api.Test
+    void transitionFires_whenDominantChangesWithSufficientGap() {
+        var classifier = new CascadingPatternClassifier(0.3, 0.8);
+        classifier.classify(
+                java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, 0.6, "rush")),
+                java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 100, 0, null, 5);
+        CascadeResult result = classifier.classify(
+                java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_BIO_TIMING, 0.9, "bio timing")),
+                java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 200, 100, null, 5);
+        org.junit.jupiter.api.Assertions.assertNotNull(result.transition());
+        org.junit.jupiter.api.Assertions.assertEquals(io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, result.transition().from());
+        org.junit.jupiter.api.Assertions.assertEquals(io.quarkmind.domain.StrategyArchetype.TERRAN_BIO_TIMING, result.transition().to());
+    }
+
+    @org.junit.jupiter.api.Test
+    void transitionDoesNotFire_whenBelowMinConfidence() {
+        var classifier = new CascadingPatternClassifier(0.3, 0.8);
+        classifier.classify(
+                java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, 0.6, "rush")),
+                java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 100, 0, null, 5);
+        CascadeResult result = classifier.classify(
+                java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_BIO_TIMING, 0.2, "weak bio")),
+                java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 200, 100, null, 5);
+        org.junit.jupiter.api.Assertions.assertNull(result.transition());
+    }
+
+    @org.junit.jupiter.api.Test
+    void resetClearsPrevDominant() {
+        var classifier = new CascadingPatternClassifier(0.3, 0.8);
+        classifier.classify(
+                java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, 0.6, "rush")),
+                java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 100, 0, null, 5);
+        classifier.reset();
+        CascadeResult result = classifier.classify(
+                java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_BIO_TIMING, 0.7, "bio")),
+                java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 200, 0, null, 5);
+        org.junit.jupiter.api.Assertions.assertNull(result.transition());
+    }
+
+    @org.junit.jupiter.api.Test
+    void prevDominantUnchanged_whenBelowThreshold() {
+        var classifier = new CascadingPatternClassifier(0.3, 0.8);
+        classifier.classify(
+                java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, 0.6, "rush")),
+                java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 100, 0, null, 5);
+        classifier.classify(
+                java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_FAST_EXPAND, 0.1, "noise")),
+                java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 200, 100, null, 5);
+        CascadeResult result = classifier.classify(
+                java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_BIO_TIMING, 0.8, "strong bio")),
+                java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 300, 200, null, 5);
+        org.junit.jupiter.api.Assertions.assertNotNull(result.transition());
+        org.junit.jupiter.api.Assertions.assertEquals(io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, result.transition().from());
+    }
+
+    @org.junit.jupiter.api.Test
+    void cascadeResultTransitionNull_whenSameDominant() {
+        var classifier = new CascadingPatternClassifier(0.3, 0.8);
+        classifier.classify(
+                java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, 0.6, "rush")),
+                java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 100, 0, null, 5);
+        CascadeResult result2 = classifier.classify(
+                java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, 0.6, "rush")),
+                java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 200, 100, null, 5);
+        org.junit.jupiter.api.Assertions.assertNull(result2.transition());
+    }
 }
