@@ -68,7 +68,7 @@ public final class ScoutingIntelPreferences {
     static boolean defaultEnabled(ScoutingIntelType type) {
         return switch (type) {
             case THREAT_POSITION, POSTURE, TIMING_ALERT, PATTERN_ASSESSMENT -> true;
-            case ARMY_SIZE, BUILD_ORDER -> false;
+            case ARMY_SIZE, BUILD_ORDER, STRATEGY_TRANSITION -> false;
         };
     }
 

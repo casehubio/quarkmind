@@ -12,5 +12,6 @@ public enum GameMomentType {
     TECH_TRANSITION_DETECTED,
     ARMY_SHIFT,
     POSTURE_CHANGE,
+    STRATEGY_TRANSITION,
     GAME_ENDING
 }

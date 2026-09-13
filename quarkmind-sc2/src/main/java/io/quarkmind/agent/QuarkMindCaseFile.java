@@ -36,6 +36,7 @@ public final class QuarkMindCaseFile {
     public static final String ENEMY_BUILD_ORDER       = "agent.intel.enemy.build";
     public static final String TIMING_ATTACK_INCOMING  = "agent.intel.enemy.timing";
     public static final String ENEMY_POSTURE           = "agent.intel.enemy.posture";
+    public static final String STRATEGY_TRANSITION    = "agent.intel.enemy.strategy.transition";
     public static final String MOMENTS_LATEST          = "agent.intel.moments.latest";
     public static final String GAME_PHASE              = "agent.intel.game.phase";
 

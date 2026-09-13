@@ -12,7 +12,8 @@ public sealed interface ScoutingIntelPayload
                 ScoutingIntelPayload.TimingAlert,
                 ScoutingIntelPayload.ArmySize,
                 ScoutingIntelPayload.BuildOrder,
-                PatternAssessmentPayload {
+                PatternAssessmentPayload,
+                ScoutingIntelPayload.TransitionDetected {
 
     ScoutingIntelType type();
 
@@ -39,4 +40,9 @@ public sealed interface ScoutingIntelPayload
     record PatternAssessmentPayload(List<PatternAssessment> assessments) implements ScoutingIntelPayload {
         public ScoutingIntelType type() {return ScoutingIntelType.PATTERN_ASSESSMENT;}
     }
+
+    record TransitionDetected(io.quarkmind.domain.StrategyTransition transition) implements ScoutingIntelPayload {
+        public ScoutingIntelType type() {return ScoutingIntelType.STRATEGY_TRANSITION;}
+    }
+
 }

@@ -61,9 +61,10 @@ public final class AdvisoryTriggerBuilder {
     private static String mapMomentTypeToTrigger(GameMomentType type) {
         return switch (type) {
             case NEXUS_UNDER_ATTACK, BATTLE_STARTED -> CRISIS_TRIGGER;
-            case TECH_TRANSITION_DETECTED -> STRATEGIC_TRIGGER;
+            case TECH_TRANSITION_DETECTED, STRATEGY_TRANSITION -> STRATEGIC_TRIGGER;
             case ECONOMIC_CRISIS, SUPPLY_BLOCK -> ECONOMIC_TRIGGER;
-            default -> null;  // FIRST_CONTACT, BATTLE_ENDED, BUILDING_LOST, SCOUT_LOST
+            case ARMY_SHIFT, POSTURE_CHANGE, FIRST_CONTACT, BUILDING_LOST,
+                 BATTLE_ENDED, SCOUT_LOST, GAME_ENDING -> null;
         };
     }
 }

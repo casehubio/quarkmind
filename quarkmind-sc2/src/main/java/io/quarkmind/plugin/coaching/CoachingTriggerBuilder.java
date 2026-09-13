@@ -63,9 +63,10 @@ public class CoachingTriggerBuilder {
     static CoachingUrgencyTier mapMomentToTier(GameMomentType type) {
         return switch (type) {
             case NEXUS_UNDER_ATTACK, BATTLE_STARTED, BUILDING_LOST -> CoachingUrgencyTier.CRISIS;
-            case TECH_TRANSITION_DETECTED, ARMY_SHIFT, POSTURE_CHANGE, FIRST_CONTACT -> CoachingUrgencyTier.STRATEGIC;
+            case TECH_TRANSITION_DETECTED, ARMY_SHIFT, POSTURE_CHANGE,
+                 FIRST_CONTACT, STRATEGY_TRANSITION -> CoachingUrgencyTier.STRATEGIC;
             case ECONOMIC_CRISIS, SUPPLY_BLOCK -> CoachingUrgencyTier.ECONOMIC;
-            default -> null;
+            case BATTLE_ENDED, SCOUT_LOST, GAME_ENDING -> null;
         };
     }
 }

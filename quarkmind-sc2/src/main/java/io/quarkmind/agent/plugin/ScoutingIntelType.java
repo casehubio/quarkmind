@@ -6,5 +6,6 @@ public enum ScoutingIntelType {
     TIMING_ALERT,
     ARMY_SIZE,
     BUILD_ORDER,
-    PATTERN_ASSESSMENT
+    PATTERN_ASSESSMENT,
+    STRATEGY_TRANSITION
 }
