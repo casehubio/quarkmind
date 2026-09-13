@@ -158,4 +158,23 @@ class StrategyTaxonomyTest {
                                      .isGreaterThan(0.5);
         }
     }
+
+    @Test
+    void transitionPathLookup_knownPath() {
+        var path = taxonomy.transitionPath(StrategyArchetype.TERRAN_MARINE_RUSH, StrategyArchetype.TERRAN_BIO_TIMING);
+        assertThat(path).isPresent();
+        assertThat(path.get().displayName()).isEqualTo("Marine Rush → Bio Timing");
+        assertThat(path.get().coachingAdvice()).isNotEmpty();
+    }
+
+    @Test
+    void transitionPathLookup_unknownPath() {
+        var path = taxonomy.transitionPath(StrategyArchetype.TERRAN_MARINE_RUSH, StrategyArchetype.ZERG_BROOD_LORD);
+        assertThat(path).isEmpty();
+    }
+
+    @Test
+    void allTransitionsReferenceValidArchetypes() {
+        assertThat(taxonomy).isNotNull();
+    }
 }

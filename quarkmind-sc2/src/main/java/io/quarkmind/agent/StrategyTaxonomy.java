@@ -7,6 +7,7 @@ import io.quarkmind.domain.GamePhase;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SignatureSpec;
 import io.quarkmind.domain.StrategyArchetype;
+import io.quarkmind.domain.TransitionPath;
 import io.quarkmind.domain.UnitType;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,6 +23,11 @@ import java.util.Map;
 public class StrategyTaxonomy {
 
     private final EnumMap<StrategyArchetype, ArchetypeEntry> entries = new EnumMap<>(StrategyArchetype.class);
+
+    private record TransitionKey(StrategyArchetype from, StrategyArchetype to) {}
+
+    private final java.util.Map<TransitionKey, TransitionPath> transitionPaths = new java.util.HashMap<>();
+
 
     @PostConstruct
     public void init() {
@@ -56,6 +62,49 @@ public class StrategyTaxonomy {
         for (StrategyArchetype arch : StrategyArchetype.values()) {
             if (!entries.containsKey(arch)) {
                 throw new IllegalStateException("StrategyArchetype." + arch.name() + " has no YAML entry in strategy-taxonomy.yaml");
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Map<String, Object>> transitions =
+            (Map<String, Map<String, Object>>) root.get("transitions");
+        if (transitions != null) {
+            for (var te : transitions.entrySet()) {
+                Map<String, Object> td = te.getValue();
+                String fromStr = (String) td.get("from");
+                String toStr = (String) td.get("to");
+                StrategyArchetype from, to;
+                try { from = StrategyArchetype.valueOf(fromStr); }
+                catch (IllegalArgumentException e) {
+                    throw new IllegalStateException("Transition '" + te.getKey()
+                        + "' has invalid 'from': " + fromStr);
+                }
+                try { to = StrategyArchetype.valueOf(toStr); }
+                catch (IllegalArgumentException e) {
+                    throw new IllegalStateException("Transition '" + te.getKey()
+                        + "' has invalid 'to': " + toStr);
+                }
+                if (from.phase().ordinal() > to.phase().ordinal()) {
+                    throw new IllegalStateException("Transition '" + te.getKey()
+                        + "' goes from " + from.phase() + " to " + to.phase()
+                        + " — late-to-early transitions are invalid");
+                }
+                String displayName = (String) td.get("displayName");
+                String coachingAdvice = (String) td.get("coachingAdvice");
+                if (displayName == null || displayName.isEmpty()) {
+                    throw new IllegalStateException("Transition '" + te.getKey()
+                        + "' has empty displayName");
+                }
+                if (coachingAdvice == null || coachingAdvice.isEmpty()) {
+                    throw new IllegalStateException("Transition '" + te.getKey()
+                        + "' has empty coachingAdvice");
+                }
+                var key = new TransitionKey(from, to);
+                if (transitionPaths.containsKey(key)) {
+                    throw new IllegalStateException("Duplicate transition path: "
+                        + from + " -> " + to);
+                }
+                transitionPaths.put(key, new TransitionPath(displayName, coachingAdvice));
             }
         }
     }
@@ -95,6 +144,10 @@ public class StrategyTaxonomy {
                       .filter(e -> gameTimeMinutes >= e.phaseWindow()[0] && gameTimeMinutes <= e.phaseWindow()[1])
                       .flatMap(e -> e.signatureSpecs().stream())
                       .toList();
+    }
+
+    public java.util.Optional<TransitionPath> transitionPath(StrategyArchetype from, StrategyArchetype to) {
+        return java.util.Optional.ofNullable(transitionPaths.get(new TransitionKey(from, to)));
     }
 
 

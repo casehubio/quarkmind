@@ -2464,3 +2464,75 @@ archetypes:
     detectionSignals:
       - "Mothership spotted after 14 minutes"
       - "Fleet Beacon completed"
+
+transitions:
+  TERRAN_MARINE_RUSH__TERRAN_BIO_TIMING:
+    from: TERRAN_MARINE_RUSH
+    to: TERRAN_BIO_TIMING
+    displayName: "Marine Rush → Bio Timing"
+    coachingAdvice: "They're adding Medivacs to their Marines — transition from rush to bio timing. Get Stalkers and Colossus tech to splash bio balls before they mass up."
+  TERRAN_BIO_TIMING__TERRAN_MARINE_TANK:
+    from: TERRAN_BIO_TIMING
+    to: TERRAN_MARINE_TANK
+    displayName: "Bio Timing → Marine Tank"
+    coachingAdvice: "Siege Tanks joining the bio — this is a positional switch. Get Immortals to break tank lines, keep Stalkers for the bio."
+  TERRAN_FAST_EXPAND__TERRAN_MECH_PUSH:
+    from: TERRAN_FAST_EXPAND
+    to: TERRAN_MECH_PUSH
+    displayName: "Fast Expand → Mech Push"
+    coachingAdvice: "Economy into Mech — expect Siege Tanks and Hellions. Get Immortals early and avoid head-on engagements until you have splash."
+  TERRAN_FAST_EXPAND__TERRAN_BIO_TIMING:
+    from: TERRAN_FAST_EXPAND
+    to: TERRAN_BIO_TIMING
+    displayName: "Fast Expand → Bio Timing"
+    coachingAdvice: "Economic opening into bio timing push — they'll have more units than a pure rush. Match with Stalker-Sentry and hold the natural."
+  TERRAN_MARINE_TANK__TERRAN_BC_TRANSITION:
+    from: TERRAN_MARINE_TANK
+    to: TERRAN_BC_TRANSITION
+    displayName: "Marine Tank → Battlecruiser"
+    coachingAdvice: "Tech switch to Battlecruisers — get Tempests or Void Rays. Keep ground pressure while they tech up."
+  TERRAN_MECH_PUSH__TERRAN_MECH_LATE:
+    from: TERRAN_MECH_PUSH
+    to: TERRAN_MECH_LATE
+    displayName: "Mech Push → Late Mech"
+    coachingAdvice: "Entrenching into late-game mech — Thors, Siege Tanks, Hellbats. Get Immortals and Tempests. Avoid frontal engagements — harass expansions."
+  ZERG_ZERGLING_RUSH__ZERG_ROACH_HYDRA:
+    from: ZERG_ZERGLING_RUSH
+    to: ZERG_ROACH_HYDRA
+    displayName: "Zergling Rush → Roach Hydra"
+    coachingAdvice: "Transitioning from ling aggression to Roach Hydra composition. Get Immortals — they hard-counter Roaches. Keep Sentries for Force Fields."
+  ZERG_MACRO__ZERG_ROACH_HYDRA:
+    from: ZERG_MACRO
+    to: ZERG_ROACH_HYDRA
+    displayName: "Macro → Roach Hydra"
+    coachingAdvice: "Greedy economy into standard Roach Hydra. They'll have high drone count — match with your own economy and get Immortal-Archon."
+  ZERG_ROACH_HYDRA__ZERG_BROOD_LORD:
+    from: ZERG_ROACH_HYDRA
+    to: ZERG_BROOD_LORD
+    displayName: "Roach Hydra → Brood Lords"
+    coachingAdvice: "Tech switch to Brood Lords — this is a late-game pivot. Get Tempests or mass Stalker-Blink to snipe them before they mass up."
+  ZERG_MACRO__ZERG_MUTALISK_HARASS:
+    from: ZERG_MACRO
+    to: ZERG_MUTALISK_HARASS
+    displayName: "Macro → Mutalisk Harass"
+    coachingAdvice: "Mutalisks incoming — get Phoenix or mass Stalkers. Spread pylons and protect mineral lines."
+  ZERG_LING_BANE__ZERG_ULTRALISK:
+    from: ZERG_LING_BANE
+    to: ZERG_ULTRALISK
+    displayName: "Ling Bane → Ultralisk"
+    coachingAdvice: "Ultralisk tech — they'll be tanky and fast. Get Immortals — they hard-counter Ultralisks. Avoid Zealots."
+  PROTOSS_GATEWAY_RUSH__PROTOSS_COLOSSUS_PUSH:
+    from: PROTOSS_GATEWAY_RUSH
+    to: PROTOSS_COLOSSUS_PUSH
+    displayName: "Gateway Rush → Colossus Push"
+    coachingAdvice: "Gateway aggression transitioning to Colossus tech. Get your own Robotics — either mirror Colossus or get Immortals to break them."
+  PROTOSS_MACRO__PROTOSS_STALKER_COLOSSUS:
+    from: PROTOSS_MACRO
+    to: PROTOSS_STALKER_COLOSSUS
+    displayName: "Macro → Stalker Colossus"
+    coachingAdvice: "Standard macro into Stalker-Colossus. Mirror with your own Colossus or tech to Immortal-Archon with Prism harass."
+  PROTOSS_MACRO__PROTOSS_AIR_SUPERIORITY:
+    from: PROTOSS_MACRO
+    to: PROTOSS_AIR_SUPERIORITY
+    displayName: "Macro → Air Superiority"
+    coachingAdvice: "Air tech switch — Void Rays or Phoenix coming. Get Stalkers and consider Archons for anti-air splash."
