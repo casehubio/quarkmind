@@ -69,10 +69,10 @@ matches:
   vod:
     url: https://www.youtube.com/watch?v=eZ25BONqIM0
     title: sOs vs MC Game 2 - IEM Taipei 2016 QF
-    game_start_offset_sec: 563
+    game_start_offset_sec: 428
     subtitle_source: whisper
-    offset_confidence: medium
-    offset_method: backward(end-duration)
+    offset_confidence: low
+    offset_method: interpolated(avg)
   confidence: high
   game_number: 2
 - replay_hash: f0c7ed2a887a
@@ -84,10 +84,10 @@ matches:
   vod:
     url: https://www.youtube.com/watch?v=eZ25BONqIM0
     title: sOs vs MC Game 3 - IEM Taipei 2016 QF
-    game_start_offset_sec: 1503
+    game_start_offset_sec: 1234
     subtitle_source: whisper
-    offset_confidence: low
-    offset_method: interpolated(forward)
+    offset_confidence: medium
+    offset_method: backward(end-duration)
   confidence: high
   game_number: 3
 - replay_hash: 8a1f5c840fab
@@ -159,10 +159,10 @@ matches:
   vod:
     url: https://www.youtube.com/watch?v=iDDY_4VLP5k
     title: Polt vs Soulkey Game 1 - IEM Taipei 2016 QF
-    game_start_offset_sec: 134
+    game_start_offset_sec: 71
     subtitle_source: whisper
     offset_confidence: low
-    offset_method: distributed
+    offset_method: interpolated(backward)
   confidence: high
   game_number: 1
 - replay_hash: f6cb6724220b
@@ -174,10 +174,10 @@ matches:
   vod:
     url: https://www.youtube.com/watch?v=iDDY_4VLP5k
     title: Polt vs Soulkey Game 2 - IEM Taipei 2016 QF
-    game_start_offset_sec: 1031
+    game_start_offset_sec: 995
     subtitle_source: whisper
-    offset_confidence: medium
-    offset_method: backward(end-duration)
+    offset_confidence: high
+    offset_method: avg(forward+backward)
   confidence: high
   game_number: 2
 - replay_hash: e2355cf00500
@@ -189,10 +189,10 @@ matches:
   vod:
     url: https://www.youtube.com/watch?v=iDDY_4VLP5k
     title: Polt vs Soulkey Game 3 - IEM Taipei 2016 QF
-    game_start_offset_sec: 2087
+    game_start_offset_sec: 1724
     subtitle_source: whisper
-    offset_confidence: medium
-    offset_method: backward(end-duration)
+    offset_confidence: low
+    offset_method: interpolated(forward)
   confidence: high
   game_number: 3
 - replay_hash: a277238b2907
@@ -204,7 +204,7 @@ matches:
   vod:
     url: https://www.youtube.com/watch?v=iDDY_4VLP5k
     title: Polt vs Soulkey Game 4 - IEM Taipei 2016 QF
-    game_start_offset_sec: 3206
+    game_start_offset_sec: 2516
     subtitle_source: whisper
     offset_confidence: low
     offset_method: interpolated(forward)
@@ -219,10 +219,10 @@ matches:
   vod:
     url: https://www.youtube.com/watch?v=iDDY_4VLP5k
     title: Polt vs Soulkey Game 5 - IEM Taipei 2016 QF
-    game_start_offset_sec: 3980
+    game_start_offset_sec: 3380
     subtitle_source: whisper
     offset_confidence: low
-    offset_method: adjusted(overlap)
+    offset_method: interpolated(forward)
   confidence: high
   game_number: 5
 - replay_hash: 421a88ce218e
@@ -264,10 +264,10 @@ matches:
   vod:
     url: https://www.youtube.com/watch?v=2woJpQ02Jl0
     title: herO vs sOs Game 3 - IEM Taipei 2016 SF
-    game_start_offset_sec: 2671
+    game_start_offset_sec: 2661
     subtitle_source: whisper
-    offset_confidence: medium
-    offset_method: backward(end-duration)
+    offset_confidence: high
+    offset_method: avg(forward+backward)
   confidence: high
   game_number: 3
 - replay_hash: 74a6039ae628
@@ -279,10 +279,10 @@ matches:
   vod:
     url: https://www.youtube.com/watch?v=2woJpQ02Jl0
     title: herO vs sOs Game 4 - IEM Taipei 2016 SF
-    game_start_offset_sec: 3786
+    game_start_offset_sec: 3354
     subtitle_source: whisper
     offset_confidence: medium
-    offset_method: backward(end-duration)
+    offset_method: forward(load+20s)
   confidence: high
   game_number: 4
 - replay_hash: 6f6b057793b1
@@ -294,10 +294,10 @@ matches:
   vod:
     url: https://www.youtube.com/watch?v=2woJpQ02Jl0
     title: herO vs sOs Game 5 - IEM Taipei 2016 SF
-    game_start_offset_sec: 4478
+    game_start_offset_sec: 3780
     subtitle_source: whisper
-    offset_confidence: low
-    offset_method: interpolated(forward)
+    offset_confidence: medium
+    offset_method: backward(end-duration)
   confidence: high
   game_number: 5
 - replay_hash: b7d07c7ef535
@@ -324,10 +324,10 @@ matches:
   vod:
     url: https://www.youtube.com/watch?v=emCaI55s8Tc
     title: ByuN vs Soulkey Game 2 - IEM Taipei 2016 SF
-    game_start_offset_sec: 1980
+    game_start_offset_sec: 2019
     subtitle_source: whisper
-    offset_confidence: low
-    offset_method: interpolated(avg)
+    offset_confidence: medium
+    offset_method: forward(load+20s)
   confidence: high
   game_number: 2
 - replay_hash: ea69286365b5
@@ -354,10 +354,10 @@ matches:
   vod:
     url: https://www.youtube.com/watch?v=emCaI55s8Tc
     title: ByuN vs Soulkey Game 4 - IEM Taipei 2016 SF
-    game_start_offset_sec: 4153
+    game_start_offset_sec: 4365
     subtitle_source: whisper
-    offset_confidence: low
-    offset_method: interpolated(forward)
+    offset_confidence: medium
+    offset_method: forward(load+20s)
   confidence: high
   game_number: 4
 - replay_hash: a0f9b25f7126

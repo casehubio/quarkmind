@@ -21,6 +21,7 @@ class GameOffset:
 LOAD_PATTERNS = [
     r"loaded\s+into\s+game\s+number\s+(\w+)",
     r"game\s+number\s+(\w+)\s+of\s+this",
+    r"game\s+number\s+(\w+)",
     r"loaded\s+.*game\s+(\w+)",
     r"here\s+we\s+go.*game\s+(\w+)",
     r"game\s+(\w+)\s+is\s+underway",
@@ -36,8 +37,8 @@ END_PATTERNS = [
     r"wins\s+the\s+game",
     r"takes\s+the\s+series",
     r"wins\s+the\s+series",
-    r"takes\s+(?:it|the\s+match|the\s+win)",
-    r"(?:and\s+)?that(?:'s|\s+is)\s+(?:it|the\s+game)",
+    r"takes\s+(?:it|the\s+match|the\s+win)\b",
+    r"and\s+that(?:'s|\s+is)\s+(?:it|the\s+game)",
     r"taps\s+out",
 ]
 
@@ -57,6 +58,13 @@ GG_FALSE_POSITIVE_CONTEXT = [
     r"almost\s+gg",
     r"not\s+(?:a\s+)?gg",
     r"before\s+gg",
+    r"always\s+gg",
+]
+
+END_FALSE_POSITIVE_CONTEXT = [
+    r"if\s+.*(?:wins|takes)\s+(?:the\s+)?game",
+    r"could\s+.*(?:win|take)\s+(?:the\s+)?game",
+    r"would\s+.*(?:win|take)\s+(?:the\s+)?game",
 ]
 
 WORD_TO_NUM = {
@@ -110,6 +118,8 @@ def estimate_offsets(
     _interpolate_missing(raw_offsets, game_durations_sec, vod_duration)
     _clamp_negatives(raw_offsets)
     _push_forward_overlaps(raw_offsets, game_durations_sec, vod_duration)
+    _interpolate_missing(raw_offsets, game_durations_sec, vod_duration)
+    _enforce_vod_bounds(raw_offsets, game_durations_sec, vod_duration)
 
     return [o for o in raw_offsets if o is not None]
 
@@ -135,7 +145,7 @@ def _find_end_cues(captions: list[Caption]) -> list[float]:
         text = c.text.lower()
         for pattern in END_PATTERNS:
             if re.search(pattern, text):
-                if _is_false_positive_gg(text):
+                if _is_false_positive_gg(text) or _is_false_positive_end(text):
                     break
                 candidates.append((c.start_sec, text))
                 break
@@ -147,6 +157,14 @@ def _find_end_cues(captions: list[Caption]) -> list[float]:
 def _is_false_positive_gg(text: str) -> bool:
     """Check if a GG mention is contextual rather than a game-ending call."""
     for pattern in GG_FALSE_POSITIVE_CONTEXT:
+        if re.search(pattern, text):
+            return True
+    return False
+
+
+def _is_false_positive_end(text: str) -> bool:
+    """Check if an end-game phrase is conditional rather than actual."""
+    for pattern in END_FALSE_POSITIVE_CONTEXT:
         if re.search(pattern, text):
             return True
     return False
@@ -351,8 +369,8 @@ def _push_forward_overlaps(
 ) -> None:
     """Push games forward when they overlap with the previous game's time span.
 
-    Sequential correctness takes priority over VOD bounds — if the only valid
-    position is past the VOD end, the estimate reflects that (with low confidence).
+    If pushing would place the game past the VOD end, discard the estimate
+    instead — the offset is unsolvable with current anchors.
     """
     for i in range(1, len(offsets)):
         prev = offsets[i - 1]
@@ -361,7 +379,10 @@ def _push_forward_overlaps(
             continue
         earliest = prev.estimated_start_sec + durations[i - 1] + MIN_GAME_GAP_SEC
         if curr.estimated_start_sec < earliest:
-            offsets[i] = GameOffset(curr.game_number, round(earliest), "low", "adjusted(overlap)")
+            if earliest + durations[i] > vod_duration + 180:
+                offsets[i] = None
+            else:
+                offsets[i] = GameOffset(curr.game_number, round(earliest), "low", "adjusted(overlap)")
 
 
 def _clamp_negatives(offsets: list[GameOffset | None]) -> None:
