@@ -94,7 +94,7 @@ class GameStateExtractor:
             unit_name = ev.get("unitTypeName", "")
             if evt_type == "UnitBorn":
                 ctrl = ev.get("controlPlayerId", 0)
-                if ctrl == 0 or unit_name in NEUTRAL_TYPES:
+                if ctrl == 0 or unit_name in NEUTRAL_TYPES or unit_name.startswith("Beacon"):
                     continue
                 events.append({
                     "frame": loop,
@@ -157,7 +157,7 @@ def _apply_event(ev: dict, state: _AccumulatorState, watched: int, opponent: int
         unit_name = ev.get("unitTypeName", "")
         ctrl = ev.get("controlPlayerId", 0)
         tag = _make_tag(ev)
-        if ctrl == 0 or unit_name in NEUTRAL_TYPES:
+        if ctrl == 0 or unit_name in NEUTRAL_TYPES or unit_name.startswith("Beacon"):
             return
         if ctrl == watched:
             if unit_name in BUILDING_TYPES:

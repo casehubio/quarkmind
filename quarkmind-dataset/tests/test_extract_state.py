@@ -60,6 +60,16 @@ def test_snapshot_has_opponent():
     assert isinstance(snap["opponent"]["known_buildings"], dict)
 
 
+def test_no_beacon_units_in_snapshot():
+    r = _first_protoss_replay()
+    ext = GameStateExtractor(r)
+    snap = ext.snapshot_at(int(60 * 22.4))
+    for unit_name in snap["player"]["army_composition"]:
+        assert not unit_name.startswith("Beacon"), f"Beacon unit {unit_name} in army_composition"
+    for unit_name in snap["opponent"]["known_units"]:
+        assert not unit_name.startswith("Beacon"), f"Beacon unit {unit_name} in known_units"
+
+
 def test_events_in_range():
     r = _first_protoss_replay()
     ext = GameStateExtractor(r)
