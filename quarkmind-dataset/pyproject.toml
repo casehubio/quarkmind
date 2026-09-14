@@ -10,6 +10,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+api = ["google-api-python-client>=2.100"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
