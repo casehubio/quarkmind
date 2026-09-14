@@ -26,6 +26,7 @@ class MatchEntry:
     vod_title: str
     game_start_offset_sec: float
     subtitle_source: str
+    offset_confidence: str
     confidence: str
 
 
@@ -62,6 +63,7 @@ def load_matches(path: Path) -> list[MatchEntry]:
             vod_title=m.get("vod", {}).get("title", ""),
             game_start_offset_sec=m.get("vod", {}).get("game_start_offset_sec", 0),
             subtitle_source=m.get("vod", {}).get("subtitle_source", "unknown"),
+            offset_confidence=m.get("vod", {}).get("offset_confidence", "medium"),
             confidence=m.get("confidence", "manual-review"),
         )
         for m in matches_raw

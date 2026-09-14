@@ -10,6 +10,7 @@ from src.extract_subtitles import parse_vtt
 from src.catalog import load_matches, MatchEntry
 from src.align import align_captions
 from src.segment import segment_game
+from src.quality_scorer import compute_quality_score, classify_quality_tier
 
 LOOPS_PER_SEC = 22.4
 
@@ -142,6 +143,17 @@ def run_pipeline(
                 subtitle_source=match.subtitle_source,
                 replay_hash=match.replay_hash,
             )
+            duration_sec = (seg.game_frame_end - seg.game_frame_start) / LOOPS_PER_SEC
+            quality = compute_quality_score(
+                commentary=seg.commentary,
+                game_state=game_state,
+                duration_sec=duration_sec,
+                subtitle_source=match.subtitle_source,
+                offset_confidence=match.offset_confidence,
+            )
+            example["quality_score"] = quality
+            example["quality_tier"] = classify_quality_tier(quality)
+
             all_examples.append(example)
             phase_counts[seg.phase] += 1
             type_counts[seg.type] += 1
