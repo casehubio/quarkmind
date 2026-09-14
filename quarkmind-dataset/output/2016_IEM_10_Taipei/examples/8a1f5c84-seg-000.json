@@ -1,0 +1,143 @@
+{
+  "id": "8a1f5c84-seg-000",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7031,
+    "game_time_sec": 313.9,
+    "player": {
+      "race": "Zerg",
+      "minerals": 252,
+      "gas": 184,
+      "supply_used": 77,
+      "supply_cap": 82,
+      "worker_count": 61,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Larva": 11,
+        "Overlord": 8,
+        "Zergling": 5,
+        "Queen": 5
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 6747,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 6747,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6825,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6841,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6884,
+          "type": "UNIT_BORN",
+          "unit": "VoidRay"
+        },
+        {
+          "frame": 6888,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6924,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 6926,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6947,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6979,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Probe": 54,
+        "Adept": 2,
+        "AdeptPhaseShift": 8,
+        "Oracle": 2,
+        "MothershipCore": 1,
+        "VoidRay": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> mid_game",
+  "commentary": "But even that's weird and when you have only been on one cruise in my life just got back from a cruise which is amazing really fun But actually for like a day or two you still feel the sway of the boat. Yeah, which is weird You know what that makes you Jeff what imbalanced To start snoot versus hero ladies and gentlemen our last best of five of the evening we are loaded in To dust towers you didn't expect that did you I didn't Smotting in the bottom left representing team liquid we have snoot who you're looking he says G. L. H. F I don't know why he said question mark. Yeah, interesting. He's still on Casper rules when he's don't see anything I can't talk right. I can't speak to me the last time I spoke to someone it was to save him from being disqualified Maybe that's right. You know, I met by the way of course. It's CJ Antis hero in the Northeast the smiling assassin Does he ever say G. L. H. F. is opponent doesn't say it? That's a question. Is that like is it like programmed and maybe programmed into your brain? You're if you're in Casper well, I would so cool about these guys is they are a lot of those Casper guys tops your friends No and play with each other so much that that kind of stuff doesn't really matter to them There's no BM either way they can say anything. We're just playing games. Okay. Well No, this isn't the safe space. We have to say G. L. H. F. and no, that's not what I'm saying It is that's super serious business for them, but it's just this is one game of like 40 they played that week against that guy So when hero doesn't say it to soul here something like that. There's no do they hate you now They either can't or they don't care because they're gonna they're gonna laugh and high five and rub each other's shoulders in 10 minutes because they're like best friends All right, well Tell me about some pvz. What are your experiences? You have a double-hatch full-play from smooth everyone I've been talking to pretty much generally Complains with the last patch. It's hard to deal with early lane aggression, but I guess this map is probably the best map for defending Yeah, it feels like I feel like part of the reason why this matchup is particularly difficult for us right now is because Zerg finally got that go between unit the ravager that is really good offensively decent enough defensively not super expensive and has transition It's not you're not punished if you're stuck on 10 ravagers. They actually have an effect they have they have Efficacy all the way to the end of the game so they're really good that way Mutus very powerful stargate hard to punish because of the speed of the game if you open up stargate It was always true and hard to form too you had to do decent damage if you didn't you're in a lot of trouble But all of a sudden because of the power of things like lurkers and the deep power of things like colossus You don't have that amazing unit to fall back on that can kind of make up the difference between you and tech pass So it's funny to think about it is not like the heart of the swarm colossus could actually probably still truck most Zerg armies in this game most armies in general yeah I mean it was like it was the it was the unit for anti-ground and it was It was it was a bad unit it's funny to think about it And I do enjoy as I get commentator in a player obviously as a player I enjoy not seeing colossus I but as a as a spectator watching non-college this games I find any more fun Fastly more interesting and that was the problem is they were too good So they were they were just prevalent all three matchups and they demanded that you responded them with your text Voice because if you didn't hardcore deal with them they would just dominate truck over so that's why they were bad And blizzard agrees that they became has kind of always been pretty vocal about that. I'm glad that sort of you know the end game GG units like that have kind of been taking out a little bit at least is something said in this matchup I agree I maybe maybe some product players would argue with me on the count of like lurkers being strong as well But some players have some of the guys that I've talked to you have said that there are some compositions that people have been Playing with more that have helped a lot against the those styles I think people been saying like zealot arc on can kind of just better better down on top of them really fast as well Kind of the matchups unbeatable. It's as it's so true stark. I've all the time like there's certain things that happen We play our old meta against it It absolutely does not work because of just how high power everything isn't stark up to and for a while We just complain that it is completely broken and impossible to play as time goes on We kind of figure it out sometimes maps will change sometimes not as we kind of liberate now sometimes path Patch is will happen as well, but for the most part. It's a lot of us It's a lot of us just realizing how you have to play with that and that being said Thankfully the Oracle will still always be relevant as Especially in this lazy boy. Yeah, it does get a little bit of her ass there But I was gonna say right now in pvz It has to be a two base all in or you go for a mega fast third to try and deal with that Zerg especially if they do two hatch before spawning pull and in this case we can see it is going to end up being a fast third from Hero and I'm really happy to see that I think these games have been cool today We haven't had a lot of macro No, not too many games have actually managed to make the distance of a long game So I can Oracle comes in doesn't do quite as much damage the second queen is still there and A lot of queen coverage with a spore in the natural to keep snoot nice and safe total workers killed nine Total working units tab by the way 60 some Look at that units tab Talk to me Zerg five Zerglings five queens 63 drones and And that is that's that's part of what's the tough thing about Produst right now a lot of people again. What's difficult to match up? Well if you go for a fast third and a Zerg is on top of it like we see from snoot They will be so minimalist about everything else and they will just plow up to 75 drones and then show up with a very Difficult like roach ravager link timing attack or if you and if you're not ready for that by the way Just die or they just it's continue their tech on to hide so that's what's nice about the Oracle opening We should see hero completely on top of this if you start to see units pouring out in a fourth base taken He should be in position to try and do something about that Yep, he's got a lot of gateways. He's going into blink plus one attack meanwhile roaches Speed upgrade is both close finishing Zergling speed finishing up as well Warpism always a nice choice sort of buy some time push the Zerg player back these oracles see this building hatch immediately I think it's yeah, I was gonna say his worm it immediately started attacking the prank to cancel it Maybe he still will be able to oracles that's crazy amount of damage Out this this night is warm is so brilliant. I love it. Why I was noticing that there's no upgrades So I was saying okay, this is gonna be a timing attack and that's cool That's really tough to deal with it should be ravager roach link but with this night is warm He's gonna attach something like I mean there's three more queens coming on. So what is this 11 queens? Oh He said eight he's at eight queens right he's gonna go straight to 11 queens and with all of those There's obviously no airplay that's gonna work against this No, is he gonna build ravagers with this which is pretty much there's no reason not to I mean Maybe he doesn't because he knows something I don't but just ravager not that expensive and they they add so much There we go. We see for their Oracle in control is correct once again as hero try step out of the map He has his Oracle tagging the army, but when you see this many queens like what's going through your mind? I well he doesn't know Snoop very well, so I don't know that he necessarily knows it's an attack just yet He is gonna pull back and that is the right choice because he centers. Well, maybe he's not pulling all the way back We's pulling back a little bit links talkers out here cool. They can they have to be careful of zerglings Of course, but otherwise they can do a little bit of damage kind of feel out what's coming and then back away I think the Oracle tagging is really useful as well It's trying to put those queens in the night is he'll see the night is just just that alone right? I don't know if he's spotted yet. No, he hasn't this Oracle won't Shouldn't make it outside of the natural It might oh no, nope So now the tag is still lasting on a few of these he can build a night is for reinforcements or try to do like a Backstab with it while he pushes. I don't know. He doesn't have vision actually. No, I'm fair Hey, so the night is right there right in his face the links run up to the stalkers He's trying to get on top of those as well, but using the cross-bottom knock on the pylons And this is so smart like it's right up in his face There's gonna be creep there is gonna drop a couple of tumors immediately. He's just continuously adding more ravagers And this is a four-base timing attack that the fourth base is not saturated at all It's basically a ruse or just purely for production But these centuries again This is something that we aren't really seeing in the PVC map like a lot of people's kind of given up on because Lirkers are so strong against them, but in this case Centuries can actually hold us off for a while Yeah, I mean you can use that cross-bottom to break those down But that means it's not using the aggressive I'm weird Like night is in your face. I mean does it give vision? No, I'm just thinking you'd be able to crack this ramp and get up there and then be able to Really read I love the defensive states of sport though. He tries to run up front by the you know We're so far so good. He's he's not dying and he's getting disruptors out which we're gonna give a lot more firepower versus army Yeah, he's making two at a time too, which is really powerful and as you said He's actually hold like his unit count is fairly high hasn't lost a lot He has all these pylons for I guess options But for the most part, he don't have that many foot to no retards anymore And the thing is the purification of also works against buildings So he can use it to cover might as two He's getting a little bit ahead of himself. You need to be careful with the disruptor great micro here from snoot as well And he is gonna circle around but his army's quite dwindled and we don't see a return just yet of the night is where my don't think No, so I feel like snoot. Yeah, he's he's kind of spiritually given up on this. It's gonna back away And he's got a lot of catching up to do like the fourth base immediately goes down for hero But tech wise he's in such a good spot with this disruptor coming up. Yeah, he has that of revelation of course You can still see where snoot's army is he knows I think seeing the links is super important too because he knows he's not gonna Get back stabbed by moving out of the map without him being able to see that so he can confidently step forward He is going pretty far deep on to creep but there's the guardian shield popped first Shrub from bone. I was about to say here's such a good job being patient with it's disruptors And then I'm like so far to creep but the prison gets into the main base during all this as well So he's got a bunch of add-outs. He's gonna use that They shifted move over into the natural expansion and he continues to press the front Yeah, such good play from hero here, and this is this is where he's just a special player like there were Roaches to try and run down these add-ups But snoot just kind of didn't see them for a few seconds huge Shrub truck goes off on the front lines a second one triggered as well And he's just blown everything up out of those instructors. This is that's disgusting It's new to having just a tough time dealing with the all fronts of this attack. It's going on inside the base It's here. Stu finally does clean up what's going on inside his main base But it's fourth base is not very saturated It's just gonna die and the prison is here so he can reinforce directly into the fight as the ravagers Used their corrosive bile on the front line So a bunch more stalkers get brought into the fray and those disruptors shots way too good",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 0,
+    "game_frame_end": 14063,
+    "game_time_start_sec": 0.0,
+    "game_time_end_sec": 627.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Snute",
+    "player1_race": "Zerg",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "ZvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 627.8125,
+    "vod_url": "https://www.youtube.com/watch?v=5P554a_8mT4",
+    "subtitle_source": "whisper",
+    "replay_hash": "8a1f5c840fab"
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "id": "fd62e9cd-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 15049,
+    "game_time_sec": 671.8,
+    "player": {
+      "race": "Protoss",
+      "minerals": 975,
+      "gas": 139,
+      "supply_used": 134,
+      "supply_cap": 149,
+      "worker_count": 55,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Stalker": 1,
+        "MothershipCore": 1,
+        "Observer": 1,
+        "Phoenix": 0,
+        "Immortal": 4,
+        "WarpPrism": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 14851,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14880,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14882,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14891,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14904,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14924,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14934,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14953,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14982,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 15019,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Probe": 54,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Sentry": 2,
+        "Observer": 2,
+        "Phoenix": 1,
+        "Immortal": 6,
+        "WarpPrism": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": true,
+  "transition_description": "mid_game -> late_game",
+  "commentary": "where he's like, okay, well, if I make any more observers, yeah, stop the DTs, but I will die to the Army overall. I need to keep making Immortals, hope to pick off the Warp Prism, hope SOS backs off in the idea of DT harassing, but SOS being so savvy, seeing that even over top the third, there was no observer, probably did the math in his head, and said there's one, maybe two out here. Dark Temple are going to get their money's worth, and if not, I'm gonna have the better Army because he made more observers. So it just really cool back and forth by the two players, hard choices are made in Starcraft. We can be critical of MC for that, but I think in this situation, he just knew he had to go with what he thought was lesser of the evils. Yep, next map is gonna be Orbital Shipyard, and it's such a tough spot when you're in that position because the observer obviously can't be in both bases at once, and I really like that you pointed out that, even with the Army in his face, he's like, yep, I'm gonna send a DTA to the base, right? Next year Army, because you already moved your observer to the main, you're gonna have to move it to the natural next, and you touched on something that was really cool too, that the choice to send one DT is very savvy and cool. He had three, so he could have dropped all three DTs, sent him into the main, and been like, you're dead, I'm gonna maybe pick off the robo, kill everything into the game, but if there is an observer in there, if MC is on top of that, has several observers, that all of a sudden those three DTs became a really big cost, and it's really, we've seen Prodoss flip their advantage on their head because they spend too much on that, but just beautiful playful players. DTs, very expensive, but got a lot of value out of them so far in this best of five, this blue Prodoss on the top right, SOS, okay? I believe you said it earlier, I was like, yeah, okay, DTs, okay? But I think anyone in the chat who disagrees with UJF has been proved fooled. Well, they all know it. You know, SOS loves DTs. If he doesn't open with them, it's like the fall back to everything, Stargate, okay, well, DTs are next. Robo, okay, fine, but DTs are next. DTs, sure, but then... DTs are next. Yeah, that's it.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 13834,
+    "game_frame_end": 16264,
+    "game_time_start_sec": 617.6,
+    "game_time_end_sec": 726.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 726.0714285714287,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "fd62e9cd965b"
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "id": "45add59e-seg-000",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1147,
+    "game_time_sec": 51.2,
+    "player": {
+      "race": "Terran",
+      "minerals": 40,
+      "gas": 0,
+      "supply_used": 16,
+      "supply_cap": 23,
+      "worker_count": 15,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 254,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 287,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 490,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 558,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 726,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 829,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1015,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1146,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Probe": 16
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "He's been doing very, very well for himself. And of course that Frenchman in bottom left being Lilbo. He's got to win three games in a row to keep his dreams alive. It's looking pretty grim form right now. I'd say yeah, be a rough trip. Go south to Taipei. It's certainly not a short flight from France. I'd imagine gets beyond. Kind of gets sat down a little bit, but you know what? Maybe he turns it around here or the shipyard is one of the better PBT maps. But he needs to. He needs to do it in kind of a big way because after this it gets. He gets a little bit tough. He's had beyond in a couple of decent positions for himself, but again, as we kind of talked about, and you pointed out Nate, just not having any defense at home. Beyond has opened up both times with a very like I'm going to defend your attack. And I'm going to have very light harassed. It's going to do game ending damage because you have nothing to stop. Yeah, I think it's a it's interesting because all not all of those were, you know, forced mistakes or anything either. Like, Lobo had an opportunity to pick off that Medevac with a lot of the Marines before he made his all in in the first game. And then of course game number two, just I really feel like it just came down to be on getting a good scout. He got a good scan. He knew everything that was going on is Medevac that had left his base earlier. Actually saw the pile on that he was going to do the all in from. So just a smooth, very smooth series from beyond so far. I don't think he comes into this tournament concerned about playing against Lobo. I know I think TVP probably, you know, he wouldn't actually have to play against MC or or SOS for quite some time because of the way the brackets set up. So his next opponent will be a Tarranger Azure because that next matchup down the bracket that we'll be doing as well as Pulse versus",
+  "segment": {
+    "type": "expansion",
+    "game_frame_start": 0,
+    "game_frame_end": 2295,
+    "game_time_start_sec": 0.0,
+    "game_time_end_sec": 102.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}

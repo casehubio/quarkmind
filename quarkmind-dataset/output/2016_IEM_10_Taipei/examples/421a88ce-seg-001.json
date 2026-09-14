@@ -1,0 +1,136 @@
+{
+  "id": "421a88ce-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4874,
+    "game_time_sec": 217.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 195,
+      "gas": 108,
+      "supply_used": 32,
+      "supply_cap": 55,
+      "worker_count": 21,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "MothershipCore": 1,
+        "Stalker": 3
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 4442,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4482,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4498,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4525,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4535,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4542,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4673,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4744,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 4796,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4870,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Probe": 24,
+        "MothershipCore": 1,
+        "Adept": 3,
+        "AdeptPhaseShift": 5
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> early_aggression",
+  "commentary": "associate from here also and also like these forces the adept to either go inside of the main of hero and be trapped there or be sent outside like look at the gateway if he sends that outside the adept won't be killing the one be killing the pylon if he sends it inside he's trapped inside so already he's so good his his own point whoa uh oh triple pylon hero in the main base this is not gonna do anything i think sos is gonna have his own overcharges i'm not sure why he's not overcharging here just yet maybe he's afraid i hear we're just canceling remake the pylon elsewhere and actually here oh my god he's making more and more pylons sos is gonna have to use the overcharge really soon here because the adept is on us there as well yeah there are three upon pylons sos plays down while all of these were being added on just so that you can get that defense going if he needs to the mothership court is still not there you though and this was quite the investment for hero because his next this was blocked by comb i mean what else is he gonna do with the minerals it's not a unit to kill it so he couldn't expand sos not overcharging yet he's gonna do that now not hero able to get one of those off he's gonna go for the probes and he gets quite a few already oh my god five before he got down naturally denying a lot of mining time as well there we pull that out for a moment see a hero kind of moving forwards with that and he has one probe slowly working away at the panel on the back that was well worth it here 24 probes for a hero 21 for sos is he gonna let that finish no just gonna cancel the shade and that pylon on the natural man he's like taking forever to eventually remove this here yeah adept's gonna send sionic transfer and shade intowards the main base away from those stalkers and they will actually go in there but they walk straight into the oracle as well as another chicor that with the photo on our charge hero is in the driver seat here and the the great thing about this too is that like with these leads he's gonna be playing very aggressive he's getting you gateway across the map to be able to walk in very quickly he's on stagatek he's getting finixes and that oracle of sos i'm really worried for it if he flies into a pinix and he's gonna do just that as well oh they need to stalk especially help it out stalkers of sos of euro sorry i actually trapped out of his base here but i think it's it's the end of the world because he's getting finixes behind and being ahead in finix versus phoenix he's gonna be great here for him two stalkers versus the oracle there and in terms of trade and then picking up another stalker picking up another one and that will be guaranteed kills off here once again for hero who putting on this aggression so early on against sos it's like the roles of reverse from how their series of work in the previous situation of the game and sos behind this didn't use his stagate for anything he's going for double additional gateway twilight council he has no pylon at the ramp so now hero is gonna proxy his own pylons there is already one centry though",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 3078,
+    "game_frame_end": 6671,
+    "game_time_start_sec": 137.4,
+    "game_time_end_sec": 297.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 333.5714285714286,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "421a88ce218e"
+  }
+}

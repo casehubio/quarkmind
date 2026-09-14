@@ -1,0 +1,145 @@
+{
+  "id": "15ad08e3-seg-000",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6471,
+    "game_time_sec": 288.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 274,
+      "gas": 305,
+      "supply_used": 55,
+      "supply_cap": 77,
+      "worker_count": 44,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "Sentry": 2,
+        "Oracle": 1,
+        "MothershipCore": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5900,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5907,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5987,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 6019,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6080,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6097,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6100,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6136,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6203,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6416,
+          "type": "UNIT_BORN",
+          "unit": "SiegeTank"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "SCV": 38,
+        "MULE": 4,
+        "Marine": 16,
+        "WidowMine": 2,
+        "Medivac": 1,
+        "SiegeTank": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> mid_game",
+  "commentary": "beyond's play is the war prism right the war prism is not only buying him a lot of time but i feel like he's starting out by putting pressure on uh on beyond he's saying i'm expanding so far so you've got to do something about it and he's always getting the prism over there so fast anything look i'm just gonna stop you moving out and beyond he's not responding with a viking or a little pack of marines in the main and that war prism just keeps getting back in over and over and i feel like s os maybe if he wasn't buying that much time we'd see beyond just push out and be like no you actually can't take five bases that quickly like bam just slapped down a few bases and win the game but the war prism is getting it done for him right now so that's just the key there is preventing this war prism from kind of backstabbing him you'd say yeah definitely think so all right so i just see you sitting over there with Lil Bo down there did he uh did he have anything to say i watched in the series i want to shaking his head uh and i love you know he's he's not too happy with the the state of balance and pv10 honestly he's he's being honestly saying he's just trying to finance this right now like everything's changed up he can't play the same styles he was playing before so he's just trying to figure out like what can you do here and uh yeah he basically said you know beyond needs to push and punish this like s os is just getting so greedy but if the first push fails and s os holds it it's pretty much game over from there and i mean it took a long time on serras for s os to close it out but we can see how methodically it was from that point he's like i got five bases tempers carriers storm everywhere cannons everywhere and it's like this really really slow patient wave just winning the game so we expecting now from this point forward i mean we've seen the maps that we played on so far we know the maps that are coming out are we gonna say a big drastic change now from beyond a lot more aggression getting into s os's face a lot more how do you say this plan out it's interesting i got to think of what beyond said in the earlier interview where uh you know i'd been saying he was playing reactively and he was like no my builds are kind of just working out like it's just kind of lucky i don't think he's gonna change too much but i definitely think he needs to tweak a few things because so far we've seen him lose twice too kind of the same strategy obviously one game there were three gold bases which made it a bit different but he's definitely uh suffering against the war prism harassment and the mass expand strategy so he's got to he's got to adjust that he's got to block out the war prism and i think he's in a good spot all right thank you very much baby you're gonna head back to the commentary team for this one to continue with the grand finals here at the interluxury masters never thought i'd hear those words of a protoss defeating a turon with a mass expand war prism strategy but he's right it is working here and now we're gonna go on to orbital shipyard uh beyond looks the battle back against s os all boys on the desk rest some very good points pig in particular i do think that's beyond needs to start changing things up a little bit because right now pion it seemed like he was a puzzle going to the series and he's already been solved before he even started from s os s os was like you like to make a few units and attack and then get a third cc i'm just gonna get out of units to defend against what you're gonna throw at me and behind me some gonna play very greedy build up my economy with very quick bases and crush you with overwhelming unique production right it is time once again game at number four as we have spawning up to the top right hand corner are red tarren representing x team it is beyond who has to find a way to shut down what we're seeing here from s os who spawns down at the bottom left hand corner brody said his name so let's get it for j agree wins s os s os to men with the belts from this gun spotting it around his neck like a fighter i just i mean yeah he just raises both belts in the uh on his shoulder man he is the undisputed champion basically uh two time world champ and then three time if you include that into extreme as well championship but he was able to win for himself and again with a very quick scouting on the map where if you wall of you're gonna prevent your opponent not to just go into your main but also into your natural so s os it seems like in some of the situations he wants to be able to see exactly what is up against and this time around will be no difference actually last time he was on dust towers right so i guess both maps where you can wall of both your base and your natural together he seems like to go for a very quick scout to see what exactly what is up against i guess i'm gonna start doing that my my as well i won't know as well i won't know why i'm doing it all right i guess i will know like because s os is doing it but i mean i'm not necessarily sure that i will know where he achieves it i guess he's just about like knowing exactly like down to a tee how the opponent's opening yeah yeah gonna ask him i guess maybe that i'll pound as well you know what happens i guess i think i got it if you don't scout this early and then you arrive there and the walls are already up you don't know if it's two bays or one base yeah that's the main thing and if you don't know then you have to kind of guess and if you get wrong then you lose because if you build up your economy and the opponent's going one base you won't have enough units to hold and then you die but if you don't build up your economy and the opponent's has a CC then he's gonna be the one building up his economy and then you will be in trouble oh that's painful this sv just barely skirts past this and he already sent a reprieve as well so he was sending this sv out to maybe spot actually he might proxy a factory now that i look at this oh bum bum bum again that's what's gonna be your robot bum bum bum okay i'll help just brook lose well we said he needed to change things up looks like that's what he's doing the funny thing is is he might still go for widow mines and then just try and drop them in but it's just like closer so the timings are all a bit wacky this is interesting what is going on the robo proxy i guess just in a mortal bus like yeah i'm not sure what ss was like exactly aiming for here maybe i think maybe like immortal production into like bursting down this step all with a lot of gateways down the line and move up the into the main base with adept's because like if you take down that wall from taren then the depots not being there you can just send in adept's and kill your opponent actually he doesn't want to send this reprieve in such a way that it would lure it back towards these buildings to spot so he's gonna be careful about how he moves with that it's gonna die warpism is on the way here from ss and at least one more gateway so i guess he's gonna be some kind of a dead a dead drop here the vision of the automaton 2000 spots that oh the reaper died i got it finally and bion is not producing anything here with the factory so maybe okay it was late i don't know why i i feel like a liberator maybe should get a liberator than maybe instead of medieval ss is back in the driving seat though look at how this is playing out i feel that yeah okay there'll be window mines and mineral lines and stuff but there may be the possibility of this actually just crippling damage on that so i suspect as well the fact alone that bion went for a 30 c instead of additional barracks before yeah and the fact that he doesn't have his factory back at home he's gonna make it so hard for him to hold this he has a couple marines to work with here but against so many adept's here that they are gonna be in this base it's gonna be really hard for him to hold get himself an sdv already showing down income on this location getting as many sdv as possible the shades go forwards he sees how many marines are there but there is gonna be other mortal knocking on his door in just a second as long as he couples up with all the extra units that are gonna warp in and we don't mind in the main boom all right just two probes in the first place but let's see in detection wise there is no observer being made i think was that so i see just salining i think i'm just gonna take out the wall like i spoke about earlier he's gonna supply block actually bion quite heavy there you can get second him all with this the liberator needs to be out and it needs to get back there fast he actually show up here me well he's in desperation mode now all the sdv's come off the line here for bion he knows that this is a bit of a critical position to be in wall prism picks up one of the s stalkers picks up a second one one in wall for the back here is being a little bit lazy i think bion might just die yeah bion isn't really mining much i told you while all of this is going on the fact that there is a war prism he's just gonna lose nothing there he can pick up everything here real sos he keeps on kiting back the sdv's not even mining anymore sure there is a widow miner cross the map but it's not killing nearly enough no i picked up all of those units there as well shittles them out and gets that so far as well great little war prism micro there you really need to kill that war prism with the liberator there's only two stalkers there maybe you can try and get a few shots off on it but at the same time it's just gonna try and go for siege up anyway move straight out of that circle it's not being used at all and bion is taking massive massive damage here sos kills off the liberator and sos is on the way to cause himself a three one lead here with all of the marines dying there is nothing left back at home he drops the scan into the natural i've bit a wall all of this is going on and bion is evacuring he's having none of it oh dear me sos he is running rampant who stops this guy in championship matches i'm not really sure but at the moment it's definitely not bion as he's hoping that these widow mines can kill off 26 extra s probes against the tennis cv's that remain it's done yeah i don't think bion can do much else here there is even like now observers back in the base of sos he's going to be able to finally defend against those widow mines i think sos has just done it he's going to be a three one lead in his best of seven poor bion man he's one time he tries something different yeah and he just gets hit by that he's actually playing ladder terran right now which is if i put all my command centres in corners maybe i'll win liberator's going to come in and try and do some damage but the",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 0,
+    "game_frame_end": 12943,
+    "game_time_start_sec": 0.0,
+    "game_time_end_sec": 577.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Prion Terraces",
+    "game_duration_sec": 577.8125,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "15ad08e3ed7f"
+  }
+}

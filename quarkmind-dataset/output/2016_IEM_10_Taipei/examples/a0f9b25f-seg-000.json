@@ -1,0 +1,144 @@
+{
+  "id": "a0f9b25f-seg-000",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7198,
+    "game_time_sec": 321.3,
+    "player": {
+      "race": "Protoss",
+      "minerals": 570,
+      "gas": 395,
+      "supply_used": 67,
+      "supply_cap": 93,
+      "worker_count": 53,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Stalker": 2,
+        "Observer": 3,
+        "MothershipCore": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 6755,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6795,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6919,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6922,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6925,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6989,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6995,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7031,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7041,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7070,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "SCV": 39,
+        "MULE": 3,
+        "Marine": 16,
+        "WidowMine": 2,
+        "Medivac": 1,
+        "Liberator": 1,
+        "SiegeTank": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> mid_game",
+  "commentary": "I don't think these guys need any introduction. One of the absolute best players in the world, one of the highest earners in StarCraft 2 and just one of the best protests all together. Yeah. One of the most fascinating players to watch as well because he does mix it up so much. And he is so creative. I think that's something we rarely see someone like that be super consistent. And I mean, you could argue that SOS hasn't been that consistent himself, but when you put two world, two Blizzcon championships and an IEM world championship together, it's a pretty high level of consistency and most importantly of all, he's the master of tearing his opponent apart. You know, he's the guy who always finds a way to rip apart their mentality when he's on the big stage. He wins that $100,000 check every time. Yeah, and we all going to have the two players come on to the main stage in a couple of seconds. SOS has a lot of fun girls. They've been screaming. We've been hearing them. They were coming through the microphones coming through and there's quite a few of them. They got all their signs up. Hopefully, Bionna can overpower the fun girls, but Bionna has a lot of momentum behind him. James, he's got the community backing. He's feeling good. He's happy up on stage. Yeah. He feels like he can win this. It looks to me as when we were sat at the Caster's desk and you guys were interviewing that he seemed quite relaxed. I mean, I don't know if you guys got that feel from him, but he, and that is actually kind of rare to see for like a Korean just kind of having a very kind of chirpy and smiley attitude towards this kind of situation. Likewise, though on the other side, SOS is normally always like that when I really look at him. So it's quite the clash to be honest. Bionna realizes here what's happening. He's on top of his game. He's playing really well and he knows that girls all boys, there are going to be a lot of fans here for him if he were to win this regardless. Yeah, it's almost like a dream come true isn't it, because he came into the tournament and was like, what are we going to be playing in this tournament? And then he went through the quarter finals. He's gone through the semis and to win this as well on top, it would just all make sense together. What do you think James? I mean, I would. I mean, him being this weird enigma for so long that everyone was hyping up but kind of jokingly and just can, yeah, I've only kissed for jail, but then he comes back and he's actually really good. I don't know what to say. It's a bizarre weird twist that he's actually come and been this great. Yeah, I mean, but how many times do fairy tales come true? Sure, I'll finish that there, but not for him. I think there are a lot more people on Reddit right now cheering for him. So he's got that wave of momentum man. And let's face it, StarCraft Reddit is where champions are truly made. Absolutely. But realistically, there's obviously, you know, it's not, it's not $100,000 first place here, but it is still a chunk of money. It's 12,000 for first place, which SOS obviously pennies for him. But as he said when he was up here, when he gets to a final, he does do well on them and he rarely, rarely loses when he gets to a grand final. That's what that mentality's got a confidence. Absolutely. That's true, but at the same time, there are a lot of indicators that might point out that it's going to be a tough game for him. Yeah. First, the fact that they played in the SSL qualifiers not too long ago in which Bjorn was able to stop SOS to run very early, like in the very qualifier for the tournament. It's like, what's SOS supposed to be in this tournament? And Bjorn stopped him with a 2-0. So also, I think Bjorn is, he's been really impressive against Protoss. He has played almost 50 series in Legacy of the Voids, recorded and posted on Lady Gulag against Protoss and he's 180% of them. SOS only three series on Legacy of the Void and he's only one of them and one of those losses, one of those two losses was against Bjorn. So if you look at that, you have to be telling yourself this could be really tough here for SOS to win this. Oh, there is Bjorn and there's the Fangirl screaming for us. It's a T-Jack lap. And of course they're playing for the trophy in the middle of the stage. And it is going to be a best of seven. Every single map is going to be played two smiles from both. Good to see. Bjorn's a happy man right now. He's been waiting for this man. This is the moment. He's having a grand finals. He's having a grand finals. He's about to play a couple, a couple liberators in some mineral lines. Of course he's smiling. We talked to it very little bit with SOS about the recent balance change. They mostly changes this match up to any of the others. What are your thoughts here, Todd, in the adept change in how that could affect SOS? It only was implemented a couple of days ago. Not much time to really start to innovate and change around the match up, what he's practiced. Really not a lot of time. And to be honest though, at the same time I feel like this guy is considered a genius. So it doesn't really strike me as the type of protost that needs to play, you know, what are present at the adept all in every single game to be successful. But the fact that adepts have been changed in the way they've been, definitely going to make it harder for you to be able to do better here. And honestly, Bjorn, with the way he's been playing so far in this tournament and the way he looks very confident, I don't even seem stopping with the aggression here just because he's playing SOS. I just seem like opening regular, you know, commence center into widow mine drop into liberator, skilling probes, getting some tanks back at home because he loves to do that to be safe against blink stalker so he can have ground army and just playing solid all around good terrain versus protost together. I think it's a great way as well. I mean, against SOS. SOS normally thrives when he is the one dictating the pace of the game. But if Bjorn concedes that away from him early on and be like the aggressor early on trying to put on some harassment, I think that'd be a great way for him to win. Yeah, you agree with that, that pick? Yeah, I mean, when it comes down to it, SOS thrives when he's the one dictating the pace. He's not a guy who sits back and thinks he's just going to win in the late game. He's going to find edges and he's going to work as hard as he can to get that momentum going. I think we're going to see Dark Templar at least one game, probably two or three. I think we're going to see a lot of aggression out of him, but not necessarily the adaptor whopperism stuff, which has been so famous in recent weeks. All right, then it's time for the all famous predictions. Clarice, you're on the end, so I have to ask you. I've got to go with the community from large, I guess. I've got to go with Bjorn, and I'm going to go for four two in the end, that you and the Twitch chat are together right now. Not quite as much as Nathanius, but not as much as Nathanius. Nathanius is melded with them, which Todd. It absolutely paints me to agree with Kaelar, but I'm not going to go with John as well, and a cheeky fall three. You guys are whole thing. That's a joke, but I was going to go for Bjorn as well, but I'm going for two, but I'm going to actually say, you know, this is going to be some momentum based, there's so much on the line. I think SOS is going to keep it together better. He's going to get under Bjorn's skin here. So I'm going to say a four two to SOS, actually. All right, well, thank you very much, Pete. Thank you very much, Todd and Kaelar is for your predictions. It is now time to begin the grand finals of the entire stream masters here in Taipei. One of these two players is going home with the trophy, going home with $12,000. The other player is unfortunately just a mere second place finisher. Let's head over to the commentary team for this one. Of course, it's Kaelar is in Todd. It is time for the grand finals here of the until extreme masters Taipei hype a bound here as we are going to be starting things off on ruins of Sarah's here in this best of seven between SOS and Bjorn, a two time bliss con world champion and a one time in telextreme masters world champion goes up against the guy who has accomplished almost nothing in his career, but is here in the grand final after doing so well at the start, like you see the void. Bjorn is a lifetime badass, but he definitely needs to prove something here. Can he win this tournament? It's going to take some really good games to for him to win the best of seven against SOS for sure. Yes, it is. All right, so as we get into this, I believe I may have to change something here on my PC a moment. Yes, John looking intense here as we're about to get into map number one on ruins of Sarah's a little bit of the the mouth open actually. Stowing down you a little bit as SOS also looking tense here in the starts. All right, and we are back and good to go. So up to the top left as well, we have our pollu protest. It is Jinag Greenwings SOS. Going for Nexus first in map number one. What else? All right, so what a way to open up here as we do have the Nexus first. I'm going to be going down here for SOS Bjorn, is he likely to go for some crazy aggression here? Is he likely to try and do so? I mean cross-maps on ruins, sorry, it's one of the furthest bonding positions you can have in the entire map pool right now. I don't know if I would describe it as crazy aggression as long as he doesn't go all out and like stay on one base, which I think is very unlikely on a map like this and in map number one. I've seen him go you know for double gas and stuff but like in this game he's just going to be the standard quick reactor into command center and then down the line he loves to rush for that stop-orts and mixing different units to try and do some economic harassment. Sometimes aliens we don't mind anything that he can get his hands on. Liberators are going to be used a lot of the time actually not just against proto sometimes against Sarah. Quite quite a bit of the camps that we've seen him against Sarah as well. He's used Liberator so well. I feel like he's almost got here with his usage of Liberators. He has true understanding on where and when to use him and he's definitely proven that he's been watching nothing. He has his stream because he uses his uses them almost as well as Nate does. Almost almost. I mean Nate again, with the twitch chat, one with the meme machine. He gets so much done with them. So much done. But for now, where is he? Get out. Okay, what do you see? Saw the reactor. That's all right. I think SOS knows exactly what is easier from there. He knows that there is a factory behind this, that there's going to be a stop-orts, some potential Widow Mine drop down the line and actually SOS going for the double gateway here. He might just be going for a double adept here for some sort of attack behind this. You don't have to get mothership called that quick versus there. And if you don't know for a fact that they're attacking so he's keeping on that for now. It's actually going to be a double stalker here instead of double adept. So maybe a little bit more defensive build here. What else does he get to? There it is, the Twilight's Council. I thought it might be a Stargate but with how Delaydy would have been here.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 0,
+    "game_frame_end": 14396,
+    "game_time_start_sec": 0.0,
+    "game_time_end_sec": 642.7
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

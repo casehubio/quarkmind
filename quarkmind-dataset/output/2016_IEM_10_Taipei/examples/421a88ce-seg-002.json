@@ -1,0 +1,139 @@
+{
+  "id": "421a88ce-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7078,
+    "game_time_sec": 316.0,
+    "player": {
+      "race": "Protoss",
+      "minerals": 110,
+      "gas": 362,
+      "supply_used": 32,
+      "supply_cap": 62,
+      "worker_count": 26,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "MothershipCore": 1,
+        "Stalker": 0,
+        "Oracle": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5935,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5944,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5945,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 6138,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6248,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6313,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6335,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6685,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6847,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6930,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Probe": 24,
+        "MothershipCore": 1,
+        "Adept": 3,
+        "AdeptPhaseShift": 7,
+        "Stalker": 1,
+        "Phoenix": 2
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": true,
+  "transition_description": "early_aggression -> mid_game",
+  "commentary": "he has no pylon at the ramp so now hero is gonna proxy his own pylons there is already one centry though if sos manages to get more he's gonna need a lot of pylons though yeah this ramp and that probe is being chased on this is super important i mean if he wants to get in himself yet the pylons they're from to warp him but it doesn't even need to cancel it to let them in he can just kill this part probe on pylon off and the all the centry goes down as well so the force you'll blocks out for a moment but it's not long enough all hero has a massive army in comparison sos has nothing here he's got one stalker and one more to ship go through his name i think you might just die i think so there goes some other ship core he's gonna be out take down a few of these stalkers as well",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 6685,
+    "game_frame_end": 7472,
+    "game_time_start_sec": 298.4,
+    "game_time_end_sec": 333.6
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 333.5714285714286,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "421a88ce218e"
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "id": "fd62e9cd-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7232,
+    "game_time_sec": 322.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 145,
+      "gas": 96,
+      "supply_used": 64,
+      "supply_cap": 70,
+      "worker_count": 36,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Stalker": 6,
+        "MothershipCore": 1,
+        "Observer": 2,
+        "Phoenix": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 6686,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 6698,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6786,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6789,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6917,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 6994,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 7031,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7034,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7048,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7080,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Probe": 36,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Sentry": 2,
+        "Observer": 1,
+        "Phoenix": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": true,
+  "transition_description": "early_aggression -> mid_game",
+  "commentary": "and perhaps that's why we're seeing several centuries. Of course, it's not necessarily for the Force Shield. It's to be on top of, are you going disruptors, are the two of us gonna have an arm's race of Immortals? It's a, the disruptors are really such a volatile thing to throw into a matchup like PvP, where the unit count is pretty much always what's determined to win, whereas now it's more like, can you get into a good position versus the disruptors? And you know, there's also like that, that kind of like kind of, I don't know, gamble you can make with bling stalkers and disruptors, like if you wanna blink in and try to snipe a disruptor while you're throwing yours, et cetera, et cetera. There's such a, I love the little up dynamics added by that, but without a robo-based rather side, it's just Immortals and stalkers versus Immortals and stalkers. And if you just go on for it by, if we're gonna get, we was about to finish it behind this award-prison coming out. He's already pushing across the map, the Ford forces of S-O-S did spot the South, so he's coming back to, kind of defend, but almost certain that third base becomes a bit of a liability, especially if he wants to defend out on the map, but if MC pushes too early and loses too many of his forces, he will just die because this third base is the, it's the gambit, so to speak, it's, it's winning or losing choice. It's what he's made this, made the plays in this game. Oh, it's already here. It's early on, and now the army is, here's gonna overcharge one pylon, as he starts the warp ends by that nexus, getting a little bit of damage down here. He's gonna force field in some of the centers in the Immortals, trying to make a play here. He does have one of the Immortals locked in as it triggers that barrier ability of it. And now, without a mortal going down, S-O-S has the Immortal lead. Can he defend this base, though, Jeff? Warpers in here is gonna allow him to warp in. Actually, if he kills that pylon, there'll be no warp in on this location, and I think he's actually waiting for the trial warp in, which is pretty cool. S-O-S already on top of that decision by warping in over it as natural, which is the further away choice. But the safer one, MC micro me back, beautifully, the two morals, as you said, they're dealing out so much damage. One of the moral is about to die, and it does good concave for MCMC, is down in supply overall, but I think part of that is actually harvesters, linking back, but there's just, and now the flotch and overcharge, he does have to pick off that pylon, and he does that. That being said, though. That being said, though, really important as well. So, he does make sure that despite all of this, or both on two bases, and he continue to warp and try to plight more of the pressure in this instance of the warping. S-O-S had a comparable army, oh my god, two of morals joined this by the way, becoming much more powerful. And she's gonna be just happy with this little wind and pull back, but S-O-S says, you know what, with you picking off the Nexus, why am I fighting here? He pulls back, he might have had a slightly stronger army before those two of morals joined, but with the two of morals, he certainly has the stronger army. Yep, so he just pulls back knowing, he doesn't need to fight in that location. Oh, Link's back. I'm going forward trying to get the Immortals. Does not manage to... Oh my god, but it's such a crazy choice because there's Blink Sockers right there as well. So that Blink is gonna cost him. These Sockers are chasing him down and there's just not enough space for MC Sockers to get too far away, because if they go in on those blue Sockers of S-O-S, they're gonna face three Immortals, which will dice him up in no time at all. So MC takes a crazy choice. He's waiting for this violence to finish. He's gonna have a lot of photon overcharge. A huge century warp in back at home again for S-O-S. I love your guys' comments. I mean, I don't pretend to know everything,",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 5123,
+    "game_frame_end": 9342,
+    "game_time_start_sec": 228.7,
+    "game_time_end_sec": 417.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 726.0714285714287,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "fd62e9cd965b"
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "id": "095724b8-seg-000",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1162,
+    "game_time_sec": 51.9,
+    "player": {
+      "race": "Terran",
+      "minerals": 40,
+      "gas": 0,
+      "supply_used": 16,
+      "supply_cap": 23,
+      "worker_count": 15,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 252,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 287,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 488,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 558,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 724,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 829,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1045,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1131,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Probe": 16
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Can he kind of make a name for himself? And in the PBT matchup, like you said, very recently, as in a couple days ago, just became a matchup that is not what it used to be. In any time in StarCraft, you have a patch change like that. Things can get weird. And I'm expecting this to be a bit of a rougher match for the pro losses. You know, that patch just kicked in. And this guy has been so good for a while. I'll be doing the honors of observing as we see where loaded into game number one for this best of five here at the Intel Extreme Master's Taipei Day one. Of course, we're looking at the base of the red tarant player. He is beyond. He's been on fire. If you've watched any online tournaments, be on on fire. Should just go ahead and say that. I don't know if everybody can't be on fire. Well, there's a young opening up probably fast Reaper. You've seen so often in the top right. We have the blue pro loss player. Is any Malayam? Of course, he is Lil'Bow. And this is a pretty darn decent map. If you're a pro loss from my perspective, you've got the very easy natural expansion. We'll make a comment on this opening from beyond here in a second. So anytime a pro loss can pretty assuredly guarantee themselves a safe expansion. They're already liking the map. The next question on their mind is, well, where's my third at? And this map does make it a little bit interesting. There's quite a large ramp leading into it, a little bit exposed. But because it kind of shares good distance between the three bases, you're not too hyper worried about drops and getting split up too much. A fairly good pro loss map, but Nate, you saw this opening from beyond. Double gas like this. What do you expect me here? So there's a lot of Korean tarant players that have been opening up with this build in a high-grandmaster ladder.",
+  "segment": {
+    "type": "expansion",
+    "game_frame_start": 0,
+    "game_frame_end": 2325,
+    "game_time_start_sec": 0.0,
+    "game_time_end_sec": 103.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 381.6964285714286,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "095724b86cbca0e6da2fb8baad0d7baf"
+  }
+}

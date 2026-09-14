@@ -1,0 +1,141 @@
+{
+  "id": "b09eebe9-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 3721,
+    "game_time_sec": 166.1,
+    "player": {
+      "race": "Terran",
+      "minerals": 30,
+      "gas": 109,
+      "supply_used": 31,
+      "supply_cap": 39,
+      "worker_count": 23,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Marine": 3,
+        "MULE": 1,
+        "WidowMine": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3125,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3346,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3396,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3502,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 3579,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3583,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3617,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3667,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3690,
+          "type": "UNIT_BORN",
+          "unit": "WidowMine"
+        },
+        {
+          "frame": 3711,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Probe": 27,
+        "Stalker": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> early_aggression",
+  "commentary": "As you said, nine plus probes were dying. I mean, and there was no detection site. He didn't add a robo and never started. It was like, this is it. I got to do it. Yeah. No way to actually get rid of those minds, even if he snuck the first tank and then like backed off. He's like, okay, killed some SUVs, but killing some SUVs isn't going to do it in that position. No. The bunker is, I have to say, once again, really, really nice. And just, you know, making sure to constantly build Marines out of that one reactor barracks. He had a lot of Marines. He kept both bunkers filled and had enough moving around that with his SUVs. He could shut down the attack, which was also really good. So I feel like you have to be kind of on some level a little bit of a starcraft to Uber nerd to appreciate that game because I feel like if I would have sat down a friend who's not super familiar to Starcraft, they'd be like, that was dumb. I mean, a couple of tanks blew up in the protest left. I don't understand what's happening here, but the bunker timing, it was preemptive. He knew where he was coming, picking off the most. Of course, sealing the deal. But as you said, continuous production and also kind of a, a little bit more of a subtle note, but not pulling SUVs too early, by the way, with that first blink, did not pull the SUVs. It was on the second blink that he did. And I think one of the things that Terrence do too often is like, they sit all in, mode all hands of deck and they throw the SUVs in. And then they do hold off the attack, but they lose so many SUVs at the protest. But it's like, wait a second. I'm not dead yet. Then they do that data mules, but there's a moment where they think that they'll still have the little minds and his mineral lines as well. So would have been. I mean, it's not unfortunate thing, right? So you get blink stalkers that fast, but to have high ground vision, then you need your mothership core, which means nothing at home and everything goes really bad. It's already to nothing. I would really feel bad. And again, this is like Lilbo's guys game plan, let him go for it. As you say, he's playing the juggernaut. So again, there's a lot of top notch players to look at this kind of matchup and say, well, I got to choose to win to have any chance. Well, if I just do a straight macro game with beyond LLL nerd, I'm going to die. But I want to see something else from Lilbo because while he has always been fairly all in oriented, I feel like he's always had the ability to fall back on a pretty strong mid game. Again, pretty aggressive. It's always like two or three base aggression, but this like 1.5 base, I don't have like it. If you counter me at all, I'm just dead because I have everything at the front of",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 2356,
+    "game_frame_end": 5087,
+    "game_time_start_sec": 105.2,
+    "game_time_end_sec": 227.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 342.1875,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "b09eebe96e48"
+  }
+}

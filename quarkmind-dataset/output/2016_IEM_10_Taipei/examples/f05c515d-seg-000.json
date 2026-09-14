@@ -1,0 +1,149 @@
+{
+  "id": "f05c515d-seg-000",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 12028,
+    "game_time_sec": 537.0,
+    "player": {
+      "race": "Zerg",
+      "minerals": 1015,
+      "gas": 641,
+      "supply_used": 148,
+      "supply_cap": 168,
+      "worker_count": 67,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Larva": 18,
+        "Overlord": 18,
+        "Zergling": 30,
+        "Queen": 4,
+        "Roach": 20,
+        "Broodling": 0,
+        "Infestor": 3
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 11890,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 11892,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 11894,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 11919,
+          "type": "UNIT_BORN",
+          "unit": "Infestor"
+        },
+        {
+          "frame": 11919,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11923,
+          "type": "UNIT_BORN",
+          "unit": "Infestor"
+        },
+        {
+          "frame": 11923,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12000,
+          "type": "UNIT_BORN",
+          "unit": "Infestor"
+        },
+        {
+          "frame": 12000,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12014,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "SCV": 67,
+        "MULE": 11,
+        "Reaper": 1,
+        "Marine": 53,
+        "KD8Charge": 7,
+        "Hellion": 6,
+        "Liberator": 1,
+        "VikingFighter": 1,
+        "SiegeTank": 4,
+        "Medivac": 6
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> late_game",
+  "commentary": "but uh yeah it's adorable bless it go off I'll leave him there there's some really cool things of this convention but uh yeah I mean you can see the pressure on Salky's face right now that says it all just that expression there he's taking big deep breath and he's kind of like just calm down after that don't let that happen again it's a severe situation that's what I mean he knows that Bjorn is for real uh and it's one of the big reasons why we came in on the desk and everyone was unanimous with Bjorn being able to take this yeah you not as much as me and taught of course but I mean Jorza you've got to do that I understand I mean I still said three one to Bjorn and right now it is two one to Bjorn so he's definitely on the road to victory right now didn't you say three two did you change I don't know I'm one of those I was kind of on the fence between so I could have said either one I have selective hearing sorry buddy so I just believe what I want to believe sorry I'll check the VOD later and I'll claim it if I was right otherwise we'll just forget about it perfect perfect well arena is going to be our next map here pigly wiggly um so this is I mean everyone knows it by now it's one of the more interesting maps in our map pool so yep um bli heaven as people are calling it a dream hack you know it's it's a crazy map and if you're a crazy player you thrive on here um honestly uh to be brutally honest um I think talking is to play very different to how he's been playing this map in the past I've cited a lot of his bots I was not impressed with his his zvt on this map I felt like he was almost never ahead in workers against terran players right and he was building way too many units early on in the game and not getting any damage done with them so I think he needs to commit harder to economy or harder to his aggression and not go for this kind of weird middle of the road um build because what we've seen in the past from him here is 17 gas uh or 17 pool both of those dropping his hatchery on 18 supply and then just building like 20 speedlings almost immediately and not really doing much with them other than chasing the first Reaper away right and that really handicaps your economy and if the terran player just slows the play down a little bit doesn't throw any units away just simply behind so I want to see solky come out here with something we haven't seen from him before and hopefully play a bit more of a solid game all right well we are just waiting in the loading screen at the moment here it was kind of taking a small moment longer uh but beyond looking on point and good too good through to the finals right now uh if he wins one more map where he would face off against either s os or hero both i am champions in the past uh for me and telextreme masters and that will be an interesting one to say the least but the thing is that i feel protest right now is in a great spot in uh in legacy of the void despite the uh the adept nerf i still think that they were already applying a multitude of different things uh to deal with uh both terran and zerg so it's uh it's quite a cool to see protest being that well rounded yeah i mean whichever one of these players go through where i'm very curious to see how those protests uh changes do play out in both matchups pvt and pvc because it's a big difference it changes things up a lot i mean protest's ability to handle aggression as well with the pylon overcharge is very changed that's the big one for me oh yeah i mean if you're on top of a base and they've only got two pylons like if they just out overcharge those pylons you can focus them down before you know too much can happen so it can actually get out of control very quickly all right into game number four now finally has our loading screen has finished to we have one of our observer shopping but that doesn't matter as we have sporting it to the bottom left hand corner it will be our red terran representing x team it is pion pion looking powerful in that last game has to just keep it together here and try to close this set out before it goes to map five and then up to the top left we have our blue is a representing tcm maybe for the last game today it is so key looking to bring it back it's got to bring something special out you always need to do something special on all rena so so key uh you know he's got his uh his mission ahead of him and it looks like he is going to do what i wanted him to do and just go for a hatch first thank you so key i'm very happy is chosen to do this i think you can definitely still defend the reaper aggression you know quite well with a nice 17 or maybe even 18 sporting pool yeah so i think so key is going to have a much more solid economy and i'd still love for him to do some crazy aggression off this i think it works great here but now that he's got a much more solid economy than what he's had in his past matches i think he's going to be in a much better stead of course if you're out and familiar with this map this is one of the big focal points of this map this small little bridge lit through the middle uh which means that the rush distances can be almost steps of war ask uh yeah that's the little bridge where uh where uh Darth Vader told Luke that he was his father yeah yeah yeah and then uh he got blocked by a supply depot pile on and then uh didn't fall off so blessed the guy uh yeah right now we actually do see uh you know gas pool coming out for sulky reaper on the way for the iron very difficult opening so this is cool to see neither players just kind of y'all are going across the map with uh you know a proxy barracks marine pool or an early pool or anything too crazy um of course because the rush distance is so fast something someone like sulky often opts for on these rush distance maps is just dropping a roach horn very soon after this warning pool and going straight into a big bunch of roaches and going across that map and applying heavy pressure we'll have to wait a moment to see if he does it here but uh of course the reaper for beyond is going to be making his way out and he's gonna forage into the zirks base for some information it'll be over there in a chiffy and uh there are a few zirglings as well as two queens on the way uh so what shall we all assume it's just a bit but what's going on on the other side for beyond getting that factory down reacts is on the way could be the helians against the honest with you yeah second gas as well so pretty typical opening definitely does make sense to do that could still go tech lab and uh into a starboard and of course go for that tanky vac tank bushes so powerful across that middle bridge meanwhile we see just just their everyday spectacular control from both of these players sulky does lose a zirgling this time notice he does build six zirglings rather than four on the big maps like dust towers very slight adjustment from sulky knowing he needs a couple more zirglings to keep the reaper at bay and it's those those cute tiny adjustments which really do separate a player like sulky from your average ladder hero and sulky is gonna have to work if he wants to spot that starboard all the way to the back does he know that it's two gases no he doesn't so still kind of wants to poke in there and spot what's going on yeah we don't minds on the way all he really needs to see is the barracks from the reactor still on it to know like hey this isn't helians um yeah no load on the back doesn't really see too much there but uh it's very important you see this sort of drop coming i i feel like this sort of drop if the zirg sees it coming is so weak like if if the zirglings and a sport crawler down like it just does nothing that if the zirg isn't ready for it a widow mind marine drop can get out of control so quickly because that widow mind you know is so annoying to deal with especially if it gets time to recharge before your sport crawler finishes the marines can focus down queens so this is a really nice kind of middle of the road aggressive poke build from beyond and behind that he'll most likely just be going into you know probably tanks maybe liberators adding a third command center it's usually a very typical follow-up from this build spotted the layer in with that repra as well and didn't really spot too much gas in the process of that but both of the good as it taken on these two base so we may see a spy go down that widow might actually relocate it from behind that command center realizing it was only a few zirglings i didn't really want to do much with it okay i think i think sook realizes what's up he's building a few more zirglings building a sport crawler yeah that's that's it that's exactly the reaction you need here yeah two sport crawlers he's going to be completely safe against this that's going to be really good liberator coming in behind it as well isn't going to do too much the drop does come in now and sees the sport crawler and says we're going to stay in there so that's just going to poke around third command center does go down so no damage done yet for beyond very good defense from sulky fantastic scouting with that zirgling getting it into kind of verify what was going on before but he doesn't have a third base remember he's going for two base muted this is exactly the sort of player i was criticizing him before saying on these short rush distance maps muters don't have a lot of space to work with they don't have the ability to really get these big counter attacks in because by the opponent the time the opponent moves out he's already at your base so these mutilisks really are a transitionary point if he gets five or six of them out shuts down the liberator shuts down the meta back and then just goes straight back into whatever is normal ground based style is that can work for sulky but it's going to leave him with a very exposed force in the early midgame but that actually shouldn't worry worry him because there's two engineering base there's barracks going up beyond's going massive macro follow up this is actually going to work out perfectly for sulky sulky getting the better end of the build order here for sure is really done a great job of denying this meta var from doing pretty much anything over the other side i mean looking at the workers lost zero and zero so sulky is doing very well indeed 50 it 546 workers at the moment third command center is done behind this for bill but beyond even but not actually morphed into that command center sorry orbital command I should say you know it's it is kind of a smart adjustment by beyond saying if you're going to have muters out I don't want to be overly aggressive and I want to go straight to the upgrades of third base because he doesn't feel like there's any option for that big strong sort of roach ravage or push or anything like that if you're investing in the fast muters you know sulky is only now finishing his third base as the orbitals finishing up for beyond so the ones just going to try and play it really slow and once he gets one one once he gets dim combat shields marines all that sort of stuff out that's when he might start poking around pushing back the creep and I think when two two finishes if beyond his survive to that point without being molested at all he's really just going to try and do what we've seen every game hey you're getting towards high attack I'm going to start shoving in hard on multiple angles I'm going to slide some drops in while pushing the front and you're going to have a really tough time dealing with that once again we see beyond being so adaptable in how he's playing he's just changing it up every game adjusting to how sulky is playing and I really feel like beyond just the the reactive one in these games and it's a real switch up from what we normally see in zirk first turn and when eras in heart the swarm kind of like having these mutilists out and about would be all good and dandy in legacy of the void with liberators being there they do a huge amount of air we damage to the air if you're not careful so you've got a in essence magic box your mutilist citrus is going to go into an engagement like that look at those bird banelings oh my god if this works so keep obviously hasn't spread creep down this hallway because he knows he's not going to take a front on fight here oh my god he's barely scooted around so he's so annoyed that he moved to the watchtower right now it's like no you're meant to move straight across yeah it's so he doesn't have any banelings up oh my god this is exactly what we're talking about with him not having a lot of units for this mid game push oh he goes a huge damage he needs everything he actually even is so on board big so the bad thing I think I got some good connection liberators splash just deliterates the mutilist only one liberator going down for six mutilists he's being forced to build more mutilist here but so he is in complete disarray and yeah oh my god to be fair at least some of the banelings got a lot of those marines behind that so it was kind of a good okay trade but we're losing that much gas invested in mutilists against only marines dying off yeah big really big oh man he's down like 20 supply right now so he is down he's even on workers which is a position you never want to be against Aaron and I mean this is just it's the map we were talking about it and I was actually talking a bit with yourself and Todd before you know the car started today about yeah yeah soky sometimes on these smaller maps he just goes from uterus and he's just a bit too greedy and he's not ready for the pushers that come out like he's got to play a little bit safer when he's playing against someone of beyond's caliber beyond just pushing out with that crisp one one medevac timing and just shutting him down doing a lot of damage killing off a lot of those expensive mutilists and now soky finds himself in a very hard position totally and it's a great macro setup for Bjorn as well behind I keep on in Bjorn I'm terrible with that it's a great macro setup frame he's got his double liberators on the way at any time he saved these two which was so low on health and there's going to be an attempt to account your attack but you got to do that as soky right now I mean you know you're not winning in front on fire there's double liberator production because all the medevac survived before just a little bit late on that boat but I'm only about five Marines with those two bannings nice counter attack running into the third though is going to force the evacuate beyond going for the throat realizing his liberator and Marines are the bunking and hold at home and look at this great setup between the rally points soky has nothing to do with his six banelings and six mutilists all great connections but there's still so many Marines left over a lot of banelings train them off and on this left hand side they need to get in there but likewise the liberators need to set up so they can actually grease some of this he also needs to to make sure that those mutilists don't do too much they can't help them off the drone line they're going to die very quickly separate some of these Marines as well against the banelings knowing that the majority of them are going to die the mutilists are so clamped once again he loses all of his mutilists for a single liberator here come on reinforcements as well they're all obviously pleased with this a little bit of a mistake there Bjorn knows that he is on the war path to actual victory and move on to the finals and there you go GG Bjorn will take the series three one and he finds himself in the final of one of the first international tournaments in forever that we've seen him out look at how happy he is you can just fail the emotion I mean it's been years and years since he's played well and he's never been to a finals like this but oh so that's massive he's played it so well you could say there are a leap for his face I love it when a player gives a reaction like that giving us a nice fist bomb Bjorn just with it's still a play that you play that so damn well his investment into legacy of the void has certainly paid dividends look how well he's able to play not only in Korea but also when he's on this international stage as well against some great players so we didn't see him properly that much in 2014 to have 15 was a great for him either but he looked good today but Bjorn just looked that much better yeah I mean we said so okay we need to step it up against Bjorn he did he did step it up and on to those first two games were amazing but at the end of the day he does go down one two three and you know it's a hard loss for him to swallow but he's going to be back and I'm sure he'll be back stronger than ever great showing great showing indeed there for Bjorn to move on to the grand finals and that puts him in a great spot now he knows he has to worry about just Terran versus Protoss yeah which I mean of course they're great Protoss players that he's going to go be going up against so depending on who goes through from that in that hype PVP the rematch for the ages we shall see he's just going to prepare himself mentally now I mean it's it's always hard going out as Sorki has here but uh Bjorn looking forward to that finals in the next match of course will be the PVP as you said and that's going to be the really interesting one all right then well we are done here at the castus that's let's head over to the analysis desk to see what we can get from Mr Bjorn. Thank you very much Kalaris yes we are joined on the desk by Bjorn congratulations Bjorn thank you well done well done um first of all we have to ask how does it feel we saw a lot of smiles in the booth Susie he was also joining us by the way for us say that hello Susie welcome hello um I mean he was obviously overjoyed at that win surely. He said even when he plays ladder at home he celebrates just like that and like smiles really huge anyway so he was like it's just a natural kind of a reaction all right he's a very simple question uh can you ask him to move his back a little bit higher up that's why I said I could question that thought great first impression you're making okay I want to ask him a little bit about the games and we're going to start with game number one on runes of seris he wasn't really doing too much uh damage with his drops and arasement at first and we went into a longer game where we saw all trash and ghosts make an appearance so I was wondering how he felt about this kind of situation where he has to use ghost very well because he was doing very good at first but then all of a sudden kind of fell apart and lost the game pretty much instantly so what do you think about that situation? so okay he said actually his third multi he forgot to uh get gas and so uh as soon as he was able to bring the ghost out he said okay I think I got this this is fine everything's great then he pushed and then realized I can't make any more and so that's where the the mistake happened okay uh in the next map on dusk's towers we saw a similar game that headed into a similar situation but at first solky was playing with raw traverture as opposed to ling muta to the to the prefer playing against one style over the other and why was he able to do so well this time around because he won that game very convincingly with ghost again okay so came to as an solky player that was what that\u00e9tat gotta what says to that style being played and both of is not nice uh yeah so when talking about muta he was right but when Kim MinChul wasn't\ufffd\ufffd it was just that matter but yo Withara was a little regretting there was a elesimos by the time i was studying by on the three time I was well in a battle than with google again have to feel comfortable that right now he thinks the road So, I think that's why I lost. I didn't expect that. But coming into game two, as soon as he saw the Revitators, he was like, yeah, I got this. Okay. Our commentator, Pig, classified our mentions Bjorn as a very reactive player in this series, as opposed to much more so than Solky. Does he agree with that statement? And does he think that he's one of his bigger players? He's a player in the game.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 0,
+    "game_frame_end": 24057,
+    "game_time_start_sec": 0.0,
+    "game_time_end_sec": 1074.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Dusk Towers",
+    "game_duration_sec": 1073.9732142857144,
+    "vod_url": "https://www.youtube.com/watch?v=emCaI55s8Tc",
+    "subtitle_source": "whisper",
+    "replay_hash": "f05c515d2c49"
+  }
+}

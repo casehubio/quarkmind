@@ -1,0 +1,139 @@
+{
+  "id": "f0c7ed2a-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 8731,
+    "game_time_sec": 389.8,
+    "player": {
+      "race": "Protoss",
+      "minerals": 320,
+      "gas": 189,
+      "supply_used": 58,
+      "supply_cap": 70,
+      "worker_count": 29,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Stalker": 1,
+        "MothershipCore": 1,
+        "Immortal": 2,
+        "Observer": 1,
+        "AdeptPhaseShift": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 8496,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 8496,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 8520,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 8520,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 8522,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8573,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8574,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8656,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8680,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8680,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Probe": 23,
+        "MothershipCore": 1,
+        "Stalker": 6,
+        "AdeptPhaseShift": 8
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "because the patch has made like PDZ win rates are pretty bad in terms of products. Products been losing a lot versus or recently. So this patch, most products have been pretty upset with the result in terms of dealing with early Zerg aggression. So, but I mean, you also have a hero on this pedestal. Yes. As well. And you're like, snoot's good, but is he hero good? Like, I don't really think so. He's hero wins, IEMs. That's what the guy does. So. Yeah. It'll be interesting. And snoot, of course, is that guy that has been the household foreigner name for going on three years now. We just always has been one of the absolute best foreigners. And here he is again, in a situation where I think the meta-faced favors him. And again, you can call me a salty product. So I want, but I do think Zerg's quite strong right now. I'm a tan and I'm on your side with. I watched a reasonable amount of ZBP since that patch. And it's rough. I'm very intrigued in a non-caster way as to how hero is going to play this. And if snoot is going to be able to use something with that patch to edge out, you know, because I mean, he's not, he's shown before he's not afraid to go for the abuse of salt. We're going to bring you that best of five after this next commercial break. Be about to see your seven minutes. We'll see you guys in just a little bit.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 6817,
+    "game_frame_end": 10645,
+    "game_time_start_sec": 304.3,
+    "game_time_end_sec": 475.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 475.22321428571433,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "f0c7ed2a887a"
+  }
+}

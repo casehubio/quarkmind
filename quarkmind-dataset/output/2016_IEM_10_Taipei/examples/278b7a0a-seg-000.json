@@ -1,0 +1,140 @@
+{
+  "id": "278b7a0a-seg-000",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 3784,
+    "game_time_sec": 168.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 40,
+      "gas": 119,
+      "supply_used": 33,
+      "supply_cap": 46,
+      "worker_count": 27,
+      "army_composition": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Adept": 1,
+        "AdeptPhaseShift": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3423,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        },
+        {
+          "frame": 3440,
+          "type": "UNIT_BORN",
+          "unit": "Adept"
+        },
+        {
+          "frame": 3551,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 3560,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3612,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3613,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3630,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3659,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3684,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 3711,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "BeaconArmy": 1,
+        "BeaconDefend": 1,
+        "BeaconAttack": 1,
+        "BeaconHarass": 1,
+        "BeaconIdle": 1,
+        "BeaconAuto": 1,
+        "BeaconDetect": 1,
+        "BeaconScout": 1,
+        "BeaconClaim": 1,
+        "BeaconExpand": 1,
+        "BeaconRally": 1,
+        "BeaconCustom1": 1,
+        "BeaconCustom2": 1,
+        "BeaconCustom3": 1,
+        "BeaconCustom4": 1,
+        "Probe": 25,
+        "MothershipCore": 1,
+        "Adept": 1,
+        "AdeptPhaseShift": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> mid_game",
+  "commentary": "The admin was wrong. The players were ready faster than they said they would be. Look at that. We are already loading in to the first map of the next series. It's PVP Jeff. There's no more Terrence tonight, which means I can freely be biased without anyone judging me. Of course. That's still not possible. You will, of course, be judged. Really excited to match SOS, of course, the Blizzcon Champion. Yeah. One of the guys that I felt like had perhaps the best year last year. And it's certainly in the discussion if you don't agree with that, versus Mintchol, who is historically one of the biggest earners and biggest names in all of Starcraft, kind of a godfather to a lot of players and just a special awesome guy. So what a treat to be able to cast this match and be here at this stage. Really awesome to see both of these players here. Yeah. Very interested to see how these guys play some legacy of the Void PVP in the top right of course. We have MC. And if you look at his Twitter, the streamer MC, he's been streaming. He actually, I think he's done two runs now where he's gone to top 16, Jim and Kriya. He's got like his next streamed crazy plans. I'm going to get number one. He's a hard worker. Cool, dude. And of course, in the bottom left, we have SOS. Oli is still with generic green wings. You said let's call champion. One of the most difficult opponents you could possibly face, he has very finely tuned builds. This is not necessarily a super free style player like, well, he does get into free style mode, but for the most part, he goes into each game. I think in a, I believe I can credit Rotterdam with his comment as saying that he feels like he has kind of a pre-plan build and plays around that. And I feel like that's pretty aptly true. And you can see he's actually fully walled in, gets the probe out. He's going to scout around. So this is of course geared towards preventing adips from doing any damage at all. Of course, they do very little damage to buildings and it's not likely that they're going to hammer through that. But again, just talking about both of these guys. I mean, I'm showing away from saying he's earned the most, but I think he might be the highest earner in Starcraft 2. But if not top 5, top 3, I think he's there. I was just looking at it recently. Big big deal. He did say he's kind of giving up pro gaming, going into streaming. But what's kind of cool about a lot of these guys is sometimes when you take the pressure off the shoulders and they're able to kind of play it their own way, sometimes it's usually the consistency that falls off, but you'll see them peak and do fairly well. I think Stefano's another player you can kind of look back to who had a moment of time there where he's like, I'm not playing as much. I barely practice with this term and then you go and crush it and do really well. And we've seen, of course, that's not the norm. It's not normal to be like, I'm going to take Starcraft less serious and then everyone does better. But some guys, MC being up there, they can do it. Yeah. It's definitely not something for everyone to do. No, practice is a certainly very important part of being a professional gamer. But MC moving out. So you already pointed out that he's got the solid set up here with that added blocking wall as it were. It's got to be true about on the map anyway. This is interesting. We're actually not seeing a tech path out of mental just yet, MC. Which is kind of focusing. He is going to have the adept out there. But SOS, if he's known for anything by the way, it is absolutely his dark Templar play. He is, it's like kind of comical. A lot of people are like, it's ridiculous how many times you'll see dark Templar. But hey, man, if it ain't broke, don't fix it. And dark Templar in all three matchups will win you games. Absolutely. Just off the RNG of whatever build they're doing. But this is going to be a proxy robot, which actually in a lot of ways, Nate, can be bad. Look at how fast that dark shrines. It's about to finish. And the observers can be built from across the map. Yeah. And at the same time, SOS, he gets that adept into the natural of MC, Hicks off Probe gets to scout a little bit. A shade not seen anything particular. So maybe he's concerned. He's like, well, what are you cheesy me with? He's got his own robot on the way. Once you said it, the dark shrines about to finish. He's got a pile on. But it's a little bit ill timed if we're going to be pretty critical of ourselves. Really, this is a pile on and also a gateway. Of course, it will end up just being a pile on in the dark Templar. It's going to take 16 seconds to warp in. But whatever. It's going to take him so long. Yeah. And this should be game ending. No, like he should be over right here. It is, unfortunately. MC is going to, well, it is. He proxy robot against a dark Templar rush. What's going to happen is MC is going to have a sizable force over here anchored by at least an immortal, maybe two. And he's going to have the ability to make an observer. So it could be a base trade situation. But I feel like it would be really incredible if, if SOS didn't have enough at home, at least slow down that attack and make it so that it is not enough. And this is just brutal right now. The DT is getting in, slicing and dice in every probe. There's not much you can do. He's going to make that attack. Like you said, this is the big moment. So he's going to pick off that pile on. Somebody pulls back and I feel like he's got enough enough to overcharge another pile on as well. He's just going to keep Warp Reinsenters. It's over. I understand MC's angle. He's like, well, I've got to play this real safe because if I lose this force, I'm dead. But unfortunately for him, it was always about just killing. You need to kill that pile on. And the one other pile on immediately. And that was his only chance. His only shot in hell. But unfortunately, that's not panning out. He's losing all his probes. I mean, MC's army manages to get inside of SOS's base. He's going to pull the probes here. And at this point, I guess he doesn't, he just had his own observer. I mean, if you got MC's observer, then you could just weapon DTs. But he's got two observers here now. Part of the toss. Pound off, but it's on a mortal, right? So this should be basically it. He's done. He's done it. He's unpowered the gauge.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 0,
+    "game_frame_end": 7568,
+    "game_time_start_sec": 0.0,
+    "game_time_end_sec": 337.9
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 337.8571428571429,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "278b7a0a0b2b"
+  }
+}
