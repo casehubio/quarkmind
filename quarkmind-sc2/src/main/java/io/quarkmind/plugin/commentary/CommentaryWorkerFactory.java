@@ -1,5 +1,7 @@
 package io.quarkmind.plugin.commentary;
 
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.ChatModel;
@@ -39,6 +41,13 @@ public final class CommentaryWorkerFactory {
     private static final Logger log = Logger.getLogger(CommentaryWorkerFactory.class);
 
     private CommentaryWorkerFactory() {} // static factory only
+
+    private static volatile FewShotRetriever fewShotRetriever;
+
+    public static void setFewShotRetriever(FewShotRetriever retriever) {
+        fewShotRetriever = retriever;
+    }
+
 
     /**
      * Creates reactive commentary {@link Worker Workers} from descriptors.
@@ -124,8 +133,13 @@ public final class CommentaryWorkerFactory {
             SystemMessage systemMessage = new SystemMessage(buildReactiveSystemPrompt(descriptor));
             UserMessage   userMessage   = new UserMessage(buildReactiveUserMessage(input));
 
+            List<ChatMessage> allMessages = new ArrayList<>();
+            allMessages.add(systemMessage);
+            allMessages.addAll(buildFewShotMessages(fewShotRetriever, null, null, null));
+            allMessages.add(userMessage);
+
             ChatRequest request = ChatRequest.builder()
-                                             .messages(systemMessage, userMessage)
+                                             .messages(allMessages)
                                              .build();
 
             ChatResponse response     = chatModel.chat(request);
@@ -159,8 +173,13 @@ public final class CommentaryWorkerFactory {
             SystemMessage systemMessage = new SystemMessage(buildNarrativeSystemPrompt(descriptor));
             UserMessage   userMessage   = new UserMessage(buildNarrativeUserMessage(input));
 
+            List<ChatMessage> allMessages = new ArrayList<>();
+            allMessages.add(systemMessage);
+            allMessages.addAll(buildFewShotMessages(fewShotRetriever, null, null, null));
+            allMessages.add(userMessage);
+
             ChatRequest request = ChatRequest.builder()
-                                             .messages(systemMessage, userMessage)
+                                             .messages(allMessages)
                                              .build();
 
             ChatResponse response     = chatModel.chat(request);
@@ -182,6 +201,23 @@ public final class CommentaryWorkerFactory {
             return WorkerResult.failed(
                     "Narrative commentary " + descriptor.agentId() + " failed: " + e.getMessage());
         }
+    }
+
+
+    static List<ChatMessage> buildFewShotMessages(FewShotRetriever retriever,
+                                                  String phase, String eventType,
+                                                  String matchup) {
+        if (retriever == null) {
+            return List.of();
+        }
+        List<FewShotExample> examples = retriever.retrieve(phase, eventType, matchup, 2);
+        List<ChatMessage>    messages = new ArrayList<>();
+        for (FewShotExample ex : examples) {
+            messages.add(new UserMessage("Game state: " + ex.gameStateSummary()
+                                         + "\nProvide commentary."));
+            messages.add(new AiMessage(ex.commentary()));
+        }
+        return messages;
     }
 
     /**
