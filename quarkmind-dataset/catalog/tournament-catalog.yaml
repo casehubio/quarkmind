@@ -4,7 +4,44 @@ tournaments:
     year: 2016
     youtube_channels:
       - channel_name: "ESL Archives"
-        playlist_url: "https://www.youtube.com/playlist?list=PLhCH_nPE4JTqKvJvmCrfR5Jk"
+        playlist_url: "https://www.youtube.com/playlist?list=PLoBxKk9n0UWd4Ut0hoGUEK2wGpwefucXO"
     liquipedia_url: "https://liquipedia.net/starcraft2/IEM_Season_X_-_Taipei"
     game_speed: "Faster"
-    notes: "30 replays in quarkmind-sc2/replays/2016_IEM_10_Taipei.zip"
+    vod_series:
+      - vod_id: "u4mURLIzN1Q"
+        stage: "Quarter Final"
+        players: ["ByuN", "Lilbow"]
+        matchup: "TvP"
+        games_in_series: 3
+      - vod_id: "eZ25BONqIM0"
+        stage: "Quarter Final"
+        players: ["sOs", "MinChul"]
+        matchup: "PvP"
+        games_in_series: 3
+      - vod_id: "5P554a_8mT4"
+        stage: "Quarter Final"
+        players: ["Snute", "herO"]
+        matchup: "ZvP"
+        games_in_series: 4
+      - vod_id: "iDDY_4VLP5k"
+        stage: "Quarter Final"
+        players: ["Polt", "Soulkey"]
+        matchup: "TvZ"
+        games_in_series: 3
+      - vod_id: "2woJpQ02Jl0"
+        stage: "Semifinal"
+        players: ["herO", "sOs"]
+        matchup: "PvP"
+        games_in_series: 5
+      - vod_id: "emCaI55s8Tc"
+        stage: "Semifinal"
+        players: ["ByuN", "Soulkey"]
+        matchup: "TvZ"
+        games_in_series: 3
+      - vod_id: "oeimjvDYIaA"
+        stage: "Final"
+        players: ["ByuN", "sOs"]
+        matchup: "TvP"
+        games_in_series: 7
+    subtitle_source: "whisper"
+    notes: "30 replays in quarkmind-sc2/replays/2016_IEM_10_Taipei.zip. No YouTube subtitles available — using Whisper ASR (base model)."
