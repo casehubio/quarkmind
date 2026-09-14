@@ -1,371 +1,452 @@
-# IEM Season 10 Taipei 2016 — Replay-to-VOD matches
-# All VODs are full-series (Bo3/Bo5/Bo7) — each game has its own game_start_offset_sec
-# Offsets marked 0 are TBD — require manual annotation from VOD scrubbing
-tournament: "2016_IEM_10_Taipei"
+tournament: 2016_IEM_10_Taipei
 matches:
-  # QF: ByuN vs Lilbow (TvP) — Bo3, ByuN wins 3-0
-  - replay_hash: "095724b86cbca0e6da2fb8baad0d7baf"
-    players: ["ByuN", "Lilbow"]
-    map: "Lerilak Crest"
-    replay_duration_sec: 382
-    vod:
-      url: "https://www.youtube.com/watch?v=u4mURLIzN1Q"
-      title: "ByuN vs Lilbow Game 1 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 1
-
-  - replay_hash: "b09eebe96e48"
-    players: ["ByuN", "Lilbow"]
-    map: "Dusk Towers"
-    replay_duration_sec: 342
-    vod:
-      url: "https://www.youtube.com/watch?v=u4mURLIzN1Q"
-      title: "ByuN vs Lilbow Game 2 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 2
-
-  - replay_hash: "45add59eb97b"
-    players: ["ByuN", "Lilbow"]
-    map: "Orbital Shipyard"
-    replay_duration_sec: 651
-    vod:
-      url: "https://www.youtube.com/watch?v=u4mURLIzN1Q"
-      title: "ByuN vs Lilbow Game 3 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 3
-
-  # QF: sOs vs MinChul (PvP) — Bo3, sOs wins 3-0
-  - replay_hash: "278b7a0a0b2b"
-    players: ["sOs", "MinChul"]
-    map: "Dusk Towers"
-    replay_duration_sec: 338
-    vod:
-      url: "https://www.youtube.com/watch?v=eZ25BONqIM0"
-      title: "sOs vs MC Game 1 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 1
-
-  - replay_hash: "fd62e9cd965b"
-    players: ["sOs", "MinChul"]
-    map: "Ruins of Seras"
-    replay_duration_sec: 726
-    vod:
-      url: "https://www.youtube.com/watch?v=eZ25BONqIM0"
-      title: "sOs vs MC Game 2 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 2
-
-  - replay_hash: "f0c7ed2a887a"
-    players: ["sOs", "MinChul"]
-    map: "Orbital Shipyard"
-    replay_duration_sec: 475
-    vod:
-      url: "https://www.youtube.com/watch?v=eZ25BONqIM0"
-      title: "sOs vs MC Game 3 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 3
-
-  # QF: Snute vs herO (ZvP) — Bo5, herO wins 3-1
-  - replay_hash: "8a1f5c840fab"
-    players: ["Snute", "herO"]
-    map: "Dusk Towers"
-    replay_duration_sec: 628
-    vod:
-      url: "https://www.youtube.com/watch?v=5P554a_8mT4"
-      title: "Snute vs herO Game 1 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 1
-
-  - replay_hash: "407c8d1441b9"
-    players: ["Snute", "herO"]
-    map: "Lerilak Crest"
-    replay_duration_sec: 870
-    vod:
-      url: "https://www.youtube.com/watch?v=5P554a_8mT4"
-      title: "Snute vs herO Game 2 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 2
-
-  - replay_hash: "a09e8befe4e2"
-    players: ["Snute", "herO"]
-    map: "Ruins of Seras"
-    replay_duration_sec: 254
-    vod:
-      url: "https://www.youtube.com/watch?v=5P554a_8mT4"
-      title: "Snute vs herO Game 3 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 3
-
-  - replay_hash: "b9411b10de82"
-    players: ["Snute", "herO"]
-    map: "Central Protocol"
-    replay_duration_sec: 785
-    vod:
-      url: "https://www.youtube.com/watch?v=5P554a_8mT4"
-      title: "Snute vs herO Game 4 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 4
-
-  # QF: Polt vs Soulkey (TvZ) — Bo5, Soulkey wins 3-2
-  - replay_hash: "cd9e6768a888"
-    players: ["Soulkey", "Polt"]
-    map: "Dusk Towers"
-    replay_duration_sec: 804
-    vod:
-      url: "https://www.youtube.com/watch?v=iDDY_4VLP5k"
-      title: "Polt vs Soulkey Game 1 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 1
-
-  - replay_hash: "f6cb6724220b"
-    players: ["Soulkey", "Polt"]
-    map: "Ruins of Seras"
-    replay_duration_sec: 609
-    vod:
-      url: "https://www.youtube.com/watch?v=iDDY_4VLP5k"
-      title: "Polt vs Soulkey Game 2 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 2
-
-  - replay_hash: "e2355cf00500"
-    players: ["Soulkey", "Polt"]
-    map: "Ulrena"
-    replay_duration_sec: 672
-    vod:
-      url: "https://www.youtube.com/watch?v=iDDY_4VLP5k"
-      title: "Polt vs Soulkey Game 3 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 3
-
-  - replay_hash: "a277238b2907"
-    players: ["Soulkey", "Polt"]
-    map: "Prion Terraces"
-    replay_duration_sec: 744
-    vod:
-      url: "https://www.youtube.com/watch?v=iDDY_4VLP5k"
-      title: "Polt vs Soulkey Game 4 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 4
-
-  - replay_hash: "a042a7cbde4d"
-    players: ["Soulkey", "Polt"]
-    map: "Central Protocol"
-    replay_duration_sec: 968
-    vod:
-      url: "https://www.youtube.com/watch?v=iDDY_4VLP5k"
-      title: "Polt vs Soulkey Game 5 - IEM Taipei 2016 QF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 5
-
-  # SF: herO vs sOs (PvP) — Bo5, sOs wins 3-2
-  - replay_hash: "421a88ce218e"
-    players: ["sOs", "herO"]
-    map: "Orbital Shipyard"
-    replay_duration_sec: 334
-    vod:
-      url: "https://www.youtube.com/watch?v=2woJpQ02Jl0"
-      title: "herO vs sOs Game 1 - IEM Taipei 2016 SF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 1
-
-  - replay_hash: "1a9aeda55b1c"
-    players: ["sOs", "herO"]
-    map: "Prion Terraces"
-    replay_duration_sec: 990
-    vod:
-      url: "https://www.youtube.com/watch?v=2woJpQ02Jl0"
-      title: "herO vs sOs Game 2 - IEM Taipei 2016 SF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 2
-
-  - replay_hash: "a1f0f8d31044"
-    players: ["sOs", "herO"]
-    map: "Dusk Towers"
-    replay_duration_sec: 479
-    vod:
-      url: "https://www.youtube.com/watch?v=2woJpQ02Jl0"
-      title: "herO vs sOs Game 3 - IEM Taipei 2016 SF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 3
-
-  - replay_hash: "74a6039ae628"
-    players: ["sOs", "herO"]
-    map: "Ruins of Seras"
-    replay_duration_sec: 343
-    vod:
-      url: "https://www.youtube.com/watch?v=2woJpQ02Jl0"
-      title: "herO vs sOs Game 4 - IEM Taipei 2016 SF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 4
-
-  - replay_hash: "6f6b057793b1"
-    players: ["sOs", "herO"]
-    map: "Lerilak Crest"
-    replay_duration_sec: 1333
-    vod:
-      url: "https://www.youtube.com/watch?v=2woJpQ02Jl0"
-      title: "herO vs sOs Game 5 - IEM Taipei 2016 SF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 5
-
-  # SF: ByuN vs Soulkey (TvZ) — Bo5, ByuN wins 3-1
-  - replay_hash: "b7d07c7ef535"
-    players: ["Soulkey", "ByuN"]
-    map: "Ulrena"
-    replay_duration_sec: 587
-    vod:
-      url: "https://www.youtube.com/watch?v=emCaI55s8Tc"
-      title: "ByuN vs Soulkey Game 1 - IEM Taipei 2016 SF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 1
-
-  - replay_hash: "3813bc1121bf"
-    players: ["Soulkey", "ByuN"]
-    map: "Lerilak Crest"
-    replay_duration_sec: 604
-    vod:
-      url: "https://www.youtube.com/watch?v=emCaI55s8Tc"
-      title: "ByuN vs Soulkey Game 2 - IEM Taipei 2016 SF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 2
-
-  - replay_hash: "ea69286365b5"
-    players: ["Soulkey", "ByuN"]
-    map: "Ruins of Seras"
-    replay_duration_sec: 1287
-    vod:
-      url: "https://www.youtube.com/watch?v=emCaI55s8Tc"
-      title: "ByuN vs Soulkey Game 3 - IEM Taipei 2016 SF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 3
-
-  - replay_hash: "f05c515d2c49"
-    players: ["Soulkey", "ByuN"]
-    map: "Dusk Towers"
-    replay_duration_sec: 1074
-    vod:
-      url: "https://www.youtube.com/watch?v=emCaI55s8Tc"
-      title: "ByuN vs Soulkey Game 4 - IEM Taipei 2016 SF"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 4
-
-  # Final: sOs vs ByuN (PvT) — Bo7, sOs wins 4-2
-  - replay_hash: "a0f9b25f7126"
-    players: ["sOs", "ByuN"]
-    map: "Ruins of Seras"
-    replay_duration_sec: 1273
-    vod:
-      url: "https://www.youtube.com/watch?v=oeimjvDYIaA"
-      title: "sOs vs ByuN Game 1 - IEM Taipei 2016 Final"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 1
-
-  - replay_hash: "f07816f9b5fb"
-    players: ["sOs", "ByuN"]
-    map: "Dusk Towers"
-    replay_duration_sec: 571
-    vod:
-      url: "https://www.youtube.com/watch?v=oeimjvDYIaA"
-      title: "sOs vs ByuN Game 2 - IEM Taipei 2016 Final"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 2
-
-  - replay_hash: "15ad08e3ed7f"
-    players: ["sOs", "ByuN"]
-    map: "Prion Terraces"
-    replay_duration_sec: 578
-    vod:
-      url: "https://www.youtube.com/watch?v=oeimjvDYIaA"
-      title: "sOs vs ByuN Game 3 - IEM Taipei 2016 Final"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 3
-
-  - replay_hash: "a1404d2d8439"
-    players: ["sOs", "ByuN"]
-    map: "Orbital Shipyard"
-    replay_duration_sec: 413
-    vod:
-      url: "https://www.youtube.com/watch?v=oeimjvDYIaA"
-      title: "sOs vs ByuN Game 4 - IEM Taipei 2016 Final"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 4
-
-  - replay_hash: "e8eea04e40da"
-    players: ["sOs", "ByuN"]
-    map: "Lerilak Crest"
-    replay_duration_sec: 336
-    vod:
-      url: "https://www.youtube.com/watch?v=oeimjvDYIaA"
-      title: "sOs vs ByuN Game 5 - IEM Taipei 2016 Final"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 5
-
-  - replay_hash: "0e0b1a550447"
-    players: ["sOs", "ByuN"]
-    map: "Central Protocol"
-    replay_duration_sec: 335
-    vod:
-      url: "https://www.youtube.com/watch?v=oeimjvDYIaA"
-      title: "sOs vs ByuN Game 6 - IEM Taipei 2016 Final"
-      game_start_offset_sec: 0
-      subtitle_source: "whisper"
-    confidence: "high"
-    game_number: 6
+- replay_hash: 095724b86cbca0e6da2fb8baad0d7baf
+  players:
+  - ByuN
+  - Lilbow
+  map: Lerilak Crest
+  replay_duration_sec: 382
+  vod:
+    url: https://www.youtube.com/watch?v=u4mURLIzN1Q
+    title: ByuN vs Lilbow Game 1 - IEM Taipei 2016 QF
+    game_start_offset_sec: 225
+    subtitle_source: whisper
+    offset_confidence: high
+    offset_method: avg(forward+backward)
+  confidence: high
+  game_number: 1
+- replay_hash: b09eebe96e48
+  players:
+  - ByuN
+  - Lilbow
+  map: Dusk Towers
+  replay_duration_sec: 342
+  vod:
+    url: https://www.youtube.com/watch?v=u4mURLIzN1Q
+    title: ByuN vs Lilbow Game 2 - IEM Taipei 2016 QF
+    game_start_offset_sec: 1058
+    subtitle_source: whisper
+    offset_confidence: low
+    offset_method: interpolated(avg)
+  confidence: high
+  game_number: 2
+- replay_hash: 45add59eb97b
+  players:
+  - ByuN
+  - Lilbow
+  map: Orbital Shipyard
+  replay_duration_sec: 651
+  vod:
+    url: https://www.youtube.com/watch?v=u4mURLIzN1Q
+    title: ByuN vs Lilbow Game 3 - IEM Taipei 2016 QF
+    game_start_offset_sec: 1850
+    subtitle_source: whisper
+    offset_confidence: high
+    offset_method: avg(forward+backward)
+  confidence: high
+  game_number: 3
+- replay_hash: 278b7a0a0b2b
+  players:
+  - sOs
+  - MinChul
+  map: Dusk Towers
+  replay_duration_sec: 338
+  vod:
+    url: https://www.youtube.com/watch?v=eZ25BONqIM0
+    title: sOs vs MC Game 1 - IEM Taipei 2016 QF
+    game_start_offset_sec: 11
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 1
+- replay_hash: fd62e9cd965b
+  players:
+  - sOs
+  - MinChul
+  map: Ruins of Seras
+  replay_duration_sec: 726
+  vod:
+    url: https://www.youtube.com/watch?v=eZ25BONqIM0
+    title: sOs vs MC Game 2 - IEM Taipei 2016 QF
+    game_start_offset_sec: 563
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 2
+- replay_hash: f0c7ed2a887a
+  players:
+  - sOs
+  - MinChul
+  map: Orbital Shipyard
+  replay_duration_sec: 475
+  vod:
+    url: https://www.youtube.com/watch?v=eZ25BONqIM0
+    title: sOs vs MC Game 3 - IEM Taipei 2016 QF
+    game_start_offset_sec: 1503
+    subtitle_source: whisper
+    offset_confidence: low
+    offset_method: interpolated(forward)
+  confidence: high
+  game_number: 3
+- replay_hash: 8a1f5c840fab
+  players:
+  - Snute
+  - herO
+  map: Dusk Towers
+  replay_duration_sec: 628
+  vod:
+    url: https://www.youtube.com/watch?v=5P554a_8mT4
+    title: Snute vs herO Game 1 - IEM Taipei 2016 QF
+    game_start_offset_sec: 19
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 1
+- replay_hash: 407c8d1441b9
+  players:
+  - Snute
+  - herO
+  map: Lerilak Crest
+  replay_duration_sec: 870
+  vod:
+    url: https://www.youtube.com/watch?v=5P554a_8mT4
+    title: Snute vs herO Game 2 - IEM Taipei 2016 QF
+    game_start_offset_sec: 850
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 2
+- replay_hash: a09e8befe4e2
+  players:
+  - Snute
+  - herO
+  map: Ruins of Seras
+  replay_duration_sec: 254
+  vod:
+    url: https://www.youtube.com/watch?v=5P554a_8mT4
+    title: Snute vs herO Game 3 - IEM Taipei 2016 QF
+    game_start_offset_sec: 1814
+    subtitle_source: whisper
+    offset_confidence: low
+    offset_method: interpolated(avg)
+  confidence: high
+  game_number: 3
+- replay_hash: b9411b10de82
+  players:
+  - Snute
+  - herO
+  map: Central Protocol
+  replay_duration_sec: 785
+  vod:
+    url: https://www.youtube.com/watch?v=5P554a_8mT4
+    title: Snute vs herO Game 4 - IEM Taipei 2016 QF
+    game_start_offset_sec: 2162
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 4
+- replay_hash: cd9e6768a888
+  players:
+  - Soulkey
+  - Polt
+  map: Dusk Towers
+  replay_duration_sec: 804
+  vod:
+    url: https://www.youtube.com/watch?v=iDDY_4VLP5k
+    title: Polt vs Soulkey Game 1 - IEM Taipei 2016 QF
+    game_start_offset_sec: 134
+    subtitle_source: whisper
+    offset_confidence: low
+    offset_method: distributed
+  confidence: high
+  game_number: 1
+- replay_hash: f6cb6724220b
+  players:
+  - Soulkey
+  - Polt
+  map: Ruins of Seras
+  replay_duration_sec: 609
+  vod:
+    url: https://www.youtube.com/watch?v=iDDY_4VLP5k
+    title: Polt vs Soulkey Game 2 - IEM Taipei 2016 QF
+    game_start_offset_sec: 1031
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 2
+- replay_hash: e2355cf00500
+  players:
+  - Soulkey
+  - Polt
+  map: Ulrena
+  replay_duration_sec: 672
+  vod:
+    url: https://www.youtube.com/watch?v=iDDY_4VLP5k
+    title: Polt vs Soulkey Game 3 - IEM Taipei 2016 QF
+    game_start_offset_sec: 2087
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 3
+- replay_hash: a277238b2907
+  players:
+  - Soulkey
+  - Polt
+  map: Prion Terraces
+  replay_duration_sec: 744
+  vod:
+    url: https://www.youtube.com/watch?v=iDDY_4VLP5k
+    title: Polt vs Soulkey Game 4 - IEM Taipei 2016 QF
+    game_start_offset_sec: 3206
+    subtitle_source: whisper
+    offset_confidence: low
+    offset_method: interpolated(forward)
+  confidence: high
+  game_number: 4
+- replay_hash: a042a7cbde4d
+  players:
+  - Soulkey
+  - Polt
+  map: Central Protocol
+  replay_duration_sec: 968
+  vod:
+    url: https://www.youtube.com/watch?v=iDDY_4VLP5k
+    title: Polt vs Soulkey Game 5 - IEM Taipei 2016 QF
+    game_start_offset_sec: 3980
+    subtitle_source: whisper
+    offset_confidence: low
+    offset_method: adjusted(overlap)
+  confidence: high
+  game_number: 5
+- replay_hash: 421a88ce218e
+  players:
+  - sOs
+  - herO
+  map: Orbital Shipyard
+  replay_duration_sec: 334
+  vod:
+    url: https://www.youtube.com/watch?v=2woJpQ02Jl0
+    title: herO vs sOs Game 1 - IEM Taipei 2016 SF
+    game_start_offset_sec: 936
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 1
+- replay_hash: 1a9aeda55b1c
+  players:
+  - sOs
+  - herO
+  map: Prion Terraces
+  replay_duration_sec: 990
+  vod:
+    url: https://www.youtube.com/watch?v=2woJpQ02Jl0
+    title: herO vs sOs Game 2 - IEM Taipei 2016 SF
+    game_start_offset_sec: 1362
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 2
+- replay_hash: a1f0f8d31044
+  players:
+  - sOs
+  - herO
+  map: Dusk Towers
+  replay_duration_sec: 479
+  vod:
+    url: https://www.youtube.com/watch?v=2woJpQ02Jl0
+    title: herO vs sOs Game 3 - IEM Taipei 2016 SF
+    game_start_offset_sec: 2671
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 3
+- replay_hash: 74a6039ae628
+  players:
+  - sOs
+  - herO
+  map: Ruins of Seras
+  replay_duration_sec: 343
+  vod:
+    url: https://www.youtube.com/watch?v=2woJpQ02Jl0
+    title: herO vs sOs Game 4 - IEM Taipei 2016 SF
+    game_start_offset_sec: 3786
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 4
+- replay_hash: 6f6b057793b1
+  players:
+  - sOs
+  - herO
+  map: Lerilak Crest
+  replay_duration_sec: 1333
+  vod:
+    url: https://www.youtube.com/watch?v=2woJpQ02Jl0
+    title: herO vs sOs Game 5 - IEM Taipei 2016 SF
+    game_start_offset_sec: 4478
+    subtitle_source: whisper
+    offset_confidence: low
+    offset_method: interpolated(forward)
+  confidence: high
+  game_number: 5
+- replay_hash: b7d07c7ef535
+  players:
+  - Soulkey
+  - ByuN
+  map: Ulrena
+  replay_duration_sec: 587
+  vod:
+    url: https://www.youtube.com/watch?v=emCaI55s8Tc
+    title: ByuN vs Soulkey Game 1 - IEM Taipei 2016 SF
+    game_start_offset_sec: 1232
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 1
+- replay_hash: 3813bc1121bf
+  players:
+  - Soulkey
+  - ByuN
+  map: Lerilak Crest
+  replay_duration_sec: 604
+  vod:
+    url: https://www.youtube.com/watch?v=emCaI55s8Tc
+    title: ByuN vs Soulkey Game 2 - IEM Taipei 2016 SF
+    game_start_offset_sec: 1980
+    subtitle_source: whisper
+    offset_confidence: low
+    offset_method: interpolated(avg)
+  confidence: high
+  game_number: 2
+- replay_hash: ea69286365b5
+  players:
+  - Soulkey
+  - ByuN
+  map: Ruins of Seras
+  replay_duration_sec: 1287
+  vod:
+    url: https://www.youtube.com/watch?v=emCaI55s8Tc
+    title: ByuN vs Soulkey Game 3 - IEM Taipei 2016 SF
+    game_start_offset_sec: 2746
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 3
+- replay_hash: f05c515d2c49
+  players:
+  - Soulkey
+  - ByuN
+  map: Dusk Towers
+  replay_duration_sec: 1074
+  vod:
+    url: https://www.youtube.com/watch?v=emCaI55s8Tc
+    title: ByuN vs Soulkey Game 4 - IEM Taipei 2016 SF
+    game_start_offset_sec: 4153
+    subtitle_source: whisper
+    offset_confidence: low
+    offset_method: interpolated(forward)
+  confidence: high
+  game_number: 4
+- replay_hash: a0f9b25f7126
+  players:
+  - sOs
+  - ByuN
+  map: Ruins of Seras
+  replay_duration_sec: 1273
+  vod:
+    url: https://www.youtube.com/watch?v=oeimjvDYIaA
+    title: sOs vs ByuN Game 1 - IEM Taipei 2016 Final
+    game_start_offset_sec: 110
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 1
+- replay_hash: f07816f9b5fb
+  players:
+  - sOs
+  - ByuN
+  map: Dusk Towers
+  replay_duration_sec: 571
+  vod:
+    url: https://www.youtube.com/watch?v=oeimjvDYIaA
+    title: sOs vs ByuN Game 2 - IEM Taipei 2016 Final
+    game_start_offset_sec: 1905
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 2
+- replay_hash: 15ad08e3ed7f
+  players:
+  - sOs
+  - ByuN
+  map: Prion Terraces
+  replay_duration_sec: 578
+  vod:
+    url: https://www.youtube.com/watch?v=oeimjvDYIaA
+    title: sOs vs ByuN Game 3 - IEM Taipei 2016 Final
+    game_start_offset_sec: 3297
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 3
+- replay_hash: a1404d2d8439
+  players:
+  - sOs
+  - ByuN
+  map: Orbital Shipyard
+  replay_duration_sec: 413
+  vod:
+    url: https://www.youtube.com/watch?v=oeimjvDYIaA
+    title: sOs vs ByuN Game 4 - IEM Taipei 2016 Final
+    game_start_offset_sec: 3927
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 4
+- replay_hash: e8eea04e40da
+  players:
+  - sOs
+  - ByuN
+  map: Lerilak Crest
+  replay_duration_sec: 336
+  vod:
+    url: https://www.youtube.com/watch?v=oeimjvDYIaA
+    title: sOs vs ByuN Game 5 - IEM Taipei 2016 Final
+    game_start_offset_sec: 4467
+    subtitle_source: whisper
+    offset_confidence: medium
+    offset_method: backward(end-duration)
+  confidence: high
+  game_number: 5
+- replay_hash: 0e0b1a550447
+  players:
+  - sOs
+  - ByuN
+  map: Central Protocol
+  replay_duration_sec: 335
+  vod:
+    url: https://www.youtube.com/watch?v=oeimjvDYIaA
+    title: sOs vs ByuN Game 6 - IEM Taipei 2016 Final
+    game_start_offset_sec: 4833
+    subtitle_source: whisper
+    offset_confidence: low
+    offset_method: adjusted(overlap)
+  confidence: high
+  game_number: 6

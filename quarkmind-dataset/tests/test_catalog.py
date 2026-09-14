@@ -1,5 +1,5 @@
 from pathlib import Path
-from src.catalog import load_catalog, load_matches, Tournament
+from src.catalog import load_catalog, load_matches, MatchEntry, Tournament
 
 CATALOG_DIR = Path(__file__).resolve().parents[1] / "catalog"
 
@@ -14,7 +14,13 @@ def test_load_catalog():
     assert t.game_speed == "Faster"
 
 
-def test_load_matches_empty():
+def test_load_matches():
     matches = load_matches(CATALOG_DIR / "matches" / "2016_IEM_10_Taipei.yaml")
     assert isinstance(matches, list)
-    assert len(matches) == 0
+    assert len(matches) == 30
+    m = matches[0]
+    assert isinstance(m, MatchEntry)
+    assert m.players == ["ByuN", "Lilbow"]
+    assert m.replay_duration_sec > 0
+    assert m.vod_url.startswith("https://")
+    assert m.game_start_offset_sec >= 0
