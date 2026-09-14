@@ -7,3 +7,6 @@ dist/
 build/
 output/examples/
 output/stats.json
+output/embeddings/
+output/index/
+data/sc2egset/
