@@ -343,7 +343,7 @@ quarkmind/                           <- parent POM
 ├── quarkmind-dataset/               <- Python data pipeline for commentary training dataset (#249)
 │   src/                             parse_replays, extract_state, extract_subtitles, align, segment, pipeline
 │   catalog/                         tournament-catalog.yaml, matches/ (replay→VOD mapping)
-│   tests/                           pytest test suite (28 tests)
+│   tests/                           pytest test suite (54 tests)
 ├── quarkmind-minecraft/             <- Minecraft agent (stub)
 ├── quarkmind-evennia/               <- MUD agent (stub)
 ├── quarkmind-sonaria/               <- Roblox/Sonaria agent (stub)

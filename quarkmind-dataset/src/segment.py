@@ -33,6 +33,8 @@ def classify_phase(frame: int) -> str:
     return "endgame"
 
 
+MIN_COMMENTARY_LEN = 20
+
 EXPANSION_BUILDINGS = {"Nexus", "CommandCenter", "Hatchery", "OrbitalCommand", "PlanetaryFortress"}
 
 
@@ -59,6 +61,8 @@ def segment_game(
         if not seg_captions:
             continue
         commentary = " ".join(c.text for c in seg_captions)
+        if len(commentary) < MIN_COMMENTARY_LEN:
+            continue
         phase_start = classify_phase(start)
         phase_end = classify_phase(end)
         is_transition = phase_start != phase_end

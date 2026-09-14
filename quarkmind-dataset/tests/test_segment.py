@@ -14,9 +14,9 @@ def test_classify_phase_by_time():
 
 def test_segment_groups_captions():
     captions = [
-        AlignedCaption(100, 103, "first pylon", 448, 515),
-        AlignedCaption(101, 104, "nice placement", 470, 537),
-        AlignedCaption(300, 305, "push incoming", 4928, 5040),
+        AlignedCaption(100, 103, "and the first pylon is going down on the low ground", 448, 515),
+        AlignedCaption(101, 104, "nice placement keeping it safe from the reaper", 470, 537),
+        AlignedCaption(300, 305, "a big push is incoming with a lot of stalkers moving across", 4928, 5040),
     ]
     events = [
         {"frame": 460, "type": "UNIT_BORN", "unit": "Pylon"},
@@ -41,7 +41,7 @@ def test_segment_detects_phase_transition():
 
 def test_empty_events_produces_macro_segment():
     captions = [
-        AlignedCaption(100, 110, "just macroing here", 448, 672),
+        AlignedCaption(100, 110, "just macroing here building up the economy and expanding", 448, 672),
     ]
     segments = segment_game(captions, [], total_frames=int(60 * 22.4))
     assert len(segments) == 1
@@ -56,8 +56,23 @@ def test_battle_detection():
         {"frame": 5030, "type": "UNIT_DIED"},
     ]
     captions = [
-        AlignedCaption(220, 230, "huge fight", 4900, 5200),
+        AlignedCaption(220, 230, "a huge fight breaks out in the middle of the map and units are falling", 4900, 5200),
     ]
     segments = segment_game(captions, events, total_frames=int(300 * 22.4))
     battle_segs = [s for s in segments if s.type == "battle"]
     assert len(battle_segs) >= 1
+
+
+def test_short_commentary_filtered():
+    captions = [
+        AlignedCaption(100, 110, "this is real commentary about the game", 448, 672),
+        AlignedCaption(290, 295, "bye", 6272, 6384),
+    ]
+    events = [
+        {"frame": 6300, "type": "UNIT_DIED"},
+        {"frame": 6310, "type": "UNIT_DIED"},
+        {"frame": 6320, "type": "UNIT_DIED"},
+    ]
+    segments = segment_game(captions, events, total_frames=int(300 * 22.4))
+    for s in segments:
+        assert len(s.commentary) >= 20, f"Short commentary not filtered: '{s.commentary}'"
