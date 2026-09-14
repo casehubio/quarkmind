@@ -79,6 +79,64 @@ def _run_ytdlp(url: str, template: str, auto: bool) -> SubtitleResult:
     return SubtitleResult(path=None, source="none", language="en")
 
 
+def download_audio(vod_url: str, output_dir: Path) -> Path | None:
+    """Download audio track from a YouTube VOD using yt-dlp."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    template = str(output_dir / "%(id)s.%(ext)s")
+    cmd = [
+        "yt-dlp",
+        "-x", "--audio-format", "wav",
+        "--audio-quality", "0",
+        "-o", template,
+        vod_url,
+    ]
+    try:
+        subprocess.run(cmd, capture_output=True, text=True, timeout=600, check=False)
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        return None
+    wav_files = list(output_dir.glob("*.wav"))
+    return wav_files[0] if wav_files else None
+
+
+def transcribe_whisper(audio_path: Path, output_dir: Path, model_name: str = "base") -> SubtitleResult:
+    """Transcribe an audio file using OpenAI Whisper and output a VTT file."""
+    try:
+        import whisper
+    except ImportError:
+        return SubtitleResult(path=None, source="none", language="en")
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    model = whisper.load_model(model_name)
+    result = model.transcribe(str(audio_path), language="en", verbose=False)
+
+    vtt_path = output_dir / (audio_path.stem + ".en.vtt")
+    _write_vtt(result["segments"], vtt_path)
+    return SubtitleResult(path=vtt_path, source="whisper", language="en")
+
+
+def _write_vtt(segments: list[dict], path: Path) -> None:
+    """Write Whisper segments to a WebVTT file."""
+    lines = ["WEBVTT", ""]
+    for seg in segments:
+        start = _format_vtt_time(seg["start"])
+        end = _format_vtt_time(seg["end"])
+        text = seg["text"].strip()
+        if text:
+            lines.append(f"{start} --> {end}")
+            lines.append(text)
+            lines.append("")
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def _format_vtt_time(seconds: float) -> str:
+    """Format seconds as HH:MM:SS.mmm for VTT."""
+    h = int(seconds // 3600)
+    m = int((seconds % 3600) // 60)
+    s = int(seconds % 60)
+    ms = int((seconds % 1) * 1000)
+    return f"{h:02d}:{m:02d}:{s:02d}.{ms:03d}"
+
+
 def _parse_timestamp_line(line: str) -> tuple[float, float]:
     match = re.match(
         r"(\d{2}):(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})\.(\d{3})",
