@@ -2,15 +2,15 @@
   "id": "b09eebe9-seg-000",
   "version": "1.0",
   "game_state": {
-    "game_frame": 1153,
-    "game_time_sec": 51.5,
+    "game_frame": 168,
+    "game_time_sec": 7.5,
     "player": {
       "race": "Terran",
-      "minerals": 30,
+      "minerals": 40,
       "gas": 0,
-      "supply_used": 16,
-      "supply_cap": 23,
-      "worker_count": 15,
+      "supply_used": 13,
+      "supply_cap": 15,
+      "worker_count": 12,
       "army_composition": {},
       "tech": [],
       "buildings": {
@@ -28,51 +28,51 @@
           "unit": "Probe"
         },
         {
-          "frame": 253,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 288,
-          "type": "UNIT_BORN",
-          "unit": "SCV"
-        },
-        {
-          "frame": 489,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 559,
-          "type": "UNIT_BORN",
-          "unit": "SCV"
-        },
-        {
-          "frame": 725,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 830,
-          "type": "UNIT_BORN",
-          "unit": "SCV"
-        },
-        {
-          "frame": 1027,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 1148,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "SCV"
+          "unit": "Probe"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         }
       ]
     },
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 16
+        "Probe": 12
       },
       "known_buildings": {
         "Nexus": 1
@@ -82,13 +82,13 @@
   "phase": "opening",
   "phase_transition": false,
   "transition_description": null,
-  "commentary": "While he's losing probes back home, he's going to be enough nine probes dying. He's killed four or five SCVs so far. Keep in mind, of course, beyond still has a lot of forces out on the map as well. Killing both the tanks is the beginning to something good here. There is no one reminds the main base I believe. So his economy is fairly okay. If you can crack this bunker, this could be the beginning of the end for beyond because he does again, just have the slow Marines going forward here. And he's getting the bunker still holding a little bit too long. And the most important is going to get picked off as well, which is kind of a big deal because that's how he bounces in the main. So right now, the one says, you can only come to my natural. Any tanks that I make are going to go over there. My Marines are going to focus on this location. And if this defense goes on, by the way, the damage is done to the natural, which I feel like he's killed. This is a lot of probes. 16 total this game. There's the fancy micro GG beyond takes game number two. I mean, I feel like if you're beyond, you make that scan. You've already opened with a factory and you say, okay, if he's rushing adips, he's going to lose because adips are not as good. He didn't see a forge or anything. I mean, not expect, you know, we an attack would come much later to have like plus one adips with a robo with that as well. So the bunkers were brilliant. Yeah. And the tanks were good. The first blink to kill that first tank was incredible. Really good decision. And this is where there's so much protest salty tears in the back of my metaphysical brain. Like I want to cry about a commenters. I won't. But the second blink, which and I know he's thinking is like, okay, if that tank stays, I'm going to pick off a depot. I'm going to walk around and maybe delay the minerals, but that's not enough damage. I'm in all in mode right now. So a blinks for gets the tank, but in doing so, loses the amount of stalkers. It takes to be a threat to win that game. And from that point forward, with a natural getting un-unhibited harassed by two widow minds.",
+  "commentary": "While he's losing probes back home, he's going to be enough nine probes dying. He's killed four or five SCVs so far. Keep in mind, of course, beyond still has a lot of forces out on the map as well. Killing both the tanks is the beginning to something good here. There is no one reminds the main base I believe.",
   "segment": {
     "type": "expansion",
     "game_frame_start": 0,
-    "game_frame_end": 2307,
+    "game_frame_end": 336,
     "game_time_start_sec": 0.0,
-    "game_time_end_sec": 103.0
+    "game_time_end_sec": 15.0
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

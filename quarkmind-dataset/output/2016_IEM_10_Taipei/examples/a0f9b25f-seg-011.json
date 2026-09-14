@@ -1,0 +1,118 @@
+{
+  "id": "a0f9b25f-seg-011",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 10681,
+    "game_time_sec": 476.8,
+    "player": {
+      "race": "Protoss",
+      "minerals": 180,
+      "gas": 86,
+      "supply_used": 124,
+      "supply_cap": 164,
+      "worker_count": 74,
+      "army_composition": {
+        "Stalker": 1,
+        "Observer": 2,
+        "MothershipCore": 1,
+        "WarpPrism": 1,
+        "Immortal": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 10522,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 10523,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 10526,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 10526,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 10538,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 10540,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 10545,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 10569,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 10573,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 10646,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 53,
+        "MULE": 9,
+        "Marine": 31,
+        "WidowMine": 2,
+        "Medivac": 5,
+        "Liberator": 1,
+        "SiegeTank": 1,
+        "Marauder": 6
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "goes up against the guy who has accomplished almost nothing in his career, but is here in the grand final after doing so well at the start, like you see the void. Bjorn is a lifetime badass, but he definitely needs to prove something here. Can he win this tournament? It's going to take some really good games to for him to win the best of seven against SOS for sure. Yes, it is. All right, so as we get into this, I believe I may have to change something here on my PC a moment.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 10381,
+    "game_frame_end": 10982,
+    "game_time_start_sec": 463.4,
+    "game_time_end_sec": 490.3
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

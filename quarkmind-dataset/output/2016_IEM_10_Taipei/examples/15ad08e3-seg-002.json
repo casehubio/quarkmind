@@ -1,0 +1,110 @@
+{
+  "id": "15ad08e3-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4216,
+    "game_time_sec": 188.2,
+    "player": {
+      "race": "Protoss",
+      "minerals": 176,
+      "gas": 69,
+      "supply_used": 39,
+      "supply_cap": 46,
+      "worker_count": 31,
+      "army_composition": {
+        "Adept": 1,
+        "AdeptPhaseShift": 0,
+        "Sentry": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3943,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3947,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3956,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4024,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 4026,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4029,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4047,
+          "type": "UNIT_BORN",
+          "unit": "Sentry"
+        },
+        {
+          "frame": 4081,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 4100,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4157,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 24,
+        "MULE": 2,
+        "Marine": 6
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> early_aggression",
+  "commentary": "pig in particular i do think that's beyond needs to start changing things up a little bit because right now pion it seemed like he was a puzzle going to the series and he's already been solved before he even started from s os s os was like you like to make a few units and attack and then get a third cc i'm just gonna get out of units to defend against what you're gonna throw at me and behind me some gonna play very greedy build up my economy with very quick bases and crush you with overwhelming unique production right it is time once again game at number four as we have spawning up to the top right hand corner are red tarren representing x team it is beyond who has to find a way to shut down what we're seeing here from s os who spawns down at the bottom left hand corner brody said his name so let's get it for j agree wins s os s os to men with the belts from this gun spotting it around his neck like a fighter i just i mean yeah he just raises both belts in the uh on his shoulder man",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 3632,
+    "game_frame_end": 4801,
+    "game_time_start_sec": 162.1,
+    "game_time_end_sec": 214.3
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Prion Terraces",
+    "game_duration_sec": 577.8125,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "15ad08e3ed7f"
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "id": "a1f0f8d3-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6215,
+    "game_time_sec": 277.5,
+    "player": {
+      "race": "Protoss",
+      "minerals": 280,
+      "gas": 140,
+      "supply_used": 40,
+      "supply_cap": 47,
+      "worker_count": 31,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Oracle": 0,
+        "Stalker": 1,
+        "Phoenix": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5648,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5658,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 5722,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5843,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5884,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5915,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 5993,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6144,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 6155,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6158,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 35,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 3
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "an oracle usually you expect to kill more like 10 probes not three and second target goes down here whoa sos all right i think you realize that he's in trouble so he's gonna take the gasses on his natural very quickly and he's gonna try to come back on the phoenix count here even though he knows that he just threw an oracle into a phoenix which is obviously really bad wow what a serious man yeah great games really all very varied to be honest with you this is now gonna end up being in a complete and dominant air war here if hero isn't careful he's going to the twilight council yeah you know against this it's difficult i think that's smart actually hero wants to be aggressive",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 5838,
+    "game_frame_end": 6593,
+    "game_time_start_sec": 260.6,
+    "game_time_end_sec": 294.3
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 478.7946428571429,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "a1f0f8d31044"
+  }
+}

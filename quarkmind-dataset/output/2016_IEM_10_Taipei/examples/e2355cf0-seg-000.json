@@ -2,20 +2,18 @@
   "id": "e2355cf0-seg-000",
   "version": "1.0",
   "game_state": {
-    "game_frame": 7531,
-    "game_time_sec": 336.2,
+    "game_frame": 313,
+    "game_time_sec": 14.0,
     "player": {
       "race": "Zerg",
-      "minerals": 180,
-      "gas": 404,
-      "supply_used": 74,
-      "supply_cap": 82,
-      "worker_count": 48,
+      "minerals": 30,
+      "gas": 0,
+      "supply_used": 13,
+      "supply_cap": 14,
+      "worker_count": 12,
       "army_composition": {
-        "Larva": 10,
-        "Overlord": 8,
-        "Zergling": 21,
-        "Queen": 4
+        "Larva": 3,
+        "Overlord": 1
       },
       "tech": [],
       "buildings": {
@@ -23,64 +21,60 @@
       },
       "recent_events": [
         {
-          "frame": 7361,
-          "type": "UNIT_BORN",
-          "unit": "Larva"
-        },
-        {
-          "frame": 7365,
-          "type": "UNIT_BORN",
-          "unit": "Larva"
-        },
-        {
-          "frame": 7366,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Drone"
         },
         {
-          "frame": 7366,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 7368,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Drone"
         },
         {
-          "frame": 7368,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 7371,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Drone"
         },
         {
-          "frame": 7371,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 7478,
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 259,
           "type": "UNIT_BORN",
           "unit": "Larva"
         },
         {
-          "frame": 7497,
+          "frame": 284,
           "type": "UNIT_BORN",
           "unit": "SCV"
+        },
+        {
+          "frame": 291,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 291,
+          "type": "UNIT_DIED"
         }
       ]
     },
     "opponent": {
       "race": "Terran",
       "known_units": {
-        "SCV": 45,
-        "MULE": 6,
-        "Reaper": 1,
-        "Marine": 12,
-        "KD8Charge": 4,
-        "SiegeTank": 1,
-        "Medivac": 1
+        "SCV": 13
       },
       "known_buildings": {
         "CommandCenter": 1
@@ -88,15 +82,15 @@
     }
   },
   "phase": "opening",
-  "phase_transition": true,
-  "transition_description": "opening -> mid_game",
-  "commentary": "No matter where that's true to meta-lize And around about sort of way he's been timeless and it's cool. We're seeing him here in the round of eight Major tournament. Awesome. And if he can somehow get past Solky I think that'll put a stamp on a good run here as well Yep, round him four. But he's got his work cut out for him. Solky pretty dominant. Although again I feel like that maps a little bit of a gimmie This map a little more evenly matched. I was I was curious both players opened up a little bit more kind of interesting Pull took the double gas trailer early on and so he opened up gas first which is again Something that like very it harkens back to hot but was like the defensive hot So if you weren't all landing off of that it was much more defensive Worked spanny into the big game here. Yep. Pulled to start floating out there. He commands to enter out He's got a lot of Marines on the map now No combat shield there you just finally starting up So the Marines are vulnerable. Yes, but there's no bailing us. It's just gonna be Marines versus Ling ravager He's gonna take this fire boost away. This is an interesting part of the meta too like I wonder the evolution of this we've definitely been in situations before in hard hard to swarm in wingsliberty Where tarry players knew they weren't facing mutus and had air supremacy So they did a lot of this drop stuff just kept the zirg activated kept them busy Thought back the creep, but I feel like it's gonna be much more prominent in the meta now and legacy avoid for tarry I can reliably do this. I'm going to be out on the map So I wonder it probably won't have the biggest impact. But you know what I mean? Yeah a little bit I like that he's getting borrow again. We saw I mean just topics which I mean you don't know what I'm doing It's funny. It's rich. They're all playing. I need a more analytical commentator like Todd here You know what I mean? He's on someone who agree with you on everything. Well, I mean I didn't want to say it I apologize for having an event I wouldn't cite Todd by the way. He kidn't me Todd wouldn't agree with Who he always TLO would TLO would agree with you on the opposite true as well Charlie Claus Well, you know what Kevin would agree damage. I think nobody I need to consider that your opinion may be the one That's a little too out there. That's what I'm saying. Well no one agrees with you I need to taste osu to start cast and start crafting and that's what I need There you go Well probably exactly. I probably can GSL have been firing up rest of the barracks production is going up for Palt now as he gets ready to Begin the parade push across the map. I mean Paltrowing to do that though like the narrow path is Yeah, fairly obsolete at this point in time. You don't want to take a fight there And now that we go towards mid map well, I did do a decent job of fighting back creep But so he has done a pretty good job himself Nice mind shot grab some links Plus to attack a shell of course I guess marauders and Poles hold on to his marauders I mean they don't die instantly right to the corrosive vile cell They're definitely a little bit more sturdy than just my Marines again Yeah, it's something that look at so key he keeps doing this by way. He will not make You know 10 ravagers in a row he makes them in pairs. It's kind of interesting I guess he's the one don't all of his resources immediately. Yeah, yeah, it's smart. I like it. I appreciate it Definitely not the norm I guess like yeah, it's pretty common at least in Games and since you watch like streams and what the zergs do like just like okay slam down that team and then suddenly they actually like for that brief 12 seconds they have no army Yeah, and then they get attacked and like oh god Well, I can't see my ravagers lose the game or I could let my ravagers continue to morph and still lose the game It's really nice Kind of a big moment here by the way both clean see get picked off as well as active creep tumors on that side The creeps reds been shut down pretty reasonably well by pull me keeping it at the halfway mark for such a small map This is vintage bolt by the way his army's never I think it's really important to know as he starts to fall back here That he's scannion saw that there's no hive on the way which means it's pure road ravager from here on out for solky Who's max he's got a lot but he's got liberators tanks and some of these widow mines He's buying himself a lot of time to continue to max out by using those mines Seeing him pick off the widow mines by the way It makes you it makes you wonder if against a good surrogate What mines are even close to being worth it at this point and because they're they're like Buying time, but that's certainly not what you hope for with your your widow mines At the very least it gives him like he said time to get more forces out But the liberators are gonna get snimes by the corrosive vials solky continuing to push in this roach ravager army Just seems to be a bit much, but now that the roaches have been chewed through the but ravagers do have less hit points than roaches So if the ravagers get to the front of the army they die pretty fast you're gonna pull sd He wants to go for a big counter attack after this and imagine but solky falling back at the same time drops Gonna hit that fourth base in the bottom right He's got roaches burrowed and moves into the mineral line of the third base and yeah, hold taking a beating here Very true choice by solky He did have roaches to support the ravagers, but he merely burrows them to make his way to the third and I think I it was Dangerously close to giving up all the ravagers, but Was able to calculate the distance well enough and separate himself didn't lose all the ravagers lost a decent chunk of them But does buy himself more time pulled losing that while not losing the third of course But having disrupted pretty significantly is very dangerous at the stage of the game doesn't have a fourth base And he's starting to mine out his main base. That's the another cool thing is the pace of legacy the void You really like all of a sudden that harass becomes very meaningful. You're you're down to one base all of a sudden I definitely definitely agree there especially with so few bases that you can take on this map Especially if you stretch yourself so thin He's gonna push in through the liberators taking a lot of damage from those liberators actually as they lay waste to this force But I think the roaches and the ravagers are just such high numbers that falling back Isn't as much of an option for pull right now the S.V.s come off the line again And solky just seems to have beaten battered and bruised him to the point of defeat Gigi is called and solky goes up to 2 to 1 a single map went away from having to face off against gun tomorrow another three oh If it goes that way, but I do like the game plan for solky I think it's very smart for this map the third base not nearly its exposed to some of the other maps But predictably is like okay pulse pulse a marine marauder metavat kind of guy as long as I don't take significant damage Get up the four bases. I can max out on two two roach ravager myself And that's really difficult to hold off especially with good ravage control like widow mines By your time liberators good, but the second they're in that siege mode They're gonna do good damage, but they're also going to die you're gonna target them triple click or what it's three It's three it's three miles kill three miles and then they're gone and they die pretty quick like the cool down on ravagers Is not slow like it's just it's like oh you have a liberator that's gonna kill two roaches your dad right? I said like ravagers like they just you know Like they they wear their infinite ammo bandanas into battle You could they could just continuously fire like pretty much nonstop. Yeah Central protocol is gonna be the next map and for that reason alone up. I'm extremely worried For Polts that reason alone well You have no other reason to be excited about this match Well, I said I'm worried about this. I'm worried about pole. That's your only concern. I mean, I'm always excited to watch Watch Starcraft. I basically Listen, they flew me into Burbank because they were noticing we were having problems with the Nathanius's wild claims while he's broadcasting And I'm here to rain you in breath. Okay, so is it this see this see the sleeper agent. That's what Carmichael asked me to do Right, that's fair where a plaid shirt and remember Jack So say you were the one that went off for pry on though pretty hard This is another map where it's not about me. All right. Let's not yeah, let's not make it This is another map. I would be surprised to see the Reaper play come back into this I keep getting asked if I'm ready. All right. Ready. Let's go. We start the game up I feel like I wanted to say something and then a three-off guard Yeah, but you know what I got it. I still really feel like Paul could have done a lot more with that opening Like I feel like he opened three racks expecting to get a two-base push But then soul key just went right up to three bases drone hard and had like even without the goals Like he just had a really nice economy and Paul really for three CC after three racks Like he was just he was just behind all game economically I think I think you get the nail in the head with that last comment particular. I think if you open up three Berks You have to do damage you have to do something and killing two queens and several creep tumors is nice That's not really the damage we're talking about that is like I need to Get him to pull his drones. I need to pick off a hatch like that kind of damage or at least kill a bunch of stuff But but soul key just pushed on took a fourth there's like a light marine drop over there the two roaches Just kind of like get out of here and that was it Yeah, he dismissed it pretty easily And I think that's also just another thing about that map even with the short rush distance the choke points to Taxi'm on a really small, but we're loaded into central protocol Which you think is the worst map, right? This is personally my least favorite map Okay, I think it's easier because you don't have to scout on prime terraces to rebar all in But that's just me you have to you know sometimes if you get cross bonds on this map then rebar all ining is a bit hard But then it's easy to reperchise if you get these spawns for example Um, of course the red tear player on the top left He is down one two needs when the next two games to keep his is it one two Yes, that's how bad my brain is right now Yes, always the game pull one thus towers game one be crushed him He killed the third The third Listen, you know, in my defense. He had five soul bats tank 12 hours ago. I was in Florida coming back from Mexico That's fair in my defense, but also that's part of my charm Because I know always know exactly where I'm at. I'll just abridged it for all of you guys Jeff losses passion. It's okay Jeff had to recharge his passion, bruh Okay, so let's let's actually just gonna do a reaper expanded single reaper He's gonna play this map sure straight up, but why is this such a bad map? That's what I want you to because I mean I played the biggest issues Anything and then vetoed it now come back the biggest issues that everybody has with this map come mostly down to just the layout of the third base Right pull has two options for a third you can take the option that's super far away from his natural Whereas army would be like this is a big ramp you can't block this off easily Speedling play early on is a super popular for that reason alone But then you've got back rocks as well And then if you're a crazy suicidal tearing you can take the third base outside their natural which is At you know what this map has played so little that I actually think that happens pretty often because people just don't even If you aren't even even thinking about it as much and to be fair if you could take that as a third You know might as well just pf it just stage your marine tank all in from there. I do have a quick update for you Now remember game one Congratulations, but I did that while listening to your analysis. I think it's spot on I also remember some of the games here And it is frustrating the distance between bases and how that gets kind of big as thing is like could could pull break the rocks and make his third base closer to his main base Sure, but then you have to consider that it's not possible You're not there's no wall. You're gonna build that's gonna keep that base safe Yeah, and then if even if you have your army here and then they just decide okay I'm just gonna go here and then get this giant space and you have to go a really far way To actually be able to defend against that so I mean you get these spawns and let's just let's not even forget whoever gets knocked down behind Like if either player falls behind at all fish rush distance is step-s-of-war That's my meastones toss right there. Yeah, that is that is your still incredible throw But it's still a tough roll much more realistic, but if we assume that you know You're either in a power suit or you're you know a genetically evolved being like a zirgling or a queen than maybe that's it",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "No matter where that's true to meta-lize And around about sort of way he's been timeless and it's cool. We're seeing him here in the round of eight Major tournament. Awesome. And if he can somehow get past Solky I think that'll put a stamp on a good run here as well Yep, round him four. But he's got his work cut out for him. Solky pretty dominant. Although again I feel like that maps a little bit of a gimmie This map a little more evenly matched. I was I was curious both players opened up a little bit more kind of interesting Pull took the double gas trailer early on and so he opened up gas first which is again",
   "segment": {
-    "type": "battle",
+    "type": "expansion",
     "game_frame_start": 0,
-    "game_frame_end": 15063,
+    "game_frame_end": 627,
     "game_time_start_sec": 0.0,
-    "game_time_end_sec": 672.5
+    "game_time_end_sec": 28.0
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

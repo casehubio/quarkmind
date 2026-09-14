@@ -1,0 +1,118 @@
+{
+  "id": "6f6b0577-seg-015",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 28010,
+    "game_time_sec": 1250.4,
+    "player": {
+      "race": "Protoss",
+      "minerals": 303,
+      "gas": 189,
+      "supply_used": 153,
+      "supply_cap": 212,
+      "worker_count": 21,
+      "army_composition": {
+        "Stalker": 3,
+        "MothershipCore": 0,
+        "Observer": 3,
+        "Immortal": 3,
+        "Phoenix": 0,
+        "WarpPrism": 0,
+        "Disruptor": 9,
+        "AdeptPhaseShift": 0,
+        "DisruptorPhased": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 27685,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 27718,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 27729,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 27730,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 27740,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 27797,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 27845,
+          "type": "UNIT_BORN",
+          "unit": "DisruptorPhased"
+        },
+        {
+          "frame": 27893,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 27976,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 27987,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 69,
+        "MothershipCore": 2,
+        "Stalker": 4,
+        "Immortal": 4,
+        "WarpPrism": 1,
+        "Observer": 4,
+        "Phoenix": 9,
+        "Disruptor": 25,
+        "DisruptorPhased": 46
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "late_game",
+  "phase_transition": true,
+  "transition_description": "late_game -> endgame",
+  "commentary": "And is he feeling confident that that's going to be a victory or is he a little bit worried? He said, because I'm playing against Terran, I'm a little worried, yes. But I'm always really good at finals. So in that sense, I'm pretty confident. All right, thank you very much, Suzy. Thank you very much, SOS. And that does it for our second match. And that's what I'm going to do. I'm going to do my best to win this match. I'm going to do my best to win this match. I'm going to do my best to win this match. I'm going to do my best to win this match. Suzy, thank you very much, SOS. And that does it for our second semi-final, which leads us to the grand final. That's just around the corner. Before we go to that, though, do make sure to check out please.tv with the plug-in. And if you get a highlight into the top 25, you may be on a cell. You'll get your ticket. Get yourself a ticket to the event in Katowicz, so the World Championship just around the corner. We're going to take a quick break when we come back. It is time for the grand finals.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 26160,
+    "game_frame_end": 29861,
+    "game_time_start_sec": 1167.9,
+    "game_time_end_sec": 1333.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

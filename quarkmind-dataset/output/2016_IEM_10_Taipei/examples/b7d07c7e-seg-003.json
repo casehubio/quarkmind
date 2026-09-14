@@ -1,0 +1,105 @@
+{
+  "id": "b7d07c7e-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 2292,
+    "game_time_sec": 102.3,
+    "player": {
+      "race": "Zerg",
+      "minerals": 140,
+      "gas": 20,
+      "supply_used": 19,
+      "supply_cap": 22,
+      "worker_count": 18,
+      "army_composition": {
+        "Larva": 1,
+        "Overlord": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 1961,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1974,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 1983,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 1983,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2025,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2057,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 2057,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2214,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 2266,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 2266,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 19
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "And he's trying to split up some of these servicemen to loosen up, but exactly how much he's going to lose. And he does. And all the same time, another bioforce going to head over towards this location. Bj\u00f6rn's going to be very careful though. If he gets divided and completely, he will get over. There's no Widowmines. Only two Widowmines. Now, okay, two more Widowmines are coming to the prey, but he has to pick up and he's going to lose all those Widowmines. Okay, great drop into the main. He should be able to fight off the Mewd as they're now. This is going to be good to buy a time. But this army cannot get trapped right now. Beyond getting good trades off the now, but the banelings have arrived and the Mewd is in the banelings combined.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 1983,
+    "game_frame_end": 2602,
+    "game_time_start_sec": 88.5,
+    "game_time_end_sec": 116.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Ulrena",
+    "game_duration_sec": 586.6964285714286,
+    "vod_url": "https://www.youtube.com/watch?v=emCaI55s8Tc",
+    "subtitle_source": "whisper",
+    "replay_hash": "b7d07c7ef535"
+  }
+}

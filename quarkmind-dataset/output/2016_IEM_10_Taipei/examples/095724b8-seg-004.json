@@ -1,0 +1,111 @@
+{
+  "id": "095724b8-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 5130,
+    "game_time_sec": 229.0,
+    "player": {
+      "race": "Terran",
+      "minerals": 180,
+      "gas": 116,
+      "supply_used": 46,
+      "supply_cap": 46,
+      "worker_count": 28,
+      "army_composition": {
+        "MULE": 2,
+        "Marine": 10,
+        "WidowMine": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 4720,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4721,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4755,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4875,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4882,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 4911,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4926,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4991,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4992,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5026,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 38,
+        "Stalker": 3
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "And we have a proxy gateway going out on the map. So Lil' Bo's opening up the door to get aggressive, meanwhile, be on. Heading across the map with this drop. He's got a widow-mind in it. He's following this up with a second widow-mind and a liberator. So not the super fast cyclone rush. He wants to try to get some damage done. You know what? He's in pilot placement, Nate, but if he's not there to charge it, then he does get the... Here comes the piece. He's got to pick up the widow-mind. It does do that. It's going to give him a chance here to do something. Where is that modisher, Corey? He's actually... He doesn't even have one. He's going to band in the attack. Good pull back by Lil' Bo. It doesn't... Minimal pro-gloss if any action could be good. And...",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 4775,
+    "game_frame_end": 5485,
+    "game_time_start_sec": 213.2,
+    "game_time_end_sec": 244.9
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 381.6964285714286,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "095724b86cbca0e6da2fb8baad0d7baf"
+  }
+}

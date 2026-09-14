@@ -1,0 +1,114 @@
+{
+  "id": "095724b8-seg-007",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6782,
+    "game_time_sec": 302.8,
+    "player": {
+      "race": "Terran",
+      "minerals": 80,
+      "gas": 129,
+      "supply_used": 70,
+      "supply_cap": 78,
+      "worker_count": 38,
+      "army_composition": {
+        "MULE": 1,
+        "Marine": 16,
+        "WidowMine": 2,
+        "Medivac": 2,
+        "SiegeTank": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 6140,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6176,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 6436,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6499,
+          "type": "UNIT_BORN",
+          "unit": "SiegeTank"
+        },
+        {
+          "frame": 6507,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 6538,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6666,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6678,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6709,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6710,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 40,
+        "Stalker": 3,
+        "MothershipCore": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": true,
+  "transition_description": "early_aggression -> mid_game",
+  "commentary": "There's a lot of offensive stuff being warped in just outside the base. We saw quite a few probes go down, so it's really a question of... Can Lillbo make up the difference? Now keep in mind, these Marines are un-upgraded. They don't have combat shields, no stim, nothing. So it could get dicey over there. Yeah, the Phoenix are going to come in to scout this out a little bit. See what's going on as we have a siege tank finishing up. There's no mistletoe, but there's no oracles. With that liberator. That liberator does show up to kill the probes not reacting at all. Who's in a lot? At the same time, he's just trying to make this push up the front. The tank is not siege. Stalker's going to try to break this ramp as the Phoenix come into it. I'm assuming he's just going to try to lift up the siege tank with his Phoenix if he gets too close. The tank had to pull back here a little bit of the Marine count getting a little bit lower. They are going to swoop in here.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 6329,
+    "game_frame_end": 7235,
+    "game_time_start_sec": 282.5,
+    "game_time_end_sec": 323.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 381.6964285714286,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "095724b86cbca0e6da2fb8baad0d7baf"
+  }
+}

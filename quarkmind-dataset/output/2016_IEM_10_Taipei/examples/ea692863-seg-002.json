@@ -1,0 +1,106 @@
+{
+  "id": "ea692863-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1731,
+    "game_time_sec": 77.3,
+    "player": {
+      "race": "Zerg",
+      "minerals": 155,
+      "gas": 0,
+      "supply_used": 17,
+      "supply_cap": 22,
+      "worker_count": 17,
+      "army_composition": {
+        "Larva": 1,
+        "Overlord": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 1070,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1146,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1259,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 1417,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1499,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 1537,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 1537,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1590,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 1590,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1688,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 18
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "so important against them erotors as well so I mean Bjorn's got a you know he's got to capitalize on that and Sorki needs to remember that upgrade I am so surprised though that Bjorn didn't get much more done while the ultra list cover was down it was very very apprehensive about pushing on in you got to be carefully in the game of soccer for cost and over here towards the right hand side",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 1537,
+    "game_frame_end": 1926,
+    "game_time_start_sec": 68.6,
+    "game_time_end_sec": 86.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1286.6964285714287,
+    "vod_url": "https://www.youtube.com/watch?v=emCaI55s8Tc",
+    "subtitle_source": "whisper",
+    "replay_hash": "ea69286365b5"
+  }
+}

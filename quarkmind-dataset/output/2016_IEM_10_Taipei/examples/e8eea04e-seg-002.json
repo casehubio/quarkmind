@@ -1,0 +1,110 @@
+{
+  "id": "e8eea04e-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 3608,
+    "game_time_sec": 161.1,
+    "player": {
+      "race": "Protoss",
+      "minerals": 55,
+      "gas": 21,
+      "supply_used": 32,
+      "supply_cap": 39,
+      "worker_count": 24,
+      "army_composition": {
+        "MothershipCore": 1,
+        "Stalker": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3190,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        },
+        {
+          "frame": 3198,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3201,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3342,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 3344,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3346,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 3440,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3461,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3597,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3600,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 22,
+        "MULE": 1,
+        "Marine": 4
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "this could be really really good here for uh for sss i can't i can't imagine you know world though where beyond doesn't know about this bill and doesn't scount for it and i feel like this is what is scv is for you across the map oh it's these two stalkers probably already know something's up",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 3440,
+    "game_frame_end": 3776,
+    "game_time_start_sec": 153.6,
+    "game_time_end_sec": 168.6
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 336.47321428571433,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "e8eea04e40da"
+  }
+}

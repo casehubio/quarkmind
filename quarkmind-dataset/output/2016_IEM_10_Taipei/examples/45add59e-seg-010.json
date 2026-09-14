@@ -1,0 +1,119 @@
+{
+  "id": "45add59e-seg-010",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 9338,
+    "game_time_sec": 416.9,
+    "player": {
+      "race": "Terran",
+      "minerals": 120,
+      "gas": 131,
+      "supply_used": 87,
+      "supply_cap": 125,
+      "worker_count": 50,
+      "army_composition": {
+        "MULE": 3,
+        "Marine": 16,
+        "WidowMine": 0,
+        "Medivac": 1,
+        "VikingFighter": 1,
+        "SiegeTank": 2,
+        "Liberator": 1,
+        "Marauder": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 8555,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8610,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8811,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 8814,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 8864,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 8872,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 8929,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 9170,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9270,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9272,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 61,
+        "Stalker": 4,
+        "Observer": 2,
+        "WarpPrism": 1,
+        "MothershipCore": 1,
+        "Disruptor": 3,
+        "DisruptorPhased": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Here we go. Here he goes. The observer's like, yes. I can't even run away. Oh, no. Here we go. Double disruptors are going to come down. Oh, my God. Oh, geez. So many Marines. He didn't fire the second shot. No. The second one was like, let's go.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 9170,
+    "game_frame_end": 9506,
+    "game_time_start_sec": 409.4,
+    "game_time_end_sec": 424.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}

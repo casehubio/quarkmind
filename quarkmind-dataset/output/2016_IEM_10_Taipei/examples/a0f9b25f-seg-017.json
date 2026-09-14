@@ -1,0 +1,121 @@
+{
+  "id": "a0f9b25f-seg-017",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 26608,
+    "game_time_sec": 1187.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 1835,
+      "gas": 1895,
+      "supply_used": 191,
+      "supply_cap": 257,
+      "worker_count": 65,
+      "army_composition": {
+        "Stalker": 0,
+        "Observer": 3,
+        "MothershipCore": 1,
+        "WarpPrism": 0,
+        "Immortal": 2,
+        "AdeptPhaseShift": 0,
+        "Phoenix": 0,
+        "Tempest": 10,
+        "Oracle": 1,
+        "Carrier": 7,
+        "Interceptor": 52
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 26550,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 26562,
+          "type": "UNIT_BORN",
+          "unit": "Interceptor"
+        },
+        {
+          "frame": 26563,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 26567,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 26579,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 26592,
+          "type": "UNIT_BORN",
+          "unit": "WidowMine"
+        },
+        {
+          "frame": 26594,
+          "type": "UNIT_BORN",
+          "unit": "WidowMine"
+        },
+        {
+          "frame": 26595,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 26604,
+          "type": "UNIT_BORN",
+          "unit": "Interceptor"
+        },
+        {
+          "frame": 26605,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 91,
+        "MULE": 13,
+        "Marine": 177,
+        "WidowMine": 20,
+        "Medivac": 17,
+        "Liberator": 3,
+        "SiegeTank": 1,
+        "Marauder": 33,
+        "Ghost": 12
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "late_game",
+  "phase_transition": true,
+  "transition_description": "late_game -> endgame",
+  "commentary": "Whoa! For Bjorn in comparison. Stargate starts. Ooh. So maybe like an Oracle first to make sure he can reveal the entire Tianan army to take a good engagement or even like use his item plush to snipe stuff. I'm not sure what these units were doing there maybe he wanted to set them up on the right hand side to counter attack when Bjorn was gonna move out but that's gonna be taken out now and people are actually ahead in supply right now. They're going down a lot of the depth field walked in into the main base also a few more gonna follow that up also already shading forwards and looking to get onto what feels. Oh, Stargate is gonna go down and SOS wants to go for Tempest. I think you realize that once you have high 10 plus you force ghost out of your opponent when he's great against ghost but bunch of Tempest. Yeah that's true. It's gonna be difficult for him to really deal with flea beacons on the way as well these adaptors are still doing big big dab. This is what's the main. This is even just too by time like this is not even supposed to do that much damage but right now his tail has gone quite a bit. It's so many adepts. I mean I can't see some Marines it's so many adept they're not exactly getting you know full combat efficiency off compared to the previous patch that they were on but still this is very very powerful here. Fy SOS is gonna greet this with ease by the looks of things. There are not any high templates there for the storm but they're coming in from the back here and they're gonna lay down the storms on towards some of this bio they sacrifice themselves but they push it all the way back. Yeah the observer was sniped though but these units in the main are already doing so much damage for SOS and he's got such an insane economy that he can just keep on warping there. Yeah. Bjorn struggling to even stay here in his main base and somehow defend that position in the meantime. Tempest production is not gonna start though. Bjorn never got to a 4th. Never mind of the 5th that is going up for SOS behind this so you're totally on the money when you say the economy advantages so much here for SOS he is now burning down even just a few more of these units anything that dies is fantastic as well as is on the march towards the opponent's main. I think he realizes that even like this army to be honest is expandable with the income that he has with the Tempest is getting now being saturated on five bases against the ten that just lost this many SIVs he's gonna mean so much trouble here for Bjorn. He's not even mining from his main he's 36 SIVs to 72 probes the income is basically double here for a SOS. We already knew he was reaching real life apparently he's in the game about as equally. Yeah this is ridiculous I mean that warpers and yes goes down up towards the top but at the same time the bio army here isn't gonna have the easiest time but it's to be in place. There's so much energy that's four storms you're available. Hmm. Well, guess pushed away but the third base has had to be forced to lift up. He dropped scans in the main because he was being harassed by some dark temp lars cancelling add-ons and not for a moment and I guess he started the wrong ones that I wanted. Wow Bjorn. He's keeping up in supply nicely but I mean he's just like at the basic bio force that you go for a steering in terms of ghosts he's got zero I feel like Bjorn's gonna move across the map get shot at by the Tempest type gg and leave. Yeah that's there's nothing he can do against it literally nothing right",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 24697,
+    "game_frame_end": 28519,
+    "game_time_start_sec": 1102.5,
+    "game_time_end_sec": 1273.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

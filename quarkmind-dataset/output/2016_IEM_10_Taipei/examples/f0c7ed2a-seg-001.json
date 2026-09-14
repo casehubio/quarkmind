@@ -2,63 +2,68 @@
   "id": "f0c7ed2a-seg-001",
   "version": "1.0",
   "game_state": {
-    "game_frame": 6051,
-    "game_time_sec": 270.1,
+    "game_frame": 2179,
+    "game_time_sec": 97.3,
     "player": {
       "race": "Protoss",
-      "minerals": 205,
-      "gas": 106,
-      "supply_used": 42,
-      "supply_cap": 54,
-      "worker_count": 26,
-      "army_composition": {
-        "Stalker": 3,
-        "MothershipCore": 1
-      },
+      "minerals": 30,
+      "gas": 40,
+      "supply_used": 20,
+      "supply_cap": 23,
+      "worker_count": 20,
+      "army_composition": {},
       "tech": [],
       "buildings": {
         "Nexus": 1
       },
       "recent_events": [
         {
-          "frame": 5426,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 5438,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 5519,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 5558,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 5587,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 5683,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 5965,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 5982,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 6000,
+          "frame": 1028,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 6003,
+          "frame": 1065,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1264,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1301,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1500,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1537,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1736,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1773,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 2009,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 2045,
           "type": "UNIT_BORN",
           "unit": "Probe"
         }
@@ -67,25 +72,23 @@
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 23,
-        "MothershipCore": 1,
-        "Stalker": 6
+        "Probe": 20
       },
       "known_buildings": {
         "Nexus": 1
       }
     }
   },
-  "phase": "early_aggression",
-  "phase_transition": true,
-  "transition_description": "early_aggression -> mid_game",
-  "commentary": "And he could have been a, I mean, if you really wanted to, he could have made a prison as well. He had the robo, right? So. But a cool, again, I like that MC. MC's that guy who 02 against SOS is like, I'm going to start dropping pylons. I'm going to add gateways to this. And I'm going to go for it. And it seems really weird and bad. But with his micro and his, for black of a better word, kind of his balls, like he just will do crazy stuff like that. So where did it go wrong, then? What was the biggest thing in that last game that just dropped in the mothership core? Losing the mothership core, I think, is the beginning of the end for him not being able to spot the high ground with a mostly stalker force becomes, it just gets completely flipped on its head. It goes from being kind of scary. And maybe with a couple of good volleys, you pick off the high ground pylons. You start picking off the centuries. 2, I got nothing. And that's what cost him. Then he goes up the ramp kind of loses two stalkers in his elbow, I think, for free, essentially. So that was the end of it. All right, well, very well played by SOS as he advances on here at the Intel Extreme Master's Taipei. He will be playing tomorrow in day two against the winner of our last series of the night. We've got snoot versus hero coming up. An interesting match. I'm very interested to see this mostly because the patch has made like PDZ win rates",
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "There's a century. So he's going to be able to pick off a couple extra stalkers who are locking him in. And he has that overcharge available as well. And these stalkers are both going to die. Yeah. Couple of very sloppy choices to lose the probe to that kind of a pylon, very curious, going up the ramp at all without being able to spot high ground because he lost the Mother's ship corps. And SOS has an immortal on the way, too. So that's going to be the get out of this game of mortal. And now, by the way, all of a sudden, going up this ramp is like the scariest thing on planet Earth each time. Because the centuries, he's got another century. And then the photon overcharge. And this is bad. Bye-bye. Just making zealots the same as him in here as well. Yep. He's moving in now as well. The zealots are here at the top of the ramp trying to help push this back. There's that force field overcharge enabled. And bye-bye stalkers. It's like this phenomenal defense from SOS. It's beautiful. Really cool use of the adip, actually. He let it finish. So it ends up being bad. But how do you just use the shade to spot high ground? He can actually always cancel that and the cooldowns so short that you're basically able to see up there for free. But again, MC kind of missx. And shout out to these guys for keeping all the action in one spot. It's a pretty much easier to observe. Yes. I mean, subtle things are being done in the background. Robo's ratted, but now Immortal's coming out. Yeah. Immortal, right? So breaking this, no upgrades, no real tech. It's not possible. And consider that there's two mineral lines available for SOS. If these guys just traded even forever and ever, that main's going to mine out. And MC will be long distance mining is natural before we see anything else happen. No, I super all in. No natural for him. Yeah, you just gave us a shot of SOS's natural. I was like, oh, he's not really satry there. But he doesn't have any satry. Yeah. So it's a bold play. Hey, here. I MC, but it doesn't seem to have paid off. I mean, SOS is just in such a good spot. Atoms did get into the natural. So he gets a few progs here. It's something. It's something. But it ain't much. What MC needs now is for SOS to make this incredibly weird choice. To just move down his ramp from the horizon. And he gets force to fill it off, yeah. But now he has an observer. He sees everything. He could even probably make the decision to throw a hallucination to MC and just confirm. Just be like, oh, can you have it expanded? So I actually just sit here making centuries and immortals. Yeah. He's trying to do the PVT thing, right? I'm just using these adips to try to distract by time, bring himself back into this game. But there's no coming back into this game by killing progs when you're still on one base. All right. He's just doing what he can. I mean, each warp in is so important too. These adips are going to kill maybe a pro or two. But in doing so, they are also warpins that MC desperately needed to have any chance. But I say that as the super-optimistic caster, again, SOS has an observer looking at MC's army. And he's just a good enough player to be like, this is all you have. You do not have anyone. Yeah.",
   "segment": {
-    "type": "battle",
-    "game_frame_start": 5292,
-    "game_frame_end": 6811,
-    "game_time_start_sec": 236.3,
-    "game_time_end_sec": 304.1
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 4023,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 179.6
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

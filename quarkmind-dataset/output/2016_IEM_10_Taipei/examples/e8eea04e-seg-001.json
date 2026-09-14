@@ -1,0 +1,106 @@
+{
+  "id": "e8eea04e-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1888,
+    "game_time_sec": 84.3,
+    "player": {
+      "race": "Protoss",
+      "minerals": 105,
+      "gas": 28,
+      "supply_used": 19,
+      "supply_cap": 23,
+      "worker_count": 18,
+      "army_composition": {},
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 559,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 724,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 830,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1052,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1131,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1288,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1402,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1524,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1673,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1760,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 18
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "how he can use that with advantage with multiple ghost gold base player on pryon terraces earlier are we gonna see something like that again let us find out the under the bottom left we have our red turran representing x team it is pion getting himself back in this maybe but he has to win two from here on out and then up to the top right hand corner we have our blue pro sauce representing junei green wings it is s os i hear the cheer count and i yeah the screaming girls are wow wow just to say the links to how do we want to open here no gas yet from john ok he goes for it now and ss still with a fairly early scout now you know i've talked about how this is a map where it can be really really hard to take a third base do we see against something crazy out of ss like something like a gold base very quickly the thing is on this map is definitely going to be much harder to pull it off than early on pryon terraces because he would be very far away from his main base so i feel like probably not but maybe some kind of two base plays but she sees it's already up by one game here and only one game away from winning the whole thing the thing is though if ss tries that and he fails he loses momentum here adding to the last map of this series i always feel as a ss is the kind of player that once he does get a very very strongly like a 31 for example he's willing to just throw straight after strapped to strad someone because he has games in hand and then in the last game he would play something out really really long but i mean that could happen again we'll see there's another part i'm going down to the extremity of this map right now of his base by the way you realize what map he's left right after this arena oh god oh god forgot one base then based that would be so amazing that would be so sick oh well we'll see but for now what is sss going to do double stalker production already to start things off at least same be able to last game so far now do we see again something like a twilight actually like if you were to go for something like blink here it could be pretty good gonna proxy oh i think proxy robo on a map like this where there is rocks at the back door",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 3440,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 153.6
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 336.47321428571433,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "e8eea04e40da"
+  }
+}

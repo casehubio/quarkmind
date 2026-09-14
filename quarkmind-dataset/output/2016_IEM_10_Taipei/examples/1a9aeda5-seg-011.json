@@ -1,0 +1,123 @@
+{
+  "id": "1a9aeda5-seg-011",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 15551,
+    "game_time_sec": 694.2,
+    "player": {
+      "race": "Protoss",
+      "minerals": 1296,
+      "gas": 435,
+      "supply_used": 145,
+      "supply_cap": 172,
+      "worker_count": 62,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 0,
+        "Oracle": 0,
+        "Observer": 1,
+        "Immortal": 3,
+        "WarpPrism": 1,
+        "Disruptor": 4
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 15129,
+          "type": "UNIT_BORN",
+          "unit": "DisruptorPhased"
+        },
+        {
+          "frame": 15147,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 15159,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 15177,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 15258,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 15291,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 15295,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 15492,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 15494,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 15550,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 76,
+        "MothershipCore": 2,
+        "Stalker": 6,
+        "Observer": 3,
+        "WarpPrism": 1,
+        "Disruptor": 6,
+        "Phoenix": 1,
+        "DisruptorPhased": 10,
+        "Immortal": 3,
+        "AdeptPhaseShift": 6
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": true,
+  "transition_description": "mid_game -> late_game",
+  "commentary": "ah it's difficult especially with how quickly warpersons are able to actually pick up units from further away fourth base is on the way warpers actually does spot that there so he's gonna warpin quite a few adept to put some harass on but he could get the robot so to the front here that'd be big and it's gonna get an easy snipe pound wow that's the mana robo yeah the one that you made too far out that gets sniped oh oh geez these warpers are there to be so careful i mean here are kind of fought to lose warper he needs to keep the pressure on himself to make sure that he can alleviate from the other side of the map oh that's surprising i think hero realizes that once again he's behind in this game so instead of trying to take the the natural fault base that you would take which is the other goal he takes this one solo for the like hidden base which could end up being spotted here right by sos but like having double disruptor production against your opponent who's only on one robo because he sniped it this is just great for sos here clearly try to stop the disruptor as once again we'll do those are models in tandem are very very powerful sos gonna be playing aggressive here i think in a minute he's gonna be moving out trying to get some good disruptor shots he's gonna be safe on his four bases with the cannon state is getting in static defense now what person is with this army wow but this is very dangerous okay don't want to get that blink tundra all he needs to keep our warpers in life it needs to do something and still another warper's him up towards the top or even the original warper's and try and do something catches a few of those stalkers there with the initial disruptor shot not quite able to kill the warper's him here and uh properly shut it down blink finally starts for hero well better than ever yeah good to have to do something i'm actually really surprised that sos didn't try to play more aggressive but i guess he was behind on the disruptor count and he realized that bit but still i i think i can somebody who doesn't have blink you have so much room to attack and get some big detonations i'm gonna move across here with this strong strong army he has at the moment disruptor doesn't catch a damn thing where the disruptors okay so there's four of them in the back here the supplies actually considering how this game has",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 14230,
+    "game_frame_end": 16872,
+    "game_time_start_sec": 635.3,
+    "game_time_end_sec": 753.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Prion Terraces",
+    "game_duration_sec": 990.2678571428572,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "1a9aeda55b1c"
+  }
+}

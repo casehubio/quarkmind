@@ -1,0 +1,108 @@
+{
+  "id": "74a6039a-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4001,
+    "game_time_sec": 178.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 135,
+      "gas": 162,
+      "supply_used": 33,
+      "supply_cap": 46,
+      "worker_count": 25,
+      "army_composition": {
+        "Stalker": 1,
+        "MothershipCore": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3490,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 3501,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 3628,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3651,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        },
+        {
+          "frame": 3661,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3663,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3772,
+          "type": "UNIT_BORN",
+          "unit": "Adept"
+        },
+        {
+          "frame": 3821,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 3888,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 3981,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 24,
+        "Adept": 2,
+        "AdeptPhaseShift": 4
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> early_aggression",
+  "commentary": "it's so it's it's an annoying so genuine annoying to actually catch up in your own nexus here as sos knowing that it's done there we go and he's gonna stick around here we're gonna have uh gonna poke on him if you're here or here where you supposed to put down the panels that you're natural that they're gonna be able to defend the center area he's gonna be almost impossible yeah it's uh two ramps and then oh gonna spot it oh been spotted you have been outed and he throws the pilot down right next to it I think heroes reaction has to be additional gateways here down the line they don't have to get them now because while gate only now started and for sos what is he gonna be though he's got a probing the main about to make something he's the third gateway so a lot of stalkers here to try and kill his opponents wow but the initial defense here is there from hero with his own pilot on you got the probe and the overcharged threats that was hero's probe uh going down so at least they can't really send over anything else on the other side to be counter attacks here uh as sos picks that up the stalker's putting away some a little bit of damage over here but there's no pilot down just yet hero is not going for additional gateways he's getting a robo instead",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 3356,
+    "game_frame_end": 4646,
+    "game_time_start_sec": 149.8,
+    "game_time_end_sec": 207.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 342.9464285714286,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "74a6039ae628"
+  }
+}

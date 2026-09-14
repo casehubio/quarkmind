@@ -1,0 +1,105 @@
+{
+  "id": "6f6b0577-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 5429,
+    "game_time_sec": 242.4,
+    "player": {
+      "race": "Protoss",
+      "minerals": 333,
+      "gas": 356,
+      "supply_used": 38,
+      "supply_cap": 47,
+      "worker_count": 23,
+      "army_composition": {
+        "Stalker": 7
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 4680,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 4961,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4977,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 4977,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 5069,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5197,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5261,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5264,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 5265,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5385,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 25,
+        "MothershipCore": 1,
+        "Stalker": 4
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "very quickly gets two of these raptors oh here's the mistakes out of SOS hero is trying to bay him in his trine I get the all toothed now that I think I saw this is really really scary here for him but at the same time all of his army is almost trapped in just rubs his gonna try and go for shots blinks forwards against all of that gets those down or even activates the barrier on some of these immortals and now he's gonna sacrifice a lot of stockers but he blinks up onto the high ground with the aid of the observer he might be trying to keep himself done I think he's doing everything he didn't get the nexus oh okay he needs to get in that that would be really silly he's trapped he's gonna lose all of this and hero is heading elsewhere with the rest of his army army supplies 70 it's still in favor of SOS but his army so far out of position he has to deal with this if he got this based I'll be amazing barrier gets activated onto those immortals and more disruptors",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 4961,
+    "game_frame_end": 5897,
+    "game_time_start_sec": 221.5,
+    "game_time_end_sec": 263.3
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

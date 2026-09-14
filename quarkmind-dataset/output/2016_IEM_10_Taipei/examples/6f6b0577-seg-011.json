@@ -1,0 +1,119 @@
+{
+  "id": "6f6b0577-seg-011",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 13704,
+    "game_time_sec": 611.8,
+    "player": {
+      "race": "Protoss",
+      "minerals": 338,
+      "gas": 549,
+      "supply_used": 131,
+      "supply_cap": 149,
+      "worker_count": 55,
+      "army_composition": {
+        "Stalker": 7,
+        "MothershipCore": 1,
+        "Observer": 1,
+        "Immortal": 4,
+        "Phoenix": 0,
+        "WarpPrism": 1,
+        "Disruptor": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 13341,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 13368,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13377,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13555,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 13574,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 13633,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 13636,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 13639,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 13642,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 13661,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 54,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Immortal": 4,
+        "WarpPrism": 1,
+        "Observer": 2,
+        "Phoenix": 6,
+        "Disruptor": 3,
+        "DisruptorPhased": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "supply is massively in favor here of SOS dark Templar on towards this base though he's actually shutting down some of the economy this is a good detonation I don't think he's got too many left six against seven he's even dumped numbers I can't believe he even dumped the numbers and taken down this Nexus as well if he wins this like he's to me is one the tournament this is ridiculous look he's he's put the economy back in his favor as hero and SOS is not there to attack because he doesn't know exactly how many disruptors there are so he traded those disruptor shots he lost on a bit more and he's like okay I got to slow down I got to pull back can he really do that with one excess less than his opponent and less mining right now SOS is separating up his army a little bit he needs to get that base knowing that it's very very important right now considering you lost his Nexus towards DTLAR who knows this more disruptor so the purification Nova once together the one's gonna come in there from SOS as he has really now smelled blood in the water that is the perfect opportunity he needs he can see a muscles as well SOS is truly gonna tap power down this position he loses a few units towards the back but he does not matter he found the key he needed to unlock this base and SOS here powering on for the victory he just needed that one connection and he got it in spade that was great stuff there from SOS GG he takes the series what a beauty pillie to end off this best of five SOS makes it to the finals my prediction may have been wrong but you know what I don't even care because Starcraft like this I can watch all day every day Calais that was a crazy series you're really",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 12686,
+    "game_frame_end": 14723,
+    "game_time_start_sec": 566.3,
+    "game_time_end_sec": 657.3
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

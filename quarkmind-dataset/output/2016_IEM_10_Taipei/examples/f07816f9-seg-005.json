@@ -1,0 +1,111 @@
+{
+  "id": "f07816f9-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 5748,
+    "game_time_sec": 256.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 220,
+      "gas": 206,
+      "supply_used": 47,
+      "supply_cap": 69,
+      "worker_count": 39,
+      "army_composition": {
+        "MothershipCore": 1,
+        "Oracle": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5398,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5406,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 5423,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 5435,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5526,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5535,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5635,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5667,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5669,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5690,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 34,
+        "MULE": 3,
+        "Marine": 12,
+        "WidowMine": 2,
+        "Medivac": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "him a little bit anyway he's gonna relocate the Widow mine I don't think the Oracle's gonna fly into that it's going towards the back mineral line there SOS by the way this time around didn't delay the modorship course so it's gonna have quite a bit of energy here down the line to really help with the defense oh my chase out that way oh very close yeah I think he spotted it yeah no what wow it attracts for just a second split second that was not supposed to happen no I told you that",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 5526,
+    "game_frame_end": 5971,
+    "game_time_start_sec": 246.7,
+    "game_time_end_sec": 266.6
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Dusk Towers",
+    "game_duration_sec": 570.7142857142858,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "f07816f9b5fb"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "id": "a1404d2d-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 3989,
+    "game_time_sec": 178.1,
+    "player": {
+      "race": "Protoss",
+      "minerals": 140,
+      "gas": 136,
+      "supply_used": 31,
+      "supply_cap": 54,
+      "worker_count": 26,
+      "army_composition": {
+        "Adept": 1,
+        "AdeptPhaseShift": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3582,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3609,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3623,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3745,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 3838,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3894,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3905,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3912,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3942,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3953,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 24,
+        "MULE": 1,
+        "Reaper": 1,
+        "KD8Charge": 1,
+        "Marine": 2
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> early_aggression",
+  "commentary": "is traditional early gas here do we see bion playing something really different here i feel like he he almost has to to be honest he needs to change something up sure he tried last game with the proxy didn't work but still if we keep some playing the same as he's been it's just gonna be so hard i feel for bion to be able to pull it off and ss actually opening double gateway here interesting with double gas so he's not gonna go for any kind of early game nexus not probable eventually go over there he put bion to complete that wall off he might be afraid that bion tries for something like a one based all in which on this map can be really really strong bion is gonna send his s cv out as well whilst this command center goes down we saw eutomo actually on this very map against t drogo a dream hack semi finals try for one base build which back then was defended but that doesn't mean it can't outwork it can be very very strong so ss maybe a little bit wary of that wanted to play a little bit more on the safer side of things so opening with the double gateway here is gonna be able to go for double stalkers on the map where",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 3364,
+    "game_frame_end": 4615,
+    "game_time_start_sec": 150.2,
+    "game_time_end_sec": 206.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 412.67857142857144,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a1404d2d8439"
+  }
+}

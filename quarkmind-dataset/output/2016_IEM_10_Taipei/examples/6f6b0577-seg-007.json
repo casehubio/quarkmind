@@ -1,0 +1,117 @@
+{
+  "id": "6f6b0577-seg-007",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 8393,
+    "game_time_sec": 374.7,
+    "player": {
+      "race": "Protoss",
+      "minerals": 278,
+      "gas": 263,
+      "supply_used": 67,
+      "supply_cap": 78,
+      "worker_count": 32,
+      "army_composition": {
+        "Stalker": 7,
+        "MothershipCore": 1,
+        "Observer": 1,
+        "Immortal": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 7748,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7892,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7937,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7984,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8041,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        },
+        {
+          "frame": 8113,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 8144,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8202,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8228,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8380,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 30,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Immortal": 1,
+        "WarpPrism": 1,
+        "Observer": 1,
+        "Phoenix": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "for hero 71 armies to play for hero 101 for SOS can he do it somehow he's gonna need some big detonations but right now SOS is the one with a great position here is the one who could just go for that for base and get a cancel on it stockers the remaining of the walls stop blinking get themselves a few pro's build time he's still buying time the entire army's being pulled back he's learned and he's just wonders oh good bye the structures so how many did you lose this might just be good life yeah he's he's killed everything like this just killed so much supply this might just be game this might be a winning movie of for SOS where does he spend is he was so bossy because if he runs or blink forward he would have sniped all of these disruptors and not lost any stalkers yeah because that was all of the shot of the disruptors so we took a big gamble once again and this one might have paid off with the series win here heroes stalkers actually called themselves one disruptor up the front they're actually all leading with charge here SOS is so if he would have been super careful about that maybe he could have got more but he doesn't want to take the chance doesn't want to take the risk he needs to replenish his disruptor count completely he's got only two against seven this is gonna be so hard for hero to come back against",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 7781,
+    "game_frame_end": 9005,
+    "game_time_start_sec": 347.4,
+    "game_time_end_sec": 402.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

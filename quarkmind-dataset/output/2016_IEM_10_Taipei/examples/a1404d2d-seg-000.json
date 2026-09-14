@@ -2,82 +2,77 @@
   "id": "a1404d2d-seg-000",
   "version": "1.0",
   "game_state": {
-    "game_frame": 4622,
-    "game_time_sec": 206.3,
+    "game_frame": 168,
+    "game_time_sec": 7.5,
     "player": {
       "race": "Protoss",
-      "minerals": 35,
-      "gas": 163,
-      "supply_used": 39,
-      "supply_cap": 54,
-      "worker_count": 29,
-      "army_composition": {
-        "Adept": 2,
-        "AdeptPhaseShift": 2
-      },
+      "minerals": 40,
+      "gas": 0,
+      "supply_used": 13,
+      "supply_cap": 15,
+      "worker_count": 12,
+      "army_composition": {},
       "tech": [],
       "buildings": {
         "Nexus": 1
       },
       "recent_events": [
         {
-          "frame": 4154,
-          "type": "UNIT_BORN",
-          "unit": "Probe"
-        },
-        {
-          "frame": 4245,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 4254,
-          "type": "UNIT_BORN",
-          "unit": "MULE"
-        },
-        {
-          "frame": 4279,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 4341,
-          "type": "UNIT_BORN",
-          "unit": "Marine"
-        },
-        {
-          "frame": 4352,
-          "type": "UNIT_BORN",
-          "unit": "Marine"
-        },
-        {
-          "frame": 4487,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "SCV"
         },
         {
-          "frame": 4531,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "MULE"
+          "unit": "SCV"
         },
         {
-          "frame": 4565,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "AdeptPhaseShift"
+          "unit": "SCV"
         },
         {
-          "frame": 4601,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "AdeptPhaseShift"
+          "unit": "SCV"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
         }
       ]
     },
     "opponent": {
       "race": "Terran",
       "known_units": {
-        "SCV": 25,
-        "MULE": 3,
-        "Reaper": 1,
-        "KD8Charge": 2,
-        "Marine": 4
+        "SCV": 12
       },
       "known_buildings": {
         "CommandCenter": 1
@@ -85,15 +80,15 @@
     }
   },
   "phase": "opening",
-  "phase_transition": true,
-  "transition_description": "opening -> mid_game",
-  "commentary": "mine opener is just not hitting home here for him at all the thing is though if he was something different then like play a commencing refers into like very greedy third commencing that's also a massive gamble like you get the wrong hand of that you know what actually like i feel like sos calculates everything so well that the one time you have finally tried that he hasn't dissipated in a kill suit anyway you just can't win cannot believe and level up crest is gonna be our next map here bion right now getting run over the master of mind games sos from championship to championship is just getting the better end of every single engagement is liberally in the mind as well as on the battlefield what he's supposed to do june has already done it recently he he'd be sos 2 0 in the ssl qualifier so he's gonna have to find some of that will power that he had recently and maybe a little bit of good fortune definitely will help as well because again like this this kind of situation you just saw like when it happens to you it definitely leaves like a soul taste in in your throat like it's yeah was not ideal for sure even though like you know as a tern here you know the pro the proto so pannan doesn't have detection back at home but you never gonna have enough back at home we just the marines and the scvs against a proto as smart as sos that can just kite back and the war prism you know everybody talks about the adept and all good it is but the war prism being able to pick up units from so far away so pixie d.a. so good yeah really is just say about a drop them and get back going all right okay so let's get into this down to the bottom left hand corner he is one game away from complete elimination it is x teams peel young i can't get away from doing done a one and because you said he doing a do reassles so you you screwed yourself and maybe and up to the top right hand corner we have our blue protoss representing jenna green wings it is s os playing so well like i can't believe the series we've had today they've been great series every single one of them again though with a pretty early scouts not the not maybe not as fast as we saw earlier here from ss and bion is traditional early gas here do we see bion playing something really different here i feel like he he almost has to to be honest he needs to change something up sure he tried last game with the proxy didn't work but still if we keep some playing the same as he's been it's just gonna be so hard i feel for bion to be able to pull it off and ss actually opening double gateway here interesting with double gas so he's not gonna go for any kind of early game nexus not probable eventually go over there he put bion to complete that wall off he might be afraid that bion tries for something like a one based all in which on this map can be really really strong bion is gonna send his s cv out as well whilst this command center goes down we saw eutomo actually on this very map against t drogo a dream hack semi finals try for one base build which back then was defended but that doesn't mean it can't outwork it can be very very strong so ss maybe a little bit wary of that wanted to play a little bit more on the safer side of things so opening with the double gateway here is gonna be able to go for double stalkers on the map where i've talked about this earlier when we saw it played in pvp the natural is very very white there is no bunker that you can make on this natural that will cover all of it so if you go for double stalker like this and a modorship core you have a lot of potential to do quite a bit of damage i wonder if ss wants to go for some sort of proxy as well with it like maybe something like a robo or if you want to maybe throw down some pion to go for some overcharging to go with this i see vina gonna fortunately pay for it so oh wait he didn't see that pylon down towards the bottom yeah absolutely i wonder what this is exactly though oh actually wait ss in the msi mga over in theater when he played innovation in semi finals hmm he had this great one base blink which we don't see anymore and nobody would ever expect so not opening the way he has on the map like this where there is so much room around the main to blink into it yeah over there you can first go into pylon and overcharge them and kill as much as you can actually this is gonna get shut down because he messed up but yeah he can just open with some aggression here and then behind this go oh it's a dark shrine uh oh i thought he might be blinked but maybe because the pylon got sniped here he was like all right it's gonna be harder well then suppose to go for a lot of stalker stuff close to that position so i'm gonna go for that shrine he's not gonna expect that kill the brook oh okay let's go and get another pylon down here oh that's what what's all widow mine oh good job buddy you've you've paid for yourself now but i think honestly like this if he had if he was going for blink right now this would be three two already i would just say like it's over but the fact that sos is going for dt's gives him a serious chance to still win this because john i feel like he might not be able to anticipate that yeah now sos does need a proxy pylon here to start very very soon will be on get any bay will his canis open his base probably not because it's a very low econ game he wants to spam those mules here yeah and he's gonna be about can he have a scan on time and more scans down the line to defend his ddts here and behind this sos does go for blink i still see another pylon being proxy to forwards here does beyond as he's trying to go for that counter drop place of what is going on shades gonna head down in oh actually could have gone in yeah they just stopped for some reason oh yeah actually goes up to the high ground for the bit oh that's a big deal actually killing that if you could kill the the addon here yeah there's then dts tries to get what he can but doesn't in the end there's two dot time plus gonna walk in he has energy for a scan and the less i wonder actually what dts are gonna go for i guess like the depot and then the greens maybe well get center here and there's actually really not much to deal with that so did he did he was not going into the into the main here was it lowered wow and that's not good that's gonna escape no oh my god it's got what won't help that would help i can't believe this he survives wow so bune's gonna evacuate out there there's more scans but not s always gonna be the one on two bases a raven starts that's so brilliant oh love it take lab on the stopboard with a mine honestly like this is still good for bune i think even though ss somehow it's gonna have a natural yeah i mean like there you go gg better be crazy one those dts not quite",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "mine opener is just not hitting home here for him at all the thing is though if he was something different then like play a commencing refers into like very greedy third commencing that's also a massive gamble like you get the wrong hand of that you know what actually like i feel like sos",
   "segment": {
-    "type": "battle",
+    "type": "expansion",
     "game_frame_start": 0,
-    "game_frame_end": 9244,
+    "game_frame_end": 336,
     "game_time_start_sec": 0.0,
-    "game_time_end_sec": 412.7
+    "game_time_end_sec": 15.0
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

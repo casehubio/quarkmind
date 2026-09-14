@@ -2,19 +2,17 @@
   "id": "421a88ce-seg-002",
   "version": "1.0",
   "game_state": {
-    "game_frame": 7078,
-    "game_time_sec": 316.0,
+    "game_frame": 3640,
+    "game_time_sec": 162.5,
     "player": {
       "race": "Protoss",
-      "minerals": 110,
-      "gas": 362,
-      "supply_used": 32,
-      "supply_cap": 62,
-      "worker_count": 26,
+      "minerals": 135,
+      "gas": 40,
+      "supply_used": 27,
+      "supply_cap": 39,
+      "worker_count": 22,
       "army_composition": {
-        "MothershipCore": 1,
-        "Stalker": 0,
-        "Oracle": 0
+        "MothershipCore": 1
       },
       "tech": [],
       "buildings": {
@@ -22,46 +20,51 @@
       },
       "recent_events": [
         {
-          "frame": 5935,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 5944,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 5945,
-          "type": "UNIT_BORN",
-          "unit": "Phoenix"
-        },
-        {
-          "frame": 6138,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 6248,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 6313,
+          "frame": 2301,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 6335,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 6685,
+          "frame": 2425,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 6847,
+          "frame": 2537,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 2661,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3078,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        },
+        {
+          "frame": 3238,
+          "type": "UNIT_BORN",
+          "unit": "Adept"
+        },
+        {
+          "frame": 3312,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 3441,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        },
+        {
+          "frame": 3472,
           "type": "UNIT_DIED"
         },
         {
-          "frame": 6930,
+          "frame": 3479,
           "type": "UNIT_BORN",
           "unit": "Probe"
         }
@@ -70,28 +73,26 @@
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 24,
+        "Probe": 23,
         "MothershipCore": 1,
-        "Adept": 3,
-        "AdeptPhaseShift": 7,
-        "Stalker": 1,
-        "Phoenix": 2
+        "Adept": 1,
+        "AdeptPhaseShift": 1
       },
       "known_buildings": {
         "Nexus": 1
       }
     }
   },
-  "phase": "early_aggression",
-  "phase_transition": true,
-  "transition_description": "early_aggression -> mid_game",
-  "commentary": "he has no pylon at the ramp so now hero is gonna proxy his own pylons there is already one centry though if sos manages to get more he's gonna need a lot of pylons though yeah this ramp and that probe is being chased on this is super important i mean if he wants to get in himself yet the pylons they're from to warp him but it doesn't even need to cancel it to let them in he can just kill this part probe on pylon off and the all the centry goes down as well so the force you'll blocks out for a moment but it's not long enough all hero has a massive army in comparison sos has nothing here he's got one stalker and one more to ship go through his name i think you might just die i think so there goes some other ship core he's gonna be out take down a few of these stalkers as well",
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "so already he's so good his his own point whoa uh oh triple pylon hero in the main base this is not gonna do anything i think sos is gonna have his own overcharges i'm not sure why he's not overcharging here just yet maybe he's afraid i hear we're just canceling remake the pylon elsewhere and actually here oh my god he's making more and more pylons sos is gonna have to use",
   "segment": {
-    "type": "battle",
-    "game_frame_start": 6685,
-    "game_frame_end": 7472,
-    "game_time_start_sec": 298.4,
-    "game_time_end_sec": 333.6
+    "type": "macro_economy",
+    "game_frame_start": 3472,
+    "game_frame_end": 3808,
+    "game_time_start_sec": 155.0,
+    "game_time_end_sec": 170.0
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

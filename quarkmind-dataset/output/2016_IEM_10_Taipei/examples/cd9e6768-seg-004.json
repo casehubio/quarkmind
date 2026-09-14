@@ -1,0 +1,109 @@
+{
+  "id": "cd9e6768-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 3259,
+    "game_time_sec": 145.5,
+    "player": {
+      "race": "Zerg",
+      "minerals": 195,
+      "gas": 12,
+      "supply_used": 28,
+      "supply_cap": 36,
+      "worker_count": 20,
+      "army_composition": {
+        "Larva": 3,
+        "Overlord": 3,
+        "Zergling": 4
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3066,
+          "type": "UNIT_BORN",
+          "unit": "Zergling"
+        },
+        {
+          "frame": 3066,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3076,
+          "type": "UNIT_BORN",
+          "unit": "Zergling"
+        },
+        {
+          "frame": 3076,
+          "type": "UNIT_BORN",
+          "unit": "Zergling"
+        },
+        {
+          "frame": 3076,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3076,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 3076,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3088,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3164,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 3227,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 21,
+        "Marine": 3,
+        "MULE": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Very monobilled more so than I feel like any other. There was like the odd All-in to his roach all-ins but other than that it was as exciting as Taren versus Zerg has been for the past few years like it Basically was I mean wings of liberty you had okay you open up reactor halian delay the third mutus come out boom boom Does it get brood lords they win if they don't you win and then in heart of this warm? You know you you went to the marine widow mine push and I think that was a little bit more dynamic You usually had more back and forth rather than just like trying to push and do in festers while they turtle up to To brood lords, but in legacy of the void There's a lot better options on late game for both sides I feel I feel the liberator is a phenomenal new tool. It's been added for Taren versus there Also early game. I think Zerg you're seeing different all-ins from them You're seeing non-aggression because that that hive is so devastatingly powerful and it's a different unit composition Yeah, Zerg has more options in the mid game when it comes to how they want to play it out You know, we it's not uncommon of course. You know, please still doing thing push now trying to get a little bit pressure But like ravagers I think we're such They are such a missing link from the first two thirds of the life of Starcraft you so far",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 2620,
+    "game_frame_end": 3899,
+    "game_time_start_sec": 117.0,
+    "game_time_end_sec": 174.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "Polt",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Dusk Towers",
+    "game_duration_sec": 804.4196428571429,
+    "vod_url": "https://www.youtube.com/watch?v=iDDY_4VLP5k",
+    "subtitle_source": "whisper",
+    "replay_hash": "cd9e6768a888"
+  }
+}

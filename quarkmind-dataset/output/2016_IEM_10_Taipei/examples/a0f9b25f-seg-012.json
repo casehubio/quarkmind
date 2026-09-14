@@ -1,0 +1,115 @@
+{
+  "id": "a0f9b25f-seg-012",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 11556,
+    "game_time_sec": 515.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 885,
+      "gas": 233,
+      "supply_used": 129,
+      "supply_cap": 172,
+      "worker_count": 70,
+      "army_composition": {
+        "Stalker": 1,
+        "Observer": 2,
+        "MothershipCore": 1,
+        "WarpPrism": 1,
+        "Immortal": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 11506,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 11508,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 11512,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 11515,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 11525,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11548,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 11549,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11551,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 11551,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11555,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 56,
+        "MULE": 9,
+        "Marine": 37,
+        "WidowMine": 4,
+        "Medivac": 7,
+        "Liberator": 1,
+        "SiegeTank": 1,
+        "Marauder": 9
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Yes, John looking intense here as we're about to get into map number one on ruins of Sarah's a little bit of the the mouth open actually. Stowing down you a little bit as SOS also looking tense here in the starts. All right, and we are back and good to go. So up to the top left as well, we have our pollu protest. It is Jinag Greenwings SOS. Going for Nexus first in map number one. What else? All right, so what a way to open up here as we do have the Nexus first. I'm going to be going down here for SOS Bjorn, is he likely to go for some crazy aggression here? Is he likely to try and do so? I mean cross-maps on ruins, sorry, it's one of the furthest bonding positions you can have in",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 10995,
+    "game_frame_end": 12118,
+    "game_time_start_sec": 490.8,
+    "game_time_end_sec": 541.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

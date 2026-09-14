@@ -1,0 +1,114 @@
+{
+  "id": "6f6b0577-seg-009",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 10450,
+    "game_time_sec": 466.5,
+    "player": {
+      "race": "Protoss",
+      "minerals": 343,
+      "gas": 313,
+      "supply_used": 91,
+      "supply_cap": 94,
+      "worker_count": 46,
+      "army_composition": {
+        "Stalker": 7,
+        "MothershipCore": 1,
+        "Observer": 1,
+        "Immortal": 3,
+        "Phoenix": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 10030,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        },
+        {
+          "frame": 10081,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10192,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10215,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10267,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 10276,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 10279,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 10283,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 10289,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 10300,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 44,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Immortal": 3,
+        "WarpPrism": 1,
+        "Observer": 1,
+        "Phoenix": 3
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "great series a fantastic series I'm what a game to finish he offers well down towards the middle it's a slight trade going off here but it's just blink stalkers the blink stalkers really he sees the did that attempt line towards the middle there's so much action everywhere all the time this is crazy like this DT has been doing distance for a very long time in the middle of the map making sure he kept the vision as much as he could and behind these stalkers on the top right hand side I still trying to find some room here to harass a little bit but SOS his army is huge though 125 army supply in this oh he actually starts gravity boosters here he's gonna get instructors he needs to keep those alive he's actually sacrificing some of the stalkers to get one of them yeah it's worth it",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 10081,
+    "game_frame_end": 10820,
+    "game_time_start_sec": 450.0,
+    "game_time_end_sec": 483.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

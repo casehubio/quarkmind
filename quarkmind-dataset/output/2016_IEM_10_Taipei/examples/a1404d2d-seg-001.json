@@ -1,0 +1,106 @@
+{
+  "id": "a1404d2d-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1850,
+    "game_time_sec": 82.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 395,
+      "gas": 0,
+      "supply_used": 19,
+      "supply_cap": 23,
+      "worker_count": 19,
+      "army_composition": {},
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 558,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 722,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 829,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1039,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1144,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1275,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1415,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1511,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1686,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1747,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 18
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "a massive gamble like you get the wrong hand of that you know what actually like i feel like sos calculates everything so well that the one time you have finally tried that he hasn't dissipated in a kill suit anyway you just can't win cannot believe and level up crest is gonna be our next map here bion right now getting run over the master of mind games sos from championship to championship is just getting the better end of every single engagement is liberally in the mind as well as on the battlefield what he's supposed to do june has already done it recently he he'd be sos 2 0 in the ssl qualifier so he's gonna have to find some of that will power that he had recently and maybe a little bit of good fortune definitely will help as well because again like this this kind of situation you just saw like when it happens to you it definitely leaves like a soul taste in in your throat like it's yeah was not ideal for sure even though like you know as a tern here you know the pro the proto so pannan doesn't have detection back at home but you never gonna have enough back at home we just the marines and the scvs against a proto as smart as sos that can just kite back and the war prism you know everybody talks about the adept and all good it is but the war prism being able to pick up units from so far away so pixie d.a. so good yeah really is just say about a drop them and get back going all right okay so let's get into this down to the bottom left hand corner he is one game away from complete elimination it is x teams peel young i can't get away from doing done a one and because you said he doing a do reassles so you you screwed yourself and maybe and up to the top right hand corner we have our blue protoss representing jenna green wings it is s os playing so well like i can't believe the series we've had today they've been great series every single one of them again though with a pretty early scouts not the not maybe not as fast as we saw earlier here from ss and bion is traditional early gas here do we see bion playing something really different here i feel like he",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 3364,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 150.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 412.67857142857144,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a1404d2d8439"
+  }
+}

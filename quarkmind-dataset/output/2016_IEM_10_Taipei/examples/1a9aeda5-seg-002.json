@@ -2,27 +2,19 @@
   "id": "1a9aeda5-seg-002",
   "version": "1.0",
   "game_state": {
-    "game_frame": 15860,
-    "game_time_sec": 708.0,
+    "game_frame": 3856,
+    "game_time_sec": 172.1,
     "player": {
       "race": "Protoss",
-      "minerals": 1179,
-      "gas": 355,
-      "supply_used": 157,
-      "supply_cap": 172,
-      "worker_count": 62,
+      "minerals": 95,
+      "gas": 151,
+      "supply_used": 29,
+      "supply_cap": 54,
+      "worker_count": 23,
       "army_composition": {
-        "Adept": 0,
-        "AdeptPhaseShift": 0,
-        "MothershipCore": 1,
-        "Stalker": 3,
-        "Phoenix": 0,
-        "Oracle": 0,
-        "Observer": 1,
-        "Immortal": 3,
-        "WarpPrism": 1,
-        "Disruptor": 4,
-        "DisruptorPhased": 0
+        "Adept": 1,
+        "AdeptPhaseShift": 1,
+        "MothershipCore": 1
       },
       "tech": [],
       "buildings": {
@@ -30,80 +22,77 @@
       },
       "recent_events": [
         {
-          "frame": 15562,
+          "frame": 3042,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 15566,
+          "frame": 3291,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 3298,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 15710,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 15730,
+          "frame": 3342,
           "type": "UNIT_BORN",
-          "unit": "Probe"
+          "unit": "Stalker"
         },
         {
-          "frame": 15742,
+          "frame": 3391,
           "type": "UNIT_BORN",
-          "unit": "DisruptorPhased"
+          "unit": "Adept"
         },
         {
-          "frame": 15790,
+          "frame": 3406,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 3455,
           "type": "UNIT_DIED"
         },
         {
-          "frame": 15790,
+          "frame": 3521,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        },
+        {
+          "frame": 3566,
           "type": "UNIT_DIED"
         },
         {
-          "frame": 15790,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 15790,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 15790,
-          "type": "UNIT_DIED"
+          "frame": 3761,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
         }
       ]
     },
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 79,
-        "MothershipCore": 2,
-        "Stalker": 6,
-        "Observer": 3,
-        "WarpPrism": 1,
-        "Disruptor": 6,
-        "Phoenix": 1,
-        "DisruptorPhased": 10,
-        "Immortal": 3,
-        "AdeptPhaseShift": 6
+        "Probe": 23,
+        "MothershipCore": 1,
+        "Stalker": 2
       },
       "known_buildings": {
         "Nexus": 1
       }
     }
   },
-  "phase": "mid_game",
+  "phase": "opening",
   "phase_transition": true,
-  "transition_description": "mid_game -> late_game",
-  "commentary": "ah it's difficult especially with how quickly warpersons are able to actually pick up units from further away fourth base is on the way warpers actually does spot that there so he's gonna warpin quite a few adept to put some harass on but he could get the robot so to the front here that'd be big and it's gonna get an easy snipe pound wow that's the mana robo yeah the one that you made too far out that gets sniped oh oh geez these warpers are there to be so careful i mean here are kind of fought to lose warper he needs to keep the pressure on himself to make sure that he can alleviate from the other side of the map oh that's surprising i think hero realizes that once again he's behind in this game so instead of trying to take the the natural fault base that you would take which is the other goal he takes this one solo for the like hidden base which could end up being spotted here right by sos but like having double disruptor production against your opponent who's only on one robo because he sniped it this is just great for sos here clearly try to stop the disruptor as once again we'll do those are models in tandem are very very powerful sos gonna be playing aggressive here i think in a minute he's gonna be moving out trying to get some good disruptor shots he's gonna be safe on his four bases with the cannon state is getting in static defense now what person is with this army wow but this is very dangerous okay don't want to get that blink tundra all he needs to keep our warpers in life it needs to do something and still another warper's him up towards the top or even the original warper's and try and do something catches a few of those stalkers there with the initial disruptor shot not quite able to kill the warper's him here and uh properly shut it down blink finally starts for hero well better than ever yeah good to have to do something i'm actually really surprised that sos didn't try to play more aggressive but i guess he was behind on the disruptor count and he realized that bit but still i i think i can somebody who doesn't have blink you have so much room to attack and get some big detonations i'm gonna move across here with this strong strong army he has at the moment disruptor doesn't catch a damn thing where the disruptors okay so there's four of them in the back here the supplies actually considering how this game has gone here was done a fantastic job of staying alive and somehow stabilizing he's ahead in walkers if he doesn't die here and like staying this game longer he might have a shot i really thought like sos would find a way to attack here sometime soon and you know sealed the deal still one dancer i'm bouncing back against this i mean another disruptor wall is gonna come out but it's not gonna connect with sos is small poke forwards as long as sos can trade out without having blink he can trade",
+  "transition_description": "opening -> early_aggression",
+  "commentary": "even take the gold if he somehow realize that there is an access but hero is not gonna be able to know so now sos is the one in the driver's seat he's the one setting up the pace and i think hero might just try to be aggressive here because of this yeah fucking like it two stalkers already rally down all woods haha to fight him in so funny he just makes a fight on his leg hey i'm for real i'm for real pay attention to me you can't be aggressive my modorship called who almost almost be reaching your base and hero actually pulls back with his stalkers he pulls back to kill the pattern he's made oh my god well how can you not respect this like you can know yeah sos is such a master that's so sick and meanwhile behind it he's just gonna get himself a nice economical",
   "segment": {
     "type": "battle",
-    "game_frame_start": 14230,
-    "game_frame_end": 17491,
-    "game_time_start_sec": 635.3,
-    "game_time_end_sec": 780.8
+    "game_frame_start": 3455,
+    "game_frame_end": 4257,
+    "game_time_start_sec": 154.2,
+    "game_time_end_sec": 190.0
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

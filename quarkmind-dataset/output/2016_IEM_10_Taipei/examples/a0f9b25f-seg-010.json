@@ -1,0 +1,117 @@
+{
+  "id": "a0f9b25f-seg-010",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 9855,
+    "game_time_sec": 440.0,
+    "player": {
+      "race": "Protoss",
+      "minerals": 685,
+      "gas": 481,
+      "supply_used": 110,
+      "supply_cap": 125,
+      "worker_count": 69,
+      "army_composition": {
+        "Stalker": 1,
+        "Observer": 3,
+        "MothershipCore": 1,
+        "WarpPrism": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 9382,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9397,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9431,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 9436,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 9444,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 9445,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9484,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 9486,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 9487,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 9687,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 51,
+        "MULE": 6,
+        "Marine": 24,
+        "WidowMine": 2,
+        "Medivac": 3,
+        "Liberator": 1,
+        "SiegeTank": 1,
+        "Marauder": 3
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "place finisher. Let's head over to the commentary team for this one. Of course, it's Kaelar is in Todd. It is time for the grand finals here of the until extreme masters Taipei hype a bound here as we are going to be starting things off on ruins of Sarah's here in this best of seven between SOS and",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 9687,
+    "game_frame_end": 10023,
+    "game_time_start_sec": 432.5,
+    "game_time_end_sec": 447.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

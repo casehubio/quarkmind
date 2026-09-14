@@ -1,0 +1,115 @@
+{
+  "id": "6f6b0577-seg-014",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 22623,
+    "game_time_sec": 1010.0,
+    "player": {
+      "race": "Protoss",
+      "minerals": 813,
+      "gas": 158,
+      "supply_used": 138,
+      "supply_cap": 142,
+      "worker_count": 38,
+      "army_composition": {
+        "Stalker": 4,
+        "MothershipCore": 0,
+        "Observer": 2,
+        "Immortal": 3,
+        "Phoenix": 0,
+        "WarpPrism": 1,
+        "Disruptor": 6,
+        "AdeptPhaseShift": 0,
+        "DisruptorPhased": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 22159,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 22170,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 22170,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 22189,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 22194,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 22206,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 22214,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 22288,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 22484,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 22606,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 59,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Immortal": 4,
+        "WarpPrism": 1,
+        "Observer": 2,
+        "Phoenix": 9,
+        "Disruptor": 19,
+        "DisruptorPhased": 37
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "late_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "well you know even if I try to stop this I don't think I'm going to be able to um and and then he made a mistake of not making his second pylon as well and so he said that regardless he knew he was going to lose that as long as he's able to stop it it should have been okay okay but I mean we know how that went yeah it was a close one though of course I wanted to ask about game two as well then that was a game where I feel like it got off to a really good start for hero I felt like he had a anise lead but SOS was just much more commanding in the disruptor battles so I just wanted to ask your thoughts on what makes you what made you so confident with the disruptor fights then was that your counter attacks distracting hero what's the secret to your disruptor micro now the second game is the first time I've been doing well in the first game I think Junho was very well done but now I think the next game of the game is the game of the game and then I think I think I was going to win Oh um okay he says I controlling a disruptor is not something that a human can do. It's just really hard. So if you're on the side of avoiding the disruptor, then no matter how fast your hand moves, you're always going to miss something. And so he felt like if he was on the side of always constantly dishing that out, he would be on the better end and he feels that he was able to do better that way. Okay, yeah, pal with the aggression and put the pressure on the opponent. All right, one last question. Then the final game was absolute madness. I mean, it started off so well for USOS. You scouted the natural, you saw this very greedy build and you started to punish it, but hero was very close to bringing it back. So I just want to hear about the emotional rollercoaster that would have been in that game when you're so close to winning and then hero almost clinches it back. He said, last game. Oh gosh, that was actually a lot. He came to a point where he realized that it's better for him to just not expand and just focus on his what's the word? Distructors? I'm sorry. I knew it in Korean. I was like, he wants to focus on the disruptors and really play that game and he realized he knew all the situations going into it. He said that he felt like he knew how things were going to play out. He just needed to focus on mainly those disruptors and play it out that way. All right, final question. How did he feel when he got all those 60 disruptors up that ramp? Because just near the end of that game. I thought it was important because he felt that if he splits it, that he was only facing forward and he was not going to be able to detect that he was coming from a different angle and so that was very important for him. All right, then final quick question. Then obviously looking forward about the grand finals. Just kind of an overall question with a couple small ones about Bjorn. Is he worried about Bjorn? There's been a recent patch recently. How is he feeling? Is he confident? Maybe disadvantage because Bjorn knew that he was going up against a protest no matter what and waiting and ready? OK.energetic. Okay. Okay. He's lost a lot to Terran before the patch anyway, so he's like, that doesn't really matter to me anyway. And? Because he's good at it, he's good at it. I think he's going to be able to get a good result.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 19435,
+    "game_frame_end": 25812,
+    "game_time_start_sec": 867.6,
+    "game_time_end_sec": 1152.3
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

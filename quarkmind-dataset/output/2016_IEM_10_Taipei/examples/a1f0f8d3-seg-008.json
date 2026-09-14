@@ -1,0 +1,106 @@
+{
+  "id": "a1f0f8d3-seg-008",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 10051,
+    "game_time_sec": 448.7,
+    "player": {
+      "race": "Protoss",
+      "minerals": 785,
+      "gas": 405,
+      "supply_used": 70,
+      "supply_cap": 70,
+      "worker_count": 43,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 0,
+        "Oracle": 0,
+        "Stalker": 1,
+        "Phoenix": 8
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 9861,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9897,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9900,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9935,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9973,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9973,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10008,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10022,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10036,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10046,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 50,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 5
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "just gonna be so difficult to hold a he's gonna be able to warp in very very aggressively with all of this he's out on the map he's trying to catch his uppeners phoenixes here it's not gonna be enough this is gonna be so bad for him he's gonna lose that pylon at the front he needs another phone over charge but he barely has the energy to actually get any more after that and the pylon's gonna die anywhere that's gonna underpower all of this phoenixes are gonna be able to pick up a few of these stalkers he needs more stalkers here there's hero though to continue this on oh he might have enough we just the phoenixes the list is a great srs went straight for the his uppeners phoenix killed them all but he loses a lot of the damage here from the phoenix when he was in the pit of thankfully he had a lot of energy to keep picking things up he might be able to kill all of this with phoenix alone with just a little bit of extra firepower on the ground hero might have attacked a little bit too early here if you waited for one or two more psych psycho weapon but this is something what in there is no detection there is no robo you need to one of these ramp it's all there's the force field there's the force field does he see it i think that's what ss you can even see it it just gets it oh he saw it walking on it",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 9378,
+    "game_frame_end": 10725,
+    "game_time_start_sec": 418.7,
+    "game_time_end_sec": 478.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 478.7946428571429,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "a1f0f8d31044"
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "id": "15ad08e3-seg-006",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7864,
+    "game_time_sec": 351.1,
+    "player": {
+      "race": "Protoss",
+      "minerals": 622,
+      "gas": 472,
+      "supply_used": 71,
+      "supply_cap": 77,
+      "worker_count": 48,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "Sentry": 1,
+        "Oracle": 0,
+        "MothershipCore": 1,
+        "Archon": 0,
+        "Observer": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 7621,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7641,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7643,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7657,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7661,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 7706,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 7715,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7718,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7764,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7851,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 45,
+        "MULE": 4,
+        "Marine": 22,
+        "WidowMine": 2,
+        "Medivac": 1,
+        "SiegeTank": 2,
+        "Liberator": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "economy and then you will be in trouble oh that's painful this sv just barely skirts past this and he already sent a reprieve as well so he was sending this sv out to maybe spot actually he might proxy a factory now that i look at this oh bum bum bum again that's what's gonna be your robot bum bum bum okay i'll help just brook lose well we said he needed to change things up looks like that's what he's doing the funny thing is is he might still go for widow mines and then just try and drop them in but it's just like closer so the timings are all a bit wacky this is interesting what is going on the robo proxy i guess just in a mortal bus like yeah i'm not sure what ss was like exactly aiming for here maybe i think maybe like immortal production into like bursting down this step all with a lot of gateways down the line and move up the into the main base with adept's because like if you take down that wall from taren then the depots not being there you can just send in adept's and kill your opponent actually he doesn't want to send this reprieve in such a way that it would lure it back towards these buildings to spot so he's gonna be careful about how he moves with that it's gonna die warpism is on the way here from ss and at least one more gateway so i guess he's gonna be some kind of a dead a dead drop here the vision of the automaton 2000 spots that oh the reaper died i got it finally and bion is not producing anything here with the factory so maybe okay it was late i don't know why i i feel like a liberator maybe should get a liberator than",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 6871,
+    "game_frame_end": 8858,
+    "game_time_start_sec": 306.7,
+    "game_time_end_sec": 395.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Prion Terraces",
+    "game_duration_sec": 577.8125,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "15ad08e3ed7f"
+  }
+}

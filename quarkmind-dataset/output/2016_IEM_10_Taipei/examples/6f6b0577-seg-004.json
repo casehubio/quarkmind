@@ -1,0 +1,107 @@
+{
+  "id": "6f6b0577-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6118,
+    "game_time_sec": 273.1,
+    "player": {
+      "race": "Protoss",
+      "minerals": 113,
+      "gas": 244,
+      "supply_used": 44,
+      "supply_cap": 47,
+      "worker_count": 23,
+      "army_composition": {
+        "Stalker": 7,
+        "MothershipCore": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5197,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5261,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5264,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 5265,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5385,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 5448,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5561,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5767,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        },
+        {
+          "frame": 5950,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6040,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 25,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Immortal": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "shots go off he's got to be so careful though SOS doesn't have anything to buffer his amount disruptors there at the front and he's actually gonna target the sexist down if he gets this nexus here hero and the army supplies stay as they do and he does get it look at the mineral surface who has this falling apart here he's not mackering right now he's not getting a pilot he's gonna be suplay blocked and right now hero is gonna have his own fourth base this is",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 5950,
+    "game_frame_end": 6286,
+    "game_time_start_sec": 265.6,
+    "game_time_end_sec": 280.6
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

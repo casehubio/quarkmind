@@ -1,0 +1,109 @@
+{
+  "id": "fd62e9cd-seg-008",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 10918,
+    "game_time_sec": 487.4,
+    "player": {
+      "race": "Protoss",
+      "minerals": 300,
+      "gas": 302,
+      "supply_used": 84,
+      "supply_cap": 78,
+      "worker_count": 46,
+      "army_composition": {
+        "Stalker": 1,
+        "MothershipCore": 1,
+        "Observer": 2,
+        "Phoenix": 0,
+        "Immortal": 3
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 10483,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10560,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10576,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10585,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10612,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10695,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10769,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10792,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10842,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10872,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 44,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Sentry": 2,
+        "Observer": 1,
+        "Phoenix": 1,
+        "Immortal": 2,
+        "WarpPrism": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "He has a dark shrine on the way as well with the Warp Rism. So opening up the door for some harass-based play without having to do the direct assault, but if you can distract him long enough, I mean, could do quite a bit of damage. He's getting highlands on here as well. Yeah, he's taking his third behind this. So it's not like this is an all-in of any sort. And the little time that he did have with that third nexus method, he's doing pretty good on harvishes. He's actually only up three, which is interesting. So a lot of this is army supply. And here come centuries, they're gonna try to capture these Immortals. So that is what they're gonna do. Picking off one very cost effectively. And those stock around the wrong side of those forest fields. So my question's answered, they're just for positional battle. It's beautiful to see again. I guess the part of the reason why I have a tough time with them is because again, disruptors are second to come out. They'll just become completely useless. MC also has no observers on the map. So as the Stark Shrine finishes up, it's also highly possible that the addition of Dark Temple I really heard him quite a bit. He's warping in his first one. Finally, another observer starts up, but. Oh, it's something to be worried about. It's not a gateway to highlands. It's gonna take a while. I love this observer by the way from MC. That's like so MC. Just has a good intuition about him. He's like, you know what? I'm noticing an observer above my army. I don't have the text. I should get an observer and it's gonna come out in just the right time. That being said, though, his warperism is in the base. MC senses it. He kind of, maybe he learned his lesson from that first game. I can only drop one in. He wants to test the water. See what's there. Three DTs can do a lot, but let the observer now being out. It's possible things get tricky, but he could be as he's trying to force a big warping in home and then maybe make his push or force him to blink some units back inside of his main base. And then attack. He is peeling off a few stalkers, so to get that DT. Is he gonna, is that so it's gonna force it now? That's a big question. Now the DT goes in a third. Like MC was caught in a tough spot. One observer is just simply not enough. He's actually making him mortals off the robot, by the way, just settling for the one, the one observer. And he's losing everything. The most important is on the edge of its life. Maybe not gonna die necessarily, but these force fields are beautiful. We're seeing the living action of why these guys chose to warp in as many centuries as they did. 15 probes dying at all three next side.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 9571,
+    "game_frame_end": 12265,
+    "game_time_start_sec": 427.3,
+    "game_time_end_sec": 547.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 726.0714285714287,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "fd62e9cd965b"
+  }
+}

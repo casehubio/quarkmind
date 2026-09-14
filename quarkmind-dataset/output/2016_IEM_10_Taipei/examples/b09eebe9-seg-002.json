@@ -2,22 +2,20 @@
   "id": "b09eebe9-seg-002",
   "version": "1.0",
   "game_state": {
-    "game_frame": 6400,
-    "game_time_sec": 285.7,
+    "game_frame": 4213,
+    "game_time_sec": 188.1,
     "player": {
       "race": "Terran",
-      "minerals": 185,
-      "gas": 253,
-      "supply_used": 54,
-      "supply_cap": 70,
-      "worker_count": 29,
+      "minerals": 180,
+      "gas": 113,
+      "supply_used": 36,
+      "supply_cap": 39,
+      "worker_count": 24,
       "army_composition": {
-        "Marine": 10,
+        "Marine": 5,
         "MULE": 1,
         "WidowMine": 1,
-        "Hellion": 0,
-        "Medivac": 1,
-        "Liberator": 1
+        "Hellion": 1
       },
       "tech": [],
       "buildings": {
@@ -25,61 +23,61 @@
       },
       "recent_events": [
         {
-          "frame": 5865,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 5928,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 5949,
+          "frame": 3938,
           "type": "UNIT_BORN",
-          "unit": "SCV"
+          "unit": "Probe"
         },
         {
-          "frame": 6085,
+          "frame": 3947,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3960,
           "type": "UNIT_BORN",
           "unit": "MULE"
         },
         {
-          "frame": 6096,
-          "type": "UNIT_BORN",
-          "unit": "Probe"
-        },
-        {
-          "frame": 6113,
+          "frame": 3978,
           "type": "UNIT_BORN",
           "unit": "Marine"
         },
         {
-          "frame": 6116,
+          "frame": 3982,
           "type": "UNIT_BORN",
           "unit": "Marine"
         },
         {
-          "frame": 6169,
-          "type": "UNIT_BORN",
-          "unit": "Phoenix"
+          "frame": 4045,
+          "type": "UNIT_DIED"
         },
         {
-          "frame": 6171,
+          "frame": 4086,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 4169,
+          "type": "UNIT_BORN",
+          "unit": "Hellion"
+        },
+        {
+          "frame": 4183,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 6256,
+          "frame": 4209,
           "type": "UNIT_BORN",
-          "unit": "SCV"
+          "unit": "Probe"
         }
       ]
     },
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 39,
-        "Stalker": 4,
-        "Phoenix": 3
+        "Probe": 31,
+        "Stalker": 2
       },
       "known_buildings": {
         "Nexus": 1
@@ -87,15 +85,15 @@
     }
   },
   "phase": "early_aggression",
-  "phase_transition": true,
-  "transition_description": "early_aggression -> mid_game",
-  "commentary": "it. If you counter me at all, I'm just dead because I have everything at the front of your base. It's not working. The young is defensively opening up with small drop. And I think on ladder, a lot of terrain plays are probably seeing that as part of us are trying different things since the adept, where prison build isn't really, well, it's not as good as it used to be. There's a brief update. It does seem I think Lilbo is just like requested like a break. He's gone to the bathroom or something. So referee. It's been an intense 10 minutes. Yeah. Yeah. It's been a rough 10 minutes. So it'll be a couple minutes before we get into the next game to see you guys know. Thank you for tuning in. Hopefully, hopefully folks having a good evening. We got a lot more Starcraft to come is we're only potentially one map went away from the end of this best of five. It's looking a little bit grim, but again, I It's a little bit orbital next to yeah as well. I pretty standard map. I don't know how many, you know, out of left field builds he has for a TV. Oh, come on. For pro. Us. We we haven't even begun to cheese you wait. He's like, we've only been doing adept all in but now that we can't do that, like we open up the rest of the universe. There's more. But yeah, it's actually kind of a nicely timed time out for a little bit. Not to get to again, like dramatic and in the great narrative. I want to get super tilted. No, but yeah, take a minute. That's actually something that I probably could have done a lot better in my professional careers. I played a lot of games or just like, no, get in the next one. Go, go, go. And I'm just like the whole time shaking and sweaty and just upset. But little bit taking a moment here to be like, OK, neither of those things work. Maybe you smoking a bag get right now. A pack of bag gets certainly has is how I don't know if bag gets their popular and Taipei. Well, Frenchman's they don't leave without it. You can get them. You can get them anywhere. Yeah, basically their fingers are baggets and they just kind of chop on off and then eat it and then rip it off. Yeah, it's going full sponge out there. So see you guys know as well for anyone curious about like where we are example. We're broadcasting this from the ESL studios in Los Angeles, California. Tomorrow, I believe Apollo, Clarice tomorrow for Americans tomorrow for",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Then they do that data mules, but there's a moment where they think that they'll still have the little minds and his mineral lines as well. So would have been. I mean, it's not unfortunate thing, right? So you get blink stalkers that fast, but to have high ground vision, then you need your mothership core, which means nothing at home and everything goes really bad. It's already to nothing.",
   "segment": {
-    "type": "battle",
-    "game_frame_start": 5136,
-    "game_frame_end": 7665,
-    "game_time_start_sec": 229.3,
-    "game_time_end_sec": 342.2
+    "type": "macro_economy",
+    "game_frame_start": 4045,
+    "game_frame_end": 4381,
+    "game_time_start_sec": 180.6,
+    "game_time_end_sec": 195.6
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

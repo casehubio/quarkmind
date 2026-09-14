@@ -1,0 +1,105 @@
+{
+  "id": "cd9e6768-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 2265,
+    "game_time_sec": 101.1,
+    "player": {
+      "race": "Zerg",
+      "minerals": 175,
+      "gas": 20,
+      "supply_used": 19,
+      "supply_cap": 22,
+      "worker_count": 19,
+      "army_composition": {
+        "Larva": 1,
+        "Overlord": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 1955,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 1955,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1964,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 1965,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 2027,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 2027,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2036,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2204,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 2239,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 2239,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 19
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "But now it's like if you're Taren and they get to ultra's you have to do something else like there's no There's no walking up to your opponent knocking down his sport Bible shows pop and you're like I can micro through this with mass marine like no, it's not happening Like you will lose everything so you have to keep in mind ghosts are a great option liberators are a phenomenal option as well I'm interested when the matchup kind of more settles and the meta's kind of figured out I feel like one of the things that kind of hamstring the matchup is it became Very monobilled more so than I feel like any other. There was like the odd",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 1955,
+    "game_frame_end": 2575,
+    "game_time_start_sec": 87.3,
+    "game_time_end_sec": 115.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "Polt",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Dusk Towers",
+    "game_duration_sec": 804.4196428571429,
+    "vod_url": "https://www.youtube.com/watch?v=iDDY_4VLP5k",
+    "subtitle_source": "whisper",
+    "replay_hash": "cd9e6768a888"
+  }
+}

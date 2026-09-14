@@ -1,0 +1,113 @@
+{
+  "id": "e8eea04e-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 5776,
+    "game_time_sec": 257.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 110,
+      "gas": 136,
+      "supply_used": 38,
+      "supply_cap": 47,
+      "worker_count": 27,
+      "army_composition": {
+        "MothershipCore": 1,
+        "Stalker": 2,
+        "Adept": 2,
+        "AdeptPhaseShift": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5387,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 5390,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 5432,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        },
+        {
+          "frame": 5457,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 5457,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 5567,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5608,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5608,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5705,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5727,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 28,
+        "MULE": 3,
+        "Marine": 12,
+        "WidowMine": 2,
+        "Medivac": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "we're gonna be taking them taking them out very quickly so it's the bunker he's he might try and go the ramp here like as a as a sort of mind game there's a widow mind there but it'd be careful oh you're the proxies okay actually with the prox second oh my god i can't believe this uh oh this is really bad there's another widow mind there as well though try to split up one of the stalkers only one stalker takes proper damage to that observer is gonna de-mind the field here with",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 5608,
+    "game_frame_end": 5944,
+    "game_time_start_sec": 250.4,
+    "game_time_end_sec": 265.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 336.47321428571433,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "e8eea04e40da"
+  }
+}

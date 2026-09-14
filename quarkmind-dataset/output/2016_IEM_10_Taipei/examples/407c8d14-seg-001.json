@@ -1,0 +1,105 @@
+{
+  "id": "407c8d14-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1022,
+    "game_time_sec": 45.6,
+    "player": {
+      "race": "Zerg",
+      "minerals": 190,
+      "gas": 0,
+      "supply_used": 17,
+      "supply_cap": 22,
+      "worker_count": 16,
+      "army_composition": {
+        "Larva": 2,
+        "Overlord": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 670,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 681,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 681,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 717,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 761,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 954,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 954,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 954,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 954,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1001,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 15
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "So at the very least a little extra distance between the two and in the bottom left We have it's newt our red zerg player another question mark. I you know what just you know I'm gonna give the benefit of the doubt. I'm gonna assume that the RPCs or something I think it might be like a special character That the starcraft engine or whatever doesn't show okay I know that if you type a symbol that they can't display her for whatever reason it shows up as a question mark Okay, I like I tried to put some copypastas in game before and it just showed up as question marks I'm gonna assume that was it you are the dank name scientist",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 670,
+    "game_frame_end": 1375,
+    "game_time_start_sec": 29.9,
+    "game_time_end_sec": 61.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Snute",
+    "player1_race": "Zerg",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "ZvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 870.1785714285714,
+    "vod_url": "https://www.youtube.com/watch?v=5P554a_8mT4",
+    "subtitle_source": "whisper",
+    "replay_hash": "407c8d1441b9"
+  }
+}

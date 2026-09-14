@@ -1,0 +1,115 @@
+{
+  "id": "45add59e-seg-014",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 13868,
+    "game_time_sec": 619.1,
+    "player": {
+      "race": "Terran",
+      "minerals": 401,
+      "gas": 126,
+      "supply_used": 143,
+      "supply_cap": 165,
+      "worker_count": 60,
+      "army_composition": {
+        "MULE": 0,
+        "Marine": 14,
+        "WidowMine": 3,
+        "Medivac": 4,
+        "VikingFighter": 0,
+        "SiegeTank": 0,
+        "Liberator": 1,
+        "Marauder": 17
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 13564,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13581,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13582,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 13584,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 13595,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13724,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 13735,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 13844,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13844,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13848,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 71,
+        "Stalker": 4,
+        "Observer": 2,
+        "WarpPrism": 1,
+        "MothershipCore": 1,
+        "Disruptor": 4,
+        "DisruptorPhased": 10
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "He's just going to come down and try to fight now. Does get three marauders with that disruptor shot, but Warpism is injured, but still standing, and it's going to be forced back a little bit. I think these meta-vacs are very low on health. They don't have any energy. No. I don't know if he needed to push down their ramp to fight. He does still have time on his side with those upgrades, and he has the liberator helping the whole to high ground. And that's I think if this does go the way of the pro-doss, going to be the thing that the young looks back on and regrets the most, I think if this game keeps going, he might. Marauders got nervous. They didn't get nerfed that bad. The young sweep, I think the most important thing you mentioned there. No, you said it. You didn't have, well, I said no. No, there's no probes in this third. Oh no, it's because the game ended here. I was like, I was like, I was like, I was like, I was like, I was like, I was like, I was like, Jail of probes are gone. It's like, Jeff, we talked about why he was all in. We didn't know fourth base. No forges. Like, that's a super disappointing thing. I really do feel like, and I know over my career of casting, we don't need, I don't need to make excuses. I have countless times. But I'm like, this fight is super average. Patriots for player me and then player eight wins the game immediately. And I'm just like, what happened?",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 13149,
+    "game_frame_end": 14587,
+    "game_time_start_sec": 587.0,
+    "game_time_end_sec": 651.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}

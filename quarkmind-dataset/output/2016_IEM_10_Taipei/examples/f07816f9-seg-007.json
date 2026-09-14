@@ -1,0 +1,105 @@
+{
+  "id": "f07816f9-seg-007",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7129,
+    "game_time_sec": 318.3,
+    "player": {
+      "race": "Protoss",
+      "minerals": 205,
+      "gas": 65,
+      "supply_used": 64,
+      "supply_cap": 77,
+      "worker_count": 45,
+      "army_composition": {
+        "MothershipCore": 1,
+        "Oracle": 0,
+        "Phoenix": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 6965,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6978,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6980,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7000,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7008,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7041,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7047,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7048,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7091,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7108,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 42,
+        "MULE": 4,
+        "Marine": 16,
+        "WidowMine": 2,
+        "Medivac": 1,
+        "SiegeTank": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": true,
+  "transition_description": "early_aggression -> mid_game",
+  "commentary": "and it looks like he just wants to play with Phoenixes and adepts on the ground which is a good style but if the tyrann was to play with mass marines and tanks and those a big push with Medivacs marines and tanks it's so hard to deal with this I think with my crows oh this is one of the adepts that he's gonna lose some uh for sure I guess there's some out of marines here beyond really taking advantage of his position at the moment bringing back the Phoenixes well to cross fresh against the Medivacs but there's not that many adepts really here to help out against this it's such a powerful little pull you're doing this many pro by so important you kill eight so now the Walker counties even but we've got a turn we said 30s here about to finish nine worker kills in total really good stuff here for beyond really taking advantage of what you could do I mean as you said that Oracle is normally supposed to keep those marines back at home being a threat but",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 6621,
+    "game_frame_end": 7638,
+    "game_time_start_sec": 295.6,
+    "game_time_end_sec": 341.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Dusk Towers",
+    "game_duration_sec": 570.7142857142858,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "f07816f9b5fb"
+  }
+}

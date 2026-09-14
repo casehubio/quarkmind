@@ -1,0 +1,112 @@
+{
+  "id": "a1f0f8d3-seg-007",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 9004,
+    "game_time_sec": 402.0,
+    "player": {
+      "race": "Protoss",
+      "minerals": 105,
+      "gas": 139,
+      "supply_used": 76,
+      "supply_cap": 78,
+      "worker_count": 44,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Oracle": 0,
+        "Stalker": 1,
+        "Phoenix": 10
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 8512,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 8539,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 8589,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8593,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8699,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8802,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 8928,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8929,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8947,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 8974,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 46,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 5
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "big attack here and that's trying as well whoa everything man all right and the kitchen sink let's go everything pylon even going down into wards the natural it wasn't spotted third even i should say and the phoenix almost for nothing the problem for us is that it doesn't know this is coming so he's not getting enough pylons to properly defend with the overcharge yeah and he only has two gateways switch up out by one single autosis pylon oh you're right oh you're not the back of the back of the back i think he's starting to realize he's not back at home ready to defend though these stalkers they have a deba to have blink they're gonna blink up your ramp bro oh this is",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 8699,
+    "game_frame_end": 9310,
+    "game_time_start_sec": 388.3,
+    "game_time_end_sec": 415.6
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 478.7946428571429,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "a1f0f8d31044"
+  }
+}

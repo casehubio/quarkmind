@@ -1,0 +1,115 @@
+{
+  "id": "a0f9b25f-seg-013",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 13311,
+    "game_time_sec": 594.2,
+    "player": {
+      "race": "Protoss",
+      "minerals": 313,
+      "gas": 700,
+      "supply_used": 150,
+      "supply_cap": 180,
+      "worker_count": 72,
+      "army_composition": {
+        "Stalker": 1,
+        "Observer": 2,
+        "MothershipCore": 1,
+        "WarpPrism": 0,
+        "Immortal": 4
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 12895,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12895,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13019,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13076,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13088,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 13092,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 13098,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 13101,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 13104,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 13105,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 65,
+        "MULE": 9,
+        "Marine": 43,
+        "WidowMine": 6,
+        "Medivac": 7,
+        "Liberator": 1,
+        "SiegeTank": 1,
+        "Marauder": 18
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "and in map number one. I've seen him go you know for double gas and stuff but like in this game he's just going to be the standard quick reactor into command center and then down the line he loves to rush for that stop-orts and mixing different units to try and do some economic harassment. Sometimes aliens we don't mind anything that he can get his hands on. Liberators are going to be used a lot of the time actually not just against proto sometimes against Sarah. Quite quite a bit of the camps that we've seen him against Sarah as well. He's used Liberator so well. I feel like he's almost got here with his usage of Liberators. He has true understanding on where and when to use him and he's definitely proven that he's been watching nothing. He has his stream because he uses his uses them almost as well as Nate does. Almost almost. I mean Nate again, with the twitch chat, one with the meme machine. He gets so much done with them. So much done. But for now, where is he? Get out. Okay, what do you see? Saw the reactor. That's all right. I think SOS knows exactly what is easier from there. He knows that there is a factory behind this, that there's going to be a stop-orts, some potential Widow Mine drop down the line and actually SOS going for the double gateway here. He might just be going for a double adept here for some sort of attack behind this. You don't have to get mothership called that quick versus there. And if you don't know for a fact that they're attacking so he's keeping on that for now. It's actually going to be a double stalker here instead of",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 12402,
+    "game_frame_end": 14221,
+    "game_time_start_sec": 553.7,
+    "game_time_end_sec": 634.9
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

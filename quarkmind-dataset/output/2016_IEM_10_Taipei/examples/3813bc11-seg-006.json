@@ -1,0 +1,113 @@
+{
+  "id": "3813bc11-seg-006",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 11725,
+    "game_time_sec": 523.4,
+    "player": {
+      "race": "Zerg",
+      "minerals": 70,
+      "gas": 31,
+      "supply_used": 145,
+      "supply_cap": 186,
+      "worker_count": 66,
+      "army_composition": {
+        "Larva": 12,
+        "Overlord": 21,
+        "Queen": 3,
+        "Zergling": 7,
+        "Roach": 25
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 11589,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 11630,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 11665,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 11697,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11701,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11705,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11708,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11711,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11711,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11714,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 48,
+        "MULE": 10,
+        "Reaper": 1,
+        "Marine": 64,
+        "KD8Charge": 1,
+        "WidowMine": 1,
+        "Medivac": 6,
+        "SiegeTank": 5,
+        "Liberator": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "stream and see towards the bottom so very finite distances really there that you've got to play with but at least he's got the sport crawl and now finished and what we can say is much better from Sorki this game is he's joining up quite hard he's already at 50 drones adding double evo chamber going up above that count adding more gases and this is what I wanted to see from Sorki I was saying I'd love to see see and play this you know solid defensive style it looks like he's opting for it now deflecting that liberator and it looks like he's locked everything down now and this is the dream is a Zerg player means he's going to be able to get these upgrades started get that three base full saturation of drones going and from there you can just mass roaches take a fourth base and basically have freedom in this mid game to do whatever he wants still looking for all the overlords and he's actually doing a really good job of limiting the vision here of Sorki I mean right now Zerg doesn't necessarily need huge amounts of vision on the end of their bases but because he knows what aggressive units are already out there but overall these helians and repurve done a great job of limiting creep spread there has been no essence of creep spread going out of here at all and that's very important that is actually a really good point you bring up I mean we've got marine tank is the composition coming out of beyond upgrades almost perfectly in line but as that tank count gets higher creep spread becomes more and more important yeah remember Sorki will have to take a fourth base if he doesn't want to just all in with road traver and if there's no creep out there marine tank bushes can get very awkward liberator even going to come and try and help out this location but doesn't want to see jump because that liberator would die in three shots of that corrosive pile so I'm going to have to relocate maybe try and get towards a mineral line it's much more difficult than one ravages are a factor here with those liberators of course yeah the liberators going to be really careful fourth base isn't going down of course on the right hand side so there's no ledge above it to abuse with siege tanks and both players just powering up right now now ah here we go okay so there is actually I believe a drop coming down the top left hand side of the map nope just a Viking but Sorki he's actually got an infestation pit on the way and that says to me he wants to go investors with his road traver not going to go for the spy so he's not really going to have the best drop defense but considering beyond doesn't have a lot of tempo going he's just going to be taking up very fast and very hard here that queen is kind of dying all Poggle and there is still well she'll kill that so guaranteed he can't unseize that quickly enough but this army towards the middle I thought I was going to push a little bit further he's going to opt to actually pick the majority of that up and try and go towards the main base but Sorki doesn't have any knowledge of that he is yeah this is a frightening army there's so many ravages in here and beyond going to be very careful with where he pushes interestingly Sorki just rushing straight up to high completely skipping investors looks like he may want to take into oh yeah melee upgrade on the way he wants to go straight towards ultra-lisks it's it's not even a huge commitment to to the you know the road traver it's just a bunch of ravages a big counter them and then back into the zirgling production so",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 9929,
+    "game_frame_end": 13521,
+    "game_time_start_sec": 443.3,
+    "game_time_end_sec": 603.6
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 603.6160714285714,
+    "vod_url": "https://www.youtube.com/watch?v=emCaI55s8Tc",
+    "subtitle_source": "whisper",
+    "replay_hash": "3813bc1121bf"
+  }
+}

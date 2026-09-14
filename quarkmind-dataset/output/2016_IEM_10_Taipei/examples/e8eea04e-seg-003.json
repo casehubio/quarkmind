@@ -1,0 +1,108 @@
+{
+  "id": "e8eea04e-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4808,
+    "game_time_sec": 214.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 335,
+      "gas": 154,
+      "supply_used": 37,
+      "supply_cap": 39,
+      "worker_count": 26,
+      "army_composition": {
+        "MothershipCore": 1,
+        "Stalker": 2,
+        "Adept": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 4276,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4337,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4381,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4386,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4530,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4552,
+          "type": "UNIT_BORN",
+          "unit": "WidowMine"
+        },
+        {
+          "frame": 4589,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4592,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4608,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4637,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 25,
+        "MULE": 1,
+        "Marine": 8,
+        "WidowMine": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "he can still actually just he's gonna have a war prison with it again he can just ferry those units up he needs to make sure that this probe isn't spotted coming from the bottom of costs so otherwise it just would be ins to be scouted he starts to start port anyway here will be on he starts to widow mine as well i i think like a cyclone would have been a better choice here against this more man whoop loads in that bunker gets on out of there proxying in the hall of fame here is sss so we do have the robot about to finish up get things going hmm actually okay it's gonna go for the immortal this time instead of a quick war prism that we saw earlier out of ss so i'm gonna look back differently i really think that he might just want to burst down that those rocks this back door and then just run right in there and then just try to finish the game pretty much immediately yeah some good guiding because how would you shut this down without bunkers if you don't have a bunker in the right locations how do you shut it out i think you need like a bunch of tanks uh if you have tanks plus many vaks actually you can pick up the tanks bring them back so it's not like they're gonna be sitting ducks against the immortals like we're gonna be taking them taking them out very quickly so it's the bunker he's he might try and go",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 4050,
+    "game_frame_end": 5566,
+    "game_time_start_sec": 180.8,
+    "game_time_end_sec": 248.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 336.47321428571433,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "e8eea04e40da"
+  }
+}

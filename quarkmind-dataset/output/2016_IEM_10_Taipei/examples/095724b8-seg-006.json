@@ -1,0 +1,112 @@
+{
+  "id": "095724b8-seg-006",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6161,
+    "game_time_sec": 275.0,
+    "player": {
+      "race": "Terran",
+      "minerals": 85,
+      "gas": 98,
+      "supply_used": 62,
+      "supply_cap": 62,
+      "worker_count": 34,
+      "army_composition": {
+        "MULE": 0,
+        "Marine": 14,
+        "WidowMine": 2,
+        "Medivac": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5573,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 5582,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5584,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5853,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5855,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5993,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6037,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6039,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6124,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6140,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 38,
+        "Stalker": 3,
+        "MothershipCore": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "No, so here's the next question, though. With those Phoenix out, by the way, this liberator... It's going to hope to sneak it all in this... Friendliest stalker in the neighborhood. Okay, there's... Could have gotten it. I know what they were there to do, but they didn't actually liberator... Is going to be deflected by the Phoenix. Should the Phoenix be on that half the map? But here's the next question, Nate. There's a lot of offensive stuff being warped in just outside the base.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 5993,
+    "game_frame_end": 6329,
+    "game_time_start_sec": 267.5,
+    "game_time_end_sec": 282.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 381.6964285714286,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "095724b86cbca0e6da2fb8baad0d7baf"
+  }
+}

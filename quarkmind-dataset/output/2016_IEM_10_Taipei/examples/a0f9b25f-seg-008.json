@@ -1,0 +1,115 @@
+{
+  "id": "a0f9b25f-seg-008",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 8883,
+    "game_time_sec": 396.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 210,
+      "gas": 389,
+      "supply_used": 94,
+      "supply_cap": 101,
+      "worker_count": 64,
+      "army_composition": {
+        "Stalker": 1,
+        "Observer": 2,
+        "MothershipCore": 1,
+        "WarpPrism": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 8211,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8381,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 8384,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 8445,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 8448,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 8482,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8536,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8765,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8874,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 8877,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 49,
+        "MULE": 6,
+        "Marine": 21,
+        "WidowMine": 2,
+        "Medivac": 1,
+        "Liberator": 1,
+        "SiegeTank": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Nathanius, but not as much as Nathanius. Nathanius is melded with them, which Todd. It absolutely paints me to agree with Kaelar, but I'm not going to go with John as well, and a cheeky fall three. You guys are whole thing. That's a joke, but I was going to go for Bjorn as well, but I'm going for two, but I'm going to actually say, you know, this is going to be some momentum based, there's so much on the line. I think SOS is going to keep it together better. He's going to get under Bjorn's skin here. So I'm going to say a four two to SOS, actually. All right, well, thank you",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 8536,
+    "game_frame_end": 9231,
+    "game_time_start_sec": 381.1,
+    "game_time_end_sec": 412.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

@@ -2,84 +2,77 @@
   "id": "095724b8-seg-001",
   "version": "1.0",
   "game_state": {
-    "game_frame": 5451,
-    "game_time_sec": 243.3,
+    "game_frame": 2183,
+    "game_time_sec": 97.5,
     "player": {
       "race": "Terran",
-      "minerals": 340,
-      "gas": 171,
-      "supply_used": 50,
-      "supply_cap": 54,
-      "worker_count": 30,
-      "army_composition": {
-        "MULE": 2,
-        "Marine": 10,
-        "WidowMine": 2,
-        "Medivac": 1
-      },
+      "minerals": 315,
+      "gas": 14,
+      "supply_used": 19,
+      "supply_cap": 23,
+      "worker_count": 19,
+      "army_composition": {},
       "tech": [],
       "buildings": {
         "CommandCenter": 1
       },
       "recent_events": [
         {
-          "frame": 4911,
-          "type": "UNIT_BORN",
-          "unit": "Marine"
-        },
-        {
-          "frame": 4926,
-          "type": "UNIT_BORN",
-          "unit": "Marine"
-        },
-        {
-          "frame": 4991,
+          "frame": 829,
           "type": "UNIT_BORN",
           "unit": "SCV"
         },
         {
-          "frame": 4992,
-          "type": "UNIT_BORN",
-          "unit": "SCV"
-        },
-        {
-          "frame": 5026,
+          "frame": 1045,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 5292,
-          "type": "UNIT_BORN",
-          "unit": "MothershipCore"
-        },
-        {
-          "frame": 5311,
+          "frame": 1131,
           "type": "UNIT_BORN",
           "unit": "SCV"
         },
         {
-          "frame": 5313,
+          "frame": 1281,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1402,
           "type": "UNIT_BORN",
           "unit": "SCV"
         },
         {
-          "frame": 5371,
+          "frame": 1517,
           "type": "UNIT_BORN",
-          "unit": "WidowMine"
+          "unit": "Probe"
         },
         {
-          "frame": 5409,
+          "frame": 1673,
           "type": "UNIT_BORN",
-          "unit": "Medivac"
+          "unit": "SCV"
+        },
+        {
+          "frame": 1753,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1944,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1989,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         }
       ]
     },
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 38,
-        "Stalker": 3,
-        "MothershipCore": 1
+        "Probe": 20
       },
       "known_buildings": {
         "Nexus": 1
@@ -87,15 +80,15 @@
     }
   },
   "phase": "opening",
-  "phase_transition": true,
-  "transition_description": "opening -> mid_game",
-  "commentary": "It's pretty much where everyone's looking for builds right now since there's so few Korean tournaments to watch. I mean, this is where I look for builds. This is pretty common. The marine opening into the fast reactor. He's going to get a tech lab on this factory when it's done. He will go for a fast cyclone and he'll build a star port and go right up to liberator. This is one of the most standard aggressive openings that we see. He hasn't fully saturated his second gas, but I think it's just to make the timing work out a little bit better. Fast cyclone openings for defense with some Marines, and especially with the last patch made that kind of reduced the, you know, I guess usability of photon overcharge makes doing pressure to produce a lot more common. The widow mine opening as well is also pretty common before you go for the cyclone so that you can afford to start the liberator on time. I guess it all comes down to how he wants to do it since he is only mining one SCV off of his second refinery. But wait, Nate, once he has 16 on those minerals, guess what he's going to do? So switch over to the rally. Oh, wow. This is very... See, now this is like the respect barometer for me. If it's a guy who's a little bit sloppy, like say myself, maybe TLO. He's like, oh, he made a mistake. How he elated. What an idiot. No, but yeah. And the guy that really kind of made this popular for me was Nanyla. He was... His gas is man. It was like an art on itself, and it was just incredible to watch. But obviously that's planned. He wants to have the... While it is just one base and he's delaying the expansion, you need to make up the difference with the mineral saturation. But we do have a target coming out from Lil' Bo. This is also something very popular in the matchup. The Oracle, of course, and legacy void has a lot more utility to it than just as a harassing unit. What I'm kind of curious to see is we've been seeing some proto-s players in the P2 matchup band actually in the P2Z as well. Go beyond just one Oracle. And it's not like a one-base all-in type of thing, but like a... I have three or four flying around. It's kind of an anti-drop. It's kind of... I constantly know what your tech is with the scouting ability. And then of course, you need to make quite a bit of defenses to hold off of. And we have a proxy gateway going out on the map. So Lil' Bo's opening up the door to get aggressive, meanwhile, be on. Heading across the map with this drop. He's got a widow-mind in it. He's following this up with a second widow-mind and a liberator. So not the super fast cyclone rush. He wants to try to get some damage done. You know what? He's in pilot placement, Nate, but if he's not there to charge it, then he does get the... Here comes the piece. He's got to pick up the widow-mind. It does do that. It's going to give him a chance here to do something. Where is that modisher, Corey? He's actually... He doesn't even have one. He's going to band in the attack. Good pull back by Lil' Bo. It doesn't... Minimal pro-gloss if any action could be good. And... No, I'm just... Just two. Okay, oh, he's basically... He's moving in from the other side, though. And he's bringing the drop-back at the same time. The Helians actually ran by during this into the natural expansion. So up to eight pro-gloss killed. I guess the Helians managed to come in and make a play. The Metamat pushed back for now. People might not liberator is still on the way over. But are the Phoenix going to move out? I don't think so. No, so here's the next question, though. With those Phoenix out, by the way, this liberator... It's going to hope to sneak it all in this... Friendliest stalker in the neighborhood. Okay, there's... Could have gotten it. I know what they were there to do, but they didn't actually liberator... Is going to be deflected by the Phoenix. Should the Phoenix be on that half the map? But here's the next question, Nate. There's a lot of offensive stuff being warped in just outside the base. We saw quite a few probes go down, so it's really a question of... Can Lillbo make up the difference? Now keep in mind, these Marines are un-upgraded. They don't have combat shields, no stim, nothing. So it could get dicey over there. Yeah, the Phoenix are going to come in to scout this out a little bit. See what's going on as we have a siege tank finishing up. There's no mistletoe, but there's no oracles. With that liberator. That liberator does show up to kill the probes not reacting at all. Who's in a lot? At the same time, he's just trying to make this push up the front. The tank is not siege. Stalker's going to try to break this ramp as the Phoenix come into it. I'm assuming he's just going to try to lift up the siege tank with his Phoenix if he gets too close. The tank had to pull back here a little bit of the Marine count getting a little bit lower. They are going to swoop in here. One of the... Keep in mind, one of the Phoenix are fairly low in health. The Stalkers don't have the highest amount of DPS, so I do feel like with the SCVs and the tank in the Marines, this is going to be deflected. Liberators moved into the main base, keep in mind. And we are seeing some probes. He's getting more chaos. Yeah, he's not building anything out of that stargate. There's nothing at home to defend. And beyond holds, GG, as he takes game number one in this best of five. I mean, the Liberator counter attack worked really well with Lilbo wanting to get aggressive, so it's like, okay, Phoenix are great against Liberators, but not if they're on the other side of the map. No, and I feel like this is just Lilbo had a planned kind of... I don't want to say tunnel vision is almost too negative, but he was definitely like, I'm going to do a 1.5 base all in. I'm going to lose... I lost if you pros in my natural. Not the biggest of deals. Of course, I would have liked to have kept them, but I'm warping and going for it. And I feel like, and this is kind of one of those what if moments, if he picks off that Medevac with six Marines in the middle of the map, I feel like this could have been actually a good flip. His stalkers could have. The Medevac was very low on health. It would have been a nice pick off.",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "In any time in StarCraft, you have a patch change like that. Things can get weird. And I'm expecting this to be a bit of a rougher match for the pro losses. You know, that patch just kicked in. And this guy has been so good for a while. I'll be doing the honors of observing as we see where loaded into game number one for this best of five here at the Intel Extreme Master's Taipei Day one. Of course, we're looking at the base of the red tarant player. He is beyond. He's been on fire. If you've watched any online tournaments, be on on fire. Should just go ahead and say that. I don't know if everybody can't be on fire. Well, there's a young opening up probably fast Reaper. You've seen so often in the top right. We have the blue pro loss player. Is any Malayam? Of course, he is Lil'Bow. And this is a pretty darn decent map. If you're a pro loss from my perspective, you've got the very easy natural expansion. We'll make a comment on this opening from beyond here in a second. So anytime a pro loss can pretty assuredly guarantee themselves a safe expansion. They're already liking the map. The next question on their mind is, well, where's my third at? And this map does make it a little bit interesting. There's quite a large ramp leading into it, a little bit exposed. But because it kind of shares good distance between the three bases, you're not too hyper worried about drops and getting split up too much. A fairly good pro loss map, but Nate, you saw this opening from beyond. Double gas like this. What do you expect me here? So there's a lot of Korean tarant players that have been opening up with this build in a high-grandmaster ladder. It's pretty much where everyone's looking for builds right now since there's so few Korean tournaments to watch. I mean, this is where I look for builds. This is pretty common. The marine opening into the fast reactor. He's going to get a tech lab on this factory when it's done. He will go for a fast cyclone and he'll build a star port and go right up to liberator. This is one of the most standard aggressive openings that we see. He hasn't fully saturated his second gas, but I think it's just to make the timing work out a little bit better. Fast cyclone openings for defense with some Marines, and especially with the last patch made that kind of reduced the, you know, I guess usability of photon overcharge makes doing pressure to produce a lot more common. The widow mine opening as well is also pretty common before you go for the cyclone so that you can afford to start the liberator on time. I guess it all comes down to how he wants to do it since he is only mining one SCV off of his second refinery. But wait, Nate, once he has 16 on those minerals, guess what he's going to do? So switch over to the rally. Oh, wow. This is very... See, now this is like the respect barometer for me. If it's a guy who's a little bit sloppy, like say myself, maybe TLO. He's like, oh, he made a mistake. How he elated. What an idiot. No, but yeah. And the guy that really kind of made this popular for me was Nanyla. He was... His gas is man. It was like an art on itself, and it was just incredible to watch. But obviously that's planned. He wants to have the... While it is just one base and he's delaying the expansion, you need to make up the difference",
   "segment": {
-    "type": "battle",
-    "game_frame_start": 2353,
-    "game_frame_end": 8550,
-    "game_time_start_sec": 105.0,
-    "game_time_end_sec": 381.7
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 4031,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 180.0
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

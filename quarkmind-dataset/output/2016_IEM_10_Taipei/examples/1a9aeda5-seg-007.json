@@ -1,0 +1,120 @@
+{
+  "id": "1a9aeda5-seg-007",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 8749,
+    "game_time_sec": 390.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 85,
+      "gas": 108,
+      "supply_used": 69,
+      "supply_cap": 86,
+      "worker_count": 42,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 0,
+        "Oracle": 0,
+        "Observer": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 8149,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 8204,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8251,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8388,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 8475,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8522,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8603,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8640,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8716,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 8746,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 42,
+        "MothershipCore": 1,
+        "Stalker": 6,
+        "Observer": 1,
+        "WarpPrism": 1,
+        "Disruptor": 1,
+        "Phoenix": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "any damage he's just gonna keep his lead very nicely here doing really well so far I mean it's been a cool little start to this game as well to just make sure that the wall up would hold worker-wise forty one to thirty two so massive economy advantage here for sos and is he actually going to go on tape a school base or is he going as elsewhere yeah I think both layers are gonna be taking that third base as so I saw really started his pretty early we saw him already do something similar to this with a fairly quick third against semis that was even faster than this black when blink is quite",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 8372,
+    "game_frame_end": 9126,
+    "game_time_start_sec": 373.8,
+    "game_time_end_sec": 407.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Prion Terraces",
+    "game_duration_sec": 990.2678571428572,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "1a9aeda55b1c"
+  }
+}

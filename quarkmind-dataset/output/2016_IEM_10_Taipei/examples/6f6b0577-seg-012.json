@@ -1,0 +1,120 @@
+{
+  "id": "6f6b0577-seg-012",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 16452,
+    "game_time_sec": 734.5,
+    "player": {
+      "race": "Protoss",
+      "minerals": 273,
+      "gas": 460,
+      "supply_used": 171,
+      "supply_cap": 213,
+      "worker_count": 58,
+      "army_composition": {
+        "Stalker": 6,
+        "MothershipCore": 1,
+        "Observer": 1,
+        "Immortal": 4,
+        "Phoenix": 0,
+        "WarpPrism": 1,
+        "Disruptor": 7,
+        "AdeptPhaseShift": 0,
+        "DisruptorPhased": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 16032,
+          "type": "UNIT_BORN",
+          "unit": "DisruptorPhased"
+        },
+        {
+          "frame": 16080,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 16163,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 16205,
+          "type": "UNIT_BORN",
+          "unit": "DisruptorPhased"
+        },
+        {
+          "frame": 16210,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 16216,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 16253,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 16348,
+          "type": "UNIT_BORN",
+          "unit": "DisruptorPhased"
+        },
+        {
+          "frame": 16396,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 16401,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 59,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Immortal": 4,
+        "WarpPrism": 1,
+        "Observer": 2,
+        "Phoenix": 9,
+        "Disruptor": 9,
+        "DisruptorPhased": 9
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": true,
+  "transition_description": "mid_game -> late_game",
+  "commentary": "back and forth even in that last game you know SOS I hadn't supplied in a couple disruptors detonation it looks a little bit scarier but somehow he found a way in the end to I think it was really that big detonation of the ramp at the natural that's yeah the way it was like pulling back I think he realized that hero was probably gonna be knowing that SOS was pulling back and what madman would leave it disruptors behind yeah send them in alone load up the disruptor shots and try and land everything on his open and saw me what madman well this man man apparently SOS three mad scientist madman attation he calculated right once again what a game what a game there as SOS now moves on into the grand finals he's gonna be facing off against PUN and considering that two form oh these two players form going into the grand final this is gonna be fantastic I watching that series there and hero being toppled once again by SOS here I have to think to himself how do you see beat this guy in these high octane matches but for now guys I believe we have our interview ready with the man himself it's dollar sign oh dollar sign over at the analysis desk thank you very much galaris yes we are joined on the desk by SOS and Suzy of course is big hello pig hello the 12 year Thai pig uh Suzy first question I want to ask to SOS what what is his thoughts on kind of this rivalry that him and hero have had over the last couple of years a little library got it's been now that Junho and I have gone so what do you think about that game game yeah uh he thinks it's fate because they're both such good players he's like I know he's a very good player but so am I and so whenever we're on a tournament anytime we get to the round of four there's it's fate that we will always play against each other and is it fate that he seems to always win when it matters how good fate is that he thinks he's a there's luck involved in it he says that luck probably has followed him through some of this uh okay okay pig all right I mean let's start",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 14822,
+    "game_frame_end": 18082,
+    "game_time_start_sec": 661.7,
+    "game_time_end_sec": 807.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

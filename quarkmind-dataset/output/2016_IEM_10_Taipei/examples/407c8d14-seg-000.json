@@ -2,21 +2,18 @@
   "id": "407c8d14-seg-000",
   "version": "1.0",
   "game_state": {
-    "game_frame": 9746,
-    "game_time_sec": 435.1,
+    "game_frame": 312,
+    "game_time_sec": 13.9,
     "player": {
       "race": "Zerg",
-      "minerals": 460,
-      "gas": 238,
-      "supply_used": 112,
-      "supply_cap": 130,
-      "worker_count": 61,
+      "minerals": 30,
+      "gas": 0,
+      "supply_used": 13,
+      "supply_cap": 14,
+      "worker_count": 12,
       "army_composition": {
-        "Larva": 10,
-        "Overlord": 14,
-        "Zergling": 1,
-        "Queen": 4,
-        "Roach": 17
+        "Larva": 3,
+        "Overlord": 1
       },
       "tech": [],
       "buildings": {
@@ -24,49 +21,52 @@
       },
       "recent_events": [
         {
-          "frame": 9548,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 9556,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 9557,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 9584,
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 242,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 256,
           "type": "UNIT_BORN",
           "unit": "Larva"
         },
         {
-          "frame": 9588,
+          "frame": 288,
           "type": "UNIT_BORN",
-          "unit": "Larva"
+          "unit": "Drone"
         },
         {
-          "frame": 9592,
-          "type": "UNIT_BORN",
-          "unit": "Larva"
-        },
-        {
-          "frame": 9647,
-          "type": "UNIT_BORN",
-          "unit": "Larva"
-        },
-        {
-          "frame": 9647,
-          "type": "UNIT_BORN",
-          "unit": "Queen"
-        },
-        {
-          "frame": 9650,
-          "type": "UNIT_BORN",
-          "unit": "Queen"
-        },
-        {
-          "frame": 9692,
+          "frame": 288,
           "type": "UNIT_DIED"
         }
       ]
@@ -74,12 +74,7 @@
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 55,
-        "Adept": 4,
-        "AdeptPhaseShift": 64,
-        "Oracle": 1,
-        "Phoenix": 8,
-        "MothershipCore": 1
+        "Probe": 13
       },
       "known_buildings": {
         "Nexus": 1
@@ -87,15 +82,15 @@
     }
   },
   "phase": "opening",
-  "phase_transition": true,
-  "transition_description": "opening -> late_game",
-  "commentary": "So I just in my brain my first thought is it's too hard to wall. It's tough It's a it can end up being a good blink stalker map, but also blink stalker and PVZ is in a weird spot where like if you get the right Composition that you're facing it can be fantastic But students been doing a good job of adding lanes having roaches and ravager and that composition is very difficult for blink stalkers because One bad blink they're all gone. They're absolutely all gone and the map's not big enough to make up the difference in time for that too All right, let's find out it's a cross-pons So at the very least a little extra distance between the two and in the bottom left We have it's newt our red zerg player another question mark. I you know what just you know I'm gonna give the benefit of the doubt. I'm gonna assume that the RPCs or something I think it might be like a special character That the starcraft engine or whatever doesn't show okay I know that if you type a symbol that they can't display her for whatever reason it shows up as a question mark Okay, I like I tried to put some copypastas in game before and it just showed up as question marks I'm gonna assume that was it you are the dank name scientist You would know we have to test these things in the top right of course. I currently leading one oh CJ enters his hero Best of five as we've had all night so I'm excited game one ended with a Overwhelming Krodos victory like just crushing down But the execution of the two players was really something beautiful. I love snooze strategy I loved him punishing the pro-dots for his opening I like the idea behind the timing attack and then it put here on a position where it's like all right hero Show us your micro and I'll tell you what hero is one of the best players in planet earth and a big part of the reason for that is because of his micro Like he of course is strong and all categories of starcraft, but I Love watching him. He was one of the guys leading that bling stalker revolution in PVC towards the end of heart of the swarm as well Right. Oh, yeah, yeah, absolutely. I mean MC. I think was like the grandfather of that so many of his games Ended with just a wave of bling stalkers, but here was the guy that at the Kespa top level kind of brought in Though like actually if you control these really well, you can kill basically anything and it was actually kind of boring for a little while Because it's like guys. Please get better at dealing with bling stalkers. Yeah, I'm like winning too many games I want to I am catavita or no, that was actually SOS that one of the finals But anyways heroes got to the finals basically off of bling stalkers in all three matchups as the primary opening Difference in openings this time around obviously no faster pace. There's nothing at that third yet for snoot But it's going for the fast-link speed and I think we just kind of talked about why or at least I was contemplating why I feel this map Bavors zerg to some extent is that you have this opening and the way the wall is done You have two ramps that lead into your natural and they're both very wide You know, this is like this would be your main ramp on a map like ruins of Saras something like that and then this map This ramp is obviously just very very large So since you can get into both sides walling it off is very difficult. You have to start your wall here I mean, I feel like run by something that you see almost everything from zerg on this map It's an expensive wall in it I mean, it's a three gateways at best at the large one and then if you wall in that other ramp I don't know I mean a lot of people try to go over the rocks try to knock those down But with a two-base speedling opening like this if you try that it's very likely you don't end up knocking this rock sound instead Get a flood of zerglings But also something to think as you're talking about off-stream as well is the prevalence now of drop-length something We've seen for sure but eight speed zerglings in your main base if you don't have a pound or perhaps you have only one Yeah, all of a sudden photon overcharges are not nearly as prevalent as well because they're higher cost So yeah, I've been especially keeping an eye on snooze infrastructure He hasn't built an evolution chamber and he also didn't mind the 25 gas necessary to make a drop over Lord Okay, his speedlings do catch this It's gonna barely stay on a transfer just in the last second. There's the overloads Of course it's 25 minerals 25 gas and suddenly if he comes a drop over Lord That's a cool long by the way like that Instead of walling off both the ranch is going for the next this this right here is pretty much what we're just talking about These elings are gonna be a constant threat in that natural expansion as he's gonna have to leave some space open to get units out of his base Hey, just I don't transfer that. Okay. Oh We keep seeing these friendly this keeps happening interactions like I could have killed them But guess not more links coming out, but also drones for snooze So it doesn't look like it's gonna be necessarily just a speedling all in He does have as we can see here the score crawler as well and the there's a oracle gonna get a couple of kills But for the most part not as much as it would like Nope, he's quite a few of its hit points as well There's still a lot of links out on the map overall worker count is favoring hero You just continue to hold on against this there's four addips inside that natural expansion But a couple of probes are gonna get knocks down and I like that from snooze by the way like Losing zerglings is so not a big deal as long as something's happening and and I say that very Specifically like if they're scouting that's worth 50 or 100 minerals That's that's kind of what Terrence pay with with scans. It's kind of what proto-pay with like observers and hallucinations kind of But zerglings if they can get a few probes and information Holy Toledo we're talking about good stuff Yep, now with that Stargate play of course being followed up a couple of Phoenix to help pitch in Resonating glaves coming in dealt for the add-up so he's gonna get that 45% attack speed boost makes him a lot better versus Zergling especially when they get surrounded Is that a complete wall in with the natural? No, okay, you're the proto-paying no, he's got space right there at the gas So almost a complete wall and he'll probably leave behind an add-up But I feel like we're about to see Too-based timing attack and it's gonna be very add-up heavy, which is gonna be super interesting Because a lot of times people do that with Oracle back up But there's just this odd pair of Phoenix going around and a third and a fourth coming out as well And this is part of the tough time with with Stargate openings like They're coming up very slowly the Zerg knows to make a bunch of drones. So maybe heroes like so incredible that he's Trying to trigger that but here all is really good So I can't I can't say that that's the kind of thing that would blow me away We do have roaches coming out now for snooze, but are they gonna be enough? You know all these questions coming in he's waiting on four overlords right now to complete before he can actually build any more units Well unfortunately for him though like this is the this is a mega old reference But for those of you that watch like Tsl and Mondragon back in the wings of Liberty days There was a counter chart and it was Phoenix's while you counter with roaches And that's exactly what's happening here. There's no drones coming out. Snooze is not being tricked. So these Phoenix They're they're pretty okay against ravagers. So I assume that's what he's hoping to do with these But again here comes a bunch of queens is snooze just gonna knight us worm and back up the ravagers. Oh wow He's just gonna face you should tell port right inside of his face. There's actually no units. Okay There are some roaches here he picks up some of the queens in the back I mean trying to get the ones with the most energy of course Gonna help a lot is gonna teleport all of his add-its away from the spike boss possibly as the next wave comes in He's like yep, okay, we're gonna start playing ring around the Rosie They get all the queens. I mean there are roaches here so that the add-its themselves not gonna do much But the Phoenix kill all the queens without really losing anything. That's a pretty decent trade if I might say so myself For the photos player and the Phoenix are still chipping away quite a bit at this some of the add-its do escape He warped some in the home to defend the link counter attack and I like this because he's taken the other third base as well So he doesn't have that prime position To get any damage done. Yeah, this is huge. He's just dealing with all these add-its is constantly running around his base Picks off another queen Slap in these drones and of course you mentioned it without the queens I mean these features can just dance around all day and they're at critical mass like they don't care about a single sport Caller anymore. They're picking up all the queens like this This is unfolding before a snooze eyes. He's like what is going on? I had eight queens Why am I all of a sudden losing the Phoenix? What was because of that add-up backup and behind this the third base is being taken the Phoenix count continuing to crawl up? By the way, so unless there's gonna be Hydras or something These can actually affect like you can't make ravagers against this they will just kill every ravager Yeah, and you can see the dark shrin is on the way as well. He's looking for that finishing blow Of course, I think he realized there's no layer yet for snooze He does finally have this is ugly up. Yeah, I mean you've got this many Phoenix just killing roaches You know you're in a bad spot, is there well snooze behind this is is is droning up So it's not the end of the world, but he's just now taking his fourth He's not really tacked up. You'll notice evolution chambers coming out But on that production tab we don't see upgrades like there's the first upgrade. There's the layer snooze has been I mean, he's just been stagnated beyond belief. He's in such a bad spot right now Yeah, and you know here It is constantly looking for things to kill you manage to scrub another queen He's gonna go for another one and this is isn't care. It's gonna go one after another I mean was that sport probably saves the other two queens and other ones Just amazing amazing Phoenix control here from here Like just the way he set himself up and as you have the adips at the front is pulling the roaches away He's really just distracting him and he gets another queen And this queens you don't want to probably too far forward as well here coming the adips snooze not really reacting to this He's still fighting them over at the fourth another He's beautiful. No really solid play no one checks no anti air He can even help if he wanted to try if he had the energy to pick up some roaches while these adips come in killing more drones I'm in love with the synergy between the adip and the Phoenix though like each time the adips showed another base These Phoenix are picking up one or two maybe three roaches this style is so cool You know this is like this is like a rotty builder something. You know so little just it's kind of out there, you know a little bit Phoenix Phoenix adips just feels a bit odd now. He's okay. He's mixing some immortals now the blink is coming in But what an interesting, you know way of picking opponent or a Ford arc Templar zerks join hands and Continue and prepare to bathe yourselves and the salty salty tears. I mean there's two sport cars That's going for snoot here and he is reacting fairly quickly not gonna be able to pick off. So okay never run Yeah, but that big a class for your hands you get saved the tears. He doesn't manage to save the dTs That pickup range on the warp prison, but he's taking a fifth which should be a fourth base snoot's been battered more warp gates finishing snoot has managed to make it to investors So I'm guessing he's trying to use fungal to lock down the Phoenix for ravager shots or lock down the adips Yeah, I mean lock down anything I guess at this point, but second robo robotics bay like the game's kind of evolving past snoots snoots to up the mid game aspect like the investors are gonna be a nice thing But again, investors have a tough time with Phoenix like if they can't land a critical fungal and there's not a decent enough number of queens to finish them off It won't be enough DTs get dropped once again one of them does get these two just right. Yeah, Kelly more queens Can you show me how? I'm actually ready to show I don't actually don't think this overlay has that button. Yeah And someone someone tell us is this is a game of regicide man There's there I would venture a guess it's over 20 as a lot of dead Queens Six investors are on the way. He's like basically praying at this point This will end the Phoenix madness and I love the fourth base timing attack behind this or not time anyways The fourth base timing behind this the Phoenix give him ultimate information snoot is is being conditioned to Defend he's back at home. He's like fairly holding on He's making units, but these units are not to attack there to survive and by the time he gets out of his base like he might even uggle all these things good for him. He needs to But he doesn't have the anti-air to finish these guys off So yeah a couple of Phoenix die. There's the good fungles. This is nice But the world outside of snoots base has evolved beyond him. It's it's double disruptor It's there's immortals out there. There's blank stalkers. There's an equal base pro dust That's knocking on the door of your fourth base. This is a very treacherous place to be. Yep the immortal stalker army shows up He's got DT's makes him with this as long as you mentioned those disruptors. He can recall out he wants He's gonna throw that Pervocation over grabs one of the investors in a few roaches He steps back double time. What's gonna be dropped to help I guess create a slow Oh god, it's so slow now. Just gonna feed everything at all. Try to dodge the disruptors then And hero This is a thing of beauty like this is your future pro dust in the hands of a good player. This is what it looks like and Hero is just he's just man handling snoot in a very very surgical kind of way like snoots up and supply He's re-adding his fourth base so I'm not ready to call him dead just yet But man is this gonna be enough bill battle for him sending a lot to counter attack against that third base trying to get some work on What is this like what a weird look at this couple of I mean It's a very he knows dark temple are out there. So I mean it's a it's a motley assort It's very important to say the least he just dives on time just blinks right on top of his okay Just kill these same approach and then go back home and kill you I think he's free of supply. He wants to I mean he's adding the ultra's cavern and he I think he's also buying time He's like hey go back to your base and defend for a minute like leave me alone If he can get ultra-sout it's it's not so bad. There is three immortals out there But again ultra-s in legacy the void are different they are Nyan stop will we do a storm coming in are they I just had a curiosity because I'm not sure they really don't know how are they the same though like for ZVP Immortals still do a good job if you have enough right they they dictate composition I mean if you have four plus immortals you're okay. You're okay They're strong, but they're not like they are in TV's where there's like basically no answer all right Well, I guess a nice disruptor attack. It's great for raffles there As well and heroes just really starting to just lay into them now those instructors really getting some key shots He has vipers so you could go for the the blinding clown fungal combination of doom Well, let's be fair here I've been pretty down on snoop, but here he goes great up ducks We certainly actually cut into that immoral count just before we start to see some ultra-s But again hero is gonna surge back There's been a little bit of a defensive line set up here Zerglings are quite a bit more powerful for us Cute up as well And there's the kindness plating that the downside is his upgrades are again quite lackluster But to be fair so are heroes heroes are not great at all He's got some temple already to move forward now storm finishes up So he can storm you can feedback. He has he has options. He has choices at this point He's gonna step in starting to attack these spine crawlers looking for some Foot hole is he gets a feedback off killing one of the investors continues to step forward and this fourth base of snoop It's like it's gonna get knocked down He's got the dt's in here as well If I see you down a lot this the preemptive storm is just saying yeah come at me come on down There's another fungal he does hit a good number of these units He gets a blinding clock too is the ultra-six pop but the immortals are not under that blinding clock If you can just focus though then he should be able to get them the purification It was also helps shred those ultra-six and hero killing the ultra is I mean that there that's there's nothing else It is so fun to watch in place our crap like that was how we control that army that was not a name Move place and gentlemen that's this is not mundane pro-dose that just wins the game for itself",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "So I just in my brain my first thought is it's too hard to wall. It's tough It's a it can end up being a good blink stalker map, but also blink stalker and PVZ is in a weird spot where like if you get the right Composition that you're facing it can be fantastic But students been doing a good job of adding lanes having roaches and ravager and that composition is very difficult for blink stalkers because One bad blink they're all gone. They're absolutely all gone and the map's not big enough to make up the difference in time for that too All right, let's find out it's a cross-pons",
   "segment": {
-    "type": "battle",
+    "type": "expansion",
     "game_frame_start": 0,
-    "game_frame_end": 19492,
+    "game_frame_end": 624,
     "game_time_start_sec": 0.0,
-    "game_time_end_sec": 870.2
+    "game_time_end_sec": 27.9
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

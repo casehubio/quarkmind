@@ -2,20 +2,18 @@
   "id": "b9411b10-seg-000",
   "version": "1.0",
   "game_state": {
-    "game_frame": 8791,
-    "game_time_sec": 392.5,
+    "game_frame": 312,
+    "game_time_sec": 13.9,
     "player": {
       "race": "Zerg",
-      "minerals": 155,
-      "gas": 183,
-      "supply_used": 43,
-      "supply_cap": 60,
-      "worker_count": 24,
+      "minerals": 35,
+      "gas": 0,
+      "supply_used": 13,
+      "supply_cap": 14,
+      "worker_count": 12,
       "army_composition": {
-        "Larva": 5,
-        "Overlord": 6,
-        "Queen": 0,
-        "Zergling": 15
+        "Larva": 3,
+        "Overlord": 1
       },
       "tech": [],
       "buildings": {
@@ -23,55 +21,60 @@
       },
       "recent_events": [
         {
-          "frame": 8723,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 8744,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 8744,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 8744,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 8744,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 8744,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 8744,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
         },
         {
-          "frame": 8744,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 8759,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 8790,
+          "frame": 256,
           "type": "UNIT_BORN",
           "unit": "Larva"
+        },
+        {
+          "frame": 288,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 288,
+          "type": "UNIT_DIED"
         }
       ]
     },
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 29,
-        "Adept": 6,
-        "AdeptPhaseShift": 71,
-        "MothershipCore": 1
+        "Probe": 12
       },
       "known_buildings": {
         "Nexus": 1
@@ -79,15 +82,15 @@
     }
   },
   "phase": "opening",
-  "phase_transition": true,
-  "transition_description": "opening -> late_game",
-  "commentary": "Get some stuff in map scorts two to one now favoring CJ and his hero if you wins this map on central protocol He will advance eliminating student he will play against SOS That's I think so as first hero tell us all this time probably the two best pro I mean there's gonna be someone that's gonna be like Jeff you Someone will disagree with you so just be forced not the best but they're definitely in contention guys I think we can agree yeah very good players We are loaded in to central protocol and I mean I don't get to see very many games on this You know most matches the star capture played in best of three so you know It's one of the unique parts of the best of five is whether or not these players like maps like this Hey, these maps get vetoed out of every single best of three. They are gonna have to play them and we're gonna have to see them try to Make some magic as it were and just as a fan of Starcraft actually I do like that I mean I've been to those MLG's You like watching players. Oh my god watching those players being uncomfortable positions. What's what? I mean yeah, I think Starcraft is a game especially in Starcraft 2 where it can become very Meta-laden and very like this is what we all do and the games look very similar but on these weird maps You got a dip into your bag of your own creativity and come out with something new Bask out here for hero as he sees snooze base of course snooop atop right and hero in the bottom right We get these vertical spawns again, so I think that rush this since very very short. Is this a road-ravider play? I mean he's going to gateway so I'm assuming Just fast adept and trying to crush his opponent early on I mean like I'm in the same boat as you man. I've this is probably my first professional PVC I've seen on this map so yeah, I haven't I haven't cast like any games on this one except the only thing already today So I'm excited I'm excited for our own enjoyment and I relish in their pain unfortunately Both these players would tell you they're like no, I don't believe this yeah, I don't know what's going on No, let's see. I guess this is where you break out your beta builds, right? It's like well this worked in the legacy of the void beta So maybe I can just rush out a bunch of adepts. He's still gonna expand though that crow boost is on the gateway There's nothing being made it is obviously a slight I guess he's waiting right is like I don't want to build any probes so might as well just wait for the current on the adept You know that millisecond that millisecond in control where he clicks on the gateway It starts to add up to then corno's it. You know that's not enough. It's just not perfect playing it So just look at that alternating the chrono So that they finish at the same time in control. Is that not TLO tier of creative? Well, I've basically already Gushed over here as much as I'm allotted as a caster. That's amazing Because otherwise the other one would have finished too early and then you can't do much with just one attempt Well, you can do a lot, but I mean I do as much answer your question. I love it. Thank you Jeff It's just if I guess too much of a player it becomes well, I mean you can't tell me that I'm right You can't just tell me I'm right all the time and you know bad things at Yeah, there's no queen here yet. So these addicts could get a bit of work done. They're gonna do some work I mean it's just a lings and a queen anyways Yeah, they're gonna say there were drones and the natural you could have gone for there was no queen there Just trying to pick up a few drones. I like this. You throw that shade out you get ready for Teleport out and yeah, I mean the queen is done now So we'll get as much but four drones. Maybe if he focuses he gets a fifth Obviously bare bones is worth it, but just keep in mind as well that he basically he made some sacrifices to get those two out So certainly they were worth it. I'm not trying to argue that they aren't they got great intel killed five drones And slow down the Zerg in general with this many links though coming out and speed being done his natural completely open Just give another like we said giant ramp no pylon here's a bit of a mistake You just have a mother ship or either he just has a couple of attents and he's gonna go ahead that poor out of to get back to the boat time Jimmy no He is adding by the way a toilet council behind this return. Did he cancel it or finish finish? That's mega that's weird and I'm guessing he was gonna try to do like two base add-on Making the most required the wrong this is just the thing. This is this man. It gets up. Okay, right? He just has that that resistance unbelievably short unfortunately We're looking at hero not knowing what to do on a map like this. This is what he came up with It's like mega fast one has has hero played a best of five yet in ZVP and legacy the way I don't even know I would be surprised if he did So you just gonna want to pump the brakes and links right now. He's played this Oh, he's dropped the phone. I mean, this is another thing that you know, that's the wrong ramp That's not it Confusing in his defense. He's still got links on both sides resonating glades on the ways well for those edits Yeah, he's like okay just run around anyway. Everybody do it. I guess this is the one way that's new can mess us up Nope, no, it might he gets around and Parallels gonna get overcharged It gets to be fights here. That's okay. He's giving your chance and what the rush is so short You don't even need great to move your queens across the map. He's like, you know what? I guess I'm kind of committed right? I think you saw a 12 counts well, wait because you just had four crawlers So he's like it's very gonna get DT. It's very forward of you. This feels like a game I should win am I gonna get DT feels like I'm watching Fancy here at that MLG you were talking about bro That's a throwback He was great. He's a fun sir. He played with like the combat helmet on yeah, that part was weird, but his style of players cool Old two reference for those and these are going to drop right now Yep, I mean he's gonna try to just what teleport all these out of side get the queens The links aren't here and he does have add up the tax speed upgrade done I think the bot's dropped definitely hurt quite a bit But yeah, these out of some when the links come back they just get all over and he can drop these links in the main base to He will they're actually gonna go the whole way. I love this. I mean you he couldn't make like the thing is in the beta You were never sure because there was no different model for the overlord right? Wow, that is To be fair there was Adam's below it so it's night the circling is wrong Yeah, they were on the teeth of the overly like I know we jump brothers in the beta There was no separate model for the drop overlord so you weren't sure but I'm like who are you trying to fool snow like I don't know Maybe just scouting overlords the queens do die like if you had banelings in it and he's like I'm just gonna drop banelings and make him think this drop is empty and it's like okay By the way, how many drones we looking at that natural not a lot. Okay total work counts 27 to 24 hero is ahead I still feel like there's a lot of lost opportunities with the failed drop that he the very first one where he just Droped them outside of his base and then he could have run them into the main. Oh, yeah, he he didn't so no I mean if if Snooze goes on to lose this game He will this these are the kind of losses that feel super bad Especially considering that his match point if you're a win this one trying to get through this century though It does he does very good. Another force field comes down Still not doing anything that's why I count so I guess he was considering going for some other type of aggressive play But just didn't have the opportunity and all of a sudden there's add-ups which actually with those ugly It's dying or they could be mega mega annoying. There are roaches out so of course in a stand-up fight The roaches would win but the questions can't oh, oh, he canceled a weird choice. He canceled all but to I guess trying to Stipe drones, but maybe he wasn't thinking about what there were roaches right there. I mean he must have not been looking man It's tough spot the fool But he does see he sees roaches coming out and by the way adds an immortal well I mean I killed my punchline there it is anyway It's a robo to make a mortals and on low-e-consituations and mortals with centuries are gods by the way absolute gods Well, he's going to say for a robo bay. So they're not gods when they don't exist though Well, I mean you can stop appreciate you so appreciate you can't you can work even if they're Not there the worship the thought of them Hero it's finally got that natural mining. It's got to feel good She's gonna teleport a bunch of add-ups inside since cancel the shade and that's the one that actually would have done something I guess he's a one to commit them because we have a Rager he's I mean snutes getting ready for a follow-up all of them that looks like the immortal is coming out too By the way, so I'm guessing he just wants to get a quick disruptor to follow this up and hero is not showing the centuries yet Now several centuries were spotted the natural of course when the certainly tried to run by so snute remembers He knows they exist needs to be very careful about this round Now he's also burned out one of these folks in overcharges He can only afford to do one more so his ability to defend an attack This is substantially limited. There's the first force was gonna try to lock these units And he has that immortal of course it does not do bonus damage to the ravager But killing those is still of utmost importance the barrier helping to soak up a lot of the heat Actually without the lingering reinforcements the immortal is able to do a lot of work on these roaches Just needs to keep cut microing it back and next overcharge really helping out as well. Yeah Yeah, he's a very decisive victory again in a low-eat concentration like this You can see snute already going to plan B. There's the guys or there's the drones and again Unfortunately for snoot because of those force fields and because of how well hero executed that defense Snoot's not going back to much. He has no upgrades. He's no layer They're now on equal bases like this is this game is collapsing around snoot and with disruptors coming out in a war prism We're about to see a show a firework show Yeah, this is this is what's really gonna set him up for our great spot Of course the disruptors are just so good against this for the army without layer You have no road speed so good luck dodging those purification No, this is gonna try to teleport much addent and I don't Whatever man Keep doing that great intel Keep snoot occupy like snoots can what snoot has to do to control the defense of that Far in a way is more than what heroes do here's I'm looking just like I'm gonna cancel this the last second Boop It's very nice because he that that shows up on your mini map You know he sees like oh units are coming. Okay. I gotta be prepared and if you don't control by don't move my units He could just let them finish yeah, and then you go you let some finishes like yeah Did you think I'm not paying attention? He's gonna come in to sign the queen? That shade back the other way and oh, okay really nice person bounce all right snoot Three of them four So actually good for snoot in that situation. I do you like a year old taking a third base not willing to commit to it Just a complete two-base push. He's still building disruptors. I'm surprised he hasn't added in a Warp prism to help with In a solve well keep in mind. This is a 10 minute game actually it looks like it's minute seven or six or something like that But it's it's 10 there is a whole aggressive opening stage So the third base is actually really smart because pro-doss falls off the face of the earth economically the second They hit one base. It's like so bad what you can produce with that But two bases that's kind of our that's our happy that's our happy ground We can make everything we want with that. It's not forever. Yeah, I mean enough champions Going off that for me to know that uh-huh and Overlord is kind of moving around. Maybe some of the probies gonna check you should be able to spot this Painling nest and the links on the way so students all in he's got to go for it and Unfortunately the tough part about that is he's leveraging against heroes micro like all leaning against heroes like It's like of all the people that you could try to do this against you're going against one of these guys It just has such a phenomenal micro But I guess you know the map kind of put us in this awkward spot where we had that mega aggressive play and then it's led into This low economy situation where neither player you know are having an easy time getting past a hundred supply Well here's defense man. That's why we're here like Snoot Against most pro-doss this game is over and snoot is easily won but hero Spot back to this and all of a sudden hero isn't the commanding position. There's overlord speed Yeah, this this matches truly just been a testament to heroes resolution in these scenarios He's done so well now coming up with these instructors. He throws up this verification of his oh don't get on three ravagers picks off another one And two more I love it. It's just one at a time so good take your time Very patient play out of enemy cells those force fields as well killing the ravagers of course limits the ability to cancel or crush those force fields Yeah, and I think he's even nice got a stalker here poking at this third base that snoot wants to take spots the base But there's a warpers he left his mother ship core at his third base too. So good luck killing that I mean here is just so on top of this game. There's I'm loving the century play like I cannot wait to go home and start working on my He's in an incorporating centuries and it did look like you wanted to try to do some bane rain on this army But picks up his ravagers instead having a hard time deporting those bane lanes. I guess that's I guess snoot Maybe thinks that he has a chance with that but that's just his only that's yeah, he has no options, right? So I mean, yeah, you can't be critical of anything snoot does this point time. It's like he's just He himself is is gotta be just like how did we get here? Why are you still alive? And he's gonna add bane is he gonna try for a big all-in But I mean it even in the situation yeah, and four years before you supply more knock on the door. Oh man Is that powerful army? Yeah, yeah, our cons are a great way to yeah, little Paul through pretty much saw bane links I mean our cons are fantastic. Yeah, you should see these drop over Lord to maybe consider the possibility of what is about to hit him But oh god, he's getting so many ravagers with that he's so on top it while while backing up and here come the bane Links but of course it was no support. That's decent damage. They're gonna be enough Snoot's got nothing left GG hero wins three to one here in tele extreme masters type A will advance on to play against",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Get some stuff in map scorts two to one now favoring CJ and his hero if you wins this map on central protocol He will advance eliminating student he will play against SOS That's I think so as first hero tell us all this time probably the two best pro I mean there's gonna be someone that's gonna be like Jeff you Someone will disagree with you so just be forced not the best but they're definitely in contention guys I think we can agree yeah very good players We are loaded in to central protocol and I mean I don't get to see very many games on this",
   "segment": {
-    "type": "battle",
+    "type": "expansion",
     "game_frame_start": 0,
-    "game_frame_end": 17583,
+    "game_frame_end": 624,
     "game_time_start_sec": 0.0,
-    "game_time_end_sec": 785.0
+    "game_time_end_sec": 27.9
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

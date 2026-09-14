@@ -1,0 +1,115 @@
+{
+  "id": "45add59e-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6135,
+    "game_time_sec": 273.9,
+    "player": {
+      "race": "Terran",
+      "minerals": 90,
+      "gas": 163,
+      "supply_used": 61,
+      "supply_cap": 70,
+      "worker_count": 34,
+      "army_composition": {
+        "MULE": 0,
+        "Marine": 14,
+        "WidowMine": 2,
+        "Medivac": 1,
+        "VikingFighter": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5635,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5668,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5698,
+          "type": "UNIT_BORN",
+          "unit": "WarpPrism"
+        },
+        {
+          "frame": 5761,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        },
+        {
+          "frame": 5904,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5937,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 5941,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 5967,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5985,
+          "type": "UNIT_BORN",
+          "unit": "VikingFighter"
+        },
+        {
+          "frame": 6008,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 44,
+        "Stalker": 4,
+        "Observer": 1,
+        "WarpPrism": 1,
+        "MothershipCore": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "But as I said that though, it's it's. Oh, he does get the win. That's good. And a little bit of damage. Five ropes though. Five ropes. And there's the coach. Are you going to get it? No, come on, David Kim. No, I'm just kidding. Oh, but yeah, the other pilot one would have absolutely finished it off. It says a lot of our two reactions.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 5967,
+    "game_frame_end": 6303,
+    "game_time_start_sec": 266.4,
+    "game_time_end_sec": 281.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}

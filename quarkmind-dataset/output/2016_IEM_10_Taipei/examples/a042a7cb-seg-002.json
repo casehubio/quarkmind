@@ -1,0 +1,106 @@
+{
+  "id": "a042a7cb-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1703,
+    "game_time_sec": 76.0,
+    "player": {
+      "race": "Zerg",
+      "minerals": 195,
+      "gas": 0,
+      "supply_used": 17,
+      "supply_cap": 22,
+      "worker_count": 17,
+      "army_composition": {
+        "Larva": 1,
+        "Overlord": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 1035,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1148,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1237,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 1419,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1477,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 1492,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 1492,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1579,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 1579,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1690,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 18
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Anything but the fake mutants in control the fake meters that do more damage than most people's 12 meters like Holy crap because 12 meters it is scares you enough to do something about it's true They're like oh three mutants. I'm never took them serious. Oh, times like what are they gonna do? He is upgrading plus one range With speed. Oh Okay, well that'll happen to put by the way. He's one of the Terrence that is not actually omniscient",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 1492,
+    "game_frame_end": 1915,
+    "game_time_start_sec": 66.6,
+    "game_time_end_sec": 85.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "Polt",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Central Protocol",
+    "game_duration_sec": 968.1696428571429,
+    "vod_url": "https://www.youtube.com/watch?v=iDDY_4VLP5k",
+    "subtitle_source": "whisper",
+    "replay_hash": "a042a7cbde4d"
+  }
+}

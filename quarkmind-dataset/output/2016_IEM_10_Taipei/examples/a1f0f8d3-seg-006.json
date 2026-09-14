@@ -1,0 +1,116 @@
+{
+  "id": "a1f0f8d3-seg-006",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7905,
+    "game_time_sec": 352.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 240,
+      "gas": 124,
+      "supply_used": 58,
+      "supply_cap": 62,
+      "worker_count": 38,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Oracle": 0,
+        "Stalker": 1,
+        "Phoenix": 5
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 7281,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7338,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7448,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 7452,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7456,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7482,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 7609,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7673,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7723,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7727,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 45,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 5
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "behind this this is gonna be blink all details here blink blink starts blink okay so we should be seeing additional gateways here going down and him transitioning i mean does he fully read into the fact that there's two targets right now did he see it he must have done right no he didn't see the stuff i thought the phoenix have flown over it but not close enough no i like this for us i think i really like it if you're able to surprise with a good amount of phoenixes he has so much initiative the thing is he's gonna face being sure but phoenixes is so good in defense anyway that he doesn't really matter and usually what happens when you play phoenix like this is that you lock your opponent on a couple basis he's very hard for him to move out and properly attack but it looks like hero might be planning to attack anywhere because it's proxying a gateway out on the map to be able to warp in quicker actually i i don't know if it will come to this but i won't do it first so it's down the line was thinking about playing with mass air on this map you mass air is so strong because you can take a third base and fourth base so easily six gateways in total being added on extra here for hero this is and seven going down this is gonna be a big big attack here and that's trying as well whoa everything man all right and the kitchen sink let's go",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 7112,
+    "game_frame_end": 8699,
+    "game_time_start_sec": 317.5,
+    "game_time_end_sec": 388.3
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 478.7946428571429,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "a1f0f8d31044"
+  }
+}

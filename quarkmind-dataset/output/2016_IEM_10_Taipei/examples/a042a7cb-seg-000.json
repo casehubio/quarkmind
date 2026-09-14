@@ -2,22 +2,18 @@
   "id": "a042a7cb-seg-000",
   "version": "1.0",
   "game_state": {
-    "game_frame": 10843,
-    "game_time_sec": 484.1,
+    "game_frame": 312,
+    "game_time_sec": 13.9,
     "player": {
       "race": "Zerg",
-      "minerals": 129,
-      "gas": 214,
-      "supply_used": 103,
-      "supply_cap": 146,
-      "worker_count": 46,
+      "minerals": 35,
+      "gas": 0,
+      "supply_used": 13,
+      "supply_cap": 14,
+      "worker_count": 12,
       "army_composition": {
-        "Larva": 9,
-        "Overlord": 17,
-        "Zergling": 11,
-        "Queen": 1,
-        "Mutalisk": 0,
-        "Roach": 14
+        "Larva": 3,
+        "Overlord": 1
       },
       "tech": [],
       "buildings": {
@@ -25,48 +21,52 @@
       },
       "recent_events": [
         {
-          "frame": 10793,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Roach"
+          "unit": "Drone"
         },
         {
-          "frame": 10793,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 10793,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Roach"
+          "unit": "Drone"
         },
         {
-          "frame": 10793,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 10797,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 10798,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 10823,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Larva"
+          "unit": "Drone"
         },
         {
-          "frame": 10827,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Larva"
+          "unit": "Drone"
         },
         {
-          "frame": 10831,
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 256,
           "type": "UNIT_BORN",
           "unit": "Larva"
         },
         {
-          "frame": 10843,
+          "frame": 287,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 288,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 288,
           "type": "UNIT_DIED"
         }
       ]
@@ -74,14 +74,7 @@
     "opponent": {
       "race": "Terran",
       "known_units": {
-        "SCV": 42,
-        "MULE": 7,
-        "Reaper": 1,
-        "Marine": 63,
-        "KD8Charge": 3,
-        "SiegeTank": 5,
-        "Medivac": 5,
-        "Marauder": 2
+        "SCV": 13
       },
       "known_buildings": {
         "CommandCenter": 1
@@ -89,15 +82,15 @@
     }
   },
   "phase": "opening",
-  "phase_transition": true,
-  "transition_description": "opening -> late_game",
-  "commentary": "But he's that half his opponents supply and workers and his army is not an army that can really do Make up a difference. It's like maybe okay. He turns the Helians into Hellbats He pushes both Marines he has these two Medivacs Maybe Polk makes more Polk Magic happen right now But if he doesn't do the same amount of damage that he did in like dusk towers No, I mean and even scowled it's a man. It's like part of the reason it worked so well last time is because he jumped on The five initial banelings that are meant to defend this but right now This overseer is keeping Tom and everything he knows what's coming And he's already making those five banelings and they're gonna be made and finished before this attack gets Yep, and it's up a total of nine banelings on the way. She's gonna follow it up with more they might have speed for pizzeris Yeah, it's not even nine banelings. It's a vented vastly superior position to the last one and these Medivacs He can take it to him heat from the queens he knows where he's positioning She's gonna try what did you run that how run the Helians by so he's like no I got something I got certain things man Fake mute is coming out too. Oh, no Anything but the fake mutants in control the fake meters that do more damage than most people's 12 meters like Holy crap because 12 meters it is scares you enough to do something about it's true They're like oh three mutants. I'm never took them serious. Oh, times like what are they gonna do? He is upgrading plus one range With speed. Oh Okay, well that'll happen to put by the way. He's one of the Terrence that is not actually omniscient He's he's off doing other things humans. Yeah, he's human sometimes. That's so weird I think it's because he goes to school if he wasn't going to school. He would have always seen that yeah Clearly Clearly a man that Isn't a tough spot right now Like I mean honestly, I'm trying to look for like positives here, but so he's already got his one one whole doesn't have his plus one yet Um, it's bad waiting on combat shields no third command center. And he's doing yes. This isn't central protocol You know he's doing that thing again where he's like front loading all the production and then we'll add the third CC But especially on this map where Applying that pressure is really really difficult. I feel like this is the pull program failing a little bit This is like pulled hot Applied to legacy avoidance is not working. I mean so he played the map really well with the speedling opener Like yeah, Pulch just got completely blindsided by that run by and it did pile a lot more damage than it should out Well, clearly it's a pull Liberators absolutely shut down muters, right? Depends on many he has two two muters you I mean two liberators you can spread against those They'll help in a straight-up fight But I think if Palt were to be attacked right now He'd probably rather put them in anti-ground mode just to help to apart anything that moves in Now I'd say when you get to like four liberators you can start to do something But like liberators hit critical mass versus like any number of muters once you have like six Because the muters will shoot their volley out while the liberators shoot and if you have like six liberators You're actually just gonna one-shot the whole cloud of muters even if you lose all your liberators too By the way, that's a lot more expensive for the zerg player. No third CC and The zergling that is off screen right now just spotting that is the end of the game. I feel like And he knows he doesn't need to do anything. Well now he just makes stuff. Yeah, just build units non-stop Don't be greedy. He has a hive gonna finish too as well if a single drone comes out Till the end of this game basically. I'll be very shocked Without a third CC at this time just link bane. There's link bane it He's gonna move in some widow mines are being brought in as well But not getting the money hits that they need pull it needs to win the game with this bush He choose a part the first wave of units here from solky He has everything all his ships in this basket and solky's doing such a great job like tears of banelings He doesn't need to win a single fight He just needs to live and here comes the bane is dealing out the damage the force has been thinned out too much No third behind this liberators are a non factor by the way Pulse just having kind of a tough time controlling this Yeah, he's having a really rough time here And then the liberators are gonna take some shots against these muters But the link bane remains unanswered as he surrounds the rest of Pulse army and will completely clear it up solky Looking to take his third win here and move on there at the intel extreme masters Pulse He's got nothing left now the parade's being shoved back again notice you see there it is Pulse GGs 32 in favor of solky a fantastic series Uh, but I do again Maybe it's because we have a long broadcast. I have time to not Shoot up my emotional like just go all the way to top But I want to be critical to pull it a little bit choosing to do it I mean again, he was gimped a little bit at the early stage But I feel like with that ramp and Okay, so he hasn't done a speedling all in or real timing attack I feel like in this entire series and for the most part he's been like defensive speedling We'll probe a little bit but for the most part is either anticipating Reapers or is just trying to defend But I feel like for it to go to game five and for Pulse to do kind of a soft opening that I feel like Without being harassed still wanted to walk across the map and be Marines and Helians. Yeah, kind of a weird choice I think a lot of it comes down to just maybe how Pulse likes to play this matchup a lot of Korean Terrence make the focus of their games again Zerg to be kill them before they get ultra-less. Yeah, so Pulse it worked really well in the first game You had a much shorter rush distance. Obviously you only have that very small ramp into your main in natural So Ling Rumbi is never gonna work Um, I agree with you. I think I think your point that it's because of the matchup. I won't ever say to agree But I feel like the map in the map in those positions Shatters that played really big into it So we can see as the bracket evolves here. We're halfway done with tonight's matches We've got beyond facing off-sulk you guys will see that tomorrow rocks you by Paul Clariss time and wonderful Commentators over in Taipei right now and coming up next We have two more best of five spring you SOS will face off against MC and then snoot playing against hero Couple a great series. I again, I'm really excited for this pvp matchup a lot of people have been bimoning a little bit That it ends up a lot of times stalker and disruptor But I actually think that's some of the most exciting micro in the game and everything that leads up to that is really cool as well Faced up charge me nerfed heading into this is gonna be interesting as well I'm curious to see how that affects pvp But as a non-tarant as a non-pros player. I think watching stalker disruptors a bit more fun than Seven or eight colossi just kind of attacking into each other whoever drops zealots on the other one wins Well, so we're gonna go into that match next please and gentlemen here into extreme masters Taipei day one will be right back after this commercial break",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "But he's that half his opponents supply and workers and his army is not an army that can really do Make up a difference. It's like maybe okay. He turns the Helians into Hellbats He pushes both Marines he has these two Medivacs Maybe Polk makes more Polk Magic happen right now But if he doesn't do the same amount of damage that he did in like dusk towers No, I mean and even scowled it's a man. It's like part of the reason it worked so well last time is because he jumped on",
   "segment": {
-    "type": "battle",
+    "type": "expansion",
     "game_frame_start": 0,
-    "game_frame_end": 21687,
+    "game_frame_end": 624,
     "game_time_start_sec": 0.0,
-    "game_time_end_sec": 968.2
+    "game_time_end_sec": 27.9
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

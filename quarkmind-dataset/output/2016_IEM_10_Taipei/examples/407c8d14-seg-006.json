@@ -1,0 +1,121 @@
+{
+  "id": "407c8d14-seg-006",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 16980,
+    "game_time_sec": 758.0,
+    "player": {
+      "race": "Zerg",
+      "minerals": 890,
+      "gas": 554,
+      "supply_used": 156,
+      "supply_cap": 186,
+      "worker_count": 70,
+      "army_composition": {
+        "Larva": 13,
+        "Overlord": 21,
+        "Zergling": 19,
+        "Queen": 10,
+        "Roach": 13,
+        "Infestor": 5,
+        "Broodling": 0,
+        "Viper": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 16678,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 16679,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 16812,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 16823,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 16828,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 16920,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 16949,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 16952,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 16952,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 16957,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 74,
+        "Adept": 4,
+        "AdeptPhaseShift": 104,
+        "Oracle": 1,
+        "Phoenix": 10,
+        "MothershipCore": 1,
+        "WarpPrism": 1,
+        "Immortal": 3,
+        "Disruptor": 4,
+        "DisruptorPhased": 3
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": true,
+  "transition_description": "mid_game -> late_game",
+  "commentary": "This will end the Phoenix madness and I love the fourth base timing attack behind this or not time anyways The fourth base timing behind this the Phoenix give him ultimate information snoot is is being conditioned to Defend he's back at home. He's like fairly holding on He's making units, but these units are not to attack there to survive and by the time he gets out of his base like he might even uggle all these things good for him. He needs to But he doesn't have the anti-air to finish these guys off So yeah a couple of Phoenix die. There's the good fungles. This is nice But the world outside of snoots base has evolved beyond him. It's it's double disruptor It's there's immortals out there. There's blank stalkers. There's an equal base pro dust That's knocking on the door of your fourth base. This is a very treacherous place to be. Yep the immortal stalker army shows up He's got DT's makes him with this as long as you mentioned those disruptors. He can recall out he wants He's gonna throw that Pervocation over grabs one of the investors in a few roaches He steps back double time. What's gonna be dropped to help I guess create a slow Oh god, it's so slow now. Just gonna feed everything at all. Try to dodge the disruptors then And hero This is a thing of beauty like this is your future pro dust in the hands of a good player. This is what it looks like and Hero is just he's just man handling snoot in a very very surgical kind of way like snoots up and supply He's re-adding his fourth base so I'm not ready to call him dead just yet But man is this gonna be enough bill battle for him sending a lot to counter attack against that third base trying to get some work on What is this like what a weird look at this couple of I mean It's a very he knows dark temple are out there. So I mean it's a it's a motley assort It's very important to say the least he just dives on time just blinks right on top of his okay Just kill these same approach and then go back home and kill you I think he's free of supply. He wants to I mean he's adding the ultra's cavern and he I think he's also buying time He's like hey go back to your base and defend for a minute like leave me alone If he can get ultra-sout it's it's not so bad. There is three immortals out there But again ultra-s in legacy the void are different they are Nyan stop will we do a storm coming in are they I just had a curiosity because I'm not sure they really don't know how are they the same though like for ZVP Immortals still do a good job if you have enough right they they dictate composition I mean if you have four plus immortals you're okay. You're okay They're strong, but they're not like they are in TV's where there's like basically no answer all right Well, I guess a nice disruptor attack. It's great for raffles there As well and heroes just really starting to just lay into them now those instructors really getting some key shots He has vipers so you could go for the the blinding clown fungal combination of doom Well, let's be fair here I've been pretty down on snoop, but here he goes great up ducks We certainly actually cut into that immoral count just before we start to see some ultra-s But again hero is gonna surge back There's been a little bit of a defensive line set up here Zerglings are quite a bit more powerful for us Cute up as well And there's the kindness plating that the downside is his upgrades are again quite lackluster But to be fair so are heroes heroes are not great at all He's got some temple already to move forward now storm finishes up So he can storm you can feedback. He has he has options. He has choices at this point He's gonna step in starting to attack these spine crawlers looking for some Foot hole is he gets a feedback off killing one of the investors continues to step forward and this fourth base of snoop It's like it's gonna get knocked down He's got the dt's in here as well If I see you down a lot this the preemptive storm is just saying yeah come at me come on down There's another fungal he does hit a good number of these units He gets a blinding clock too is the ultra-six pop but the immortals are not under that blinding clock If you can just focus though then he should be able to get them the purification It was also helps shred those ultra-six and hero killing the ultra is I mean that there that's there's nothing else It is so fun to watch in place our crap like that was how we control that army that was not a name Move place and gentlemen that's this is not mundane pro-dose that just wins the game for itself",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 14469,
+    "game_frame_end": 19492,
+    "game_time_start_sec": 645.9,
+    "game_time_end_sec": 870.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Snute",
+    "player1_race": "Zerg",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "ZvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 870.1785714285714,
+    "vod_url": "https://www.youtube.com/watch?v=5P554a_8mT4",
+    "subtitle_source": "whisper",
+    "replay_hash": "407c8d1441b9"
+  }
+}

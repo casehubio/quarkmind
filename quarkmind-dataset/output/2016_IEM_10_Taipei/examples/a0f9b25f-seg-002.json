@@ -1,0 +1,107 @@
+{
+  "id": "a0f9b25f-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4202,
+    "game_time_sec": 187.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 135,
+      "gas": 130,
+      "supply_used": 38,
+      "supply_cap": 46,
+      "worker_count": 32,
+      "army_composition": {},
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3707,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3711,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3828,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3935,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3939,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3947,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3996,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4034,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4084,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 4099,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 24,
+        "MULE": 2,
+        "Marine": 6
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "That's what that mentality's got a confidence. Absolutely. That's true, but at the same time, there are a lot of indicators that might point out that it's going to be a tough game for him. Yeah. First, the fact that they played in the SSL qualifiers not too long ago in which Bjorn was able to stop SOS to run very early, like in the very qualifier for the tournament. It's like, what's SOS supposed to be in this tournament? And Bjorn stopped him with a 2-0. So also, I think Bjorn is,",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 4034,
+    "game_frame_end": 4370,
+    "game_time_start_sec": 180.1,
+    "game_time_end_sec": 195.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

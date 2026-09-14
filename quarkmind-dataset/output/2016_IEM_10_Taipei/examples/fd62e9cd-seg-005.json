@@ -1,0 +1,115 @@
+{
+  "id": "fd62e9cd-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7929,
+    "game_time_sec": 354.0,
+    "player": {
+      "race": "Protoss",
+      "minerals": 80,
+      "gas": 98,
+      "supply_used": 70,
+      "supply_cap": 78,
+      "worker_count": 42,
+      "army_composition": {
+        "Stalker": 6,
+        "MothershipCore": 1,
+        "Observer": 2,
+        "Phoenix": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 7503,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7506,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7590,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7622,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7646,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7745,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7750,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7876,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7877,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7893,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 42,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Sentry": 2,
+        "Observer": 1,
+        "Phoenix": 1,
+        "Immortal": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "but I think part of that is actually harvesters, linking back, but there's just, and now the flotch and overcharge, he does have to pick off that pylon, and he does that. That being said, though. That being said, though, really important as well. So, he does make sure that despite all of this, or both on two bases, and he continue to warp and try to plight more of the pressure in this instance of the warping. S-O-S had a comparable army, oh my god, two of morals joined this by the way, becoming much more powerful. And she's gonna be just happy with this little wind and pull back, but S-O-S says, you know what, with you picking off the Nexus,",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 7646,
+    "game_frame_end": 8213,
+    "game_time_start_sec": 341.3,
+    "game_time_end_sec": 366.7
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 726.0714285714287,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "fd62e9cd965b"
+  }
+}

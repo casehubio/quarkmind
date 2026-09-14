@@ -1,0 +1,117 @@
+{
+  "id": "407c8d14-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 14148,
+    "game_time_sec": 631.6,
+    "player": {
+      "race": "Zerg",
+      "minerals": 690,
+      "gas": 303,
+      "supply_used": 153,
+      "supply_cap": 168,
+      "worker_count": 78,
+      "army_composition": {
+        "Larva": 21,
+        "Overlord": 18,
+        "Zergling": 2,
+        "Queen": 4,
+        "Roach": 21
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 13898,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 13901,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 13905,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 13909,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 13909,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 13979,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 13979,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13982,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 13982,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14016,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 60,
+        "Adept": 4,
+        "AdeptPhaseShift": 104,
+        "Oracle": 1,
+        "Phoenix": 10,
+        "MothershipCore": 1,
+        "WarpPrism": 1,
+        "Immortal": 3
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Can you show me how? I'm actually ready to show I don't actually don't think this overlay has that button. Yeah And someone someone tell us is this is a game of regicide man There's there I would venture a guess it's over 20 as a lot of dead Queens",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 13979,
+    "game_frame_end": 14318,
+    "game_time_start_sec": 624.1,
+    "game_time_end_sec": 639.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Snute",
+    "player1_race": "Zerg",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "ZvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 870.1785714285714,
+    "vod_url": "https://www.youtube.com/watch?v=5P554a_8mT4",
+    "subtitle_source": "whisper",
+    "replay_hash": "407c8d1441b9"
+  }
+}

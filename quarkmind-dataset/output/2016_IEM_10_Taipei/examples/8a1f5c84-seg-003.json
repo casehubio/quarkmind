@@ -1,0 +1,110 @@
+{
+  "id": "8a1f5c84-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 5488,
+    "game_time_sec": 245.0,
+    "player": {
+      "race": "Zerg",
+      "minerals": 132,
+      "gas": 44,
+      "supply_used": 63,
+      "supply_cap": 74,
+      "worker_count": 46,
+      "army_composition": {
+        "Larva": 10,
+        "Overlord": 7,
+        "Zergling": 6,
+        "Queen": 5
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5355,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5359,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 5359,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 5359,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5363,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 5389,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 5389,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5411,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5457,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 5482,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 41,
+        "Adept": 2,
+        "AdeptPhaseShift": 7,
+        "Oracle": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> mid_game",
+  "commentary": "All right, well Tell me about some pvz. What are your experiences? You have a double-hatch full-play from smooth everyone I've been talking to pretty much generally Complains with the last patch. It's hard to deal with early lane aggression, but I guess this map is probably the best map for defending Yeah, it feels like I feel like part of the reason why this matchup is particularly difficult for us right now is because Zerg finally got that go between unit the ravager that is really good offensively decent enough defensively not super expensive and has transition It's not you're not punished if you're stuck on 10 ravagers. They actually have an effect they have they have Efficacy all the way to the end of the game so they're really good that way Mutus very powerful stargate hard to punish because of the speed of the game if you open up stargate It was always true and hard to form too you had to do decent damage if you didn't you're in a lot of trouble But all of a sudden because of the power of things like lurkers and the deep power of things like colossus You don't have that amazing unit to fall back on that can kind of make up the difference between you and tech pass So it's funny to think about it is not like the heart of the swarm colossus could actually probably still truck most Zerg armies in this game most armies in general yeah I mean it was like it was the it was the unit for anti-ground and it was It was it was a bad unit it's funny to think about it And I do enjoy as I get commentator in a player obviously as a player I enjoy not seeing colossus I but as a as a spectator watching non-college this games I find any more fun Fastly more interesting and that was the problem is they were too good So they were they were just prevalent all three matchups and they demanded that you responded them with your text Voice because if you didn't hardcore deal with them they would just dominate truck over so that's why they were bad And blizzard agrees that they became has kind of always been pretty vocal about that. I'm glad that sort of you know the end game GG units like that have kind of been taking out a little bit at least is something said in this matchup I agree I maybe maybe some product players would argue with me on the count of like lurkers being strong as well But some players have some of the guys that I've talked to you have said that there are some compositions that people have been Playing with more that have helped a lot against the those styles I think people been saying like zealot arc on can kind of just better better down on top of them really fast as well Kind of the matchups unbeatable. It's as it's so true stark. I've all the time like there's certain things that happen We play our old meta against it It absolutely does not work because of just how high power everything isn't stark up to and for a while We just complain that it is completely broken and impossible to play as time goes on We kind of figure it out sometimes maps will change sometimes not as we kind of liberate now sometimes path Patch is will happen as well, but for the most part. It's a lot of us It's a lot of us just realizing how you have to play with that and that being said Thankfully the Oracle will still always be relevant as Especially in this lazy boy. Yeah, it does get a little bit of her ass there But I was gonna say right now in pvz It has to be a two base all in or you go for a mega fast third to try and deal with that Zerg especially if they do two hatch before spawning pull and in this case we can see it is going to end up being a fast third from Hero and I'm really happy to see that I think these games have been cool today We haven't had a lot of macro No, not too many games have actually managed to make the distance of a long game So I can Oracle comes in doesn't do quite as much damage the second queen is still there and A lot of queen coverage with a spore in the natural to keep snoot nice and safe total workers killed nine Total working units tab by the way 60 some Look at that units tab Talk to me Zerg five Zerglings five queens 63 drones and And that is that's that's part of what's the tough thing about Produst right now a lot of people again. What's difficult to match up? Well if you go for a fast third and a Zerg is on top of it like we see from snoot They will be so minimalist about everything else and they will just plow up to 75 drones and then show up with a very Difficult like roach ravager link timing attack or if you and if you're not ready for that by the way Just die or they just it's continue their tech on to hide so that's what's nice about the Oracle opening We should see hero completely on top of this if you start to see units pouring out in a fourth base taken He should be in position to try and do something about that Yep, he's got a lot of gateways. He's going into blink plus one attack meanwhile roaches Speed upgrade is both close finishing Zergling speed finishing up as well Warpism always a nice choice sort of buy some time push the Zerg player back these oracles see this building hatch immediately I think it's yeah, I was gonna say his worm it immediately started attacking the prank to cancel it Maybe he still will be able to oracles that's crazy amount of damage Out this this night is warm is so brilliant. I love it. Why I was noticing that there's no upgrades So I was saying okay, this is gonna be a timing attack and that's cool That's really tough to deal with it should be ravager roach link but with this night is warm",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 2336,
+    "game_frame_end": 8640,
+    "game_time_start_sec": 104.3,
+    "game_time_end_sec": 385.7
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Snute",
+    "player1_race": "Zerg",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "ZvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 627.8125,
+    "vod_url": "https://www.youtube.com/watch?v=5P554a_8mT4",
+    "subtitle_source": "whisper",
+    "replay_hash": "8a1f5c840fab"
+  }
+}

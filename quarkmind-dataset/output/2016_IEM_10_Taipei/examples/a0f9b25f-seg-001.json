@@ -2,104 +2,93 @@
   "id": "a0f9b25f-seg-001",
   "version": "1.0",
   "game_state": {
-    "game_frame": 21547,
-    "game_time_sec": 961.9,
+    "game_frame": 2185,
+    "game_time_sec": 97.5,
     "player": {
       "race": "Protoss",
-      "minerals": 788,
-      "gas": 1556,
-      "supply_used": 186,
-      "supply_cap": 258,
-      "worker_count": 68,
-      "army_composition": {
-        "Stalker": 1,
-        "Observer": 3,
-        "MothershipCore": 1,
-        "WarpPrism": 0,
-        "Immortal": 3,
-        "AdeptPhaseShift": 0,
-        "Phoenix": 0,
-        "Tempest": 10,
-        "Oracle": 1
-      },
+      "minerals": 15,
+      "gas": 0,
+      "supply_used": 21,
+      "supply_cap": 23,
+      "worker_count": 20,
+      "army_composition": {},
       "tech": [],
       "buildings": {
         "Nexus": 1
       },
       "recent_events": [
         {
-          "frame": 21458,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 21480,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 21509,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 21510,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 21526,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 21536,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 21537,
+          "frame": 831,
           "type": "UNIT_BORN",
-          "unit": "Marine"
+          "unit": "SCV"
         },
         {
-          "frame": 21537,
+          "frame": 1039,
           "type": "UNIT_BORN",
-          "unit": "Marine"
+          "unit": "Probe"
         },
         {
-          "frame": 21537,
+          "frame": 1146,
           "type": "UNIT_BORN",
-          "unit": "Marine"
+          "unit": "SCV"
         },
         {
-          "frame": 21537,
-          "type": "UNIT_DIED"
+          "frame": 1275,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1417,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1511,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1688,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1747,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1959,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1985,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         }
       ]
     },
     "opponent": {
       "race": "Terran",
       "known_units": {
-        "SCV": 91,
-        "MULE": 11,
-        "Marine": 117,
-        "WidowMine": 18,
-        "Medivac": 9,
-        "Liberator": 3,
-        "SiegeTank": 1,
-        "Marauder": 31,
-        "Ghost": 6
+        "SCV": 19
       },
       "known_buildings": {
         "CommandCenter": 1
       }
     }
   },
-  "phase": "mid_game",
+  "phase": "opening",
   "phase_transition": true,
-  "transition_description": "mid_game -> endgame",
-  "commentary": "The thing is with the adept being how they are now. I mean we've seen a lot of proto as well kind of go over to Walls Blinkstalkers right and use those to great effects for like even just kind of holding off against initial aggression and then putting on some pressure later on. Yeah. I mean I don't think it's like adept's not bad or anything now. Not that's good as they used to be. They are not ridiculous anymore. Let's just put it that way. But they can still do stuff, you know, especially with resonating glaves. Yeah. Still quite strong. Let's see if you're ready for Bjorn. Is moving over to the left side. Quite aggressively here to try and keep an eye on things. I suppose controlling this watch tower. I thought he was going to stick around and like controlling just in case it was a wall. I think this is going to be a quick third for us. Look at this. He's only on two gateways, gets the Robo folks. He started Blink already and he's going to be a quick third next this year. And he is covering all of these bases with stalkers and trying to prevent a scout. So now Bjorn is going to be misled. He's caused the third base there. He's no third starting. Scan's the main. He's just a Robo double gates and something being researched right now in the twilight council. This could be anything. This could be adept with additional gateways on the natural. Yeah. Yeah. I don't think that out of four things he can somehow expect that there is a third base on the way and this could be really good if I so as because his economy is going to completely take off. He's going to have Blink stalkers or just stalkers in general to deal with the liberators that are going to hit him and he's going to have enough. I think to defend against those windomines. Yeah, I should do. The thing is is that at least the windomines from this direction will spot out the third base one more dimension unless it changes some calls drastically. Actually wait the timing on that mothership point looks like it's it's going to align up very well with when the Medivac gets there I think. Yeah it's going all the way around. He's going to spot that base. He's not going to spot the third. Oh my yeah. The mothership call. He said it towards the natural. Look at the timing on the mothership point. It's literally going to get there as the Medivac arrives. That's so sick. So he sees the third. He sees double fours as well as he flies on into this with a to this with a mind drop and burrowing. He even kills one of the phone over charge. I mean yeah one probe is going to die but who cares behind his observer is going to come there. D-Mine SOS is now going to be saturated on three bases even before Bjorn just he just started Sturdy CC. Exactly. And Bjorn is so funny because like he almost always does this behind where he gets like some tanks to make sure he's safe back at home and I think SOS knew that so he's like you know what I'm going to do. You're going to stay at home. Stay at home. I'm already on three bases. Double fours gateway explosions going to happen down the line and SOS's production is going to blow up. He's going to get so many units. Liberators on the way on the left hand side going to cross over with this Medivac and that'll go home to try and shut the some more units forward again later on. And this Liberator looking at the positioning of the pylons as well as the stalkers. I don't think it's going to get more stone here. It's going to be very difficult to find that sweet spot. And it definitely didn't find it. Just one stalker but I mean I think SOS has lost one probe and one stalker so far this guy. Yeah, something like that. That's really good. Well, it's not going well. For Bjorn let's just say that here. 63 workers to 44 RcVs. I mean yes of course they have mules and eventually that third base will be open running but it's going to take a while for Bjorn. It's only just started for this. Oh my SOS started for this. Even before Bjorn has flown his third CC on location. It's like the tempo of the game from either side it's just completely different. Like the turn of it all is literally only starting now. SOS just is going to snowball out of control here on everything. Production. He's starting to proxy some planets on the map. He's going to have so much vision. What is him headed throughout the main and Dark Shrine. I mean about halfway through done here as one one's about to finish. Realistically if you're looking at this and thinking well you know Bjorn why didn't he pull out more aggression again. It's ruins of service. It's so difficult to get over the other side of the map. These are the best possible spawns for SOS to execute this vastly greedy style that he is exuding here. Let me reformulate what you just said. Realistically Bjorn is in a lot of trouble if not dead. Yes. I guess he's going to be really talk for him to somehow make something happen in this game even though like right now supply wise there is not a huge gap. SOS is to be careful though. If he messes up like if he loses his war prism recklessly here it could be in big trouble. If he doesn't realize there is drops headed across the map here also could this could mean big trouble but with the amount of gateways that he has I really can't imagine SOS somehow messing up big and off here for him to be throwing away this game. It's six gateways. He definitely needs more by the way I think like 10 12 would be really nice. And actually walked in some more at that stone towards the bottom where he's like even just walked up the mountain then substituted them for dark templars that he's going to send on in a moment. So this is really quite scary here for Bjorn. Like the ramp up in how much supply SOS is going to have soon is going to be huge but he doesn't really have much to defend this location right now. Where's the mother ship car? I'm not even sure. I'm really surprised that Bjorn actually didn't detect the base here because he was pretty exposed but he's still laying that here for now. Dark Templar is in the mix of all of this. He actually spots it before it even gets a siphon and that will be one dark templar already going down but there's still two in this warp rhythm. Little bit surprised that charge hasn't started yet but maybe SOS wants to stay on adept stalkers going in for kill on this some of these units they instantly die as soon as they get warped in. That's a great move here. Why Bjorn's trying to start equalizing things? He's like he realizes he has to get out of there that's a huge army. High templars were just a little bit too far here to feed back on time. DT is going to do some damage. He can even pick up behind his oh he gets a missile turret with the two DTs. That's each time a strand of help out through upstound the scan but instantly gets picked up at SOS. Wow what a start of this game. Behind is he's going to be adding on even more gateways. His production is just going to be so insane. He's on 71 probes. Is that not a little excessive? I mean I think it's a great economy but yeah I think he's the perfect number but he definitely needs to make sure he has the production facilities here to to spend all of his minerals. Yeah. Yeah. So a couple more gateways would be nice maybe even a second robo, some kind of robo but I mean two two finishes now like Bjorn doing so much trouble mate. He starts his own two two and he's keeping up his supply but I don't see these attacks doing enough. He'll be like he's definitely got some initiative here to try and make something happen. He's done a really good job to actually keep up in terms of macro. He's got quite a strong army himself. Storm finished. That's the big problem here. That is true and three three is already on the way before two two is even halfway complete. So Bjorn has to again he basically has to drive his opponents crazy with these drops. But SOS knows I think that this is one of the only ways he can lose this game so he's left some Templar here at this 12 o'clock base and he's getting extra cannons there. Make sure he can defend with just that and he's actually throwing down cannons in his main base as well. No he knows yet though on that Templar. If Bjorn was to hit that position right now and he snipe that would be great I think for him. Because it's got to be on the way. Spots the army in the middle of the map here and drops the scan realizing the high templates are with it and knows now that Storm is very much so available to him. I'm gonna try and go in here. Storm pressuring that back allowing him for the warp him even if that pilot goes down at the front there's still one to back it up so there's the depth will not get cancelled. Bjorn was very impressive actually earlier against Salky with the ghosts like his control was I thought really really good but it's very different against Rotos. He's such a different story. When you have so many high templates already placed down on the map there's no room for mistake here for a turn. SOS gonna start a fifth base. I mean why not like he's so rich already. It's crazy as I said you know to begin with it feels like the tempo is just off. Whoa! For Bjorn in comparison. Stargate starts. Ooh. So maybe like an Oracle first to make sure he can reveal the entire Tianan army to take a good engagement or even like use his item plush to snipe stuff. I'm not sure what these units were doing there maybe he wanted to set them up on the right hand side to counter attack when Bjorn was gonna move out but that's gonna be taken out now and people are actually ahead in supply right now. They're going down a lot of the depth field walked in into the main base also a few more gonna follow that up also already shading forwards and looking to get onto what feels. Oh, Stargate is gonna go down and SOS wants to go for Tempest. I think you realize that once you have high 10 plus you force ghost out of your opponent when he's great against ghost but bunch of Tempest. Yeah that's true. It's gonna be difficult for him to really deal with flea beacons on the way as well these adaptors are still doing big big dab. This is what's the main. This is even just too by time like this is not even supposed to do that much damage but right now his tail has gone quite a bit. It's so many adepts. I mean I can't see some Marines it's so many adept they're not exactly getting you know full combat efficiency off compared to the previous patch that they were on but still this is very very powerful here. Fy SOS is gonna greet this with ease by the looks of things. There are not any high templates there for the storm but they're coming in from the back here and they're gonna lay down the storms on towards some of this bio they sacrifice themselves but they push it all the way back. Yeah the observer was sniped though but these units in the main are already doing so much damage for SOS and he's got such an insane economy that he can just keep on warping there. Yeah. Bjorn struggling to even stay here in his main base and somehow defend that position in the meantime. Tempest production is not gonna start though. Bjorn never got to a 4th. Never mind of the 5th that is going up for SOS behind this so you're totally on the money when you say the economy advantages so much here for SOS he is now burning down even just a few more of these units anything that dies is fantastic as well as is on the march towards the opponent's main. I think he realizes that even like this army to be honest is expandable with the income that he has with the Tempest is getting now being saturated on five bases against the ten that just lost this many SIVs he's gonna mean so much trouble here for Bjorn. He's not even mining from his main he's 36 SIVs to 72 probes the income is basically double here for a SOS. We already knew he was reaching real life apparently he's in the game about as equally. Yeah this is ridiculous I mean that warpers and yes goes down up towards the top but at the same time the bio army here isn't gonna have the easiest time but it's to be in place. There's so much energy that's four storms you're available. Hmm. Well, guess pushed away but the third base has had to be forced to lift up. He dropped scans in the main because he was being harassed by some dark temp lars cancelling add-ons and not for a moment and I guess he started the wrong ones that I wanted. Wow Bjorn. He's keeping up in supply nicely but I mean he's just like at the basic bio force that you go for a steering in terms of ghosts he's got zero I feel like Bjorn's gonna move across the map get shot at by the Tempest type gg and leave. Yeah that's there's nothing he can do against it literally nothing right",
+  "transition_description": "opening -> early_aggression",
+  "commentary": "Yeah. One of the most fascinating players to watch as well because he does mix it up so much. And he is so creative. I think that's something we rarely see someone like that be super consistent. And I mean, you could argue that SOS hasn't been that consistent himself, but when you put two world, two Blizzcon championships and an IEM world championship together, it's a pretty high level of consistency and most importantly of all, he's the master of tearing his opponent apart. You know, he's the guy who always finds a way to rip apart their mentality when he's on the big stage. He wins that $100,000 check every time. Yeah, and we all going to have the two players come on to the main stage in a couple of seconds. SOS has a lot of fun girls. They've been screaming. We've been hearing them. They were coming through the microphones coming through and there's quite a few of them. They got all their signs up. Hopefully, Bionna can overpower the fun girls, but Bionna has a lot of momentum behind him. James, he's got the community backing. He's feeling good. He's happy up on stage. Yeah. He feels like he can win this. It looks to me as when we were sat at the Caster's desk and you guys were interviewing that he seemed quite relaxed. I mean, I don't know if you guys got that feel from him, but he, and that is actually kind of rare to see for like a Korean just kind of having a very kind of chirpy and smiley attitude towards this kind of situation. Likewise, though on the other side, SOS is normally always like that when I really look at him. So it's quite the clash to be honest. Bionna realizes here what's happening. He's on top of his game. He's playing really well and he knows that girls all boys, there are going to be a lot of fans here for him if he were to win this regardless. Yeah, it's almost like a dream come true isn't it, because he came into the tournament and was like, what are we going to be playing in this tournament? And then he went through the quarter finals. He's gone through the semis and to win this as well on top, it would just all make sense together. What do you think James? I mean, I would. I mean, him being this weird enigma for so long that everyone was hyping up but kind of jokingly and just can, yeah, I've only kissed for jail, but then he comes back and he's actually really good. I don't know what to say. It's a bizarre weird twist that he's actually come and been this great. Yeah, I mean, but how many times do fairy tales come true? Sure, I'll finish that there, but not for him. I think there are a lot more people on Reddit right now cheering for him. So he's got that wave of momentum man. And let's face it, StarCraft Reddit is where champions are truly made. Absolutely. But realistically, there's obviously, you know, it's not, it's not $100,000 first place here, but it is still a chunk of money. It's 12,000 for first place, which SOS obviously pennies for him. But as he said when he was up here, when he gets to a final, he does do well on them and he rarely, rarely loses when he gets to a grand final. That's what that mentality's got a confidence. Absolutely. That's true, but at the same time,",
   "segment": {
-    "type": "battle",
-    "game_frame_start": 14575,
-    "game_frame_end": 28519,
-    "game_time_start_sec": 650.7,
-    "game_time_end_sec": 1273.2
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 4034,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 180.1
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

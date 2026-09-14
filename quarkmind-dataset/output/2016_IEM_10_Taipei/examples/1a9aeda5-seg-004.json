@@ -1,0 +1,112 @@
+{
+  "id": "1a9aeda5-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6166,
+    "game_time_sec": 275.3,
+    "player": {
+      "race": "Protoss",
+      "minerals": 115,
+      "gas": 254,
+      "supply_used": 41,
+      "supply_cap": 62,
+      "worker_count": 25,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Stalker": 3
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5545,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5549,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5652,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5678,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 5759,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5809,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5813,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6071,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6135,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6139,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 27,
+        "MothershipCore": 1,
+        "Stalker": 6,
+        "Observer": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": true,
+  "transition_description": "early_aggression -> mid_game",
+  "commentary": "traded but it's not really crippling damage that you need to be doing against this kind of tech and now sos is gonna start on warping in units three by three he's got two base saturation with more probes hero as the the robot that just finished and he gets an observer so he's he's still afraid that there could be some kind of dt's which is a little bit surprising so he's missing in the situation a little bit he needs to hold us off over and over making sure nothing's gonna get him I know oh my god pylon going down in the back of the base here for sos this game what do you expect from hero versus sos though really i'm gonna see the next just as well yeah oh sos the zero check is the inner side of his main and now though because i think there's something being walked in there and i'd have to try and snipe some probes where is the modorship core just walks in blissfully nothing to deny at all does the ship go to the map so there's not gonna be any overcharge and stalkers they take some time to kill on the depth so that was gonna get a few stipes yeah in total we have two workers killed again six and he will find this pylon eventually and so that's 27 probes against 22 and he's got the earlier nexus now all sos has to do",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 5493,
+    "game_frame_end": 6840,
+    "game_time_start_sec": 245.2,
+    "game_time_end_sec": 305.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Prion Terraces",
+    "game_duration_sec": 990.2678571428572,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "1a9aeda55b1c"
+  }
+}

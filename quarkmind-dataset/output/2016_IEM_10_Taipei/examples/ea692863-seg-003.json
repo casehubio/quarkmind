@@ -1,0 +1,108 @@
+{
+  "id": "ea692863-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 2961,
+    "game_time_sec": 132.2,
+    "player": {
+      "race": "Zerg",
+      "minerals": 115,
+      "gas": 92,
+      "supply_used": 26,
+      "supply_cap": 36,
+      "worker_count": 19,
+      "army_composition": {
+        "Larva": 4,
+        "Overlord": 3
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 2555,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 2628,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 2628,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2699,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 2699,
+          "type": "UNIT_BORN",
+          "unit": "Reaper"
+        },
+        {
+          "frame": 2717,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2798,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 2799,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2823,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 2939,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 20,
+        "MULE": 1,
+        "Reaper": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "that doesn't do too much. Huge lingering run by coming in from Sorki at the same time is that going to get a lot of damage done it's coming into all the base planetary tanks and Marines though just shut everything down I was gonna say I think the only thing that took a huge amount of damage was the Surgling. Another ultra list that goes down some of the more orders of Marines at the front. Good sniping one of the investors they pretty even trade there. Bjorn continuing to apply pressure though keep in mind there has been no spire this entire game these drops Bjorn is just using his sheer mechanical skill right now to keep Sorki on the back foot he's saying look if you don't have a way to shut down these drops I am going to drive you crazy with them and right now Sorki feels like he's in the middle of a game of tug of a rope or something like he's got people just pulling at his arms from either side these drops will not stop annoying him. Nice little cleanup once again fungal corrosive file combo and even like drilling claws coming in here for widow mines so Bjorn's gathering a lot of speed with his army too but still you've got a wonder how much these ultra lists are going to take in terms of punishment six at the moment of seventh on the way. Oh gosh catch you a lot of turn out. Got to be careful that widow mines actually going to catch a lot of certain except the front that takes away some of the defensive capabilities here for this army as it moves forward and tries to tank it up. Oh good evacuated by Bjorn. Bjorn continuing to play the slow game he's actually poking and prodding he's got a liberator coming into the back face he's got a drop still position down at the fourth another liberator oh he's got too liberator staging up at the exact same time really nice move and his army just his bio is posturing in the middle at home Bjorn has a huge defensive setup with tanks behind his planetary so he's not saying I'm going to suddenly die to a counter attack look at that another drop on the",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 2002,
+    "game_frame_end": 3921,
+    "game_time_start_sec": 89.4,
+    "game_time_end_sec": 175.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1286.6964285714287,
+    "vod_url": "https://www.youtube.com/watch?v=emCaI55s8Tc",
+    "subtitle_source": "whisper",
+    "replay_hash": "ea69286365b5"
+  }
+}

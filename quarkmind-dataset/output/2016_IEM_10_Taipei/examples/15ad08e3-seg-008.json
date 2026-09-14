@@ -1,0 +1,120 @@
+{
+  "id": "15ad08e3-seg-008",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 10045,
+    "game_time_sec": 448.4,
+    "player": {
+      "race": "Protoss",
+      "minerals": 182,
+      "gas": 378,
+      "supply_used": 110,
+      "supply_cap": 125,
+      "worker_count": 55,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "Sentry": 1,
+        "Oracle": 0,
+        "MothershipCore": 1,
+        "Archon": 0,
+        "Observer": 1,
+        "WarpPrism": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 9782,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9785,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9788,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9832,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 9835,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 9884,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 9963,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9997,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9998,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 10022,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 49,
+        "MULE": 7,
+        "Marine": 39,
+        "WidowMine": 2,
+        "Medivac": 3,
+        "SiegeTank": 4,
+        "Liberator": 1,
+        "Marauder": 7
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "getting as many sdv as possible the shades go forwards he sees how many marines are there but there is gonna be other mortal knocking on his door in just a second as long as he couples up with all the extra units that are gonna warp in and we don't mind in the main boom all right just two probes in the first place but let's see in detection wise there is no observer being made i think was that so i see just salining i think i'm just gonna take out the wall like i spoke about earlier he's gonna supply block actually bion quite heavy there you can get second him all with this the",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 9758,
+    "game_frame_end": 10333,
+    "game_time_start_sec": 435.6,
+    "game_time_end_sec": 461.3
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Prion Terraces",
+    "game_duration_sec": 577.8125,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "15ad08e3ed7f"
+  }
+}

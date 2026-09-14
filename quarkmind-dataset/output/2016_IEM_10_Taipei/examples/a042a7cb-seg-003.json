@@ -1,0 +1,105 @@
+{
+  "id": "a042a7cb-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 2259,
+    "game_time_sec": 100.8,
+    "player": {
+      "race": "Zerg",
+      "minerals": 190,
+      "gas": 20,
+      "supply_used": 19,
+      "supply_cap": 22,
+      "worker_count": 18,
+      "army_composition": {
+        "Larva": 1,
+        "Overlord": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 1943,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 1943,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1957,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 1961,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 2024,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 2024,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2034,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2197,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 2240,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 2240,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 19
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "He's he's off doing other things humans. Yeah, he's human sometimes. That's so weird I think it's because he goes to school if he wasn't going to school. He would have always seen that yeah Clearly Clearly a man that Isn't a tough spot right now Like I mean honestly, I'm trying to look for like positives here, but so he's already got his one one whole doesn't have his plus one yet Um, it's bad waiting on combat shields no third command center. And he's doing yes. This isn't central protocol You know he's doing that thing again where he's like front loading all the production and then we'll add the third CC",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 1943,
+    "game_frame_end": 2576,
+    "game_time_start_sec": 86.7,
+    "game_time_end_sec": 115.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "Polt",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Central Protocol",
+    "game_duration_sec": 968.1696428571429,
+    "vod_url": "https://www.youtube.com/watch?v=iDDY_4VLP5k",
+    "subtitle_source": "whisper",
+    "replay_hash": "a042a7cbde4d"
+  }
+}

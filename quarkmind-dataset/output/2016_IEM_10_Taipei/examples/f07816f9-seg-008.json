@@ -1,0 +1,109 @@
+{
+  "id": "f07816f9-seg-008",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7987,
+    "game_time_sec": 356.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 400,
+      "gas": 310,
+      "supply_used": 74,
+      "supply_cap": 77,
+      "worker_count": 51,
+      "army_composition": {
+        "MothershipCore": 1,
+        "Oracle": 0,
+        "Phoenix": 3,
+        "AdeptPhaseShift": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 7812,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7812,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7812,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7812,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7812,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7813,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7827,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7895,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 7960,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7965,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 48,
+        "MULE": 6,
+        "Marine": 20,
+        "WidowMine": 2,
+        "Medivac": 1,
+        "SiegeTank": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "to a widow man and die this is a very characteristic mistake here that we saw out of SOS and he definitely paid the price for it behind this and now we've got beyond going into uh lots of bio he just made one single tank I really feel like if you don't have gone for like a lot of tanks and marines",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 7812,
+    "game_frame_end": 8163,
+    "game_time_start_sec": 348.8,
+    "game_time_end_sec": 364.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Dusk Towers",
+    "game_duration_sec": 570.7142857142858,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "f07816f9b5fb"
+  }
+}

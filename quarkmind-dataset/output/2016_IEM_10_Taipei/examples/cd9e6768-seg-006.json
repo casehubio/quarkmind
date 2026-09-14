@@ -1,0 +1,117 @@
+{
+  "id": "cd9e6768-seg-006",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 17485,
+    "game_time_sec": 780.6,
+    "player": {
+      "race": "Zerg",
+      "minerals": 400,
+      "gas": 756,
+      "supply_used": 116,
+      "supply_cap": 124,
+      "worker_count": 31,
+      "army_composition": {
+        "Larva": 11,
+        "Overlord": 14,
+        "Zergling": 0,
+        "Queen": 2,
+        "Mutalisk": 0,
+        "Broodling": 0,
+        "Baneling": 0,
+        "Roach": 33
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 17372,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 17377,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 17440,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 17442,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 17443,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 17443,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 17446,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 17449,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 17450,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 17470,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 83,
+        "Marine": 81,
+        "MULE": 11,
+        "Hellion": 6,
+        "VikingFighter": 1,
+        "Medivac": 14,
+        "WidowMine": 12,
+        "Marauder": 25,
+        "Liberator": 4
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "late_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "But if I land these vials on those two metabacks I can turn the tide and it's not just a like right click on it and kill it It's a I need to predict where you're gonna be and the other player has counter play as well like I don't know Yeah, it adds a lot more skill into taking me actual engagements rather than you know Okay, my roaches have low range move them closer so they can hit, you know Yeah, the bit more to uh then we'll work with that was It still exists but in a different way, but in sarcoph to the dumbest micro to me was like Roach versus Roach battles where they're all just like shifting into each other You know, there's so dumb there's there's a there's always you know There's always you know as we're as we're loaded into the next game There's always those people out there that I like they can't but that was beautiful to watch I'm like no watching people try to dodge corrosive bile and land them is way there's a lot there's a lot more exciting I find this game a lot more fun to cast just from that alone We're loaded into prion terraces for game number two",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 16952,
+    "game_frame_end": 18019,
+    "game_time_start_sec": 756.8,
+    "game_time_end_sec": 804.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "Polt",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Dusk Towers",
+    "game_duration_sec": 804.4196428571429,
+    "vod_url": "https://www.youtube.com/watch?v=iDDY_4VLP5k",
+    "subtitle_source": "whisper",
+    "replay_hash": "cd9e6768a888"
+  }
+}

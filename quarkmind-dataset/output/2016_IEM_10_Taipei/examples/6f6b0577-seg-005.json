@@ -1,0 +1,110 @@
+{
+  "id": "6f6b0577-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6631,
+    "game_time_sec": 296.0,
+    "player": {
+      "race": "Protoss",
+      "minerals": 313,
+      "gas": 185,
+      "supply_used": 48,
+      "supply_cap": 55,
+      "worker_count": 25,
+      "army_composition": {
+        "Stalker": 7,
+        "MothershipCore": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5265,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5385,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 5448,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5561,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5767,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        },
+        {
+          "frame": 5950,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6040,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        },
+        {
+          "frame": 6276,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6534,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6547,
+          "type": "UNIT_BORN",
+          "unit": "WarpPrism"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 25,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Immortal": 1,
+        "WarpPrism": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": true,
+  "transition_description": "early_aggression -> mid_game",
+  "commentary": "pilot he's gonna be suplay blocked and right now hero is gonna have his own fourth base this is insane as SOS right now has to make something happen with this army dark tempals are on the left hand side actually killing off a few of these units and there's a kind of net to actually deal with it but he could get on some of the stockers here hero has to hold on against the biggest army he's gonna face this game heroes coming in from behind with a huge chunk of his army the disruptors and the immortals more importantly I don't think he has enough he needs to hit some great detonations here with the with the disruptors he gets the nexus he backs on out he's got his own nexus on the way behind this yeah that's not a stocker so I think to get a snipe on this so he's",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 6286,
+    "game_frame_end": 6976,
+    "game_time_start_sec": 280.6,
+    "game_time_end_sec": 311.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

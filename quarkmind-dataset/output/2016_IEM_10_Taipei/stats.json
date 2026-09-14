@@ -1,23 +1,23 @@
 {
-  "total_examples": 49,
+  "total_examples": 236,
   "games_processed": 30,
   "tournaments": 1,
   "phase_distribution": {
-    "opening": 36,
-    "early_aggression": 5,
-    "mid_game": 7,
-    "late_game": 1
+    "opening": 111,
+    "early_aggression": 52,
+    "mid_game": 63,
+    "late_game": 10
   },
   "segment_type_distribution": {
-    "expansion": 7,
-    "battle": 40,
-    "macro_economy": 2
+    "expansion": 29,
+    "macro_economy": 84,
+    "battle": 123
   },
   "matchup_distribution": {
-    "TvP": 7,
-    "PvP": 22,
-    "ZvP": 4,
-    "ZvT": 9,
-    "PvT": 7
+    "TvP": 30,
+    "PvP": 75,
+    "ZvP": 20,
+    "ZvT": 54,
+    "PvT": 57
   }
 }

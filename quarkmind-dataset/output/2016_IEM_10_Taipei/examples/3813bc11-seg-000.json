@@ -2,20 +2,18 @@
   "id": "3813bc11-seg-000",
   "version": "1.0",
   "game_state": {
-    "game_frame": 6760,
-    "game_time_sec": 301.8,
+    "game_frame": 312,
+    "game_time_sec": 13.9,
     "player": {
       "race": "Zerg",
-      "minerals": 185,
-      "gas": 224,
-      "supply_used": 54,
-      "supply_cap": 60,
-      "worker_count": 34,
+      "minerals": 40,
+      "gas": 0,
+      "supply_used": 13,
+      "supply_cap": 14,
+      "worker_count": 12,
       "army_composition": {
-        "Larva": 9,
-        "Overlord": 6,
-        "Queen": 3,
-        "Zergling": 14
+        "Larva": 3,
+        "Overlord": 1
       },
       "tech": [],
       "buildings": {
@@ -23,66 +21,60 @@
       },
       "recent_events": [
         {
-          "frame": 6470,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Marine"
+          "unit": "Drone"
         },
         {
-          "frame": 6473,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Marine"
+          "unit": "Drone"
         },
         {
-          "frame": 6571,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Liberator"
+          "unit": "Drone"
         },
         {
-          "frame": 6661,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 6678,
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Overlord"
         },
         {
-          "frame": 6678,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 6689,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 6702,
-          "type": "UNIT_BORN",
-          "unit": "SCV"
-        },
-        {
-          "frame": 6711,
-          "type": "UNIT_BORN",
-          "unit": "SCV"
-        },
-        {
-          "frame": 6731,
+          "frame": 256,
           "type": "UNIT_BORN",
           "unit": "Larva"
+        },
+        {
+          "frame": 288,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 288,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 289,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
         }
       ]
     },
     "opponent": {
       "race": "Terran",
       "known_units": {
-        "SCV": 34,
-        "MULE": 4,
-        "Reaper": 1,
-        "Marine": 13,
-        "KD8Charge": 1,
-        "WidowMine": 1,
-        "Medivac": 1,
-        "SiegeTank": 1,
-        "Liberator": 1
+        "SCV": 13
       },
       "known_buildings": {
         "CommandCenter": 1
@@ -90,15 +82,15 @@
     }
   },
   "phase": "opening",
-  "phase_transition": true,
-  "transition_description": "opening -> mid_game",
-  "commentary": "at least one of the next two series. And really kind of balanced things out in a much more even gameplay. I don't want him to just keep dropping Ling's and trying to run roaches and ravages in, which is in the last week and a half, there's like 80% of his CVT. So I hope he does kind of chill out a little bit on some of these maps. All right, well, we're getting onto Dust Towers 4 game number two. I mean, what do you make of this map as a whole? Like, Bjorn have a good shot here to bring this back. It's Sorki in a favorable position here. What do you think? I mean, we're going into Dust Towers and it's such an interesting map because there is of course the fiddity bonny build that Captain Nathanius has been publicizing so much. You know, that's something that is in the back of every player's mind. So going into this map, Sorki's got to be thinking about the threat of liberators on this map. Even without range, they've got a lot of angles they can come in from and be annoying. There was that single liberator or two that was very annoying last game. Otherwise, though, besides the threat of that, I think this map's great for Zirk. It's, you know, so big, so straightforward. You can scout relatively easily as lots of angles coming with overlords. There's so much rush distance. So I think Sorki's going to be pretty confident on this map. Are you taking your hatchery outside and then going to the inside later on to get one group spread? One group spread, one hundred percent of the time against Terran. Sorki will do that one hundred percent. You know, there's no real risk to it. Proxy through here, Axmer, Ren, SCV rush is not really the most popular thing right now. You know, if you don't drone scout or send an overlord to check for it, yeah, you could technically lose a game to it. But I don't think someone Sorki's car is too worried about that. Not so much. Not so much. We're just getting loaded up into the second game here. Taking a small moment longer than we're anticipating. But Bjorn probably welcomes the slight rest. Reset his mind a little bit. Because it's not like that was any kind of fluke of a game there from Sorki. That was a well thought out, well thought out methodical game there. That he just, he bore the brunt of the aggression. And it can be very difficult in times like that when there are three or four engagements going on across the entirety of the map to keep your composure. Yeah. Sorki did great. Exactly. And one thing we could criticize Sorki for last game is once things got messy. And I mean, everyone makes mistakes when you're in such a messy game. But he didn't really respret his creep particularly well. I think he got very lucky that Bjorn scans didn't take out the active trimmers early on. I think even the initial creep wasn't spectacular, but it was there. Right. It was there. Yeah. All right, let's get into it. Game number two. As we have sporting down to the south. It is our red tower representing X team. It is Bjorn. Let's come back here in this best of five. And up to the top. We have our blue Zerg representing TCM. It is Sorki. Got to have a big confidence boost after that game one. I think that's probably one of the best sort of games to win as a player when you're on the back foot and you're kind of fighting in this really down and dirty messy situation. And then you kind of come back and you tear your opponent's economy apart with this like two pro encounter attack and then capitalizing and crush their army from all sides. That's one of the best feelings for Sorki. So he's got to really ride that energy now and I think it's going to give him a lot of confidence going into this map. And we're going to have gas opening here from Bjorn to start things off as well. So potentially just the straight over to Reaper and then just poking around see what's going on. Always want the information and Reaper can get the information as to when the third hatchery's gone down and what's actually going on with gas etc. Exactly. And just a hatch gas pool coming out here for Sorki. Very typical opening as well. So Reaper's quite common here into expand of course. What are some other builds we've been talking about liberators but I was talking earlier about how Terran players you know they like to do some aggressive pushes. Now something which is rather niche but beyond might pull out is actually marine tank push. A lot of players been doing this off two base and there is a very cute area actually just down out front your you kind of frontal base where I'm looking. Yeah just up here to the around that ledge where you can drop the tank on the high ground the middle ground all the low ground and repositioning those with meta-vacs can get very awkward especially against a slower roach based army. So if someone's opening up with roaches roach ravager they don't have roach speed yet. I push there can actually just completely end the game. So that may be something beyond opts for as Sorki has traditionally favoured a lot of roach ravager play on this map. We're going to head on across the map and not be spotted I mean it's kind of anticipated here when we say from Sorki as I'll have a few links on out the queens are about to pop then he's getting himself speed as well. No huge rush over to that third base but if you tried to go up the ramp you would have instantly been attacked there for a moment. KDH tries to go off on this drone. It doesn't really do too much. Save the drone. It's okay. Don't hurt the drone kids. Good job. Being in his annoying as possible. Great pullback micro from Sorki pulls back the low hit point zirgling and doesn't want to lose any of those. That's just great micro. It's a long distance map so the reaper takes a little bit longer to get here which is why Sorki knows he builds just four zirglings. He can basically micro them around to buy time for those queens and he's never going to lose them. Yeah. And of course this is Sorki's favourite opening recently just goes straight into two more queens after the original two and that's just going to allow him to be 100% safe. And from here sometimes he texts straight into mutilisks off two base. You'll notice he's still got one drone mining gas which will allow him to have that option. He might just go straight into ravages and so on. But I think definitely it's going to be some form of spire into a roach based play. That's something Sorki loves to do. You know, either mass roach ravager but sometimes he goes ravages zirgling off the mutilisks as well. So he's got a real weird range of play there. Beyond on the other side of things just going to be going for that liberator opening. Yeah, maybe you start on towards the main base at the back of the mineral line there after these helians have done some harass. And the thing is is that he placed the star point in such a way that if a zirgling poked up the ramp it wouldn't see that star point because it's so far away. And then if you try to go over there overload there was a marine there to try and get rid of that point. So Bj\u00f6rn is really kind of covering his bases himself. Oh broach were on the way. Do you see just a second gas coming out of Sorki recently I did see him opt for a fast third gas where off this exact same opening he goes for a big ravager speedling timing looks like he's not going to go for that this time around. And just defending their nice with those cleans overlord goes in did actually see the star port there. I'm not 100% sure just saw the glimpse of those doesn't he doesn't know that there's no add on that because the barracks has the add on so you know is okay. There's a star board here you know liberators are an option Viking to clear up scouts he's going to poke into double check that look at that just being very sure there's no liberator range coming out that overlord sees it and then turns around very good scouting from Sorki not going to lose the overlord either. Yeah definitely really cool stuff should be fine and this liberator coming in to the back of this mineral line is to be expected pulls away starts the sport crawler. Queen's going to have a bit of a hard time of actually reaching that without going into firing range I'm not even sure it can get it might be able to Sorki is not even trying this is a big loss actually I mean he's got the third base up so he's got other bases to mind from but if you don't have that's already a can be a real problem losing some zerglings at the front to those helians yeah look at that that Queen actually did take some shots to that and trying to go on the stream and see towards the bottom so very finite distances really there that you've got to play with but at least he's got the sport crawl and now finished and what we can say is much better from Sorki this game is he's joining up quite hard he's already at 50 drones adding double evo chamber going up above that count adding more gases and this is what I wanted to see from Sorki I was saying I'd love to see see and play this you know solid defensive style it looks like he's opting for it now deflecting that liberator and it looks like he's locked everything down now and this is the dream is a Zerg player means he's going to be able to get these upgrades started get that three base full saturation of drones going and from there you can just mass roaches take a fourth base and basically have freedom in this mid game to do whatever he wants still looking for all the overlords and he's actually doing a really good job of limiting the vision here of Sorki I mean right now Zerg doesn't necessarily need huge amounts of vision on the end of their bases but because he knows what aggressive units are already out there but overall these helians and repurve done a great job of limiting creep spread there has been no essence of creep spread going out of here at all and that's very important that is actually a really good point you bring up I mean we've got marine tank is the composition coming out of beyond upgrades almost perfectly in line but as that tank count gets higher creep spread becomes more and more important yeah remember Sorki will have to take a fourth base if he doesn't want to just all in with road traver and if there's no creep out there marine tank bushes can get very awkward liberator even going to come and try and help out this location but doesn't want to see jump because that liberator would die in three shots of that corrosive pile so I'm going to have to relocate maybe try and get towards a mineral line it's much more difficult than one ravages are a factor here with those liberators of course yeah the liberators going to be really careful fourth base isn't going down of course on the right hand side so there's no ledge above it to abuse with siege tanks and both players just powering up right now now ah here we go okay so there is actually I believe a drop coming down the top left hand side of the map nope just a Viking but Sorki he's actually got an infestation pit on the way and that says to me he wants to go investors with his road traver not going to go for the spy so he's not really going to have the best drop defense but considering beyond doesn't have a lot of tempo going he's just going to be taking up very fast and very hard here that queen is kind of dying all Poggle and there is still well she'll kill that so guaranteed he can't unseize that quickly enough but this army towards the middle I thought I was going to push a little bit further he's going to opt to actually pick the majority of that up and try and go towards the main base but Sorki doesn't have any knowledge of that he is yeah this is a frightening army there's so many ravages in here and beyond going to be very careful with where he pushes interestingly Sorki just rushing straight up to high completely skipping investors looks like he may want to take into oh yeah melee upgrade on the way he wants to go straight towards ultra-lisks it's it's not even a huge commitment to to the you know the road traver it's just a bunch of ravages a big counter them and then back into the zirgling production so",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "at least one of the next two series. And really kind of balanced things out in a much more even gameplay. I don't want him to just keep dropping Ling's and trying to run roaches and ravages in, which is in the last week and a half, there's like 80% of his CVT. So I hope he does kind of chill out a little bit on some of these maps. All right, well, we're getting onto Dust Towers 4 game number two. I mean, what do you make of this map as a whole? Like, Bjorn have a good shot here to bring this back. It's Sorki in a favorable position here.",
   "segment": {
-    "type": "battle",
+    "type": "expansion",
     "game_frame_start": 0,
-    "game_frame_end": 13521,
+    "game_frame_end": 624,
     "game_time_start_sec": 0.0,
-    "game_time_end_sec": 603.6
+    "game_time_end_sec": 27.9
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

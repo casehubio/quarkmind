@@ -1,0 +1,110 @@
+{
+  "id": "fd62e9cd-seg-011",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 14783,
+    "game_time_sec": 660.0,
+    "player": {
+      "race": "Protoss",
+      "minerals": 1315,
+      "gas": 283,
+      "supply_used": 130,
+      "supply_cap": 149,
+      "worker_count": 55,
+      "army_composition": {
+        "Stalker": 1,
+        "MothershipCore": 1,
+        "Observer": 1,
+        "Phoenix": 0,
+        "Immortal": 4,
+        "WarpPrism": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 14647,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14672,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14673,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14675,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14675,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14675,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14677,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14713,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14733,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 14750,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 54,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Sentry": 2,
+        "Observer": 2,
+        "Phoenix": 1,
+        "Immortal": 6,
+        "WarpPrism": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "hope to pick off the Warp Prism, hope SOS backs off in the idea of DT harassing, but SOS being so savvy, seeing that even over top the third, there was no observer, probably did the math in his head, and said there's one, maybe two out here. Dark Temple are going to get their money's worth, and if not, I'm gonna have the better Army because he made more observers. So it just really cool back and forth by the two players, hard choices are made in Starcraft. We can be critical of MC for that, but I think in this situation, he just knew he had to go with what he thought was lesser of the evils. Yep, next map is gonna be Orbital Shipyard, and it's such a tough spot when you're in that position because the observer obviously can't be in both bases at once, and I really like that you pointed out that, even with the Army in his face, he's like, yep, I'm gonna send a DTA to the base, right? Next year Army, because you already moved your observer to the main, you're gonna have to move it to the natural next, and you touched on something that was really cool too, that the choice to send one DT is very savvy and cool. He had three, so he could have dropped all three DTs, sent him into the main, and been like, you're dead, I'm gonna maybe pick off the robo, kill everything into the game, but if there is an observer in there, if MC is on top of that, has several observers, that all of a sudden those three DTs became a really big cost, and it's really, we've seen Prodoss flip their advantage on their head because they spend too much on that,",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 14003,
+    "game_frame_end": 15563,
+    "game_time_start_sec": 625.1,
+    "game_time_end_sec": 694.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 726.0714285714287,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "fd62e9cd965b"
+  }
+}

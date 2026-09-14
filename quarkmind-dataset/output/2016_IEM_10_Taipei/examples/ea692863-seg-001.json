@@ -1,0 +1,105 @@
+{
+  "id": "ea692863-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1037,
+    "game_time_sec": 46.3,
+    "player": {
+      "race": "Zerg",
+      "minerals": 170,
+      "gas": 0,
+      "supply_used": 17,
+      "supply_cap": 22,
+      "worker_count": 14,
+      "army_composition": {
+        "Larva": 2,
+        "Overlord": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 668,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 699,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 699,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 779,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 829,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 972,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 972,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 973,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 973,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1019,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 15
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "of the bio dodges the bile um it's a little bit misplaced there but nice zergling wraparound from behind is going to clean up that army and now Sorki's supply looking very scary I mean he's got ultra is he's still got those ravages we talked about those surviving for the entire game even though his economy is not great I mean how does Bjorn take an efficient trade against this he's got seven siege tanks former orders and 19 Marines there are only two ultra lists out right now but soon there's going to be another three doesn't have kindness plating on the way yet so oh man sniping that if Sorki doesn't remember that upgrade the Marines will actually do damage to the ultra list which they're",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 668,
+    "game_frame_end": 1406,
+    "game_time_start_sec": 29.8,
+    "game_time_end_sec": 62.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1286.6964285714287,
+    "vod_url": "https://www.youtube.com/watch?v=emCaI55s8Tc",
+    "subtitle_source": "whisper",
+    "replay_hash": "ea69286365b5"
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "id": "1a9aeda5-seg-014",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 21403,
+    "game_time_sec": 955.5,
+    "player": {
+      "race": "Protoss",
+      "minerals": 865,
+      "gas": 1411,
+      "supply_used": 188,
+      "supply_cap": 243,
+      "worker_count": 63,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Stalker": 0,
+        "Phoenix": 0,
+        "Oracle": 0,
+        "Observer": 1,
+        "Immortal": 3,
+        "WarpPrism": 1,
+        "Disruptor": 11,
+        "DisruptorPhased": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 21394,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21394,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21398,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21398,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21401,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21401,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21401,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21401,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21401,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21401,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 93,
+        "MothershipCore": 2,
+        "Stalker": 6,
+        "Observer": 3,
+        "WarpPrism": 1,
+        "Disruptor": 19,
+        "Phoenix": 1,
+        "DisruptorPhased": 34,
+        "Immortal": 3,
+        "AdeptPhaseShift": 6
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "late_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "orchestrate this attack wow sos known five bases and no-tampest prospect here so far for either player two dt's are being warped in i think in the main this could be a great move for sos here there is only once you can do zero time but there's an observer anyway hero with the four side here most of course will be able to deal with that as well but still more units getting warped in there few more zealots now all with that cannon almost down phone overcharge about to dissipate as well who I've seen on time actually oh oh oh oh oh oh oh oh oh oh oh oh oh oh blinks out of that but he loses himself disruptors as well as a stalker or two but now this is where sos really wraps it up he's got a huge army advantage here after being able to have all of those bases at the back of this going for it was instead blinking forwards he knows there's no disruptors there and he's gonna try and come in for the defense what is it so many disruptors in the process here is hero he is being dismantled and he'll have to back on out from here because sos army was all together i decided to get in there very very seriously to force an overextension here for hero to tell hero you need to come in right now and try and defend this because otherwise i'm gonna kill you entire army and then that's when you get these big detonations that your forcing mistakes are out of your opponent his army has to come in hot and those disruptors tied that start dying from your opponent's disruptors hero starts a dark trine but he's gonna lose his rubber band gg gave",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 20625,
+    "game_frame_end": 22182,
+    "game_time_start_sec": 920.8,
+    "game_time_end_sec": 990.3
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Prion Terraces",
+    "game_duration_sec": 990.2678571428572,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "1a9aeda55b1c"
+  }
+}

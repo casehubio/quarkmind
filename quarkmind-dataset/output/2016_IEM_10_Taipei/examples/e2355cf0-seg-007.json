@@ -1,0 +1,119 @@
+{
+  "id": "e2355cf0-seg-007",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 12915,
+    "game_time_sec": 576.6,
+    "player": {
+      "race": "Zerg",
+      "minerals": 810,
+      "gas": 245,
+      "supply_used": 197,
+      "supply_cap": 248,
+      "worker_count": 72,
+      "army_composition": {
+        "Larva": 18,
+        "Overlord": 27,
+        "Zergling": 15,
+        "Queen": 4,
+        "Roach": 47,
+        "Changeling": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 12877,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 12882,
+          "type": "UNIT_BORN",
+          "unit": "Roach"
+        },
+        {
+          "frame": 12882,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12884,
+          "type": "UNIT_BORN",
+          "unit": "Roach"
+        },
+        {
+          "frame": 12884,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12895,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12895,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12903,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 12907,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 12911,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 61,
+        "MULE": 10,
+        "Reaper": 1,
+        "Marine": 59,
+        "KD8Charge": 4,
+        "SiegeTank": 1,
+        "Medivac": 6,
+        "WidowMine": 8,
+        "Marauder": 13,
+        "VikingFighter": 1,
+        "Liberator": 2
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "You have to do damage you have to do something and killing two queens and several creep tumors is nice That's not really the damage we're talking about that is like I need to Get him to pull his drones. I need to pick off a hatch like that kind of damage or at least kill a bunch of stuff But but soul key just pushed on took a fourth there's like a light marine drop over there the two roaches Just kind of like get out of here and that was it Yeah, he dismissed it pretty easily And I think that's also just another thing about that map even with the short rush distance the choke points to Taxi'm on a really small, but we're loaded into central protocol Which you think is the worst map, right? This is personally my least favorite map Okay, I think it's easier because you don't have to scout on prime terraces to rebar all in But that's just me you have to you know sometimes if you get cross bonds on this map then rebar all ining is a bit hard But then it's easy to reperchise if you get these spawns for example Um, of course the red tear player on the top left He is down one two needs when the next two games to keep his is it one two Yes, that's how bad my brain is right now Yes, always the game pull one thus towers game one be crushed him He killed the third The third Listen, you know, in my defense. He had five soul bats tank 12 hours ago. I was in Florida coming back from Mexico That's fair in my defense, but also that's part of my charm Because I know always know exactly where I'm at. I'll just abridged it for all of you guys Jeff losses passion. It's okay Jeff had to recharge his passion, bruh Okay, so let's let's actually just gonna do a reaper expanded single reaper He's gonna play this map sure straight up, but why is this such a bad map? That's what I want you to because I mean I played the biggest issues Anything and then vetoed it now come back the biggest issues that everybody has with this map come mostly down to just the layout of the third base Right pull has two options for a third you can take the option that's super far away from his natural Whereas army would be like this is a big ramp you can't block this off easily Speedling play early on is a super popular for that reason alone But then you've got back rocks as well And then if you're a crazy suicidal tearing you can take the third base outside their natural which is At you know what this map has played so little that I actually think that happens pretty often because people just don't even If you aren't even even thinking about it as much and to be fair if you could take that as a third You know might as well just pf it just stage your marine tank all in from there. I do have a quick update for you Now remember game one Congratulations, but I did that while listening to your analysis. I think it's spot on I also remember some of the games here And it is frustrating the distance between bases and how that gets kind of big as thing is like could could pull break the rocks and make his third base closer to his main base Sure, but then you have to consider that it's not possible You're not there's no wall. You're gonna build that's gonna keep that base safe Yeah, and then if even if you have your army here and then they just decide okay I'm just gonna go here and then get this giant space and you have to go a really far way To actually be able to defend against that so I mean you get these spawns and let's just let's not even forget whoever gets knocked down behind Like if either player falls behind at all fish rush distance is step-s-of-war That's my meastones toss right there. Yeah, that is that is your still incredible throw But it's still a tough roll much more realistic, but if we assume that you know You're either in a power suit or you're you know a genetically evolved being like a zirgling or a queen than maybe that's it",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 10768,
+    "game_frame_end": 15063,
+    "game_time_start_sec": 480.7,
+    "game_time_end_sec": 672.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "Polt",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Ulrena",
+    "game_duration_sec": 672.4553571428572,
+    "vod_url": "https://www.youtube.com/watch?v=iDDY_4VLP5k",
+    "subtitle_source": "whisper",
+    "replay_hash": "e2355cf00500"
+  }
+}

@@ -33,6 +33,9 @@ def classify_phase(frame: int) -> str:
     return "endgame"
 
 
+EXPANSION_BUILDINGS = {"Nexus", "CommandCenter", "Hatchery", "OrbitalCommand", "PlanetaryFortress"}
+
+
 def segment_game(
     aligned_captions: list[AlignedCaption],
     events: list[dict],
@@ -44,7 +47,8 @@ def segment_game(
     post_event_frames = int(post_event_window_sec * LOOPS_PER_SEC)
     min_quiet_frames = int(min_quiet_segment_sec * LOOPS_PER_SEC)
 
-    boundaries = _build_boundaries(events, post_event_frames, min_quiet_frames, total_frames)
+    significant = _filter_significant_events(events)
+    boundaries = _build_boundaries(significant, post_event_frames, min_quiet_frames, total_frames)
 
     segments = []
     for start, end, seg_type in boundaries:
@@ -105,6 +109,20 @@ def _build_boundaries(
     return boundaries
 
 
+def _filter_significant_events(events: list[dict]) -> list[dict]:
+    """Keep only segmentation-significant events: deaths, upgrades, expansions."""
+    significant = []
+    for ev in events:
+        evt_type = ev.get("type", "")
+        if evt_type == "UNIT_DIED":
+            significant.append(ev)
+        elif evt_type == "UPGRADE_COMPLETE":
+            significant.append(ev)
+        elif evt_type == "UNIT_BORN" and ev.get("unit", "") in EXPANSION_BUILDINGS:
+            significant.append(ev)
+    return significant
+
+
 def _cluster_events(events: list[dict], window: int) -> list[list[dict]]:
     """Group events within `window` frames of each other."""
     if not events:
@@ -130,8 +148,7 @@ def _classify_cluster(cluster: list[dict]) -> str:
         return "tech_transition"
 
     unit_names = [e.get("unit", "") for e in cluster if e.get("type") == "UNIT_BORN"]
-    expansion_buildings = {"Nexus", "CommandCenter", "Hatchery", "OrbitalCommand", "PlanetaryFortress"}
-    if any(u in expansion_buildings for u in unit_names):
+    if any(u in EXPANSION_BUILDINGS for u in unit_names):
         return "expansion"
 
     return "macro_economy"

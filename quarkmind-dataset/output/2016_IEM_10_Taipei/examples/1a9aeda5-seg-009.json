@@ -1,0 +1,123 @@
+{
+  "id": "1a9aeda5-seg-009",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 11763,
+    "game_time_sec": 525.1,
+    "player": {
+      "race": "Protoss",
+      "minerals": 89,
+      "gas": 88,
+      "supply_used": 105,
+      "supply_cap": 117,
+      "worker_count": 52,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 0,
+        "Oracle": 0,
+        "Observer": 1,
+        "Immortal": 2,
+        "WarpPrism": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 11511,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11512,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 11512,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 11540,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 11543,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 11545,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 11575,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11613,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 11665,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 11676,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 60,
+        "MothershipCore": 2,
+        "Stalker": 6,
+        "Observer": 1,
+        "WarpPrism": 1,
+        "Disruptor": 3,
+        "Phoenix": 1,
+        "DisruptorPhased": 7,
+        "Immortal": 2,
+        "AdeptPhaseShift": 4
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "initiative because he has a blink he can just move out be aggressive and I think he might just attack actually when you know that your opponent is on low disruptor count you can attack with the motos and blink stalkers make sure you dodge those those balls and try and finish the game it's three disruptors though it's gonna be tough but I mean sos he's got a good amount of stalkers the control needs to be there tries to blink some of those away first misses second one will it hit anything this is a very long cooldown on these detonations he uses all three hero you shouldn't have done that now he's gonna be even harder to hold this attack he's got a couple of pylons here that will help they're not active at all completely dead weight phone over charge gonna go down on one piling as a bit more energy especially by some time and sos doesn't actually have to commit because behind this he's getting a warper's him he's getting a dodge when he could drop some dt's and he's applying so much pressure than hero he's not gonna be getting additional observers he's just gonna have the one down there blink's way one the only one of the two balls actually hits that it multiple is gonna come in as well because separates off some of those units oh actually lose two of the centuries there to that disruptor but the warper's him is on its way there is one single observer here for sos so if there is some kind of dt drop in the natural and main very quickly plus a dt walking to the third base at the same time that could be a lot of probes that die here hey we're just looking to use these f- shades as a scouting mechanism doesn't really see anything they've already moved back as they are me here of sos actually like you can remove the dt's with some good uh disrupted detonation but against like a very good player usually is just gonna move back dodge these and our dt's are being wiped in they're gonna be dropped in the main looks like it's gonna be the two of them and even a third that's for the third base I think and usually oh no he loads it up well no no okay being cheeky fell up the fight gonna go down he gets himself under structure nice to blink away from there there's two immortals do cause some problems he actually spots the spot he's not ready coming in he's not ready you're here as one observer that's on the map right now he's gonna have to walk all the way back and he's in so much trouble that's gonna be what 20 probes dead maybe oh oh he gets the first dt wow i did not expect that and the dt in the third base as well was killing some probes that's already nine probes here oh so much damage been done oh sacrifice is the stalker for it but i mean to alleviate some of the pressure but another ten plus gonna be warped into the main base and this is really causing heroes so many problems sos in the meantime being active with the stalkers as well trying to find some room to do some damage he's saturated on three bases himself now he's walking leads he's gonna be massive actually no it's just 59 to 53 so i think that's a lot of",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 10158,
+    "game_frame_end": 13369,
+    "game_time_start_sec": 453.5,
+    "game_time_end_sec": 596.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Prion Terraces",
+    "game_duration_sec": 990.2678571428572,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "1a9aeda55b1c"
+  }
+}

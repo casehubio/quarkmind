@@ -1,0 +1,114 @@
+{
+  "id": "15ad08e3-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6217,
+    "game_time_sec": 277.5,
+    "player": {
+      "race": "Protoss",
+      "minerals": 184,
+      "gas": 161,
+      "supply_used": 54,
+      "supply_cap": 54,
+      "worker_count": 44,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "Sentry": 2,
+        "Oracle": 1,
+        "MothershipCore": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5874,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        },
+        {
+          "frame": 5900,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5907,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5987,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 6019,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6080,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6097,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6100,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6136,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6203,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 38,
+        "MULE": 4,
+        "Marine": 16,
+        "WidowMine": 2,
+        "Medivac": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "i mean i'm not necessarily sure that i will know where he achieves it i guess he's just about like knowing exactly like down to a tee how the opponent's opening yeah yeah gonna ask him i guess maybe that i'll pound as well you know what happens i guess i think i got it if you don't scout this early and then you arrive there and the walls are already up you don't know if it's two bays or one base yeah that's the main thing and if you don't know then you have to",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 6019,
+    "game_frame_end": 6416,
+    "game_time_start_sec": 268.7,
+    "game_time_end_sec": 286.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Prion Terraces",
+    "game_duration_sec": 577.8125,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "15ad08e3ed7f"
+  }
+}

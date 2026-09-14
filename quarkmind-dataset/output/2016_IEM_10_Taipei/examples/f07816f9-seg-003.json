@@ -1,0 +1,107 @@
+{
+  "id": "f07816f9-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4257,
+    "game_time_sec": 190.0,
+    "player": {
+      "race": "Protoss",
+      "minerals": 35,
+      "gas": 62,
+      "supply_used": 33,
+      "supply_cap": 46,
+      "worker_count": 29,
+      "army_composition": {},
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3744,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3821,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3898,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4010,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4013,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4015,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4020,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 4089,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4117,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4191,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 24,
+        "MULE": 2,
+        "Marine": 6
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "some kind of target play with new thermal being very successful with this kind of build or you can just play Finix's. Finix's are super good like overall they are a very well-rounded unit that can pick up Widow mines which guess what Jon loves to get almost every single game he always goes for that factory always goes for that stop-ort as well and drops a bunch of Widow mines but in this case he's",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 4089,
+    "game_frame_end": 4425,
+    "game_time_start_sec": 182.5,
+    "game_time_end_sec": 197.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Dusk Towers",
+    "game_duration_sec": 570.7142857142858,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "f07816f9b5fb"
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "id": "f07816f9-seg-011",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 11691,
+    "game_time_sec": 521.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 1005,
+      "gas": 219,
+      "supply_used": 109,
+      "supply_cap": 141,
+      "worker_count": 73,
+      "army_composition": {
+        "MothershipCore": 1,
+        "Oracle": 0,
+        "Phoenix": 3,
+        "AdeptPhaseShift": 0,
+        "WarpPrism": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 11573,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11586,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11592,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11649,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11662,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11664,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11670,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 11672,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 11673,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11673,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 65,
+        "MULE": 10,
+        "Marine": 42,
+        "WidowMine": 6,
+        "Medivac": 7,
+        "SiegeTank": 1,
+        "Marauder": 11
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "it's interesting actually not to see charge you know in uh in much more sort of like a roti-esque style where you get charge high temp bars and usually opening with blinks stalkers like in this case here it seems like s os prefers to go stalker adept heavy skip an italian zealots and then they get 10 get to a bunch of high temp bars yes boss fields available didn't actually even use them guardians shield was the attempt that in storms will buy the time prep a pit of seal the man with boss fields that could have been a few extra kills that but it would have picked up with the meta vans it's really cool actually to see beyond like place so well in game number two and starting is two two before his opponents one one even finished year a second ago so he's ahead on upgrades and then from there i feel like he's just he doesn't even have to play aggressive anymore really i mean if you work to row into 87 armies of like this is 44 right now he's gonna get high temp bar forward there and actually that alleviates all of the storm potential he could actually rip this army apart if he's not careful the arcongas focus down those attempts do not have the firepower here to deal with this and another high temp bar comes in it has one storm available look at the reinforcement coming in from beyond here this is a huge army has available there's one storm to split up and just actually maneuver around this there is no more gateway units here left and the other charges used to late yeah way too late that pilot was almost dead anyway and that's gonna be a nexus gone this is a great little move here but beyond he was able to deal with the aggression there's gonna be the warp of the depths towards the back here but this is desperation times for s os where the nexus are going down and all of these are dead being cleaned up beyond is really",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 10598,
+    "game_frame_end": 12784,
+    "game_time_start_sec": 473.1,
+    "game_time_end_sec": 570.7
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Dusk Towers",
+    "game_duration_sec": 570.7142857142858,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "f07816f9b5fb"
+  }
+}

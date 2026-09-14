@@ -1,0 +1,110 @@
+{
+  "id": "f05c515d-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 3152,
+    "game_time_sec": 140.7,
+    "player": {
+      "race": "Zerg",
+      "minerals": 145,
+      "gas": 4,
+      "supply_used": 27,
+      "supply_cap": 36,
+      "worker_count": 19,
+      "army_composition": {
+        "Larva": 2,
+        "Overlord": 3,
+        "Zergling": 4
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3066,
+          "type": "UNIT_BORN",
+          "unit": "Zergling"
+        },
+        {
+          "frame": 3066,
+          "type": "UNIT_BORN",
+          "unit": "Zergling"
+        },
+        {
+          "frame": 3066,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3069,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3070,
+          "type": "UNIT_BORN",
+          "unit": "Zergling"
+        },
+        {
+          "frame": 3070,
+          "type": "UNIT_BORN",
+          "unit": "Zergling"
+        },
+        {
+          "frame": 3070,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3088,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 3088,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3089,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 21,
+        "MULE": 1,
+        "Reaper": 1,
+        "Marine": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "economy and if the terran player just slows the play down a little bit doesn't throw any units away just simply behind so I want to see solky come out here with something we haven't seen from him before and hopefully play a bit more of a solid game all right well we are just waiting in the loading screen at the moment here it was kind of taking a small moment longer uh but beyond looking on point and good too good through to the finals right now uh if he wins one more map where he would face off against either s os or hero both i am champions in the past uh for me and telextreme masters and that will be an interesting one to say the least but the thing is that i feel protest right now is in a great spot in uh in legacy of the void despite the uh the adept nerf i still think that they were already applying a multitude of different things uh to deal with uh both terran and zerg so",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 2624,
+    "game_frame_end": 3680,
+    "game_time_start_sec": 117.1,
+    "game_time_end_sec": 164.3
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Dusk Towers",
+    "game_duration_sec": 1073.9732142857144,
+    "vod_url": "https://www.youtube.com/watch?v=emCaI55s8Tc",
+    "subtitle_source": "whisper",
+    "replay_hash": "f05c515d2c49"
+  }
+}

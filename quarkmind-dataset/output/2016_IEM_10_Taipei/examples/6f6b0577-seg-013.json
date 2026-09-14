@@ -1,0 +1,117 @@
+{
+  "id": "6f6b0577-seg-013",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 18701,
+    "game_time_sec": 834.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 1118,
+      "gas": 858,
+      "supply_used": 195,
+      "supply_cap": 244,
+      "worker_count": 57,
+      "army_composition": {
+        "Stalker": 6,
+        "MothershipCore": 1,
+        "Observer": 3,
+        "Immortal": 4,
+        "Phoenix": 0,
+        "WarpPrism": 1,
+        "Disruptor": 9,
+        "AdeptPhaseShift": 0,
+        "DisruptorPhased": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 18260,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 18267,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 18306,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 18379,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 18491,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 18502,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 18574,
+          "type": "UNIT_BORN",
+          "unit": "DisruptorPhased"
+        },
+        {
+          "frame": 18588,
+          "type": "UNIT_BORN",
+          "unit": "DisruptorPhased"
+        },
+        {
+          "frame": 18622,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 18636,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 59,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Immortal": 4,
+        "WarpPrism": 1,
+        "Observer": 2,
+        "Phoenix": 9,
+        "Disruptor": 13,
+        "DisruptorPhased": 15
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "late_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "luck probably has followed him through some of this uh okay okay pig all right I mean let's start off game one to the series overall shipyard um SOS went for a pylon block on here is natural and then he counter attacked with the big pylon rush can seem to catch SOS by surprise I just wanted to hear SOS's thoughts on why why did that catch him off guard that first game when you know the pylon rush was coming up that time was it that time was it that time was it that time um he feels that actually he knew that the timing of the core hero was going to be faster than him and he was like",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 18084,
+    "game_frame_end": 19318,
+    "game_time_start_sec": 807.3,
+    "game_time_end_sec": 862.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

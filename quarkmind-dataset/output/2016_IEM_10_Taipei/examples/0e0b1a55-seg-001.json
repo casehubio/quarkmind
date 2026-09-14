@@ -1,0 +1,106 @@
+{
+  "id": "0e0b1a55-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1922,
+    "game_time_sec": 85.8,
+    "player": {
+      "race": "Protoss",
+      "minerals": 40,
+      "gas": 60,
+      "supply_used": 20,
+      "supply_cap": 23,
+      "worker_count": 19,
+      "army_composition": {},
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 555,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 721,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 826,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1022,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1143,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1258,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1414,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1494,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1685,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1730,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 18
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "to hear what the boys have to say about mr dole sign or dole sign thank you very much calora s os picks up another trophy seems unstoppable when he plays in these tournaments he just turns up and says all right this one i think i'm gonna win this and he does pick and he played in such a way where it was really both ends of the the scale really it was complete greeting one set of games and then the next funeral he just went all right well this guy's gonna finish this guy's gonna die very fast and he went all in all in all in until he broke him technically maybe not the most uh you know superior player in terms of every little detail of his micro and macro but when it comes down to the strategy the decision making this guy is an absolute god s os he just came out like you said alternating that extreme greed that extreme aggression he chose the right builds and he put all the pressure on beyond there he said i am just gonna keep applying this pressure i'm gonna force you to make mistakes and if you don't really step up to the plate like i'm just gonna use all of that experience from all those championships i've won and i'm gonna i'm gonna push you over really well played by s os i think uh one thing to say here claus and taut is he's got a bit of practice we've lifted up trophies he's picked up the world championship trophy and that thing is not as heavy no that must be an easy job from up there yeah very much so i look at look at how that series play now i i mean as you said pick just crazy wild variations from game to game and that robo build that robo build looks scary as anything actually it's funny like at the end of the series you kept asking who's gonna defeat this guy and now you guys mentioned the trophy i know who could defeat s was the champagne the champagne that's pretty much it no yeah that that's way too easy from up there no but a dominating performance from him this weekend he's not very good obviously the most difficult game was against hero which was back and forth for sure but overall a very good performance from s os pick yeah i mean he came out and he showed that he has what it takes some people were doubting him a few of us were doubting him saying you know he's had a bit of a shaky start to legacy but as we can see as time goes on he's just getting his footing more and more and already taking a championship this early on it's such a great start to the year for him so i think 2016 is just gonna be absolutely huge he had a lot of good fortune but it feels like s os creates his own luck he's not just pure luck where he's like rolling the dice even though sometimes it might seem like it and beyond on the other hand i feel like i'm gonna expect a lot more out of",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 3508,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 156.6
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Central Protocol",
+    "game_duration_sec": 334.86607142857144,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "0e0b1a550447"
+  }
+}

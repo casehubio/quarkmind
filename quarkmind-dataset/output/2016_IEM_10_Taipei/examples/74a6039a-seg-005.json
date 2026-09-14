@@ -1,0 +1,104 @@
+{
+  "id": "74a6039a-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7410,
+    "game_time_sec": 330.8,
+    "player": {
+      "race": "Protoss",
+      "minerals": 290,
+      "gas": 120,
+      "supply_used": 56,
+      "supply_cap": 78,
+      "worker_count": 30,
+      "army_composition": {
+        "Stalker": 5,
+        "MothershipCore": 0,
+        "Immortal": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 7167,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7177,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7205,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        },
+        {
+          "frame": 7272,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7276,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7322,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7346,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7367,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7387,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7389,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 24,
+        "Adept": 3,
+        "AdeptPhaseShift": 13,
+        "WarpPrism": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "abandoning the did you see what just happens she moved away from his ramp because he knows that photon of charge gonna be enough to defend there and he he these units right and then ss looked up the ramp and he saw you know you know you know it is like wait a second is he already unloading his units elsewhere it's time to go back but no he wasn't yet so that was a cool bluff here and ss pull back a little bit too early make sure he was safe at least oh nice pick up that ss definitely that really takes the wind out of heroes sales I can believe that just up and actually",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 7139,
+    "game_frame_end": 7682,
+    "game_time_start_sec": 318.7,
+    "game_time_end_sec": 342.9
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 342.9464285714286,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "74a6039ae628"
+  }
+}

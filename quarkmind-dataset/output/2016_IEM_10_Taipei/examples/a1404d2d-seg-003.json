@@ -1,0 +1,111 @@
+{
+  "id": "a1404d2d-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4911,
+    "game_time_sec": 219.2,
+    "player": {
+      "race": "Protoss",
+      "minerals": 185,
+      "gas": 235,
+      "supply_used": 39,
+      "supply_cap": 54,
+      "worker_count": 29,
+      "army_composition": {
+        "Adept": 3,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 4601,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 4650,
+          "type": "UNIT_BORN",
+          "unit": "Adept"
+        },
+        {
+          "frame": 4725,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4740,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4740,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4751,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4760,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4761,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4801,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4866,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 27,
+        "MULE": 3,
+        "Reaper": 1,
+        "KD8Charge": 2,
+        "Marine": 6
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "i've talked about this earlier when we saw it played in pvp the natural is very very white there is no bunker that you can make on this natural that will cover all of it so if you go for double stalker like this and a modorship core you have a lot of potential to do quite a bit of damage i wonder if ss wants to go for some sort of proxy as well with it like maybe something like a robo or if you",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 4725,
+    "game_frame_end": 5097,
+    "game_time_start_sec": 210.9,
+    "game_time_end_sec": 227.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 412.67857142857144,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a1404d2d8439"
+  }
+}

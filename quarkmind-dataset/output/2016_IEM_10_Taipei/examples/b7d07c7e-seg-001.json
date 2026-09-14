@@ -1,0 +1,105 @@
+{
+  "id": "b7d07c7e-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1049,
+    "game_time_sec": 46.8,
+    "player": {
+      "race": "Zerg",
+      "minerals": 175,
+      "gas": 0,
+      "supply_used": 17,
+      "supply_cap": 22,
+      "worker_count": 14,
+      "army_composition": {
+        "Larva": 2,
+        "Overlord": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 682,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 694,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 694,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 774,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 829,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 973,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 973,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 977,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 977,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1014,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 15
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Absolutely. And something we didn't mention too much, but Salki actually had a 2-2-1 upgrade lead for about a minute or a minute and a half here. But that's about to close. And Salki being on the back foot, he hasn't really had the chance to go and force that engagement. Suddenly, this upgrade lead he had is fading to 2-2's kicked in for beyond. And only now is the infestation pick getting close to finish with Salki. So 3-3 Ultras, all that stuff is very far away. Salki needs to try and find a way to thrive on this Mewdling Bane composition. He can't just defend and wait, or beyond is going to max out on this higher quality army of Widowmines, Thors and Marine Marauder. And I mean, Salki's not going to win a front one fight with Ling Bane Mewd with that. So he's got to try and make something happen using his mobility right now. But beyond with that army on the top left side of the map is creating a very awkward situation.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 682,
+    "game_frame_end": 1416,
+    "game_time_start_sec": 30.4,
+    "game_time_end_sec": 63.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Ulrena",
+    "game_duration_sec": 586.6964285714286,
+    "vod_url": "https://www.youtube.com/watch?v=emCaI55s8Tc",
+    "subtitle_source": "whisper",
+    "replay_hash": "b7d07c7ef535"
+  }
+}

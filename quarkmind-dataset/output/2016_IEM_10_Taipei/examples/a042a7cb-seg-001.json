@@ -1,0 +1,105 @@
+{
+  "id": "a042a7cb-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1017,
+    "game_time_sec": 45.4,
+    "player": {
+      "race": "Zerg",
+      "minerals": 185,
+      "gas": 0,
+      "supply_used": 17,
+      "supply_cap": 22,
+      "worker_count": 16,
+      "army_composition": {
+        "Larva": 2,
+        "Overlord": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 663,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 677,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 677,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 757,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 829,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 950,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 950,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 951,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 951,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 997,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 15
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "The five initial banelings that are meant to defend this but right now This overseer is keeping Tom and everything he knows what's coming And he's already making those five banelings and they're gonna be made and finished before this attack gets Yep, and it's up a total of nine banelings on the way. She's gonna follow it up with more they might have speed for pizzeris Yeah, it's not even nine banelings. It's a vented vastly superior position to the last one and these Medivacs He can take it to him heat from the queens he knows where he's positioning She's gonna try what did you run that how run the Helians by so he's like no I got something I got certain things man Fake mute is coming out too. Oh, no",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 663,
+    "game_frame_end": 1371,
+    "game_time_start_sec": 29.6,
+    "game_time_end_sec": 61.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "Polt",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Central Protocol",
+    "game_duration_sec": 968.1696428571429,
+    "vod_url": "https://www.youtube.com/watch?v=iDDY_4VLP5k",
+    "subtitle_source": "whisper",
+    "replay_hash": "a042a7cbde4d"
+  }
+}

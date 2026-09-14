@@ -1,0 +1,107 @@
+{
+  "id": "e2355cf0-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 2683,
+    "game_time_sec": 119.8,
+    "player": {
+      "race": "Zerg",
+      "minerals": 20,
+      "gas": 4,
+      "supply_used": 20,
+      "supply_cap": 22,
+      "worker_count": 16,
+      "army_composition": {
+        "Larva": 3,
+        "Overlord": 2,
+        "Zergling": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 1976,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2061,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2301,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 2445,
+          "type": "UNIT_BORN",
+          "unit": "Zergling"
+        },
+        {
+          "frame": 2445,
+          "type": "UNIT_BORN",
+          "unit": "Zergling"
+        },
+        {
+          "frame": 2445,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2529,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 2553,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 2585,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 2585,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 19,
+        "MULE": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Charlie Claus Well, you know what Kevin would agree damage. I think nobody I need to consider that your opinion may be the one That's a little too out there. That's what I'm saying. Well no one agrees with you I need to taste osu to start cast and start crafting and that's what I need There you go Well probably exactly. I probably can GSL have been firing up rest of the barracks production is going up for Palt now as he gets ready to",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 2445,
+    "game_frame_end": 2921,
+    "game_time_start_sec": 109.2,
+    "game_time_end_sec": 130.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "Polt",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Ulrena",
+    "game_duration_sec": 672.4553571428572,
+    "vod_url": "https://www.youtube.com/watch?v=iDDY_4VLP5k",
+    "subtitle_source": "whisper",
+    "replay_hash": "e2355cf00500"
+  }
+}

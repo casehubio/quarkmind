@@ -1,0 +1,108 @@
+{
+  "id": "095724b8-seg-008",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7892,
+    "game_time_sec": 352.3,
+    "player": {
+      "race": "Terran",
+      "minerals": 370,
+      "gas": 160,
+      "supply_used": 71,
+      "supply_cap": 86,
+      "worker_count": 36,
+      "army_composition": {
+        "MULE": 1,
+        "Marine": 20,
+        "WidowMine": 2,
+        "Medivac": 1,
+        "SiegeTank": 0
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 7577,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7599,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7618,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7646,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 7649,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 7685,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7708,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 7710,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 7734,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7819,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 40,
+        "Stalker": 3,
+        "MothershipCore": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "They are going to swoop in here. One of the... Keep in mind, one of the Phoenix are fairly low in health. The Stalkers don't have the highest amount of DPS, so I do feel like with the SCVs and the tank in the Marines, this is going to be deflected. Liberators moved into the main base, keep in mind. And we are seeing some probes. He's getting more chaos. Yeah, he's not building anything out of that stargate. There's nothing at home to defend. And beyond holds, GG, as he takes game number one in this best of five. I mean, the Liberator counter attack worked really well with Lilbo wanting to get aggressive, so it's like, okay, Phoenix are great against Liberators, but not if they're on the other side of the map. No, and I feel like this is just Lilbo had a planned kind of... I don't want to say tunnel vision is almost too negative, but he was definitely like, I'm going to do a 1.5 base all in. I'm going to lose... I lost if you pros in my natural. Not the biggest of deals. Of course, I would have liked to have kept them, but I'm warping and going for it. And I feel like, and this is kind of one of those what if moments, if he picks off that Medevac with six Marines in the middle of the map, I feel like this could have been actually a good flip. His stalkers could have. The Medevac was very low on health. It would have been a nice pick off.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 7235,
+    "game_frame_end": 8550,
+    "game_time_start_sec": 323.0,
+    "game_time_end_sec": 381.7
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 381.6964285714286,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "095724b86cbca0e6da2fb8baad0d7baf"
+  }
+}

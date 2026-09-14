@@ -1,0 +1,106 @@
+{
+  "id": "f07816f9-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1826,
+    "game_time_sec": 81.5,
+    "player": {
+      "race": "Protoss",
+      "minerals": 375,
+      "gas": 8,
+      "supply_used": 19,
+      "supply_cap": 23,
+      "worker_count": 19,
+      "army_composition": {},
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 558,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 725,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 829,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1018,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1137,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1254,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1408,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1490,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1679,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1726,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 18
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "just played this match just finished against hero and now he's starting his run. All right well we're getting into it. If SOS takes the second game I may have to change my prediction because this is just that was too fierce as we have spawning up to the top right it will be our red terror representing X-Team it is beyond and I would be so you jumping shape at the first time of hardship. Hey man if I I will admit when I'm wrong for sure like if SOS is able to pull this one out of the bag as well and then down to the bottom left thank corner we have our blue pro toss it's Gen Agree Mings SOS actually he's down in the bottom left but he's already sending a probe across the map. Yes what is this for? This might just be like a really quick scout to make sure he doesn't get walled out maybe maybe maybe he was afraid of some kind of two rags you know like these players the thing about these two is that I'm pretty sure you know they practice a lot on the ladder in particular beyond and I feel like if they've met recently and SOS would have gone on two rags on this map after a map number one like this it's perfectly fine to say well you know what I might be starting to destroy him already mentally in his best of seven from map number one so I'm gonna be extra safe and scout really really quickly to see exactly what is going for. SOS has put a little bit of pressure on against that SCV not too much beyond reveals that easily. Next is going to go down behind this for SOS so really just ramping up the ramping up the economy in the end and if he gets himself in a in a great economic position before not necessarily as ridiculous as the last what type game but he can still find himself in a good probe advantage as long as the Crudebrew stays on these Nexus. Yeah and I mean from Jon as well like somebody scouts who this fast like this isn't an unusual timing. Jon didn't even go for a scout himself but it's probably yeah maybe getting a little bit paranoid especially because he's playing SOS like this could mean a number of things but so far he's not necessarily overreacting or if or anything and he's just gonna be going for the factory here behind this. All right so command center finishing up soon and SOS talking with thinking stock it yeah target's gonna be the way.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 3317,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 148.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Dusk Towers",
+    "game_duration_sec": 570.7142857142858,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "f07816f9b5fb"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "id": "a1f0f8d3-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 5458,
+    "game_time_sec": 243.7,
+    "player": {
+      "race": "Protoss",
+      "minerals": 210,
+      "gas": 88,
+      "supply_used": 39,
+      "supply_cap": 47,
+      "worker_count": 29,
+      "army_composition": {
+        "Adept": 2,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Oracle": 0,
+        "Stalker": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5179,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 5179,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 5182,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5261,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5273,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 5279,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5282,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5329,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5339,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5339,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 29,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "with it was the oracle right okay so let's get a head on the way over to the side the adeptus still working away at that pylon i'm afraid that the oracles gonna try to fly in there because in this case sos has no info so he's actually gonna fly into a phoenix potentially yeah because he couldn't get in at all with the adeptus now they've killed this often they could technically send a shade in but by the time they get in it's all too late there's the phoenix there's the phone overcharge and the oracle will be denied and the adeptus will be killed as well only oh he killed three probes which is not bad but that's i mean when you lose two adeptus and an oracle usually you expect to kill more like 10 probes not three and second target goes down here",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 5078,
+    "game_frame_end": 5838,
+    "game_time_start_sec": 226.7,
+    "game_time_end_sec": 260.6
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 478.7946428571429,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "a1f0f8d31044"
+  }
+}

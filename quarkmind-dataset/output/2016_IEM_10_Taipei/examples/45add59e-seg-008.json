@@ -1,0 +1,119 @@
+{
+  "id": "45add59e-seg-008",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 8063,
+    "game_time_sec": 360.0,
+    "player": {
+      "race": "Terran",
+      "minerals": 365,
+      "gas": 248,
+      "supply_used": 75,
+      "supply_cap": 109,
+      "worker_count": 45,
+      "army_composition": {
+        "MULE": 2,
+        "Marine": 14,
+        "WidowMine": 0,
+        "Medivac": 1,
+        "VikingFighter": 1,
+        "SiegeTank": 2,
+        "Liberator": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 7693,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 7706,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 7721,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 7724,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7769,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7895,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7940,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 7992,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 7995,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8040,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 56,
+        "Stalker": 4,
+        "Observer": 2,
+        "WarpPrism": 1,
+        "MothershipCore": 1,
+        "Disruptor": 2,
+        "DisruptorPhased": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Oh, okay, we got the Viking doing nothing. But with that speed upgrade, you can get away from this. Man, he did manage to get. I guess he got a couple probes and then backed off. He doesn't want all the stalkers to be able to blink into range. I think from this far away, I don't know. It doesn't hit anything. Yeah, I don't know. Yeah, but I don't know if the stalkers could all hit it at once.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 7895,
+    "game_frame_end": 8231,
+    "game_time_start_sec": 352.5,
+    "game_time_end_sec": 367.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}

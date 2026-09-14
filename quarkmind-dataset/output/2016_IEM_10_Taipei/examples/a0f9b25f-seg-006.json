@@ -1,0 +1,114 @@
+{
+  "id": "a0f9b25f-seg-006",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7268,
+    "game_time_sec": 324.5,
+    "player": {
+      "race": "Protoss",
+      "minerals": 280,
+      "gas": 171,
+      "supply_used": 71,
+      "supply_cap": 93,
+      "worker_count": 54,
+      "army_composition": {
+        "Stalker": 2,
+        "Observer": 3,
+        "MothershipCore": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 6919,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6922,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6925,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6989,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6995,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7031,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7041,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7070,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 7227,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 7256,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 40,
+        "MULE": 4,
+        "Marine": 16,
+        "WidowMine": 2,
+        "Medivac": 1,
+        "Liberator": 1,
+        "SiegeTank": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "skilling probes, getting some tanks back at home because he loves to do that to be safe against blink stalker so he can have ground army and just playing solid all around good terrain versus protost together. I think it's a great way as well. I mean, against SOS. SOS normally thrives when he is the one dictating the pace of the game. But if Bjorn concedes that away from him early on and be like the aggressor early on trying to put on some harassment, I think that'd be a great way for him to win. Yeah, you agree with that, that pick? Yeah, I mean, when it comes down to it, SOS thrives when he's the one dictating the pace. He's not a guy who sits back and thinks he's just going to win in the late game. He's going to find edges and he's going to work as",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 6919,
+    "game_frame_end": 7618,
+    "game_time_start_sec": 308.9,
+    "game_time_end_sec": 340.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

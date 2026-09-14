@@ -2,88 +2,77 @@
   "id": "45add59e-seg-001",
   "version": "1.0",
   "game_state": {
-    "game_frame": 8483,
-    "game_time_sec": 378.7,
+    "game_frame": 2200,
+    "game_time_sec": 98.2,
     "player": {
       "race": "Terran",
-      "minerals": 145,
-      "gas": 210,
-      "supply_used": 79,
-      "supply_cap": 109,
-      "worker_count": 47,
-      "army_composition": {
-        "MULE": 3,
-        "Marine": 16,
-        "WidowMine": 0,
-        "Medivac": 1,
-        "VikingFighter": 1,
-        "SiegeTank": 2,
-        "Liberator": 1
-      },
+      "minerals": 310,
+      "gas": 14,
+      "supply_used": 19,
+      "supply_cap": 23,
+      "worker_count": 19,
+      "army_composition": {},
       "tech": [],
       "buildings": {
         "CommandCenter": 1
       },
       "recent_events": [
         {
-          "frame": 8209,
-          "type": "UNIT_BORN",
-          "unit": "Marine"
-        },
-        {
-          "frame": 8212,
-          "type": "UNIT_BORN",
-          "unit": "Marine"
-        },
-        {
-          "frame": 8257,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 8263,
+          "frame": 829,
           "type": "UNIT_BORN",
           "unit": "SCV"
         },
         {
-          "frame": 8266,
+          "frame": 1015,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 8282,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 8289,
+          "frame": 1146,
           "type": "UNIT_BORN",
           "unit": "SCV"
         },
         {
-          "frame": 8308,
-          "type": "UNIT_DIED"
+          "frame": 1251,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 8401,
+          "frame": 1417,
           "type": "UNIT_BORN",
-          "unit": "Disruptor"
+          "unit": "SCV"
         },
         {
-          "frame": 8405,
+          "frame": 1487,
           "type": "UNIT_BORN",
-          "unit": "MULE"
+          "unit": "Probe"
+        },
+        {
+          "frame": 1688,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1723,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1959,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1959,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         }
       ]
     },
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 57,
-        "Stalker": 4,
-        "Observer": 2,
-        "WarpPrism": 1,
-        "MothershipCore": 1,
-        "Disruptor": 3,
-        "DisruptorPhased": 1
+        "Probe": 20
       },
       "known_buildings": {
         "Nexus": 1
@@ -92,14 +81,14 @@
   },
   "phase": "opening",
   "phase_transition": true,
-  "transition_description": "opening -> mid_game",
-  "commentary": "So his next opponent will be a Tarranger Azure because that next matchup down the bracket that we'll be doing as well as Pulse versus Solky, then there's three out of four pro DOS at the bottom half of the bracket. So I mean, he's just a lot of these darker players don't necessarily, especially in this form out of a tournament, train like, I mean, unless they have like four zergs in a row, they're not going to not practice everything else. He probably played a crap ton of ladder, played with his team. Probably didn't super look into Lobo, maybe asked a few Koreans like, Hey, face Lobo a bunch. What does he do? And they probably also the same thing is very cheesy. So I can all in kind of guys was like, OK, you can kind of see that in his builds. Like both of his builds have just been very, like you said, that scan found out everything. But for the most part, too, it's it's not, he's not leveraging very much. He thinks of himself probably as the better player. And he's doing very kind of hot issue. Well, it's not fair to call the whole build Hots is, but the idea of a couple of widow minds and some reins being dropped in your base earlier on. That's very hot. That's that's that's way back to that. It's getting buffed by tanks and liberators. It is interesting to see the omittance of that fast cyclone, which is basically that everybody's go to and legacy of the void. I kind of expected this to happen to some degree where we would see players maybe skip it occasionally, but I didn't think we'd still see the really fast starboard openings without cyclones. So basically saying, OK, I don't need cyclones anymore because the what prison attack isn't as common. Widow minds still deal stargate units like a fast Oracle very well. So I'd rather just invest into something that I can also use aggressively, but really faster botics pay here. Yes. I'm loving everything I'm seeing so far. It's going to be a war prison to fall that up. Well, to fall up the the observers, excuse me, but we're seeing a build from map one here from beyond. It's going to be kind of a marine widow mine drop with some probably hellians. I believe that's a reactor being out of there. Where's that a tech lab? Tech lab. It is a tech lab. So maybe a slight variation actually is going to be the two. I like the Viking though because he's following up with this. It actually helped him a little bit keep the Phoenix away from his tank and he dropped out of the scan. And he sees everything. You see the work. He doesn't see the workers in finish, but he sees the robo going and he sees the robo bay. And I think seeing the robo bay early on as a tarant tells you pretty much everything that you expect to know. I would be really shocked if libo did some sort of crazy colossus all in. I mean, destructor jock really shocked. Yeah, that's who's going to do. But really? Yeah. So prepare to be shocked. You know what, Jeff? Have you? Did you like it's never mind? I'm completely okay. I was going to say I'm like destructor jobs are what I've seen be really effective. Collosis are okay. And then you talking about these hard of the swarm styles. You're like, you got me doubting myself. Well, I was watching some Petitro fans in Luba. They do make losses more Petitro than little bo. But not here. Give me to disrupt a drop. I do like the slightly more defensive opening. But as I said that though, it's it's. Oh, he does get the win. That's good. And a little bit of damage. Five ropes though. Five ropes. And there's the coach. Are you going to get it? No, come on, David Kim. No, I'm just kidding. Oh, but yeah, the other pilot one would have absolutely finished it off. It says a lot of our two reactions. They just came. Yeah, Jeff gets away. You panicking and me with a sigh of relief. Really? No, I'm like the perpetual underdog fan here. I just want. What was he not looking? No, probably not. Beyond is everywhere right now, man. But with that hit and the widow minds being deflected fairly okay. Five probes. But in this day and age, that's more okay than not because it is not being followed up by a two-base all in. We saw the third CC from beyond. So the third next will go down at a decent time here as well. And now let the great harass begin. Now double disruptor. So he's bringing the great balls of fire over to the base. Really? He's got the Viking on the right side. Great balls of fire. Yeah. Well, there will be many, many jokes like this made throughout the entirety of legacy. More so. Okay, until they change the distrubter into a cube. I like this one. I'm in this broadcast. I was going to say the longer this goes, the more gendels that we'll get reference. But for right now, the observer winning the MVP award knowing and showing where these forces are. And you did say that that Viking is there. And of course, that would be bad news bears. It still is bad news bears in terms of how much harass is going to get done. Oh, okay, we got the Viking doing nothing. But with that speed upgrade, you can get away from this. Man, he did manage to get. I guess he got a couple probes and then backed off. He doesn't want all the stalkers to be able to blink into range. I think from this far away, I don't know. It doesn't hit anything. Yeah, I don't know. Yeah, but I don't know if the stalkers could all hit it at once. So he might lose the stalker is very slowly. Well, for right now, it doesn't do anything. So it doesn't have to work. Oh, he's going to try to pick up a stalker. Oh, look at Lil' Bo. He's so on top of it. Nope. Very smart. Okay. So far, nothing though with the disruptors. I love this though, because his observer sees it, but he recognizes that the one is a little bit too tight together for him to get those disruptors in without possibly losing them. But look at the way his observer is set, right? He can see as soon as he comes on that ramp. He wants to be looking for it. And the scan from him says everything's at home. Let's never look away from this, by the way, because when he comes down that ramp, I might do something. He loaded up a tank. Here we go. Here he goes. The observer's like, yes. I can't even run away. Oh, no. Here we go. Double disruptors are going to come down. Oh, my God. Oh, geez. So many Marines. He didn't fire the second shot. No. The second one was like, let's go. He's like running forward with it. Nothing left to kill. Okay. That's okay though. Good hit. Oh, that's a very expensive prison. Oh, it's terrible. And as he goes for the shot, gets a moronter into the region. Good hit. Again, buying some time. Look how painfully slow the Viking is too. Yeah. Vikings are. Carb Whack here, warp prison. The thing I love the most about this setup, even as this Viking starts to corner that warp prison, I think I like most about this setup is the liberator can actually catch a non-upgraded warp prison. But since he went fast warp prison speed, nothing beyond makes will ever actually be able to catch the prison. We have an engagement here. Lose it. There's stalkers move out of the map. So they're not immediately paying attention, but it's nice to see each tank meta that. It's going to say both of them, both of them are kind of caught off guard. It's like, oh, I didn't expect to bump into you. He runs like, I gotta go home. There's too much stuff here. Again, a little bit tentative from. And look at this. While running back as these stalkers begin to engage, you got the disruptor in the front. But he's going to drop all the structures from the back. The moronters trying to run away. But focus is down the disruptors and kills them before they're purification. Purification of this can actually go off. Those lose the majority of his army though. And there's just so many darn stalkers here. While not picking off that warp prison, I believe Lilbo is going to feel fairly confident taking this fight here. But he's going to pull back as these are pulled. Probably the wise choice. Let the stem wear out as well. Metavex lagging behind. Goes here to a favorable spot. Launches forward. The purifier. What is it called? It's purification. I know it's a technical. Yeah. It's called the Great Balls of Fire that you bust out the actual name of it and you're just throwing me off. Yeah. See, I blame you. See, at first you lose your trust. And at the second point you're like, no, they can't possibly need a smart and referring to generals at the same time. I feel like Lilbo is like one warp in a way of a add-ups away from just stealing the deal. Reminds shot though. It gets the shields off from the rest of the system. And it goes to stand forward. Got to be careful. And get the mine either. Just constantly pushing out here. Beyond feels like he's the aggressor pulls out. Yeah. I mean, as Taren, I feel just securing yourself on three bases is one of the most important things you do in TvP. He doesn't actually need to do much because Lilbo doesn't have a fourth. Well, Nate, he also doesn't have any forges going. So I feel like it has to be out. Yeah, it's not up-raids. He's got his hand on. He has to end it now and it's getting hard. Because as time goes on, we... He's still eating these mine shots, too. Oh. Tactical pause from Bound, and I appreciate that. And there is the purifying what? Purification Nova. Purification Nova going forward. Here's the fight. But again, not super favorable, actually, for Lilbo. I just feel like Lilbo has had such a huge advantage in all these fights, but the advantage is kind of starting to be mitigated. Now the liberators in position to do some damage. We have, I think that's two two upgrades on the bio coming up. Yep. I mean, two two is going to be lights out if you're down four upgrades. He's just going to come down and try to fight now. Does get three marauders with that disruptor shot, but Warpism is injured, but still standing, and it's going to be forced back a little bit. I think these meta-vacs are very low on health. They don't have any energy. No. I don't know if he needed to push down their ramp to fight. He does still have time on his side with those upgrades, and he has the liberator helping the whole to high ground. And that's I think if this does go the way of the pro-doss, going to be the thing that the young looks back on and regrets the most, I think if this game keeps going, he might. Marauders got nervous. They didn't get nerfed that bad. The young sweep, I think the most important thing you mentioned there. No, you said it. You didn't have, well, I said no. No, there's no probes in this third. Oh no, it's because the game ended here. I was like, I was like, I was like, I was like, I was like, I was like, I was like, I was like, Jail of probes are gone. It's like, Jeff, we talked about why he was all in. We didn't know fourth base. No forges. Like, that's a super disappointing thing. I really do feel like, and I know over my career of casting, we don't need, I don't need to make excuses. I have countless times. But I'm like, this fight is super average. Patriots for player me and then player eight wins the game immediately. And I'm just like, what happened?",
+  "transition_description": "opening -> early_aggression",
+  "commentary": "I'd say yeah, be a rough trip. Go south to Taipei. It's certainly not a short flight from France. I'd imagine gets beyond. Kind of gets sat down a little bit, but you know what? Maybe he turns it around here or the shipyard is one of the better PBT maps. But he needs to. He needs to do it in kind of a big way because after this it gets. He gets a little bit tough. He's had beyond in a couple of decent positions for himself, but again, as we kind of talked about, and you pointed out Nate, just not having any defense at home. Beyond has opened up both times with a very like I'm going to defend your attack. And I'm going to have very light harassed. It's going to do game ending damage because you have nothing to stop. Yeah, I think it's a it's interesting because all not all of those were, you know, forced mistakes or anything either. Like, Lobo had an opportunity to pick off that Medevac with a lot of the Marines before he made his all in in the first game. And then of course game number two, just I really feel like it just came down to be on getting a good scout. He got a good scan. He knew everything that was going on is Medevac that had left his base earlier. Actually saw the pile on that he was going to do the all in from. So just a smooth, very smooth series from beyond so far. I don't think he comes into this tournament concerned about playing against Lobo. I know I think TVP probably, you know, he wouldn't actually have to play against MC or or SOS for quite some time because of the way the brackets set up. So his next opponent will be a Tarranger Azure because that next matchup down the bracket that we'll be doing as well as Pulse versus Solky, then there's three out of four pro DOS at the bottom half of the bracket. So I mean, he's just a lot of these darker players don't necessarily, especially in this form out of a tournament, train like, I mean, unless they have like four zergs in a row, they're not going to not practice everything else. He probably played a crap ton of ladder, played with his team. Probably didn't super look into Lobo, maybe asked a few Koreans like, Hey, face Lobo a bunch. What does he do? And they probably also the same thing is very cheesy. So I can all in kind of guys was like, OK, you can kind of see that in his builds. Like both of his builds have just been very, like you said, that scan found out everything. But for the most part, too, it's it's not, he's not leveraging very much. He thinks of himself probably as the better player. And he's doing very kind of hot issue. Well, it's not fair to call the whole build Hots is, but the idea of a couple of widow minds and some reins being dropped in your base earlier on. That's very hot. That's that's that's way back to that. It's getting buffed by tanks and liberators. It is interesting to see the omittance of that fast cyclone, which is basically that everybody's go to and legacy of the void. I kind of expected this to happen to some degree where we would see players maybe skip it occasionally, but I didn't think we'd still see the really fast starboard openings without cyclones. So basically saying, OK, I don't need cyclones anymore because the what prison attack isn't as common. Widow minds still deal stargate units like a fast Oracle very well.",
   "segment": {
-    "type": "battle",
-    "game_frame_start": 2380,
-    "game_frame_end": 14587,
-    "game_time_start_sec": 106.2,
-    "game_time_end_sec": 651.2
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 4065,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 181.5
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

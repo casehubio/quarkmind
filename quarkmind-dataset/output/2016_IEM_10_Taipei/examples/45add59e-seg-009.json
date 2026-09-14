@@ -1,0 +1,118 @@
+{
+  "id": "45add59e-seg-009",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 8601,
+    "game_time_sec": 384.0,
+    "player": {
+      "race": "Terran",
+      "minerals": 145,
+      "gas": 210,
+      "supply_used": 79,
+      "supply_cap": 109,
+      "worker_count": 47,
+      "army_composition": {
+        "MULE": 3,
+        "Marine": 16,
+        "WidowMine": 0,
+        "Medivac": 1,
+        "VikingFighter": 1,
+        "SiegeTank": 2,
+        "Liberator": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 8263,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 8266,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8282,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8289,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 8308,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8401,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 8405,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 8530,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8534,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 8555,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 59,
+        "Stalker": 4,
+        "Observer": 2,
+        "WarpPrism": 1,
+        "MothershipCore": 1,
+        "Disruptor": 3,
+        "DisruptorPhased": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Yeah, but I don't know if the stalkers could all hit it at once. So he might lose the stalker is very slowly. Well, for right now, it doesn't do anything. So it doesn't have to work. Oh, he's going to try to pick up a stalker. Oh, look at Lil' Bo. He's so on top of it. Nope. Very smart. Okay. So far, nothing though with the disruptors. I love this though, because his observer sees it, but he recognizes that the one is a little bit too tight together for him to get those disruptors in without possibly losing them. But look at the way his observer is set, right? He can see as soon as he comes on that ramp. He wants to be looking for it. And the scan from him says everything's at home.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 8257,
+    "game_frame_end": 8946,
+    "game_time_start_sec": 368.6,
+    "game_time_end_sec": 399.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}

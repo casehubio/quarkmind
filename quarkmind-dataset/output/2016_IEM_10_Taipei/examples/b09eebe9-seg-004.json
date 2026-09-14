@@ -1,0 +1,110 @@
+{
+  "id": "b09eebe9-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 5831,
+    "game_time_sec": 260.3,
+    "player": {
+      "race": "Terran",
+      "minerals": 310,
+      "gas": 301,
+      "supply_used": 49,
+      "supply_cap": 55,
+      "worker_count": 27,
+      "army_composition": {
+        "Marine": 8,
+        "MULE": 0,
+        "WidowMine": 1,
+        "Hellion": 2,
+        "Medivac": 1,
+        "Liberator": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5587,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5595,
+          "type": "UNIT_BORN",
+          "unit": "Liberator"
+        },
+        {
+          "frame": 5650,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5678,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5683,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 5697,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5739,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5784,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5825,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5827,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 37,
+        "Stalker": 4,
+        "Phoenix": 2
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "trying different things since the adept, where prison build isn't really, well, it's not as good as it used to be. There's a brief update. It does seem I think Lilbo is just like requested like a break. He's gone to the bathroom or something. So referee. It's been an intense 10 minutes. Yeah. Yeah. It's been a rough 10 minutes. So it'll be a couple minutes before we get into the next game to see you guys know. Thank you for tuning in. Hopefully, hopefully folks having a good evening. We got a lot more Starcraft to come is we're only potentially one map went away from the end of this best of five. It's looking a little bit grim, but again, I It's a little bit orbital next to yeah as well. I pretty standard map. I don't know how many, you know, out of left field builds he has for a TV. Oh, come on.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 5399,
+    "game_frame_end": 6264,
+    "game_time_start_sec": 241.0,
+    "game_time_end_sec": 279.6
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 342.1875,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "b09eebe96e48"
+  }
+}

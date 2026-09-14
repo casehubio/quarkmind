@@ -1,0 +1,106 @@
+{
+  "id": "f0c7ed2a-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7270,
+    "game_time_sec": 324.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 495,
+      "gas": 114,
+      "supply_used": 50,
+      "supply_cap": 54,
+      "worker_count": 30,
+      "army_composition": {
+        "Stalker": 1,
+        "MothershipCore": 1,
+        "Immortal": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 6939,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7055,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7095,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 7146,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        },
+        {
+          "frame": 7164,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7182,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7184,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7216,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7254,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7255,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 23,
+        "MothershipCore": 1,
+        "Stalker": 6,
+        "AdeptPhaseShift": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "because the patch has made like PDZ win rates are pretty bad in terms of products. Products been losing a lot versus or recently. So this patch, most products have been pretty upset with the result in terms of dealing with early Zerg aggression. So, but I mean, you also have a hero on this pedestal. Yes. As well. And you're like, snoot's good, but is he hero good? Like, I don't really think so. He's hero wins, IEMs. That's what the guy does. So. Yeah. It'll be interesting. And snoot, of course, is that guy that has been the household foreigner name for going on three years now. We just always has been one of the absolute best foreigners. And here he is again, in a situation where I think the meta-faced favors him. And again, you can call me a salty product. So I want, but I do think Zerg's quite strong right now.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 6817,
+    "game_frame_end": 7723,
+    "game_time_start_sec": 304.3,
+    "game_time_end_sec": 344.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 475.22321428571433,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "f0c7ed2a887a"
+  }
+}

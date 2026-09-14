@@ -1,0 +1,109 @@
+{
+  "id": "095724b8-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4199,
+    "game_time_sec": 187.5,
+    "player": {
+      "race": "Terran",
+      "minerals": 35,
+      "gas": 37,
+      "supply_used": 35,
+      "supply_cap": 46,
+      "worker_count": 24,
+      "army_composition": {
+        "MULE": 1,
+        "Marine": 6
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3733,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3807,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3931,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3979,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 3984,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3988,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4004,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4031,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4043,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4167,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 31,
+        "Stalker": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> early_aggression",
+  "commentary": "While it is just one base and he's delaying the expansion, you need to make up the difference with the mineral saturation. But we do have a target coming out from Lil' Bo. This is also something very popular in the matchup. The Oracle, of course, and legacy void has a lot more utility to it than just as a harassing unit. What I'm kind of curious to see is we've been seeing some proto-s players in the P2 matchup",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 4031,
+    "game_frame_end": 4367,
+    "game_time_start_sec": 180.0,
+    "game_time_end_sec": 195.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 381.6964285714286,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "095724b86cbca0e6da2fb8baad0d7baf"
+  }
+}

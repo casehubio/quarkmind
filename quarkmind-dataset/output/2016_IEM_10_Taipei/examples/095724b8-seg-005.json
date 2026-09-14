@@ -1,0 +1,112 @@
+{
+  "id": "095724b8-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 5653,
+    "game_time_sec": 252.4,
+    "player": {
+      "race": "Terran",
+      "minerals": 215,
+      "gas": 111,
+      "supply_used": 54,
+      "supply_cap": 54,
+      "worker_count": 32,
+      "army_composition": {
+        "MULE": 1,
+        "Marine": 12,
+        "WidowMine": 2,
+        "Medivac": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5292,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        },
+        {
+          "frame": 5311,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5313,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5371,
+          "type": "UNIT_BORN",
+          "unit": "WidowMine"
+        },
+        {
+          "frame": 5409,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 5485,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5570,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 5573,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 5582,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5584,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 38,
+        "Stalker": 3,
+        "MothershipCore": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "And... No, I'm just... Just two. Okay, oh, he's basically... He's moving in from the other side, though. And he's bringing the drop-back at the same time. The Helians actually ran by during this into the natural expansion. So up to eight pro-gloss killed. I guess the Helians managed to come in and make a play. The Metamat pushed back for now.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 5485,
+    "game_frame_end": 5821,
+    "game_time_start_sec": 244.9,
+    "game_time_end_sec": 259.9
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 381.6964285714286,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "095724b86cbca0e6da2fb8baad0d7baf"
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "id": "1a9aeda5-seg-010",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 13765,
+    "game_time_sec": 614.5,
+    "player": {
+      "race": "Protoss",
+      "minerals": 851,
+      "gas": 127,
+      "supply_used": 124,
+      "supply_cap": 141,
+      "worker_count": 61,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 0,
+        "Oracle": 0,
+        "Observer": 1,
+        "Immortal": 3,
+        "WarpPrism": 1,
+        "Disruptor": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 13137,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 13141,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 13172,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 13522,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13591,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13610,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 13620,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13646,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13673,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 13702,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 72,
+        "MothershipCore": 2,
+        "Stalker": 6,
+        "Observer": 3,
+        "WarpPrism": 1,
+        "Disruptor": 4,
+        "Phoenix": 1,
+        "DisruptorPhased": 9,
+        "Immortal": 3,
+        "AdeptPhaseShift": 4
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "it's out there eventually but oh there we go and more more stalkers just gonna get warped ten second robot actually from sos so he might be slowing down this game a little bit more hero it looks like he might want to go into blink himself because he's getting a twilight council i don't think he wants to go for charge here because when you're facing disruptor yourself it's gonna be really hard to win if you go for a ground army still more dark ten plus just being dropped off",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 13522,
+    "game_frame_end": 14009,
+    "game_time_start_sec": 603.7,
+    "game_time_end_sec": 625.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Prion Terraces",
+    "game_duration_sec": 990.2678571428572,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "1a9aeda55b1c"
+  }
+}

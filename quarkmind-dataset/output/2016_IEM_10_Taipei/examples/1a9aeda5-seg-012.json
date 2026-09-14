@@ -1,0 +1,123 @@
+{
+  "id": "1a9aeda5-seg-012",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 17210,
+    "game_time_sec": 768.3,
+    "player": {
+      "race": "Protoss",
+      "minerals": 1128,
+      "gas": 345,
+      "supply_used": 175,
+      "supply_cap": 220,
+      "worker_count": 63,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 0,
+        "Oracle": 0,
+        "Observer": 1,
+        "Immortal": 3,
+        "WarpPrism": 1,
+        "Disruptor": 6,
+        "DisruptorPhased": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 16788,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 16823,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 16882,
+          "type": "UNIT_BORN",
+          "unit": "DisruptorPhased"
+        },
+        {
+          "frame": 16930,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 16966,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 17013,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 17107,
+          "type": "UNIT_BORN",
+          "unit": "DisruptorPhased"
+        },
+        {
+          "frame": 17121,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 17143,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 17155,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 93,
+        "MothershipCore": 2,
+        "Stalker": 6,
+        "Observer": 3,
+        "WarpPrism": 1,
+        "Disruptor": 8,
+        "Phoenix": 1,
+        "DisruptorPhased": 13,
+        "Immortal": 3,
+        "AdeptPhaseShift": 6
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "late_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "okay so there's four of them in the back here the supplies actually considering how this game has gone here was done a fantastic job of staying alive and somehow stabilizing he's ahead in walkers if he doesn't die here and like staying this game longer he might have a shot i really thought like sos would find a way to attack here sometime soon and you know sealed the deal still one dancer i'm bouncing back against this i mean another disruptor wall is gonna come out but it's not gonna connect with sos is small poke forwards as long as sos can trade out without having blink he can trade",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 16930,
+    "game_frame_end": 17491,
+    "game_time_start_sec": 755.8,
+    "game_time_end_sec": 780.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Prion Terraces",
+    "game_duration_sec": 990.2678571428572,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "1a9aeda55b1c"
+  }
+}

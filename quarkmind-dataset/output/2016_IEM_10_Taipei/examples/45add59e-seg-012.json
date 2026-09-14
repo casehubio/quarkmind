@@ -1,0 +1,115 @@
+{
+  "id": "45add59e-seg-012",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 10407,
+    "game_time_sec": 464.6,
+    "player": {
+      "race": "Terran",
+      "minerals": 131,
+      "gas": 99,
+      "supply_used": 108,
+      "supply_cap": 149,
+      "worker_count": 58,
+      "army_composition": {
+        "MULE": 0,
+        "Marine": 11,
+        "WidowMine": 0,
+        "Medivac": 3,
+        "VikingFighter": 1,
+        "SiegeTank": 2,
+        "Liberator": 1,
+        "Marauder": 6
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 10137,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10155,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 10202,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10287,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10337,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 10341,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 10369,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10371,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 10374,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 10380,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 65,
+        "Stalker": 4,
+        "Observer": 2,
+        "WarpPrism": 1,
+        "MothershipCore": 1,
+        "Disruptor": 3,
+        "DisruptorPhased": 2
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "warp prison, I think I like most about this setup is the liberator can actually catch a non-upgraded warp prison. But since he went fast warp prison speed, nothing beyond makes will ever actually be able to catch the prison. We have an engagement here. Lose it. There's stalkers move out of the map. So they're not immediately paying attention, but it's nice to see each tank meta that. It's going to say both of them, both of them are kind of caught off guard. It's like, oh, I didn't expect to bump into you. He runs like, I gotta go home. There's too much stuff here. Again, a little bit tentative from. And look at this. While running back as these stalkers begin to engage, you got the disruptor in the front. But he's going to drop all the structures from the back. The moronters trying to run away. But focus is down the disruptors and kills them before they're purification. Purification of this can actually go off.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 9913,
+    "game_frame_end": 10901,
+    "game_time_start_sec": 442.5,
+    "game_time_end_sec": 486.7
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}

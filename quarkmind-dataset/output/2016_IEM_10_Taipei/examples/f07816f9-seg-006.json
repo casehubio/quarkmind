@@ -1,0 +1,113 @@
+{
+  "id": "f07816f9-seg-006",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6326,
+    "game_time_sec": 282.4,
+    "player": {
+      "race": "Protoss",
+      "minerals": 45,
+      "gas": 27,
+      "supply_used": 59,
+      "supply_cap": 77,
+      "worker_count": 44,
+      "army_composition": {
+        "MothershipCore": 1,
+        "Oracle": 0,
+        "Phoenix": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5943,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5949,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 5953,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 5988,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6120,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 6158,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6209,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6211,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6258,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6318,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 38,
+        "MULE": 4,
+        "Marine": 14,
+        "WidowMine": 2,
+        "Medivac": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "an Oracle of SOS will not fly into a Widow mine guess what I was wrong myself and I admit it and in this case actually it's pretty bad that Oracle is supposed to be a massive threat is supposed to even if he doesn't do any damage to consistently reveal the tyrann army and behind this SOS is even very hesitant here I think for a second okay he restarts the second Phoenix",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 6158,
+    "game_frame_end": 6494,
+    "game_time_start_sec": 274.9,
+    "game_time_end_sec": 289.9
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Dusk Towers",
+    "game_duration_sec": 570.7142857142858,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "f07816f9b5fb"
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "id": "15ad08e3-seg-007",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 9551,
+    "game_time_sec": 426.4,
+    "player": {
+      "race": "Protoss",
+      "minerals": 170,
+      "gas": 383,
+      "supply_used": 99,
+      "supply_cap": 109,
+      "worker_count": 52,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "Sentry": 1,
+        "Oracle": 0,
+        "MothershipCore": 1,
+        "Archon": 0,
+        "Observer": 2,
+        "WarpPrism": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 9158,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9285,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 9355,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9358,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9361,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9381,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9386,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9492,
+          "type": "UNIT_BORN",
+          "unit": "SiegeTank"
+        },
+        {
+          "frame": 9519,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9521,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 49,
+        "MULE": 7,
+        "Marine": 35,
+        "WidowMine": 2,
+        "Medivac": 1,
+        "SiegeTank": 4,
+        "Liberator": 1,
+        "Marauder": 4
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "have his factory back at home he's gonna make it so hard for him to hold this he has a couple marines to work with here but against so many adept's here that they are gonna be in this base it's gonna be really hard for him to hold get himself an sdv already showing down income on this location",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 9381,
+    "game_frame_end": 9722,
+    "game_time_start_sec": 418.8,
+    "game_time_end_sec": 434.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Prion Terraces",
+    "game_duration_sec": 577.8125,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "15ad08e3ed7f"
+  }
+}

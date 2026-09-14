@@ -1,0 +1,113 @@
+{
+  "id": "45add59e-seg-006",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6896,
+    "game_time_sec": 307.9,
+    "player": {
+      "race": "Terran",
+      "minerals": 170,
+      "gas": 80,
+      "supply_used": 70,
+      "supply_cap": 78,
+      "worker_count": 38,
+      "army_composition": {
+        "MULE": 1,
+        "Marine": 17,
+        "WidowMine": 0,
+        "Medivac": 1,
+        "VikingFighter": 1,
+        "SiegeTank": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 6597,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6599,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6609,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6618,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6703,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6839,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 6856,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6877,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6893,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6895,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 48,
+        "Stalker": 4,
+        "Observer": 2,
+        "WarpPrism": 1,
+        "MothershipCore": 1,
+        "Disruptor": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": true,
+  "transition_description": "early_aggression -> mid_game",
+  "commentary": "What was he not looking? No, probably not. Beyond is everywhere right now, man. But with that hit and the widow minds being deflected fairly okay. Five probes. But in this day and age, that's more okay than not because it is not being followed up by a two-base all in. We saw the third CC from beyond. So the third next will go down at a decent time here as well. And now let the great harass begin. Now double disruptor. So he's bringing the great balls of fire over to the base.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 6579,
+    "game_frame_end": 7213,
+    "game_time_start_sec": 293.7,
+    "game_time_end_sec": 322.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}

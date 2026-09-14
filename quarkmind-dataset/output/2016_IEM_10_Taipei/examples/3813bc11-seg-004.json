@@ -1,0 +1,113 @@
+{
+  "id": "3813bc11-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4821,
+    "game_time_sec": 215.2,
+    "player": {
+      "race": "Zerg",
+      "minerals": 160,
+      "gas": 100,
+      "supply_used": 44,
+      "supply_cap": 44,
+      "worker_count": 21,
+      "army_composition": {
+        "Larva": 9,
+        "Overlord": 4,
+        "Queen": 3,
+        "Zergling": 18
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 4594,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4625,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 4633,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 4662,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 4664,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4666,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 4670,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 4692,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4753,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4756,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 26,
+        "MULE": 3,
+        "Reaper": 1,
+        "Marine": 5,
+        "KD8Charge": 1,
+        "WidowMine": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> early_aggression",
+  "commentary": "We have our blue Zerg representing TCM. It is Sorki. Got to have a big confidence boost after that game one. I think that's probably one of the best sort of games to win as a player when you're on the back foot and you're kind of fighting in this really down and dirty messy situation. And then you kind of come back and you tear your opponent's economy apart with this like two pro encounter attack and then capitalizing and crush their army from all sides. That's one of the best feelings for Sorki. So he's got to really ride that energy now and I think it's going to give him a lot of confidence going into this map. And we're going to have gas opening here from Bjorn to start things off as well. So potentially just the straight over to Reaper and then just poking around see what's going on. Always want the information and Reaper can get the information as to when the third hatchery's gone down and what's actually going on with gas etc. Exactly. And just a hatch gas pool coming out here for Sorki. Very typical opening as well. So Reaper's quite common here into expand of course. What are some other builds we've been talking about liberators but I was talking earlier about how Terran players you know they like to do some aggressive pushes. Now something which is rather niche but beyond might pull out is actually marine tank push. A lot of players been doing this off two base and there is a very cute area actually just down out front your you kind of frontal base where I'm looking. Yeah just up here to the around that ledge where you can drop the tank on the high ground the middle ground all the low ground and repositioning those with meta-vacs can get very awkward especially against a slower roach based army. So if someone's opening up with roaches roach ravager they don't have roach speed yet. I push there can actually just completely end the game. So that may be something beyond opts for as Sorki has traditionally favoured a lot of roach ravager play on this map. We're going to head on across the map and not be spotted I mean it's kind of anticipated here when we say from Sorki as I'll have a few links on out the queens are about to pop then he's getting himself speed as well.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 3569,
+    "game_frame_end": 6074,
+    "game_time_start_sec": 159.3,
+    "game_time_end_sec": 271.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 603.6160714285714,
+    "vod_url": "https://www.youtube.com/watch?v=emCaI55s8Tc",
+    "subtitle_source": "whisper",
+    "replay_hash": "3813bc1121bf"
+  }
+}

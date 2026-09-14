@@ -1,0 +1,112 @@
+{
+  "id": "e8eea04e-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6808,
+    "game_time_sec": 303.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 230,
+      "gas": 172,
+      "supply_used": 39,
+      "supply_cap": 70,
+      "worker_count": 28,
+      "army_composition": {
+        "MothershipCore": 1,
+        "Stalker": 2,
+        "Adept": 0,
+        "AdeptPhaseShift": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 6320,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6381,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 6465,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6466,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6573,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6584,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6587,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6689,
+          "type": "UNIT_BORN",
+          "unit": "SiegeTank"
+        },
+        {
+          "frame": 6712,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6712,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 30,
+        "MULE": 3,
+        "Marine": 18,
+        "WidowMine": 2,
+        "Medivac": 1,
+        "SiegeTank": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": true,
+  "transition_description": "early_aggression -> mid_game",
+  "commentary": "that one single widow mind oh my god pretty much instantly ss is gonna be right on top of that barrack he can basically kite endlessly and he's gonna re-walk a lot of stalkers here behind he says well he's gonna lose so much of his production if that barrack goes down he has to actually keep that life the scb's of come off line one of them is gonna repair but there's not really that many marines the move we know i know the back has to catch his itself a stalker as well but this is still 21 arms to play against 13 liberators about the pop he tries to get the barracks out of there but it's gonna die he's gonna lose so much production from this and he hardly has anything left scb's come off the line as well once again there's not that many marines to hold on against ss oes here who has bust down the doors he is bringing this home and the liberator is gonna try and stop this but it's gonna get focused down as well there's so oes here with this potential victory trying to focus down the medevac as well there is not much left here at all forbion it's been a great tournament for him so far but you don't defeat the champion you do not defeat the world champion here with a sea shank going down as well s os has run rampant the scango's down in his base he sees everything that's going on back there and that is gg s os",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 6080,
+    "game_frame_end": 7537,
+    "game_time_start_sec": 271.4,
+    "game_time_end_sec": 336.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 336.47321428571433,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "e8eea04e40da"
+  }
+}

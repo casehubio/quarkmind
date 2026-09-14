@@ -2,15 +2,15 @@
   "id": "421a88ce-seg-000",
   "version": "1.0",
   "game_state": {
-    "game_frame": 1498,
-    "game_time_sec": 66.9,
+    "game_frame": 168,
+    "game_time_sec": 7.5,
     "player": {
       "race": "Protoss",
-      "minerals": 105,
+      "minerals": 40,
       "gas": 0,
-      "supply_used": 18,
-      "supply_cap": 23,
-      "worker_count": 17,
+      "supply_used": 13,
+      "supply_cap": 15,
+      "worker_count": 12,
       "army_composition": {},
       "tech": [],
       "buildings": {
@@ -18,52 +18,52 @@
       },
       "recent_events": [
         {
-          "frame": 247,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 483,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 522,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 719,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 758,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 1009,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 1037,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 1245,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 1273,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 1481,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         }
@@ -72,7 +72,7 @@
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 17
+        "Probe": 12
       },
       "known_buildings": {
         "Nexus": 1
@@ -82,13 +82,13 @@
   "phase": "opening",
   "phase_transition": false,
   "transition_description": null,
-  "commentary": "good to go you predicted uh who did you predict to hero okay oh okay yeah we're odds we're odd to my friend i have to go with ss let's get into it first game in this best of five in this second semi-final of the day to see who moves on to the grand final between hero and sos they face off against one another again and to the bottom left-hand corner we have our red protest representing cj-entus it is of course hero three times until extreme master's champion looking to repeat here once again and then up to the top right we have our blue protest representing jenna green wings it is s os i'm so excited man this is their first encounter in legacy of the void actually they've met eight times in the past four of those times were last year in 2015 and actually back then he was sos that won three out of those four times so uh cannot wait to see here if hero can finally try to even the score here a little bit more because it's uh man that that's one hundred thousand dollars final i'm pretty sure he's still as he's on his vine yeah i mean despite them like having those win ratios against one another or whatever i think that one's the one that stings the most down everything and actually even build otherwise hero right now is the one going for the wall of i predicted it would be ss that would go for something like this but nope hero wants to try and get uh one of this himself here and almost as if ss new he sneaked a probe in before he was sealed up so he's scattered early enough to make sure he was gonna be in there and ss being the guy who usually plays with this kind of build quite a bit himself right now he must be he must be so happy he's on cloud nine man he's like well i've used this time so many times for myself i know exactly what i need to look out for right now and i mean i mean just great position for sure on this probe you know it's funny because it might actually get through these shields and do a small little bit damage to that pile on we'll see in a moment uh because it's not being a thing being built just yet he'll get his mother should call on the way very soon along with an adapt the adapt normally gonna be sent out of the probe but actually he's rallied it round to the back and the probe is abandoned not location and even from the down of pylon to block this is great like i think he realized there was gonna be a quick next",
+  "commentary": "good to go you predicted uh who did you predict to hero okay oh okay yeah we're odds we're odd to my friend i have to go with ss let's get into it first game in this best of five in this second semi-final of the day to see who moves on to the grand final between hero and sos they",
   "segment": {
     "type": "expansion",
     "game_frame_start": 0,
-    "game_frame_end": 2997,
+    "game_frame_end": 336,
     "game_time_start_sec": 0.0,
-    "game_time_end_sec": 133.8
+    "game_time_end_sec": 15.0
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

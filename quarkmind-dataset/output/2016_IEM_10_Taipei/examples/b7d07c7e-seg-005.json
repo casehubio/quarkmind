@@ -1,0 +1,113 @@
+{
+  "id": "b7d07c7e-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 12463,
+    "game_time_sec": 556.4,
+    "player": {
+      "race": "Zerg",
+      "minerals": 307,
+      "gas": 375,
+      "supply_used": 88,
+      "supply_cap": 152,
+      "worker_count": 60,
+      "army_composition": {
+        "Larva": 18,
+        "Overlord": 13,
+        "Zergling": 15,
+        "Queen": 2,
+        "Mutalisk": 5,
+        "Baneling": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 12415,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 12420,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12420,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12429,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12429,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12435,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12435,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12435,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12445,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12457,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 63,
+        "MULE": 10,
+        "Reaper": 1,
+        "Marine": 75,
+        "KD8Charge": 3,
+        "WidowMine": 1,
+        "Medivac": 5,
+        "Liberator": 5,
+        "Hellion": 3,
+        "Marauder": 2
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Ravaging positions with these ultras that are just not going to die to rudimentary defenses alone. And he could go over and go for the jokula here. There's not much that's going to slow him down. Oh, this is such great play from Sorki. And he was getting bruised a lot in the early stages that Bjorn wasn't quite able to capitalize on it. He got maybe a little bit too over aggressive at some points. And the moment Sorki got a bit of breathing room, he found that space to tech up to this high tier army. He's found these great engagements, this great multi-pronged harass. And I mean, Bjorn's at 33 SCVs. He barely even has a mining base on the left hand side now. And Sorki, I mean, he's got 57 drones. He's still at that healthy fifth, a healthy sixth base mining. He can do pretty much whatever he wants right now. He's just got too much stuff. Yeah, zero, literally for a moment, a zero income for Bjorn. That really gives you a good indication as to how this game has played out. Sorki played a blinder of the game so far. I must say I'm really impressed. I didn't give Sorki the benefit of the down on the desk. But look at how he's played out this one so far. He's gone up against the harassment. He's harassed himself. He's gone up against these ghosts.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 11784,
+    "game_frame_end": 13142,
+    "game_time_start_sec": 526.1,
+    "game_time_end_sec": 586.7
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Ulrena",
+    "game_duration_sec": 586.6964285714286,
+    "vod_url": "https://www.youtube.com/watch?v=emCaI55s8Tc",
+    "subtitle_source": "whisper",
+    "replay_hash": "b7d07c7ef535"
+  }
+}

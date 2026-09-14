@@ -1,0 +1,112 @@
+{
+  "id": "fd62e9cd-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6189,
+    "game_time_sec": 276.3,
+    "player": {
+      "race": "Protoss",
+      "minerals": 345,
+      "gas": 199,
+      "supply_used": 49,
+      "supply_cap": 70,
+      "worker_count": 28,
+      "army_composition": {
+        "Stalker": 6,
+        "MothershipCore": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5151,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 5155,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5183,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 5391,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5589,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5637,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5825,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5885,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6061,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6156,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 30,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Sentry": 2
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": true,
+  "transition_description": "early_aggression -> mid_game",
+  "commentary": "like they're feeling out their comfort zone of like, okay, well I'm gonna skip Immortals, go really fast disruptors, which is quite bad against super mass bling stalkers, but if I can get to the disruptor bling stalker stage, now I'm advantage, whereas the other guy was slowed down by having a lot of bling stalkers, but then making Immortals. So it's kind of an uncomfortable give and take, and perhaps that's why we're seeing several centuries. Of course, it's not necessarily for the Force Shield. It's to be on top of, are you going disruptors, are the two of us gonna have an arm's race of Immortals? It's a, the disruptors are really such a volatile thing to throw into a matchup like PvP, where the unit count is pretty much always what's determined to win, whereas now it's more like, can you get into a good position versus the disruptors? And you know, there's also like that, that kind of like kind of, I don't know, gamble you can make with bling stalkers and disruptors, like if you wanna blink in and try to snipe a disruptor while you're throwing yours, et cetera, et cetera. There's such a, I love the little up dynamics added by that, but without a robo-based rather side, it's just Immortals and stalkers versus Immortals and stalkers. And if you just go on for it by, if we're gonna get, we was about to finish it behind this award-prison coming out. He's already pushing across the map, the Ford forces of S-O-S did spot the South, so he's coming back to, kind of defend, but almost certain that third base becomes a bit of a liability, especially if he wants to defend out on the map, but if MC pushes too early and loses too many of his forces, he will just die because this third base is the, it's the gambit, so to speak, it's, it's winning or losing choice. It's what he's made this, made the plays in this game. Oh, it's already here. It's early on, and now the army is, here's gonna overcharge one pylon, as he starts the warp ends by that nexus, getting a little bit of damage down here. He's gonna force field in some of the centers in the Immortals, trying to make a play here. He does have one of the Immortals locked in as it triggers that barrier ability of it. And now, without a mortal going down, S-O-S has the Immortal lead. Can he defend this base, though, Jeff? Warpers in here is gonna allow him to warp in. Actually, if he kills that pylon, there'll be no warp in on this location, and I think he's actually waiting for the trial warp in, which is pretty cool. S-O-S already on top of that decision by warping in over it as natural, which is the further away choice. But the safer one, MC micro me back, beautifully, the two morals, as you said, they're dealing out so much damage. One of the moral is about to die, and it does good concave for MCMC, is down in supply overall, but I think part of that is actually harvesters,",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 4733,
+    "game_frame_end": 7646,
+    "game_time_start_sec": 211.3,
+    "game_time_end_sec": 341.3
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 726.0714285714287,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "fd62e9cd965b"
+  }
+}

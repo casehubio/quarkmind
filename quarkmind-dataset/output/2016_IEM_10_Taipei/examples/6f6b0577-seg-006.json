@@ -1,0 +1,112 @@
+{
+  "id": "6f6b0577-seg-006",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7378,
+    "game_time_sec": 329.4,
+    "player": {
+      "race": "Protoss",
+      "minerals": 108,
+      "gas": 131,
+      "supply_used": 59,
+      "supply_cap": 70,
+      "worker_count": 26,
+      "army_composition": {
+        "Stalker": 7,
+        "MothershipCore": 1,
+        "Observer": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 6276,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6534,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6547,
+          "type": "UNIT_BORN",
+          "unit": "WarpPrism"
+        },
+        {
+          "frame": 6768,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 6876,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 6976,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7018,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7155,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 7188,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7225,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 26,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Immortal": 1,
+        "WarpPrism": 1,
+        "Observer": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "nexus on the way behind this yeah that's not a stocker so I think to get a snipe on this so he's gonna have to get out of there SOS with the double nexus remake and we're gonna be on 38 pro for SOS 43 for hero who starts or I guess we start the fourth base in this time on the left hand side how is hero gonna buy time it's gonna have to be some a lot of disruptors laying down some siege on towards those locations but this is a huge army from SOS absolutely yeah it's it's gonna be really tough oh and he lost the woppers move to the left hand side did it I mean that's a small prize here for hero 71 armies to play for hero 101 for SOS can he do it somehow he's gonna need some big",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 6976,
+    "game_frame_end": 7781,
+    "game_time_start_sec": 311.4,
+    "game_time_end_sec": 347.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

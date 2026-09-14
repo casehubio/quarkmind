@@ -1,0 +1,108 @@
+{
+  "id": "a1f0f8d3-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4085,
+    "game_time_sec": 182.4,
+    "player": {
+      "race": "Protoss",
+      "minerals": 235,
+      "gas": 36,
+      "supply_used": 35,
+      "supply_cap": 39,
+      "worker_count": 25,
+      "army_composition": {
+        "Adept": 2,
+        "AdeptPhaseShift": 2,
+        "MothershipCore": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3542,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3547,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3602,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 3602,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 3762,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3762,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3849,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3925,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
+        },
+        {
+          "frame": 3933,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 3933,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 24,
+        "MothershipCore": 1,
+        "Stalker": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> early_aggression",
+  "commentary": "we're in sir we haven't seen him uh play with the stargate uh properly so far yeah we we saw a little bit of fits earlier in map number one but back then he was sos that uh he was hero that run uh that run the show and at one uh throws down a pylon here but it spotted very very quickly by sos along with the pro uh the adept being able to kill off the probe as well so that's a good start by sos to just get full information on what's going on it's gonna be stargate as well for hero but he starts it vastly uh slower than sos which could be really bad now the question is do we see a noracle or phoenix here being made by sos and it's a noracle so if hero manages to overcharge his pylon sometime back at home when uh the oracles gonna hit and then behind this gets phoenixes he could be okay but right now hero is across the map with his mulletier part he's gonna check the stargate then recall full wall off from the hero very quickly because of those shades that wanted to get in oh did you see the stargate did he not did he not get the stargate he's going to",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 3471,
+    "game_frame_end": 4699,
+    "game_time_start_sec": 155.0,
+    "game_time_end_sec": 209.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 478.7946428571429,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "a1f0f8d31044"
+  }
+}

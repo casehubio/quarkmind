@@ -1,0 +1,109 @@
+{
+  "id": "0e0b1a55-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4255,
+    "game_time_sec": 190.0,
+    "player": {
+      "race": "Protoss",
+      "minerals": 55,
+      "gas": 86,
+      "supply_used": 35,
+      "supply_cap": 39,
+      "worker_count": 23,
+      "army_composition": {
+        "Stalker": 4
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3636,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3637,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3908,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4024,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 4026,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 4028,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4035,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4087,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4179,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4199,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 25,
+        "MULE": 2,
+        "Marine": 6
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "it's pretty weird Bjorn's cool Bjorn's also kind of cool i like Bjorn he's a nice guy that's what i'm done you like to see him all this year obviously and uh you know a good performance good to see him come to another international event thank you very much gentlemen i had a lot of fun broadcasts in this event for you guys back at home that's it us done here in Taipei before we go though do make sure to check out the plays dot tv plugin for all the highlights of this tournament",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 4087,
+    "game_frame_end": 4423,
+    "game_time_start_sec": 182.5,
+    "game_time_end_sec": 197.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Central Protocol",
+    "game_duration_sec": 334.86607142857144,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "0e0b1a550447"
+  }
+}

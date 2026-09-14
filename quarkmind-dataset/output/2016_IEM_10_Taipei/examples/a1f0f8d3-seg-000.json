@@ -2,15 +2,15 @@
   "id": "a1f0f8d3-seg-000",
   "version": "1.0",
   "game_state": {
-    "game_frame": 1517,
-    "game_time_sec": 67.7,
+    "game_frame": 168,
+    "game_time_sec": 7.5,
     "player": {
       "race": "Protoss",
-      "minerals": 90,
+      "minerals": 40,
       "gas": 0,
-      "supply_used": 18,
-      "supply_cap": 23,
-      "worker_count": 17,
+      "supply_used": 13,
+      "supply_cap": 15,
+      "worker_count": 12,
       "army_composition": {},
       "tech": [],
       "buildings": {
@@ -18,52 +18,52 @@
       },
       "recent_events": [
         {
-          "frame": 489,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 522,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 725,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 758,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 1005,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 1015,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 1241,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 1253,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 1477,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 1489,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Probe"
         }
@@ -72,7 +72,7 @@
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 17
+        "Probe": 12
       },
       "known_buildings": {
         "Nexus": 1
@@ -82,13 +82,13 @@
   "phase": "opening",
   "phase_transition": false,
   "transition_description": null,
-  "commentary": "lately i think it's um bion you mean yeah yeah i think it's um holy moly on twitter that posted like a screenshot of like uh all the tournaments he's been in uh in in finals of the holy moly it's like an insane amount i think he's like what over ten maybe uh oh a lot a lot of games really clean let's get into this game hero is not producing probes up to the top left-hand corner we have our red pro toss it will be cjns as is hero and down to the bottom left we have our blue pro toss it is jina green wings s os tying up the series and that is a fast fast gateway to start things off here from hero yeah and with the wall of as well which both players are going for so apparently wall of sargood in pvp and uh everybody should use them yeah especially on these pocket they actually if you think about it in the first two maps whoever went for a wall of one the game even though obviously yeah he was very specific bills and stuff and they could have gone either way it definitely worked out in the end and before like pvp's like the new pvp's like you wall of except you don't even leave a hole like you properly wall of everything exactly full full wall of they think the terrans you can't move those pylons guys you can have to kill them and that etc but he guess a proven now already just that's what seems like wait a minute i get it was pretty quick overall so he did sacrifice a little bit of economy for this did hero yeah and here at this time actually won't even completely out perfect wall because the probes already and i think you realize is that he fee walls off completely he might find himself in the same position that we saw him in map number one where he's a pylon going up on his natural he can't start the nexus and he can't let the units be uh walked in inside of his main because then he would be trapped there yeah not the best of spots to be him this uh what road from here is gonna get over that sos being able to be the one that uh wins for the wall of here it's actually again gonna be a great achievement here because he is not gonna know where he's facing he's not gonna know whether or not there's the next he sees",
+  "commentary": "lately i think it's um bion you mean yeah yeah i think it's um holy moly on twitter that posted like a screenshot of like uh all the tournaments",
   "segment": {
     "type": "expansion",
     "game_frame_start": 0,
-    "game_frame_end": 3034,
+    "game_frame_end": 336,
     "game_time_start_sec": 0.0,
-    "game_time_end_sec": 135.4
+    "game_time_end_sec": 15.0
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

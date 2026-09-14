@@ -1,0 +1,110 @@
+{
+  "id": "095724b8-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4607,
+    "game_time_sec": 205.7,
+    "player": {
+      "race": "Terran",
+      "minerals": 250,
+      "gas": 93,
+      "supply_used": 36,
+      "supply_cap": 46,
+      "worker_count": 24,
+      "army_composition": {
+        "MULE": 2,
+        "Marine": 8,
+        "WidowMine": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 4211,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 4279,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4303,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4403,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4439,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4485,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 4499,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4515,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4527,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4604,
+          "type": "UNIT_BORN",
+          "unit": "WidowMine"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 34,
+        "Stalker": 2
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "band actually in the P2Z as well. Go beyond just one Oracle. And it's not like a one-base all-in type of thing, but like a... I have three or four flying around. It's kind of an anti-drop. It's kind of... I constantly know what your tech is with the scouting ability. And then of course, you need to make quite a bit of defenses to hold off of. And we have a proxy gateway going out on the map.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 4439,
+    "game_frame_end": 4775,
+    "game_time_start_sec": 198.2,
+    "game_time_end_sec": 213.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 381.6964285714286,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "095724b86cbca0e6da2fb8baad0d7baf"
+  }
+}

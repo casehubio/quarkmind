@@ -1,0 +1,110 @@
+{
+  "id": "a0f9b25f-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 5617,
+    "game_time_sec": 250.8,
+    "player": {
+      "race": "Protoss",
+      "minerals": 45,
+      "gas": 103,
+      "supply_used": 53,
+      "supply_cap": 54,
+      "worker_count": 44,
+      "army_composition": {
+        "Stalker": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5202,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5208,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5306,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5392,
+          "type": "UNIT_BORN",
+          "unit": "WidowMine"
+        },
+        {
+          "frame": 5466,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5469,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5513,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 5556,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5563,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5593,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 31,
+        "MULE": 3,
+        "Marine": 10,
+        "WidowMine": 2,
+        "Medivac": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "And it is going to be a best of seven. Every single map is going to be played two smiles from both. Good to see. Bjorn's a happy man right now. He's been waiting for this man. This is the moment. He's having a grand finals. He's having a grand finals. He's about to play a couple, a couple liberators in some mineral lines. Of course he's smiling. We talked to it very little bit with SOS about the recent balance change. They mostly changes this match up to any of the others. What are your thoughts here, Todd,",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 5306,
+    "game_frame_end": 5929,
+    "game_time_start_sec": 236.9,
+    "game_time_end_sec": 264.7
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "id": "a0f9b25f-seg-016",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 23646,
+    "game_time_sec": 1055.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 998,
+      "gas": 1447,
+      "supply_used": 192,
+      "supply_cap": 235,
+      "worker_count": 66,
+      "army_composition": {
+        "Stalker": 1,
+        "Observer": 3,
+        "MothershipCore": 1,
+        "WarpPrism": 0,
+        "Immortal": 3,
+        "AdeptPhaseShift": 0,
+        "Phoenix": 0,
+        "Tempest": 10,
+        "Oracle": 1,
+        "Carrier": 3,
+        "Interceptor": 23
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 23513,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 23516,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 23520,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 23523,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 23538,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 23545,
+          "type": "UNIT_BORN",
+          "unit": "Interceptor"
+        },
+        {
+          "frame": 23591,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 23594,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 23597,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 23603,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 91,
+        "MULE": 13,
+        "Marine": 142,
+        "WidowMine": 18,
+        "Medivac": 11,
+        "Liberator": 3,
+        "SiegeTank": 1,
+        "Marauder": 31,
+        "Ghost": 8
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "late_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Yeah. Yeah. So a couple more gateways would be nice maybe even a second robo, some kind of robo but I mean two two finishes now like Bjorn doing so much trouble mate. He starts his own two two and he's keeping up his supply but I don't see these attacks doing enough. He'll be like he's definitely got some initiative here to try and make something happen. He's done a really good job to actually keep up in terms of macro. He's got quite a strong army himself. Storm finished. That's the big problem here. That is true and three three is already on the way before two two is even halfway complete. So Bjorn has to again he basically has to drive his opponents crazy with these drops. But SOS knows I think that this is one of the only ways he can lose this game so he's left some Templar here at this 12 o'clock base and he's getting extra cannons there. Make sure he can defend with just that and he's actually throwing down cannons in his main base as well. No he knows yet though on that Templar. If Bjorn was to hit that position right now and he snipe that would be great I think for him. Because it's got to be on the way. Spots the army in the middle of the map here and drops the scan realizing the high templates are with it and knows now that Storm is very much so available to him. I'm gonna try and go in here. Storm pressuring that back allowing him for the warp him even if that pilot goes down at the front there's still one to back it up so there's the depth will not get cancelled. Bjorn was very impressive actually earlier against Salky with the ghosts like his control was I thought really really good but it's very different against Rotos. He's such a different story. When you have so many high templates already placed down on the map there's no room for mistake here for a turn. SOS gonna start a fifth base. I mean why not like he's so rich already. It's crazy as I said you know to begin with it feels like the tempo is just off.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 22611,
+    "game_frame_end": 24682,
+    "game_time_start_sec": 1009.4,
+    "game_time_end_sec": 1101.9
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

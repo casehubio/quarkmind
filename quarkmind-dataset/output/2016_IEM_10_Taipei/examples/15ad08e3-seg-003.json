@@ -1,0 +1,113 @@
+{
+  "id": "15ad08e3-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 5646,
+    "game_time_sec": 252.1,
+    "player": {
+      "race": "Protoss",
+      "minerals": 294,
+      "gas": 87,
+      "supply_used": 51,
+      "supply_cap": 54,
+      "worker_count": 42,
+      "army_composition": {
+        "Adept": 1,
+        "AdeptPhaseShift": 0,
+        "Sentry": 2,
+        "Oracle": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5323,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5358,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5366,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 5369,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5418,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5457,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5529,
+          "type": "UNIT_BORN",
+          "unit": "Oracle"
+        },
+        {
+          "frame": 5587,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5594,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5629,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 34,
+        "MULE": 3,
+        "Marine": 12,
+        "WidowMine": 2,
+        "Medivac": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "into your main but also into your natural so s os it seems like in some of the situations he wants to be able to see exactly what is up against and this time around will be no difference actually last time he was on dust towers right so i guess both maps where you can wall of both your base and your natural together he seems like to go for a very quick scout to see what exactly what is up against i guess i'm gonna start doing that my my as well i won't know as well i won't know why i'm doing it all right i guess i will know like because s os is doing it but",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 5369,
+    "game_frame_end": 5923,
+    "game_time_start_sec": 239.7,
+    "game_time_end_sec": 264.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Prion Terraces",
+    "game_duration_sec": 577.8125,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "15ad08e3ed7f"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "id": "15ad08e3-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1984,
+    "game_time_sec": 88.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 85,
+      "gas": 24,
+      "supply_used": 20,
+      "supply_cap": 23,
+      "worker_count": 19,
+      "army_composition": {},
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 724,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 826,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1017,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1140,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1253,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1411,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1489,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1682,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 1725,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1953,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 19
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "anything look i'm just gonna stop you moving out and beyond he's not responding with a viking or a little pack of marines in the main and that war prism just keeps getting back in over and over and i feel like s os maybe if he wasn't buying that much time we'd see beyond just push out and be like no you actually can't take five bases that quickly like bam just slapped down a few bases and win the game but the war prism is getting it done for him right now so that's just the key there is preventing this war prism from kind of backstabbing him you'd say yeah definitely think so all right so i just see you sitting over there with Lil Bo down there did he uh did he have anything to say i watched in the series i want to shaking his head uh and i love you know he's he's not too happy with the the state of balance and pv10 honestly he's he's being honestly saying he's just trying to finance this right now like everything's changed up he can't play the same styles he was playing before so he's just trying to figure out like what can you do here and uh yeah he basically said you know beyond needs to push and punish this like s os is just getting so greedy but if the first push fails and s os holds it it's pretty much game over from there and i mean it took a long time on serras for s os to close it out but we can see how methodically it was from that point he's like i got five bases tempers carriers storm everywhere cannons everywhere and it's like this really really slow patient wave just winning the game so we expecting now from this point forward i mean we've seen the maps that we played on so far we know the maps that are coming out are we gonna say a big drastic change now from beyond a lot more aggression getting into s os's face a lot more how do you say this plan out it's interesting i got to think of what beyond said in the earlier interview where uh you know i'd been saying he was playing reactively and he was like no my builds are kind of just working out like it's just kind of lucky i don't think he's gonna change too much but i definitely think he needs to tweak a few things because so far we've seen him lose twice too kind of the same strategy obviously one game there were three gold bases which made it a bit different but he's definitely uh suffering against the war prism harassment and the mass expand strategy so he's got to he's got to adjust that he's got to block out the war prism and i think he's in a good spot all right thank you very much baby you're gonna head back to the commentary team for this one to continue with the grand finals here at the interluxury masters never thought i'd hear those words of a protoss defeating a turon with a mass expand war prism strategy but he's right it is working here and now we're gonna go on to orbital shipyard uh beyond looks the battle back against s os all boys on the desk rest some very good points pig in particular i do think that's beyond needs to start changing things up a little bit because",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 3632,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 162.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Prion Terraces",
+    "game_duration_sec": 577.8125,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "15ad08e3ed7f"
+  }
+}

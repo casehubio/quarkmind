@@ -2,71 +2,68 @@
   "id": "a1f0f8d3-seg-001",
   "version": "1.0",
   "game_state": {
-    "game_frame": 6899,
-    "game_time_sec": 308.0,
+    "game_frame": 1903,
+    "game_time_sec": 85.0,
     "player": {
       "race": "Protoss",
-      "minerals": 340,
-      "gas": 60,
-      "supply_used": 42,
-      "supply_cap": 62,
-      "worker_count": 32,
-      "army_composition": {
-        "Adept": 0,
-        "AdeptPhaseShift": 0,
-        "MothershipCore": 1,
-        "Oracle": 0,
-        "Stalker": 1,
-        "Phoenix": 1
-      },
+      "minerals": 95,
+      "gas": 20,
+      "supply_used": 20,
+      "supply_cap": 23,
+      "worker_count": 19,
+      "army_composition": {},
       "tech": [],
       "buildings": {
         "Nexus": 1
       },
       "recent_events": [
         {
-          "frame": 6457,
+          "frame": 725,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 6564,
+          "frame": 758,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 6593,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 6625,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 6630,
-          "type": "UNIT_BORN",
-          "unit": "Phoenix"
-        },
-        {
-          "frame": 6662,
+          "frame": 1005,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 6738,
+          "frame": 1015,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 6738,
-          "type": "UNIT_DIED"
+          "frame": 1241,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 6776,
-          "type": "UNIT_DIED"
+          "frame": 1253,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 6862,
+          "frame": 1477,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1489,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1713,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1725,
           "type": "UNIT_BORN",
           "unit": "Probe"
         }
@@ -75,10 +72,7 @@
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 39,
-        "MothershipCore": 1,
-        "Stalker": 3,
-        "Phoenix": 4
+        "Probe": 18
       },
       "known_buildings": {
         "Nexus": 1
@@ -86,15 +80,15 @@
     }
   },
   "phase": "opening",
-  "phase_transition": true,
-  "transition_description": "opening -> mid_game",
-  "commentary": "the double gateway though and he's gonna see the double at that production but the question behind this is always is there an access is there a stargate is there dt's you can never know and sometimes they can even be blink with like a proxy pylon the proxy gateway to whopping quickly and some kind of three or four gate blink and it will be stargate as the response here from sos so like of course we're in sir we haven't seen him uh play with the stargate uh properly so far yeah we we saw a little bit of fits earlier in map number one but back then he was sos that uh he was hero that run uh that run the show and at one uh throws down a pylon here but it spotted very very quickly by sos along with the pro uh the adept being able to kill off the probe as well so that's a good start by sos to just get full information on what's going on it's gonna be stargate as well for hero but he starts it vastly uh slower than sos which could be really bad now the question is do we see a noracle or phoenix here being made by sos and it's a noracle so if hero manages to overcharge his pylon sometime back at home when uh the oracles gonna hit and then behind this gets phoenixes he could be okay but right now hero is across the map with his mulletier part he's gonna check the stargate then recall full wall off from the hero very quickly because of those shades that wanted to get in oh did you see the stargate did he not did he not get the stargate he's going to run back he's gonna see it now yeah he has to so he's gonna overcharge oh dude he's no overcharge left for his choice now he's just got one but i don't think he can use it anymore what came out with it was the oracle right okay so let's get a head on the way over to the side the adeptus still working away at that pylon i'm afraid that the oracles gonna try to fly in there because in this case sos has no info so he's actually gonna fly into a phoenix potentially yeah because he couldn't get in at all with the adeptus now they've killed this often they could technically send a shade in but by the time they get in it's all too late there's the phoenix there's the phone overcharge and the oracle will be denied and the adeptus will be killed as well only oh he killed three probes which is not bad but that's i mean when you lose two adeptus and an oracle usually you expect to kill more like 10 probes not three and second target goes down here whoa sos all right i think you realize that he's in trouble so he's gonna take the gasses on his natural very quickly and he's gonna try to come back on the phoenix count here even though he knows that he just threw an oracle into a phoenix which is obviously really bad wow what a serious man yeah great games really all very varied to be honest with you this is now gonna end up being in a complete and dominant air war here if hero isn't careful he's going to the twilight council yeah you know against this it's difficult i think that's smart actually hero wants to be aggressive he knows that he's gonna have more phoenixes here for the moments so he's gonna poke at the ramp try to foster overcharge and then try to use his phoenixes to do some damage here and there so sick for an overcharge it's so hard trying to get into the walls this mineral line get himself two probes but now he's in a bit of a tight bind actually with those phoenix they took some free damage and he's gonna lose one oh one for one okay hero made the twilight by the way behind this this is gonna be blink all details here blink blink starts blink okay so we should be seeing additional gateways here going down and him transitioning i mean does he fully read into the fact that there's two targets right now did he see it he must have done right no he didn't see the stuff i thought the phoenix have flown over it but not close enough no i like this for us i think i really like it if you're able to surprise with a good amount of phoenixes he has so much initiative the thing is he's gonna face being sure but phoenixes is so good in defense anyway that he doesn't really matter and usually what happens when you play phoenix like this is that you lock your opponent on a couple basis he's very hard for him to move out and properly attack but it looks like hero might be planning to attack anywhere because it's proxying a gateway out on the map to be able to warp in quicker actually i i don't know if it will come to this but i won't do it first so it's down the line was thinking about playing with mass air on this map you mass air is so strong because you can take a third base and fourth base so easily six gateways in total being added on extra here for hero this is and seven going down this is gonna be a big big attack here and that's trying as well whoa everything man all right and the kitchen sink let's go everything pylon even going down into wards the natural it wasn't spotted third even i should say and the phoenix almost for nothing the problem for us is that it doesn't know this is coming so he's not getting enough pylons to properly defend with the overcharge yeah and he only has two gateways switch up out by one single autosis pylon oh you're right oh you're not the back of the back of the back i think he's starting to realize he's not back at home ready to defend though these stalkers they have a deba to have blink they're gonna blink up your ramp bro oh this is just gonna be so difficult to hold a he's gonna be able to warp in very very aggressively with all of this he's out on the map he's trying to catch his uppeners phoenixes here it's not gonna be enough this is gonna be so bad for him he's gonna lose that pylon at the front he needs another phone over charge but he barely has the energy to actually get any more after that and the pylon's gonna die anywhere that's gonna underpower all of this phoenixes are gonna be able to pick up a few of these stalkers he needs more stalkers here there's hero though to continue this on oh he might have enough we just the phoenixes the list is a great srs went straight for the his uppeners phoenix killed them all but he loses a lot of the damage here from the phoenix when he was in the pit of thankfully he had a lot of energy to keep picking things up he might be able to kill all of this with phoenix alone with just a little bit of extra firepower on the ground hero might have attacked a little bit too early here if you waited for one or two more psych psycho weapon but this is something what in there is no detection there is no robo you need to one of these ramp it's all there's the force field there's the force field does he see it i think that's what ss you can even see it it just gets it oh he saw it walking on it",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "holy moly on twitter that posted like a screenshot of like uh all the tournaments he's been in uh in in finals of the holy moly it's like an insane amount i think he's like what over ten maybe uh oh a lot a lot of games really clean let's get into this game hero is not producing probes up to the top left-hand corner we have our red pro toss it will be cjns as is hero and down to the bottom left we have our blue pro toss it is jina green wings s os tying up the series and that is a fast fast gateway to start things off here from hero yeah and with the wall of as well which both players are going for so apparently wall of sargood in pvp and uh everybody should use them yeah especially on these pocket they actually if you think about it in the first two maps whoever went for a wall of one the game even though obviously yeah he was very specific bills and stuff and they could have gone either way it definitely worked out in the end and before like pvp's like the new pvp's like you wall of except you don't even leave a hole like you properly wall of everything exactly full full wall of they think the terrans you can't move those pylons guys you can have to kill them and that etc but he guess a proven now already just that's what seems like wait a minute i get it was pretty quick overall so he did sacrifice a little bit of economy for this did hero yeah and here at this time actually won't even completely out perfect wall because the probes already and i think you realize is that he fee walls off completely he might find himself in the same position that we saw him in map number one where he's a pylon going up on his natural he can't start the nexus and he can't let the units be uh walked in inside of his main because then he would be trapped there yeah not the best of spots to be him this uh what road from here is gonna get over that sos being able to be the one that uh wins for the wall of here it's actually again gonna be a great achievement here because he is not gonna know where he's facing he's not gonna know whether or not there's the next he sees the double gateway though and he's gonna see the double at that production but the question behind this is always is there an access is there a stargate is there dt's you can never know and sometimes they can even be blink with like a proxy pylon the proxy gateway to whopping quickly and some kind of three or four gate blink and it will be stargate as the response here from sos so like of course we're in sir we haven't seen him uh play with the stargate uh properly so far yeah we we saw a little",
   "segment": {
-    "type": "battle",
-    "game_frame_start": 3074,
-    "game_frame_end": 10725,
-    "game_time_start_sec": 137.2,
-    "game_time_end_sec": 478.8
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 3471,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 155.0
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

@@ -1,0 +1,110 @@
+{
+  "id": "74a6039a-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 5203,
+    "game_time_sec": 232.3,
+    "player": {
+      "race": "Protoss",
+      "minerals": 125,
+      "gas": 230,
+      "supply_used": 44,
+      "supply_cap": 54,
+      "worker_count": 28,
+      "army_composition": {
+        "Stalker": 4,
+        "MothershipCore": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 4735,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4862,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4865,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4868,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 4907,
+          "type": "UNIT_BORN",
+          "unit": "WarpPrism"
+        },
+        {
+          "frame": 5003,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5046,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 5175,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 5176,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 5176,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 24,
+        "Adept": 3,
+        "AdeptPhaseShift": 10,
+        "WarpPrism": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "I think it's a great it could be something like dt's that's the only explanation as he's gonna see an additional gateway going down here and he probably still can't quite he needs to get though surely he needs at least one he starts one now and he needs at least one more I think all right well poking over these stalkers already getting a few good volleys off that's a nice stop but for an overcharge we'll shoot that away for a moment get some stuff a free pylon up towards the top at least I really feel PVP is like this weird tower defense game where pylon counts as pylon of all things pylon wars man yeah here we were thinking it's all about the nexus wars nope no he's gonna sack the natural I was wondering about this when I saw the robo and I think he might be a really good choice because second pylon",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 4735,
+    "game_frame_end": 5672,
+    "game_time_start_sec": 211.4,
+    "game_time_end_sec": 253.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 342.9464285714286,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "74a6039ae628"
+  }
+}

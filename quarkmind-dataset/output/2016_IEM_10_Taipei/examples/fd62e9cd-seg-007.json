@@ -1,0 +1,117 @@
+{
+  "id": "fd62e9cd-seg-007",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 9124,
+    "game_time_sec": 407.3,
+    "player": {
+      "race": "Protoss",
+      "minerals": 275,
+      "gas": 308,
+      "supply_used": 83,
+      "supply_cap": 93,
+      "worker_count": 47,
+      "army_composition": {
+        "Stalker": 5,
+        "MothershipCore": 1,
+        "Observer": 2,
+        "Phoenix": 0,
+        "Immortal": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 8165,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        },
+        {
+          "frame": 8446,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8458,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8464,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8773,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8777,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8866,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        },
+        {
+          "frame": 8907,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8952,
+          "type": "UNIT_BORN",
+          "unit": "WarpPrism"
+        },
+        {
+          "frame": 9006,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 44,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Sentry": 2,
+        "Observer": 1,
+        "Phoenix": 1,
+        "Immortal": 2,
+        "WarpPrism": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "because if they go in on those blue Sockers of S-O-S, they're gonna face three Immortals, which will dice him up in no time at all. So MC takes a crazy choice. He's waiting for this violence to finish. He's gonna have a lot of photon overcharge. A huge century warp in back at home again for S-O-S. I love your guys' comments. I mean, I don't pretend to know everything,",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 8907,
+    "game_frame_end": 9342,
+    "game_time_start_sec": 397.6,
+    "game_time_end_sec": 417.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 726.0714285714287,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "fd62e9cd965b"
+  }
+}

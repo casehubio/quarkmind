@@ -2,20 +2,18 @@
   "id": "f6cb6724-seg-000",
   "version": "1.0",
   "game_state": {
-    "game_frame": 6816,
-    "game_time_sec": 304.3,
+    "game_frame": 311,
+    "game_time_sec": 13.9,
     "player": {
       "race": "Zerg",
-      "minerals": 365,
-      "gas": 162,
-      "supply_used": 60,
-      "supply_cap": 74,
-      "worker_count": 44,
+      "minerals": 30,
+      "gas": 0,
+      "supply_used": 13,
+      "supply_cap": 14,
+      "worker_count": 12,
       "army_composition": {
-        "Larva": 8,
-        "Overlord": 7,
-        "Zergling": 5,
-        "Queen": 5
+        "Larva": 3,
+        "Overlord": 1
       },
       "tech": [],
       "buildings": {
@@ -23,61 +21,60 @@
       },
       "recent_events": [
         {
-          "frame": 6657,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Drone"
         },
         {
-          "frame": 6657,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 6660,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Drone"
         },
         {
-          "frame": 6660,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 6662,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Drone"
         },
         {
-          "frame": 6662,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 6665,
+          "frame": 0,
           "type": "UNIT_BORN",
           "unit": "Drone"
         },
         {
-          "frame": 6665,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 6743,
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 255,
           "type": "UNIT_BORN",
           "unit": "Larva"
         },
         {
-          "frame": 6764,
+          "frame": 287,
           "type": "UNIT_BORN",
-          "unit": "Larva"
+          "unit": "Drone"
+        },
+        {
+          "frame": 287,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 289,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
         }
       ]
     },
     "opponent": {
       "race": "Terran",
       "known_units": {
-        "SCV": 39,
-        "Marine": 5,
-        "MULE": 5,
-        "Hellion": 8,
-        "VikingFighter": 1
+        "SCV": 13
       },
       "known_buildings": {
         "CommandCenter": 1
@@ -85,15 +82,15 @@
     }
   },
   "phase": "opening",
-  "phase_transition": true,
-  "transition_description": "opening -> mid_game",
-  "commentary": "Just kind of know what their opponent's gonna do and this is what I do Like if the medicates that if the matchup gets there okay, that's part of the game, but when the maps is You must kill them before the full minute mark strikes 12 doffeth and then you're dead and it's that's not good So this I mean the three racks Reaper when zergs have tried to go for the fast gold base Sometimes it can kind of give you a much easier time because the gold is harder to reach for the lanes and the cleans But by taking the normal natural expansion it will be a lot harder for pull to get damage them with this He's made a large commitment with this Reaper push Usually zerg players are just gonna try to get speed get a lot of links around the knock them down But very clearly it makes that trickies. Yes, but keep making queens. It's not actually thelings that's gonna keep them alive It's the queens the the lanes are just to buy enough time for there to be 300 queens Yeah, because as you said with the grenades if you make infinity lings You are gonna be a part of a reddit highlight reel where your 35lings go for a surround They chuck grenades at their feet and then laugh as all of them die Yep, and this map does have those features as we see the things are trying to push these reapers back I mean a surround you would be deadly by that Look at the maids not too many reapers do get caught. Yeah. Yeah, I mean it was good for the zerg there But even that one Reaper builds are still very heavily Based around momentum. This isn't halo though. I mean in what like battle situation? Are you like dropped arm? Drop the grenades at your feet, but sir That's still a drop time. You don't know these reapers have the martyrdom perk. Hey, do man Always always gotta drop those grenades He's already put in the bunker behind his wall expecting a counter, but there will be And no such thing he doesn't he's not really minding anymore gas. It doesn't look like he's got he actually has enough gas If you were to build an evil chamber like I've seen some zergs I do like a counter drop as well, which is really frustrating because you always want to keep your reapers out on the map Yeah, but of course this is where this is where it begins He takes the more difficult to secure gold base early He can start to spread creep from there And then it becomes really hard to push into this base because all of your production just gets rally here And good luck killing the base then so the reapers are gonna jump into the main base Paul is looking for an opportunity Zerglings are pretty fast though. Are there enough of them that counter is gonna go be denied Because the grenades begin to fly in time He's not he's still building reapers just reapers. Okay, the reapers are out so now that counter attack is denied Oh, needs himself. It's really mad. They'll heal on a second here But I feel like part of the reason the bunker everything showed up was also because he lost those initial two Yeah, you know, it's lots of other sales. I'd say that puts you in panic mode to some extent losing any number of reapers early on Just because they scale so ridiculously well. Oh, it's mad. Then you have this little spot here where it's like well You would like to get these reapers, but no, not happening You just dropping your nids are yeah, I feel like Polk could actually be a lot better about grenades more active about them Um to put on my cast or monocle where I criticize for the best players You know, it could be you know, he could just become a machine and just do it perfectly I think that would be a really benefit Honestly, let's ask ourselves why he hasn't already, you know, he does this for a living Why haven't why aren't these guys? Why aren't these guys in like test medical studies for like cyber cybernetics Arms and legs that they don't actually have like the wrist issues anymore from playing Oh, that'll be a shing face. You know, they already took out like guys that have the prosthetic leg that actually helps them run faster What if there's a time When they start wondering in games, it's like guys that have games hooked up to their brain If we got a band them all the reapers died here by the way Yeah, I mean at some point that you had you kind of do this and this is actually a pretty normal phase He's just like okay really yeah, I mean at some point this is the reaper at some point you got to look back at your base and start Macroing man, I lost all the reapers whatever he's like is he's got double gold. I'm sure I'm fine I think a couple of men have actually had fix There's a reason why he made that investment to reapers and the fact that it hasn't paid off Well, if he had just done nothing and let's all he take two gold bases without trying to defend He'd be an equally unfun position. I tell the story once more, but but honestly I am Like if someone bms me I will be in you back, but one of the but otherwise I'm not a bm right I'd never I always gg I don't I don't really say anything Unless someone says something to me, but one of the like few times I've ever bm someone unsolicited Was against cytoplasm a Swedish third player On uh, gosh, what was that city scape gold base that the terns just floated to the metal? A meditation station. No, the one that was on top of a building. I really should remember the name of this Oh, it might have been before your time. It was on top of a building Yeah, bro. It was one of the really common. I know metropolis was on top of the building. Yeah, people didn't float to gold I'm a tropolis they did the things um, but he was there so it doesn't really fit here But what he did do is take his natural at the gold and I remember taking my hands off the mouse and just I mean metal opolis Metal opolis, but okay There's a gold base on metropolis But they have so many similar letters with anus. I can't keep track of this stuff. All right Anyways, it's really only times I ever bm someone unsolicited I was like I was like you're how do you sleep and I you dirty scumbag? Well, so he's gonna be able to afford to build infinite roaches His he does have two gold bases mining now as Polt has just landed his third But of course this map is so open like Polt's gonna It's a tough third you need so much to defend that so he's gonna push out. He's gonna try to do something here But I don't think there's any meta-vacs. So this is this is really risky Uh Risky's a word for it. I guess he's got sim and combat shield. No, it's dead This is dead without meta-vacs What Polt's trying to like this is kind of getting close. He missed the corrosive Ah, I want to get excited about this. I'm not gonna. I'm not gonna stop you let your let your passion flag fly Get excited about this Uh, well, you know, you know if I criticize Polt's push here, then it's just my bias showing so say it for your save it for me Yeah, save it for your stream. There's yeah, I mean, I know what Polt's doing here because because they're both on the same page So he's like all right got both gold saturated I'm upgrading whatever. I'm just gonna from this point forward. It's four hatch production. You can't hold your stuff So let me let me ask you this then why would Polt veto larylac crest instead of this map I think Polt's asking that question right now as well Is like I thought my reaper micro would be better. I thought I could just walk reapers at him and win. No, bro No, and that taking these gold so early like the creep spread is really pushed far out now from the northeast So try to escape. Yeah, he's still doesn't have g. There's still no meta-vacs out here like he's I mean at some point so he's just oh that's right Polt doesn't gg. I forgot now. This will go on for a little while longer Yeah, Polt doesn't die very quickly But guys, ladies and gents at home Unlike the little bow game. I'm not gonna get this one wrong. Okay. If Polt wins this I will eat Nathaniel's pants I don't know you like taste of denim Jeff Okay, two tears on the way for Polt and sulky six transition bra Plus two carapace hosting that dream hack desk is really helping you up to humor. Oh, yeah You're super comfortable in awkward situations. This is a it's a brave new world. We've entered into Jeff Should I make you more comfortable and just say rotting the club after ever since that that bring you more at home if The looser cast. Yeah, sure why not so he's still keeps maxed out Or at least he could if you really wanted to I think if he built a few more overlords He has the resources just maxed on roaches, but he's choosing to go for ultra instead because Polt can't really attack him right now He's gonna go for a job in the main base. Oh, he didn't go. He didn't send his army exactly where Polt's drops are headed. He has some links there You get excited. I just have I mean, I want to believe right you got to believe Polt is of any of any player is gonna come back from You know, it up against the dude who's got two gold bases then it's got to be Polt right you see that club great up there The orange one. Oh, that's the GG up. That is the GG upgrade I'm this matchup. It's also the one that comes out of the ultra-less cavern Yeah, well, I mean that's the like if you're really being stubborn My favorite part is that when you're trying to do this pressure You're trying to make something happen as a tarant player and then go though you need so much to make these you need You need so much to make these pushes work and like Polt's trying his best to get work done But the problem is everything that he's invested into upgrade wise tech wise Infrastructure wise is completely useless as soon as this kite is plating upgrade is done Like in a straight-up fight He needs a completely different army to win once there's ultra-lisks on the map and the double gold base is like he's just Honestly like soul keys can in a really good spot But you know as Polt increased in supply. I'm not gonna completely count him out here yet. Yeah, I refuse doing what he can't I you know what I don't mind but he does he does have to switch to something else Unless he's gonna try to win this game in some super weird base trade There's no way he's gonna beat an army that's got multiple ultras and kite miss plating if he gets that plus three Carapace as well Three three upgrades from so it's gonna be through drops. Yes, pick off the fifth base attempt. Soul keys gonna Double expand to make up the difference I suppose here And again one of the factors that taran does kind of go into this this matchup these days knowing is there's not a flock of mutants There are investors so a drop could be devastated have to be very careful about that But otherwise creep me and fought back a little Fifth base being picked off So the doom of taran is being staved off Nathanius the supply as we said clawing closer and closer Yep Important things to know of course soul keys can start to build up a bang from here But his kite miss plating is ready and since they're on even upgrades That means these marines and marauders don't really do damage against the ultra-lisks anymore So he's gonna step out on creep blood And then he's got to lift up and get out of here But if he gets fond of a little bit of that So a lot of medivex okay only gets one since they that actually would be gg right there But this army camp you can't fight for soldiers He has to just drop everywhere all right build up a liberator count and Just hope that he can take a fight by his liberators because otherwise He's gonna get rolled off for game observing right now by his friends late at night for her At least Paul's doing his thing where he's able to get all over the place as uh that's what I'm saying He's dealing damage This counter attack I like this you know soul keys just saying actually know what's grievous I'm just gonna not just end up in your service I told you this what I told you the only way Paul gets it has a chance in this game is if it goes to a really awkward base train We're on our way to a really awkward base train it's almost like you do this for a living or something Yeah Hold chaps that",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Just kind of know what their opponent's gonna do and this is what I do Like if the medicates that if the matchup gets there okay, that's part of the game, but when the maps is You must kill them before the full minute mark strikes 12 doffeth and then you're dead and it's that's not good So this I mean the three racks Reaper when zergs have tried to go for the fast gold base Sometimes it can kind of give you a much easier time because the gold is harder to reach for the lanes and the cleans But by taking the normal natural expansion it will be a lot harder for pull to get damage them with this",
   "segment": {
-    "type": "battle",
+    "type": "expansion",
     "game_frame_start": 0,
-    "game_frame_end": 13632,
+    "game_frame_end": 623,
     "game_time_start_sec": 0.0,
-    "game_time_end_sec": 608.6
+    "game_time_end_sec": 27.8
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

@@ -1,0 +1,105 @@
+{
+  "id": "8a1f5c84-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1687,
+    "game_time_sec": 75.3,
+    "player": {
+      "race": "Zerg",
+      "minerals": 215,
+      "gas": 0,
+      "supply_used": 18,
+      "supply_cap": 22,
+      "worker_count": 18,
+      "army_composition": {
+        "Larva": 1,
+        "Overlord": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 947,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 994,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 1027,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 1027,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1234,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 1474,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 1481,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 1481,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1557,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 1557,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 15
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "You're if you're in Casper well, I would so cool about these guys is they are a lot of those Casper guys tops your friends No and play with each other so much that that kind of stuff doesn't really matter to them There's no BM either way they can say anything. We're just playing games. Okay. Well No, this isn't the safe space. We have to say G. L. H. F. and no, that's not what I'm saying It is that's super serious business for them, but it's just this is one game of like 40 they played that week against that guy",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 1481,
+    "game_frame_end": 1893,
+    "game_time_start_sec": 66.1,
+    "game_time_end_sec": 84.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Snute",
+    "player1_race": "Zerg",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "ZvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 627.8125,
+    "vod_url": "https://www.youtube.com/watch?v=5P554a_8mT4",
+    "subtitle_source": "whisper",
+    "replay_hash": "8a1f5c840fab"
+  }
+}

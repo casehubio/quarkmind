@@ -1,0 +1,119 @@
+{
+  "id": "1a9aeda5-seg-013",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 19125,
+    "game_time_sec": 853.8,
+    "player": {
+      "race": "Protoss",
+      "minerals": 1182,
+      "gas": 1573,
+      "supply_used": 193,
+      "supply_cap": 228,
+      "worker_count": 63,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 0,
+        "Oracle": 0,
+        "Observer": 1,
+        "Immortal": 3,
+        "WarpPrism": 1,
+        "Disruptor": 9,
+        "DisruptorPhased": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 19069,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 19082,
+          "type": "UNIT_BORN",
+          "unit": "DisruptorPhased"
+        },
+        {
+          "frame": 19109,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 19109,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 19109,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 19109,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 19109,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 19109,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 19114,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 19123,
+          "type": "UNIT_BORN",
+          "unit": "DisruptorPhased"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 93,
+        "MothershipCore": 2,
+        "Stalker": 6,
+        "Observer": 3,
+        "WarpPrism": 1,
+        "Disruptor": 13,
+        "Phoenix": 1,
+        "DisruptorPhased": 20,
+        "Immortal": 3,
+        "AdeptPhaseShift": 6
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "late_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "stalker for stalker and then just get away what's that up there oh yeah and observe it okay it's flooding the prison keeping an eye out whoop that disruptor yeah you can't blink forward that's the thing though i see over here because if you do then and more disruptors come in with some big detonations actually that's right to come out of the time very very nice few more stalkers go down all of these trades definitely going in favor of sos he's just controlling better blink not done yet so important together now eventually does get it though hero it's just so hard to attack against disruptors and sos i think he's found a way here to try and do some damage maybe try and pull his opponent out of position he's got no supply spurs that's force base as well which is very important yeah the disruptors were exchanging blows into the middle but those allies did cause some problems of a charge so sick it's really good that was like like 12 zealots yeah they just melted it's so powerful but oh well and at least you can't get a million of them at the same time i guess i remember which game was it casting it was like eight pylons floating over charged before patch it's crazy for a defense but i'm gonna see that these stalkers just wrapping around and looking for some alternate paths to pawn some aggression themselves and they've done a good job they can get out of here they have blink up cooldown sos now with the fifth base i can't believe this game as a we actually might see a really long game here between these two there they're so evenly matched here and as i say that's disruptor force going in everywhere and he split up so much of his army he's actually gonna blink it aggressively against this just from force go in and catch a lot of those stalkers look at the supplies and they're also combating these guys so i'm sorry i didn't supply what uh hero sorry sos might have overextended here with this attack even though he traded pretty well and his army is looking really scary what's going on here i mean the one thing that's going in sos is favor is the fact that eventually he will have more bases than his opponent but that was crazy engagement hero got the far better end of those trades in the end look at this surprising army and walk it there so even as well this this is crazy game here we are seeing on map number two yeah stalker's just gonna press up against this it does have plus two but also blackwise plus two is done for hero two disruptors in there so he's got to be careful about how we orchestrate this attack wow sos known five bases and no-tampest prospect here so far for either",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 17639,
+    "game_frame_end": 20612,
+    "game_time_start_sec": 787.5,
+    "game_time_end_sec": 920.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Prion Terraces",
+    "game_duration_sec": 990.2678571428572,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "1a9aeda55b1c"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "id": "a0f9b25f-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4838,
+    "game_time_sec": 216.0,
+    "player": {
+      "race": "Protoss",
+      "minerals": 105,
+      "gas": 32,
+      "supply_used": 44,
+      "supply_cap": 54,
+      "worker_count": 38,
+      "army_composition": {
+        "Stalker": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 4461,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4481,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 4496,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4578,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4595,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4658,
+          "type": "UNIT_BORN",
+          "unit": "WidowMine"
+        },
+        {
+          "frame": 4730,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4736,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4747,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4751,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 27,
+        "MULE": 3,
+        "Marine": 8,
+        "WidowMine": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "SOS supposed to be in this tournament? And Bjorn stopped him with a 2-0. So also, I think Bjorn is, he's been really impressive against Protoss. He has played almost 50 series in Legacy of the Voids, recorded and posted on Lady Gulag against Protoss and he's 180% of them. SOS only three series on Legacy of the Void and he's only one of them and one of those losses, one of those two losses was against Bjorn. So if you look at that, you have to be telling yourself this could be really tough here for SOS to win this. Oh, there is Bjorn and there's the Fangirl screaming for us. It's a T-Jack lap. And of course they're playing for the trophy in the middle of the stage. And it is going to be a best of seven. Every single map is going to be played two smiles from both.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 4370,
+    "game_frame_end": 5306,
+    "game_time_start_sec": 195.1,
+    "game_time_end_sec": 236.9
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

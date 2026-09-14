@@ -1,0 +1,109 @@
+{
+  "id": "b09eebe9-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7256,
+    "game_time_sec": 323.9,
+    "player": {
+      "race": "Terran",
+      "minerals": 350,
+      "gas": 308,
+      "supply_used": 61,
+      "supply_cap": 70,
+      "worker_count": 33,
+      "army_composition": {
+        "Marine": 11,
+        "MULE": 2,
+        "WidowMine": 1,
+        "Hellion": 0,
+        "Medivac": 1,
+        "Liberator": 1,
+        "SiegeTank": 1,
+        "VikingFighter": 0
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 7020,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7051,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7069,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7069,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 7091,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7097,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7125,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 7140,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7190,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7252,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 40,
+        "Stalker": 4,
+        "Phoenix": 3
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "I played a lot of games or just like, no, get in the next one. Go, go, go. And I'm just like the whole time shaking and sweaty and just upset. But little bit taking a moment here to be like, OK, neither of those things work. Maybe you smoking a bag get right now. A pack of bag gets certainly has is how I don't know if bag gets their popular and Taipei. Well, Frenchman's they don't leave without it. You can get them. You can get them anywhere. Yeah, basically their fingers are baggets and they just kind of chop on off and then eat it and then rip it off. Yeah, it's going full sponge out there. So see you guys know as well for anyone curious about like where we are example. We're broadcasting this from the ESL studios in Los Angeles, California. Tomorrow, I believe Apollo, Clarice tomorrow for Americans tomorrow for",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 6847,
+    "game_frame_end": 7665,
+    "game_time_start_sec": 305.7,
+    "game_time_end_sec": 342.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 342.1875,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "b09eebe96e48"
+  }
+}

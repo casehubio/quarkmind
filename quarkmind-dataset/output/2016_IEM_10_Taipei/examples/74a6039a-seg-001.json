@@ -2,91 +2,93 @@
   "id": "74a6039a-seg-001",
   "version": "1.0",
   "game_state": {
-    "game_frame": 7410,
-    "game_time_sec": 330.8,
+    "game_frame": 1846,
+    "game_time_sec": 82.4,
     "player": {
       "race": "Protoss",
-      "minerals": 290,
-      "gas": 120,
-      "supply_used": 56,
-      "supply_cap": 78,
-      "worker_count": 30,
-      "army_composition": {
-        "Stalker": 5,
-        "MothershipCore": 0,
-        "Immortal": 1
-      },
+      "minerals": 395,
+      "gas": 12,
+      "supply_used": 19,
+      "supply_cap": 23,
+      "worker_count": 19,
+      "army_composition": {},
       "tech": [],
       "buildings": {
         "Nexus": 1
       },
       "recent_events": [
         {
-          "frame": 7167,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 7177,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 7205,
+          "frame": 728,
           "type": "UNIT_BORN",
-          "unit": "Immortal"
+          "unit": "Probe"
         },
         {
-          "frame": 7272,
-          "type": "UNIT_DIED"
+          "frame": 858,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 7276,
-          "type": "UNIT_DIED"
+          "frame": 1035,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 7322,
-          "type": "UNIT_DIED"
+          "frame": 1094,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 7346,
-          "type": "UNIT_DIED"
+          "frame": 1271,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 7367,
-          "type": "UNIT_DIED"
+          "frame": 1330,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 7387,
-          "type": "UNIT_DIED"
+          "frame": 1507,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 7389,
-          "type": "UNIT_DIED"
+          "frame": 1566,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1743,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1802,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         }
       ]
     },
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 24,
-        "Adept": 3,
-        "AdeptPhaseShift": 13,
-        "WarpPrism": 1
+        "Probe": 19
       },
       "known_buildings": {
         "Nexus": 1
       }
     }
   },
-  "phase": "mid_game",
+  "phase": "opening",
   "phase_transition": false,
   "transition_description": null,
-  "commentary": "abandoning the did you see what just happens she moved away from his ramp because he knows that photon of charge gonna be enough to defend there and he he these units right and then ss looked up the ramp and he saw you know you know you know it is like wait a second is he already unloading his units elsewhere it's time to go back but no he wasn't yet so that was a cool bluff here and ss pull back a little bit too early make sure he was safe at least oh nice pick up that ss definitely that really takes the wind out of heroes sales I can believe that just up and actually",
+  "commentary": "is the series that we deserve to see back in katavitsi when they've been final like our entertaining is mean and like our clothes as well and we are finally getting it man they're not for it all right let's get into it game number five as we are loading on up and getting good to go as we have to the bottom left hang corner it will be our red protest representative cjentus it is hero the mandalegions and then down to the bottom right hang corner it is mr dollar sign dollar sign himself it's sos yes with a pylon is main here once again are we gonna see a quick next class out of him again we want more see the pylon at the ramp here for heroes so with how aggressive he's been playing he feroz game plan for this entire series was to try and be aggressive every single game those who mix it up or those who stick to it because as much as he's been successful twice he's felt twice yeah it's a really really hard call to make here and it says already gonna scout out in the correct direction with this map being a two players map he's gonna have to be fortunate as well with this cut but here only on one single gas so he might be the one going for a single quick next this year whereas sos went for the double gas and two gateways oh oh so the roles could be reversed rope yeah no blocker reno no blocky block no one yeah double gas on the other side here for us as you were mentioning it might be time for sos to go all out on the aggression himself yeah because he's already got the double gateways setup it's horizontal close position so he's gonna get there very quickly and like I said on this map I thought he was unlikely that's anybody will go for a quick next because it's so open around the natural but now this is just ideal for sos he could go into something like adepts follow the path any kind of attack if you don't go for a target and I recall sure I think he's gonna be fine anything really let's go pick it scary I mean he knows with the progression of any nexus that he would take oh cheeky cheeky approaching sticking around approaching probe hidden pilot tasteless yeah gotta do what you gotta do at this point I mean it's so it's it's an annoying so genuine annoying to actually catch up in your own nexus here",
   "segment": {
-    "type": "battle",
-    "game_frame_start": 7139,
-    "game_frame_end": 7682,
-    "game_time_start_sec": 318.7,
-    "game_time_end_sec": 342.9
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 3356,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 149.8
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

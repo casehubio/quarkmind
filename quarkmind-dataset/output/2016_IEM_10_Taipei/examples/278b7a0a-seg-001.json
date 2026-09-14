@@ -1,0 +1,106 @@
+{
+  "id": "278b7a0a-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1948,
+    "game_time_sec": 87.0,
+    "player": {
+      "race": "Protoss",
+      "minerals": 90,
+      "gas": 24,
+      "supply_used": 20,
+      "supply_cap": 23,
+      "worker_count": 19,
+      "army_composition": {},
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 719,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 724,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1039,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1076,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1275,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1312,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1511,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1548,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1747,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1784,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 19
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Of course. That's still not possible. You will, of course, be judged. Really excited to match SOS, of course, the Blizzcon Champion. Yeah. One of the guys that I felt like had perhaps the best year last year. And it's certainly in the discussion if you don't agree with that, versus Mintchol, who is historically one of the biggest earners and biggest names in all of Starcraft, kind of a godfather to a lot of players and just a special awesome guy. So what a treat to be able to cast this match and be here at this stage. Really awesome to see both of these players here. Yeah. Very interested to see how these guys play some legacy of the Void PVP in the top right of course. We have MC. And if you look at his Twitter, the streamer MC, he's been streaming. He actually, I think he's done two runs now where he's gone to top 16, Jim and Kriya. He's got like his next streamed crazy plans. I'm going to get number one. He's a hard worker. Cool, dude. And of course, in the bottom left, we have SOS. Oli is still with generic green wings. You said let's call champion. One of the most difficult opponents you could possibly face, he has very finely tuned builds. This is not necessarily a super free style player like, well, he does get into free style mode, but for the most part, he goes into each game. I think in a, I believe I can credit Rotterdam with his comment as saying that he feels like he has kind of a pre-plan build and plays around that. And I feel like that's pretty aptly true. And you can see he's actually fully walled in, gets the probe out. He's going to scout around. So this is of course geared towards preventing adips from doing any damage at all. Of course, they do very little damage to buildings and it's not likely that they're going to hammer through that. But again, just talking about both of these guys. I mean, I'm showing away from saying he's earned the most, but I think he might be the highest earner in Starcraft 2. But if not top 5, top 3, I think he's there. I was just looking at it recently. Big big deal. He did say he's kind of giving up pro gaming, going into streaming. But what's kind of cool about a lot of these guys is sometimes when you take the pressure off the shoulders and they're able to kind of play it their own way, sometimes it's usually the consistency that falls off, but you'll see them peak and do fairly well. I think Stefano's another player you can kind of look back to who had a moment of time there where he's like, I'm not playing as much. I barely practice with this term and then you go and crush it and do really well. And we've seen, of course, that's not the norm. It's not normal to be like, I'm going to take Starcraft less serious and then everyone does better. But some guys, MC being up there, they can do it.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 3560,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 158.9
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 337.8571428571429,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "278b7a0a0b2b"
+  }
+}

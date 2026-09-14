@@ -1,0 +1,109 @@
+{
+  "id": "278b7a0a-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6714,
+    "game_time_sec": 299.7,
+    "player": {
+      "race": "Protoss",
+      "minerals": 280,
+      "gas": 36,
+      "supply_used": 63,
+      "supply_cap": 70,
+      "worker_count": 46,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "Stalker": 1,
+        "MothershipCore": 1,
+        "Observer": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 6494,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6507,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6523,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6540,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6560,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6592,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6622,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6645,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 6652,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6690,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 35,
+        "MothershipCore": 1,
+        "Adept": 1,
+        "AdeptPhaseShift": 6,
+        "Stalker": 3,
+        "Immortal": 1,
+        "Observer": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": true,
+  "transition_description": "early_aggression -> mid_game",
+  "commentary": "MC is going to, well, it is. He proxy robot against a dark Templar rush. What's going to happen is MC is going to have a sizable force over here anchored by at least an immortal, maybe two. And he's going to have the ability to make an observer. So it could be a base trade situation. But I feel like it would be really incredible if, if SOS didn't have enough at home, at least slow down that attack and make it so that it is not enough. And this is just brutal right now. The DT is getting in, slicing and dice in every probe. There's not much you can do. He's going to make that attack. Like you said, this is the big moment. So he's going to pick off that pile on. Somebody pulls back and I feel like he's got enough enough to overcharge another pile on as well. He's just going to keep Warp Reinsenters. It's over. I understand MC's angle. He's like, well, I've got to play this real safe because if I lose this force, I'm dead. But unfortunately for him, it was always about just killing. You need to kill that pile on. And the one other pile on immediately. And that was his only chance. His only shot in hell. But unfortunately, that's not panning out. He's losing all his probes. I mean, MC's army manages to get inside of SOS's base. He's going to pull the probes here. And at this point, I guess he doesn't, he just had his own observer. I mean, if you got MC's observer, then you could just weapon DTs. But he's got two observers here now. Part of the toss. Pound off, but it's on a mortal, right? So this should be basically it. He's done. He's done it. He's unpowered the gauge.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 5860,
+    "game_frame_end": 7568,
+    "game_time_start_sec": 261.6,
+    "game_time_end_sec": 337.9
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 337.8571428571429,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "278b7a0a0b2b"
+  }
+}

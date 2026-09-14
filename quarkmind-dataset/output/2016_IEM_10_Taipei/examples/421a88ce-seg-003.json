@@ -1,0 +1,103 @@
+{
+  "id": "421a88ce-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4735,
+    "game_time_sec": 211.4,
+    "player": {
+      "race": "Protoss",
+      "minerals": 125,
+      "gas": 72,
+      "supply_used": 32,
+      "supply_cap": 55,
+      "worker_count": 20,
+      "army_composition": {
+        "MothershipCore": 1,
+        "Stalker": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 4382,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4397,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4432,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4442,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4482,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4498,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4525,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4535,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4542,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4673,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 24,
+        "MothershipCore": 1,
+        "Adept": 3,
+        "AdeptPhaseShift": 4
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> early_aggression",
+  "commentary": "elsewhere and actually here oh my god he's making more and more pylons sos is gonna have to use the overcharge really soon here because the adept is on us there as well yeah there are three upon pylons sos plays down while all of these were being added on just so that you can get that defense going if he needs to the mothership court is still not there you though and this was quite the investment for hero because his next this was blocked by comb i mean what else is he gonna do with the minerals it's not a unit to kill it so he couldn't expand sos not overcharging yet he's gonna do that now not hero able to get one of those off he's gonna go for the probes and he gets quite a few already oh my god five before he got down naturally denying a lot of mining time as well there we pull that out for a moment see a hero kind of moving forwards with that and he has one probe slowly working away at the panel on the back that was well worth it here 24 probes for a hero 21 for sos is he gonna let that finish no just gonna cancel the shade and that pylon on the natural man he's like taking forever to eventually remove this here yeah adept's gonna send sionic transfer and shade intowards the main base away from those stalkers and they will actually go in there but they walk straight into the oracle as well as another chicor that with the photo on our charge hero is in the driver seat here and the the great thing about this too is that like with these leads he's gonna be playing very aggressive he's getting you gateway across the map to be able to walk in very quickly he's on stagatek he's getting finixes and that oracle of sos i'm really",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 3848,
+    "game_frame_end": 5623,
+    "game_time_start_sec": 171.8,
+    "game_time_end_sec": 251.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 333.5714285714286,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "421a88ce218e"
+  }
+}

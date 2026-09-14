@@ -1,0 +1,109 @@
+{
+  "id": "45add59e-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4233,
+    "game_time_sec": 189.0,
+    "player": {
+      "race": "Terran",
+      "minerals": 55,
+      "gas": 57,
+      "supply_used": 35,
+      "supply_cap": 46,
+      "worker_count": 24,
+      "army_composition": {
+        "MULE": 1,
+        "Marine": 6
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3801,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3948,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 3984,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 3986,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3998,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4001,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4037,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4065,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 4184,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4227,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 31,
+        "Stalker": 2
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Widow minds still deal stargate units like a fast Oracle very well. So I'd rather just invest into something that I can also use aggressively, but really faster botics pay here. Yes. I'm loving everything I'm seeing so far. It's going to be a war prison to fall that up. Well, to fall up the the observers, excuse me, but we're seeing a build from map one here from beyond.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 4065,
+    "game_frame_end": 4401,
+    "game_time_start_sec": 181.5,
+    "game_time_end_sec": 196.5
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}

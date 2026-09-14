@@ -1,0 +1,113 @@
+{
+  "id": "b09eebe9-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4890,
+    "game_time_sec": 218.3,
+    "player": {
+      "race": "Terran",
+      "minerals": 5,
+      "gas": 94,
+      "supply_used": 43,
+      "supply_cap": 47,
+      "worker_count": 24,
+      "army_composition": {
+        "Marine": 6,
+        "MULE": 1,
+        "WidowMine": 1,
+        "Hellion": 2,
+        "Medivac": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 4183,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4209,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4399,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4423,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4480,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4551,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 4648,
+          "type": "UNIT_BORN",
+          "unit": "Hellion"
+        },
+        {
+          "frame": 4670,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 4694,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4751,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 35,
+        "Stalker": 3
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "I would really feel bad. And again, this is like Lilbo's guys game plan, let him go for it. As you say, he's playing the juggernaut. So again, there's a lot of top notch players to look at this kind of matchup and say, well, I got to choose to win to have any chance. Well, if I just do a straight macro game with beyond LLL nerd, I'm going to die. But I want to see something else from Lilbo because while he has always been fairly all in oriented, I feel like he's always had the ability to fall back on a pretty strong mid game. Again, pretty aggressive. It's always like two or three base aggression, but this like 1.5 base, I don't have like it. If you counter me at all, I'm just dead because I have everything at the front of your base. It's not working. The young is defensively opening up with small drop. And I think on ladder, a lot of terrain plays are probably seeing that as part of us are trying different things since the adept, where prison build isn't really, well, it's not",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 4381,
+    "game_frame_end": 5399,
+    "game_time_start_sec": 195.6,
+    "game_time_end_sec": 241.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 342.1875,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "b09eebe96e48"
+  }
+}

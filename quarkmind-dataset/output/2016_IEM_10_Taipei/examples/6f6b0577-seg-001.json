@@ -2,80 +2,77 @@
   "id": "6f6b0577-seg-001",
   "version": "1.0",
   "game_state": {
-    "game_frame": 3815,
-    "game_time_sec": 170.3,
+    "game_frame": 2067,
+    "game_time_sec": 92.3,
     "player": {
       "race": "Protoss",
-      "minerals": 45,
-      "gas": 222,
-      "supply_used": 32,
-      "supply_cap": 39,
-      "worker_count": 23,
-      "army_composition": {
-        "Stalker": 2
-      },
+      "minerals": 35,
+      "gas": 60,
+      "supply_used": 20,
+      "supply_cap": 23,
+      "worker_count": 19,
+      "army_composition": {},
       "tech": [],
       "buildings": {
         "Nexus": 1
       },
       "recent_events": [
         {
-          "frame": 2513,
+          "frame": 732,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 2749,
+          "frame": 1025,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 3229,
+          "frame": 1040,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 3312,
-          "type": "UNIT_BORN",
-          "unit": "MothershipCore"
-        },
-        {
-          "frame": 3373,
-          "type": "UNIT_BORN",
-          "unit": "Stalker"
-        },
-        {
-          "frame": 3395,
-          "type": "UNIT_BORN",
-          "unit": "Stalker"
-        },
-        {
-          "frame": 3463,
-          "type": "UNIT_BORN",
-          "unit": "Stalker"
-        },
-        {
-          "frame": 3580,
+          "frame": 1261,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 3662,
+          "frame": 1276,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 3799,
-          "type": "UNIT_DIED"
+          "frame": 1497,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1512,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1733,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1748,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1984,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         }
       ]
     },
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 24,
-        "MothershipCore": 1,
-        "Stalker": 1
+        "Probe": 19
       },
       "known_buildings": {
         "Nexus": 1
@@ -83,15 +80,15 @@
     }
   },
   "phase": "opening",
-  "phase_transition": true,
-  "transition_description": "opening -> early_aggression",
-  "commentary": "here for SOS and while we on for hero I guess just plus two right yeah yeah he's going quite far forwards with just a small chunk of his army okay SOS is not gonna make the semi-stake as hero by the way he's got a war prism already ready has his dark trine finishes so he works if you were seeing a bunch of dts and drops them this could be a deadly move here our time pause up to the top here for hero I can believe his four zero to take this base it's yeah it's not the best of positions so funny like hero scali the less inside he saw double pilot on his hour it's like all right I'm not even welcome on my side of the map I'm gonna take this aggressive force base and try to make something happen with some good disruptor shots economies for the moment are pretty equal by the looks of things SOS just teetering forward slightly because he has that healthy mining base up to the top and now some stock because I'm gonna kill off the pylon so you can actually expand over towards their modus shrimp shots come out one disruptor going down another one will be back priced off yeah there is a modus you've got that base down there so with the double overcharge on these pylons like this should be an easy defense triple focus on down he's",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "he's just gonna win the game instantly hero though going for additional gateways right now and we're gonna be seeing a SOS take an earlier fault base here in a second and the really cool thing about this is that he's got a pile on the left hand side where a hero could go for a fault base and if this might for zero to try and go for the middle the six o'clock fault base but you think his SOS has more supply so it's impossible almost to actually try and get him as okay he's nothing for these players man I agree it's pretty tough he's just just keep giving me a heart attack and it's always blinking out so should be okay when behind Kaira is do the dark shrine dance well there's no dance for the dark shrine you can invent one it's just invisible you don't see it and it's like oh okay that's your dancing staying there idle just like at the concert let's uh say the day no man I got crazy I got crazy jumping up and down but anyway he's sharpters still trying to get their shots off do you know what they can there there's really not that many cannons actually not that I look at SOS space so did he drop oh every single time SOS it makes me believe somehow he's gonna blink a little bit too late yeah it's only for a second you know he doesn't have to wait that long actually to blink no he wants to attempt the devil exactly he's like wait another trip to come in down trying to go into the mortals oh good shot hot and shields was not activated in time it's very disappointing that hero doesn't have a war prison because if you had a one right now he could send in a bunch of dts across the map drop them in the main of his opponents and do a lot of damage he's warping in dts somewhere in the natural of SOS okay he's just gonna send him like this where are they oh okay there's some yeah there's some adepts in a what I want for him as well if he sends them in that base he shouldn't send them into the third base because there he's a cannon there they can't get around the rocks I'm sorry it's made us put it them he's pulling but he's it oh he blinked forward oh this is ruptured okay they weren't in the right range he blinked forwards onto that and disruptors were there potentially could have got some shots off but was this is Eagle I man he misses nothing the the observer just moved slightly into the fray plus three weapons on the way here for SOS and while we on for hero I guess just plus two right yeah yeah he's going quite far forwards with just a small chunk of his army okay SOS is not gonna make the semi-stake as hero by the way he's got a war prism already ready has his dark trine finishes so he works if you were seeing a bunch of dts and drops them this could be a deadly move here our time pause up to the top here for hero I can believe his four zero to take this base it's yeah it's not the best of positions so funny like hero scali the less inside he saw double pilot on his hour it's like all right I'm not even welcome on my side of the map I'm gonna take this aggressive force base",
   "segment": {
     "type": "macro_economy",
-    "game_frame_start": 3229,
-    "game_frame_end": 4402,
-    "game_time_start_sec": 144.2,
-    "game_time_end_sec": 196.5
+    "game_frame_start": 336,
+    "game_frame_end": 3799,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 169.6
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

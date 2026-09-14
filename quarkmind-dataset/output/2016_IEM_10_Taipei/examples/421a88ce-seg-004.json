@@ -1,0 +1,110 @@
+{
+  "id": "421a88ce-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6261,
+    "game_time_sec": 279.5,
+    "player": {
+      "race": "Protoss",
+      "minerals": 345,
+      "gas": 440,
+      "supply_used": 30,
+      "supply_cap": 55,
+      "worker_count": 23,
+      "army_composition": {
+        "MothershipCore": 1,
+        "Stalker": 2,
+        "Oracle": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5319,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 5459,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 5574,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5810,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5851,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5935,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5944,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5945,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 6138,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6248,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 24,
+        "MothershipCore": 1,
+        "Adept": 3,
+        "AdeptPhaseShift": 7,
+        "Stalker": 1,
+        "Phoenix": 2
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "worried for it if he flies into a pinix and he's gonna do just that as well oh they need to stalk especially help it out stalkers of sos of euro sorry i actually trapped out of his base here but i think it's it's the end of the world because he's getting finixes behind and being ahead in finix versus phoenix he's gonna be great here for him two stalkers versus the oracle there and in terms of trade and then picking up another stalker picking up another one and that will be guaranteed kills off here once again for hero who putting on this aggression so early on against sos it's like the roles of reverse from how their series of work in the previous situation of the game and sos behind this didn't use his stagate for anything he's going for double additional gateway twilight council he has no pylon at the ramp so now hero is gonna proxy his own pylons there is already one centry though",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 5851,
+    "game_frame_end": 6671,
+    "game_time_start_sec": 261.2,
+    "game_time_end_sec": 297.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 333.5714285714286,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "421a88ce218e"
+  }
+}

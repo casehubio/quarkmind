@@ -1,0 +1,116 @@
+{
+  "id": "6f6b0577-seg-008",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 9369,
+    "game_time_sec": 418.3,
+    "player": {
+      "race": "Protoss",
+      "minerals": 83,
+      "gas": 145,
+      "supply_used": 83,
+      "supply_cap": 86,
+      "worker_count": 40,
+      "army_composition": {
+        "Stalker": 7,
+        "MothershipCore": 1,
+        "Observer": 1,
+        "Immortal": 2,
+        "Phoenix": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 8910,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8936,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9005,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9073,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9112,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9121,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 9136,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9174,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9192,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9265,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 36,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Immortal": 2,
+        "WarpPrism": 1,
+        "Observer": 1,
+        "Phoenix": 2
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "he's got only two against seven this is gonna be so hard for hero to come back against double observer here being added on for SOS I think he might be starting to realize that hero might be getting desperate in which case you go for dTs and try to steal the game away from your opponents SOS does not want to let that happen still stalkers up towards top hero can't afford to lose any of those really as he needs every unit he can get I'm gonna poke forwards with these stalkers with the one disruptor back hero is the one we double disruptor production here right now so he's gonna",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 9005,
+    "game_frame_end": 9734,
+    "game_time_start_sec": 402.0,
+    "game_time_end_sec": 434.6
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

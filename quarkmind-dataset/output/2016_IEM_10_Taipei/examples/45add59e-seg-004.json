@@ -1,0 +1,112 @@
+{
+  "id": "45add59e-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 5659,
+    "game_time_sec": 252.6,
+    "player": {
+      "race": "Terran",
+      "minerals": 230,
+      "gas": 176,
+      "supply_used": 56,
+      "supply_cap": 70,
+      "worker_count": 32,
+      "army_composition": {
+        "MULE": 1,
+        "Marine": 12,
+        "WidowMine": 2,
+        "Medivac": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5325,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5325,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 5328,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 5344,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5364,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5425,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5491,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 5615,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5620,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 5635,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 41,
+        "Stalker": 4,
+        "Observer": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "I was going to say I'm like destructor jobs are what I've seen be really effective. Collosis are okay. And then you talking about these hard of the swarm styles. You're like, you got me doubting myself. Well, I was watching some Petitro fans in Luba. They do make losses more Petitro than little bo.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 5491,
+    "game_frame_end": 5827,
+    "game_time_start_sec": 245.1,
+    "game_time_end_sec": 260.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}

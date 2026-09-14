@@ -1,0 +1,110 @@
+{
+  "id": "6f6b0577-seg-010",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 11728,
+    "game_time_sec": 523.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 323,
+      "gas": 571,
+      "supply_used": 101,
+      "supply_cap": 102,
+      "worker_count": 48,
+      "army_composition": {
+        "Stalker": 7,
+        "MothershipCore": 1,
+        "Observer": 1,
+        "Immortal": 4,
+        "Phoenix": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 11130,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11156,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11169,
+          "type": "UNIT_BORN",
+          "unit": "Phoenix"
+        },
+        {
+          "frame": 11247,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11249,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11403,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11528,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11614,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 11645,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11690,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 48,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Immortal": 4,
+        "WarpPrism": 1,
+        "Observer": 2,
+        "Phoenix": 4
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "you can just use a very few stalkers where's that dark template uh he's gonna ask it whoa she's flings across but he actually blinks straight into the focus here off SOS and he loses them all if you're what sent a DT actually in that base there's no detection no cannon as well now he's gonna come down to this SOS trying to force a big engagement here to try and get some good detonations oh and the blink is used too late so much damage already being done mod from the boss gets on the forwards here this is gonna be really really bad for him he almost brought a good position there to actually just focus down the Nexus but this is a massive army still here we're trying to stay alive in this but he's running out of disruptor shots and he's running out of steam here trying to fast SOS is in the driving seat I mean he's got double his opponents harm supply he's got less workers like if he gives hero any time he could be in trouble but I don't think he has any plan to do that like in terms of army supply oh yeah there's no holding this I think the core lifestyle as well there is actually a little bit of those focus to the purification Nova it's gonna take some of the absolute best disruptor shots here for hero for him to come back in this game can he do it another one and sending forwards but doesn't really do anything he's just scared of these disruptor shots but realistically he's got so much the army",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 10868,
+    "game_frame_end": 12588,
+    "game_time_start_sec": 485.2,
+    "game_time_end_sec": 562.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 1333.0803571428573,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "6f6b057793b1"
+  }
+}

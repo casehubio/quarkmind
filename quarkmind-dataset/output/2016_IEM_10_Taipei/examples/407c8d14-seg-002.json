@@ -1,0 +1,105 @@
+{
+  "id": "407c8d14-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 2040,
+    "game_time_sec": 91.1,
+    "player": {
+      "race": "Zerg",
+      "minerals": 75,
+      "gas": 8,
+      "supply_used": 18,
+      "supply_cap": 22,
+      "worker_count": 16,
+      "army_composition": {
+        "Larva": 2,
+        "Overlord": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 1497,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1497,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1609,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 1609,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1721,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 1733,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1799,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 1961,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 1980,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 1980,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 19
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "You would know we have to test these things in the top right of course. I currently leading one oh CJ enters his hero Best of five as we've had all night so I'm excited game one ended with a Overwhelming Krodos victory like just crushing down But the execution of the two players was really something beautiful. I love snooze strategy I loved him punishing the pro-dots for his opening I like the idea behind the timing attack and then it put here on a position where it's like all right hero Show us your micro and I'll tell you what hero is one of the best players in planet earth and a big part of the reason for that is because of his micro Like he of course is strong and all categories of starcraft, but I Love watching him. He was one of the guys leading that bling stalker revolution in PVC towards the end of heart of the swarm as well Right. Oh, yeah, yeah, absolutely. I mean MC. I think was like the grandfather of that so many of his games",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 1497,
+    "game_frame_end": 2584,
+    "game_time_start_sec": 66.8,
+    "game_time_end_sec": 115.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Snute",
+    "player1_race": "Zerg",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "ZvP",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 870.1785714285714,
+    "vod_url": "https://www.youtube.com/watch?v=5P554a_8mT4",
+    "subtitle_source": "whisper",
+    "replay_hash": "407c8d1441b9"
+  }
+}

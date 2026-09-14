@@ -1,0 +1,118 @@
+{
+  "id": "3813bc11-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 8017,
+    "game_time_sec": 357.9,
+    "player": {
+      "race": "Zerg",
+      "minerals": 280,
+      "gas": 122,
+      "supply_used": 67,
+      "supply_cap": 74,
+      "worker_count": 49,
+      "army_composition": {
+        "Larva": 11,
+        "Overlord": 7,
+        "Queen": 3,
+        "Zergling": 17
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 7861,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 7861,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7874,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 7878,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 7882,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 7929,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 7931,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 7966,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 7970,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 7974,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 40,
+        "MULE": 7,
+        "Reaper": 1,
+        "Marine": 19,
+        "KD8Charge": 1,
+        "WidowMine": 1,
+        "Medivac": 1,
+        "SiegeTank": 1,
+        "Liberator": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": true,
+  "transition_description": "early_aggression -> mid_game",
+  "commentary": "We're going to head on across the map and not be spotted I mean it's kind of anticipated here when we say from Sorki as I'll have a few links on out the queens are about to pop then he's getting himself speed as well. No huge rush over to that third base but if you tried to go up the ramp you would have instantly been attacked there for a moment. KDH tries to go off on this drone. It doesn't really do too much. Save the drone. It's okay. Don't hurt the drone kids. Good job. Being in his annoying as possible. Great pullback micro from Sorki pulls back the low hit point zirgling and doesn't want to lose any of those. That's just great micro. It's a long distance map so the reaper takes a little bit longer to get here which is why Sorki knows he builds just four zirglings. He can basically micro them around to buy time for those queens and he's never going to lose them. Yeah. And of course this is Sorki's favourite opening recently just goes straight into two more queens after the original two and that's just going to allow him to be 100% safe. And from here sometimes he texts straight into mutilisks off two base. You'll notice he's still got one drone mining gas which will allow him to have that option. He might just go straight into ravages and so on. But I think definitely it's going to be some form of spire into a roach based play. That's something Sorki loves to do. You know, either mass roach ravager but sometimes he goes ravages zirgling off the mutilisks as well. So he's got a real weird range of play there. Beyond on the other side of things just going to be going for that liberator opening. Yeah, maybe you start on towards the main base at the back of the mineral line there after these helians have done some harass. And the thing is is that he placed the star point in such a way that if a zirgling poked up the ramp it wouldn't see that star point because it's so far away. And then if you try to go over there overload there was a marine there to try and get rid of that point. So Bj\u00f6rn is really kind of covering his bases himself. Oh broach were on the way. Do you see just a second gas coming out of Sorki recently I did see him opt for a fast third gas where off this exact same opening he goes for a big ravager speedling timing looks like he's not going to go for that this time around. And just defending their nice with those cleans overlord goes in did actually see the star port there. I'm not 100% sure just saw the glimpse of those doesn't he doesn't know that there's no add on that because the barracks has the add on so you know is okay. There's a star board here you know liberators are an option Viking to clear up scouts he's going to poke into double check that look at that just being very sure there's no liberator range coming out that overlord sees it and then turns around very good scouting from Sorki not going to lose the overlord either. Yeah definitely really cool stuff should be fine and this liberator coming in to the back of this mineral line is to be expected pulls away starts the sport crawler. Queen's going to have a bit of a hard time of actually reaching that without going into firing range I'm not even sure it can get it might be able to Sorki is not even trying this is a big loss actually I mean he's got the third base up so he's got other bases to mind from but if you don't have that's already a can be a real problem losing some zerglings at the front to those helians yeah look at that that Queen actually did take some shots to that and trying to go on the stream and see towards the bottom so very finite distances really there that you've got to play with but at least he's got the sport crawl and now finished and what we can say is much better from Sorki this game is he's",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 6119,
+    "game_frame_end": 9916,
+    "game_time_start_sec": 273.2,
+    "game_time_end_sec": 442.7
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Lerilak Crest",
+    "game_duration_sec": 603.6160714285714,
+    "vod_url": "https://www.youtube.com/watch?v=emCaI55s8Tc",
+    "subtitle_source": "whisper",
+    "replay_hash": "3813bc1121bf"
+  }
+}

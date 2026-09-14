@@ -1,0 +1,118 @@
+{
+  "id": "a0f9b25f-seg-015",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 21828,
+    "game_time_sec": 974.5,
+    "player": {
+      "race": "Protoss",
+      "minerals": 1193,
+      "gas": 1820,
+      "supply_used": 180,
+      "supply_cap": 258,
+      "worker_count": 66,
+      "army_composition": {
+        "Stalker": 1,
+        "Observer": 3,
+        "MothershipCore": 1,
+        "WarpPrism": 0,
+        "Immortal": 3,
+        "AdeptPhaseShift": 0,
+        "Phoenix": 0,
+        "Tempest": 10,
+        "Oracle": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 21537,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 21537,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21562,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21573,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 21579,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21587,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21604,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 21606,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 21679,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 21799,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 91,
+        "MULE": 11,
+        "Marine": 120,
+        "WidowMine": 18,
+        "Medivac": 9,
+        "Liberator": 3,
+        "SiegeTank": 1,
+        "Marauder": 31,
+        "Ghost": 6
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "late_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "car? I'm not even sure. I'm really surprised that Bjorn actually didn't detect the base here because he was pretty exposed but he's still laying that here for now. Dark Templar is in the mix of all of this. He actually spots it before it even gets a siphon and that will be one dark templar already going down but there's still two in this warp rhythm. Little bit surprised that charge hasn't started yet but maybe SOS wants to stay on adept stalkers going in for kill on this some of these units they instantly die as soon as they get warped in. That's a great move here. Why Bjorn's trying to start equalizing things? He's like he realizes he has to get out of there that's a huge army. High templars were just a little bit too far here to feed back on time. DT is going to do some damage. He can even pick up behind his oh he gets a missile turret with the two DTs. That's each time a strand of help out through upstound the scan but instantly gets picked up at SOS. Wow what a start of this game. Behind is he's going to be adding on even more gateways. His production is just going to be so insane. He's on 71 probes. Is that not a little excessive? I mean I think it's a great economy but yeah I think he's the perfect number but he definitely needs to make sure he has the production facilities here to to spend all of his minerals.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 21136,
+    "game_frame_end": 22520,
+    "game_time_start_sec": 943.6,
+    "game_time_end_sec": 1005.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

@@ -2,108 +2,93 @@
   "id": "1a9aeda5-seg-001",
   "version": "1.0",
   "game_state": {
-    "game_frame": 13862,
-    "game_time_sec": 618.8,
+    "game_frame": 1895,
+    "game_time_sec": 84.6,
     "player": {
       "race": "Protoss",
-      "minerals": 851,
-      "gas": 127,
-      "supply_used": 124,
-      "supply_cap": 141,
-      "worker_count": 61,
-      "army_composition": {
-        "Adept": 0,
-        "AdeptPhaseShift": 0,
-        "MothershipCore": 1,
-        "Stalker": 3,
-        "Phoenix": 0,
-        "Oracle": 0,
-        "Observer": 1,
-        "Immortal": 3,
-        "WarpPrism": 1,
-        "Disruptor": 1
-      },
+      "minerals": 395,
+      "gas": 12,
+      "supply_used": 19,
+      "supply_cap": 23,
+      "worker_count": 18,
+      "army_composition": {},
       "tech": [],
       "buildings": {
         "Nexus": 1
       },
       "recent_events": [
         {
-          "frame": 13137,
+          "frame": 725,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 13141,
+          "frame": 850,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 13172,
+          "frame": 1086,
           "type": "UNIT_BORN",
-          "unit": "Observer"
+          "unit": "Probe"
         },
         {
-          "frame": 13522,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 13591,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 13610,
+          "frame": 1127,
           "type": "UNIT_BORN",
-          "unit": "Disruptor"
+          "unit": "Probe"
         },
         {
-          "frame": 13620,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 13646,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 13673,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 13702,
+          "frame": 1322,
           "type": "UNIT_BORN",
-          "unit": "Immortal"
+          "unit": "Probe"
+        },
+        {
+          "frame": 1363,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1558,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1599,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1794,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1835,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         }
       ]
     },
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 72,
-        "MothershipCore": 2,
-        "Stalker": 6,
-        "Observer": 3,
-        "WarpPrism": 1,
-        "Disruptor": 4,
-        "Phoenix": 1,
-        "DisruptorPhased": 9,
-        "Immortal": 3,
-        "AdeptPhaseShift": 4
+        "Probe": 19
       },
       "known_buildings": {
         "Nexus": 1
       }
     }
   },
-  "phase": "mid_game",
+  "phase": "opening",
   "phase_transition": false,
   "transition_description": null,
-  "commentary": "it's out there eventually but oh there we go and more more stalkers just gonna get warped ten second robot actually from sos so he might be slowing down this game a little bit more hero it looks like he might want to go into blink himself because he's getting a twilight council i don't think he wants to go for charge here because when you're facing disruptor yourself it's gonna be really hard to win if you go for a ground army still more dark ten plus just being dropped off all the time here by sos there's no blink there's no blink for hero i can't shut this down properly ah it's difficult especially with how quickly warpersons are able to actually pick up units from",
+  "commentary": "for this map to people go for golds early is that difficult is that gonna be a factor at all usually no you don't really go for gold very quickly especially like even going for nexus he's a big part of the meta but Koreans do it a lot less going for a very quick nexus because it seems like they play sore aggressive sieve and so well over there that they'd be able to kill somebody who tried to go for that so we'll see all right up to the top left then one game up currently in this best of five representing cj enters it is hero looking good in that first game really bringing it and looking good period not entirely expected there from sos and then down to the bottom right we have our blue pro toss representing generic green wins it is s os with a pile on it is natural ramp yeah he's gonna be playing a little bit of a trickier call here himself with probably some some aggression like when you get a gateway like this usually you're gonna want to play a aggressive what is it gonna be the way exactly is he gonna go for the full wall you think that like yeah i have four there is like two main reasons why we'll put a gateway here number one he wants to reach his opponent space earlier than if he had a gateway in his main number two he might want to wall of entirely and then going to either something like a nexus or dt's and for his opponents it will be almost impossible to scout because they you will need a flying unit and it's only the money ship call that you can get that fast that can see whether or not there is an exit so it can be very tricky to play against this kind of style and he's actually gonna be a nexus here for sos but a probe trying to get up here if this is completely fully walled off he won't really completely know that's the case i guess can you read into the cybernet is call timing though not really i think no okay it did no no no not really it was started like very shortly after the gateway would have been about the same if the simulator had been made instead of of nexus and yeah he wanted to go for some kind of one base so now hero is gonna be in this situation where he doesn't know if there is an access which is everything if you're facing if you think you're facing on one base you need to get stalker south you need to get a robo maybe for observer some kind of detection in case it's dt's if you're facing a nexus you need to expand yourself he could maybe even take the gold if he somehow realize that there is an access but hero is not gonna be able to know",
   "segment": {
-    "type": "battle",
-    "game_frame_start": 13522,
-    "game_frame_end": 14203,
-    "game_time_start_sec": 603.7,
-    "game_time_end_sec": 634.1
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 3455,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 154.2
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

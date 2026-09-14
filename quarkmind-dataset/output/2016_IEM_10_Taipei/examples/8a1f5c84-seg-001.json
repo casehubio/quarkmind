@@ -1,0 +1,105 @@
+{
+  "id": "8a1f5c84-seg-001",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 1015,
+    "game_time_sec": 45.3,
+    "player": {
+      "race": "Zerg",
+      "minerals": 190,
+      "gas": 0,
+      "supply_used": 17,
+      "supply_cap": 22,
+      "worker_count": 16,
+      "army_composition": {
+        "Larva": 2,
+        "Overlord": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 668,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 674,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 674,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 717,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 754,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 946,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 946,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 947,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 947,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 994,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 15
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Smotting in the bottom left representing team liquid we have snoot who you're looking he says G. L. H. F I don't know why he said question mark. Yeah, interesting. He's still on Casper rules when he's don't see anything I can't talk right. I can't speak to me the last time I spoke to someone it was to save him from being disqualified Maybe that's right. You know, I met by the way of course. It's CJ Antis hero in the Northeast the smiling assassin Does he ever say G. L. H. F. is opponent doesn't say it? That's a question. Is that like is it like programmed and maybe programmed into your brain? You're if you're in Casper well, I would so cool about these guys is they are a lot of those Casper guys tops your friends",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 668,
+    "game_frame_end": 1363,
+    "game_time_start_sec": 29.8,
+    "game_time_end_sec": 60.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Snute",
+    "player1_race": "Zerg",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "ZvP",
+    "map": "Dusk Towers",
+    "game_duration_sec": 627.8125,
+    "vod_url": "https://www.youtube.com/watch?v=5P554a_8mT4",
+    "subtitle_source": "whisper",
+    "replay_hash": "8a1f5c840fab"
+  }
+}

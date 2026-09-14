@@ -2,73 +2,68 @@
   "id": "fd62e9cd-seg-001",
   "version": "1.0",
   "game_state": {
-    "game_frame": 7232,
-    "game_time_sec": 322.9,
+    "game_frame": 2174,
+    "game_time_sec": 97.1,
     "player": {
       "race": "Protoss",
-      "minerals": 145,
-      "gas": 96,
-      "supply_used": 64,
-      "supply_cap": 70,
-      "worker_count": 36,
-      "army_composition": {
-        "Stalker": 6,
-        "MothershipCore": 1,
-        "Observer": 2,
-        "Phoenix": 1
-      },
+      "minerals": 70,
+      "gas": 72,
+      "supply_used": 21,
+      "supply_cap": 23,
+      "worker_count": 20,
+      "army_composition": {},
       "tech": [],
       "buildings": {
         "Nexus": 1
       },
       "recent_events": [
         {
-          "frame": 6686,
-          "type": "UNIT_BORN",
-          "unit": "Phoenix"
-        },
-        {
-          "frame": 6698,
+          "frame": 1048,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 6786,
+          "frame": 1069,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 6789,
+          "frame": 1284,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 6917,
-          "type": "UNIT_BORN",
-          "unit": "Phoenix"
-        },
-        {
-          "frame": 6994,
-          "type": "UNIT_BORN",
-          "unit": "Observer"
-        },
-        {
-          "frame": 7031,
+          "frame": 1305,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 7034,
+          "frame": 1520,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 7048,
+          "frame": 1541,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 7080,
+          "frame": 1756,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1782,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 1992,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 2018,
           "type": "UNIT_BORN",
           "unit": "Probe"
         }
@@ -77,28 +72,23 @@
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 36,
-        "MothershipCore": 1,
-        "Stalker": 4,
-        "Sentry": 2,
-        "Observer": 1,
-        "Phoenix": 1
+        "Probe": 20
       },
       "known_buildings": {
         "Nexus": 1
       }
     }
   },
-  "phase": "early_aggression",
-  "phase_transition": true,
-  "transition_description": "early_aggression -> mid_game",
-  "commentary": "and perhaps that's why we're seeing several centuries. Of course, it's not necessarily for the Force Shield. It's to be on top of, are you going disruptors, are the two of us gonna have an arm's race of Immortals? It's a, the disruptors are really such a volatile thing to throw into a matchup like PvP, where the unit count is pretty much always what's determined to win, whereas now it's more like, can you get into a good position versus the disruptors? And you know, there's also like that, that kind of like kind of, I don't know, gamble you can make with bling stalkers and disruptors, like if you wanna blink in and try to snipe a disruptor while you're throwing yours, et cetera, et cetera. There's such a, I love the little up dynamics added by that, but without a robo-based rather side, it's just Immortals and stalkers versus Immortals and stalkers. And if you just go on for it by, if we're gonna get, we was about to finish it behind this award-prison coming out. He's already pushing across the map, the Ford forces of S-O-S did spot the South, so he's coming back to, kind of defend, but almost certain that third base becomes a bit of a liability, especially if he wants to defend out on the map, but if MC pushes too early and loses too many of his forces, he will just die because this third base is the, it's the gambit, so to speak, it's, it's winning or losing choice. It's what he's made this, made the plays in this game. Oh, it's already here. It's early on, and now the army is, here's gonna overcharge one pylon, as he starts the warp ends by that nexus, getting a little bit of damage down here. He's gonna force field in some of the centers in the Immortals, trying to make a play here. He does have one of the Immortals locked in as it triggers that barrier ability of it. And now, without a mortal going down, S-O-S has the Immortal lead. Can he defend this base, though, Jeff? Warpers in here is gonna allow him to warp in. Actually, if he kills that pylon, there'll be no warp in on this location, and I think he's actually waiting for the trial warp in, which is pretty cool. S-O-S already on top of that decision by warping in over it as natural, which is the further away choice. But the safer one, MC micro me back, beautifully, the two morals, as you said, they're dealing out so much damage. One of the moral is about to die, and it does good concave for MCMC, is down in supply overall, but I think part of that is actually harvesters, linking back, but there's just, and now the flotch and overcharge, he does have to pick off that pylon, and he does that. That being said, though. That being said, though, really important as well. So, he does make sure that despite all of this, or both on two bases, and he continue to warp and try to plight more of the pressure in this instance of the warping. S-O-S had a comparable army, oh my god, two of morals joined this by the way, becoming much more powerful. And she's gonna be just happy with this little wind and pull back, but S-O-S says, you know what, with you picking off the Nexus, why am I fighting here? He pulls back, he might have had a slightly stronger army before those two of morals joined, but with the two of morals, he certainly has the stronger army. Yep, so he just pulls back knowing, he doesn't need to fight in that location. Oh, Link's back. I'm going forward trying to get the Immortals. Does not manage to... Oh my god, but it's such a crazy choice because there's Blink Sockers right there as well. So that Blink is gonna cost him. These Sockers are chasing him down and there's just not enough space for MC Sockers to get too far away, because if they go in on those blue Sockers of S-O-S, they're gonna face three Immortals, which will dice him up in no time at all. So MC takes a crazy choice. He's waiting for this violence to finish. He's gonna have a lot of photon overcharge. A huge century warp in back at home again for S-O-S. I love your guys' comments. I mean, I don't pretend to know everything,",
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "So SOS is going to open with double stalker, like that mothership core coming out faster for MC. They're both going double stalker. So is this meant to counter the adiped play or it's met opening and it's in its no balls. So like let's say the guy does go two adips and expands behind that and then does some kind of text, stargate or robo. Well, if you show up with six stalkers and a single pile on is not going to hold it off and you can't actually kill those adips in enough time that all of a sudden their opening is is is thwarted. They don't have any force to defend against you and you're not punishing them. So he canceled. He canceled. Oh no, if you finish. He's not building anymore. Okay. Okay. I didn't see the stalkers come out. I was I was almost panicking for a second. It happens to the best of us. But MC is actually cronobosing his warp gate upgrade. It is. So it's doing the same. We can go into the base. They're very close for both players. They both are so pretty much exactly the same build so far. Yeah, very so why go down to this is come down to micro, right? And it looks like the shields are being traded evenly on both sockers. First, real damage being taken. You cast this. I mean, well, no, I mean, it's just. Oh, watching two beautiful players a little bit of a slight miss there. First blood for us. So next next is down at the exact same time as well, which is actually kind of a scary nexus because both these players and two now that is interesting. Centuries. But why'd ramp like that? Like, obviously, you want at least one century fairly early on, not for defensive capabilities, but because you want to throw a hallucination, you'll notice both these builds don't have a robo. They don't have a target. There's the robo at the exact same time. But that's quite a bit of a late robo. Neither of these players know what their opponents doing, but because their stalkers dueled in the middle of the map, because the probe did scout in there and they kind of saw not an immediate attack there. They're basically going off intuition and instinct. This is probably one of the more dominant. Dominant. Dominant. Dominant. As far as common builds on the Korean server in particular amongst the top players, the difference here is we do see that MC is going for a fast Twilight council, but also the two centuries, which I think is really interesting. Yeah. They can't force Bill to ramp. You said it already with being able to throw its hallucination to scout later on, but yeah, force field is definitely not that must be used. Yeah, it's a little bit curious. And actually, if we can get a look at MC's base real quick, I would say that Pilot the natural if we could. No, so it's not even on the ramp. So I just flat out don't understand. And so I was gonna push in here the centuries in the back, tagging a little bit, but I guess that lag of high ground vision, he takes that first shot and he's just gonna step off. Yep, as Blink starts up, Fremsy, and where will he see? And Immortal coming out from SOS. He cancel goes for the observer, a little bit concerned that he's gonna get a retaliatory, and he has three centuries. So yeah, I'm excited to see where this goes.",
   "segment": {
-    "type": "battle",
-    "game_frame_start": 5123,
-    "game_frame_end": 9342,
-    "game_time_start_sec": 228.7,
-    "game_time_end_sec": 417.1
+    "type": "macro_economy",
+    "game_frame_start": 336,
+    "game_frame_end": 4012,
+    "game_time_start_sec": 15.0,
+    "game_time_end_sec": 179.1
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

@@ -1,0 +1,112 @@
+{
+  "id": "45add59e-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 4946,
+    "game_time_sec": 220.8,
+    "player": {
+      "race": "Terran",
+      "minerals": 100,
+      "gas": 84,
+      "supply_used": 44,
+      "supply_cap": 46,
+      "worker_count": 27,
+      "army_composition": {
+        "MULE": 2,
+        "Marine": 10,
+        "WidowMine": 1
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 4528,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4656,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4745,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4799,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4803,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 4878,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4881,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 4892,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 4898,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 4903,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 37,
+        "Stalker": 3,
+        "Observer": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "Well, to fall up the the observers, excuse me, but we're seeing a build from map one here from beyond. It's going to be kind of a marine widow mine drop with some probably hellians. I believe that's a reactor being out of there. Where's that a tech lab? Tech lab. It is a tech lab. So maybe a slight variation actually is going to be the two. I like the Viking though because he's following up with this. It actually helped him a little bit keep the Phoenix away from his tank and he dropped out of the scan. And he sees everything. You see the work. He doesn't see the workers in finish, but he sees the robo going and he sees the robo bay. And I think seeing the robo bay early on as a tarant tells you pretty much everything that you expect to know. I would be really shocked if libo did some sort of crazy colossus all in. I mean, destructor jock really shocked. Yeah, that's who's going to do. But really? Yeah. So prepare to be shocked. You know what, Jeff? Have you? Did you like it's never mind? I'm completely okay.",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 4401,
+    "game_frame_end": 5491,
+    "game_time_start_sec": 196.5,
+    "game_time_end_sec": 245.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}

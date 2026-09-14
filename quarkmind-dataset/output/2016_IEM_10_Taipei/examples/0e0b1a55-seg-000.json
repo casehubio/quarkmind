@@ -2,80 +2,77 @@
   "id": "0e0b1a55-seg-000",
   "version": "1.0",
   "game_state": {
-    "game_frame": 3750,
-    "game_time_sec": 167.4,
+    "game_frame": 168,
+    "game_time_sec": 7.5,
     "player": {
       "race": "Protoss",
-      "minerals": 125,
-      "gas": 70,
-      "supply_used": 31,
-      "supply_cap": 39,
-      "worker_count": 23,
-      "army_composition": {
-        "Stalker": 2
-      },
+      "minerals": 35,
+      "gas": 0,
+      "supply_used": 13,
+      "supply_cap": 15,
+      "worker_count": 12,
+      "army_composition": {},
       "tech": [],
       "buildings": {
         "Nexus": 1
       },
       "recent_events": [
         {
-          "frame": 3092,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "SCV"
+          "unit": "Probe"
         },
         {
-          "frame": 3230,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Marine"
+          "unit": "Probe"
         },
         {
-          "frame": 3232,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Marine"
+          "unit": "Probe"
         },
         {
-          "frame": 3353,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Stalker"
+          "unit": "Probe"
         },
         {
-          "frame": 3355,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Stalker"
+          "unit": "Probe"
         },
         {
-          "frame": 3366,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "SCV"
+          "unit": "Probe"
         },
         {
-          "frame": 3508,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
         },
         {
-          "frame": 3629,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Marine"
+          "unit": "Probe"
         },
         {
-          "frame": 3636,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "Marine"
+          "unit": "Probe"
         },
         {
-          "frame": 3637,
+          "frame": 0,
           "type": "UNIT_BORN",
-          "unit": "SCV"
+          "unit": "Probe"
         }
       ]
     },
     "opponent": {
       "race": "Terran",
       "known_units": {
-        "SCV": 23,
-        "MULE": 1,
-        "Marine": 4
+        "SCV": 12
       },
       "known_buildings": {
         "CommandCenter": 1
@@ -83,15 +80,15 @@
     }
   },
   "phase": "opening",
-  "phase_transition": true,
-  "transition_description": "opening -> mid_game",
-  "commentary": "championship like a sea of the void tea takes another trophy let's head over to the analysis desk to hear what the boys have to say about mr dole sign or dole sign thank you very much calora s os picks up another trophy seems unstoppable when he plays in these tournaments he just turns up and says all right this one i think i'm gonna win this and he does pick and he played in such a way where it was really both ends of the the scale really it was complete greeting one set of games and then the next funeral he just went all right well this guy's gonna finish this guy's gonna die very fast and he went all in all in all in until he broke him technically maybe not the most uh you know superior player in terms of every little detail of his micro and macro but when it comes down to the strategy the decision making this guy is an absolute god s os he just came out like you said alternating that extreme greed that extreme aggression he chose the right builds and he put all the pressure on beyond there he said i am just gonna keep applying this pressure i'm gonna force you to make mistakes and if you don't really step up to the plate like i'm just gonna use all of that experience from all those championships i've won and i'm gonna i'm gonna push you over really well played by s os i think uh one thing to say here claus and taut is he's got a bit of practice we've lifted up trophies he's picked up the world championship trophy and that thing is not as heavy no that must be an easy job from up there yeah very much so i look at look at how that series play now i i mean as you said pick just crazy wild variations from game to game and that robo build that robo build looks scary as anything actually it's funny like at the end of the series you kept asking who's gonna defeat this guy and now you guys mentioned the trophy i know who could defeat s was the champagne the champagne that's pretty much it no yeah that that's way too easy from up there no but a dominating performance from him this weekend he's not very good obviously the most difficult game was against hero which was back and forth for sure but overall a very good performance from s os pick yeah i mean he came out and he showed that he has what it takes some people were doubting him a few of us were doubting him saying you know he's had a bit of a shaky start to legacy but as we can see as time goes on he's just getting his footing more and more and already taking a championship this early on it's such a great start to the year for him so i think 2016 is just gonna be absolutely huge he had a lot of good fortune but it feels like s os creates his own luck he's not just pure luck where he's like rolling the dice even though sometimes it might seem like it and beyond on the other hand i feel like i'm gonna expect a lot more out of him you know in the in the future i hope he attends a lot more tournaments and we keep on seeing him because he was a very entertaining player that also played very well this tournament even though he lost in grand finals yeah i really got to echo that sentiment i would love to see more of dual see uh sorry Bjorn why do i care that that's because he said it in the real souls yeah it's all it's pretty weird Bjorn's cool Bjorn's also kind of cool i like Bjorn he's a nice guy that's what i'm done you like to see him all this year obviously and uh you know a good performance good to see him come to another international event thank you very much gentlemen i had a lot of fun broadcasts in this event for you guys back at home that's it us done here in Taipei before we go though do make sure to check out the plays dot tv plugin for all the highlights of this tournament if you've missed any and if you upload a highlight and get it into the top 25 for this event you may find yourself winning an event tickets the inter extreme masters in catavits where the world championship series winter championship will be taking place that's all for us here on the desk at the inter extreme masters in Taipei we'll see you next time bye",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "championship like a sea of the void tea takes another trophy let's head over to the analysis desk to hear what the boys have to say about mr dole sign or dole sign thank you very much calora s os",
   "segment": {
-    "type": "battle",
+    "type": "expansion",
     "game_frame_start": 0,
-    "game_frame_end": 7501,
+    "game_frame_end": 336,
     "game_time_start_sec": 0.0,
-    "game_time_end_sec": 334.9
+    "game_time_end_sec": 15.0
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

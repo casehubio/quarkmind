@@ -1,0 +1,108 @@
+{
+  "id": "f6cb6724-seg-003",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 2989,
+    "game_time_sec": 133.4,
+    "player": {
+      "race": "Zerg",
+      "minerals": 110,
+      "gas": 92,
+      "supply_used": 26,
+      "supply_cap": 36,
+      "worker_count": 19,
+      "army_composition": {
+        "Larva": 4,
+        "Overlord": 3
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 2479,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 2560,
+          "type": "UNIT_BORN",
+          "unit": "MULE"
+        },
+        {
+          "frame": 2631,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 2631,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2691,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 2714,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2787,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 2788,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 2827,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 2931,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 20,
+        "Marine": 1,
+        "MULE": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "That's still a drop time. You don't know these reapers have the martyrdom perk. Hey, do man Always always gotta drop those grenades He's already put in the bunker behind his wall expecting a counter, but there will be And no such thing he doesn't he's not really minding anymore gas. It doesn't look like he's got he actually has enough gas If you were to build an evil chamber like I've seen some zergs I do like a counter drop as well, which is really frustrating because you always want to keep your reapers out on the map Yeah, but of course this is where this is where it begins He takes the more difficult to secure gold base early He can start to spread creep from there And then it becomes really hard to push into this base because all of your production just gets rally here And good luck killing the base then so the reapers are gonna jump into the main base Paul is looking for an opportunity Zerglings are pretty fast though. Are there enough of them that counter is gonna go be denied Because the grenades begin to fly in time He's not he's still building reapers just reapers. Okay, the reapers are out so now that counter attack is denied Oh, needs himself. It's really mad. They'll heal on a second here But I feel like part of the reason the bunker everything showed up was also because he lost those initial two Yeah, you know, it's lots of other sales. I'd say that puts you in panic mode to some extent losing any number of reapers early on Just because they scale so ridiculously well. Oh, it's mad. Then you have this little spot here where it's like well You would like to get these reapers, but no, not happening You just dropping your nids are yeah, I feel like Polk could actually be a lot better about grenades more active about them Um to put on my cast or monocle where I criticize for the best players You know, it could be you know, he could just become a machine and just do it perfectly I think that would be a really benefit Honestly, let's ask ourselves why he hasn't already, you know, he does this for a living",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 2014,
+    "game_frame_end": 3964,
+    "game_time_start_sec": 89.9,
+    "game_time_end_sec": 177.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "Polt",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 608.5714285714286,
+    "vod_url": "https://www.youtube.com/watch?v=iDDY_4VLP5k",
+    "subtitle_source": "whisper",
+    "replay_hash": "f6cb6724220b"
+  }
+}

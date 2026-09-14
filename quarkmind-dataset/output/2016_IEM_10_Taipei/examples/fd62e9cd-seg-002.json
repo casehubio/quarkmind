@@ -2,21 +2,18 @@
   "id": "fd62e9cd-seg-002",
   "version": "1.0",
   "game_state": {
-    "game_frame": 11644,
-    "game_time_sec": 519.8,
+    "game_frame": 4180,
+    "game_time_sec": 186.6,
     "player": {
       "race": "Protoss",
-      "minerals": 580,
-      "gas": 614,
-      "supply_used": 84,
-      "supply_cap": 86,
-      "worker_count": 48,
+      "minerals": 410,
+      "gas": 206,
+      "supply_used": 35,
+      "supply_cap": 39,
+      "worker_count": 25,
       "army_composition": {
-        "Stalker": 1,
-        "MothershipCore": 1,
-        "Observer": 2,
-        "Phoenix": 0,
-        "Immortal": 3
+        "Stalker": 2,
+        "MothershipCore": 1
       },
       "tech": [],
       "buildings": {
@@ -24,77 +21,78 @@
       },
       "recent_events": [
         {
-          "frame": 11437,
-          "type": "UNIT_DIED"
+          "frame": 3148,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
         },
         {
-          "frame": 11460,
-          "type": "UNIT_DIED"
+          "frame": 3392,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
         },
         {
-          "frame": 11461,
-          "type": "UNIT_DIED"
+          "frame": 3396,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
         },
         {
-          "frame": 11505,
-          "type": "UNIT_DIED"
+          "frame": 3478,
+          "type": "UNIT_BORN",
+          "unit": "MothershipCore"
         },
         {
-          "frame": 11505,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 11512,
+          "frame": 3606,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 11512,
+          "frame": 3662,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 3669,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 3714,
           "type": "UNIT_BORN",
           "unit": "Probe"
         },
         {
-          "frame": 11549,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 11603,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 11611,
+          "frame": 3877,
           "type": "UNIT_BORN",
-          "unit": "Immortal"
+          "unit": "Probe"
+        },
+        {
+          "frame": 4012,
+          "type": "UNIT_DIED"
         }
       ]
     },
     "opponent": {
       "race": "Protoss",
       "known_units": {
-        "Probe": 48,
+        "Probe": 25,
         "MothershipCore": 1,
-        "Stalker": 4,
-        "Sentry": 2,
-        "Observer": 1,
-        "Phoenix": 1,
-        "Immortal": 3,
-        "WarpPrism": 1
+        "Stalker": 2
       },
       "known_buildings": {
         "Nexus": 1
       }
     }
   },
-  "phase": "mid_game",
-  "phase_transition": false,
-  "transition_description": null,
-  "commentary": "Hmm, interesting. He said in the market across the map. He has a dark shrine on the way as well with the Warp Rism. So opening up the door for some harass-based play without having to do the direct assault, but if you can distract him long enough, I mean, could do quite a bit of damage. He's getting highlands on here as well. Yeah, he's taking his third behind this. So it's not like this is an all-in of any sort. And the little time that he did have with that third nexus method, he's doing pretty good on harvishes. He's actually only up three, which is interesting. So a lot of this is army supply. And here come centuries, they're gonna try to capture these Immortals. So that is what they're gonna do. Picking off one very cost effectively. And those stock around the wrong side of those forest fields. So my question's answered, they're just for positional battle. It's beautiful to see again. I guess the part of the reason why I have a tough time with them is because again, disruptors are second to come out. They'll just become completely useless. MC also has no observers on the map. So as the Stark Shrine finishes up, it's also highly possible that the addition of Dark Temple I really heard him quite a bit. He's warping in his first one. Finally, another observer starts up, but. Oh, it's something to be worried about. It's not a gateway to highlands. It's gonna take a while. I love this observer by the way from MC. That's like so MC. Just has a good intuition about him. He's like, you know what? I'm noticing an observer above my army. I don't have the text. I should get an observer and it's gonna come out in just the right time. That being said, though, his warperism is in the base. MC senses it. He kind of, maybe he learned his lesson from that first game. I can only drop one in. He wants to test the water. See what's there. Three DTs can do a lot, but let the observer now being out. It's possible things get tricky, but he could be as he's trying to force a big warping in home and then maybe make his push or force him to blink some units back inside of his main base. And then attack. He is peeling off a few stalkers, so to get that DT. Is he gonna, is that so it's gonna force it now? That's a big question. Now the DT goes in a third. Like MC was caught in a tough spot. One observer is just simply not enough. He's actually making him mortals off the robot, by the way, just settling for the one, the one observer. And he's losing everything. The most important is on the edge of its life. Maybe not gonna die necessarily, but these force fields are beautiful. We're seeing the living action of why these guys chose to warp in as many centuries as they did. 15 probes dying at all three next side. Behind us, I think the main was closed up, but I mean, at what cost Nathanius, the age-old question. He had to buy it at a high price, I would say, controlled. He's been taking a beating, and that warperism is still lurking about outside of his base. We have the Robo Bay coming in for us, I think, in this position, and he starts to get to structures here then he can make anything he wants. Yeah. He's in such a good spot. Struppers, of course, the good-looking choice here. And all force fields in another immortal pixel. I'm loving it. I'm loving it. I was really wondering what these guys were about, but both these players knew it was going to come down to Blinkstalker Micro-Incred by Immortals, and that's where the centuries really shine. That was really nice being able to pinch those forces in. Another DT getting warped inside of the main base, another one aimed at the natural expansion, and he's just picking MC apart. MC can't handle it. There's just too much pressure. G-G-S-O-S takes the second map in this best of five. And to give credit, what credits do? So a lot of people saw with that Robo, MC just kept making Immortals, and then the back of all of our minds probably, was us being very critical of that. Why are you doing that? You're getting picked apart by DTs. I think MC made that really tough Starcraft choice,",
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> early_aggression",
+  "commentary": "So yeah, I'm excited to see where this goes. He just takes a third base, and that's a very fast third base. And just now is adding his own Twilight Council. So he will of course, tech the Blink as well. Immortals by the way are an interesting spot in PvP, because disruptors make them pretty much useless,",
   "segment": {
-    "type": "battle",
-    "game_frame_start": 9515,
-    "game_frame_end": 13774,
-    "game_time_start_sec": 424.8,
-    "game_time_end_sec": 614.9
+    "type": "macro_economy",
+    "game_frame_start": 4012,
+    "game_frame_end": 4348,
+    "game_time_start_sec": 179.1,
+    "game_time_end_sec": 194.1
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

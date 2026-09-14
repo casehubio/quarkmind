@@ -1,0 +1,114 @@
+{
+  "id": "b7d07c7e-seg-004",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 7205,
+    "game_time_sec": 321.7,
+    "player": {
+      "race": "Zerg",
+      "minerals": 180,
+      "gas": 498,
+      "supply_used": 66,
+      "supply_cap": 76,
+      "worker_count": 44,
+      "army_composition": {
+        "Larva": 7,
+        "Overlord": 8,
+        "Zergling": 13,
+        "Queen": 4
+      },
+      "tech": [],
+      "buildings": {
+        "Hatchery": 1
+      },
+      "recent_events": [
+        {
+          "frame": 7003,
+          "type": "UNIT_BORN",
+          "unit": "Larva"
+        },
+        {
+          "frame": 7035,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7113,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
+        },
+        {
+          "frame": 7113,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7177,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 7180,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 7192,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 7192,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7205,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
+        },
+        {
+          "frame": 7205,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 44,
+        "MULE": 6,
+        "Reaper": 1,
+        "Marine": 11,
+        "KD8Charge": 3,
+        "WidowMine": 1,
+        "Medivac": 1,
+        "Liberator": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> mid_game",
+  "commentary": "But this army cannot get trapped right now. Beyond getting good trades off the now, but the banelings have arrived and the Mewd is in the banelings combined. Shut it down. Big, big connections there. Even if he was to try and retreat on out the Mewd's would have cleaned up everything. A really good game by Salki so far. Bj\u00f6rn on the back foot. He's still trying to keep himself in it though by going for this multi-pronged harass. Tried to go for a hatch. He got a macro hatch, but that's about it. He is going to lose all of these units if he's not careful. I mean, oh, Bj\u00f6rn is continuing to thrust in here, but this is actually just throwing away units at this point. Salki not getting caught off guard. He's reacting on time. Oh! That Widowmines did a lot of damage, but I don't even think that's enough to actually kind of went out this position at the moment because he lost all the units on the left hand side. He's now gathering up this force. I guess he really needs to wait for 3-3 to be able to put running here, but that's a problem, right? Ultra-caven's halfway done. And Dreadnauglan's is on the way. Salki's managed to stabilize. He's on 72 drones. He doesn't need to take a fifth base very soon as we are getting to that 14-15 minute mark where he's dropping it down now. He knows he needs to establish that to send those workers over. Salki doesn't have a massive economy. One bad fight, and it can still go in Bj\u00f6rn's way very quickly. But right now, Bj\u00f6rn's army not looking that big. A couple Widowmines are thought, oh, this is a nice trade for Bj\u00f6rn there. It doesn't pick up a bunch of banelings, but he's got to be very careful because he's lost all those anti-baneling units. All those Widowmines, timing again with that multi-prong. Suddenly we see the momentum shift in Salki's favor because he says, if I've just got enough Ling Bain together, you don't really have an effective composition for dealing with that. And suddenly Bj\u00f6rn has to slow things down. And that's exactly what Salki wants because he's heading towards those imbalists. Those ultra-liscs, they're just so good against this sort of army. So Bj\u00f6rn's trap between a rock and a hard place. He needs to find an attack timing before the Ultras get out in any significant number. Considering the flow of this game, Salki, I really like how far he's actually gone to Ward's all of this. The adrenal glands is about to finish up here as well. And that's a big deal here for these Erglings. Oh, yeah. Almost an epic baneling bomb there, but Bj\u00f6rn does spread his units out and does minimize that. Salki trying to buy time here, but pretty good splits from Bj\u00f6rn so far. A lot of banelings going down. Some foreshorts on the muters kind of keeping them back. But we are seeing those Ultras almost out. Still trying to put forwards here, getting some followers from the store on towards the mutalists. Now doing too bad up to the top left-hand corner. He's found the fifth base once again. Oh, wow. Getting the drones. And might even get the full hatchery. He hasn't sent you in his back to deal with that. Because he knows he's threatened at the front. And Marauda showed us up some of the banelings there. And still the winner minds get crushed off. But he killed the fifth base completely. Yeah, these fights are getting so efficient for Bj\u00f6rn. He's actually doing this perfectly. I thought he was taking too long, but he's actually managed to calculate this amazingly. And look at that Thorough Front. Crushers all the banelings. The Marines get to safety. And beyond maintains the position, he's still applying pressure. And Salki's bases are starting to mine out. He needs a new fifth base to start mining on. But he can't secure it right now. Getting clean up some of those widow minds as well. They're out towards the front. This is looking a bit more difficult for Salki as time goes on as you say. Of course, Bj\u00f6rn has mined out a few of his locations. He'll have to really start expanding out further and further. And that can be easier for Salki to try and harass as long as the fights aren't kept on his side of the field. If Bj\u00f6rn pushes over the other side and tries to expand, that could be okay. Very nice usage of that drop. Get's even a second cancel on that base by Bj\u00f6rn. And let's take a stalker of the situations. Because a lot of players, I think when they're watching this sort of game, they do have a bit of trouble figuring out who's in the lead. And it's hard to say, you know, cut and dry who's ahead. But you've got to take into account the economy right now. Of course, Salki has never hit that nice 80 drone economy where you can just throw units at him. He's only at 63 drones. So even if he gets his fifth base up, he's not at an absolutely crazy economy. But he's got a very efficient army. He's got 15 muters to shut down drops. He's got a lot of altruz. He's starting to add in some investors. However, he won't have the money to go towards broodlords, any of that ultimate late game. And on the side, he's got ghosts coming into play. He's got the most absolutely hard counter-altralisks, and less the Ling Bain and the fungal of the broodlords can get on top of them very quickly. So, Bjorn now is going to swap into this very defensive focused with the slower ghost-based army. And he's going to try and slowly expand and just push forward very methodically. Not huge mobility here, unfortunately, for Bjorn, as he tries to deal with these mutalisks. And they will eventually get shoot away by a fall. But now we're seeing the base transition over to this left-hand location, which is actually being blocked by Sorki here. But Bjorn realizes very quickly on those change links. So he will claim his fifth. No planetary there, though. That is just an orbital command center. And we do see Sorki. He's sending his entire army down there. He wants to punish this. He's got an altralisks defending his top base where Bjorn's trying to drop. So Bjorn's dropped completely in a vectorialized just by that single unit. And now comes this... Oh, those Sorklings almost taking some big widow of my inshots. As long as Bjorn stays in a good position, he can defend this. But remember, if those altras, links and infestors kind of get a good wrap around, any damage can interrupt the sniper ability on those ghosts. If they don't get the snipes off, the altras are going to just massacre this army. So it's all about positioning for Bjorn. I'm burying those widow mines. It's clever little move against only Sorklings if you think that it's going to be the split-up of them. So Bjorn really anticipating Sorki's moves. Seeing this drop get cleaned up up towards the top left. And another base going to go down. So quite the long TVZ to start things off here. But looks like Bjorn's no stranger to it just mixing in all of these ghosts. Oh, looks like we have a pinch over a big engage. All the widow mines go up front. Some nice fungles. A couple of good snipes too. Ultralisk just disappear. Another Ultralisk goes down. And an infesta. Oh my god, these snipes. He's running away. Like you can't keep running away from this. If you go that close, you can lose units guarantee from those snipes. And the mutilist diving in here again trying to exploit the immobility of the term force. Getting some addons wherever they can. I mean, this is that point in the game where, you know, Bjorn, he was so mobile before. But now he's just got that big scary ball of army. And he's pushing right down the middle, clearing up the creep. Sorki coming in though is going to find the exposed missile turret on the right hand side of this mutist. While his ultras found the base on the left. Sorki's starting to do big damage to Bjorn. And suddenly Bjorn's hand is forced. His economy's getting gutted. He needs to push across and shut down Sorki's on the other side of things. Yeah, this is what I always worried about in Legacy of the Void. I was like, it's going to be hard to observe. And yeah, it got a whole lot harder to observe. I'm trying my best. Catch everything that's going on at the same time here. But Bjorn trying to push in against this. They're going to start going together onto what some of these ultras still though. Not the best to positions as the banelings roll on forward trying to kill them up. But there's not much to compliment these ultras except the moment they're going to get pushed away. Bjorn is the ghost babysitter right now. He's keeping them all so safe. And that's exactly what he needs to do. Those banelings are such a big threat for them. But there's too many banelings in Ultras coming in right now. Sorki going to find the engaging. Needs the mutus coming in from behind and he absolutely brushes Bjorn's force. Absolutely perfect for orchestration there from Sorki. Same time behind all of this. Ravaging positions with these ultras that are just not going to die to rudimentary defenses alone.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 2628,
+    "game_frame_end": 11782,
+    "game_time_start_sec": 117.3,
+    "game_time_end_sec": 526.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "Soulkey",
+    "player1_race": "Zerg",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "ZvT",
+    "map": "Ulrena",
+    "game_duration_sec": 586.6964285714286,
+    "vod_url": "https://www.youtube.com/watch?v=emCaI55s8Tc",
+    "subtitle_source": "whisper",
+    "replay_hash": "b7d07c7ef535"
+  }
+}

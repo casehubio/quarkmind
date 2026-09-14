@@ -1,0 +1,119 @@
+{
+  "id": "1a9aeda5-seg-008",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 9410,
+    "game_time_sec": 420.1,
+    "player": {
+      "race": "Protoss",
+      "minerals": 24,
+      "gas": 102,
+      "supply_used": 81,
+      "supply_cap": 94,
+      "worker_count": 45,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 0,
+        "Oracle": 0,
+        "Observer": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 8846,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        },
+        {
+          "frame": 8965,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8987,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9064,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9075,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9126,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9223,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9310,
+          "type": "UNIT_BORN",
+          "unit": "DisruptorPhased"
+        },
+        {
+          "frame": 9335,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9358,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 47,
+        "MothershipCore": 1,
+        "Stalker": 6,
+        "Observer": 1,
+        "WarpPrism": 1,
+        "Disruptor": 2,
+        "Phoenix": 1,
+        "DisruptorPhased": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "this with a fairly quick third against semis that was even faster than this black when blink is quite a few seconds away from finishing I think his modus him caught two different bases he's got two pilots very well placed actually this could die very quickly and he's chased away instantly shut on the arrestment here double foot and overcharge now it doesn't last as long but I mean it's very very powerful the blink now on the way all right I should say it lasts a little bit longer but anyway this is so this is going to blink at the last second and get the warper's him here potentially",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 9126,
+    "game_frame_end": 9694,
+    "game_time_start_sec": 407.4,
+    "game_time_end_sec": 432.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Prion Terraces",
+    "game_duration_sec": 990.2678571428572,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "1a9aeda55b1c"
+  }
+}

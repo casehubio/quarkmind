@@ -1,0 +1,117 @@
+{
+  "id": "1a9aeda5-seg-006",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 8166,
+    "game_time_sec": 364.6,
+    "player": {
+      "race": "Protoss",
+      "minerals": 460,
+      "gas": 92,
+      "supply_used": 62,
+      "supply_cap": 62,
+      "worker_count": 41,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "MothershipCore": 1,
+        "Stalker": 3,
+        "Phoenix": 0,
+        "Oracle": 0,
+        "Observer": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 7591,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7709,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7933,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 7961,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 7980,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8036,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8048,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 8144,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8144,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 8149,
+          "type": "UNIT_BORN",
+          "unit": "Disruptor"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 37,
+        "MothershipCore": 1,
+        "Stalker": 6,
+        "Observer": 1,
+        "WarpPrism": 1,
+        "Disruptor": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "chance this this ruptur hits before this is ready but being able to spot it here oh my this is gonna be everything even like he even sees the robo bay researching something like sos right now he's gonna know exactly what is gonna be up against and then all he has to do now he stasks his units to defend one of his bases and modus you've got to defend the other one and he's if he doesn't take any damage he's just gonna keep his lead very nicely here doing really well so far I mean it's",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 7961,
+    "game_frame_end": 8372,
+    "game_time_start_sec": 355.4,
+    "game_time_end_sec": 373.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "herO",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Prion Terraces",
+    "game_duration_sec": 990.2678571428572,
+    "vod_url": "https://www.youtube.com/watch?v=2woJpQ02Jl0",
+    "subtitle_source": "whisper",
+    "replay_hash": "1a9aeda55b1c"
+  }
+}

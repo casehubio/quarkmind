@@ -1,0 +1,116 @@
+{
+  "id": "a0f9b25f-seg-009",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 9464,
+    "game_time_sec": 422.5,
+    "player": {
+      "race": "Protoss",
+      "minerals": 155,
+      "gas": 253,
+      "supply_used": 110,
+      "supply_cap": 125,
+      "worker_count": 68,
+      "army_composition": {
+        "Stalker": 1,
+        "Observer": 3,
+        "MothershipCore": 1,
+        "WarpPrism": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 8986,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9056,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 9268,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9324,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9382,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9397,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9431,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 9436,
+          "type": "UNIT_BORN",
+          "unit": "Medivac"
+        },
+        {
+          "frame": 9444,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 9445,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 49,
+        "MULE": 6,
+        "Marine": 24,
+        "WidowMine": 2,
+        "Medivac": 2,
+        "Liberator": 1,
+        "SiegeTank": 1,
+        "Marauder": 3
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "very much, Pete. Thank you very much, Todd and Kaelar is for your predictions. It is now time to begin the grand finals of the entire stream masters here in Taipei. One of these two players is going home with the trophy, going home with $12,000. The other player is unfortunately just a mere second",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 9268,
+    "game_frame_end": 9660,
+    "game_time_start_sec": 413.8,
+    "game_time_end_sec": 431.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

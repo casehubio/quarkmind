@@ -2,21 +2,18 @@
   "id": "f0c7ed2a-seg-002",
   "version": "1.0",
   "game_state": {
-    "game_frame": 8731,
-    "game_time_sec": 389.8,
+    "game_frame": 4472,
+    "game_time_sec": 199.6,
     "player": {
       "race": "Protoss",
-      "minerals": 320,
-      "gas": 189,
-      "supply_used": 58,
-      "supply_cap": 70,
-      "worker_count": 29,
+      "minerals": 170,
+      "gas": 176,
+      "supply_used": 35,
+      "supply_cap": 54,
+      "worker_count": 27,
       "army_composition": {
-        "Stalker": 1,
-        "MothershipCore": 1,
-        "Immortal": 2,
-        "Observer": 1,
-        "AdeptPhaseShift": 0
+        "Stalker": 2,
+        "MothershipCore": 0
       },
       "tech": [],
       "buildings": {
@@ -24,48 +21,51 @@
       },
       "recent_events": [
         {
-          "frame": 8496,
+          "frame": 3588,
           "type": "UNIT_BORN",
-          "unit": "AdeptPhaseShift"
+          "unit": "MothershipCore"
         },
         {
-          "frame": 8496,
+          "frame": 3611,
           "type": "UNIT_BORN",
-          "unit": "AdeptPhaseShift"
+          "unit": "Probe"
         },
         {
-          "frame": 8520,
+          "frame": 3930,
           "type": "UNIT_BORN",
-          "unit": "AdeptPhaseShift"
+          "unit": "Probe"
         },
         {
-          "frame": 8520,
+          "frame": 4004,
           "type": "UNIT_BORN",
-          "unit": "AdeptPhaseShift"
+          "unit": "Probe"
         },
         {
-          "frame": 8522,
+          "frame": 4023,
           "type": "UNIT_DIED"
         },
         {
-          "frame": 8573,
+          "frame": 4097,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 4345,
           "type": "UNIT_DIED"
         },
         {
-          "frame": 8574,
+          "frame": 4407,
           "type": "UNIT_DIED"
         },
         {
-          "frame": 8656,
-          "type": "UNIT_DIED"
+          "frame": 4436,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
         },
         {
-          "frame": 8680,
-          "type": "UNIT_DIED"
-        },
-        {
-          "frame": 8680,
-          "type": "UNIT_DIED"
+          "frame": 4439,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
         }
       ]
     },
@@ -74,24 +74,23 @@
       "known_units": {
         "Probe": 23,
         "MothershipCore": 1,
-        "Stalker": 6,
-        "AdeptPhaseShift": 8
+        "Stalker": 4
       },
       "known_buildings": {
         "Nexus": 1
       }
     }
   },
-  "phase": "mid_game",
-  "phase_transition": false,
-  "transition_description": null,
-  "commentary": "because the patch has made like PDZ win rates are pretty bad in terms of products. Products been losing a lot versus or recently. So this patch, most products have been pretty upset with the result in terms of dealing with early Zerg aggression. So, but I mean, you also have a hero on this pedestal. Yes. As well. And you're like, snoot's good, but is he hero good? Like, I don't really think so. He's hero wins, IEMs. That's what the guy does. So. Yeah. It'll be interesting. And snoot, of course, is that guy that has been the household foreigner name for going on three years now. We just always has been one of the absolute best foreigners. And here he is again, in a situation where I think the meta-faced favors him. And again, you can call me a salty product. So I want, but I do think Zerg's quite strong right now. I'm a tan and I'm on your side with. I watched a reasonable amount of ZBP since that patch. And it's rough. I'm very intrigued in a non-caster way as to how hero is going to play this. And if snoot is going to be able to use something with that patch to edge out, you know, because I mean, he's not, he's shown before he's not afraid to go for the abuse of salt. We're going to bring you that best of five after this next commercial break. Be about to see your seven minutes. We'll see you guys in just a little bit.",
+  "phase": "opening",
+  "phase_transition": true,
+  "transition_description": "opening -> early_aggression",
+  "commentary": "Yeah. I mean, SOS just needs to keep holding on. Slowly build up more. And I guess, what do you get to end this game? DT's, I'm going to cross the map. He's going to step up the ramp. He gets force fielded in, mortal. Here comes the attack, the ramp. He's going to try, gets the immortal. And a lot of the teeth has been taken out. But keep in mind, a lot of it's actually inside the main of SOS, trying to figure out if that's the more important defense or not. But he has so many force fields. So here we go. Yeah. Now that he's finally catching these stalkers on the ramp, and they're pushing over, trying to get dropped. The model comes back. GG's called SOS. With a 3-0 here. Pretty cool games. 2-0 did end with DT. So it's very like. And you know what? He had a twilight on the way there. So I'm just going to say he's going for DT. That's what I mean. When you've got an observer on top of your opponent,",
   "segment": {
     "type": "battle",
-    "game_frame_start": 6817,
-    "game_frame_end": 10645,
-    "game_time_start_sec": 304.3,
-    "game_time_end_sec": 475.2
+    "game_frame_start": 4023,
+    "game_frame_end": 4922,
+    "game_time_start_sec": 179.6,
+    "game_time_end_sec": 219.7
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

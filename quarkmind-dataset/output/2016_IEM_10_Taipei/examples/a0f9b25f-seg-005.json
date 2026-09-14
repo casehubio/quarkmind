@@ -1,0 +1,112 @@
+{
+  "id": "a0f9b25f-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 6158,
+    "game_time_sec": 274.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 195,
+      "gas": 64,
+      "supply_used": 57,
+      "supply_cap": 62,
+      "worker_count": 47,
+      "army_composition": {
+        "Stalker": 2,
+        "Observer": 1
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 5734,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5738,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5976,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 5976,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5978,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 5990,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 6006,
+          "type": "UNIT_BORN",
+          "unit": "Observer"
+        },
+        {
+          "frame": 6119,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6122,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 6142,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 33,
+        "MULE": 3,
+        "Marine": 14,
+        "WidowMine": 2,
+        "Medivac": 1
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "early_aggression",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "in the adept change in how that could affect SOS? It only was implemented a couple of days ago. Not much time to really start to innovate and change around the match up, what he's practiced. Really not a lot of time. And to be honest though, at the same time I feel like this guy is considered a genius. So it doesn't really strike me as the type of",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 5990,
+    "game_frame_end": 6326,
+    "game_time_start_sec": 267.4,
+    "game_time_end_sec": 282.4
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 1273.169642857143,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "a0f9b25f7126"
+  }
+}

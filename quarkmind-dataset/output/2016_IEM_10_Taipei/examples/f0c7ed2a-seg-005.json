@@ -1,0 +1,111 @@
+{
+  "id": "f0c7ed2a-seg-005",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 9196,
+    "game_time_sec": 410.5,
+    "player": {
+      "race": "Protoss",
+      "minerals": 300,
+      "gas": 207,
+      "supply_used": 67,
+      "supply_cap": 70,
+      "worker_count": 32,
+      "army_composition": {
+        "Stalker": 1,
+        "MothershipCore": 1,
+        "Immortal": 2,
+        "Observer": 1,
+        "AdeptPhaseShift": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 8988,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 8988,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9029,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9034,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9036,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9053,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9108,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 9108,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 9108,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        },
+        {
+          "frame": 9108,
+          "type": "UNIT_BORN",
+          "unit": "AdeptPhaseShift"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 23,
+        "MothershipCore": 1,
+        "Stalker": 6,
+        "AdeptPhaseShift": 13
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "So I want, but I do think Zerg's quite strong right now. I'm a tan and I'm on your side with. I watched a reasonable amount of ZBP since that patch. And it's rough. I'm very intrigued in a non-caster way as to how hero is going to play this. And if snoot is going to be able to use something with that patch to edge out, you know, because I mean, he's not, he's shown before he's not afraid to go for the abuse of salt. We're going to bring you that best of five after this next commercial break. Be about to see your seven minutes. We'll see you guys in just a little bit.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 7748,
+    "game_frame_end": 10645,
+    "game_time_start_sec": 345.9,
+    "game_time_end_sec": 475.2
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 475.22321428571433,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "f0c7ed2a887a"
+  }
+}

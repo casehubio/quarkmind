@@ -2,24 +2,18 @@
   "id": "cd9e6768-seg-000",
   "version": "1.0",
   "game_state": {
-    "game_frame": 9009,
-    "game_time_sec": 402.2,
+    "game_frame": 312,
+    "game_time_sec": 13.9,
     "player": {
       "race": "Zerg",
-      "minerals": 275,
-      "gas": 254,
-      "supply_used": 76,
-      "supply_cap": 108,
-      "worker_count": 46,
+      "minerals": 30,
+      "gas": 0,
+      "supply_used": 13,
+      "supply_cap": 14,
+      "worker_count": 12,
       "army_composition": {
-        "Larva": 6,
-        "Overlord": 12,
-        "Zergling": 7,
-        "Queen": 1,
-        "Mutalisk": 5,
-        "Broodling": 0,
-        "Baneling": 1,
-        "Roach": 4
+        "Larva": 3,
+        "Overlord": 1
       },
       "tech": [],
       "buildings": {
@@ -27,44 +21,52 @@
       },
       "recent_events": [
         {
-          "frame": 8955,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 8960,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 8960,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 8960,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 8960,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 8960,
-          "type": "UNIT_DIED"
+          "frame": 0,
+          "type": "UNIT_BORN",
+          "unit": "Overlord"
         },
         {
-          "frame": 8965,
+          "frame": 257,
           "type": "UNIT_BORN",
           "unit": "Larva"
         },
         {
-          "frame": 8966,
-          "type": "UNIT_DIED"
+          "frame": 287,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
         },
         {
-          "frame": 8985,
-          "type": "UNIT_DIED"
+          "frame": 289,
+          "type": "UNIT_BORN",
+          "unit": "Drone"
         },
         {
-          "frame": 8985,
+          "frame": 289,
           "type": "UNIT_DIED"
         }
       ]
@@ -72,12 +74,7 @@
     "opponent": {
       "race": "Terran",
       "known_units": {
-        "SCV": 52,
-        "Marine": 24,
-        "MULE": 6,
-        "Hellion": 6,
-        "VikingFighter": 1,
-        "Medivac": 2
+        "SCV": 13
       },
       "known_buildings": {
         "CommandCenter": 1
@@ -85,15 +82,15 @@
     }
   },
   "phase": "opening",
-  "phase_transition": true,
-  "transition_description": "opening -> late_game",
-  "commentary": "I feel like solkey is a world-class top tier player who solely plays in Korea and does exceptionally well Which I think is an incredibly different level of a feat That being said I'm enjoying this little bit of reset Where in legacy the void the game itself is different but also the patches have radically changed the game Kind of back and forth we're still in that formative period of time where Yes, we had a really long beta, but because a lot of players were still playing hard to swarm It wasn't truly a we weren't seen the best Excessible play and I I'm interested. I agree. I tend versus there. I get in a pretty interesting spot I'm mostly concerned I guess curious or interested whatever word anything fits best you are titillated. Yes. I am titillated at the prospect of a Palt Taren versus Zerg because I know Based on what other Korean Terran's have been doing and what people have been talking to me about their strategies and legacy of the void is that It is mostly centered around Building a ton an endless stream of Marines enforcing them a down-year opponents throughout before they can get ultra-lisks out Which he kind of has been since the end of the movie but The ultra's is the new part it used to just be like parade push forever until Zerg. It's a critical mass But I'm enjoying it a lot more Yeah, the thing was I used to be that you would you would tech up or you know and the Zerg would sometimes never make it to high If they had a good mid game. Yep, they'd get the hive But then it kind of came down to like who could micro who could control who could macro better But now it's like if you're Taren and they get to ultra's you have to do something else like there's no There's no walking up to your opponent knocking down his sport Bible shows pop and you're like I can micro through this with mass marine like no, it's not happening Like you will lose everything so you have to keep in mind ghosts are a great option liberators are a phenomenal option as well I'm interested when the matchup kind of more settles and the meta's kind of figured out I feel like one of the things that kind of hamstring the matchup is it became Very monobilled more so than I feel like any other. There was like the odd All-in to his roach all-ins but other than that it was as exciting as Taren versus Zerg has been for the past few years like it Basically was I mean wings of liberty you had okay you open up reactor halian delay the third mutus come out boom boom Does it get brood lords they win if they don't you win and then in heart of this warm? You know you you went to the marine widow mine push and I think that was a little bit more dynamic You usually had more back and forth rather than just like trying to push and do in festers while they turtle up to To brood lords, but in legacy of the void There's a lot better options on late game for both sides I feel I feel the liberator is a phenomenal new tool. It's been added for Taren versus there Also early game. I think Zerg you're seeing different all-ins from them You're seeing non-aggression because that that hive is so devastatingly powerful and it's a different unit composition Yeah, Zerg has more options in the mid game when it comes to how they want to play it out You know, we it's not uncommon of course. You know, please still doing thing push now trying to get a little bit pressure But like ravagers I think we're such They are such a missing link from the first two thirds of the life of Starcraft you so far Wings Liberty and Heart of the Swarms are very much suffered from like I have roaches Yeah, they're like oh crap. I still have roaches and no Paul is doing one of those things. Paul does best as he drops this scan He sees the spires close to completing he had these helians out for harass But he snuck in that second barracks pretty early on and as this dim finishes up He's actually gonna have a few more rings a few more marines than solkey should expect So he's got an armory that's completing as well while he has his engineering base coming in and what Paul wants to do is try to You know clear the creeps sure but also take advantage of the lack of possibly baneling speed Which obvious which there isn't this early on in the game and try to get some serious damage And he has stimuli as hellbats. Let's see what you can get done five banelings are on the way Stim is now ready you could skin kill the creep What he wants to push for he wants to get damaged in banelings are super late. He's gonna get on top of them right now Looks like most of this not all yep All our cancel out queens huddling in the corner five meters simply not gonna do it sixteen weeks about the join What are you supposed to do? No bands? This is just pull throwing on another one of those those cute tines This is this is what Paul does He's a creative guy is I think most tarantlers the last few years If you want to see something other than those standard builds that we've already discussed Paul was your man for it. He was the he's going for that fast biking Usually we get the fast second barracks and this actually interesting enough is very hard to the swarm of pull We saw this all the time actually haven't really seen him doing this too much myself Like you know if they stream that I've watched but I guess that's why he's at a time off. He can just pick up this force Exactly like that. I mean might lose one med back there. He's actually gonna kill all the banelings So he's gonna go okay, then I'm gonna drop the marines again have fun killing those what if that that play with the The hellbats was fantastic getting all the banels like that and there are a few enough if he tries I guess he's just gonna be content to trade out here How's that his army looks cleaned up what he's shut down the third base Pull has his own third base roach speeds about to finish but pulls got one one about to complete He's got tearing vehicles the one on the way and one one for roaches is coming in while his roach horn is bleeding out in his May in his third But uh two-base sir not a fun place to be and there's just think about he's already got stamed combat shows Very close like everything this game is actually just Got super well in Pulse favor this easy build that he's just frozen It's very interesting. I again kind of want to reference and this is of course a fact of life at Sarkhaff The loaded rng oriented here we do see a lot of zergs Opening up very differently from this they have kind of more of a roach ravager opening doing a two-base all in themselves And I feel like in that situation of course Pulse craftiness and micro could get him out of that But I would say otherwise he's fairly disadvantaged like just naked marines against ravagers and roaches Well, I don't know it's it's 50 50 but the point being Against this build in particular as you said very hots Yeah, and and really tough in hots like you had to have bannings at that time If you didn't you better have 10 queens for some reason because otherwise you're dead and I feel like Soul key is good enough of a player to perhaps make this interesting after this But he is he's been gimp really bad and Pulse trying to push on in the map of two more meta Actually quite a few more marines. There's only two bannings with this army Of course the strongest part here for a soul key as Pulse has his one one is two two is starting up and soul keys on his way to getting is one one If it's pretty close at this point, but a fight right now could you know kind of spiral out of it I don't want to read too much into this Nate, but what what of the mech upgrade right there I don't see anything composition wise that he's doing with that, but why would you do that? I think Pulse just killed into the lake and I think he's just considering the possibility that he might build c-stanks later on if you can't Stay out on the map and answer for all of this though. I mean is is there like a that's what I'm thinking Is he thinking like if this goes late? I don't want to want to look back or something It's really weird because I don't I don't know that Pulse likes the slower play which is kind of what liberators favor Is he drops another scan of that main he's kind of trying to seize like well where are you going with this? But really he just dealt he dealt such a blow to soul key early on that though He doesn't have to worry like soul key can't afford to rush high where he would he wouldn't have had those roaches that we just saw He would just die So clear up a bit of kitten pulls back, but I feel liberators are just such a better tool. I actually Think since he doesn't have any tanks. I'm gonna actually agree with yama that confused myself plus one Ship weapons would have been really nice as Because of the way liberator attacks where I think they fire in two volleys They do a lot of splash damage every attack upgrade for a liberator. It is Massive if they're gonna fight against air, but also shooting on the ground You know every little bit of damage helps not that it really matters because liberators two shot every ground units or it has We'll see where we go with this, but right now soul key is content with continuing upgrades on those road travelers Just building raiders kind of a pair at a time which is also kind of keying in on the fact that he does feel like he's way behind As Nate said not just going straight to hive and that's because He feels like if he makes too big of a switch to anything he'll just die and and to be fair Pulse selling that message. He's doing a great job of remaining outside the base and doing these drops and harass Yeah, and I love this you're trying to pull him apart and you know It's he's always been easier to max on roaches than anything else for zerg players You know for a supply for larva But this is still not a cost-effective army in the long run and pull is just pulling him in every which way Going for these fights pulling back the air superiority is not there No, or soul key he can't do anything about these drops and you know if there's one thing pulled loves to do It's drop all day. There we go. Taren vehicle ship weapons. I really like to ship weapons upgrade For the liberators he is starting to get a few more of them out and you use these to get board control the zone out your Forces they are so strong very strong now applying pressure this fourth base again A pretty sizeable force move at the middle of the map, but also so he said you know what I got to do something myself Drop comes into the main it will be greeted here by probably enough since it is just Marines with me while the fourth base is going down Yep, he does snipe that fourth base. Yeah, it takes a little mind shot onto some of those Massing army he's gonna try to move in at the same time the brod roaches are gonna make the way over inside of the main base Meanwhile the drop hits inside of the main too So he's gonna try to deal with those roaches pulls back and now he's gonna make as an attack on this third base once again He's got so many forces now there are roaches spread out all over his main base two two is not yet done for soul key Oh, there's anything you can do to actually kill this army the roaches are going to town They're trying to get some work done, but I just don't think it's gonna be enough that drop also lands back and behind the main base mineral line Jeff Yeah, I mean the meta-backs have been allowed to live the air as you said superior to going in the favor of polt Killing all the meta-backs and like this roach attack would be phenomenal And they were for the fact that he's losing the roach war and both the evolution chambers and his third again and to be Half the amount of bases kill 30 40 50 scd's for all I carry is making mules off of four or five cc's and he's got an army advantage So a little bit too little too late soul key. I feel like did what he could this is not a bad plan as we saw again If he was able to hold the fourth if the drops weren't happening Then this roach attack would be what would bring soul key back into the game But unfortunately just so much damage done to him again Yeah, and Paul is just he's just been in a dominant position most of the game I felt that early attack. He did you know to be maybe a little too critical kind of kind of gave him this game Like it was polt's game to lose from that first point You kill that much stuff you kill those mutas you kill those banelings you kill I mean just the third base in general is a is a death blow to most zary players and Soul keys he's never had a he never had a good answer to that because roaches were never going to be good versus the drops anyway So polt just happily 60 supply ahead. I guess he's just gonna build up another army secure his main and natural from the roaches Get a turd or two out front take this fourth base and then I mean this army right now could kill everything he has at home Yes, it's actually just been sitting here, but he could the stem a move and kill everything he pretty much could It's just ravaged back there and even they are gonna go to the front and this might look like a dumb choice But honestly this is this is so key saying I'm dead. I'm just gonna try something really wonky It's not even a base trade. It's just like maybe polt slips up in production. Maybe he's a little bit too confused on what's going on We know these may be are not true, but it's he's gonna try this yep He's moving in on top of that fourth base. We have the liberators here to help defend. There's widow mines He could be tried to dive on top and this army it's gonna come back home And that's that's like it's not the wrong choice because he actually can't make the wrong choice But this is the one that I think so he was hoping for And I love these widow mines. It's just like yeah, let's just lock you inside your face get killed And yeah, I'm actually doing it. Where's Polt's army? Oh, it's coming back now Great. Oh, it's all going to die. It's yeah, but finally Here's the turning the frown upside down a little bit So he needed much more predictive and better Cross of vial shots and in that last fight he actually got him which is tragically the one that didn't matter at all like he actually triggered or targeted himself knowing that he was gonna get stamed into any back to have him and it did Demstained damage, but That's the that's the cool thing about the ravager It used to be if you didn't have mutants Terrence would just drop you all day long while your queens are like sidearm lobbying stones at him And they're like if I do this 47 more times it'll kill him out of that We're getting there, but it's taken a bit of time, but now And we've I've seen some super savvy zirks too that are like you're not gonna be right where you all right now You're gonna go over that and then they they because you have to preampively shoot there But it feels so good and that's that's part of the excitement. I have released the void to is there's much more Expression of skill and we're gonna see more of this the more time that the players spend with it Even in a position where you're behind like roaches were always gonna be like okay You know my opponent makes a mistake Maybe the roaches bring me back into this game But with ravagers at the very least you have that possibility where maybe I don't have as much But if I can get the perfect corrosive vials, you know, there is a chance You know however small it is you got a better chance to just straight up roaches versus pole But they're better in the in the hands of better players and that's something that I feel like With legacy the void we have a lot more of that because it yeah, you're right Like roaches could get in this weird situation where it's like I hit two two and even though I'm down a base You skipped upgrades and you just have marines some kind of winning fights And you made the wrong choice to not counter attack but instead come home and defend But that's more like a move a move and choices which is still interesting to me But we're kind of addicted to start up so everything's interesting But in legacy the void it's like I have worse of a much worse army But if I land these vials on those two metabacks I can turn the tide and it's not just a like right click on it and kill it It's a I need to predict where you're gonna be and the other player has counter play as well like I don't know Yeah, it adds a lot more skill into taking me actual engagements rather than you know Okay, my roaches have low range move them closer so they can hit, you know Yeah, the bit more to uh then we'll work with that was It still exists but in a different way, but in sarcoph to the dumbest micro to me was like Roach versus Roach battles where they're all just like shifting into each other You know, there's so dumb there's there's a there's always you know There's always you know as we're as we're loaded into the next game There's always those people out there that I like they can't but that was beautiful to watch I'm like no watching people try to dodge corrosive bile and land them is way there's a lot there's a lot more exciting I find this game a lot more fun to cast just from that alone We're loaded into prion terraces for game number two",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "I feel like solkey is a world-class top tier player who solely plays in Korea and does exceptionally well Which I think is an incredibly different level of a feat That being said I'm enjoying this little bit of reset Where in legacy the void the game itself is different but also the patches have radically changed the game Kind of back and forth we're still in that formative period of time where Yes, we had a really long beta, but because a lot of players were still playing hard to swarm It wasn't truly a we weren't seen the best",
   "segment": {
-    "type": "battle",
+    "type": "expansion",
     "game_frame_start": 0,
-    "game_frame_end": 18019,
+    "game_frame_end": 625,
     "game_time_start_sec": 0.0,
-    "game_time_end_sec": 804.4
+    "game_time_end_sec": 27.9
   },
   "metadata": {
     "tournament": "IEM Season 10 Taipei 2016",

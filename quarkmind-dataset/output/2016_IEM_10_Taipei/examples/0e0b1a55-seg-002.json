@@ -1,0 +1,109 @@
+{
+  "id": "0e0b1a55-seg-002",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 3676,
+    "game_time_sec": 164.1,
+    "player": {
+      "race": "Protoss",
+      "minerals": 215,
+      "gas": 134,
+      "supply_used": 31,
+      "supply_cap": 39,
+      "worker_count": 23,
+      "army_composition": {
+        "Stalker": 2
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 3092,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3230,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3232,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3353,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 3355,
+          "type": "UNIT_BORN",
+          "unit": "Stalker"
+        },
+        {
+          "frame": 3366,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 3508,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 3629,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3636,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 3637,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 23,
+        "MULE": 1,
+        "Marine": 4
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "opening",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "it might seem like it and beyond on the other hand i feel like i'm gonna expect a lot more out of him you know in the in the future i hope he attends a lot more tournaments and we keep on seeing him because he was a very entertaining player that also played very well this tournament even though he lost in grand finals yeah i really got to echo that sentiment i would love to see more of",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 3508,
+    "game_frame_end": 3844,
+    "game_time_start_sec": 156.6,
+    "game_time_end_sec": 171.6
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Central Protocol",
+    "game_duration_sec": 334.86607142857144,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "0e0b1a550447"
+  }
+}

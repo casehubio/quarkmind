@@ -1,0 +1,120 @@
+{
+  "id": "45add59e-seg-011",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 9713,
+    "game_time_sec": 433.6,
+    "player": {
+      "race": "Terran",
+      "minerals": 21,
+      "gas": 44,
+      "supply_used": 97,
+      "supply_cap": 125,
+      "worker_count": 51,
+      "army_composition": {
+        "MULE": 3,
+        "Marine": 18,
+        "WidowMine": 0,
+        "Medivac": 1,
+        "VikingFighter": 1,
+        "SiegeTank": 2,
+        "Liberator": 1,
+        "Marauder": 3
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 9368,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9396,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 9419,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 9423,
+          "type": "UNIT_BORN",
+          "unit": "Marauder"
+        },
+        {
+          "frame": 9497,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9541,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 9545,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 9599,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 9602,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 9616,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 64,
+        "Stalker": 4,
+        "Observer": 2,
+        "WarpPrism": 1,
+        "MothershipCore": 1,
+        "Disruptor": 3,
+        "DisruptorPhased": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "He's like running forward with it. Nothing left to kill. Okay. That's okay though. Good hit. Oh, that's a very expensive prison. Oh, it's terrible. And as he goes for the shot, gets a moronter into the region. Good hit. Again, buying some time. Look how painfully slow the Viking is too. Yeah. Vikings are. Carb Whack here, warp prison. The thing I love the most about this setup, even as this Viking starts to corner that",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 9545,
+    "game_frame_end": 9881,
+    "game_time_start_sec": 426.1,
+    "game_time_end_sec": 441.1
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "id": "15ad08e3-seg-009",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 11713,
+    "game_time_sec": 522.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 436,
+      "gas": 285,
+      "supply_used": 133,
+      "supply_cap": 148,
+      "worker_count": 59,
+      "army_composition": {
+        "Adept": 0,
+        "AdeptPhaseShift": 0,
+        "Sentry": 1,
+        "Oracle": 0,
+        "MothershipCore": 1,
+        "Archon": 0,
+        "Observer": 0,
+        "WarpPrism": 1,
+        "Immortal": 2,
+        "Phoenix": 0
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 11598,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 11601,
+          "type": "UNIT_BORN",
+          "unit": "SCV"
+        },
+        {
+          "frame": 11601,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11628,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11636,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11641,
+          "type": "UNIT_BORN",
+          "unit": "Marine"
+        },
+        {
+          "frame": 11643,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11665,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11671,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11685,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Terran",
+      "known_units": {
+        "SCV": 51,
+        "MULE": 7,
+        "Marine": 55,
+        "WidowMine": 2,
+        "Medivac": 3,
+        "SiegeTank": 5,
+        "Liberator": 1,
+        "Marauder": 15
+      },
+      "known_buildings": {
+        "CommandCenter": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "liberator needs to be out and it needs to get back there fast he actually show up here me well he's in desperation mode now all the sdv's come off the line here for bion he knows that this is a bit of a critical position to be in wall prism picks up one of the s stalkers picks up a second one one in wall for the back here is being a little bit lazy i think bion might just die yeah bion isn't really mining much i told you while all of this is going on the fact that there is a war prism he's just gonna lose nothing there he can pick up everything here real sos he keeps on kiting back the sdv's not even mining anymore sure there is a widow miner cross the map but it's not killing nearly enough no i picked up all of those units there as well shittles them out and gets that so far as well great little war prism micro there you really need to kill that war prism with the liberator there's only two stalkers there maybe you can try and get a few shots off on it but at the same time it's just gonna try and go for siege up anyway move straight out of that circle it's not being used at all and bion is taking massive massive damage here sos kills off the liberator and sos is on the way to cause himself a three one lead here with all of the marines dying there is nothing left back at home he drops the scan into the natural i've bit a wall all of this is going on and bion is evacuring he's having none of it oh dear me sos he is running rampant who stops this guy in championship matches i'm not really sure but at the moment it's definitely not bion as he's hoping that these widow mines can kill off 26 extra s probes against the tennis cv's that remain it's done yeah i don't think bion can do much else here there is even like now observers back in the base of sos he's going to be able to finally defend against those widow mines i think sos has just done it he's going to be a three one lead in his best of seven poor bion man he's one time he tries something different yeah and he just gets hit by that he's actually playing ladder terran right now which is if i put all my command centres in corners maybe i'll win liberator's going to come in and try and do some damage but the",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 10483,
+    "game_frame_end": 12943,
+    "game_time_start_sec": 468.0,
+    "game_time_end_sec": 577.8
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "ByuN",
+    "player2_race": "Terran",
+    "matchup": "PvT",
+    "map": "Prion Terraces",
+    "game_duration_sec": 577.8125,
+    "vod_url": "https://www.youtube.com/watch?v=oeimjvDYIaA",
+    "subtitle_source": "whisper",
+    "replay_hash": "15ad08e3ed7f"
+  }
+}

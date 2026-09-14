@@ -1,0 +1,115 @@
+{
+  "id": "fd62e9cd-seg-009",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 12654,
+    "game_time_sec": 564.9,
+    "player": {
+      "race": "Protoss",
+      "minerals": 30,
+      "gas": 250,
+      "supply_used": 108,
+      "supply_cap": 110,
+      "worker_count": 50,
+      "army_composition": {
+        "Stalker": 1,
+        "MothershipCore": 1,
+        "Observer": 2,
+        "Phoenix": 0,
+        "Immortal": 4
+      },
+      "tech": [],
+      "buildings": {
+        "Nexus": 1
+      },
+      "recent_events": [
+        {
+          "frame": 11505,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11512,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 11512,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 11549,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11603,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 11611,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        },
+        {
+          "frame": 11929,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12227,
+          "type": "UNIT_BORN",
+          "unit": "Immortal"
+        },
+        {
+          "frame": 12443,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        },
+        {
+          "frame": 12443,
+          "type": "UNIT_BORN",
+          "unit": "Probe"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 48,
+        "MothershipCore": 1,
+        "Stalker": 4,
+        "Sentry": 2,
+        "Observer": 1,
+        "Phoenix": 1,
+        "Immortal": 3,
+        "WarpPrism": 1
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "15 probes dying at all three next side. Behind us, I think the main was closed up, but I mean, at what cost Nathanius, the age-old question. He had to buy it at a high price, I would say, controlled. He's been taking a beating, and that warperism is still lurking about outside of his base. We have the Robo Bay coming in for us, I think, in this position, and he starts to get to structures here then he can make anything he wants. Yeah. He's in such a good spot. Struppers, of course, the good-looking choice here. And all force fields in another immortal pixel. I'm loving it. I'm loving it. I was really wondering what these guys were about, but both these players knew it was going to come down",
+  "segment": {
+    "type": "macro_economy",
+    "game_frame_start": 12265,
+    "game_frame_end": 13044,
+    "game_time_start_sec": 547.5,
+    "game_time_end_sec": 582.3
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "sOs",
+    "player1_race": "Protoss",
+    "player2": "MinChul",
+    "player2_race": "Protoss",
+    "matchup": "PvP",
+    "map": "Ruins of Seras",
+    "game_duration_sec": 726.0714285714287,
+    "vod_url": "https://www.youtube.com/watch?v=eZ25BONqIM0",
+    "subtitle_source": "whisper",
+    "replay_hash": "fd62e9cd965b"
+  }
+}

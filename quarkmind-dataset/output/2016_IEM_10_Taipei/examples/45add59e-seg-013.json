@@ -1,0 +1,111 @@
+{
+  "id": "45add59e-seg-013",
+  "version": "1.0",
+  "game_state": {
+    "game_frame": 12102,
+    "game_time_sec": 540.3,
+    "player": {
+      "race": "Terran",
+      "minerals": 291,
+      "gas": 170,
+      "supply_used": 120,
+      "supply_cap": 165,
+      "worker_count": 64,
+      "army_composition": {
+        "MULE": 0,
+        "Marine": 6,
+        "WidowMine": 1,
+        "Medivac": 3,
+        "VikingFighter": 1,
+        "SiegeTank": 0,
+        "Liberator": 1,
+        "Marauder": 9
+      },
+      "tech": [],
+      "buildings": {
+        "CommandCenter": 1
+      },
+      "recent_events": [
+        {
+          "frame": 12044,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12050,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12056,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12062,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12067,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12080,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12090,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12091,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12091,
+          "type": "UNIT_DIED"
+        },
+        {
+          "frame": 12097,
+          "type": "UNIT_DIED"
+        }
+      ]
+    },
+    "opponent": {
+      "race": "Protoss",
+      "known_units": {
+        "Probe": 65,
+        "Stalker": 4,
+        "Observer": 2,
+        "WarpPrism": 1,
+        "MothershipCore": 1,
+        "Disruptor": 3,
+        "DisruptorPhased": 7
+      },
+      "known_buildings": {
+        "Nexus": 1
+      }
+    }
+  },
+  "phase": "mid_game",
+  "phase_transition": false,
+  "transition_description": null,
+  "commentary": "But he's going to pull back as these are pulled. Probably the wise choice. Let the stem wear out as well. Metavex lagging behind. Goes here to a favorable spot. Launches forward. The purifier. What is it called? It's purification. I know it's a technical. Yeah. It's called the Great Balls of Fire that you bust out the actual name of it and you're just throwing me off. Yeah. See, I blame you. See, at first you lose your trust. And at the second point you're like, no, they can't possibly need a smart and referring to generals at the same time. I feel like Lilbo is like one warp in a way of a add-ups away from just stealing the deal. Reminds shot though. It gets the shields off from the rest of the system. And it goes to stand forward. Got to be careful. And get the mine either. Just constantly pushing out here. Beyond feels like he's the aggressor pulls out. Yeah. I mean, as Taren, I feel just securing yourself on three bases is one of the most important things you do in TvP. He doesn't actually need to do much because Lilbo doesn't have a fourth. Well, Nate, he also doesn't have any forges going. So I feel like it has to be out. Yeah, it's not up-raids. He's got his hand on. He has to end it now and it's getting hard. Because as time goes on, we... He's still eating these mine shots, too. Oh. Tactical pause from Bound, and I appreciate that. And there is the purifying what? Purification Nova. Purification Nova going forward. Here's the fight. But again, not super favorable, actually, for Lilbo. I just feel like Lilbo has had such a huge advantage in all these fights, but the advantage is kind of starting to be mitigated. Now the liberators in position to do some damage. We have, I think that's two two upgrades on the bio coming up. Yep. I mean, two two is going to be lights out if you're down four upgrades.",
+  "segment": {
+    "type": "battle",
+    "game_frame_start": 11124,
+    "game_frame_end": 13081,
+    "game_time_start_sec": 496.6,
+    "game_time_end_sec": 584.0
+  },
+  "metadata": {
+    "tournament": "IEM Season 10 Taipei 2016",
+    "player1": "ByuN",
+    "player1_race": "Terran",
+    "player2": "Lilbow",
+    "player2_race": "Protoss",
+    "matchup": "TvP",
+    "map": "Orbital Shipyard",
+    "game_duration_sec": 651.2053571428572,
+    "vod_url": "https://www.youtube.com/watch?v=u4mURLIzN1Q",
+    "subtitle_source": "whisper",
+    "replay_hash": "45add59eb97b"
+  }
+}
