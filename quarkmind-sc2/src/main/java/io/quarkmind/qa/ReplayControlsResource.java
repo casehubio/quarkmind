@@ -1,5 +1,6 @@
 package io.quarkmind.qa;
 
+import io.casehub.platform.api.mcp.HandWrittenEndpoint;
 import io.quarkmind.agent.AgentOrchestrator;
 
 import io.quarkmind.sc2.SC2Engine;
@@ -15,6 +16,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @UnlessBuildProfile("prod")
+@HandWrittenEndpoint("application-specific game simulation endpoint")
 @Path("/qa/replay")
 public class ReplayControlsResource {
 

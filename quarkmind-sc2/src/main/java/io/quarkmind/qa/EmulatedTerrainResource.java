@@ -1,5 +1,6 @@
 package io.quarkmind.qa;
 
+import io.casehub.platform.api.mcp.HandWrittenEndpoint;
 import io.quarkmind.domain.TerrainGrid;
 import io.quarkmind.qa.TerrainResponse;
 import io.quarkus.arc.profile.UnlessBuildProfile;
@@ -19,6 +20,7 @@ import java.util.List;
  * Returns 404 in non-emulated profiles so the visualiser skips fog plane creation.
  */
 @UnlessBuildProfile("prod")
+@HandWrittenEndpoint("application-specific game simulation endpoint")
 @Path("/qa/emulated/terrain")
 @Produces(MediaType.APPLICATION_JSON)
 public class EmulatedTerrainResource {

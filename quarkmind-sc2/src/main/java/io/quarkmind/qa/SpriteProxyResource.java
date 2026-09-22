@@ -1,5 +1,6 @@
 package io.quarkmind.qa;
 
+import io.casehub.platform.api.mcp.HandWrittenEndpoint;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
@@ -16,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
 @UnlessBuildProfile("prod")
+@HandWrittenEndpoint("application-specific game simulation endpoint")
 @Path("/qa/sprites")
 public class SpriteProxyResource {
 

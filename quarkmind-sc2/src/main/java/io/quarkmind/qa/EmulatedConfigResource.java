@@ -1,5 +1,6 @@
 package io.quarkmind.qa;
 
+import io.casehub.platform.api.mcp.HandWrittenEndpoint;
 import io.quarkmind.domain.Race;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import jakarta.inject.Inject;
@@ -9,6 +10,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.Map;
 
 @UnlessBuildProfile("prod")
+@HandWrittenEndpoint("application-specific game simulation endpoint")
 @Path("/qa/emulated/config")
 @Produces(MediaType.APPLICATION_JSON)
 public class EmulatedConfigResource {

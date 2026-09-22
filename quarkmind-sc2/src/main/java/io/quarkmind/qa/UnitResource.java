@@ -1,5 +1,6 @@
 package io.quarkmind.qa;
 
+import io.casehub.platform.api.mcp.HandWrittenEndpoint;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.sc2.SC2Engine;
@@ -11,6 +12,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.Optional;
 
 @UnlessBuildProfile("prod")
+@HandWrittenEndpoint("application-specific game simulation endpoint")
 @Path("/qa/unit")
 @Produces(MediaType.APPLICATION_JSON)
 public class UnitResource {

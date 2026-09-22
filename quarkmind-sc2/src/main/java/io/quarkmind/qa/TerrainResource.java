@@ -1,5 +1,6 @@
 package io.quarkmind.qa;
 
+import io.casehub.platform.api.mcp.HandWrittenEndpoint;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.quarkmind.sc2.map.SC2MapCache;
 import jakarta.inject.Inject;
@@ -11,6 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @UnlessBuildProfile("prod")
+@HandWrittenEndpoint("application-specific game simulation endpoint")
 @Path("/qa/terrain")
 @Produces(MediaType.APPLICATION_JSON)
 public class TerrainResource {

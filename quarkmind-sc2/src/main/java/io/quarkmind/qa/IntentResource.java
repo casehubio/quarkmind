@@ -1,5 +1,6 @@
 package io.quarkmind.qa;
 
+import io.casehub.platform.api.mcp.HandWrittenEndpoint;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @UnlessBuildProfile("prod")
+@HandWrittenEndpoint("application-specific game simulation endpoint")
 @Path("/sc2")
 @Produces(MediaType.APPLICATION_JSON)
 public class IntentResource {

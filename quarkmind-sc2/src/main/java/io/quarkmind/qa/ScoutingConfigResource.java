@@ -1,5 +1,6 @@
 package io.quarkmind.qa;
 
+import io.casehub.platform.api.mcp.HandWrittenEndpoint;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
@@ -9,6 +10,7 @@ import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.plugin.scouting.DroolsScoutingTask;
 
 @UnlessBuildProfile("prod")
+@HandWrittenEndpoint("application-specific game simulation endpoint")
 @Path("/qa/scouting")
 public class ScoutingConfigResource {
 
