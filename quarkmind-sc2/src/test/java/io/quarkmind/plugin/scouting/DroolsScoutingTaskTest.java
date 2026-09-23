@@ -2,15 +2,15 @@ package io.quarkmind.plugin.scouting;
 
 import io.casehub.blocks.summarisation.EventStreamBus;
 import io.casehub.blocks.summarisation.LevelEvent;
-import io.quarkmind.agent.GameSession;
 import io.quarkmind.agency.context.MutableMapCaseContext;
+import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
+import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
-import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.StrategyArchetype;
@@ -463,9 +463,108 @@ class DroolsScoutingTaskTest {
     void buildSnapshot_featureVectorLength() {
         var gs = gameState(List.of(), List.of(), List.of(), List.of());
         var snap = DroolsScoutingTask.buildSnapshot(gs);
-        assertThat(snap.playerFeatures()).hasSize(134);
-        assertThat(snap.opponentFeatures()).hasSize(134);
+        assertThat(snap.playerFeatures()).hasSize(FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER);
+        assertThat(snap.opponentFeatures()).hasSize(FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER);
     }
+
+    @Test
+    void buildSnapshot_featureVectorLength_144perPlayer() {
+        var gs   = gameStateWithMap(List.of(), List.of(), List.of(), List.of());
+        var snap = DroolsScoutingTask.buildSnapshot(gs);
+        assertThat(snap.playerFeatures()).hasSize(FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER);
+        assertThat(snap.opponentFeatures()).hasSize(FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER);
+    }
+
+    @Test
+    void buildSnapshot_spatialFeatures_armyCentroid() {
+        var myUnits = List.of(
+                new Unit("u1", UnitType.ZEALOT, new Point2d(50, 50), 100, 100, 50, 50, 0, 0),
+                new Unit("u2", UnitType.STALKER, new Point2d(70, 70), 80, 80, 80, 80, 0, 0)
+                             );
+        var gs   = gameStateWithMap(myUnits, List.of(), List.of(), List.of());
+        var snap = DroolsScoutingTask.buildSnapshot(gs);
+        int off  = FeatureIndexMaps.SPATIAL_OFFSET;
+        // centroid = (60, 60), map = 150x150
+        assertThat(snap.playerFeatures()[off]).as("centroid_x").isCloseTo(60f / 150f, org.assertj.core.data.Offset.offset(1e-5f));
+        assertThat(snap.playerFeatures()[off + 1]).as("centroid_y").isCloseTo(60f / 150f, org.assertj.core.data.Offset.offset(1e-5f));
+    }
+
+    @Test
+    void buildSnapshot_spatialFeatures_distancesToBases() {
+        var myUnits = List.of(
+                new Unit("u1", UnitType.ZEALOT, new Point2d(75, 75), 100, 100, 50, 50, 0, 0)
+                             );
+        var   gs        = gameStateWithMap(myUnits, List.of(), List.of(), List.of());
+        var   snap      = DroolsScoutingTask.buildSnapshot(gs);
+        int   off       = FeatureIndexMaps.SPATIAL_OFFSET;
+        float mapDiag   = (float) Math.sqrt(150.0 * 150 + 150.0 * 150);
+        float distOwn   = (float) new Point2d(75, 75).distanceTo(new Point2d(30, 30)) / mapDiag;
+        float distEnemy = (float) new Point2d(75, 75).distanceTo(new Point2d(120, 120)) / mapDiag;
+        assertThat(snap.playerFeatures()[off + 2]).as("dist_own_base").isCloseTo(distOwn, org.assertj.core.data.Offset.offset(1e-5f));
+        assertThat(snap.playerFeatures()[off + 3]).as("dist_enemy_base").isCloseTo(distEnemy, org.assertj.core.data.Offset.offset(1e-5f));
+    }
+
+    @Test
+    void buildSnapshot_spatialFeatures_noArmyUnits_allZeros() {
+        // Only workers — no army units, spatial should be all zeros
+        var myUnits = List.of(
+                new Unit("w1", UnitType.PROBE, new Point2d(50, 50), 20, 20, 20, 20, 0, 0)
+                             );
+        var gs   = gameStateWithMap(myUnits, List.of(), List.of(), List.of());
+        var snap = DroolsScoutingTask.buildSnapshot(gs);
+        int off  = FeatureIndexMaps.SPATIAL_OFFSET;
+        for (int i = 0; i < FeatureIndexMaps.N_SPATIAL; i++) {
+            assertThat(snap.playerFeatures()[off + i]).as("spatial[%d]", i).isEqualTo(0f);
+        }
+    }
+
+    @Test
+    void buildSnapshot_spatialFeatures_proxyBuildingScore() {
+        // Building at (110, 110) — closer to enemy (120,120) than own (30,30)
+        var myBuildings = List.of(
+                new Building("b1", BuildingType.PYLON, new Point2d(110, 110), 200, 200, true),
+                new Building("b2", BuildingType.GATEWAY, new Point2d(35, 35), 500, 500, true)
+                                 );
+        var gs = gameStateWithMap(List.of(new Unit("u1", UnitType.ZEALOT, new Point2d(50, 50), 100, 100, 50, 50, 0, 0)),
+                                  myBuildings, List.of(), List.of());
+        var snap = DroolsScoutingTask.buildSnapshot(gs);
+        int off  = FeatureIndexMaps.SPATIAL_OFFSET;
+        // 1 of 2 buildings proxied = 0.5
+        assertThat(snap.playerFeatures()[off + 6]).as("proxy_building_score").isCloseTo(0.5f, org.assertj.core.data.Offset.offset(1e-5f));
+    }
+
+    @Test
+    void buildSnapshot_ratioFeatures_armySupplyRatio() {
+        // 2 zealots (2 supply each) + 1 probe (worker, excluded) = army supply 4
+        // foodUsed in economy = 6000 (pre-scaled /1000 = 6)
+        var eco = new io.quarkmind.domain.PlayerEconomyStats(400, 100, 1000, 300, 8000, 6000, 3000, 0, 0, 0, 0, 0, 0);
+        var myUnits = List.of(
+                new Unit("u1", UnitType.ZEALOT, new Point2d(50, 50), 100, 100, 50, 50, 0, 0),
+                new Unit("u2", UnitType.ZEALOT, new Point2d(60, 60), 100, 100, 50, 50, 0, 0),
+                new Unit("w1", UnitType.PROBE, new Point2d(30, 30), 20, 20, 20, 20, 0, 0)
+                             );
+        var gs = new io.quarkmind.domain.GameState(400, 100, 46, 38, myUnits, List.of(), List.of(), List.of(),
+                                                   List.of(), List.of(), List.of(), 5000,
+                                                   new io.quarkmind.domain.MapInfo(new Point2d(30, 30), new Point2d(120, 120), 150, 150, List.of(), List.of(), List.of()),
+                                                   eco, io.quarkmind.domain.PlayerEconomyStats.EMPTY, java.util.Set.of(), java.util.Set.of());
+        var snap = DroolsScoutingTask.buildSnapshot(gs);
+        int off  = FeatureIndexMaps.RATIO_OFFSET;
+        // army supply = 4, foodUsed = 6000/1000 = 6.0 → ratio = 4/6 ≈ 0.667
+        assertThat(snap.playerFeatures()[off]).as("army_supply_ratio").isCloseTo(4f / 6f, org.assertj.core.data.Offset.offset(1e-3f));
+    }
+
+    @Test
+    void buildSnapshot_nullMapInfo_spatialAllZeros() {
+        // Backward compatibility: null mapInfo should produce zero spatial features
+        var myUnits = List.of(new Unit("u1", UnitType.ZEALOT, new Point2d(50, 50), 100, 100, 50, 50, 0, 0));
+        var gs      = gameState(myUnits, List.of(), List.of(), List.of());
+        var snap    = DroolsScoutingTask.buildSnapshot(gs);
+        int off     = FeatureIndexMaps.SPATIAL_OFFSET;
+        for (int i = 0; i < FeatureIndexMaps.N_SPATIAL; i++) {
+            assertThat(snap.playerFeatures()[off + i]).as("spatial[%d] with null mapInfo", i).isEqualTo(0f);
+        }
+    }
+
 
     // ---- resolveEnemyRace ----
 
@@ -501,4 +600,18 @@ class DroolsScoutingTaskTest {
             io.quarkmind.domain.PlayerEconomyStats.EMPTY,
             java.util.Set.of(), java.util.Set.of());
     }
+
+    private io.quarkmind.domain.GameState gameStateWithMap(
+            List<Unit> myUnits, List<Building> myBuildings,
+            List<Unit> enemyUnits, List<Building> enemyBuildings) {
+        return new io.quarkmind.domain.GameState(
+                400, 200, 46, 38,
+                myUnits, myBuildings, enemyUnits, enemyBuildings,
+                List.of(), List.of(), List.of(), 5000,
+                new io.quarkmind.domain.MapInfo(new Point2d(30, 30), new Point2d(120, 120), 150, 150, List.of(), List.of(), List.of()),
+                io.quarkmind.domain.PlayerEconomyStats.EMPTY,
+                io.quarkmind.domain.PlayerEconomyStats.EMPTY,
+                java.util.Set.of(), java.util.Set.of());
+    }
+
 }

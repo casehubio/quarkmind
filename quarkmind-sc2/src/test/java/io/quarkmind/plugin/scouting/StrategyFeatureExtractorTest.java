@@ -12,14 +12,14 @@ class StrategyFeatureExtractorTest {
         var accumulator = new TemporalWindowAccumulator();
         for (int i = 0; i < 360; i++) {
             accumulator.addSnapshot(new WindowSnapshot(
-                new float[134], new float[134], 0.5f));
+                new float[FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER], new float[FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER], 0.5f));
         }
         var result = extractor.extract(
             accumulator.getWindowedFeatures(),
             MapCharacteristics.DEFAULT);
         assertThat(result.tensors()).containsKeys("temporal", "map");
         assertThat(result.tensors().get("temporal")).hasNumberOfRows(1);
-        assertThat(result.tensors().get("temporal")[0]).hasSize(2690);
+        assertThat(result.tensors().get("temporal")[0]).hasSize(FeatureIndexMaps.FEATURES_PER_WINDOW * TemporalWindowAccumulator.MAX_WINDOWS);
         assertThat(result.tensors().get("map")).hasNumberOfRows(1);
         assertThat(result.tensors().get("map")[0]).hasSize(6);
     }
@@ -29,10 +29,10 @@ class StrategyFeatureExtractorTest {
         var extractor = new StrategyFeatureExtractor();
         var accumulator = new TemporalWindowAccumulator();
         for (int i = 0; i < 60; i++) {
-            var player = new float[134];
+            var player = new float[FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER];
             player[0] = 1.0f;
             accumulator.addSnapshot(new WindowSnapshot(
-                player, new float[134], 0.0f));
+                player, new float[FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER], 0.0f));
         }
         var result = extractor.extract(
             accumulator.getWindowedFeatures(),
@@ -47,12 +47,12 @@ class StrategyFeatureExtractorTest {
         var accumulator = new TemporalWindowAccumulator();
         for (int i = 0; i < 60; i++) {
             accumulator.addSnapshot(new WindowSnapshot(
-                new float[134], new float[134], 1.0f));
+                new float[FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER], new float[FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER], 1.0f));
         }
         var result = extractor.extract(
             accumulator.getWindowedFeatures(),
             MapCharacteristics.DEFAULT);
-        assertThat(result.tensors().get("temporal")[0][268]).isEqualTo(1.0f);
+        assertThat(result.tensors().get("temporal")[0][FeatureIndexMaps.HAS_VISION_INDEX]).isEqualTo(1.0f);
     }
 
     @Test
@@ -60,16 +60,17 @@ class StrategyFeatureExtractorTest {
         var extractor = new StrategyFeatureExtractor();
         var accumulator = new TemporalWindowAccumulator();
         for (int i = 0; i < 60; i++) {
-            var player = new float[134];
+            var player = new float[FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER];
             player[0] = 5.0f;
             accumulator.addSnapshot(new WindowSnapshot(
-                player, new float[134], 0.5f));
+                player, new float[FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER], 0.5f));
         }
         var result = extractor.extract(
             accumulator.getWindowedFeatures(),
             MapCharacteristics.DEFAULT);
         float[] temporal = result.tensors().get("temporal")[0];
-        for (int f = 269; f < 538; f++) {
+        int fpw = FeatureIndexMaps.FEATURES_PER_WINDOW;
+        for (int f = fpw; f < 2 * fpw; f++) {
             assertThat(temporal[f]).as("zero-padded window feature at %d", f).isEqualTo(0.0f);
         }
     }
@@ -79,10 +80,10 @@ class StrategyFeatureExtractorTest {
         var extractor = new StrategyFeatureExtractor();
         var accumulator = new TemporalWindowAccumulator();
         for (int i = 0; i < 60; i++) {
-            var player = new float[134];
+            var player = new float[FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER];
             player[0] = 1.0f;
             accumulator.addSnapshot(new WindowSnapshot(
-                player, new float[134], 0.0f));
+                player, new float[FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER], 0.0f));
         }
         var result = extractor.extract(
             accumulator.getWindowedFeatures(),

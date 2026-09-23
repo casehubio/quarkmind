@@ -21,21 +21,23 @@ import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.agent.ScoutingIntelBroker;
 import io.quarkmind.agent.StrategyTaxonomy;
 import io.quarkmind.agent.plugin.PatternAssessmentPublished;
-import io.quarkmind.agent.plugin.StrategyTransitionPublished;
-import io.quarkmind.domain.StrategyTransition;
-import io.quarkmind.domain.TransitionPath;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload.PatternAssessmentPayload;
 import io.quarkmind.agent.plugin.ScoutingIntelPreferences;
 import io.quarkmind.agent.plugin.ScoutingIntelType;
 import io.quarkmind.agent.plugin.ScoutingTask;
+import io.quarkmind.agent.plugin.StrategyTransitionPublished;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.MapInfo;
 import io.quarkmind.domain.PatternAssessment;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.PhaseResolver;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.StrategyTransition;
+import io.quarkmind.domain.TransitionPath;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.MoveIntent;
@@ -481,51 +483,139 @@ public class DroolsScoutingTask implements ScoutingTask {
     }
 
     static WindowSnapshot buildSnapshot(GameState gs) {
-        float[] player = new float[FeatureIndexMaps.N_FEATURES_PER_PLAYER];
-        float[] opponent = new float[FeatureIndexMaps.N_FEATURES_PER_PLAYER];
+        float[] player   = new float[FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER];
+        float[] opponent = new float[FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER];
 
         for (var b : gs.myBuildings()) {
             Integer idx = FeatureIndexMaps.BUILDING_INDEX.get(b.type());
-            if (idx != null) player[idx]++;
+            if (idx != null) {player[idx]++;}
         }
         for (var u : gs.myUnits()) {
             Integer idx = FeatureIndexMaps.UNIT_INDEX.get(u.type());
-            if (idx != null) player[FeatureIndexMaps.N_BUILDINGS + idx]++;
+            if (idx != null) {player[FeatureIndexMaps.N_BUILDINGS + idx]++;}
         }
         float[] ecoArray = gs.playerEconomy().toFeatureVector();
         System.arraycopy(ecoArray, 0, player,
-                FeatureIndexMaps.N_BUILDINGS + FeatureIndexMaps.N_UNITS, ecoArray.length);
+                         FeatureIndexMaps.N_BUILDINGS + FeatureIndexMaps.N_UNITS, ecoArray.length);
         for (int i = 0; i < FeatureIndexMaps.UPGRADE_NAMES.size(); i++) {
             if (gs.playerUpgrades().contains(FeatureIndexMaps.UPGRADE_NAMES.get(i))) {
                 player[FeatureIndexMaps.N_BUILDINGS + FeatureIndexMaps.N_UNITS
-                        + FeatureIndexMaps.N_STATS + i] = 1.0f;
+                       + FeatureIndexMaps.N_STATS + i] = 1.0f;
             }
         }
 
         for (var b : gs.enemyBuildings()) {
             Integer idx = FeatureIndexMaps.BUILDING_INDEX.get(b.type());
-            if (idx != null) opponent[idx]++;
+            if (idx != null) {opponent[idx]++;}
         }
         for (var u : gs.enemyUnits()) {
             Integer idx = FeatureIndexMaps.UNIT_INDEX.get(u.type());
-            if (idx != null) opponent[FeatureIndexMaps.N_BUILDINGS + idx]++;
+            if (idx != null) {opponent[FeatureIndexMaps.N_BUILDINGS + idx]++;}
         }
         float[] enemyEcoArray = gs.enemyEconomy().toFeatureVector();
         System.arraycopy(enemyEcoArray, 0, opponent,
-                FeatureIndexMaps.N_BUILDINGS + FeatureIndexMaps.N_UNITS, enemyEcoArray.length);
+                         FeatureIndexMaps.N_BUILDINGS + FeatureIndexMaps.N_UNITS, enemyEcoArray.length);
         for (int i = 0; i < FeatureIndexMaps.UPGRADE_NAMES.size(); i++) {
             if (gs.enemyUpgrades().contains(FeatureIndexMaps.UPGRADE_NAMES.get(i))) {
                 opponent[FeatureIndexMaps.N_BUILDINGS + FeatureIndexMaps.N_UNITS
-                        + FeatureIndexMaps.N_STATS + i] = 1.0f;
+                         + FeatureIndexMaps.N_STATS + i] = 1.0f;
             }
         }
 
+        // Spatial + ratio features require mapInfo
+        if (gs.mapInfo() != null) {
+            MapInfo map = gs.mapInfo();
+            float mapDiag = (float) Math.sqrt(
+                    (double) map.mapWidth() * map.mapWidth() + (double) map.mapHeight() * map.mapHeight());
+
+            computeSpatialFeatures(player, FeatureIndexMaps.SPATIAL_OFFSET,
+                                   gs.myUnits(), gs.myBuildings(), map.playerStart(), map.enemyStart(),
+                                   map.mapWidth(), map.mapHeight(), mapDiag);
+            computeSpatialFeatures(opponent, FeatureIndexMaps.SPATIAL_OFFSET,
+                                   gs.enemyUnits(), gs.enemyBuildings(), map.enemyStart(), map.playerStart(),
+                                   map.mapWidth(), map.mapHeight(), mapDiag);
+        }
+
+        computeRatioFeatures(player, FeatureIndexMaps.RATIO_OFFSET,
+                             gs.myUnits(), gs.myBuildings(), gs.playerEconomy());
+        computeRatioFeatures(opponent, FeatureIndexMaps.RATIO_OFFSET,
+                             gs.enemyUnits(), gs.enemyBuildings(), gs.enemyEconomy());
+
         int uniqueEnemyTypes = (int) gs.enemyUnits().stream()
-                .map(Unit::type).distinct().count();
+                                       .map(Unit::type).distinct().count();
         float visibility = Math.min(1.0f, uniqueEnemyTypes / 5.0f);
 
         return new WindowSnapshot(player, opponent, visibility);
     }
+
+    private static void computeSpatialFeatures(
+            float[] features, int offset,
+            List<Unit> allUnits, List<Building> buildings,
+            Point2d ownBase, Point2d enemyBase,
+            int mapWidth, int mapHeight, float mapDiag) {
+        List<Unit> armyUnits = allUnits.stream()
+                                       .filter(u -> !SC2Data.isWorker(u.type())).toList();
+        if (armyUnits.isEmpty()) {return;}
+        Point2d centroid = Point2d.centroidOf(armyUnits);
+        if (centroid == null) {return;}
+        features[offset]     = centroid.x() / mapWidth;
+        features[offset + 1] = centroid.y() / mapHeight;
+        features[offset + 2] = (float) centroid.distanceTo(ownBase) / mapDiag;
+        features[offset + 3] = (float) centroid.distanceTo(enemyBase) / mapDiag;
+        double varX = 0, varY = 0;
+        for (Unit u : armyUnits) {
+            float dx = u.position().x() - centroid.x();
+            float dy = u.position().y() - centroid.y();
+            varX += dx * dx;
+            varY += dy * dy;
+        }
+        varX /= armyUnits.size();
+        varY /= armyUnits.size();
+        features[offset + 4] = (float) Math.sqrt(varX + varY) / mapDiag;
+        double maxForward = 0;
+        double baseDist   = ownBase.distanceTo(enemyBase);
+        for (Unit u : armyUnits) {
+            double forward = baseDist - u.position().distanceTo(enemyBase);
+            if (forward > maxForward) {maxForward = forward;}
+        }
+        features[offset + 5] = (float) maxForward / mapDiag;
+        if (!buildings.isEmpty()) {
+            int proxied = 0;
+            for (Building b : buildings) {
+                if (b.position().distanceTo(enemyBase) < b.position().distanceTo(ownBase)) {
+                    proxied++;
+                }
+            }
+            features[offset + 6] = (float) proxied / buildings.size();
+        }
+    }
+
+    private static void computeRatioFeatures(
+            float[] features, int offset,
+            List<Unit> allUnits, List<Building> buildings,
+            PlayerEconomyStats eco) {
+        float armySupply = 0;
+        for (Unit u : allUnits) {
+            if (!SC2Data.isWorker(u.type())) {
+                armySupply += SC2Data.supplyCost(u.type());
+            }
+        }
+        float foodUsed = Math.max(eco.foodUsed() / 1000.0f, 1e-6f);
+        features[offset] = armySupply / foodUsed;
+        int baseCount = 0;
+        for (Building b : buildings) {
+            if (SC2Data.isBase(b.type())) {baseCount++;}
+        }
+        float satDenom = Math.max(baseCount * 16.0f, 1.0f);
+        features[offset + 1] = (eco.workersActiveCount() / 1000.0f) / satDenom;
+        float gasSpent = (eco.vespeneUsedCurrentArmy() + eco.vespeneUsedCurrentEconomy()
+                          + eco.vespeneUsedCurrentTechnology()) / 1000.0f;
+        float minSpent = (eco.mineralsUsedCurrentArmy() + eco.mineralsUsedCurrentEconomy()
+                          + eco.mineralsUsedCurrentTechnology()) / 1000.0f;
+        float totalSpent = Math.max(gasSpent + minSpent, 1e-6f);
+        features[offset + 2] = gasSpent / totalSpent;
+    }
+
 
     static io.quarkmind.domain.Race resolveEnemyRace(CaseContext ctx) {
         String raceName = ctx.getAs(QuarkMindCaseFile.ENEMY_RACE, String.class);

@@ -39,9 +39,9 @@ public final class StrategyFeatureExtractor {
                 temporal, w * FEATURES_PER_WINDOW, FEATURES_PER_WINDOW);
         }
 
-        boolean hasPlayer = hasNonZeroBlock(temporal, 0, TemporalWindowAccumulator.FEATURES_PER_PLAYER);
+        boolean hasPlayer = hasNonZeroBlock(temporal, 0, FeatureIndexMaps.N_FEATURES_PER_PLAYER);
         boolean hasOpponent = hasNonZeroBlock(temporal,
-            TemporalWindowAccumulator.FEATURES_PER_PLAYER, 2 * TemporalWindowAccumulator.FEATURES_PER_PLAYER);
+            FeatureIndexMaps.N_FEATURES_PER_PLAYER, 2 * FeatureIndexMaps.N_FEATURES_PER_PLAYER);
 
         for (int w = 0; w < MAX_WINDOWS; w++) {
             int base = w * FEATURES_PER_WINDOW;
