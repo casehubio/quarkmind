@@ -3,7 +3,7 @@ package io.quarkmind.agent.cbr;
 import io.casehub.api.spi.routing.TrustRoutingPolicyProvider;
 import io.casehub.ledger.api.spi.TrustScoreSource;
 import io.casehub.ledger.routing.TrustCandidateClassifier;
-import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
+import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agency.context.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
@@ -32,14 +32,14 @@ import static org.mockito.Mockito.when;
 class SC2StrategyRouterTaskTest {
 
     ScoutingIntelBroker broker;
-    CbrCaseMemoryStore cbrStore;
+    CbrRecordStore cbrStore;
     GameSession gameSession;
     SC2StrategyRouterTask router;
 
     @BeforeEach
     void setUp() {
         broker = mock(ScoutingIntelBroker.class);
-        cbrStore = mock(CbrCaseMemoryStore.class);
+        cbrStore = mock(CbrRecordStore.class);
         when(cbrStore.retrieveSimilar(any(), any())).thenReturn(List.of());
         gameSession = new GameSession();
 

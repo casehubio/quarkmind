@@ -1,7 +1,7 @@
 package io.quarkmind.agent.cbr;
 
-import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
-import io.casehub.neocortex.memory.cbr.CbrFeatureSchema;
+import io.casehub.neocortex.memory.cbr.CbrRecordStore;
+import io.casehub.neocortex.memory.cbr.CbrRecordSchema;
 import io.casehub.neocortex.memory.cbr.FeatureField;
 import io.casehub.neocortex.memory.cbr.SimilaritySpec;
 import io.casehub.neocortex.memory.cbr.WarpingConstraint;
@@ -21,10 +21,10 @@ public class SC2CbrSchemaRegistrar {
     private static final Logger log = Logger.getLogger(SC2CbrSchemaRegistrar.class);
 
     @Inject
-    CbrCaseMemoryStore cbrStore;
+    CbrRecordStore cbrStore;
 
-    static CbrFeatureSchema buildStrategySchema() {
-        return CbrFeatureSchema.of(
+    static CbrRecordSchema buildStrategySchema() {
+        return CbrRecordSchema.of(
                 SC2GameCbrCase.CBR_TYPE,
                 // Tier 1
                 FeatureField.categorical("enemy_archetype"),
@@ -85,10 +85,10 @@ public class SC2CbrSchemaRegistrar {
 
     @PostConstruct
     void register() {
-        CbrFeatureSchema strategySchema = buildStrategySchema();
+        CbrRecordSchema strategySchema = buildStrategySchema();
         cbrStore.registerSchema(strategySchema);
 
-        CbrFeatureSchema advisorySchema = CbrFeatureSchema.of(
+        CbrRecordSchema advisorySchema = CbrRecordSchema.of(
                 SC2AdvisoryCbrCase.CBR_TYPE,
                 FeatureField.categorical("enemy_archetype"),
                 FeatureField.categorical("enemy_race"),

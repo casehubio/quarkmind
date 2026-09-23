@@ -4,7 +4,7 @@ import io.casehub.api.spi.CaseOutcomeEvent;
 import io.casehub.api.spi.CaseOutcomeObserver;
 import io.casehub.blocks.summarisation.LevelEvent;
 import io.casehub.neocortex.memory.MemoryDomain;
-import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
+import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.cbr.CbrOutcome;
 import io.casehub.neocortex.memory.cbr.FeatureValue;
 import io.casehub.platform.api.path.Path;
@@ -45,7 +45,7 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
     private static final Logger       log    = Logger.getLogger(SC2CbrRetentionObserver.class);
     private static final MemoryDomain DOMAIN = new MemoryDomain("quarkmind");
 
-    private final CbrCaseMemoryStore           cbrStore;
+    private final CbrRecordStore           cbrStore;
     private final SummarisationLifecycle       summarisationLifecycle;
     private final MomentBroker                 momentBroker;
     private final MultiFactorDominanceAssessor dominanceAssessor;
@@ -57,7 +57,7 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
     private final List<StrategyTransition> transitions = new CopyOnWriteArrayList<>();
 
     @Inject
-    public SC2CbrRetentionObserver(CbrCaseMemoryStore cbrStore,
+    public SC2CbrRetentionObserver(CbrRecordStore cbrStore,
                                    SummarisationLifecycle summarisationLifecycle,
                                    MomentBroker momentBroker,
                                    MultiFactorDominanceAssessor dominanceAssessor,

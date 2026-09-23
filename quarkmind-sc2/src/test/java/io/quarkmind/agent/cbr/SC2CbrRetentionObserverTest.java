@@ -3,7 +3,7 @@ package io.quarkmind.agent.cbr;
 import io.casehub.api.spi.CaseOutcomeEvent;
 import io.casehub.blocks.summarisation.EventLevel;
 import io.casehub.blocks.summarisation.LevelEvent;
-import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
+import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.cbr.FeatureValue;
 import io.quarkmind.agent.MultiFactorDominanceAssessor;
 import io.quarkmind.agent.QuarkMindCaseFile;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 
 class SC2CbrRetentionObserverTest {
 
-    CbrCaseMemoryStore store;
+    CbrRecordStore store;
     SummarisationLifecycle summarisationLifecycle;
     MomentBroker momentBroker;
     MultiFactorDominanceAssessor dominanceAssessor;
@@ -53,7 +53,7 @@ class SC2CbrRetentionObserverTest {
 
     @BeforeEach
     void setUp() {
-        store = mock(CbrCaseMemoryStore.class);
+        store = mock(CbrRecordStore.class);
         when(store.store(any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn("stored-case-1");
         summarisationLifecycle = mock(SummarisationLifecycle.class);

@@ -3,7 +3,7 @@ package io.quarkmind.agent.cbr;
 import io.casehub.api.spi.CaseOutcomeEvent;
 import io.casehub.api.spi.CaseOutcomeObserver;
 import io.casehub.neocortex.memory.MemoryDomain;
-import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
+import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.cbr.CbrOutcome;
 import io.casehub.platform.api.path.Path;
 import io.quarkmind.agent.AdvisoryInvocationCounter;
@@ -22,11 +22,11 @@ public class SC2AdvisoryCbrRetentionObserver implements CaseOutcomeObserver {
     private static final Logger log = Logger.getLogger(SC2AdvisoryCbrRetentionObserver.class);
     private static final MemoryDomain DOMAIN = new MemoryDomain("quarkmind");
 
-    private final CbrCaseMemoryStore cbrStore;
+    private final CbrRecordStore cbrStore;
     private final AdvisoryInvocationCounter invocationCounter;
 
     @Inject
-    public SC2AdvisoryCbrRetentionObserver(CbrCaseMemoryStore cbrStore, AdvisoryInvocationCounter invocationCounter) {
+    public SC2AdvisoryCbrRetentionObserver(CbrRecordStore cbrStore, AdvisoryInvocationCounter invocationCounter) {
         this.cbrStore = cbrStore;
         this.invocationCounter = invocationCounter;
     }

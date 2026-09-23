@@ -14,10 +14,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class SC2GameCbrCaseTest {
 
     @Test
-    void cbrType() {
+    void recordType() {
         var c = new SC2GameCbrCase("vs ZERG_ROACH_RUSH (PvZ)", "strategy.early-pressure",
                                    null, null, Map.of());
-        assertThat(c.cbrType()).isEqualTo("sc2-strategy");
+        assertThat(c.recordType()).isEqualTo("sc2-strategy");
     }
 
     @Test

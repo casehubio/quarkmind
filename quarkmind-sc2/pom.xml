@@ -209,11 +209,10 @@
             <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
         </dependency>
 
-        <!-- Quarkus Flow -->
+        <!-- Quarkus Flow — version managed by parent dependencyManagement -->
         <dependency>
             <groupId>io.quarkiverse.flow</groupId>
             <artifactId>quarkus-flow</artifactId>
-            <version>0.7.1</version>
         </dependency>
 
         <!-- SmallRye Reactive Messaging -->

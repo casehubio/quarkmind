@@ -131,13 +131,13 @@ class SC2AdvisoryCbrRetentionObserverTest {
     record StoredCase(SC2AdvisoryCbrCase cbrCase, String cbrType) {}
     record StoredOutcome(String caseId, CbrOutcome outcome) {}
 
-    static class RecordingCbrStore implements CbrCaseMemoryStore {
+    static class RecordingCbrStore implements CbrRecordStore {
         final List<StoredCase> storedCases = new ArrayList<>();
         final List<StoredOutcome> outcomes = new ArrayList<>();
         private int counter = 0;
 
         @Override
-        public String store(CbrCase cbrCase, String tenancyId, String correlationId,
+        public String store(CbrRecord cbrCase, String tenancyId, String correlationId,
                             MemoryDomain domain, String sourceId, String cbrType, Path path) {
             storedCases.add(new StoredCase((SC2AdvisoryCbrCase) cbrCase, cbrType));
             return "case-" + counter++;
@@ -147,8 +147,8 @@ class SC2AdvisoryCbrRetentionObserverTest {
             outcomes.add(new StoredOutcome(caseId, outcome));
         }
 
-        @Override public void registerSchema(CbrFeatureSchema schema) {}
-        @Override public <C extends CbrCase> List<ScoredCbrCase<C>> retrieveSimilar(CbrQuery query, Class<C> type) { return List.of(); }
+        @Override public void registerSchema(CbrRecordSchema schema) {}
+        @Override public <C extends CbrRecord> List<CbrMatch<C>> retrieveSimilar(CbrQuery query, Class<C> type) { return List.of(); }
         @Override public Integer erase(EraseRequest request) { return 0; }
         @Override public Integer eraseEntity(String entityId, String tenancyId) { return 0; }
         @Override public Integer eraseByScope(Path scope, String tenancyId) { return 0; }

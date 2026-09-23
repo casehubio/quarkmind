@@ -10,10 +10,10 @@ import io.casehub.api.spi.routing.TrustRoutingPolicyProvider;
 import io.casehub.ledger.api.spi.TrustScoreSource;
 import io.casehub.ledger.routing.TrustCandidateClassifier;
 import io.casehub.neocortex.memory.MemoryDomain;
-import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
+import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.cbr.CbrQuery;
 import io.casehub.neocortex.memory.cbr.FeatureValue;
-import io.casehub.neocortex.memory.cbr.ScoredCbrCase;
+import io.casehub.neocortex.memory.cbr.CbrMatch;
 import io.casehub.platform.api.path.Path;
 import io.quarkmind.agent.GameSession;
 import io.quarkmind.agent.QuarkMindCaseFile;
@@ -48,7 +48,7 @@ public class SC2StrategyRouterTask implements TaskDefinition {
     private static final String CAPABILITY = "strategy";
 
     private final ScoutingIntelBroker broker;
-    private final CbrCaseMemoryStore cbrStore;
+    private final CbrRecordStore cbrStore;
     private final GameSession gameSession;
     private final List<StrategyTask> strategies;
     private final double confidenceThreshold;
@@ -63,7 +63,7 @@ public class SC2StrategyRouterTask implements TaskDefinition {
     @Inject
     public SC2StrategyRouterTask(
             ScoutingIntelBroker broker,
-            CbrCaseMemoryStore cbrStore,
+            CbrRecordStore cbrStore,
             GameSession gameSession,
             @Any Instance<StrategyTask> strategyTasks,
             TrustCandidateClassifier classifier,
@@ -80,7 +80,7 @@ public class SC2StrategyRouterTask implements TaskDefinition {
     }
 
     SC2StrategyRouterTask(
-            ScoutingIntelBroker broker, CbrCaseMemoryStore cbrStore,
+            ScoutingIntelBroker broker, CbrRecordStore cbrStore,
             GameSession gameSession, List<StrategyTask> strategies,
             TrustCandidateClassifier classifier, TrustScoreSource scoreSource,
             TrustRoutingPolicyProvider policyProvider,
@@ -146,7 +146,7 @@ public class SC2StrategyRouterTask implements TaskDefinition {
         int pivotCount = ctx.getOrDefault(QuarkMindCaseFile.STRATEGY_PIVOT_COUNT, -1);
         if (pivotCount >= maxPivots) return;
 
-        List<ScoredCbrCase<SC2GameCbrCase>> retrieved = cbrStore.retrieveSimilar(
+        List<CbrMatch<SC2GameCbrCase>> retrieved = cbrStore.retrieveSimilar(
                 CbrQuery.of("default", DOMAIN, Path.root(), SC2GameCbrCase.CBR_TYPE,
                                 Map.of(
                                         "enemy_archetype", FeatureValue.string(archetype.name()),
@@ -164,10 +164,10 @@ public class SC2StrategyRouterTask implements TaskDefinition {
 
         List<RetrievedExperience> experiences = retrieved.stream()
                 .map(sc -> new RetrievedExperience(
-                        sc.cbrCase().problem(), sc.cbrCase().solution(),
-                        sc.cbrCase().outcome(), sc.cbrCase().confidence() != null ? sc.cbrCase().confidence().value() : null,
+                        sc.cbrRecord().problem(), sc.cbrRecord().solution(),
+                        sc.cbrRecord().outcome(), sc.cbrRecord().confidence() != null ? sc.cbrRecord().confidence().value() : null,
                         sc.score(),
-                        FeatureValue.toRawMap(sc.cbrCase().features()),
+                        FeatureValue.toRawMap(sc.cbrRecord().features()),
                         List.of(), sc.featureSimilarities()))
                 .toList();
 

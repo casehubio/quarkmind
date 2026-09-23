@@ -1,11 +1,11 @@
 package io.quarkmind.qa;
 
 import io.casehub.neocortex.memory.MemoryDomain;
-import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
+import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.cbr.CbrQuery;
 import io.casehub.neocortex.memory.cbr.FeatureValue;
 import io.casehub.neocortex.memory.cbr.RetrievalMode;
-import io.casehub.neocortex.memory.cbr.ScoredCbrCase;
+import io.casehub.neocortex.memory.cbr.CbrMatch;
 import io.casehub.platform.api.path.Path;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.quarkmind.agent.cbr.SC2GameCbrCase;
@@ -31,7 +31,7 @@ public class CbrLearningCurveEndpoint {
 
     private static final MemoryDomain DOMAIN = new MemoryDomain("quarkmind");
 
-    @Inject CbrCaseMemoryStore cbrStore;
+    @Inject CbrRecordStore cbrStore;
 
     @GET @jakarta.ws.rs.Path("/learning-curve")
     public Response learningCurve() {
@@ -71,7 +71,7 @@ public class CbrLearningCurveEndpoint {
     public Response strategyEvolution() {
         var cases = retrieveAllCases();
         var byStrategy = cases.stream()
-                .collect(Collectors.groupingBy(c -> c.cbrCase().solution()));
+                .collect(Collectors.groupingBy(c -> c.cbrRecord().solution()));
 
         var strategies = byStrategy.entrySet().stream().map(e -> {
             var strategyCases = e.getValue();
@@ -97,21 +97,21 @@ public class CbrLearningCurveEndpoint {
     public Response caseStats() {
         var strategyCases = retrieveAllCases();
         int tier2Count = (int) strategyCases.stream()
-                .filter(c -> c.cbrCase().features().containsKey("moment_count"))
+                .filter(c -> c.cbrRecord().features().containsKey("moment_count"))
                 .count();
         double tier2Coverage = strategyCases.isEmpty() ? 0.0
                 : (double) tier2Count / strategyCases.size();
 
         long influencedCount = strategyCases.stream()
                 .filter(c -> {
-                    var v = c.cbrCase().features().get("cbr_influenced");
+                    var v = c.cbrRecord().features().get("cbr_influenced");
                     return v != null && "true".equals(String.valueOf(v.toRawValue()));
                 }).count();
         double influenceRate = strategyCases.isEmpty() ? 0.0
                 : (double) influencedCount / strategyCases.size();
 
         var perOpponent = strategyCases.stream()
-                .filter(c -> c.cbrCase().features().containsKey("opponent_id"))
+                .filter(c -> c.cbrRecord().features().containsKey("opponent_id"))
                 .collect(Collectors.groupingBy(c -> featureString(c, "opponent_id"),
                         Collectors.counting()));
 
@@ -123,7 +123,7 @@ public class CbrLearningCurveEndpoint {
         return Response.ok(result).build();
     }
 
-    private List<ScoredCbrCase<SC2GameCbrCase>> retrieveAllCases() {
+    private List<CbrMatch<SC2GameCbrCase>> retrieveAllCases() {
         var query = CbrQuery.of("default", DOMAIN,
                 Path.of("quarkmind", "strategy", "cases"),
                 SC2GameCbrCase.CBR_TYPE, Map.of(), 1000)
@@ -132,9 +132,9 @@ public class CbrLearningCurveEndpoint {
         return new ArrayList<>(cbrStore.retrieveSimilar(query, SC2GameCbrCase.class));
     }
 
-    private static double winRate(List<? extends ScoredCbrCase<?>> cases) {
+    private static double winRate(List<? extends CbrMatch<?>> cases) {
         if (cases.isEmpty()) return 0.0;
-        long wins = cases.stream().filter(c -> "WIN".equals(c.cbrCase().outcome())).count();
+        long wins = cases.stream().filter(c -> "WIN".equals(c.cbrRecord().outcome())).count();
         return (double) wins / cases.size();
     }
 
@@ -146,8 +146,8 @@ public class CbrLearningCurveEndpoint {
         return list.subList(0, Math.min(n, list.size()));
     }
 
-    private static String featureString(ScoredCbrCase<?> sc, String key) {
-        var v = sc.cbrCase().features().get(key);
+    private static String featureString(CbrMatch<?> sc, String key) {
+        var v = sc.cbrRecord().features().get(key);
         return v != null ? String.valueOf(v.toRawValue()) : "unknown";
     }
 }

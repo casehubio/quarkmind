@@ -48,6 +48,30 @@
                 <artifactId>json-schema-validator</artifactId>
                 <version>2.0.0</version>
             </dependency>
+            <!-- Align quarkus-flow: casehub-engine-support-core brings 0.13.0 -->
+            <dependency>
+                <groupId>io.quarkiverse.flow</groupId>
+                <artifactId>quarkus-flow</artifactId>
+                <version>0.13.0</version>
+            </dependency>
+            <!-- Align MCP SDK: casehub-engine-support-core brings 2.0.0 -->
+            <dependency>
+                <groupId>io.modelcontextprotocol.sdk</groupId>
+                <artifactId>mcp</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+            <!-- Align Jackson 3.x: mcp-json-jackson3 brings 3.0.3, jsonschema2pojo-core brings 3.0.2 -->
+            <dependency>
+                <groupId>tools.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>3.0.3</version>
+            </dependency>
+            <!-- Align jackson-jq: quarkus-flow 0.13.0 brings 1.6.2, platform-expression brings 1.6.0 -->
+            <dependency>
+                <groupId>net.thisptr</groupId>
+                <artifactId>jackson-jq</artifactId>
+                <version>1.6.2</version>
+            </dependency>
             <!-- Drools BOM — Apache KIE; governs all org.drools:* versions -->
             <dependency>
                 <groupId>org.drools</groupId>

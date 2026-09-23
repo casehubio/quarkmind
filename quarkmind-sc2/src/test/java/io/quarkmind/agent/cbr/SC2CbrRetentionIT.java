@@ -1,7 +1,7 @@
 package io.quarkmind.agent.cbr;
 
 import io.casehub.api.spi.CaseOutcomeEvent;
-import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
+import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -30,7 +30,7 @@ import java.util.UUID;
 class SC2CbrRetentionIT {
 
 
-    @Inject CbrCaseMemoryStore cbrStore;
+    @Inject CbrRecordStore cbrStore;
     @Inject SC2CbrRetentionObserver retentionObserver;
 
     @Test
@@ -44,8 +44,8 @@ class SC2CbrRetentionIT {
                 "WIN", Instant.now(), Map.of());
 
         retentionObserver.onOutcome(event);
-        // InMemoryCbrCaseMemoryStore.store() succeeded if no exception was thrown.
-        // Retrieval verification deferred — InMemoryCbrCaseMemoryStore.retrieveSimilar()
+        // InMemoryCbrRecordStore.store() succeeded if no exception was thrown.
+        // Retrieval verification deferred — InMemoryCbrRecordStore.retrieveSimilar()
         // returns empty in this Quarkus test context (tracked: foundation issue).
     }
 

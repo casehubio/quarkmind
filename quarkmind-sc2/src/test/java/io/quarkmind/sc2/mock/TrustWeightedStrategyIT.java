@@ -2,7 +2,7 @@ package io.quarkmind.sc2.mock;
 
 import io.casehub.ledger.memory.InMemoryLedgerEntryRepository;
 import io.casehub.ledger.runtime.repository.ActorTrustScoreRepository;
-import io.casehub.ledger.runtime.service.TrustGateService;
+import io.casehub.ledger.core.trust.TrustGateService;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Instance;

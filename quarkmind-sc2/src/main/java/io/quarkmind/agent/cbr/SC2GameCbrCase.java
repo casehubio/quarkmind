@@ -1,7 +1,7 @@
 package io.quarkmind.agent.cbr;
 
 import io.casehub.neocortex.cognitive.Confidence;
-import io.casehub.neocortex.memory.cbr.CbrCase;
+import io.casehub.neocortex.memory.cbr.CbrRecord;
 import io.casehub.neocortex.memory.cbr.FeatureValue;
 import io.quarkmind.domain.TimelineObservation;
 
@@ -15,7 +15,7 @@ public record SC2GameCbrCase(
         String outcome,
         Confidence confidence,
         Map<String, FeatureValue> features
-) implements CbrCase {
+) implements CbrRecord {
 
     public static final String CBR_TYPE = "sc2-strategy";
 
@@ -109,15 +109,15 @@ public record SC2GameCbrCase(
     }
 
     @Override
-    public String cbrType() {return CBR_TYPE;}
+    public String recordType() {return CBR_TYPE;}
 
     @Override
-    public CbrCase withOutcome(String outcome, Confidence confidence) {
+    public CbrRecord withOutcome(String outcome, Confidence confidence) {
         return new SC2GameCbrCase(problem, solution, outcome, confidence, features);
     }
 
     @Override
-    public CbrCase withFeatures(Map<String, FeatureValue> features) {
+    public CbrRecord withFeatures(Map<String, FeatureValue> features) {
         return new SC2GameCbrCase(problem, solution, outcome, confidence, features);
     }
 

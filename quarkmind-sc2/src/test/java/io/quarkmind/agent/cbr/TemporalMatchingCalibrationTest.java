@@ -3,7 +3,7 @@ package io.quarkmind.agent.cbr;
 import io.casehub.neocortex.memory.cbr.DtwSimilarity;
 import io.casehub.neocortex.memory.cbr.FeatureField;
 import io.casehub.neocortex.memory.cbr.FeatureValue;
-import io.casehub.neocortex.memory.cbr.ScoredCbrCase;
+import io.casehub.neocortex.memory.cbr.CbrMatch;
 import io.casehub.neocortex.memory.cbr.WarpingConstraint;
 import io.quarkmind.domain.TimelineObservation;
 import org.junit.jupiter.api.Tag;
@@ -78,7 +78,7 @@ class TemporalMatchingCalibrationTest {
         features.put("phase_sequence", FeatureValue.stringList("EARLY_MACRO", "MID_SKIRMISH"));
         features.put("enemy_archetype", FeatureValue.string("ZERG_ROACH_RUSH"));
         var storedCase = new SC2GameCbrCase("vs ZERG (PvZ)", "strategy.drools", "WIN", io.casehub.neocortex.cognitive.Confidence.unknown(0.9), features);
-        var scored = new ScoredCbrCase<>(storedCase, "sc2-game", 0.85);
+        var scored = new CbrMatch<>(storedCase, "sc2-game", 0.85);
 
         var task = new TemporalCbrTask(null, null, null);
         var prediction = task.extractPrediction(queryTimeline, List.of(scored));

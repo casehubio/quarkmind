@@ -1,8 +1,8 @@
 package io.quarkmind.qa;
 
-import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
+import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.cbr.FeatureValue;
-import io.casehub.neocortex.memory.cbr.ScoredCbrCase;
+import io.casehub.neocortex.memory.cbr.CbrMatch;
 import io.quarkmind.agent.cbr.SC2GameCbrCase;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,12 +20,12 @@ import static org.mockito.Mockito.when;
 
 class CbrLearningCurveEndpointTest {
 
-    CbrCaseMemoryStore store;
+    CbrRecordStore store;
     CbrLearningCurveEndpoint endpoint;
 
     @BeforeEach
     void setUp() throws Exception {
-        store = mock(CbrCaseMemoryStore.class);
+        store = mock(CbrRecordStore.class);
         endpoint = new CbrLearningCurveEndpoint();
         var field = CbrLearningCurveEndpoint.class.getDeclaredField("cbrStore");
         field.setAccessible(true);
@@ -168,8 +168,8 @@ class CbrLearningCurveEndpointTest {
 
         when(store.retrieveSimilar(any(), eq(SC2GameCbrCase.class)))
                 .thenReturn(List.of(
-                        new ScoredCbrCase<>(tier1Case, "sc2-game", 0.5),
-                        new ScoredCbrCase<>(tier2Case, "sc2-game", 0.5)));
+                        new CbrMatch<>(tier1Case, "sc2-game", 0.5),
+                        new CbrMatch<>(tier2Case, "sc2-game", 0.5)));
 
         Response r = endpoint.caseStats();
         @SuppressWarnings("unchecked")
@@ -178,11 +178,11 @@ class CbrLearningCurveEndpointTest {
         assertThat((double) body.get("tier2Coverage")).isCloseTo(0.5, org.assertj.core.data.Offset.offset(0.01));
     }
 
-    private static ScoredCbrCase<SC2GameCbrCase> scored(String outcome, String matchup, String strategy, int order) {
+    private static CbrMatch<SC2GameCbrCase> scored(String outcome, String matchup, String strategy, int order) {
         var c = new SC2GameCbrCase("problem", strategy, outcome, null, Map.of(
                 "matchup", FeatureValue.string(matchup),
                 "enemy_archetype", FeatureValue.string("ARCH_" + order)));
-        return new ScoredCbrCase<>(c, "case-" + order, "sc2-game", 0.5, false, Map.of(),
+        return new CbrMatch<>(c, "case-" + order, "sc2-game", 0.5, false, Map.of(),
                 Instant.EPOCH.plusSeconds(order * 3600L), io.casehub.platform.api.path.Path.root(), null);
     }
 }

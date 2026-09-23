@@ -3,10 +3,10 @@ package io.quarkmind.agent.cbr;
 import io.casehub.annotation.CaseType;
 import io.casehub.api.context.CaseContext;
 import io.casehub.neocortex.memory.MemoryDomain;
-import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
+import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.cbr.CbrQuery;
 import io.casehub.neocortex.memory.cbr.FeatureValue;
-import io.casehub.neocortex.memory.cbr.ScoredCbrCase;
+import io.casehub.neocortex.memory.cbr.CbrMatch;
 import io.casehub.platform.api.path.Path;
 import io.quarkmind.agency.task.TaskDefinition;
 import io.quarkmind.agent.QuarkMindCaseFile;
@@ -37,7 +37,7 @@ public class TemporalCbrTask implements TaskDefinition {
     private static final double       MIN_SIMILARITY        = 0.3;
     private static final MemoryDomain DOMAIN                = new MemoryDomain("quarkmind");
 
-    private final CbrCaseMemoryStore     cbrStore;
+    private final CbrRecordStore     cbrStore;
     private final TimelineSampler        timelineSampler;
     private final SummarisationLifecycle summarisationLifecycle;
 
@@ -45,7 +45,7 @@ public class TemporalCbrTask implements TaskDefinition {
     private       long                  lastQueryFrame = -QUERY_INTERVAL_FRAMES;
 
     @Inject
-    public TemporalCbrTask(CbrCaseMemoryStore cbrStore,
+    public TemporalCbrTask(CbrRecordStore cbrStore,
                            TimelineSampler timelineSampler,
                            SummarisationLifecycle summarisationLifecycle) {
         this.cbrStore               = cbrStore;
@@ -138,7 +138,7 @@ public class TemporalCbrTask implements TaskDefinition {
 
     TemporalPrediction extractPrediction(
             List<TimelineObservation> queryTimeline,
-            List<ScoredCbrCase<SC2GameCbrCase>> results) {
+            List<CbrMatch<SC2GameCbrCase>> results) {
 
         double queryEndMinute = queryTimeline.getLast().minute();
 
@@ -146,7 +146,7 @@ public class TemporalCbrTask implements TaskDefinition {
         List<List<TimelineObservation>> lookaheads = new ArrayList<>();
 
         for (var scored : results) {
-            var caseFeatures = scored.cbrCase().features();
+            var caseFeatures = scored.cbrRecord().features();
             if (!caseFeatures.containsKey("timeline")) {continue;}
 
             var caseTimeline = ((FeatureValue.StructListVal) caseFeatures.get("timeline")).items();

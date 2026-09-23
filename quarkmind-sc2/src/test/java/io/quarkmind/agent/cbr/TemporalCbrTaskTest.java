@@ -1,8 +1,8 @@
 package io.quarkmind.agent.cbr;
 
-import io.casehub.neocortex.memory.cbr.CbrCaseMemoryStore;
+import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.cbr.FeatureValue;
-import io.casehub.neocortex.memory.cbr.ScoredCbrCase;
+import io.casehub.neocortex.memory.cbr.CbrMatch;
 import io.quarkmind.agency.context.MutableMapCaseContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.GameState;
@@ -29,14 +29,14 @@ import static org.mockito.Mockito.mock;
 
 class TemporalCbrTaskTest {
 
-    CbrCaseMemoryStore cbrStore;
+    CbrRecordStore cbrStore;
     TimelineSampler timelineSampler;
     SummarisationLifecycle summarisationLifecycle;
     TemporalCbrTask task;
 
     @BeforeEach
     void setUp() {
-        cbrStore = mock(CbrCaseMemoryStore.class);
+        cbrStore = mock(CbrRecordStore.class);
         timelineSampler = new TimelineSampler();
         summarisationLifecycle = mock(SummarisationLifecycle.class);
         task = new TemporalCbrTask(cbrStore, timelineSampler, summarisationLifecycle);
@@ -181,7 +181,7 @@ class TemporalCbrTaskTest {
                 QuarkMindCaseFile.ENEMY_RACE, "ZERG")));
     }
 
-    private ScoredCbrCase<SC2GameCbrCase> buildStoredCase(int timelineSize) {
+    private CbrMatch<SC2GameCbrCase> buildStoredCase(int timelineSize) {
         var timeline = new java.util.ArrayList<Map<String, FeatureValue>>();
         for (int i = 0; i < timelineSize; i++) {
             timeline.add(Map.of(
@@ -197,7 +197,7 @@ class TemporalCbrTaskTest {
         features.put("phase_sequence", FeatureValue.stringList("EARLY_MACRO", "MID_SKIRMISH"));
         var cbrCase = new SC2GameCbrCase("vs ZERG_ROACH_RUSH (PvZ)", "strategy.drools",
                 "WIN", io.casehub.neocortex.cognitive.Confidence.unknown(0.9), features);
-        return new ScoredCbrCase<>(cbrCase, "sc2-game", 0.85);
+        return new CbrMatch<>(cbrCase, "sc2-game", 0.85);
     }
 
     private static List<Unit> buildWorkers(int count) {
