@@ -970,7 +970,7 @@ public final class SC2Data {
     public static OptionalInt techTier(BuildingType type) {
         return switch (type) {
             // Protoss T1
-            case GATEWAY -> OptionalInt.of(1);
+            case GATEWAY, CYBERNETICS_CORE -> OptionalInt.of(1);
             // Protoss T2
             case ROBOTICS_FACILITY, STARGATE -> OptionalInt.of(2);
             // Protoss T3
@@ -1017,4 +1017,20 @@ public final class SC2Data {
             default -> false;
         };
     }
+
+    public static boolean isProductionBuilding(BuildingType type) {
+        return switch (type) {
+            case BARRACKS, FACTORY, STARPORT,
+                 HATCHERY, LAIR, HIVE,
+                 GATEWAY, ROBOTICS_FACILITY, STARGATE -> true;
+            default -> false;
+        };
+    }
+
+    public static boolean isTechBuilding(BuildingType type) {
+        return techTier(type).isPresent()
+               && !isProductionBuilding(type)
+               && !isBase(type);
+    }
+
 }

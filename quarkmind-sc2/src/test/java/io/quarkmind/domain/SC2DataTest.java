@@ -640,4 +640,70 @@ class SC2DataTest {
                     .isGreaterThan(0);
         }
     }
+
+    @Test
+    void techTier_cyberneticsCore_returnsTier1() {
+        assertThat(SC2Data.techTier(BuildingType.CYBERNETICS_CORE))
+                .isPresent().hasValue(1);
+    }
+
+    @Test
+    void isProductionBuilding_barracks_true() {
+        assertThat(SC2Data.isProductionBuilding(BuildingType.BARRACKS)).isTrue();
+    }
+
+    @Test
+    void isProductionBuilding_factory_true() {
+        assertThat(SC2Data.isProductionBuilding(BuildingType.FACTORY)).isTrue();
+    }
+
+    @Test
+    void isProductionBuilding_gateway_true() {
+        assertThat(SC2Data.isProductionBuilding(BuildingType.GATEWAY)).isTrue();
+    }
+
+    @Test
+    void isProductionBuilding_hatchery_true() {
+        assertThat(SC2Data.isProductionBuilding(BuildingType.HATCHERY)).isTrue();
+    }
+
+    @Test
+    void isProductionBuilding_engineeringBay_false() {
+        assertThat(SC2Data.isProductionBuilding(BuildingType.ENGINEERING_BAY)).isFalse();
+    }
+
+    @Test
+    void isProductionBuilding_nexus_false() {
+        assertThat(SC2Data.isProductionBuilding(BuildingType.NEXUS)).isFalse();
+    }
+
+    @Test
+    void isTechBuilding_spawningPool_true() {
+        assertThat(SC2Data.isTechBuilding(BuildingType.SPAWNING_POOL)).isTrue();
+    }
+
+    @Test
+    void isTechBuilding_cyberneticsCore_true() {
+        assertThat(SC2Data.isTechBuilding(BuildingType.CYBERNETICS_CORE)).isTrue();
+    }
+
+    @Test
+    void isTechBuilding_ghostAcademy_true() {
+        assertThat(SC2Data.isTechBuilding(BuildingType.GHOST_ACADEMY)).isTrue();
+    }
+
+    @Test
+    void isTechBuilding_hatchery_false_isBase() {
+        assertThat(SC2Data.isTechBuilding(BuildingType.HATCHERY)).isFalse();
+    }
+
+    @Test
+    void isTechBuilding_barracks_false_isProduction() {
+        assertThat(SC2Data.isTechBuilding(BuildingType.BARRACKS)).isFalse();
+    }
+
+    @Test
+    void isTechBuilding_pylon_false_notTech() {
+        assertThat(SC2Data.isTechBuilding(BuildingType.PYLON)).isFalse();
+    }
 }

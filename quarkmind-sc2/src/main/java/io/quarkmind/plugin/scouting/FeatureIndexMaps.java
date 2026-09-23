@@ -13,7 +13,19 @@ public final class FeatureIndexMaps {
     static final int N_UNITS = 53;
     static final int N_STATS = 13;
     static final int N_UPGRADES = 15;
-    static final int N_FEATURES_PER_PLAYER = N_BUILDINGS + N_UNITS + N_STATS + N_UPGRADES;
+    static final int N_SPATIAL = 7;
+    static final int N_RATIOS = 3;
+    static final int N_DELTAS = 4;
+
+    static final int SPATIAL_OFFSET = N_BUILDINGS + N_UNITS + N_STATS + N_UPGRADES;
+    static final int RATIO_OFFSET = SPATIAL_OFFSET + N_SPATIAL;
+    static final int DELTA_OFFSET = RATIO_OFFSET + N_RATIOS;
+
+    static final int N_TICK_FEATURES_PER_PLAYER = N_BUILDINGS + N_UNITS + N_STATS + N_UPGRADES + N_SPATIAL + N_RATIOS;
+    static final int N_FEATURES_PER_PLAYER = N_TICK_FEATURES_PER_PLAYER + N_DELTAS;
+    static final int FEATURES_PER_WINDOW = 2 * N_FEATURES_PER_PLAYER + 2;
+    static final int ARMY_GAP_INDEX = 2 * N_FEATURES_PER_PLAYER;
+    static final int HAS_VISION_INDEX = ARMY_GAP_INDEX + 1;
 
     static final Map<BuildingType, Integer> BUILDING_INDEX = buildBuildingIndex();
     static final Map<UnitType, Integer> UNIT_INDEX = buildUnitIndex();
