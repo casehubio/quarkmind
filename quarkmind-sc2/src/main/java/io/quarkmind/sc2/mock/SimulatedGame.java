@@ -3,6 +3,7 @@ package io.quarkmind.sc2.mock;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.MapInfo;
 import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Resource;
@@ -44,6 +45,7 @@ public class SimulatedGame {
     protected volatile PlayerEconomyStats enemyEconomy = PlayerEconomyStats.EMPTY;
     protected final Set<String> playerUpgrades = Collections.synchronizedSet(new java.util.HashSet<>());
     protected final Set<String> enemyUpgrades = Collections.synchronizedSet(new java.util.HashSet<>());
+    protected volatile MapInfo  mapInfo;
 
 
     private record PendingCompletion(long completesAtTick, Runnable action) {}
@@ -116,7 +118,7 @@ public class SimulatedGame {
     }
 
     public synchronized GameState snapshot() {
-        return new GameState(minerals, vespene, supply, supplyUsed, List.copyOf(myUnits), List.copyOf(myBuildings), List.copyOf(enemyUnits), List.copyOf(enemyBuildings), List.copyOf(testStagingArea), List.copyOf(geysers), List.copyOf(mineralPatches), gameFrame.get(), null, playerEconomy, enemyEconomy, Set.copyOf(playerUpgrades), Set.copyOf(enemyUpgrades));
+        return new GameState(minerals, vespene, supply, supplyUsed, List.copyOf(myUnits), List.copyOf(myBuildings), List.copyOf(enemyUnits), List.copyOf(enemyBuildings), List.copyOf(testStagingArea), List.copyOf(geysers), List.copyOf(mineralPatches), gameFrame.get(), mapInfo, playerEconomy, enemyEconomy, Set.copyOf(playerUpgrades), Set.copyOf(enemyUpgrades));
     }
 
     /**

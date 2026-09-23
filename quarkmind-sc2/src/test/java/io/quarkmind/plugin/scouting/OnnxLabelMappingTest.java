@@ -36,6 +36,8 @@ class OnnxLabelMappingTest {
             .isEqualTo(StrategyArchetype.PROTOSS_COLOSSUS_PUSH);
         assertThat(OnnxLabelMapping.resolve("AIR_SUPERIORITY", Race.PROTOSS))
             .isEqualTo(StrategyArchetype.PROTOSS_AIR_SUPERIORITY);
+        assertThat(OnnxLabelMapping.resolve("TECH_RUSH", Race.PROTOSS))
+            .isEqualTo(StrategyArchetype.PROTOSS_TECH_RUSH);
     }
 
     @Test
@@ -45,8 +47,8 @@ class OnnxLabelMappingTest {
 
     @Test
     void labelsForRace_matchesLabelCount() {
-        assertThat(OnnxLabelMapping.labelsForRace(Race.TERRAN)).hasSize(5);
+        assertThat(OnnxLabelMapping.labelsForRace(Race.TERRAN)).hasSize(6);
         assertThat(OnnxLabelMapping.labelsForRace(Race.ZERG)).hasSize(6);
-        assertThat(OnnxLabelMapping.labelsForRace(Race.PROTOSS)).hasSize(7);
+        assertThat(OnnxLabelMapping.labelsForRace(Race.PROTOSS)).hasSize(8);
     }
 }

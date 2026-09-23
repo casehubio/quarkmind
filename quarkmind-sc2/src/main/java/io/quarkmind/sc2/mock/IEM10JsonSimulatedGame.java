@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.MapInfo;
 import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Resource;
@@ -96,6 +97,7 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
         }
         this.gameEvents = Collections.unmodifiableList(gameEventList);
 
+        this.mapInfo = extractMapInfo(root, watchedPlayerId);
         reset();
     }
 
@@ -195,12 +197,15 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
                 addMineralPatch(new Resource(tag, pos, Sc2ReplayShared.defaultMineralAmount(unitName)));
             }
         } else if (Sc2ReplayShared.BUILDING_NAMES.contains(unitName)) {
-            if (ctrlId == watchedPlayerId) {
-                BuildingType bt = toBuildingType(unitName);
-                if (bt != BuildingType.UNKNOWN) {
-                    Point2d pos = pos(e);
+            BuildingType bt = toBuildingType(unitName);
+            if (bt != BuildingType.UNKNOWN) {
+                Point2d pos = pos(e);
+                if (ctrlId == watchedPlayerId) {
                     addBuilding(new Building(tag, bt, pos,
                                              defaultBuildingHealth(bt), defaultBuildingHealth(bt), true));
+                } else {
+                    addEnemyBuilding(new Building(tag, bt, pos,
+                                                  defaultBuildingHealth(bt), defaultBuildingHealth(bt), true));
                 }
             }
         } else {
@@ -276,16 +281,19 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
     }
 
     private void applyUnitInit(JsonNode e) {
-        int ctrlId = e.get("controlPlayerId").asInt();
-        if (ctrlId != watchedPlayerId) return;
+        int          ctrlId   = e.get("controlPlayerId").asInt();
         String       unitName = e.get("unitTypeName").asText();
         String       tag      = makeTag(e.get("unitTagIndex").asInt(), e.get("unitTagRecycle").asInt());
         BuildingType bt       = toBuildingType(unitName);
         Point2d      pos      = pos(e);
         Building b = new Building(tag, bt, pos,
-            defaultBuildingHealth(bt), defaultBuildingHealth(bt), false);
-        pendingBuildings.put(tag, b);
-        addBuilding(b);
+                                  defaultBuildingHealth(bt), defaultBuildingHealth(bt), false);
+        if (ctrlId == watchedPlayerId) {
+            pendingBuildings.put(tag, b);
+            addBuilding(b);
+        } else {
+            addEnemyBuilding(b);
+        }
     }
 
     private void applyUnitDone(JsonNode e) {
@@ -294,6 +302,31 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
     }
 
     // ---- Helpers ----
+
+
+    private static MapInfo extractMapInfo(JsonNode root, int watchedPlayerId) {
+        JsonNode meta      = root.get("metadata");
+        int      mapWidth  = meta != null && meta.has("mapWidth") ? meta.get("mapWidth").asInt(200) : 200;
+        int      mapHeight = meta != null && meta.has("mapHeight") ? meta.get("mapHeight").asInt(200) : 200;
+        if (mapWidth == 0) {mapWidth = 200;}
+        if (mapHeight == 0) {mapHeight = 200;}
+
+        Map<Integer, Point2d> startPositions = new HashMap<>();
+        for (JsonNode e : root.get("trackerEvents")) {
+            if (!"UnitBorn".equals(e.get("evtTypeName").asText())) {continue;}
+            String name = e.get("unitTypeName").asText();
+            int    pid  = e.get("controlPlayerId").asInt();
+            if ((name.equals("Nexus") || name.equals("CommandCenter") || name.equals("Hatchery"))
+                && (pid == 1 || pid == 2) && !startPositions.containsKey(pid)) {
+                startPositions.put(pid, pos(e));
+            }
+            if (startPositions.size() == 2) {break;}
+        }
+        Point2d watchedStart = startPositions.getOrDefault(watchedPlayerId, new Point2d(30, 30));
+        int     enemyId      = watchedPlayerId == 1 ? 2 : 1;
+        Point2d enemyStart   = startPositions.getOrDefault(enemyId, new Point2d(120, 120));
+        return new MapInfo(watchedStart, enemyStart, mapWidth, mapHeight, List.of(), List.of(), List.of());
+    }
 
     private static Point2d pos(JsonNode e) {
         return new Point2d(e.get("x").floatValue(), e.get("y").floatValue());
@@ -320,4 +353,7 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
     boolean hasProtossPlayer() { return hasProtossPlayer; }
     int watchedUserId() { return watchedUserId; }
     List<JsonNode> gameEvents() { return gameEvents; }
+
+    int watchedPlayerId()       {return watchedPlayerId;}
+
 }

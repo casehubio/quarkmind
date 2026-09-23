@@ -45,11 +45,6 @@ public final class StrategyFeatureExtractor {
 
         for (int w = 0; w < MAX_WINDOWS; w++) {
             int base = w * FEATURES_PER_WINDOW;
-            boolean populated = false;
-            for (int f = 0; f < FEATURES_PER_WINDOW; f++) {
-                if (temporal[base + f] != 0.0f) { populated = true; break; }
-            }
-            if (!populated) continue;
             for (int f = 0; f < FEATURES_PER_WINDOW; f++) {
                 if (f == HAS_VISION_OFFSET) continue;
                 if (normStd[f] > 0) {

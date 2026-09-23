@@ -56,7 +56,7 @@ class StrategyFeatureExtractorTest {
     }
 
     @Test
-    void extract_zeroPaddedWindowsStayZero() {
+    void extract_zeroPaddedWindowsAreNormalized() {
         var extractor = new StrategyFeatureExtractor();
         var accumulator = new TemporalWindowAccumulator();
         for (int i = 0; i < 60; i++) {
@@ -70,9 +70,13 @@ class StrategyFeatureExtractorTest {
             MapCharacteristics.DEFAULT);
         float[] temporal = result.tensors().get("temporal")[0];
         int fpw = FeatureIndexMaps.FEATURES_PER_WINDOW;
+        boolean anyNonZero = false;
         for (int f = fpw; f < 2 * fpw; f++) {
-            assertThat(temporal[f]).as("zero-padded window feature at %d", f).isEqualTo(0.0f);
+            if (temporal[f] != 0.0f) { anyNonZero = true; break; }
         }
+        assertThat(anyNonZero)
+            .as("zero-padded windows should be normalized (not raw zeros) to match training data")
+            .isTrue();
     }
 
     @Test
