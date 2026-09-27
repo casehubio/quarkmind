@@ -87,14 +87,10 @@ class OnnxClassificationCalibrationTest {
         appendAccuracyTable(report, aiArenaResults, "AI Arena (PvP)");
         System.out.println(report);
 
-        // Gate uses minutes 3-5 at 40%: ground truth is unit-count heuristic
-        // while training uses build-order labels — standard Terran bio builds with
-        // 5+ marines at minute 3 are labeled rush by the heuristic but BIO_TIMING by
-        // the model (correctly). 40% catches regressions without penalising the mismatch.
         double rushOverall = rushAccuracyOverall(iem10Results, 3, 5);
         assertThat(rushOverall)
-                .as("ONNX rush accuracy >= 40%% across minutes 3-5")
-                .isGreaterThanOrEqualTo(0.40);
+                .as("ONNX rush accuracy >= 60%% across minutes 3-5")
+                .isGreaterThanOrEqualTo(0.60);
     }
 
     private void runGame(SimulatedGame game, String matchup, String gameName,

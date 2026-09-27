@@ -91,7 +91,7 @@ final class ReplayClassificationTestSupport {
         long dts = counts.getOrDefault(UnitType.DARK_TEMPLAR, 0L);
 
         // Early game (< 5 min)
-        if (marines >= 5 && gameTimeMin < 4.0) return StrategyArchetype.TERRAN_MARINE_RUSH;
+        if (marines >= 8 && gameTimeMin < 3.0) return StrategyArchetype.TERRAN_MARINE_RUSH;
         if (banshees >= 1 && gameTimeMin < 8.0) return StrategyArchetype.TERRAN_BANSHEE_HARASS;
         if (dts >= 1 && gameTimeMin < 8.0) return StrategyArchetype.PROTOSS_DT_HARASS;
         if (zerglings >= 6 && gameTimeMin < 4.0) return StrategyArchetype.ZERG_ZERGLING_RUSH;

@@ -161,6 +161,21 @@ mvn test -pl quarkmind-chat/quarkmind-chat-agent
 mvn test -pl quarkmind-sc2 -Dtest=SimulatedGameTest -q
 ```
 
+**Setup (classifier venv):**
+```bash
+cd quarkmind-classifier && python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'
+```
+
+**Test (classifier):**
+```bash
+cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m pytest tests/ -v
+```
+
+**Train (classifier — requires data in data/combined/):**
+```bash
+cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.run_pipeline --data combined
+```
+
 **Run (mock mode, no SC2 needed):**
 ```bash
 mvn quarkus:dev -pl quarkmind-sc2
@@ -340,6 +355,11 @@ quarkmind/                           <- parent POM
 │       ChatCharacterManager         <- manages N characters, routes ticks per agentId
 │       ChatAgencyLoop               <- stateless loop — reactive (LLM) + proactive (InnerLifeOrchestrator)
 │       CharacterConfig              <- per-character config record (agentId, token, channels)
+├── quarkmind-classifier/              <- SC2 strategy classifier training pipeline
+│   src/                               config, train, model, normalize, feature_engineering,
+│                                      sc2egset_extractor, labelling/, fog_of_war, dataset
+│   tests/                             pytest test suite (76 tests)
+│   docker/sc2-restore/                SC2 headless tracker restoration tooling
 ├── quarkmind-dataset/               <- Python data pipeline for commentary training dataset (#249)
 │   src/                             parse_replays, extract_state, extract_subtitles, align, segment, pipeline, estimate_offsets, catalog, curate_iem10, vod_matcher, catalog_builder, download_sc2egset, quality_scorer, batch_pipeline, export_examples, embed
 │   catalog/                         tournament-catalog.yaml, matches/ (replay→VOD mapping)
