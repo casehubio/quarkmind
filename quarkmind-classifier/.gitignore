@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+data/*
+!data/DATA_SOURCES.md
+!data/README.md
+models/
+output/
+docker/sc2-restore/*.zip
