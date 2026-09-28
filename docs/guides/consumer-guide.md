@@ -42,7 +42,7 @@ QuarkMind is a single-module Quarkus application (`quarkmind-agent`). Key struct
 | `sc2/emulated/` | Full physics simulation -- `EmulatedGame`, `EmulatedEngine`, `RaceModel` plugin seam (Protoss/Terran/Zerg), `EnemyBehavior`, `VisibilityGrid` |
 | `sc2/emulated/server/` | `EmulatedSC2Server` -- SC2 protocol wrapper over `EmulatedGame` with bidirectional translators (`GameStateToProtobuf`, `ProtobufToIntent`) |
 | `sc2/mock/` | Mock engine -- `SimulatedGame`, `MockEngine`, scenarios |
-| `sc2/replay/` | Replay engine -- `ReplayEngine`, `ReplayCommandExtractor`, `ReplayValidationHarness`, `GameEventStream`, `AbilityMapping` |
+| `sc2/replay/` | Replay engine -- `ReplayEngine`, `ReplayCommandExtractor`, `ReplayValidationHarness`, `GameEventStream`, `AbilityMapping`, `StrippedReplayFeatureExtractor` (synthetic tracker events from stripped replays), `BulkFeatureExtractor` (parallel batch runner) |
 | `sc2/map/` | Map terrain extraction -- `MapDownloader`, `SC2MapCache`, `SC2MapTerrainExtractor` |
 | `qa/` | QA REST endpoints -- dev/test only (`@UnlessBuildProfile("prod")`) |
 | `visualizer/` | `GameStateBroadcaster` (WebSocket push), `SpriteProxyResource` (Liquipedia CORS proxy) |
@@ -66,7 +66,7 @@ Each plugin extends QuarkMind's `TaskDefinition` interface (package `io.quarkmin
 - **`QuarkMindCaseFile`** -- all CaseFile key constants (30 keys across observation state, resource budget, agent strategy, intel, commentary, and coaching triggers); never use raw string keys
 - **`Intent`** (sealed interface) -- exhaustive set of game actions: `BuildIntent`, `TrainIntent`, `AttackIntent`, `MoveIntent`, `BlinkIntent`, `MuleCalldownIntent`; switch exhaustiveness enforced at compile time
 - **`TimedIntent`** -- an `Intent` tagged with its absolute game loop for sub-tick completion precision
-- **`SC2Data`** -- all game constants: damage-per-tick, attack range, supply cost, shield values, building health, mineral costs, train times (calibrated from 29 AI Arena replays), build times (calibrated from 30 replays), mineral income (three-tier saturation model per base), unit costs (`UnitCosts` exhaustive `EnumMap`), building radii
+- **`SC2Data`** -- all game constants: damage-per-tick, attack range, supply cost, shield values, building health, mineral costs, train times (calibrated from 29 AI Arena replays), build times (calibrated from 30 replays), upgrade times (`upgradeTimeInLoops(UpgradeType)` for 15 classifier-tracked upgrades), mineral income (three-tier saturation model per base), unit costs (`UnitCosts` exhaustive `EnumMap`), building radii
 - **`GameState`** -- per-tick snapshot: minerals, vespene, supply, unit lists, enemy buildings, mineral patches, geysers, game frame
 - **`StrategyArchetype`** -- 58-entry enum across all 3 races (Protoss/Terran/Zerg) x 3 phases (EARLY/MID/LATE) x 6 categories (RUSH/TIMING/HARASS/MACRO/TECH/COMPOSITION)
 - **`PatternAssessment`** -- archetype classification with confidence score, detection frame, and rationale
