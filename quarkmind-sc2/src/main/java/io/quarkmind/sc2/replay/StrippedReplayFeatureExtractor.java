@@ -4,6 +4,7 @@ import hu.scelight.sc2.rep.factory.RepContent;
 import hu.scelight.sc2.rep.factory.RepParserEngine;
 import hu.scelight.sc2.rep.model.Replay;
 import hu.scelight.sc2.rep.model.details.Player;
+import hu.scelight.sc2.rep.model.details.Race;
 import hu.scelight.sc2.rep.model.details.Result;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
@@ -48,6 +49,7 @@ public class StrippedReplayFeatureExtractor {
         map.put(UnitType.BANSHEE, "Banshee");
         map.put(UnitType.RAVEN, "Raven");
         map.put(UnitType.WIDOW_MINE, "WidowMine");
+        map.put(UnitType.BATTLECRUISER, "Battlecruiser");
         // Zerg
         map.put(UnitType.DRONE, "Drone");
         map.put(UnitType.ZERGLING, "Zergling");
@@ -135,7 +137,8 @@ public class StrippedReplayFeatureExtractor {
         int tagCounter = 1;
 
         for (int playerId = 1; playerId <= 2; playerId++) {
-            AbilityMapping mapping = new AbilityMapping(playerId, true);
+            var playerRace = players[playerId - 1].getRace();
+            AbilityMapping mapping = new AbilityMapping(playerId, true, playerRace);
             var state = new PlayerState();
 
             for (Event raw : gameEvents) {

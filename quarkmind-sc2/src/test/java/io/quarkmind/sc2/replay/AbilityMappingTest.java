@@ -19,9 +19,9 @@ class AbilityMappingTest {
     static final int MOVE_ABIL        = 42;
     static final int PROBE_ABIL       = 175;
     static final int ZEALOT_ABIL      = 172;
-    static final int ZEALOT_ABIL_IDX  = 1;
+    static final int ZEALOT_ABIL_IDX  = 0;
     static final int STALKER_ABIL     = 172;
-    static final int STALKER_ABIL_IDX = 0;
+    static final int STALKER_ABIL_IDX = 1;
 
     // Terran constants — AI Arena build 75689 (derived from TerranDiscoveryTest 2026-05-29)
     static final int TERRAN_CC_ABIL        = 155; // Command Center → SCV (idx=0 only)

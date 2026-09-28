@@ -1,5 +1,6 @@
 package io.quarkmind.sc2.replay;
 
+import hu.scelight.sc2.rep.model.details.Race;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
 import io.quarkmind.domain.Point2d;
@@ -39,11 +40,11 @@ public class AbilityMapping {
     private static final int ABIL_SMART       = 42;  // Smart/RightClick — move, attack, harvest
     private static final int ABIL_ATTACK_MOVE = 45;  // Attack-move command
 
-    // --- Protoss train ---
-    private static final int ABIL_GATEWAY     = 172; // Gateway normal train (abilCmdIndex selects unit)
-    private static final int ABIL_ROBOTICS    = 173; // Robotics Facility train
+    // --- Protoss train (calibrated from 118 oracle replays, 4.9.3) ---
+    private static final int ABIL_GATEWAY     = 172; // Gateway normal train
+    private static final int ABIL_STARGATE    = 173; // Stargate train (was 174 in bot replays)
+    private static final int ABIL_ROBOTICS    = 174; // Robotics Facility train (was 173 in bot replays)
     private static final int ABIL_NEXUS       = 175; // Nexus train (Probe)
-    private static final int ABIL_STARGATE    = 174; // Stargate train
 
     // WarpGate warp-in — abilLink=170 with hasTP=true; treated as movement (location-targeted)
     private static final int ABIL_WARPGATE    = 170;
@@ -56,9 +57,11 @@ public class AbilityMapping {
     // --- Terran train (AI Arena build 75689) ---
     // Derived from TerranDiscoveryTest: no-target Cmd events cross-referenced across
     // Nothing_4720935 (18m), Tyckles_4721034 (15m), Starlight_4721165 (6m) Terran-wins PvT.
-    // Other abilLinks (157, 158, 161) have insufficient cross-replay evidence — logged as unknown.
+    // Other abilLinks (157, 158) have insufficient cross-replay evidence — logged as unknown.
     private static final int ABIL_COMMAND_CENTER = 155; // idx=0 only → SCV
-    private static final int ABIL_BARRACKS       = 159; // idx=0 → Marine, idx=3 → Marauder
+    private static final int ABIL_BARRACKS       = 159; // idx=0 → Marine, idx=1 → Reaper, idx=3 → Marauder
+    private static final int ABIL_FACTORY        = 160; // Factory train (calibrated from oracle replays)
+    private static final int ABIL_STARPORT       = 161; // Starport train (calibrated from oracle replays)
     // --- Human replay building placement (from AbilityDiscoveryCalibrationTest, 118 oracle replays) ---
 // In human replays, building placement uses distinct per-building abilLinks unlike bot replays
 // which use abilLink=42 (Smart). abilLink=170 means Protoss building here, NOT warp-in.
@@ -74,42 +77,63 @@ public class AbilityMapping {
 
     private static final Map<Integer, UnitType> BARRACKS_UNITS = Map.of(
             0, UnitType.MARINE,
+            1, UnitType.REAPER,
             3, UnitType.MARAUDER
     );
 
-    // Gateway abilCmdIndex → UnitType (from discovery: idx1=Zealot most common, idx0=Stalker)
+    // Factory abilCmdIndex → UnitType (calibrated from 118 oracle replays, 4.9.3)
+    private static final Map<Integer, UnitType> FACTORY_UNITS = Map.ofEntries(
+            Map.entry(1, UnitType.SIEGE_TANK),
+            Map.entry(5, UnitType.HELLION),
+            Map.entry(6, UnitType.HELLBAT),
+            Map.entry(7, UnitType.CYCLONE),
+            Map.entry(24, UnitType.WIDOW_MINE)
+    );
+
+    // Starport abilCmdIndex → UnitType (calibrated from 118 oracle replays, 4.9.3)
+    private static final Map<Integer, UnitType> STARPORT_UNITS = Map.of(
+            0, UnitType.MEDIVAC,
+            1, UnitType.BANSHEE,
+            2, UnitType.RAVEN,
+            3, UnitType.BATTLECRUISER,
+            4, UnitType.VIKING,
+            6, UnitType.LIBERATOR
+    );
+
+    // Gateway abilCmdIndex → UnitType (calibrated from 118 oracle replays, 4.9.3)
     private static final Map<Integer, UnitType> GATEWAY_UNITS = Map.of(
-            0, UnitType.STALKER,
-            1, UnitType.ZEALOT,
+            0, UnitType.ZEALOT,
+            1, UnitType.STALKER,
             5, UnitType.ADEPT
     );
 
-    // Robotics abilCmdIndex → UnitType
+    // Robotics abilCmdIndex → UnitType (calibrated from 118 oracle replays, 4.9.3)
     private static final Map<Integer, UnitType> ROBOTICS_UNITS = Map.of(
-            0, UnitType.IMMORTAL,
+            0, UnitType.WARP_PRISM,
             1, UnitType.OBSERVER,
-            2, UnitType.COLOSSUS
+            2, UnitType.COLOSSUS,
+            3, UnitType.IMMORTAL
     );
 
-    // Stargate abilCmdIndex → UnitType
+    // Stargate abilCmdIndex → UnitType (calibrated from 118 oracle replays, 4.9.3)
     private static final Map<Integer, UnitType> STARGATE_UNITS = Map.of(
             0, UnitType.PHOENIX,
-            1, UnitType.VOID_RAY,
-            2, UnitType.ORACLE
+            2, UnitType.CARRIER,
+            8, UnitType.ORACLE
     );
 
-    // Zerg larva abilCmdIndex → UnitType
-    private static final Map<Integer, UnitType> LARVA_UNITS = Map.of(
-            0, UnitType.DRONE,
-            1, UnitType.ZERGLING,
-            2, UnitType.ROACH,
-            3, UnitType.HYDRALISK,
-            4, UnitType.MUTALISK,
-            5, UnitType.CORRUPTOR,
-            6, UnitType.ULTRALISK,
-            7, UnitType.INFESTOR,
-            8, UnitType.SWARM_HOST,
-            9, UnitType.VIPER
+    // Zerg larva abilCmdIndex → UnitType (calibrated from 118 oracle replays, 4.9.3)
+    private static final Map<Integer, UnitType> LARVA_UNITS = Map.ofEntries(
+            Map.entry(0, UnitType.DRONE),
+            Map.entry(1, UnitType.ZERGLING),
+            Map.entry(2, UnitType.OVERLORD),
+            Map.entry(3, UnitType.HYDRALISK),
+            Map.entry(4, UnitType.MUTALISK),
+            Map.entry(6, UnitType.ULTRALISK),
+            Map.entry(9, UnitType.ROACH),
+            Map.entry(10, UnitType.INFESTOR),
+            Map.entry(11, UnitType.CORRUPTOR),
+            Map.entry(14, UnitType.SWARM_HOST)
     );
     // Terran SCV build abilCmdIndex → building name (from discovery: 118 oracle replays)
     private static final Map<Integer, String>   SCV_BUILD_BUILDINGS = Map.ofEntries(
@@ -157,15 +181,21 @@ public class AbilityMapping {
     private final int userId;  // 0-indexed game event userId = (playerId - 1)
     private final SelectionState selection = new SelectionState();
     private final boolean        humanReplay;
+    private final Race           race;
 
 
     public AbilityMapping(int playerId) {
-        this(playerId, false);
+        this(playerId, false, null);
     }
 
     public AbilityMapping(int playerId, boolean humanReplay) {
+        this(playerId, humanReplay, null);
+    }
+
+    public AbilityMapping(int playerId, boolean humanReplay, Race race) {
         this.userId = playerId - 1;
         this.humanReplay = humanReplay;
+        this.race = race;
     }
 
     public void onSelection(SelectionDeltaEvent event) {
@@ -252,34 +282,57 @@ public class AbilityMapping {
         return switch (abilLink) {
             case ABIL_SMART, ABIL_ATTACK_MOVE, ABIL_WARPGATE -> moveOrders(event, loop);
 
-            case ABIL_NEXUS -> trainIntent(loop, UnitType.PROBE);
+            case ABIL_NEXUS -> isRace(Race.PROTOSS) ? trainIntent(loop, UnitType.PROBE) : unknown(abilLink, idx);
 
             case ABIL_GATEWAY -> {
+                if (!isRace(Race.PROTOSS)) yield unknown(abilLink, idx);
                 UnitType unit = GATEWAY_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }
 
             case ABIL_ROBOTICS -> {
+                if (!isRace(Race.PROTOSS)) yield unknown(abilLink, idx);
                 UnitType unit = ROBOTICS_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }
 
             case ABIL_STARGATE -> {
+                if (!isRace(Race.PROTOSS)) yield unknown(abilLink, idx);
                 UnitType unit = STARGATE_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }
 
             case ABIL_LARVA -> {
+                if (!isRace(Race.ZERG)) yield unknown(abilLink, idx);
                 UnitType unit = LARVA_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }
 
-            case ABIL_HATCHERY -> idx == 1 ? trainIntent(loop, UnitType.QUEEN) : List.of();
+            case ABIL_HATCHERY -> {
+                if (!isRace(Race.ZERG)) yield unknown(abilLink, idx);
+                yield idx == 1 ? trainIntent(loop, UnitType.QUEEN) : List.of();
+            }
 
-            case ABIL_COMMAND_CENTER -> idx == 0 ? trainIntent(loop, UnitType.SCV) : unknown(abilLink, idx);
+            case ABIL_COMMAND_CENTER -> {
+                if (!isRace(Race.TERRAN)) yield unknown(abilLink, idx);
+                yield idx == 0 ? trainIntent(loop, UnitType.SCV) : unknown(abilLink, idx);
+            }
 
             case ABIL_BARRACKS -> {
+                if (!isRace(Race.TERRAN)) yield unknown(abilLink, idx);
                 UnitType unit = BARRACKS_UNITS.get(idx);
+                yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
+            }
+
+            case ABIL_FACTORY -> {
+                if (!isRace(Race.TERRAN)) yield unknown(abilLink, idx);
+                UnitType unit = FACTORY_UNITS.get(idx);
+                yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
+            }
+
+            case ABIL_STARPORT -> {
+                if (!isRace(Race.TERRAN)) yield unknown(abilLink, idx);
+                UnitType unit = STARPORT_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }
 
@@ -287,19 +340,24 @@ public class AbilityMapping {
         };
     }
 
+    private boolean isRace(Race expected) {
+        return race == null || race == expected;
+    }
+
     private List<ReplayCommand> dispatchHuman(int abilLink, int idx, CmdEvent event, long loop) {
         return switch (abilLink) {
-            case ABIL_SCV_BUILD -> buildCommand(loop, SCV_BUILD_BUILDINGS.get(idx), event);
-            case ABIL_PROBE_BUILD -> buildCommand(loop, PROBE_BUILD_BUILDINGS.get(idx), event);
-            case ABIL_DRONE_BUILD -> buildCommand(loop, DRONE_BUILD_BUILDINGS.get(idx), event);
-            case ABIL_BARRACKS_ADDON -> buildCommand(loop, BARRACKS_ADDON_MAP.get(idx), event);
-            case ABIL_FACTORY_ADDON -> buildCommand(loop, FACTORY_ADDON_MAP.get(idx), event);
-            case ABIL_STARPORT_ADDON -> buildCommand(loop, STARPORT_ADDON_MAP.get(idx), event);
+            case ABIL_SCV_BUILD -> isRace(Race.TERRAN) ? buildCommand(loop, SCV_BUILD_BUILDINGS.get(idx), event) : null;
+            case ABIL_PROBE_BUILD -> isRace(Race.PROTOSS) ? buildCommand(loop, PROBE_BUILD_BUILDINGS.get(idx), event) : null;
+            case ABIL_DRONE_BUILD -> isRace(Race.ZERG) ? buildCommand(loop, DRONE_BUILD_BUILDINGS.get(idx), event) : null;
+            case ABIL_BARRACKS_ADDON -> isRace(Race.TERRAN) ? buildCommand(loop, BARRACKS_ADDON_MAP.get(idx), event) : null;
+            case ABIL_FACTORY_ADDON -> isRace(Race.TERRAN) ? buildCommand(loop, FACTORY_ADDON_MAP.get(idx), event) : null;
+            case ABIL_STARPORT_ADDON -> isRace(Race.TERRAN) ? buildCommand(loop, STARPORT_ADDON_MAP.get(idx), event) : null;
             case ABIL_WARPGATE_WARPIN -> {
+                if (!isRace(Race.PROTOSS)) yield null;
                 UnitType unit = WARPGATE_WARPIN_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : null;
             }
-            case ABIL_ARCHON_MERGE -> List.of(new ReplayCommand.MorphCommand(loop, "HighTemplar", "Archon"));
+            case ABIL_ARCHON_MERGE -> isRace(Race.PROTOSS) ? List.of(new ReplayCommand.MorphCommand(loop, "HighTemplar", "Archon")) : null;
             default -> null;
         };
     }
