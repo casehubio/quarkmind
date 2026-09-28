@@ -249,11 +249,19 @@ public class AbilityMapping {
     }
 
     public List<ReplayCommand> process(CmdEvent event) {
-        if (event.getUserId() != userId) return List.of();
-        if (selection.isEmpty()) return List.of();
+        if (event.getUserId() != userId) {return List.of();}
         Integer abilLink = event.getAbilLink();
-        if (abilLink == null) return List.of();
+        if (abilLink == null) {return List.of();}
         int idx = Objects.requireNonNullElse(event.getAbilCmdIndex(), 0);
+
+        // Human-mode commands (builds, warp-ins, archon merge) are self-identifying
+        // via abilLink and don't need selection state — try before the selection guard.
+        if (humanReplay) {
+            List<ReplayCommand> result = dispatchHuman(abilLink, idx, event, event.getLoop());
+            if (result != null) {return result;}
+        }
+
+        if (selection.isEmpty()) {return List.of();}
         return dispatch(abilLink, idx, event);
     }
 
@@ -277,64 +285,59 @@ public class AbilityMapping {
     private List<ReplayCommand> dispatch(int abilLink, int idx, CmdEvent event) {
         long loop = event.getLoop();
 
-        if (humanReplay) {
-            List<ReplayCommand> result = dispatchHuman(abilLink, idx, event, loop);
-            if (result != null) {return result;}
-        }
-
         return switch (abilLink) {
             case ABIL_SMART, ABIL_ATTACK_MOVE, ABIL_WARPGATE -> moveOrders(event, loop);
 
             case ABIL_NEXUS -> isRace(Race.PROTOSS) ? trainIntent(loop, UnitType.PROBE) : unknown(abilLink, idx);
 
             case ABIL_GATEWAY -> {
-                if (!isRace(Race.PROTOSS)) yield unknown(abilLink, idx);
+                if (!isRace(Race.PROTOSS)) {yield unknown(abilLink, idx);}
                 UnitType unit = GATEWAY_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }
 
             case ABIL_ROBOTICS -> {
-                if (!isRace(Race.PROTOSS)) yield unknown(abilLink, idx);
+                if (!isRace(Race.PROTOSS)) {yield unknown(abilLink, idx);}
                 UnitType unit = ROBOTICS_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }
 
             case ABIL_STARGATE -> {
-                if (!isRace(Race.PROTOSS)) yield unknown(abilLink, idx);
+                if (!isRace(Race.PROTOSS)) {yield unknown(abilLink, idx);}
                 UnitType unit = STARGATE_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }
 
             case ABIL_LARVA -> {
-                if (!isRace(Race.ZERG)) yield unknown(abilLink, idx);
+                if (!isRace(Race.ZERG)) {yield unknown(abilLink, idx);}
                 UnitType unit = LARVA_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }
 
             case ABIL_HATCHERY -> {
-                if (!isRace(Race.ZERG)) yield unknown(abilLink, idx);
+                if (!isRace(Race.ZERG)) {yield unknown(abilLink, idx);}
                 yield idx == 1 ? trainIntent(loop, UnitType.QUEEN) : List.of();
             }
 
             case ABIL_COMMAND_CENTER -> {
-                if (!isRace(Race.TERRAN)) yield unknown(abilLink, idx);
+                if (!isRace(Race.TERRAN)) {yield unknown(abilLink, idx);}
                 yield idx == 0 ? trainIntent(loop, UnitType.SCV) : unknown(abilLink, idx);
             }
 
             case ABIL_BARRACKS -> {
-                if (!isRace(Race.TERRAN)) yield unknown(abilLink, idx);
+                if (!isRace(Race.TERRAN)) {yield unknown(abilLink, idx);}
                 UnitType unit = BARRACKS_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }
 
             case ABIL_FACTORY -> {
-                if (!isRace(Race.TERRAN)) yield unknown(abilLink, idx);
+                if (!isRace(Race.TERRAN)) {yield unknown(abilLink, idx);}
                 UnitType unit = FACTORY_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }
 
             case ABIL_STARPORT -> {
-                if (!isRace(Race.TERRAN)) yield unknown(abilLink, idx);
+                if (!isRace(Race.TERRAN)) {yield unknown(abilLink, idx);}
                 UnitType unit = STARPORT_UNITS.get(idx);
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }

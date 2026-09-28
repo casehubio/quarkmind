@@ -320,6 +320,49 @@ class AbilityMappingTest {
 
 
     @Test
+    void humanMode_warpInWithEmptySelection_stillProducesTrainIntent() {
+        // No selection primed — simulates rapid-fire warp-in or "Select All WarpGates" not tracked
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_WARPGATE_WARPIN, 0, 5000, new float[]{45f, 55f}, null, 1));
+        assertThat(result).isNotEmpty();
+        // Find the IntentCommand (first warp-in also emits UpgradeCommand)
+        var intents = result.stream()
+                            .filter(r -> r instanceof ReplayCommand.IntentCommand)
+                            .toList();
+        assertThat(intents).hasSize(1);
+        TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) intents.get(0)).intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.STALKER);
+        assertThat(t.buildingTag()).isNull();
+    }
+
+    @Test
+    void humanMode_buildWithEmptySelection_stillProducesBuildCommand() {
+        // No selection primed — human build commands are self-identifying via abilLink
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_SCV_BUILD, 0, 5000, new float[]{40f, 60f}, null, 1));
+        assertThat(result).hasSize(1);
+        ReplayCommand.BuildCommand bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.buildingName()).isEqualTo("SupplyDepot");
+    }
+
+    @Test
+    void humanMode_warpInWithEmptySelection_tracksUnitType() {
+        // First warp-in primes warpGateResearchEmitted
+        humanMapping.setSelectionForTest(0, List.of("r-wg-0"));
+        humanMapping.process(fakeCmdEvent(ABIL_WARPGATE_WARPIN, 0, 1100, new float[]{40f, 50f}, null, 0));
+
+        // Second warp-in with empty selection (rapid-fire via "Select All WarpGates")
+        humanMapping.setSelectionForTest(0, List.of());
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_WARPGATE_WARPIN, 0, 5000, new float[]{45f, 55f}, null, 1));
+        assertThat(result).hasSize(1);
+        TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) result.get(0)).intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.STALKER);
+        assertThat(t.buildingTag()).isNull();
+    }
+
+
+    @Test
     void humanMode_archonMerge_producesMorphCommand() {
         humanMapping.setSelectionForTest(0, List.of("r-ht-1", "r-ht-2"));
         List<ReplayCommand> result = humanMapping.process(

@@ -67,8 +67,7 @@ public final class SelectionState {
     public boolean isEmpty() { return tags.isEmpty(); }
     public int size()        { return tags.size(); }
 
-    /** Returns the first element. Behaviour undefined if state is empty — caller must guard. */
-    public String first()    { return tags.get(0); }
+    public String first() {return tags.isEmpty() ? null : tags.get(0);}
 
     /** Returns an immutable snapshot of the current tag list. */
     public List<String> snapshot() { return List.copyOf(tags); }

@@ -27,6 +27,10 @@ import java.util.Set;
 
 public class StrippedReplayFeatureExtractor {
 
+
+    private static final int                   ID_CMD_UPDATE_TARGET_POINT = 104;
+    private static final int                   ABIL_WARPGATE_WARPIN       = 214;
+
     private static final Map<UnitType, String> UNIT_PYTHON_NAMES;
     static {
         var map = new EnumMap<UnitType, String>(UnitType.class);
@@ -129,51 +133,66 @@ public class StrippedReplayFeatureExtractor {
 
     public Map<String, Object> extract(Path replayPath) {
         Replay replay = RepParserEngine.parseReplay(replayPath,
-            java.util.EnumSet.of(RepContent.GAME_EVENTS));
-        if (replay == null) throw new IllegalArgumentException("Cannot parse replay: " + replayPath);
+                                                    java.util.EnumSet.of(RepContent.GAME_EVENTS));
+        if (replay == null) {throw new IllegalArgumentException("Cannot parse replay: " + replayPath);}
 
         Player[] players = replay.details.getPlayerList();
-        if (players.length < 2) throw new IllegalArgumentException("Need at least 2 players: " + replayPath);
+        if (players.length < 2) {throw new IllegalArgumentException("Need at least 2 players: " + replayPath);}
 
         List<Event> gameEvents = List.of(replay.gameEvents.getEvents());
 
         List<SyntheticEvent> syntheticEvents = new ArrayList<>();
-        int tagCounter = 1;
+        int                  tagCounter      = 1;
 
         for (int playerId = 1; playerId <= 2; playerId++) {
-            var playerRace = players[playerId - 1].getRace();
-            AbilityMapping mapping = new AbilityMapping(playerId, true, playerRace);
-            var state = new PlayerState();
+            var            playerRace = players[playerId - 1].getRace();
+            AbilityMapping mapping    = new AbilityMapping(playerId, true, playerRace);
+            var            state      = new PlayerState();
+            int            userId     = playerId - 1;
+            TrainIntent    lastWarpIn = null;
 
             for (Event raw : gameEvents) {
                 if (raw instanceof SelectionDeltaEvent sel) {
                     mapping.onSelection(sel);
                 } else if (raw instanceof CmdEvent cmd) {
+                    if (cmd.getUserId() == userId) {
+                        lastWarpIn = null;
+                    }
                     for (ReplayCommand rc : mapping.process(cmd)) {
                         switch (rc) {
                             case ReplayCommand.IntentCommand ic -> {
                                 TimedIntent ti = ic.intent();
                                 if (ti.intent() instanceof TrainIntent train) {
+                                    Integer abilLink = cmd.getAbilLink();
+                                    if (abilLink != null && abilLink == ABIL_WARPGATE_WARPIN
+                                        && GATEWAY_UNITS.contains(train.unitType())) {
+                                        lastWarpIn = train;
+                                    }
                                     tagCounter = handleTrain(train, ti.loop(), playerId,
-                                        state, syntheticEvents, tagCounter);
+                                                             state, syntheticEvents, tagCounter);
                                 }
                             }
                             case ReplayCommand.BuildCommand bc -> {
                                 tagCounter = handleBuild(bc, playerId,
-                                    state, syntheticEvents, tagCounter);
+                                                         state, syntheticEvents, tagCounter);
                             }
                             case ReplayCommand.UpgradeCommand uc -> {
                                 tagCounter = handleUpgrade(uc, playerId,
-                                    state, syntheticEvents, tagCounter);
+                                                           state, syntheticEvents, tagCounter);
                             }
                             case ReplayCommand.MorphCommand mc -> {
                                 tagCounter = handleMorph(mc, playerId,
-                                    syntheticEvents, tagCounter);
+                                                         syntheticEvents, tagCounter);
                             }
                             case ReplayCommand.CancelCommand ignored -> {}
                             case ReplayCommand.Movement ignored -> {}
                         }
                     }
+                } else if (raw.getId() == ID_CMD_UPDATE_TARGET_POINT
+                           && raw.getUserId() == userId
+                           && lastWarpIn != null) {
+                    tagCounter = handleTrain(lastWarpIn, raw.getLoop(), playerId,
+                                             state, syntheticEvents, tagCounter);
                 }
             }
 
@@ -188,7 +207,7 @@ public class StrippedReplayFeatureExtractor {
         }
 
         syntheticEvents.sort(Comparator.comparingLong(SyntheticEvent::loop)
-            .thenComparing(SyntheticEvent::ordinal));
+                                       .thenComparing(SyntheticEvent::ordinal));
 
         return buildGameJson(replay, players, syntheticEvents);
     }
