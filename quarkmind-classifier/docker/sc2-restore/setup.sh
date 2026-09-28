@@ -6,7 +6,8 @@
 #
 set -e
 
-SC2_BASE="/Users/mdproctor/claude/casehub/neocortex/evaluation/strategy_classifier/data/sc2_headless"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SC2_BASE="$(cd "$SCRIPT_DIR/../.." && pwd)/data/sc2_headless"
 
 echo "Setting up SC2 headless builds..."
 echo "Base directory: $SC2_BASE"

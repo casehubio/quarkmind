@@ -10,7 +10,8 @@ set -e
 VERSION="${1:?Usage: ./run.sh <version> [--workers N] [--limit N] [--offset N]}"
 shift
 
-DATA_BASE="/Users/mdproctor/claude/casehub/neocortex/evaluation/strategy_classifier/data"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+DATA_BASE="$(cd "$SCRIPT_DIR/../.." && pwd)/data"
 SC2_BASE="$DATA_BASE/sc2_headless"
 INPUT_DIR="$DATA_BASE/replay_packs/blizzard_ladder/$VERSION/replays"
 OUTPUT_DIR="$DATA_BASE/replay_packs/blizzard_ladder/${VERSION}_restored"
@@ -22,7 +23,11 @@ case "$VERSION" in
     *)      SC2_VERSION="$VERSION" ;;
 esac
 
-SC2_DIR="$SC2_BASE/$SC2_VERSION/StarCraftII"
+SC2_DIR="$SC2_BASE/$SC2_VERSION/SC2.${SC2_VERSION}/StarCraftII"
+# Fallback for 4.10 which extracts directly (no SC2.X.Y wrapper)
+if [ ! -d "$SC2_DIR" ]; then
+    SC2_DIR="$SC2_BASE/$SC2_VERSION/StarCraftII"
+fi
 
 if [ ! -d "$SC2_DIR" ]; then
     echo "SC2 $SC2_VERSION not found at $SC2_DIR"
