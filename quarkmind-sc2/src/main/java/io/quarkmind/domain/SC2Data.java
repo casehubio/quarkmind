@@ -312,6 +312,29 @@ public final class SC2Data {
         return buildTimeInLoops(type) / LOOPS_PER_TICK;
     }
 
+    private static final Map<UpgradeType, Integer> UPGRADE_TIMES = Map.ofEntries(
+            Map.entry(UpgradeType.STIMPACK, (int) (100 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.COMBAT_SHIELD, (int) (100 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.CONCUSSIVE_SHELLS, (int) (43 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.BANSHEE_CLOAK, (int) (79 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.TERRAN_VEHICLE_WEAPONS_1, (int) (114 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.PERSONAL_CLOAKING, (int) (86 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.DRILL_CLAWS, (int) (79 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.ZERGLING_SPEED, (int) (71 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.GLIAL_RECONSTITUTION, (int) (57 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.CENTRIFUGAL_HOOKS, (int) (43 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.BURROW, (int) (71 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.WARP_GATE_RESEARCH, (int) (114 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.BLINK, (int) (121 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.CHARGE, (int) (100 * GAME_LOOPS_PER_SECOND)),
+            Map.entry(UpgradeType.ADEPT_PIERCING, (int) (100 * GAME_LOOPS_PER_SECOND))
+                                                                                );
+
+    public static int upgradeTimeInLoops(UpgradeType type) {
+        return UPGRADE_TIMES.getOrDefault(type, (int) (100 * GAME_LOOPS_PER_SECOND));
+    }
+
+
     private static final Map<UnitType, UnitCosts> UNIT_COSTS;
     static {
         var map = new EnumMap<UnitType, UnitCosts>(UnitType.class);
