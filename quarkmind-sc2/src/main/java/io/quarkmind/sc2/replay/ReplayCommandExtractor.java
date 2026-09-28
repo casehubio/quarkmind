@@ -34,7 +34,11 @@ public final class ReplayCommandExtractor {
                 for (ReplayCommand rc : mapping.process(cmd)) {
                     switch (rc) {
                         case ReplayCommand.Movement      m -> orders.add(m.order());
-                        case ReplayCommand.IntentCommand i -> intents.add(i.intent());
+                        case ReplayCommand.IntentCommand  i -> intents.add(i.intent());
+                        case ReplayCommand.BuildCommand   ignored -> {}
+                        case ReplayCommand.UpgradeCommand ignored -> {}
+                        case ReplayCommand.MorphCommand   ignored -> {}
+                        case ReplayCommand.CancelCommand  ignored -> {}
                     }
                 }
             }

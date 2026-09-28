@@ -59,6 +59,18 @@ public class AbilityMapping {
     // Other abilLinks (157, 158, 161) have insufficient cross-replay evidence — logged as unknown.
     private static final int ABIL_COMMAND_CENTER = 155; // idx=0 only → SCV
     private static final int ABIL_BARRACKS       = 159; // idx=0 → Marine, idx=3 → Marauder
+    // --- Human replay building placement (from AbilityDiscoveryCalibrationTest, 118 oracle replays) ---
+// In human replays, building placement uses distinct per-building abilLinks unlike bot replays
+// which use abilLink=42 (Smart). abilLink=170 means Protoss building here, NOT warp-in.
+    private static final int ABIL_SCV_BUILD      = 129; // SCV build — abilCmdIndex selects building
+    private static final int ABIL_PROBE_BUILD    = 170; // Probe build — same value as ABIL_WARPGATE (mode-dependent)
+    private static final int ABIL_DRONE_BUILD    = 183; // Drone build (morph) — abilCmdIndex selects building
+    private static final int ABIL_BARRACKS_ADDON = 147;
+    private static final int ABIL_FACTORY_ADDON  = 149;
+    private static final int ABIL_STARPORT_ADDON = 151;
+    private static final int ABIL_WARPGATE_WARPIN = 214; // WarpGate warp-in (human replays)
+    private static final int ABIL_ARCHON_MERGE = 267;
+
 
     private static final Map<Integer, UnitType> BARRACKS_UNITS = Map.of(
             0, UnitType.MARINE,
@@ -99,12 +111,61 @@ public class AbilityMapping {
             8, UnitType.SWARM_HOST,
             9, UnitType.VIPER
     );
+    // Terran SCV build abilCmdIndex → building name (from discovery: 118 oracle replays)
+    private static final Map<Integer, String>   SCV_BUILD_BUILDINGS = Map.ofEntries(
+            Map.entry(0, "CommandCenter"), Map.entry(1, "SupplyDepot"),
+            Map.entry(2, "Refinery"), Map.entry(3, "Barracks"),
+            Map.entry(4, "EngineeringBay"), Map.entry(5, "MissileTurret"),
+            Map.entry(6, "Bunker"), Map.entry(8, "SensorTower"),
+            Map.entry(9, "GhostAcademy"), Map.entry(10, "Factory"),
+            Map.entry(11, "Starport"), Map.entry(13, "Armory"),
+            Map.entry(15, "FusionCore"));
+
+    // Protoss Probe build abilCmdIndex → building name
+    private static final Map<Integer, String> PROBE_BUILD_BUILDINGS = Map.ofEntries(
+            Map.entry(0, "Nexus"), Map.entry(1, "Pylon"),
+            Map.entry(2, "Assimilator"), Map.entry(3, "Gateway"),
+            Map.entry(4, "Forge"), Map.entry(5, "FleetBeacon"),
+            Map.entry(6, "TwilightCouncil"), Map.entry(7, "PhotonCannon"),
+            Map.entry(9, "Stargate"), Map.entry(10, "TemplarArchive"),
+            Map.entry(11, "DarkShrine"), Map.entry(12, "RoboticsBay"),
+            Map.entry(13, "RoboticsFacility"), Map.entry(14, "CyberneticsCore"),
+            Map.entry(15, "ShieldBattery"));
+
+    // Zerg Drone build abilCmdIndex → building name
+    private static final Map<Integer, String> DRONE_BUILD_BUILDINGS = Map.ofEntries(
+            Map.entry(0, "Hatchery"), Map.entry(2, "Extractor"),
+            Map.entry(3, "SpawningPool"), Map.entry(4, "EvolutionChamber"),
+            Map.entry(5, "HydraliskDen"), Map.entry(6, "Spire"),
+            Map.entry(7, "UltraliskCavern"), Map.entry(8, "InfestationPit"),
+            Map.entry(9, "NydusNetwork"), Map.entry(10, "BanelingNest"),
+            Map.entry(11, "LurkerDenMP"), Map.entry(13, "RoachWarren"),
+            Map.entry(14, "SpineCrawler"), Map.entry(15, "SporeCrawler"));
+
+    // Terran addon maps
+    private static final Map<Integer, String> BARRACKS_ADDON_MAP = Map.of(0, "BarracksTechLab", 1, "BarracksReactor");
+    private static final Map<Integer, String> FACTORY_ADDON_MAP  = Map.of(0, "FactoryTechLab", 1, "FactoryReactor");
+    private static final Map<Integer, String> STARPORT_ADDON_MAP = Map.of(0, "StarportTechLab", 1, "StarportReactor");
+
+    // WarpGate warp-in (human replays) abilCmdIndex → UnitType
+    private static final Map<Integer, UnitType> WARPGATE_WARPIN_UNITS = Map.of(
+            0, UnitType.ZEALOT, 1, UnitType.STALKER,
+            3, UnitType.HIGH_TEMPLAR, 4, UnitType.DARK_TEMPLAR,
+            5, UnitType.SENTRY, 6, UnitType.ADEPT);
+
 
     private final int userId;  // 0-indexed game event userId = (playerId - 1)
     private final SelectionState selection = new SelectionState();
+    private final boolean        humanReplay;
+
 
     public AbilityMapping(int playerId) {
+        this(playerId, false);
+    }
+
+    public AbilityMapping(int playerId, boolean humanReplay) {
         this.userId = playerId - 1;
+        this.humanReplay = humanReplay;
     }
 
     public void onSelection(SelectionDeltaEvent event) {
@@ -183,12 +244,15 @@ public class AbilityMapping {
     private List<ReplayCommand> dispatch(int abilLink, int idx, CmdEvent event) {
         long loop = event.getLoop();
 
-        return switch (abilLink) {
-            case ABIL_SMART, ABIL_ATTACK_MOVE, ABIL_WARPGATE ->
-                    moveOrders(event, loop);
+        if (humanReplay) {
+            List<ReplayCommand> result = dispatchHuman(abilLink, idx, event, loop);
+            if (result != null) {return result;}
+        }
 
-            case ABIL_NEXUS ->
-                    trainIntent(loop, UnitType.PROBE);
+        return switch (abilLink) {
+            case ABIL_SMART, ABIL_ATTACK_MOVE, ABIL_WARPGATE -> moveOrders(event, loop);
+
+            case ABIL_NEXUS -> trainIntent(loop, UnitType.PROBE);
 
             case ABIL_GATEWAY -> {
                 UnitType unit = GATEWAY_UNITS.get(idx);
@@ -210,13 +274,9 @@ public class AbilityMapping {
                 yield unit != null ? trainIntent(loop, unit) : unknown(abilLink, idx);
             }
 
-            case ABIL_HATCHERY ->
-                // abilCmdIndex=1 = Train Queen; other indices are macro (inject, etc.) — skip
-                    idx == 1 ? trainIntent(loop, UnitType.QUEEN) : List.of();
+            case ABIL_HATCHERY -> idx == 1 ? trainIntent(loop, UnitType.QUEEN) : List.of();
 
-            case ABIL_COMMAND_CENTER ->
-                    // idx=0 = Train SCV; other indices are Orbital abilities (call-down MULE, scan) — skip
-                    idx == 0 ? trainIntent(loop, UnitType.SCV) : unknown(abilLink, idx);
+            case ABIL_COMMAND_CENTER -> idx == 0 ? trainIntent(loop, UnitType.SCV) : unknown(abilLink, idx);
 
             case ABIL_BARRACKS -> {
                 UnitType unit = BARRACKS_UNITS.get(idx);
@@ -226,6 +286,33 @@ public class AbilityMapping {
             default -> unknown(abilLink, idx);
         };
     }
+
+    private List<ReplayCommand> dispatchHuman(int abilLink, int idx, CmdEvent event, long loop) {
+        return switch (abilLink) {
+            case ABIL_SCV_BUILD -> buildCommand(loop, SCV_BUILD_BUILDINGS.get(idx), event);
+            case ABIL_PROBE_BUILD -> buildCommand(loop, PROBE_BUILD_BUILDINGS.get(idx), event);
+            case ABIL_DRONE_BUILD -> buildCommand(loop, DRONE_BUILD_BUILDINGS.get(idx), event);
+            case ABIL_BARRACKS_ADDON -> buildCommand(loop, BARRACKS_ADDON_MAP.get(idx), event);
+            case ABIL_FACTORY_ADDON -> buildCommand(loop, FACTORY_ADDON_MAP.get(idx), event);
+            case ABIL_STARPORT_ADDON -> buildCommand(loop, STARPORT_ADDON_MAP.get(idx), event);
+            case ABIL_WARPGATE_WARPIN -> {
+                UnitType unit = WARPGATE_WARPIN_UNITS.get(idx);
+                yield unit != null ? trainIntent(loop, unit) : null;
+            }
+            case ABIL_ARCHON_MERGE -> List.of(new ReplayCommand.MorphCommand(loop, "HighTemplar", "Archon"));
+            default -> null;
+        };
+    }
+
+    private List<ReplayCommand> buildCommand(long loop, String buildingName, CmdEvent event) {
+        if (buildingName == null) {return List.of();}
+        var tp = event.getTargetPoint();
+        if (tp == null) {return List.of();}
+        float x = tp.getXFloat() * 2;
+        float y = tp.getYFloat() * 2;
+        return List.of(new ReplayCommand.BuildCommand(loop, buildingName, new Point2d(x, y)));
+    }
+
 
     private List<ReplayCommand> trainIntent(long loop, UnitType unitType) {
         String buildingTag = selection.first();

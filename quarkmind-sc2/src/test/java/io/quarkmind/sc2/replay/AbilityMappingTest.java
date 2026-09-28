@@ -28,12 +28,25 @@ class AbilityMappingTest {
     static final int TERRAN_BARRACKS_ABIL  = 159; // Barracks → Marine (idx=0), Marauder (idx=3)
     static final int TERRAN_MARINE_IDX     = 0;
     static final int TERRAN_MARAUDER_IDX   = 3;
+    // --- Human replay building placement (from AbilityDiscoveryCalibrationTest) ---
+    static final int ABIL_SCV_BUILD        = 129;
+    static final int ABIL_PROBE_BUILD      = 170;  // same value as ABIL_WARPGATE in bot mode
+    static final int ABIL_DRONE_BUILD      = 183;
+    static final int ABIL_BARRACKS_ADDON   = 147;
+    static final int ABIL_FACTORY_ADDON    = 149;
+    static final int ABIL_STARPORT_ADDON   = 151;
+    static final int ABIL_WARPGATE_WARPIN  = 214;
+    static final int ABIL_ARCHON_MERGE     = 267;
+
 
     AbilityMapping mapping;
+    AbilityMapping humanMapping;
+
 
     @BeforeEach
     void setUp() {
-        mapping = new AbilityMapping(1); // player 1 = userId 0
+        mapping      = new AbilityMapping(1);
+        humanMapping = new AbilityMapping(1, true);
     }
 
     @Test
@@ -165,6 +178,151 @@ class AbilityMappingTest {
                 fakeCmdEvent(TERRAN_BARRACKS_ABIL, 0, 800, null, null, 99));
         assertThat(result).isEmpty();
     }
+// --- Human replay mode tests ---
+
+    @Test
+    void humanMode_scvBuildSupplyDepot_producesBuildCommand() {
+        humanMapping.setSelectionForTest(0, List.of("r-scv-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_SCV_BUILD, 0, 500, new float[]{40f, 60f}, null, 1));
+        assertThat(result).hasSize(1);
+        ReplayCommand.BuildCommand bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.loop()).isEqualTo(500);
+        assertThat(bc.buildingName()).isEqualTo("SupplyDepot");
+        assertThat(bc.position().x()).isEqualTo(80f);
+        assertThat(bc.position().y()).isEqualTo(120f);
+    }
+
+    @Test
+    void humanMode_scvBuildBarracks_producesBuildCommand() {
+        humanMapping.setSelectionForTest(0, List.of("r-scv-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_SCV_BUILD, 0, 600, new float[]{30f, 40f}, null, 3));
+        assertThat(result).hasSize(1);
+        ReplayCommand.BuildCommand bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.buildingName()).isEqualTo("Barracks");
+    }
+
+    @Test
+    void humanMode_probeBuildPylon_producesBuildCommand() {
+        humanMapping.setSelectionForTest(0, List.of("r-probe-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_PROBE_BUILD, 0, 700, new float[]{50f, 50f}, null, 1));
+        assertThat(result).hasSize(1);
+        ReplayCommand.BuildCommand bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.buildingName()).isEqualTo("Pylon");
+    }
+
+    @Test
+    void humanMode_probeBuildGateway_producesBuildCommand() {
+        humanMapping.setSelectionForTest(0, List.of("r-probe-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_PROBE_BUILD, 0, 800, new float[]{55f, 45f}, null, 3));
+        assertThat(result).hasSize(1);
+        ReplayCommand.BuildCommand bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.buildingName()).isEqualTo("Gateway");
+    }
+
+    @Test
+    void humanMode_droneBuildHatchery_producesBuildCommand() {
+        humanMapping.setSelectionForTest(0, List.of("r-drone-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_DRONE_BUILD, 0, 900, new float[]{70f, 30f}, null, 0));
+        assertThat(result).hasSize(1);
+        ReplayCommand.BuildCommand bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.buildingName()).isEqualTo("Hatchery");
+    }
+
+    @Test
+    void humanMode_droneBuildSpawningPool_producesBuildCommand() {
+        humanMapping.setSelectionForTest(0, List.of("r-drone-2"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_DRONE_BUILD, 0, 1000, new float[]{65f, 35f}, null, 3));
+        assertThat(result).hasSize(1);
+        ReplayCommand.BuildCommand bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.buildingName()).isEqualTo("SpawningPool");
+    }
+
+    @Test
+    void humanMode_barracksAddonTechLab_producesBuildCommand() {
+        humanMapping.setSelectionForTest(0, List.of("r-bx-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_BARRACKS_ADDON, 0, 1100, new float[]{40f, 50f}, null, 0));
+        assertThat(result).hasSize(1);
+        ReplayCommand.BuildCommand bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.buildingName()).isEqualTo("BarracksTechLab");
+    }
+
+    @Test
+    void humanMode_warpGateWarpIn_producesStalkerTrainIntent() {
+        humanMapping.setSelectionForTest(0, List.of("r-wg-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_WARPGATE_WARPIN, 0, 1200, new float[]{45f, 55f}, null, 1));
+        assertThat(result).hasSize(1);
+        ReplayCommand.IntentCommand ic = (ReplayCommand.IntentCommand) result.get(0);
+        TrainIntent                 t  = (TrainIntent) ic.intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.STALKER);
+    }
+
+    @Test
+    void humanMode_warpGateWarpIn_producesAdeptTrainIntent() {
+        humanMapping.setSelectionForTest(0, List.of("r-wg-2"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_WARPGATE_WARPIN, 0, 1300, new float[]{50f, 60f}, null, 6));
+        assertThat(result).hasSize(1);
+        ReplayCommand.IntentCommand ic = (ReplayCommand.IntentCommand) result.get(0);
+        TrainIntent                 t  = (TrainIntent) ic.intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.ADEPT);
+    }
+
+    @Test
+    void humanMode_archonMerge_producesMorphCommand() {
+        humanMapping.setSelectionForTest(0, List.of("r-ht-1", "r-ht-2"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_ARCHON_MERGE, 0, 1400, null, null, 0));
+        assertThat(result).hasSize(1);
+        ReplayCommand.MorphCommand mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.loop()).isEqualTo(1400);
+        assertThat(mc.sourceName()).isEqualTo("HighTemplar");
+        assertThat(mc.targetName()).isEqualTo("Archon");
+    }
+
+    @Test
+    void humanMode_unknownBuildIdx_returnsEmpty() {
+        humanMapping.setSelectionForTest(0, List.of("r-scv-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_SCV_BUILD, 0, 1500, new float[]{40f, 60f}, null, 99));
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void humanMode_buildWithoutTargetPoint_returnsEmpty() {
+        humanMapping.setSelectionForTest(0, List.of("r-scv-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_SCV_BUILD, 0, 1600, null, null, 1));
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void humanMode_existingTrainStillWorks() {
+        humanMapping.setSelectionForTest(0, List.of("r-nexus-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(PROBE_ABIL, 0, 1700, null, null, 0));
+        assertThat(result).hasSize(1);
+        ReplayCommand.IntentCommand ic = (ReplayCommand.IntentCommand) result.get(0);
+        TrainIntent                 t  = (TrainIntent) ic.intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.PROBE);
+    }
+
+    @Test
+    void botMode_abilLink170_producesMovement() {
+        mapping.setSelectionForTest(0, List.of("r-wg-1"));
+        List<ReplayCommand> result = mapping.process(
+                fakeCmdEvent(170, 0, 1800, new float[]{45f, 55f}, null, 0));
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0)).isInstanceOf(ReplayCommand.Movement.class);
+    }
+
 
     /**
      * Construct a minimal CmdEvent via its public constructor.
