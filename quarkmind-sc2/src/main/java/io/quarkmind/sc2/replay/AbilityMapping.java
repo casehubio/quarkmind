@@ -4,7 +4,9 @@ import hu.scelight.sc2.rep.model.details.Race;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.domain.UpgradeType;
 import io.quarkmind.sc2.SelectionState;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
@@ -182,6 +184,7 @@ public class AbilityMapping {
     private final SelectionState selection = new SelectionState();
     private final boolean        humanReplay;
     private final Race           race;
+    private       boolean        warpGateResearchEmitted = false;
 
 
     public AbilityMapping(int playerId) {
@@ -353,9 +356,19 @@ public class AbilityMapping {
             case ABIL_FACTORY_ADDON -> isRace(Race.TERRAN) ? buildCommand(loop, FACTORY_ADDON_MAP.get(idx), event) : null;
             case ABIL_STARPORT_ADDON -> isRace(Race.TERRAN) ? buildCommand(loop, STARPORT_ADDON_MAP.get(idx), event) : null;
             case ABIL_WARPGATE_WARPIN -> {
-                if (!isRace(Race.PROTOSS)) yield null;
+                if (!isRace(Race.PROTOSS)) {yield null;}
                 UnitType unit = WARPGATE_WARPIN_UNITS.get(idx);
-                yield unit != null ? trainIntent(loop, unit) : null;
+                if (unit == null) {yield null;}
+                List<ReplayCommand> train = trainIntent(loop, unit);
+                if (!warpGateResearchEmitted) {
+                    warpGateResearchEmitted = true;
+                    var result = new ArrayList<ReplayCommand>();
+                    long inferredStart = Math.max(0, loop - SC2Data.upgradeTimeInLoops(UpgradeType.WARP_GATE_RESEARCH));
+                    result.add(new ReplayCommand.UpgradeCommand(inferredStart, "WarpGateResearch"));
+                    result.addAll(train);
+                    yield result;
+                }
+                yield train;
             }
             case ABIL_ARCHON_MERGE -> isRace(Race.PROTOSS) ? List.of(new ReplayCommand.MorphCommand(loop, "HighTemplar", "Archon")) : null;
             default -> null;

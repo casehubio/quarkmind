@@ -13,25 +13,30 @@ class StrippedReplayMorphTest {
     @Test
     void morphCommandEmitsSourceDeathAndTargetBirth() {
         var extractor = new StrippedReplayFeatureExtractor();
-        var morph = new ReplayCommand.MorphCommand(1000, "HighTemplar", "Archon");
+        var morph     = new ReplayCommand.MorphCommand(1000, "HighTemplar", "Archon");
 
         List<Map<String, Object>> events = extractor.processMorphForTest(morph, 1, 100);
 
         var deaths = events.stream()
-            .filter(e -> "UnitDied".equals(e.get("evtTypeName")))
-            .toList();
-        var births = events.stream()
-            .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
-            .toList();
+                           .filter(e -> "UnitDied".equals(e.get("evtTypeName")))
+                           .toList();
+        var inits = events.stream()
+                          .filter(e -> "UnitInit".equals(e.get("evtTypeName")))
+                          .toList();
+        var dones = events.stream()
+                          .filter(e -> "UnitDone".equals(e.get("evtTypeName")))
+                          .toList();
 
         // Archon merge: 2 source deaths (HighTemplar × 2)
         assertThat(deaths).hasSize(2);
         assertThat(deaths).allMatch(e -> "HighTemplar".equals(e.get("unitTypeName")));
         assertThat(deaths).allMatch(e -> ((Number) e.get("loop")).longValue() == 1000);
 
-        // 1 target birth (Archon)
-        assertThat(births).hasSize(1);
-        assertThat(births.get(0).get("unitTypeName")).isEqualTo("Archon");
+        // 1 target UnitInit + UnitDone (Archon)
+        assertThat(inits).hasSize(1);
+        assertThat(inits.get(0).get("unitTypeName")).isEqualTo("Archon");
+        assertThat(dones).hasSize(1);
+        assertThat(dones.get(0).get("unitTypeName")).isEqualTo("Archon");
     }
 
     @Test

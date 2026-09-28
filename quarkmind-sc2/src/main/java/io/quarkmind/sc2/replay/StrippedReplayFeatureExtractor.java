@@ -4,7 +4,6 @@ import hu.scelight.sc2.rep.factory.RepContent;
 import hu.scelight.sc2.rep.factory.RepParserEngine;
 import hu.scelight.sc2.rep.model.Replay;
 import hu.scelight.sc2.rep.model.details.Player;
-import hu.scelight.sc2.rep.model.details.Race;
 import hu.scelight.sc2.rep.model.details.Result;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
@@ -122,6 +121,11 @@ public class StrippedReplayFeatureExtractor {
     );
 
     private static final int ARCHON_MORPH_TIME = 269;
+    private static final Set<UnitType> GATEWAY_UNITS = Set.of(
+            UnitType.ZEALOT, UnitType.STALKER, UnitType.SENTRY,
+            UnitType.ADEPT, UnitType.HIGH_TEMPLAR, UnitType.DARK_TEMPLAR
+                                                             );
+
 
     public Map<String, Object> extract(Path replayPath) {
         Replay replay = RepParserEngine.parseReplay(replayPath,
@@ -192,13 +196,13 @@ public class StrippedReplayFeatureExtractor {
     private int handleTrain(TrainIntent train, long commandLoop, int playerId,
                             PlayerState state,
                             List<SyntheticEvent> events, int tagCounter) {
-        UnitType unitType = train.unitType();
-        String pythonName = UNIT_PYTHON_NAMES.get(unitType);
-        if (pythonName == null) return tagCounter;
+        UnitType unitType   = train.unitType();
+        String   pythonName = UNIT_PYTHON_NAMES.get(unitType);
+        if (pythonName == null) {return tagCounter;}
 
-        int trainTime = SC2Data.trainTimeInLoops(unitType);
+        int    trainTime   = SC2Data.trainTimeInLoops(unitType);
         String buildingTag = train.buildingTag();
-        long startLoop;
+        long   startLoop;
 
         if (buildingTag != null) {
             long busyUntil = state.buildingBusyUntil.getOrDefault(buildingTag, 0L);
@@ -211,16 +215,37 @@ public class StrippedReplayFeatureExtractor {
         long birthLoop = startLoop + trainTime;
         trackTrainSpending(unitType, state);
 
+        boolean warpIn = state.warpGateCompletionLoop > 0
+                         && commandLoop >= state.warpGateCompletionLoop
+                         && GATEWAY_UNITS.contains(unitType);
+
         int count = SC2Data.trainCount(unitType);
         for (int i = 0; i < count; i++) {
             int tag = tagCounter++;
-            events.add(new SyntheticEvent(birthLoop, EventOrdinal.UNIT_BORN, playerId,
-                Map.of("evtTypeName", "UnitBorn",
-                    "loop", birthLoop,
-                    "controlPlayerId", playerId,
-                    "unitTypeName", pythonName,
-                    "unitTagIndex", tag,
-                    "unitTagRecycle", 0)));
+            if (warpIn) {
+                events.add(new SyntheticEvent(startLoop, EventOrdinal.UNIT_INIT, playerId,
+                                              Map.of("evtTypeName", "UnitInit",
+                                                     "loop", startLoop,
+                                                     "controlPlayerId", playerId,
+                                                     "unitTypeName", pythonName,
+                                                     "unitTagIndex", tag,
+                                                     "unitTagRecycle", 0)));
+                events.add(new SyntheticEvent(birthLoop, EventOrdinal.UNIT_DONE, playerId,
+                                              Map.of("evtTypeName", "UnitDone",
+                                                     "loop", birthLoop,
+                                                     "controlPlayerId", playerId,
+                                                     "unitTypeName", pythonName,
+                                                     "unitTagIndex", tag,
+                                                     "unitTagRecycle", 0)));
+            } else {
+                events.add(new SyntheticEvent(birthLoop, EventOrdinal.UNIT_BORN, playerId,
+                                              Map.of("evtTypeName", "UnitBorn",
+                                                     "loop", birthLoop,
+                                                     "controlPlayerId", playerId,
+                                                     "unitTypeName", pythonName,
+                                                     "unitTagIndex", tag,
+                                                     "unitTagRecycle", 0)));
+            }
         }
         return tagCounter;
     }
@@ -270,19 +295,19 @@ public class StrippedReplayFeatureExtractor {
 
     private int handleUpgrade(ReplayCommand.UpgradeCommand uc, int playerId,
                               PlayerState state, List<SyntheticEvent> events, int tagCounter) {
-        String upgradeName = uc.upgradeName();
+        String      upgradeName = uc.upgradeName();
         UpgradeType upgradeType = UpgradeType.fromPythonName(upgradeName);
-        if (upgradeType == null) return tagCounter;
+        if (upgradeType == null) {return tagCounter;}
 
-        long commandLoop = uc.loop();
-        int upgradeTime = SC2Data.upgradeTimeInLoops(upgradeType);
+        long commandLoop    = uc.loop();
+        int  upgradeTime    = SC2Data.upgradeTimeInLoops(upgradeType);
         long completionLoop = commandLoop + upgradeTime;
 
         events.add(new SyntheticEvent(completionLoop, EventOrdinal.UPGRADE, playerId,
-            Map.of("evtTypeName", "Upgrade",
-                "loop", completionLoop,
-                "playerId", playerId,
-                "upgradeTypeName", upgradeName)));
+                                      Map.of("evtTypeName", "Upgrade",
+                                             "loop", completionLoop,
+                                             "playerId", playerId,
+                                             "upgradeTypeName", upgradeName)));
 
         if (upgradeType == UpgradeType.WARP_GATE_RESEARCH) {
             state.warpGateCompletionLoop = completionLoop;
@@ -295,51 +320,50 @@ public class StrippedReplayFeatureExtractor {
 
     int handleMorph(ReplayCommand.MorphCommand mc, int playerId,
                     List<SyntheticEvent> events, int tagCounter) {
-        String sourceName = mc.sourceName();
-        String targetName = mc.targetName();
-        long commandLoop = mc.loop();
+        String sourceName  = mc.sourceName();
+        String targetName  = mc.targetName();
+        long   commandLoop = mc.loop();
 
         int sourceDeathCount = "Archon".equals(targetName) ? 2 : 1;
         for (int i = 0; i < sourceDeathCount; i++) {
             int tag = tagCounter++;
             events.add(new SyntheticEvent(commandLoop, EventOrdinal.UNIT_DIED, playerId,
-                Map.of("evtTypeName", "UnitDied",
-                    "loop", commandLoop,
-                    "controlPlayerId", playerId,
-                    "unitTypeName", sourceName,
-                    "unitTagIndex", tag,
-                    "unitTagRecycle", 0)));
+                                          Map.of("evtTypeName", "UnitDied",
+                                                 "loop", commandLoop,
+                                                 "controlPlayerId", playerId,
+                                                 "unitTypeName", sourceName,
+                                                 "unitTagIndex", tag,
+                                                 "unitTagRecycle", 0)));
         }
 
-        if (BUILDING_MORPH_TARGETS.contains(targetName)) {
-            int buildTime = getBuildTime(targetName);
+        if (BUILDING_MORPH_TARGETS.contains(targetName) || "Archon".equals(targetName)) {
+            int morphTime = BUILDING_MORPH_TARGETS.contains(targetName)
+                            ? getBuildTime(targetName) : ARCHON_MORPH_TIME;
             int tag = tagCounter++;
             events.add(new SyntheticEvent(commandLoop, EventOrdinal.UNIT_INIT, playerId,
-                Map.of("evtTypeName", "UnitInit",
-                    "loop", commandLoop,
-                    "controlPlayerId", playerId,
-                    "unitTypeName", targetName,
-                    "unitTagIndex", tag,
-                    "unitTagRecycle", 0)));
-            long doneLoop = commandLoop + buildTime;
+                                          Map.of("evtTypeName", "UnitInit",
+                                                 "loop", commandLoop,
+                                                 "controlPlayerId", playerId,
+                                                 "unitTypeName", targetName,
+                                                 "unitTagIndex", tag,
+                                                 "unitTagRecycle", 0)));
+            long doneLoop = commandLoop + morphTime;
             events.add(new SyntheticEvent(doneLoop, EventOrdinal.UNIT_DONE, playerId,
-                Map.of("evtTypeName", "UnitDone",
-                    "loop", doneLoop,
-                    "controlPlayerId", playerId,
-                    "unitTypeName", targetName,
-                    "unitTagIndex", tag,
-                    "unitTagRecycle", 0)));
+                                          Map.of("evtTypeName", "UnitDone",
+                                                 "loop", doneLoop,
+                                                 "controlPlayerId", playerId,
+                                                 "unitTypeName", targetName,
+                                                 "unitTagIndex", tag,
+                                                 "unitTagRecycle", 0)));
         } else {
-            int morphTime = "Archon".equals(targetName) ? ARCHON_MORPH_TIME : 0;
-            long birthLoop = commandLoop + morphTime;
             int tag = tagCounter++;
-            events.add(new SyntheticEvent(birthLoop, EventOrdinal.UNIT_BORN, playerId,
-                Map.of("evtTypeName", "UnitBorn",
-                    "loop", birthLoop,
-                    "controlPlayerId", playerId,
-                    "unitTypeName", targetName,
-                    "unitTagIndex", tag,
-                    "unitTagRecycle", 0)));
+            events.add(new SyntheticEvent(commandLoop, EventOrdinal.UNIT_BORN, playerId,
+                                          Map.of("evtTypeName", "UnitBorn",
+                                                 "loop", commandLoop,
+                                                 "controlPlayerId", playerId,
+                                                 "unitTypeName", targetName,
+                                                 "unitTagIndex", tag,
+                                                 "unitTagRecycle", 0)));
         }
 
         return tagCounter;
@@ -403,6 +427,17 @@ public class StrippedReplayFeatureExtractor {
             emitWarpGateAutoMorph(playerId, state, events, tag);
         }
 
+        return events.stream().map(SyntheticEvent::data).toList();
+    }
+
+
+    List<Map<String, Object>> processTrainForTest(TrainIntent train, long commandLoop,
+                                                  int playerId, int startTag,
+                                                  long warpGateCompletionLoop) {
+        List<SyntheticEvent> events = new ArrayList<>();
+        var                  state  = new PlayerState();
+        state.warpGateCompletionLoop = warpGateCompletionLoop;
+        handleTrain(train, commandLoop, playerId, state, events, startTag);
         return events.stream().map(SyntheticEvent::data).toList();
     }
 

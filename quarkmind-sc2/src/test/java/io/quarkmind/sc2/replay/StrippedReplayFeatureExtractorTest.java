@@ -1,5 +1,7 @@
 package io.quarkmind.sc2.replay;
 
+import io.quarkmind.domain.UnitType;
+import io.quarkmind.sc2.intent.TrainIntent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
@@ -166,6 +168,78 @@ class StrippedReplayFeatureExtractorTest {
                 .doesNotContain("_");
         }
     }
+
+
+    @Test
+    void preWarpGateStalkerEmitsUnitBorn() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var train     = new TrainIntent("gw1", UnitType.STALKER);
+        List<Map<String, Object>> events = extractor.processTrainForTest(
+                train, 3000L, 1, 100, 0L);
+
+        assertThat(events).hasSize(1);
+        assertThat(events.get(0).get("evtTypeName")).isEqualTo("UnitBorn");
+        assertThat(events.get(0).get("unitTypeName")).isEqualTo("Stalker");
+    }
+
+    @Test
+    void warpGatedStalkerEmitsUnitInit() {
+        var  extractor    = new StrippedReplayFeatureExtractor();
+        var  train        = new TrainIntent("gw1", UnitType.STALKER);
+        long warpGateDone = 2500L;
+        List<Map<String, Object>> events = extractor.processTrainForTest(
+                train, 3000L, 1, 100, warpGateDone);
+
+        assertThat(events).hasSize(2);
+        assertThat(events.get(0).get("evtTypeName")).isEqualTo("UnitInit");
+        assertThat(events.get(0).get("unitTypeName")).isEqualTo("Stalker");
+        assertThat(events.get(1).get("evtTypeName")).isEqualTo("UnitDone");
+        assertThat(events.get(1).get("unitTypeName")).isEqualTo("Stalker");
+    }
+
+    @Test
+    void nonGatewayUnitStillEmitsUnitBornAfterWarpGate() {
+        var  extractor    = new StrippedReplayFeatureExtractor();
+        var  train        = new TrainIntent("robo1", UnitType.IMMORTAL);
+        long warpGateDone = 2500L;
+        List<Map<String, Object>> events = extractor.processTrainForTest(
+                train, 3000L, 1, 100, warpGateDone);
+
+        assertThat(events).hasSize(1);
+        assertThat(events.get(0).get("evtTypeName")).isEqualTo("UnitBorn");
+        assertThat(events.get(0).get("unitTypeName")).isEqualTo("Immortal");
+    }
+
+    @Test
+    void warpGatedZealotAtExactCompletionLoopEmitsUnitInit() {
+        var  extractor    = new StrippedReplayFeatureExtractor();
+        var  train        = new TrainIntent("gw1", UnitType.ZEALOT);
+        long warpGateDone = 3000L;
+        List<Map<String, Object>> events = extractor.processTrainForTest(
+                train, 3000L, 1, 100, warpGateDone);
+
+        assertThat(events).hasSize(2);
+        assertThat(events.get(0).get("evtTypeName")).isEqualTo("UnitInit");
+        assertThat(events.get(0).get("unitTypeName")).isEqualTo("Zealot");
+        assertThat(events.get(1).get("evtTypeName")).isEqualTo("UnitDone");
+    }
+
+
+    @Test
+    void archonMergeEmitsUnitInitNotUnitBorn() {
+        var                       extractor = new StrippedReplayFeatureExtractor();
+        var                       morph     = new ReplayCommand.MorphCommand(3000L, "HighTemplar", "Archon");
+        List<Map<String, Object>> events    = extractor.processMorphForTest(morph, 1, 100);
+
+        var archonEvents = events.stream()
+                                 .filter(e -> "Archon".equals(e.get("unitTypeName")))
+                                 .toList();
+
+        assertThat(archonEvents).hasSize(2);
+        assertThat(archonEvents.get(0).get("evtTypeName")).isEqualTo("UnitInit");
+        assertThat(archonEvents.get(1).get("evtTypeName")).isEqualTo("UnitDone");
+    }
+
 
     private Path firstReplay() throws Exception {
         try (var stream = Files.list(LADDER_493)) {

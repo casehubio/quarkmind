@@ -2,7 +2,9 @@ package io.quarkmind.sc2.replay;
 
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.sllauncher.util.Pair;
+import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.domain.UpgradeType;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -255,6 +257,10 @@ class AbilityMappingTest {
 
     @Test
     void humanMode_warpGateWarpIn_producesStalkerTrainIntent() {
+        humanMapping.setSelectionForTest(0, List.of("r-wg-0"));
+        // Prime: first warp-in emits the upgrade — consume it
+        humanMapping.process(fakeCmdEvent(ABIL_WARPGATE_WARPIN, 0, 1100, new float[]{40f, 50f}, null, 0));
+
         humanMapping.setSelectionForTest(0, List.of("r-wg-1"));
         List<ReplayCommand> result = humanMapping.process(
                 fakeCmdEvent(ABIL_WARPGATE_WARPIN, 0, 1200, new float[]{45f, 55f}, null, 1));
@@ -266,6 +272,10 @@ class AbilityMappingTest {
 
     @Test
     void humanMode_warpGateWarpIn_producesAdeptTrainIntent() {
+        humanMapping.setSelectionForTest(0, List.of("r-wg-0"));
+        // Prime: first warp-in emits the upgrade — consume it
+        humanMapping.process(fakeCmdEvent(ABIL_WARPGATE_WARPIN, 0, 1200, new float[]{40f, 50f}, null, 0));
+
         humanMapping.setSelectionForTest(0, List.of("r-wg-2"));
         List<ReplayCommand> result = humanMapping.process(
                 fakeCmdEvent(ABIL_WARPGATE_WARPIN, 0, 1300, new float[]{50f, 60f}, null, 6));
@@ -274,6 +284,40 @@ class AbilityMappingTest {
         TrainIntent                 t  = (TrainIntent) ic.intent().intent();
         assertThat(t.unitType()).isEqualTo(UnitType.ADEPT);
     }
+
+    @Test
+    void humanMode_firstWarpIn_emitsWarpGateResearchUpgrade() {
+        humanMapping.setSelectionForTest(0, List.of("r-wg-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_WARPGATE_WARPIN, 0, 4000, new float[]{45f, 55f}, null, 1));
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0)).isInstanceOf(ReplayCommand.UpgradeCommand.class);
+        ReplayCommand.UpgradeCommand uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("WarpGateResearch");
+        long expectedStart = 4000 - SC2Data.upgradeTimeInLoops(UpgradeType.WARP_GATE_RESEARCH);
+        assertThat(uc.loop()).isEqualTo(expectedStart);
+
+        assertThat(result.get(1)).isInstanceOf(ReplayCommand.IntentCommand.class);
+        TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) result.get(1)).intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.STALKER);
+    }
+
+    @Test
+    void humanMode_secondWarpIn_doesNotEmitUpgradeAgain() {
+        humanMapping.setSelectionForTest(0, List.of("r-wg-1"));
+        humanMapping.process(fakeCmdEvent(ABIL_WARPGATE_WARPIN, 0, 4000, new float[]{45f, 55f}, null, 1));
+
+        humanMapping.setSelectionForTest(0, List.of("r-wg-2"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_WARPGATE_WARPIN, 0, 4500, new float[]{50f, 60f}, null, 0));
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0)).isInstanceOf(ReplayCommand.IntentCommand.class);
+        TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) result.get(0)).intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.ZEALOT);
+    }
+
 
     @Test
     void humanMode_archonMerge_producesMorphCommand() {
