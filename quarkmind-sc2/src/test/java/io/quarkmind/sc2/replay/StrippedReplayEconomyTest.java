@@ -140,7 +140,7 @@ class StrippedReplayEconomyTest {
         var stats = (Map<String, Object>) firstStats.get("stats");
         int workers = ((Number) stats.get("scoreValueWorkersActiveCount")).intValue();
 
-        assertThat(workers).as("Workers should start at 12").isEqualTo(12);
+        assertThat(workers).as("Workers should start at 12 (× 1000)").isEqualTo(12000);
     }
 
     private Path firstReplay() throws Exception {

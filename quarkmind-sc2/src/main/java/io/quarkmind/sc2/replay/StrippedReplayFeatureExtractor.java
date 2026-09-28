@@ -541,20 +541,21 @@ public class StrippedReplayFeatureExtractor {
             double rateVespene = state.gasBuildingCount * GAS_WORKERS_PER_GEYSER
                 * GAS_INCOME_PER_WORKER_PER_TICK * SC2Data.GAME_LOOPS_PER_SECOND / SC2Data.LOOPS_PER_TICK * 60;
 
+            // Non-food stats × 1000, food stats × 4096 — matches sc2reader_to_game_json
             Map<String, Object> stats = new LinkedHashMap<>();
-            stats.put("scoreValueMineralsCurrent", Math.max(0, (int) state.mineralsCurrent));
-            stats.put("scoreValueVespeneCurrent", Math.max(0, (int) state.vespeneCurrent));
-            stats.put("scoreValueMineralsCollectionRate", (int) rateMinerals);
-            stats.put("scoreValueVespeneCollectionRate", (int) rateVespene);
+            stats.put("scoreValueMineralsCurrent", Math.max(0, (int) state.mineralsCurrent) * 1000);
+            stats.put("scoreValueVespeneCurrent", Math.max(0, (int) state.vespeneCurrent) * 1000);
+            stats.put("scoreValueMineralsCollectionRate", (int) (rateMinerals * 1000));
+            stats.put("scoreValueVespeneCollectionRate", (int) (rateVespene * 1000));
             stats.put("scoreValueFoodMade", state.foodMade);
             stats.put("scoreValueFoodUsed", state.foodUsed);
-            stats.put("scoreValueWorkersActiveCount", state.workersActive);
-            stats.put("scoreValueMineralsUsedCurrentArmy", state.mineralsUsedArmy);
-            stats.put("scoreValueMineralsUsedCurrentEconomy", state.mineralsUsedEconomy);
-            stats.put("scoreValueMineralsUsedCurrentTechnology", state.mineralsUsedTechnology);
-            stats.put("scoreValueVespeneUsedCurrentArmy", state.gasUsedArmy);
-            stats.put("scoreValueVespeneUsedCurrentEconomy", state.gasUsedEconomy);
-            stats.put("scoreValueVespeneUsedCurrentTechnology", state.gasUsedTechnology);
+            stats.put("scoreValueWorkersActiveCount", state.workersActive * 1000);
+            stats.put("scoreValueMineralsUsedCurrentArmy", state.mineralsUsedArmy * 1000);
+            stats.put("scoreValueMineralsUsedCurrentEconomy", state.mineralsUsedEconomy * 1000);
+            stats.put("scoreValueMineralsUsedCurrentTechnology", state.mineralsUsedTechnology * 1000);
+            stats.put("scoreValueVespeneUsedCurrentArmy", state.gasUsedArmy * 1000);
+            stats.put("scoreValueVespeneUsedCurrentEconomy", state.gasUsedEconomy * 1000);
+            stats.put("scoreValueVespeneUsedCurrentTechnology", state.gasUsedTechnology * 1000);
 
             allEvents.add(new SyntheticEvent(tick, EventOrdinal.PLAYER_STATS, playerId,
                 Map.of("evtTypeName", "PlayerStats",

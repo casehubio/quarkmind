@@ -177,6 +177,22 @@ def sc2reader_to_game_json(replay) -> Optional[dict]:
     }
 
 
+def _process_one_json(args: Tuple[str, int]) -> Tuple[str, list]:
+    """Multiprocessing worker: load game_json from file, label, and extract features.
+
+    Same pipeline as _process_one_replay but reads pre-generated game_json
+    instead of parsing .SC2Replay via sc2reader.
+    """
+    import json as _json
+    json_path_str, replay_seed = args
+    try:
+        with open(json_path_str) as f:
+            game_json = _json.load(f)
+    except Exception:
+        return ("error", [])
+    return _extract_from_game_json(game_json, replay_seed)
+
+
 def _process_one_replay(args: Tuple[str, int]) -> Tuple[str, list]:
     """Multiprocessing worker: parse, label, and extract features for one replay.
 
@@ -185,7 +201,6 @@ def _process_one_replay(args: Tuple[str, int]) -> Tuple[str, list]:
     where samples is [(temporal, map_tensor, label_idx)].
     """
     replay_path_str, replay_seed = args
-    hp = HyperParams()
 
     try:
         replay = sc2reader.load_replay(replay_path_str, load_level=4)
@@ -196,6 +211,12 @@ def _process_one_replay(args: Tuple[str, int]) -> Tuple[str, list]:
     del replay
     if game_json is None:
         return ("skip", [])
+    return _extract_from_game_json(game_json, replay_seed)
+
+
+def _extract_from_game_json(game_json: dict, replay_seed: int) -> Tuple[str, list]:
+    """Shared extraction logic for both replay and JSON input paths."""
+    hp = HyperParams()
 
     toon_map = game_json["ToonPlayerDescMap"]
     players = {desc["playerID"]: desc for desc in toon_map.values()}
@@ -258,8 +279,9 @@ def process_replay_list(
     tournament_name: str,
     seed: int = 42,
     workers: int = 1,
+    fmt: str = "replay",
 ) -> Dict[str, int]:
-    """Process a list of .SC2Replay files into per-tournament output.
+    """Process a list of .SC2Replay or .json files into per-tournament output.
 
     Each batch produces a self-contained output directory — safe to stop
     between batches without losing completed work.
@@ -267,13 +289,14 @@ def process_replay_list(
     actual = len(replay_files)
 
     print(f"\n{'='*60}")
-    print(f"Processing {tournament_name} ({actual} replays, {workers} workers)")
+    print(f"Processing {tournament_name} ({actual} {'JSON files' if fmt == 'json' else 'replays'}, {workers} workers)")
     print(f"{'='*60}")
 
     if not replay_files:
-        print("  No replays to process")
+        print("  No files to process")
         return {}
 
+    worker_fn = _process_one_json if fmt == "json" else _process_one_replay
     worker_args = [(str(p), seed + i) for i, p in enumerate(replay_files)]
 
     stats = {"ok": 0, "skip": 0, "error": 0}
@@ -293,7 +316,7 @@ def process_replay_list(
         chunksize = max(1, actual // (workers * 4))
         with multiprocessing.Pool(workers) as pool:
             for i, (status, results) in enumerate(
-                pool.imap_unordered(_process_one_replay, worker_args, chunksize=chunksize)
+                pool.imap_unordered(worker_fn, worker_args, chunksize=chunksize)
             ):
                 _collect(status, results)
                 if (i + 1) % 500 == 0:
@@ -303,7 +326,7 @@ def process_replay_list(
                     print(f"  Progress: {i+1}/{actual} ({rate:.1f} replays/s, ETA {eta:.0f}s)", flush=True)
     else:
         for i, wa in enumerate(worker_args):
-            status, results = _process_one_replay(wa)
+            status, results = worker_fn(wa)
             _collect(status, results)
             if (i + 1) % 500 == 0:
                 elapsed = time.time() - t0
@@ -362,15 +385,17 @@ def process_replay_dir(
     workers: int = 1,
     limit: Optional[int] = None,
     offset: int = 0,
+    fmt: str = "replay",
 ) -> Dict[str, int]:
-    """Process a directory of .SC2Replay files into per-tournament output."""
-    replay_files = sorted(replay_dir.rglob("*.SC2Replay"))
+    """Process a directory of .SC2Replay or .json files into per-tournament output."""
+    glob_pattern = "*.json" if fmt == "json" else "*.SC2Replay"
+    replay_files = sorted(replay_dir.rglob(glob_pattern))
     total_available = len(replay_files)
     replay_files = replay_files[offset:]
     if limit is not None:
         replay_files = replay_files[:limit]
     print(f"  Found {total_available} total, selected {len(replay_files)} (offset={offset}, limit={limit})")
-    return process_replay_list(replay_files, output_base, tournament_name, seed, workers)
+    return process_replay_list(replay_files, output_base, tournament_name, seed, workers, fmt=fmt)
 
 
 if __name__ == "__main__":
@@ -388,6 +413,8 @@ if __name__ == "__main__":
                         help="Skip first N replays (for manual batching)")
     parser.add_argument("--limit", type=int,
                         help="Max replays to process (for manual batching)")
+    parser.add_argument("--format", choices=["replay", "json"], default="replay",
+                        help="Input format: 'replay' for .SC2Replay, 'json' for game_json files")
     parser.add_argument("--force", action="store_true",
                         help="Overwrite existing output")
     args = parser.parse_args()
@@ -407,15 +434,17 @@ if __name__ == "__main__":
             try:
                 with zipfile.ZipFile(src) as zf:
                     zf.extractall(tmp)
+                glob_pat = "*.json" if args.format == "json" else "*.SC2Replay"
                 process_replay_list(
-                    sorted(tmp.rglob("*.SC2Replay")),
-                    output_base, name, workers=args.workers,
+                    sorted(tmp.rglob(glob_pat)),
+                    output_base, name, workers=args.workers, fmt=args.format,
                 )
             finally:
                 shutil.rmtree(tmp)
 
     elif args.batch_size:
-        replay_files = sorted(src.rglob("*.SC2Replay"))
+        glob_pat = "*.json" if args.format == "json" else "*.SC2Replay"
+        replay_files = sorted(src.rglob(glob_pat))
         replay_files = replay_files[args.offset:]
         if args.limit:
             replay_files = replay_files[:args.limit]
@@ -423,9 +452,9 @@ if __name__ == "__main__":
         total = len(replay_files)
         n_batches = (total + args.batch_size - 1) // args.batch_size
         print(f"{'='*60}")
-        print(f"Batch processing: {total} replays in {n_batches} batches of {args.batch_size}")
+        print(f"Batch processing: {total} files in {n_batches} batches of {args.batch_size}")
         print(f"Output prefix: {name}")
-        print(f"Workers: {args.workers}")
+        print(f"Workers: {args.workers}, format: {args.format}")
         print(f"{'='*60}")
 
         all_counts: Dict[str, Dict[str, int]] = {}
@@ -443,7 +472,7 @@ if __name__ == "__main__":
                 continue
 
             batch_files = replay_files[batch_start:batch_end]
-            counts = process_replay_list(batch_files, output_base, batch_name, workers=args.workers)
+            counts = process_replay_list(batch_files, output_base, batch_name, workers=args.workers, fmt=args.format)
             all_counts[batch_name] = counts
 
             for m, c in counts.items():
@@ -469,5 +498,5 @@ if __name__ == "__main__":
         else:
             process_replay_dir(
                 src, output_base, name, workers=args.workers,
-                limit=args.limit, offset=args.offset,
+                limit=args.limit, offset=args.offset, fmt=args.format,
             )
