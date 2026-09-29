@@ -31,25 +31,9 @@ public class StrippedReplayFeatureExtractor {
 
     private static final int                   ID_CMD_UPDATE_TARGET_POINT = 104;
     private static final int                   ABIL_WARPGATE_WARPIN       = 214;
-    private static final Map<Integer, Set<Integer>> PRODUCTION_UNIT_LINKS = Map.ofEntries(
-            Map.entry(155, Set.of(67)),          // CommandCenter
-            Map.entry(159, Set.of(70)),          // Barracks (or OrbitalCommand in same group)
-            Map.entry(160, Set.of(75, 48)),      // Factory (+ with addon)
-            Map.entry(161, Set.of(56, 49)),      // Starport (+ with addon)
-            Map.entry(172, Set.of(84)),          // Gateway
-            Map.entry(173, Set.of(89)),          // Stargate
-            Map.entry(174, Set.of(93)),          // RoboticsFacility
-            Map.entry(175, Set.of(81, 106)),     // Nexus (+ Nexus variant)
-            Map.entry(193, Set.of(189)),         // Zerg Larva (unitLink=189 in selection)
-            Map.entry(184, Set.of(189)),         // Hatchery Queen (same Larva selection)
-            Map.entry(186, Set.of(189))          // Lair/Hive Queen (same Larva selection)
-    );
     private static final int ABIL_LARVA = 193;
     private static final int ABIL_HATCHERY_QUEEN = 184;
     private static final int ABIL_LAIR_QUEEN = 186;
-    private static final int ABIL_NEXUS = 175;
-    private static final Set<Integer> BUILDINGCAP_ABIL_LINKS = Set.of(
-            ABIL_LARVA, ABIL_HATCHERY_QUEEN, ABIL_LAIR_QUEEN, ABIL_NEXUS);
 
 
 
@@ -152,7 +136,7 @@ public class StrippedReplayFeatureExtractor {
             UnitType.BANSHEE, UnitType.RAVEN, UnitType.BATTLECRUISER
     );
 
-    private static final int MAX_MULTIPLICATION = 8;
+    private static final int MAX_MULTIPLICATION = 4;
 
     private static final Map<String, Integer> BUILDING_TO_ABIL_LINK = Map.ofEntries(
             Map.entry("CommandCenter", 155), Map.entry("OrbitalCommand", 155),
@@ -194,12 +178,10 @@ public class StrippedReplayFeatureExtractor {
             initStartingBuildings(playerRace, state);
             int            userId     = playerId - 1;
             TrainIntent    lastWarpIn = null;
-            var            selTracker = new SelectionUnitLinkTracker(userId);
 
             for (Event raw : gameEvents) {
                 if (raw instanceof SelectionDeltaEvent sel) {
                     mapping.onSelection(sel);
-                    selTracker.onSelection(sel);
                 } else if (raw instanceof CmdEvent cmd) {
                     if (cmd.getUserId() == userId) {
                         lastWarpIn = null;
@@ -217,20 +199,10 @@ public class StrippedReplayFeatureExtractor {
                                     }
                                     int repeatCount = 1;
                                     if (abilLink != null && !TECHLAB_UNITS.contains(train.unitType())) {
-                                        Set<Integer> validLinks = PRODUCTION_UNIT_LINKS.get(abilLink);
-                                        if (validLinks != null) {
-                                            int selectionCount = Math.max(1, selTracker.countMatching(validLinks));
-                                            int buildingCap = state.productionBuildingCounts.getOrDefault(abilLink, 1);
-                                            if (BUILDINGCAP_ABIL_LINKS.contains(abilLink)) {
-                                                // Selection tracking unreliable for these abilLinks:
-                                                // Zerg — Larva unitLinks inflate 3x per Hatchery
-                                                // Nexus — rapid-fire production via control groups skips selection update
-                                                // Use building count directly as the multiplication factor.
-                                                int capKey = (abilLink == ABIL_HATCHERY_QUEEN || abilLink == ABIL_LAIR_QUEEN) ? ABIL_LARVA : abilLink;
-                                                repeatCount = state.productionBuildingCounts.getOrDefault(capKey, 1);
-                                            } else {
-                                                repeatCount = Math.min(selectionCount, Math.max(buildingCap, MAX_MULTIPLICATION));
-                                            }
+                                        int capKey = (abilLink == ABIL_HATCHERY_QUEEN || abilLink == ABIL_LAIR_QUEEN) ? ABIL_LARVA : abilLink;
+                                        int buildingCount = state.productionBuildingCounts.getOrDefault(capKey, 0);
+                                        if (buildingCount > 0) {
+                                            repeatCount = Math.min(buildingCount, MAX_MULTIPLICATION);
                                         }
                                     }
                                     for (int r = 0; r < repeatCount; r++) {
@@ -848,62 +820,115 @@ public class StrippedReplayFeatureExtractor {
     }
 
     static final class SelectionUnitLinkTracker {
-        private final ArrayList<Integer> unitLinks = new ArrayList<>();
-        private final int                userId;
+        record TaggedUnit(int tag, int unitLink) {}
 
-        SelectionUnitLinkTracker(int userId) {this.userId = userId;}
+        private final ArrayList<TaggedUnit> units = new ArrayList<>();
+        private final int userId;
+        private int syntheticTagCounter = Integer.MIN_VALUE;
+
+        SelectionUnitLinkTracker(int userId) { this.userId = userId; }
 
         void onSelection(SelectionDeltaEvent sel) {
-            if (sel.getUserId() != userId) {return;}
+            if (sel.getUserId() != userId) return;
             var delta = sel.getDelta();
             if (delta == null) {
-                unitLinks.clear();
+                units.clear();
                 return;
             }
 
-            var    removeMask = delta.getRemoveMask();
-            String variant    = removeMask != null ? removeMask.value1 : null;
-            if ("ZeroIndices".equals(variant) && removeMask.value2 instanceof Integer[] indices) {
-                var kept = new ArrayList<Integer>();
+            applyRemoveMask(delta.getRemoveMask());
+            addUnits(delta.getAddSubgroups(), delta.getAddUnitTags());
+        }
+
+        void applyDelta(String removeMaskVariant, Object removeMaskValue,
+                        int[][] subgroups, Integer[] unitTags) {
+            if (removeMaskVariant != null || removeMaskValue != null) {
+                applyRemoveMaskFields(removeMaskVariant, removeMaskValue);
+            }
+            addUnitsFromArrays(subgroups, unitTags);
+        }
+
+        private void applyRemoveMask(hu.sllauncher.util.Pair<String, Object> removeMask) {
+            if (removeMask == null) return;
+            applyRemoveMaskFields(removeMask.value1, removeMask.value2);
+        }
+
+        private void applyRemoveMaskFields(String variant, Object value) {
+            if ("ZeroIndices".equals(variant) && value instanceof Integer[] indices) {
+                var kept = new ArrayList<TaggedUnit>();
                 for (int idx : indices) {
-                    if (idx >= 0 && idx < unitLinks.size()) {kept.add(unitLinks.get(idx));}
+                    if (idx >= 0 && idx < units.size()) kept.add(units.get(idx));
                 }
-                unitLinks.clear();
-                unitLinks.addAll(kept);
-            } else if ("OneIndices".equals(variant) && removeMask.value2 instanceof Integer[] indices) {
+                units.clear();
+                units.addAll(kept);
+            } else if ("OneIndices".equals(variant) && value instanceof Integer[] indices) {
                 for (int i = indices.length - 1; i >= 0; i--) {
                     int idx = indices[i];
-                    if (idx >= 0 && idx < unitLinks.size()) {unitLinks.remove(idx);}
+                    if (idx >= 0 && idx < units.size()) units.remove(idx);
                 }
-            } else if ("Mask".equals(variant) && removeMask.value2 instanceof hu.belicza.andras.util.type.BitArray bitArray) {
-                for (int i = unitLinks.size() - 1; i >= 0; i--) {
-                    if (i < bitArray.getCount() && bitArray.getBit(i)) {unitLinks.remove(i);}
+            } else if ("Mask".equals(variant)
+                       && value instanceof hu.belicza.andras.util.type.BitArray bitArray) {
+                for (int i = units.size() - 1; i >= 0; i--) {
+                    if (i < bitArray.getCount() && bitArray.getBit(i)) units.remove(i);
                 }
             } else if (variant != null && !"None".equals(variant)) {
-                unitLinks.clear();
+                units.clear();
             }
+        }
 
-            var subgroups = delta.getAddSubgroups();
-            if (subgroups != null) {
-                for (var sg : subgroups) {
-                    Integer link  = sg.getUnitLink();
-                    Integer count = sg.getCount();
-                    if (link != null && count != null) {
-                        for (int i = 0; i < count; i++) {unitLinks.add(link);}
+        private void addUnits(hu.scelight.sc2.rep.model.gameevents.selectiondelta.Subgroup[] subgroups,
+                              Integer[] unitTags) {
+            if (subgroups == null) return;
+            int tagIdx = 0;
+            for (var sg : subgroups) {
+                Integer link = sg.getUnitLink();
+                Integer count = sg.getCount();
+                if (link == null || count == null) continue;
+                for (int i = 0; i < count; i++) {
+                    int tag = (unitTags != null && tagIdx < unitTags.length)
+                              ? unitTags[tagIdx] : syntheticTagCounter++;
+                    tagIdx++;
+                    if (!containsTag(tag)) {
+                        units.add(new TaggedUnit(tag, link));
                     }
                 }
             }
         }
 
+        private void addUnitsFromArrays(int[][] subgroups, Integer[] unitTags) {
+            if (subgroups == null) return;
+            int tagIdx = 0;
+            for (int[] sg : subgroups) {
+                int link = sg[0];
+                int count = sg[1];
+                for (int i = 0; i < count; i++) {
+                    int tag = (unitTags != null && tagIdx < unitTags.length)
+                              ? unitTags[tagIdx] : syntheticTagCounter++;
+                    tagIdx++;
+                    if (!containsTag(tag)) {
+                        units.add(new TaggedUnit(tag, link));
+                    }
+                }
+            }
+        }
+
+        private boolean containsTag(int tag) {
+            for (TaggedUnit existing : units) {
+                if (existing.tag == tag) return true;
+            }
+            return false;
+        }
+
         int countMatching(Set<Integer> validLinks) {
             int count = 0;
-            for (Integer link : unitLinks) {
-                if (validLinks.contains(link)) {count++;}
+            for (TaggedUnit u : units) {
+                if (validLinks.contains(u.unitLink)) count++;
             }
             return count;
         }
 
-        List<Integer> unitLinksSnapshot() {return List.copyOf(unitLinks);}
-
+        List<Integer> unitLinksSnapshot() {
+            return units.stream().map(TaggedUnit::unitLink).toList();
+        }
     }
 }
