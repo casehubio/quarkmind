@@ -8,7 +8,6 @@ import hu.scelight.sc2.rep.model.details.Race;
 import hu.scelight.sc2.rep.model.details.Result;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
-import hu.scelight.sc2.rep.model.gameevents.selectiondelta.Subgroup;
 import hu.scelight.sc2.rep.s2prot.Event;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.SC2Data;
@@ -40,8 +39,17 @@ public class StrippedReplayFeatureExtractor {
             Map.entry(172, Set.of(84)),          // Gateway
             Map.entry(173, Set.of(89)),          // Stargate
             Map.entry(174, Set.of(93)),          // RoboticsFacility
-            Map.entry(175, Set.of(81, 106))      // Nexus (+ Nexus variant)
+            Map.entry(175, Set.of(81, 106)),     // Nexus (+ Nexus variant)
+            Map.entry(193, Set.of(189)),         // Zerg Larva (unitLink=189 in selection)
+            Map.entry(184, Set.of(189)),         // Hatchery Queen (same Larva selection)
+            Map.entry(186, Set.of(189))          // Lair/Hive Queen (same Larva selection)
     );
+    private static final int ABIL_LARVA = 193;
+    private static final int ABIL_HATCHERY_QUEEN = 184;
+    private static final int ABIL_LAIR_QUEEN = 186;
+    private static final int ABIL_NEXUS = 175;
+    private static final Set<Integer> BUILDINGCAP_ABIL_LINKS = Set.of(
+            ABIL_LARVA, ABIL_HATCHERY_QUEEN, ABIL_LAIR_QUEEN, ABIL_NEXUS);
 
 
 
@@ -213,7 +221,16 @@ public class StrippedReplayFeatureExtractor {
                                         if (validLinks != null) {
                                             int selectionCount = Math.max(1, selTracker.countMatching(validLinks));
                                             int buildingCap = state.productionBuildingCounts.getOrDefault(abilLink, 1);
-                                            repeatCount = Math.min(selectionCount, Math.max(buildingCap, MAX_MULTIPLICATION));
+                                            if (BUILDINGCAP_ABIL_LINKS.contains(abilLink)) {
+                                                // Selection tracking unreliable for these abilLinks:
+                                                // Zerg — Larva unitLinks inflate 3x per Hatchery
+                                                // Nexus — rapid-fire production via control groups skips selection update
+                                                // Use building count directly as the multiplication factor.
+                                                int capKey = (abilLink == ABIL_HATCHERY_QUEEN || abilLink == ABIL_LAIR_QUEEN) ? ABIL_LARVA : abilLink;
+                                                repeatCount = state.productionBuildingCounts.getOrDefault(capKey, 1);
+                                            } else {
+                                                repeatCount = Math.min(selectionCount, Math.max(buildingCap, MAX_MULTIPLICATION));
+                                            }
                                         }
                                     }
                                     for (int r = 0; r < repeatCount; r++) {
@@ -885,5 +902,8 @@ public class StrippedReplayFeatureExtractor {
             }
             return count;
         }
+
+        List<Integer> unitLinksSnapshot() {return List.copyOf(unitLinks);}
+
     }
 }

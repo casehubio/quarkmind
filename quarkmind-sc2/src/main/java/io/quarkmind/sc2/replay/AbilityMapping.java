@@ -271,7 +271,7 @@ public class AbilityMapping {
             if (result != null) {return result;}
         }
 
-        if (selection.isEmpty()) {return List.of();}
+        if (selection.isEmpty() && !humanReplay) {return List.of();}
         return dispatch(abilLink, idx, event);
     }
 

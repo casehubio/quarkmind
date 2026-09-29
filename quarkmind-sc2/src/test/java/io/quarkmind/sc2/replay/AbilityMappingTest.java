@@ -39,6 +39,10 @@ class AbilityMappingTest {
     static final int ABIL_STARPORT_ADDON   = 151;
     static final int ABIL_WARPGATE_WARPIN  = 214;
     static final int ABIL_ARCHON_MERGE     = 267;
+    // Zerg constants
+    static final int ABIL_LARVA            = 193;
+    static final int ABIL_HATCHERY         = 184;
+    static final int ABIL_LAIR             = 186;
 
 
     AbilityMapping mapping;
@@ -408,6 +412,64 @@ class AbilityMappingTest {
                 fakeCmdEvent(170, 0, 1800, new float[]{45f, 55f}, null, 0));
         assertThat(result).hasSize(1);
         assertThat(result.get(0)).isInstanceOf(ReplayCommand.Movement.class);
+    }
+
+    @Test
+    void larvaTrain_withSelection_producesDrone() {
+        humanMapping.setSelectionForTest(0, List.of("r-hatch-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_LARVA, 0, 2000, null, null, 0));
+        assertThat(result).hasSize(1);
+        TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) result.get(0)).intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.DRONE);
+        assertThat(t.buildingTag()).isEqualTo("r-hatch-1");
+    }
+
+    @Test
+    void larvaTrain_withSelection_producesZergling() {
+        humanMapping.setSelectionForTest(0, List.of("r-hatch-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_LARVA, 0, 2100, null, null, 1));
+        assertThat(result).hasSize(1);
+        TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) result.get(0)).intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.ZERGLING);
+    }
+
+    @Test
+    void hatcheryQueen_withSelection_producesQueen() {
+        humanMapping.setSelectionForTest(0, List.of("r-hatch-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_HATCHERY, 0, 2400, null, null, 1));
+        assertThat(result).hasSize(1);
+        TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) result.get(0)).intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.QUEEN);
+    }
+
+    @Test
+    void lairQueen_withSelection_producesQueen() {
+        humanMapping.setSelectionForTest(0, List.of("r-lair-1"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_LAIR, 0, 2500, null, null, 0));
+        assertThat(result).hasSize(1);
+        TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) result.get(0)).intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.QUEEN);
+    }
+
+    @Test
+    void larvaTrain_emptySelection_blockedInBotMode() {
+        List<ReplayCommand> result = mapping.process(
+                fakeCmdEvent(ABIL_LARVA, 0, 2600, null, null, 0));
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void humanMode_larvaTrain_emptySelection_stillProduces() {
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_LARVA, 0, 2600, null, null, 0));
+        assertThat(result).hasSize(1);
+        TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) result.get(0)).intent().intent();
+        assertThat(t.unitType()).isEqualTo(UnitType.DRONE);
+        assertThat(t.buildingTag()).isNull();
     }
 
 
