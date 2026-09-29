@@ -1,7 +1,7 @@
 package io.quarkmind.agent;
 
 import io.casehub.ledger.memory.InMemoryActorTrustScoreRepository;
-import io.casehub.ledger.runtime.repository.ActorTrustScoreRepository;
+import io.casehub.ledger.api.spi.ActorTrustScoreRepository;
 import io.casehub.platform.api.identity.ActorType;
 
 import java.time.Instant;

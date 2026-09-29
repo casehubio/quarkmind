@@ -55,6 +55,8 @@ public class AbilityMapping {
     private static final int ABIL_LARVA       = 193;
     // Queen is trained from Hatchery via abilLink=184 abilCmdIndex=1; other indices are macro (inject)
     private static final int ABIL_HATCHERY    = 184;
+    // Lair/Hive also trains Queen at abilLink=186 abilCmdIndex=0 (distinct from Hatchery abilLink)
+    private static final int ABIL_LAIR        = 186;
 
     // --- Terran train (AI Arena build 75689) ---
     // Derived from TerranDiscoveryTest: no-target Cmd events cross-referenced across
@@ -80,12 +82,14 @@ public class AbilityMapping {
     private static final Map<Integer, UnitType> BARRACKS_UNITS = Map.of(
             0, UnitType.MARINE,
             1, UnitType.REAPER,
+            2, UnitType.GHOST,
             3, UnitType.MARAUDER
     );
 
-    // Factory abilCmdIndex → UnitType (calibrated from 118 oracle replays, 4.9.3)
+    // Factory abilCmdIndex → UnitType (calibrated from 118 oracle replays + 500 ladder replays, 4.9.3)
     private static final Map<Integer, UnitType> FACTORY_UNITS = Map.ofEntries(
             Map.entry(1, UnitType.SIEGE_TANK),
+            Map.entry(4, UnitType.THOR),
             Map.entry(5, UnitType.HELLION),
             Map.entry(6, UnitType.HELLBAT),
             Map.entry(7, UnitType.CYCLONE),
@@ -102,29 +106,34 @@ public class AbilityMapping {
             6, UnitType.LIBERATOR
     );
 
-    // Gateway abilCmdIndex → UnitType (calibrated from 118 oracle replays, 4.9.3)
-    private static final Map<Integer, UnitType> GATEWAY_UNITS = Map.of(
-            0, UnitType.ZEALOT,
-            1, UnitType.STALKER,
-            5, UnitType.ADEPT
+    // Gateway abilCmdIndex → UnitType (calibrated from 118 oracle replays + 500 ladder replays, 4.9.3)
+    private static final Map<Integer, UnitType> GATEWAY_UNITS = Map.ofEntries(
+            Map.entry(0, UnitType.ZEALOT),
+            Map.entry(1, UnitType.STALKER),
+            Map.entry(4, UnitType.DARK_TEMPLAR),
+            Map.entry(5, UnitType.ADEPT),
+            Map.entry(6, UnitType.SENTRY)
     );
 
-    // Robotics abilCmdIndex → UnitType (calibrated from 118 oracle replays, 4.9.3)
-    private static final Map<Integer, UnitType> ROBOTICS_UNITS = Map.of(
-            0, UnitType.WARP_PRISM,
-            1, UnitType.OBSERVER,
-            2, UnitType.COLOSSUS,
-            3, UnitType.IMMORTAL
+    // Robotics abilCmdIndex → UnitType (calibrated from 118 oracle replays + 500 ladder replays, 4.9.3)
+    private static final Map<Integer, UnitType> ROBOTICS_UNITS = Map.ofEntries(
+            Map.entry(0, UnitType.WARP_PRISM),
+            Map.entry(1, UnitType.OBSERVER),
+            Map.entry(2, UnitType.COLOSSUS),
+            Map.entry(3, UnitType.IMMORTAL),
+            Map.entry(18, UnitType.DISRUPTOR)
     );
 
-    // Stargate abilCmdIndex → UnitType (calibrated from 118 oracle replays, 4.9.3)
-    private static final Map<Integer, UnitType> STARGATE_UNITS = Map.of(
-            0, UnitType.PHOENIX,
-            2, UnitType.CARRIER,
-            8, UnitType.ORACLE
+    // Stargate abilCmdIndex → UnitType (calibrated from 118 oracle replays + 500 ladder replays, 4.9.3)
+    private static final Map<Integer, UnitType> STARGATE_UNITS = Map.ofEntries(
+            Map.entry(0, UnitType.PHOENIX),
+            Map.entry(2, UnitType.CARRIER),
+            Map.entry(4, UnitType.VOID_RAY),
+            Map.entry(8, UnitType.ORACLE),
+            Map.entry(9, UnitType.TEMPEST)
     );
 
-    // Zerg larva abilCmdIndex → UnitType (calibrated from 118 oracle replays, 4.9.3)
+    // Zerg larva abilCmdIndex → UnitType (calibrated from 118 oracle replays + 500 ladder replays, 4.9.3)
     private static final Map<Integer, UnitType> LARVA_UNITS = Map.ofEntries(
             Map.entry(0, UnitType.DRONE),
             Map.entry(1, UnitType.ZERGLING),
@@ -135,6 +144,7 @@ public class AbilityMapping {
             Map.entry(9, UnitType.ROACH),
             Map.entry(10, UnitType.INFESTOR),
             Map.entry(11, UnitType.CORRUPTOR),
+            Map.entry(12, UnitType.VIPER),
             Map.entry(14, UnitType.SWARM_HOST)
     );
     // Terran SCV build abilCmdIndex → building name (from discovery: 118 oracle replays)
@@ -317,6 +327,11 @@ public class AbilityMapping {
             case ABIL_HATCHERY -> {
                 if (!isRace(Race.ZERG)) {yield unknown(abilLink, idx);}
                 yield idx == 1 ? trainIntent(loop, UnitType.QUEEN) : List.of();
+            }
+
+            case ABIL_LAIR -> {
+                if (!isRace(Race.ZERG)) {yield unknown(abilLink, idx);}
+                yield idx == 0 ? trainIntent(loop, UnitType.QUEEN) : List.of();
             }
 
             case ABIL_COMMAND_CENTER -> {

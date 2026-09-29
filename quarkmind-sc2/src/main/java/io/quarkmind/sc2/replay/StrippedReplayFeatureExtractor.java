@@ -164,8 +164,9 @@ public class StrippedReplayFeatureExtractor {
                                 TimedIntent ti = ic.intent();
                                 if (ti.intent() instanceof TrainIntent train) {
                                     Integer abilLink = cmd.getAbilLink();
-                                    if (abilLink != null && abilLink == ABIL_WARPGATE_WARPIN
-                                        && GATEWAY_UNITS.contains(train.unitType())) {
+                                    boolean isWarpIn = abilLink != null && abilLink == ABIL_WARPGATE_WARPIN
+                                        && GATEWAY_UNITS.contains(train.unitType());
+                                    if (isWarpIn) {
                                         lastWarpIn = train;
                                     }
                                     tagCounter = handleTrain(train, ti.loop(), playerId,

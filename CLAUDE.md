@@ -292,6 +292,12 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 **Diagnostic tests** (`@Tag("diagnostic")`, excluded from default surefire run):
 - `IEM10AbilityDiscoveryTest` — prints abilLink→unit correlation table across all 30 IEM10 games using narrow-window modal matching; documents how IEM10 2016 constants in `IEM10CommandExtractor` were derived
 - `WarpInDiagnosticTest` — counts oracle UnitInit gateway events vs abilLink=214 CmdEvents and CmdUpdateTargetPointEvents across 118 oracle replays; validates warp-in coverage pipeline
+- `AbilityMappingCoverageDiagnosticTest` — per-unit oracle vs java coverage across 118 oracle replays; used to identify abilCmdIndex mapping gaps
+- `UnmappedAbilCmdIndexDiagnosticTest` — scans 500 ladder replays for abilLink+abilCmdIndex combinations not in AbilityMapping; discovered Thor, Ghost, VoidRay, Tempest, Sentry, DarkTemplar, Disruptor, Viper mappings
+- `ZergSelectionDiagnosticTest` — counts Zerg Larva/Queen CmdEvents, Hatchery BuildCommands, and Probe production diagnostics across 118 oracle replays; validates selection-based multiplication
+- `TrackerCorruptionDiagnosticTest` — traces SelectionDelta events showing tracker state accumulation from `removeMask=None` + addSubgroups pattern
+- `BarracksUnitLinkDiscoveryTest`, `UnitLinkDiscoveryTest` — discovers unitLink values for production buildings from SelectionDelta subgroups
+- `MarineMultiplicationDiagnosticTest` — traces per-replay Marine over-counting from selection-based multiplication; validates multiplication cap
 - Run with: `mvn test -pl quarkmind-sc2 -Pdiagnostic`
 
 **Never use `@QuarkusTest` for tests that can be plain JUnit** — boot cost is significant.
