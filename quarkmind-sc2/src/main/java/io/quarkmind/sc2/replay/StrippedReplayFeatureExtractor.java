@@ -4,9 +4,11 @@ import hu.scelight.sc2.rep.factory.RepContent;
 import hu.scelight.sc2.rep.factory.RepParserEngine;
 import hu.scelight.sc2.rep.model.Replay;
 import hu.scelight.sc2.rep.model.details.Player;
+import hu.scelight.sc2.rep.model.details.Race;
 import hu.scelight.sc2.rep.model.details.Result;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
+import hu.scelight.sc2.rep.model.gameevents.selectiondelta.Subgroup;
 import hu.scelight.sc2.rep.s2prot.Event;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.SC2Data;
@@ -30,6 +32,18 @@ public class StrippedReplayFeatureExtractor {
 
     private static final int                   ID_CMD_UPDATE_TARGET_POINT = 104;
     private static final int                   ABIL_WARPGATE_WARPIN       = 214;
+    private static final Map<Integer, Set<Integer>> PRODUCTION_UNIT_LINKS = Map.ofEntries(
+            Map.entry(155, Set.of(67)),          // CommandCenter
+            Map.entry(159, Set.of(70)),          // Barracks (or OrbitalCommand in same group)
+            Map.entry(160, Set.of(75, 48)),      // Factory (+ with addon)
+            Map.entry(161, Set.of(56, 49)),      // Starport (+ with addon)
+            Map.entry(172, Set.of(84)),          // Gateway
+            Map.entry(173, Set.of(89)),          // Stargate
+            Map.entry(174, Set.of(93)),          // RoboticsFacility
+            Map.entry(175, Set.of(81, 106))      // Nexus (+ Nexus variant)
+    );
+
+
 
     private static final Map<UnitType, String> UNIT_PYTHON_NAMES;
     static {
@@ -124,6 +138,27 @@ public class StrippedReplayFeatureExtractor {
         "OrbitalCommand", "PlanetaryFortress"
     );
 
+    private static final Set<UnitType> TECHLAB_UNITS = Set.of(
+            UnitType.MARAUDER, UnitType.GHOST,
+            UnitType.SIEGE_TANK, UnitType.THOR,
+            UnitType.BANSHEE, UnitType.RAVEN, UnitType.BATTLECRUISER
+    );
+
+    private static final int MAX_MULTIPLICATION = 8;
+
+    private static final Map<String, Integer> BUILDING_TO_ABIL_LINK = Map.ofEntries(
+            Map.entry("CommandCenter", 155), Map.entry("OrbitalCommand", 155),
+            Map.entry("PlanetaryFortress", 155),
+            Map.entry("Barracks", 159),
+            Map.entry("Factory", 160),
+            Map.entry("Starport", 161),
+            Map.entry("Gateway", 172),
+            Map.entry("Stargate", 173),
+            Map.entry("RoboticsFacility", 174),
+            Map.entry("Nexus", 175),
+            Map.entry("Hatchery", 193)
+    );
+
     private static final int ARCHON_MORPH_TIME = 269;
     private static final Set<UnitType> GATEWAY_UNITS = Set.of(
             UnitType.ZEALOT, UnitType.STALKER, UnitType.SENTRY,
@@ -148,12 +183,15 @@ public class StrippedReplayFeatureExtractor {
             var            playerRace = players[playerId - 1].getRace();
             AbilityMapping mapping    = new AbilityMapping(playerId, true, playerRace);
             var            state      = new PlayerState();
+            initStartingBuildings(playerRace, state);
             int            userId     = playerId - 1;
             TrainIntent    lastWarpIn = null;
+            var            selTracker = new SelectionUnitLinkTracker(userId);
 
             for (Event raw : gameEvents) {
                 if (raw instanceof SelectionDeltaEvent sel) {
                     mapping.onSelection(sel);
+                    selTracker.onSelection(sel);
                 } else if (raw instanceof CmdEvent cmd) {
                     if (cmd.getUserId() == userId) {
                         lastWarpIn = null;
@@ -169,8 +207,19 @@ public class StrippedReplayFeatureExtractor {
                                     if (isWarpIn) {
                                         lastWarpIn = train;
                                     }
-                                    tagCounter = handleTrain(train, ti.loop(), playerId,
-                                                             state, syntheticEvents, tagCounter);
+                                    int repeatCount = 1;
+                                    if (abilLink != null && !TECHLAB_UNITS.contains(train.unitType())) {
+                                        Set<Integer> validLinks = PRODUCTION_UNIT_LINKS.get(abilLink);
+                                        if (validLinks != null) {
+                                            int selectionCount = Math.max(1, selTracker.countMatching(validLinks));
+                                            int buildingCap = state.productionBuildingCounts.getOrDefault(abilLink, 1);
+                                            repeatCount = Math.min(selectionCount, Math.max(buildingCap, MAX_MULTIPLICATION));
+                                        }
+                                    }
+                                    for (int r = 0; r < repeatCount; r++) {
+                                        tagCounter = handleTrain(train, ti.loop(), playerId,
+                                                                 state, syntheticEvents, tagCounter);
+                                    }
                                 }
                             }
                             case ReplayCommand.BuildCommand bc -> {
@@ -211,6 +260,18 @@ public class StrippedReplayFeatureExtractor {
                                        .thenComparing(SyntheticEvent::ordinal));
 
         return buildGameJson(replay, players, syntheticEvents);
+    }
+
+    private static void initStartingBuildings(Race race, PlayerState state) {
+        if (race == Race.TERRAN) {
+            state.productionBuildingCounts.put(155, 1); // CommandCenter
+        } else if (race == Race.PROTOSS) {
+            state.productionBuildingCounts.put(175, 1); // Nexus
+            state.productionBuildingCounts.put(172, 0); // Gateway — none at start
+        } else if (race == Race.ZERG) {
+            state.productionBuildingCounts.put(193, 1); // Hatchery (larva)
+            state.productionBuildingCounts.put(184, 1); // Hatchery (queen)
+        }
     }
 
     private int handleTrain(TrainIntent train, long commandLoop, int playerId,
@@ -297,6 +358,10 @@ public class StrippedReplayFeatureExtractor {
                 "unitTagRecycle", 0)));
 
         state.trackedBuildings.add(new TrackedBuilding(tag, buildingName, doneLoop));
+        Integer abilForBuilding = BUILDING_TO_ABIL_LINK.get(buildingName);
+        if (abilForBuilding != null) {
+            state.productionBuildingCounts.merge(abilForBuilding, 1, Integer::sum);
+        }
         trackBuildSpending(buildingName, state);
 
         if (ZERG_BUILDINGS.contains(buildingName)) {
@@ -745,6 +810,7 @@ public class StrippedReplayFeatureExtractor {
     private static class PlayerState {
         final Map<String, Long> buildingBusyUntil = new HashMap<>();
         final List<TrackedBuilding> trackedBuildings = new ArrayList<>();
+        final Map<Integer, Integer> productionBuildingCounts = new HashMap<>();
         long warpGateCompletionLoop = -1;
 
         // Economy — Tier 1: cumulative spending
@@ -762,5 +828,62 @@ public class StrippedReplayFeatureExtractor {
         double vespeneCurrent = SC2Data.INITIAL_VESPENE;
         int workersActive = SC2Data.INITIAL_PROBES;
         int gasBuildingCount;
+    }
+
+    static final class SelectionUnitLinkTracker {
+        private final ArrayList<Integer> unitLinks = new ArrayList<>();
+        private final int                userId;
+
+        SelectionUnitLinkTracker(int userId) {this.userId = userId;}
+
+        void onSelection(SelectionDeltaEvent sel) {
+            if (sel.getUserId() != userId) {return;}
+            var delta = sel.getDelta();
+            if (delta == null) {
+                unitLinks.clear();
+                return;
+            }
+
+            var    removeMask = delta.getRemoveMask();
+            String variant    = removeMask != null ? removeMask.value1 : null;
+            if ("ZeroIndices".equals(variant) && removeMask.value2 instanceof Integer[] indices) {
+                var kept = new ArrayList<Integer>();
+                for (int idx : indices) {
+                    if (idx >= 0 && idx < unitLinks.size()) {kept.add(unitLinks.get(idx));}
+                }
+                unitLinks.clear();
+                unitLinks.addAll(kept);
+            } else if ("OneIndices".equals(variant) && removeMask.value2 instanceof Integer[] indices) {
+                for (int i = indices.length - 1; i >= 0; i--) {
+                    int idx = indices[i];
+                    if (idx >= 0 && idx < unitLinks.size()) {unitLinks.remove(idx);}
+                }
+            } else if ("Mask".equals(variant) && removeMask.value2 instanceof hu.belicza.andras.util.type.BitArray bitArray) {
+                for (int i = unitLinks.size() - 1; i >= 0; i--) {
+                    if (i < bitArray.getCount() && bitArray.getBit(i)) {unitLinks.remove(i);}
+                }
+            } else if (variant != null && !"None".equals(variant)) {
+                unitLinks.clear();
+            }
+
+            var subgroups = delta.getAddSubgroups();
+            if (subgroups != null) {
+                for (var sg : subgroups) {
+                    Integer link  = sg.getUnitLink();
+                    Integer count = sg.getCount();
+                    if (link != null && count != null) {
+                        for (int i = 0; i < count; i++) {unitLinks.add(link);}
+                    }
+                }
+            }
+        }
+
+        int countMatching(Set<Integer> validLinks) {
+            int count = 0;
+            for (Integer link : unitLinks) {
+                if (validLinks.contains(link)) {count++;}
+            }
+            return count;
+        }
     }
 }
