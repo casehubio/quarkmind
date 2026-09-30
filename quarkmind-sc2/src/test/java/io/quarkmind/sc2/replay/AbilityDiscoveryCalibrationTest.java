@@ -136,6 +136,47 @@ class AbilityDiscoveryCalibrationTest {
         printMappings("=== Building Morph AbilLinks (0-50 loop window) ===", mappings);
     }
 
+    @Test
+    @Tag("diagnostic")
+    @EnabledIf("oracleExists")
+    void discoverMorphSourceUnitLinks() throws Exception {
+        Set<String>                        morphSources   = Set.of("Zergling", "Roach", "Hydralisk", "Corruptor", "Overlord");
+        Map<String, Map<Integer, Integer>> unitLinkCounts = new TreeMap<>();
+        boolean                            debugged       = false;
+
+        try (var stream = Files.list(ORACLE_RESTORED)) {
+            for (Path oraclePath : stream.filter(p -> p.toString().endsWith(".SC2Replay")).sorted().toList()) {
+                Replay rep = RepParserEngine.parseReplay(oraclePath, EnumSet.of(RepContent.TRACKER_EVENTS));
+                if (rep == null || rep.trackerEvents == null) {continue;}
+                for (Event raw : rep.trackerEvents.getEvents()) {
+                    if (raw.getId() != ITrackerEvents.ID_UNIT_BORN) {continue;}
+                    IBaseUnitEvent ub   = (IBaseUnitEvent) raw;
+                    String         name = ub.getUnitTypeName().toString();
+                    if (!morphSources.contains(name)) {continue;}
+                    if (!debugged) {
+                        System.out.println("DEBUG UnitBorn raw params: " + raw.getRawParameters());
+                        debugged = true;
+                    }
+                    Integer unitLink = raw.get("unitLink");
+                    if (unitLink == null) {
+                        unitLink = raw.get("m_unitLink");
+                    }
+                    if (unitLink == null) {continue;}
+                    unitLinkCounts.computeIfAbsent(name, k -> new TreeMap<>()).merge(unitLink, 1, Integer::sum);
+                }
+            }
+        }
+
+        System.out.println("=== Morph Source UnitLinks ===");
+        for (var entry : unitLinkCounts.entrySet()) {
+            var best = entry.getValue().entrySet().stream()
+                            .max(java.util.Comparator.comparingInt(Map.Entry::getValue)).orElse(null);
+            if (best != null) {
+                System.out.printf("  %-20s  unitLink=%d  (n=%d)%n", entry.getKey(), best.getKey(), best.getValue());
+            }
+        }
+    }
+
 
     private Map<String, Map<String, Integer>> discoverAll(String label, int trackerEventId) throws Exception {
         Map<String, Map<String, Integer>> mappings = new TreeMap<>();

@@ -297,6 +297,11 @@ public class AbilityMapping {
         return selection.snapshot();
     }
 
+    int selectionSize() {
+        return selection.size();
+    }
+
+
     private List<ReplayCommand> dispatch(int abilLink, int idx, CmdEvent event) {
         long loop = event.getLoop();
 

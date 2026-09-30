@@ -220,8 +220,11 @@ public class StrippedReplayFeatureExtractor {
                                                            state, syntheticEvents, tagCounter);
                             }
                             case ReplayCommand.MorphCommand mc -> {
-                                tagCounter = handleMorph(mc, playerId,
-                                                         state, syntheticEvents, tagCounter);
+                                int morphCount = morphMultiplier(mc.targetName(), mapping.selectionSize());
+                                for (int r = 0; r < morphCount; r++) {
+                                    tagCounter = handleMorph(mc, playerId,
+                                                             state, syntheticEvents, tagCounter);
+                                }
                             }
                             case ReplayCommand.CancelCommand ignored -> {}
                             case ReplayCommand.Movement ignored -> {}
@@ -435,6 +438,17 @@ public class StrippedReplayFeatureExtractor {
         return tagCounter;
     }
 
+    private static int morphMultiplier(String targetName, int selectionSize) {
+        if (BUILDING_MORPH_TARGETS.contains(targetName)) {
+            return 1;
+        }
+        if (selectionSize > 1) {
+            return Math.min(selectionSize, MAX_MULTIPLICATION);
+        }
+        return 1;
+    }
+
+
     private int emitWarpGateAutoMorph(int playerId, PlayerState state,
                                       List<SyntheticEvent> events, int tagCounter) {
         long completionLoop = state.warpGateCompletionLoop;
@@ -485,6 +499,23 @@ public class StrippedReplayFeatureExtractor {
         state.mineralsCurrent = 10000;
         state.vespeneCurrent  = 10000;
         handleMorph(mc, playerId, state, events, startTag);
+        return new MorphTestResult(
+                events.stream().map(SyntheticEvent::data).toList(),
+                state.mineralsUsedArmy, state.gasUsedArmy,
+                state.foodUsed, state.foodMade);
+    }
+
+    MorphTestResult processMorphWithMultiplicationForTest(ReplayCommand.MorphCommand mc,
+                                                          int playerId, int startTag, int selectionSize) {
+        List<SyntheticEvent> events = new ArrayList<>();
+        var                  state  = new PlayerState();
+        state.mineralsCurrent = 10000;
+        state.vespeneCurrent  = 10000;
+        int morphCount = morphMultiplier(mc.targetName(), selectionSize);
+        int tagCounter = startTag;
+        for (int r = 0; r < morphCount; r++) {
+            tagCounter = handleMorph(mc, playerId, state, events, tagCounter);
+        }
         return new MorphTestResult(
                 events.stream().map(SyntheticEvent::data).toList(),
                 state.mineralsUsedArmy, state.gasUsedArmy,

@@ -95,6 +95,49 @@ class StrippedReplayMorphTest {
         assertThat(result.foodUsed()).isEqualTo(initialFoodUsed);
     }
 
+    @Test
+    void morphMultiplicationEmitsMultipleEvents() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var morph     = new ReplayCommand.MorphCommand(2000, "Zergling", "Baneling");
+
+        var result = extractor.processMorphWithMultiplicationForTest(morph, 1, 100, 3);
+
+        var deaths = result.events().stream()
+                           .filter(e -> "UnitDied".equals(e.get("evtTypeName")))
+                           .toList();
+        var inits = result.events().stream()
+                          .filter(e -> "UnitInit".equals(e.get("evtTypeName")))
+                          .toList();
+        assertThat(deaths).hasSize(3);
+        assertThat(inits).hasSize(3);
+    }
+
+    @Test
+    void buildingMorphIgnoresMultiplication() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var morph     = new ReplayCommand.MorphCommand(3000, "Hatchery", "Lair");
+
+        var result = extractor.processMorphWithMultiplicationForTest(morph, 1, 100, 3);
+
+        var deaths = result.events().stream()
+                           .filter(e -> "UnitDied".equals(e.get("evtTypeName")))
+                           .toList();
+        assertThat(deaths).hasSize(1);
+    }
+
+    @Test
+    void morphMultiplicationCappedAtMax() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var morph     = new ReplayCommand.MorphCommand(2000, "Zergling", "Baneling");
+
+        var result = extractor.processMorphWithMultiplicationForTest(morph, 1, 100, 10);
+
+        var deaths = result.events().stream()
+                           .filter(e -> "UnitDied".equals(e.get("evtTypeName")))
+                           .toList();
+        assertThat(deaths).hasSize(4);
+    }
+
 
     @Test
     void buildingMorphEmitsInitAndDone() {
