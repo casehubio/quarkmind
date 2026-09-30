@@ -13,6 +13,7 @@ import io.quarkmind.sc2.intent.TrainIntent;
 import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -82,6 +83,7 @@ public class AbilityMapping {
     private static final int ABIL_BROODLORD_MORPH = 194;
     private static final int ABIL_LURKER_MORPH = 522;
     private static final int ABIL_OVERSEER_MORPH = 221;
+    private static final int UNIT_LINK_DARK_TEMPLAR = 76;
 
 
     private static final Map<Integer, UnitType> BARRACKS_UNITS = Map.of(
@@ -198,6 +200,8 @@ public class AbilityMapping {
     private final int userId;  // 0-indexed game event userId = (playerId - 1)
     private final SelectionState selection = new SelectionState();
     private final boolean        humanReplay;
+    private final Map<String, Integer> tagToUnitLink = new HashMap<>();
+
     private final Race           race;
     private       boolean        warpGateResearchEmitted = false;
 
@@ -217,15 +221,16 @@ public class AbilityMapping {
     }
 
     public void onSelection(SelectionDeltaEvent event) {
-        if (event.getUserId() != userId) return;
+        if (event.getUserId() != userId) {return;}
         var delta = event.getDelta();
         if (delta == null) {
             selection.clear();
+            tagToUnitLink.clear();
             return;
         }
 
-        var removeMask = delta.getRemoveMask();
-        String variant = removeMask != null ? removeMask.value1 : null;
+        var    removeMask = delta.getRemoveMask();
+        String variant    = removeMask != null ? removeMask.value1 : null;
 
         if (variant == null || "None".equals(variant)) {
             // carry forward — no removal
@@ -254,10 +259,38 @@ public class AbilityMapping {
             selection.clear();
         }
 
-        if (delta.getAddUnitTags() != null) {
-            for (Integer rawTag : delta.getAddUnitTags()) {
+        // Sync unitLink map with any removed tags
+        tagToUnitLink.keySet().retainAll(new java.util.HashSet<>(selection.snapshot()));
+
+        // Zip addSubgroups with addUnitTags to track unitLink per tag
+        var subgroups = delta.getAddSubgroups();
+        var addTags   = delta.getAddUnitTags();
+        if (addTags != null) {
+            int sgIdx       = 0;
+            int sgRemaining = 0;
+            int currentLink = -1;
+            if (subgroups != null && subgroups.length > 0) {
+                Integer link  = subgroups[0].getUnitLink();
+                Integer count = subgroups[0].getCount();
+                currentLink = link != null ? link : -1;
+                sgRemaining = count != null ? count : 0;
+                sgIdx       = 1;
+            }
+            for (Integer rawTag : addTags) {
                 if (rawTag != null) {
-                    selection.addTag(GameEventStream.decodeTag(rawTag));
+                    String tag = GameEventStream.decodeTag(rawTag);
+                    selection.addTag(tag);
+                    if (currentLink >= 0) {
+                        tagToUnitLink.put(tag, currentLink);
+                    }
+                }
+                sgRemaining--;
+                if (sgRemaining <= 0 && subgroups != null && sgIdx < subgroups.length) {
+                    Integer link  = subgroups[sgIdx].getUnitLink();
+                    Integer count = subgroups[sgIdx].getCount();
+                    currentLink = link != null ? link : -1;
+                    sgRemaining = count != null ? count : 0;
+                    sgIdx++;
                 }
             }
         }
@@ -282,6 +315,7 @@ public class AbilityMapping {
 
     public void reset() {
         selection.clear();
+        tagToUnitLink.clear();
     }
 
     /** Package-private — used by AbilityMappingTest to prime selection without replay parsing. */
@@ -398,7 +432,11 @@ public class AbilityMapping {
                 }
                 yield train;
             }
-            case ABIL_ARCHON_MERGE -> isRace(Race.PROTOSS) ? List.of(new ReplayCommand.MorphCommand(loop, "HighTemplar", "Archon")) : null;
+            case ABIL_ARCHON_MERGE -> {
+                if (!isRace(Race.PROTOSS)) {yield null;}
+                String archonSource = resolveArchonSource();
+                yield List.of(new ReplayCommand.MorphCommand(loop, archonSource, "Archon"));
+            }
             case ABIL_BANELING_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Zergling", "Baneling")) : null;
             case ABIL_RAVAGER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Roach", "Ravager")) : null;
             case ABIL_BROODLORD_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Corruptor", "BroodLord")) : null;
@@ -415,6 +453,16 @@ public class AbilityMapping {
         float x = tp.getXFloat() * 2;
         float y = tp.getYFloat() * 2;
         return List.of(new ReplayCommand.BuildCommand(loop, buildingName, new Point2d(x, y)));
+    }
+
+    private String resolveArchonSource() {
+        for (String tag : selection.snapshot()) {
+            Integer link = tagToUnitLink.get(tag);
+            if (link != null && link == UNIT_LINK_DARK_TEMPLAR) {
+                return "DarkTemplar";
+            }
+        }
+        return "HighTemplar";
     }
 
 

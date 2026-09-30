@@ -1,9 +1,10 @@
 package io.quarkmind.sc2.replay;
 
+import hu.scelight.sc2.rep.model.details.Race;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
+import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
 import hu.sllauncher.util.Pair;
 import io.quarkmind.domain.SC2Data;
-import hu.scelight.sc2.rep.model.details.Race;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.UpgradeType;
 import io.quarkmind.sc2.intent.TrainIntent;
@@ -386,6 +387,50 @@ class AbilityMappingTest {
     }
 
     @Test
+    void humanMode_archonMerge_darkTemplarSelection_producesDTSource() {
+        var protossMapping = new AbilityMapping(1, true, Race.PROTOSS);
+        // Select 2 Dark Templars via selection delta with unitLink=76 (DarkTemplar)
+        int dtUnitLink = 76;
+        protossMapping.onSelection(selectionEvent(0, null, null,
+                                                  new int[][]{{dtUnitLink, 2}},
+                                                  new Integer[]{(1 << 18) | 1, (2 << 18) | 1}));
+        List<ReplayCommand> result = protossMapping.process(
+                fakeCmdEvent(ABIL_ARCHON_MERGE, 0, 1400, null, null, 0));
+        assertThat(result).hasSize(1);
+        ReplayCommand.MorphCommand mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("DarkTemplar");
+        assertThat(mc.targetName()).isEqualTo("Archon");
+    }
+
+    @Test
+    void humanMode_archonMerge_highTemplarSelection_producesHTSource() {
+        var protossMapping = new AbilityMapping(1, true, Race.PROTOSS);
+        // Select 2 High Templars via selection delta with unitLink=75 (HighTemplar)
+        int htUnitLink = 75;
+        protossMapping.onSelection(selectionEvent(0, null, null,
+                                                  new int[][]{{htUnitLink, 2}},
+                                                  new Integer[]{(3 << 18) | 1, (4 << 18) | 1}));
+        List<ReplayCommand> result = protossMapping.process(
+                fakeCmdEvent(ABIL_ARCHON_MERGE, 0, 1500, null, null, 0));
+        assertThat(result).hasSize(1);
+        ReplayCommand.MorphCommand mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("HighTemplar");
+        assertThat(mc.targetName()).isEqualTo("Archon");
+    }
+
+    @Test
+    void humanMode_archonMerge_noUnitLinkData_defaultsToHighTemplar() {
+        // setSelectionForTest doesn't set unitLinks — should default to HighTemplar
+        humanMapping.setSelectionForTest(0, List.of("r-ht-1", "r-ht-2"));
+        List<ReplayCommand> result = humanMapping.process(
+                fakeCmdEvent(ABIL_ARCHON_MERGE, 0, 1600, null, null, 0));
+        assertThat(result).hasSize(1);
+        ReplayCommand.MorphCommand mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("HighTemplar");
+    }
+
+
+    @Test
     void humanMode_banelingMorph_producesMorphCommand() {
         var zergMapping = new AbilityMapping(1, true, Race.ZERG);
         zergMapping.setSelectionForTest(0, List.of("r-z-1"));
@@ -566,4 +611,30 @@ class AbilityMappingTest {
         }
         return new CmdEvent(struct, 27, "BasicCommandEvent", (int) loop, userId, 99999, null);
     }
+
+    @SuppressWarnings("unchecked")
+    private SelectionDeltaEvent selectionEvent(int userId, String removeVariant,
+                                               Object removeValue, int[][] subgroups,
+                                               Integer[] addUnitTags) {
+        Pair<String, Object> removeMask = removeVariant != null
+                                          ? new Pair<>(removeVariant, removeValue) : null;
+        Map<String, Object> deltaMap = new HashMap<>();
+        deltaMap.put("removeMask", removeMask);
+        deltaMap.put("addUnitTags", addUnitTags != null ? addUnitTags : new Integer[0]);
+        deltaMap.put("subgroupIndex", 0);
+        if (subgroups != null) {
+            Map<String, Object>[] sgMaps = new Map[subgroups.length];
+            for (int i = 0; i < subgroups.length; i++) {
+                sgMaps[i] = Map.of("unitLink", subgroups[i][0], "count", subgroups[i][1],
+                                   "subgroupPriority", 0, "intraSubgroupPriority", 0);
+            }
+            deltaMap.put("addSubgroups", sgMaps);
+        } else {
+            deltaMap.put("addSubgroups", new Map[0]);
+        }
+        Map<String, Object> struct = new HashMap<>();
+        struct.put("delta", deltaMap);
+        return new SelectionDeltaEvent(struct, 0, "SelectionDeltaEvent", 0, userId, 16561);
+    }
+
 }
