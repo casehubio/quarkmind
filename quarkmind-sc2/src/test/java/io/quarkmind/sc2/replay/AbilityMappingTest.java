@@ -3,6 +3,7 @@ package io.quarkmind.sc2.replay;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.sllauncher.util.Pair;
 import io.quarkmind.domain.SC2Data;
+import hu.scelight.sc2.rep.model.details.Race;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.UpgradeType;
 import io.quarkmind.sc2.intent.TrainIntent;
@@ -39,6 +40,12 @@ class AbilityMappingTest {
     static final int ABIL_STARPORT_ADDON   = 151;
     static final int ABIL_WARPGATE_WARPIN  = 214;
     static final int ABIL_ARCHON_MERGE     = 267;
+    static final int ABIL_BANELING_MORPH   = 73;
+    static final int ABIL_RAVAGER_MORPH    = 309;
+    static final int ABIL_BROODLORD_MORPH  = 194;
+    static final int ABIL_LURKER_MORPH     = 522;
+    static final int ABIL_OVERSEER_MORPH   = 221;
+
     // Zerg constants
     static final int ABIL_LARVA            = 193;
     static final int ABIL_HATCHERY         = 184;
@@ -377,6 +384,62 @@ class AbilityMappingTest {
         assertThat(mc.sourceName()).isEqualTo("HighTemplar");
         assertThat(mc.targetName()).isEqualTo("Archon");
     }
+
+    @Test
+    void humanMode_banelingMorph_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-z-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_BANELING_MORPH, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Zergling");
+        assertThat(mc.targetName()).isEqualTo("Baneling");
+    }
+
+    @Test
+    void humanMode_ravagerMorph_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-r-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_RAVAGER_MORPH, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Roach");
+        assertThat(mc.targetName()).isEqualTo("Ravager");
+    }
+
+    @Test
+    void humanMode_broodlordMorph_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-c-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_BROODLORD_MORPH, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Corruptor");
+        assertThat(mc.targetName()).isEqualTo("BroodLord");
+    }
+
+    @Test
+    void humanMode_lurkerMorph_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-h-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_LURKER_MORPH, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Hydralisk");
+        assertThat(mc.targetName()).isEqualTo("Lurker");
+    }
+
+    @Test
+    void humanMode_overseerMorph_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-o-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_OVERSEER_MORPH, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Overlord");
+        assertThat(mc.targetName()).isEqualTo("Overseer");
+    }
+
 
     @Test
     void humanMode_unknownBuildIdx_returnsEmpty() {

@@ -77,6 +77,11 @@ public class AbilityMapping {
     private static final int ABIL_STARPORT_ADDON = 151;
     private static final int ABIL_WARPGATE_WARPIN = 214; // WarpGate warp-in (human replays)
     private static final int ABIL_ARCHON_MERGE = 267;
+    private static final int ABIL_BANELING_MORPH = 73;
+    private static final int ABIL_RAVAGER_MORPH = 309;
+    private static final int ABIL_BROODLORD_MORPH = 194;
+    private static final int ABIL_LURKER_MORPH = 522;
+    private static final int ABIL_OVERSEER_MORPH = 221;
 
 
     private static final Map<Integer, UnitType> BARRACKS_UNITS = Map.of(
@@ -389,6 +394,11 @@ public class AbilityMapping {
                 yield train;
             }
             case ABIL_ARCHON_MERGE -> isRace(Race.PROTOSS) ? List.of(new ReplayCommand.MorphCommand(loop, "HighTemplar", "Archon")) : null;
+            case ABIL_BANELING_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Zergling", "Baneling")) : null;
+            case ABIL_RAVAGER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Roach", "Ravager")) : null;
+            case ABIL_BROODLORD_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Corruptor", "BroodLord")) : null;
+            case ABIL_LURKER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Hydralisk", "Lurker")) : null;
+            case ABIL_OVERSEER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Overlord", "Overseer")) : null;
             default -> null;
         };
     }

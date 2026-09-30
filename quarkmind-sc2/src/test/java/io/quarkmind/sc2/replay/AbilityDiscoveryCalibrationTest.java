@@ -8,13 +8,19 @@ import hu.scelight.sc2.rep.s2prot.Event;
 import hu.scelightapi.sc2.rep.model.trackerevents.IBaseUnitEvent;
 import hu.scelightapi.sc2.rep.model.trackerevents.ITrackerEvents;
 import hu.scelightapi.sc2.rep.model.trackerevents.IUpgradeEvent;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,6 +80,62 @@ class AbilityDiscoveryCalibrationTest {
         printMappings("=== Upgrade Research abilLinks ===", mappings);
         assertThat(mappings).as("Must discover upgrade abilLinks").isNotEmpty();
     }
+
+    @Test
+    @Tag("diagnostic")
+    @EnabledIf("oracleExists")
+    void discoverMorphAbilLinks() throws Exception {
+        Map<String, Map<String, Integer>> mappings = new TreeMap<>();
+
+        try (var stream = Files.list(ORACLE_RESTORED)) {
+            for (Path oraclePath : stream.filter(p -> p.toString().endsWith(".SC2Replay")).sorted().toList()) {
+                Path strippedPath = ORACLE_INPUT.resolve(oraclePath.getFileName());
+                if (!Files.exists(strippedPath)) {continue;}
+                discoverMorphFromReplay(oraclePath, strippedPath, mappings);
+            }
+        }
+        printMappings("=== Morph Unit AbilLinks ===", mappings);
+        assertThat(mappings).isNotEmpty();
+    }
+
+    @Test
+    @Tag("diagnostic")
+    @EnabledIf("oracleExists")
+    void discoverBuildingMorphAbilLinks() throws Exception {
+        Map<String, Map<String, Integer>> mappings       = new TreeMap<>();
+        Set<String>                       buildingMorphs = Set.of("OrbitalCommand", "PlanetaryFortress", "Lair", "Hive", "GreaterSpire");
+
+        try (var stream = Files.list(ORACLE_RESTORED)) {
+            for (Path oraclePath : stream.filter(p -> p.toString().endsWith(".SC2Replay")).sorted().toList()) {
+                Path strippedPath = ORACLE_INPUT.resolve(oraclePath.getFileName());
+                if (!Files.exists(strippedPath)) {continue;}
+
+                Replay rep = RepParserEngine.parseReplay(oraclePath, EnumSet.of(RepContent.TRACKER_EVENTS));
+                if (rep == null || rep.trackerEvents == null) {continue;}
+                List<CmdRecord> commands = extractCommands(strippedPath);
+                if (commands.isEmpty()) {continue;}
+
+                for (Event raw : rep.trackerEvents.getEvents()) {
+                    if (raw.getId() != ITrackerEvents.ID_UNIT_TYPE_CHANGE) {continue;}
+                    Object nameObj  = raw.get("unitTypeName");
+                    String unitName = nameObj != null ? nameObj.toString() : null;
+                    if (unitName == null || !buildingMorphs.contains(unitName)) {continue;}
+
+                    String key = "BuildingMorph:" + unitName;
+                    for (CmdRecord cmd : commands) {
+                        long dist = raw.getLoop() - cmd.loop;
+                        if (dist >= 0 && dist <= 50) {
+                            String abilKey = "abilLink=" + cmd.abilLink + ",idx=" + cmd.abilCmdIndex
+                                             + (cmd.hasTargetPoint ? ",hasTP" : "") + ",dist=" + dist;
+                            mappings.computeIfAbsent(key, k -> new TreeMap<>()).merge(abilKey, 1, Integer::sum);
+                        }
+                    }
+                }
+            }
+        }
+        printMappings("=== Building Morph AbilLinks (0-50 loop window) ===", mappings);
+    }
+
 
     private Map<String, Map<String, Integer>> discoverAll(String label, int trackerEventId) throws Exception {
         Map<String, Map<String, Integer>> mappings = new TreeMap<>();
@@ -136,6 +198,31 @@ class AbilityDiscoveryCalibrationTest {
         }
     }
 
+    private void discoverMorphFromReplay(Path oraclePath, Path strippedPath,
+                                         Map<String, Map<String, Integer>> mappings) {
+        Replay rep = RepParserEngine.parseReplay(oraclePath,
+                                                 EnumSet.of(RepContent.TRACKER_EVENTS));
+        if (rep == null || rep.trackerEvents == null) {return;}
+
+        List<CmdRecord> commands = extractCommands(strippedPath);
+        if (commands.isEmpty()) {return;}
+
+        for (Event raw : rep.trackerEvents.getEvents()) {
+            if (raw.getId() != ITrackerEvents.ID_UNIT_TYPE_CHANGE) {continue;}
+            if (raw.getLoop() == 0) {continue;}
+
+            Object unitNameObj = raw.get("unitTypeName");
+            String unitName    = unitNameObj != null ? unitNameObj.toString() : null;
+            if (unitName == null) {continue;}
+            if ("Egg".equals(unitName) || "SupplyDepotLowered".equals(unitName)
+                || unitName.contains("Flying") || "InvisibleTargetDummy".equals(unitName)) {continue;}
+
+            String key = "MorphUnit:" + unitName;
+            findClosestCommandAnyPlayer(commands, raw.getLoop(), key, mappings, 0, 500);
+        }
+    }
+
+
     private List<CmdRecord> extractCommands(Path strippedPath) {
         List<Event> gameEvents;
         try { gameEvents = GameEventStream.events(strippedPath); }
@@ -175,6 +262,27 @@ class AbilityDiscoveryCalibrationTest {
                 .merge(abilKey, 1, Integer::sum);
         }
     }
+
+    private void findClosestCommandAnyPlayer(List<CmdRecord> commands, long trackerLoop,
+                                             String trackerKey, Map<String, Map<String, Integer>> mappings,
+                                             int minLookback, int maxLookback) {
+        CmdRecord best     = null;
+        long      bestDist = Long.MAX_VALUE;
+        for (CmdRecord cmd : commands) {
+            long dist = trackerLoop - cmd.loop;
+            if (dist >= minLookback && dist <= maxLookback && dist < bestDist) {
+                bestDist = dist;
+                best     = cmd;
+            }
+        }
+        if (best != null) {
+            String abilKey = "abilLink=" + best.abilLink + ",idx=" + best.abilCmdIndex
+                             + (best.hasTargetPoint ? ",hasTP" : "");
+            mappings.computeIfAbsent(trackerKey, k -> new TreeMap<>())
+                    .merge(abilKey, 1, Integer::sum);
+        }
+    }
+
 
     private void printMappings(String header, Map<String, Map<String, Integer>> mappings) {
         System.out.println("\n" + header);
