@@ -46,6 +46,8 @@ class AbilityMappingTest {
     static final int ABIL_BROODLORD_MORPH  = 194;
     static final int ABIL_LURKER_MORPH     = 522;
     static final int ABIL_OVERSEER_MORPH   = 221;
+    static final int ABIL_CC_MORPH         = 120;
+
 
     // Zerg constants
     static final int ABIL_LARVA            = 193;
@@ -483,6 +485,28 @@ class AbilityMappingTest {
         var mc = (ReplayCommand.MorphCommand) result.get(0);
         assertThat(mc.sourceName()).isEqualTo("Overlord");
         assertThat(mc.targetName()).isEqualTo("Overseer");
+    }
+
+    @Test
+    void humanMode_ccMorphOrbitalCommand_producesMorphCommand() {
+        var terranMapping = new AbilityMapping(1, true, Race.TERRAN);
+        terranMapping.setSelectionForTest(0, List.of("r-cc-1"));
+        var result = terranMapping.process(fakeCmdEvent(ABIL_CC_MORPH, 0, 2000, null, null, 1));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("CommandCenter");
+        assertThat(mc.targetName()).isEqualTo("OrbitalCommand");
+    }
+
+    @Test
+    void humanMode_ccMorphPlanetaryFortress_producesMorphCommand() {
+        var terranMapping = new AbilityMapping(1, true, Race.TERRAN);
+        terranMapping.setSelectionForTest(0, List.of("r-cc-1"));
+        var result = terranMapping.process(fakeCmdEvent(ABIL_CC_MORPH, 0, 2100, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("CommandCenter");
+        assertThat(mc.targetName()).isEqualTo("PlanetaryFortress");
     }
 
 

@@ -14,6 +14,7 @@ import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -83,6 +84,8 @@ public class AbilityMapping {
     private static final int ABIL_BROODLORD_MORPH = 194;
     private static final int ABIL_LURKER_MORPH = 522;
     private static final int ABIL_OVERSEER_MORPH = 221;
+    private static final int ABIL_CC_MORPH       = 120;
+
     private static final int UNIT_LINK_DARK_TEMPLAR = 76;
 
 
@@ -189,6 +192,11 @@ public class AbilityMapping {
     private static final Map<Integer, String> BARRACKS_ADDON_MAP = Map.of(0, "BarracksTechLab", 1, "BarracksReactor");
     private static final Map<Integer, String> FACTORY_ADDON_MAP  = Map.of(0, "FactoryTechLab", 1, "FactoryReactor");
     private static final Map<Integer, String> STARPORT_ADDON_MAP = Map.of(0, "StarportTechLab", 1, "StarportReactor");
+    private static final Map<Integer, String> CC_MORPH_TARGETS   = Map.of(
+            0, "PlanetaryFortress",
+            1, "OrbitalCommand"
+                                                                         );
+
 
     // WarpGate warp-in (human replays) abilCmdIndex → UnitType
     private static final Map<Integer, UnitType> WARPGATE_WARPIN_UNITS = Map.of(
@@ -260,7 +268,7 @@ public class AbilityMapping {
         }
 
         // Sync unitLink map with any removed tags
-        tagToUnitLink.keySet().retainAll(new java.util.HashSet<>(selection.snapshot()));
+        tagToUnitLink.keySet().retainAll(new HashSet<>(selection.snapshot()));
 
         // Zip addSubgroups with addUnitTags to track unitLink per tag
         var subgroups = delta.getAddSubgroups();
@@ -442,6 +450,11 @@ public class AbilityMapping {
             case ABIL_BROODLORD_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Corruptor", "BroodLord")) : null;
             case ABIL_LURKER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Hydralisk", "Lurker")) : null;
             case ABIL_OVERSEER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Overlord", "Overseer")) : null;
+            case ABIL_CC_MORPH -> {
+                if (!isRace(Race.TERRAN)) {yield null;}
+                String target = CC_MORPH_TARGETS.get(idx);
+                yield target != null ? List.of(new ReplayCommand.MorphCommand(loop, "CommandCenter", target)) : null;
+            }
             default -> null;
         };
     }
