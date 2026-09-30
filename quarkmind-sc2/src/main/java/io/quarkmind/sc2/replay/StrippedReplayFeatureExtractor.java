@@ -221,7 +221,7 @@ public class StrippedReplayFeatureExtractor {
                             }
                             case ReplayCommand.MorphCommand mc -> {
                                 tagCounter = handleMorph(mc, playerId,
-                                                         syntheticEvents, tagCounter);
+                                                         state, syntheticEvents, tagCounter);
                             }
                             case ReplayCommand.CancelCommand ignored -> {}
                             case ReplayCommand.Movement ignored -> {}
@@ -393,7 +393,7 @@ public class StrippedReplayFeatureExtractor {
     }
 
     int handleMorph(ReplayCommand.MorphCommand mc, int playerId,
-                    List<SyntheticEvent> events, int tagCounter) {
+                    PlayerState state, List<SyntheticEvent> events, int tagCounter) {
         String sourceName  = mc.sourceName();
         String targetName  = mc.targetName();
         long   commandLoop = mc.loop();
@@ -410,34 +410,26 @@ public class StrippedReplayFeatureExtractor {
                                                  "unitTagRecycle", 0)));
         }
 
-        if (BUILDING_MORPH_TARGETS.contains(targetName) || "Archon".equals(targetName)) {
-            int morphTime = BUILDING_MORPH_TARGETS.contains(targetName)
-                            ? getBuildTime(targetName) : ARCHON_MORPH_TIME;
-            int tag = tagCounter++;
-            events.add(new SyntheticEvent(commandLoop, EventOrdinal.UNIT_INIT, playerId,
-                                          Map.of("evtTypeName", "UnitInit",
-                                                 "loop", commandLoop,
-                                                 "controlPlayerId", playerId,
-                                                 "unitTypeName", targetName,
-                                                 "unitTagIndex", tag,
-                                                 "unitTagRecycle", 0)));
-            long doneLoop = commandLoop + morphTime;
-            events.add(new SyntheticEvent(doneLoop, EventOrdinal.UNIT_DONE, playerId,
-                                          Map.of("evtTypeName", "UnitDone",
-                                                 "loop", doneLoop,
-                                                 "controlPlayerId", playerId,
-                                                 "unitTypeName", targetName,
-                                                 "unitTagIndex", tag,
-                                                 "unitTagRecycle", 0)));
-        } else {
-            int tag = tagCounter++;
-            events.add(new SyntheticEvent(commandLoop, EventOrdinal.UNIT_BORN, playerId,
-                                          Map.of("evtTypeName", "UnitBorn",
-                                                 "loop", commandLoop,
-                                                 "controlPlayerId", playerId,
-                                                 "unitTypeName", targetName,
-                                                 "unitTagIndex", tag,
-                                                 "unitTagRecycle", 0)));
+        int morphTime = getMorphTime(targetName);
+        int tag       = tagCounter++;
+        events.add(new SyntheticEvent(commandLoop, EventOrdinal.UNIT_INIT, playerId,
+                                      Map.of("evtTypeName", "UnitInit",
+                                             "loop", commandLoop,
+                                             "controlPlayerId", playerId,
+                                             "unitTypeName", targetName,
+                                             "unitTagIndex", tag,
+                                             "unitTagRecycle", 0)));
+        long doneLoop = commandLoop + morphTime;
+        events.add(new SyntheticEvent(doneLoop, EventOrdinal.UNIT_DONE, playerId,
+                                      Map.of("evtTypeName", "UnitDone",
+                                             "loop", doneLoop,
+                                             "controlPlayerId", playerId,
+                                             "unitTypeName", targetName,
+                                             "unitTagIndex", tag,
+                                             "unitTagRecycle", 0)));
+
+        if (state != null) {
+            trackMorphSpending(targetName, state);
         }
 
         return tagCounter;
@@ -478,11 +470,27 @@ public class StrippedReplayFeatureExtractor {
     }
 
     List<Map<String, Object>> processMorphForTest(ReplayCommand.MorphCommand mc,
-                                                   int playerId, int startTag) {
+                                                  int playerId, int startTag) {
         List<SyntheticEvent> events = new ArrayList<>();
-        handleMorph(mc, playerId, events, startTag);
+        handleMorph(mc, playerId, null, events, startTag);
         return events.stream().map(SyntheticEvent::data).toList();
     }
+
+    record MorphTestResult(List<Map<String, Object>> events, int mineralsUsedArmy, int gasUsedArmy,
+                           int foodUsed, int foodMade) {}
+
+    MorphTestResult processMorphWithStateForTest(ReplayCommand.MorphCommand mc, int playerId, int startTag) {
+        List<SyntheticEvent> events = new ArrayList<>();
+        var                  state  = new PlayerState();
+        state.mineralsCurrent = 10000;
+        state.vespeneCurrent  = 10000;
+        handleMorph(mc, playerId, state, events, startTag);
+        return new MorphTestResult(
+                events.stream().map(SyntheticEvent::data).toList(),
+                state.mineralsUsedArmy, state.gasUsedArmy,
+                state.foodUsed, state.foodMade);
+    }
+
 
     List<Map<String, Object>> processWarpGateScenarioForTest(
             List<ReplayCommand.BuildCommand> builds,
@@ -530,6 +538,25 @@ public class StrippedReplayFeatureExtractor {
         if (addonTime != null) return addonTime;
         return 880; // default estimate
     }
+
+    private int getMorphTime(String targetName) {
+        if (BUILDING_MORPH_TARGETS.contains(targetName)) {
+            return getBuildTime(targetName);
+        }
+        if ("Archon".equals(targetName)) {
+            return ARCHON_MORPH_TIME;
+        }
+        UnitType ut = UNIT_PYTHON_NAMES.entrySet().stream()
+                                       .filter(e -> e.getValue().equals(targetName))
+                                       .map(Map.Entry::getKey)
+                                       .findFirst()
+                                       .orElse(null);
+        if (ut != null) {
+            return SC2Data.trainTimeInLoops(ut);
+        }
+        return ARCHON_MORPH_TIME;
+    }
+
 
     private Map<String, Object> buildGameJson(Replay replay, Player[] players,
                                               List<SyntheticEvent> events) {
@@ -622,6 +649,34 @@ public class StrippedReplayFeatureExtractor {
         state.vespeneCurrent -= gasCost;
     }
 
+    private void trackMorphSpending(String targetName, PlayerState state) {
+        UnitType ut = UNIT_PYTHON_NAMES.entrySet().stream()
+                                       .filter(e -> e.getValue().equals(targetName))
+                                       .map(Map.Entry::getKey)
+                                       .findFirst()
+                                       .orElse(null);
+        if (ut != null) {
+            int mineralCost = SC2Data.mineralCost(ut);
+            int gasCost     = SC2Data.gasCost(ut);
+            state.mineralsUsedArmy += mineralCost;
+            state.gasUsedArmy += gasCost;
+            state.mineralsCurrent -= mineralCost;
+            state.vespeneCurrent -= gasCost;
+            state.foodUsed += SC2Data.supplyCost(ut) * 4096;
+            return;
+        }
+        BuildingType bt = BUILDING_NAME_TO_TYPE.get(targetName);
+        if (bt != null) {
+            int mineralCost = SC2Data.mineralCost(bt);
+            int gasCost     = gasCostForBuilding(bt);
+            state.mineralsUsedTechnology += mineralCost;
+            state.gasUsedTechnology += gasCost;
+            state.mineralsCurrent -= mineralCost;
+            state.vespeneCurrent -= gasCost;
+        }
+    }
+
+
     private void generatePlayerStats(int playerId, PlayerState state,
                                      List<SyntheticEvent> allEvents, long elapsedLoops) {
         List<SyntheticEvent> playerEvents = allEvents.stream()
@@ -691,6 +746,7 @@ public class StrippedReplayFeatureExtractor {
             }
             case "UnitDone" -> {
                 if (GAS_BUILDINGS.contains(unitName)) state.gasBuildingCount++;
+                if ("Overseer".equals(unitName)) state.foodMade += 8 * 4096;
             }
             case "UnitDied" -> {
                 if ("Drone".equals(unitName)) state.workersActive--;

@@ -1,5 +1,7 @@
 package io.quarkmind.sc2.replay;
 
+import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.UpgradeType;
 import org.junit.jupiter.api.Test;
 
@@ -42,23 +44,57 @@ class StrippedReplayMorphTest {
     @Test
     void standardUnitMorphEmitsSingleDeath() {
         var extractor = new StrippedReplayFeatureExtractor();
-        var morph = new ReplayCommand.MorphCommand(2000, "Zergling", "Baneling");
+        var morph     = new ReplayCommand.MorphCommand(2000, "Zergling", "Baneling");
 
         List<Map<String, Object>> events = extractor.processMorphForTest(morph, 1, 100);
 
         var deaths = events.stream()
-            .filter(e -> "UnitDied".equals(e.get("evtTypeName")))
-            .toList();
-        var births = events.stream()
-            .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
-            .toList();
+                           .filter(e -> "UnitDied".equals(e.get("evtTypeName")))
+                           .toList();
+        var inits = events.stream()
+                          .filter(e -> "UnitInit".equals(e.get("evtTypeName")))
+                          .toList();
+        var dones = events.stream()
+                          .filter(e -> "UnitDone".equals(e.get("evtTypeName")))
+                          .toList();
 
         assertThat(deaths).hasSize(1);
         assertThat(deaths.get(0).get("unitTypeName")).isEqualTo("Zergling");
 
-        assertThat(births).hasSize(1);
-        assertThat(births.get(0).get("unitTypeName")).isEqualTo("Baneling");
+        assertThat(inits).hasSize(1);
+        assertThat(inits.get(0).get("unitTypeName")).isEqualTo("Baneling");
+        assertThat(((Number) inits.get(0).get("loop")).longValue()).isEqualTo(2000);
+
+        assertThat(dones).hasSize(1);
+        assertThat(dones.get(0).get("unitTypeName")).isEqualTo("Baneling");
+        long expectedDoneLoop = 2000 + SC2Data.trainTimeInLoops(UnitType.BANELING);
+        assertThat(((Number) dones.get(0).get("loop")).longValue()).isEqualTo(expectedDoneLoop);
     }
+
+    @Test
+    void morphTracksBanelingSpending() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var morph     = new ReplayCommand.MorphCommand(2000, "Zergling", "Baneling");
+
+        var result = extractor.processMorphWithStateForTest(morph, 1, 100);
+
+        assertThat(result.mineralsUsedArmy()).isEqualTo(25);
+        assertThat(result.gasUsedArmy()).isEqualTo(25);
+    }
+
+    @Test
+    void overseerMorphTracksSpendingWithZeroSupplyDelta() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var morph     = new ReplayCommand.MorphCommand(2000, "Overlord", "Overseer");
+
+        var result = extractor.processMorphWithStateForTest(morph, 1, 100);
+
+        assertThat(result.mineralsUsedArmy()).isEqualTo(50);
+        assertThat(result.gasUsedArmy()).isEqualTo(50);
+        int initialFoodUsed = SC2Data.INITIAL_SUPPLY_USED * 4096;
+        assertThat(result.foodUsed()).isEqualTo(initialFoodUsed);
+    }
+
 
     @Test
     void buildingMorphEmitsInitAndDone() {

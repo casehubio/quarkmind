@@ -170,18 +170,18 @@ public final class SC2Data {
         map.put(UnitType.HYDRALISK, 672);  // estimate: 30s × 22.4
         map.put(UnitType.MUTALISK, 672);  // uncalibrated
         map.put(UnitType.ULTRALISK, 672);  // uncalibrated
-        map.put(UnitType.BROOD_LORD, 672);  // uncalibrated
+        map.put(UnitType.BROOD_LORD, 538);  // Liquipedia: 24s × 22.4
         map.put(UnitType.CORRUPTOR, 672);  // uncalibrated
         map.put(UnitType.INFESTOR, 672);  // uncalibrated
         map.put(UnitType.SWARM_HOST, 672);  // uncalibrated
         map.put(UnitType.VIPER, 672);  // uncalibrated
         map.put(UnitType.QUEEN, 900);  // estimate: ceil(40.18s × 22.4)
-        map.put(UnitType.RAVAGER, 672);  // uncalibrated
-        map.put(UnitType.LURKER, 672);  // uncalibrated
+        map.put(UnitType.RAVAGER, 269);  // Liquipedia: 12s × 22.4
+        map.put(UnitType.LURKER, 403);  // Liquipedia: 18s × 22.4
         map.put(UnitType.DRONE, 275);  // estimate: same as SCV (same real-time duration)
         map.put(UnitType.OVERLORD, 357);  // estimate: ceil(15.93s × 22.4)
-        map.put(UnitType.OVERSEER, 672);  // uncalibrated
-        map.put(UnitType.BANELING, 672);  // uncalibrated
+        map.put(UnitType.OVERSEER, 269);  // Liquipedia: 12s × 22.4
+        map.put(UnitType.BANELING, 448);  // Liquipedia: 20s × 22.4
         map.put(UnitType.LOCUST, 672);  // uncalibrated
         map.put(UnitType.BROODLING, 672);  // uncalibrated
         map.put(UnitType.INFESTED_TERRAN, 672);  // uncalibrated

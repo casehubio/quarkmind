@@ -296,6 +296,9 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - `UnmappedAbilCmdIndexDiagnosticTest` — scans 500 ladder replays for abilLink+abilCmdIndex combinations not in AbilityMapping; discovered Thor, Ghost, VoidRay, Tempest, Sentry, DarkTemplar, Disruptor, Viper mappings
 - `ZergSelectionDiagnosticTest` — counts Zerg Larva/Queen CmdEvents, Hatchery BuildCommands, and Probe production diagnostics across 118 oracle replays; validates selection-based multiplication
 - `TrackerCorruptionDiagnosticTest` — traces SelectionDelta events showing tracker state accumulation from `removeMask=None` + addSubgroups pattern
+- `AbilityDiscoveryCalibrationTest.discoverMorphAbilLinks` — discovers morph abilLinks via UnitTypeChangeEvent correlation; found Baneling=73, Ravager=309, BroodLord=194, Lurker=522, Overseer=221
+- `AbilityDiscoveryCalibrationTest.discoverBuildingMorphAbilLinks` — tight-window building morph abilLink discovery (low confidence — bot replays don't emit building morph CmdEvents)
+- `AbilityDiscoveryCalibrationTest.discoverMorphSourceUnitLinks` — discovers unitLink values for morph source units from UnitBorn tracker events
 - `BarracksUnitLinkDiscoveryTest`, `UnitLinkDiscoveryTest` — discovers unitLink values for production buildings from SelectionDelta subgroups
 - `MarineMultiplicationDiagnosticTest` — traces per-replay Marine over-counting from selection-based multiplication; validates multiplication cap
 - Run with: `mvn test -pl quarkmind-sc2 -Pdiagnostic`
