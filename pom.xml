@@ -158,7 +158,7 @@
             </dependency>
             <dependency>
                 <groupId>io.casehub</groupId>
-                <artifactId>casehub-ledger-memory</artifactId>
+                <artifactId>casehub-ledger-persistence-memory</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
