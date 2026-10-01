@@ -1,5 +1,6 @@
 package io.quarkmind.sc2.replay;
 
+import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.junit.jupiter.api.Test;
@@ -238,6 +239,22 @@ class StrippedReplayFeatureExtractorTest {
         assertThat(archonEvents).hasSize(2);
         assertThat(archonEvents.get(0).get("evtTypeName")).isEqualTo("UnitInit");
         assertThat(archonEvents.get(1).get("evtTypeName")).isEqualTo("UnitDone");
+    }
+
+    @Test
+    void newBuildingTypesHavePythonNames() {
+        assertThat(StrippedReplayFeatureExtractor.buildingTypeToPythonName(BuildingType.CREEP_TUMOR))
+                .isEqualTo("CreepTumor");
+        assertThat(StrippedReplayFeatureExtractor.buildingTypeToPythonName(BuildingType.CREEP_TUMOR_QUEEN))
+                .isEqualTo("CreepTumorQueen");
+        assertThat(StrippedReplayFeatureExtractor.buildingTypeToPythonName(BuildingType.NYDUS_CANAL))
+                .isEqualTo("NydusCanal");
+        assertThat(StrippedReplayFeatureExtractor.buildingTypeToPythonName(BuildingType.ORACLE_STASIS_TRAP))
+                .isEqualTo("OracleStasisTrap");
+        assertThat(StrippedReplayFeatureExtractor.buildingTypeToPythonName(BuildingType.ASSIMILATOR_RICH))
+                .isEqualTo("AssimilatorRich");
+        assertThat(StrippedReplayFeatureExtractor.buildingTypeToPythonName(BuildingType.LURKER_DEN))
+                .isEqualTo("LurkerDenMP");
     }
 
 

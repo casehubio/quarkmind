@@ -304,7 +304,10 @@ public final class SC2Data {
             case NYDUS_CANAL       -> 242;  // estimate: 11 × 22
             case ULTRALISK_CAVERN  -> 1012; // estimate: 46 × 22
             case EXTRACTOR         -> 480;  // empirical (67 obs, AI Arena replays)
-            default                -> 880;  // estimate: 40 × 22
+            case CREEP_TUMOR, CREEP_TUMOR_QUEEN -> 224; // estimate: ~10s
+            case ORACLE_STASIS_TRAP -> 67;              // estimate: ~3s
+            case ASSIMILATOR_RICH  -> 480;              // same as ASSIMILATOR
+            case UNKNOWN           -> 880;              // estimate: 40 × 22
         };
     }
 
@@ -502,7 +505,18 @@ public final class SC2Data {
             case PYLON         -> 8;
             case SUPPLY_DEPOT  -> 8;
             case HATCHERY, LAIR, HIVE -> 6;
-            default            -> 0;
+            case NEXUS, COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS,
+                 GATEWAY, CYBERNETICS_CORE, ASSIMILATOR, ASSIMILATOR_RICH,
+                 ROBOTICS_FACILITY, STARGATE, FORGE, TWILIGHT_COUNCIL,
+                 PHOTON_CANNON, SHIELD_BATTERY, DARK_SHRINE, TEMPLAR_ARCHIVES,
+                 FLEET_BEACON, ROBOTICS_BAY,
+                 BARRACKS, ENGINEERING_BAY, ARMORY, MISSILE_TURRET, BUNKER,
+                 SENSOR_TOWER, GHOST_ACADEMY, FACTORY, STARPORT, FUSION_CORE, REFINERY,
+                 SPAWNING_POOL, EVOLUTION_CHAMBER, ROACH_WARREN, BANELING_NEST,
+                 SPINE_CRAWLER, SPORE_CRAWLER, HYDRALISK_DEN, LURKER_DEN,
+                 INFESTATION_PIT, SPIRE, GREATER_SPIRE, NYDUS_NETWORK, NYDUS_CANAL,
+                 ULTRALISK_CAVERN, EXTRACTOR,
+                 CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP, UNKNOWN -> 0;
         };
     }
 
@@ -750,7 +764,10 @@ public final class SC2Data {
             case NYDUS_CANAL        -> 250;
             case ULTRALISK_CAVERN   -> 850;
             case EXTRACTOR          -> 500;
-            default                 -> 500;
+            case CREEP_TUMOR, CREEP_TUMOR_QUEEN -> 50;
+            case ORACLE_STASIS_TRAP -> 30;
+            case ASSIMILATOR_RICH   -> 450;
+            case UNKNOWN            -> 500;
         };
     }
 
@@ -809,7 +826,10 @@ public final class SC2Data {
             case NYDUS_CANAL        -> 50;
             case ULTRALISK_CAVERN   -> 150;
             case EXTRACTOR          -> 25;
-            default                 -> 100;
+            case CREEP_TUMOR, CREEP_TUMOR_QUEEN -> 0;
+            case ORACLE_STASIS_TRAP -> 0;
+            case ASSIMILATOR_RICH   -> 75;
+            case UNKNOWN            -> 100;
         };
     }
 
@@ -1020,8 +1040,20 @@ public final class SC2Data {
     /** Official SC2 sight radius in tiles for buildings. */
     public static int sightRange(BuildingType type) {
         return switch (type) {
-            case ASSIMILATOR -> 6;
-            default          -> 9;  // NEXUS, GATEWAY, FORGE, etc.
+            case ASSIMILATOR, ASSIMILATOR_RICH -> 6;
+            case CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP -> 0;
+            case NEXUS, PYLON, GATEWAY, CYBERNETICS_CORE,
+                 ROBOTICS_FACILITY, STARGATE, FORGE, TWILIGHT_COUNCIL,
+                 PHOTON_CANNON, SHIELD_BATTERY, DARK_SHRINE, TEMPLAR_ARCHIVES,
+                 FLEET_BEACON, ROBOTICS_BAY,
+                 COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS,
+                 SUPPLY_DEPOT, BARRACKS, ENGINEERING_BAY, ARMORY, MISSILE_TURRET,
+                 BUNKER, SENSOR_TOWER, GHOST_ACADEMY, FACTORY, STARPORT, FUSION_CORE,
+                 HATCHERY, LAIR, HIVE, SPAWNING_POOL, EVOLUTION_CHAMBER,
+                 ROACH_WARREN, BANELING_NEST, SPINE_CRAWLER, SPORE_CRAWLER,
+                 HYDRALISK_DEN, LURKER_DEN, INFESTATION_PIT, SPIRE, GREATER_SPIRE,
+                 NYDUS_NETWORK, NYDUS_CANAL, ULTRALISK_CAVERN,
+                 REFINERY, EXTRACTOR, UNKNOWN -> 9;
         };
     }
 
@@ -1057,9 +1089,18 @@ public final class SC2Data {
                  PHOTON_CANNON, SHIELD_BATTERY,
                  SPINE_CRAWLER, SPORE_CRAWLER,
                  EVOLUTION_CHAMBER, ASSIMILATOR, REFINERY, EXTRACTOR,
-                 NYDUS_CANAL -> 1.0f;
-            // Medium (3×3 or 4×3) — all remaining tech buildings
-            default -> 1.5f;
+                 NYDUS_CANAL, ASSIMILATOR_RICH -> 1.0f;
+            // Tiny — tumors, stasis traps
+            case CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP -> 0.5f;
+            // Medium (3×3 or 4×3) — tech buildings
+            case GATEWAY, CYBERNETICS_CORE, FORGE, TWILIGHT_COUNCIL,
+                 DARK_SHRINE, TEMPLAR_ARCHIVES, FLEET_BEACON, ROBOTICS_BAY,
+                 ROBOTICS_FACILITY, STARGATE,
+                 BARRACKS, ENGINEERING_BAY, ARMORY, GHOST_ACADEMY,
+                 FACTORY, STARPORT, FUSION_CORE, BUNKER,
+                 SPAWNING_POOL, ROACH_WARREN, BANELING_NEST,
+                 HYDRALISK_DEN, LURKER_DEN, INFESTATION_PIT,
+                 SPIRE, GREATER_SPIRE, NYDUS_NETWORK, UNKNOWN -> 1.5f;
         };
     }
 
@@ -1093,8 +1134,13 @@ public final class SC2Data {
             case INFESTATION_PIT, LURKER_DEN, NYDUS_NETWORK -> OptionalInt.of(3);
             // Zerg T4
             case GREATER_SPIRE, ULTRALISK_CAVERN -> OptionalInt.of(4);
-            // Non-tech: bases, supply, defence, gas, unknown
-            default -> OptionalInt.empty();
+            // Non-tech: bases, supply, defence, gas, ability-placed, unknown
+            case NEXUS, PYLON, ASSIMILATOR, ASSIMILATOR_RICH,
+                 COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS,
+                 SUPPLY_DEPOT, MISSILE_TURRET, BUNKER, SENSOR_TOWER, REFINERY,
+                 HATCHERY, LAIR, HIVE, SPINE_CRAWLER, SPORE_CRAWLER,
+                 NYDUS_CANAL, EXTRACTOR, PHOTON_CANNON, SHIELD_BATTERY,
+                 CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP, UNKNOWN -> OptionalInt.empty();
         };
     }
 
@@ -1113,7 +1159,18 @@ public final class SC2Data {
         return switch (type) {
             case NEXUS, COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS,
                  HATCHERY, LAIR, HIVE -> true;
-            default -> false;
+            case PYLON, GATEWAY, CYBERNETICS_CORE, ASSIMILATOR, ASSIMILATOR_RICH,
+                 ROBOTICS_FACILITY, STARGATE, FORGE, TWILIGHT_COUNCIL,
+                 PHOTON_CANNON, SHIELD_BATTERY, DARK_SHRINE, TEMPLAR_ARCHIVES,
+                 FLEET_BEACON, ROBOTICS_BAY,
+                 SUPPLY_DEPOT, BARRACKS, ENGINEERING_BAY, ARMORY, MISSILE_TURRET,
+                 BUNKER, SENSOR_TOWER, GHOST_ACADEMY, FACTORY, STARPORT,
+                 FUSION_CORE, REFINERY,
+                 SPAWNING_POOL, EVOLUTION_CHAMBER, ROACH_WARREN, BANELING_NEST,
+                 SPINE_CRAWLER, SPORE_CRAWLER, HYDRALISK_DEN, LURKER_DEN,
+                 INFESTATION_PIT, SPIRE, GREATER_SPIRE, NYDUS_NETWORK, NYDUS_CANAL,
+                 ULTRALISK_CAVERN, EXTRACTOR,
+                 CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP, UNKNOWN -> false;
         };
     }
 
@@ -1122,7 +1179,17 @@ public final class SC2Data {
             case BARRACKS, FACTORY, STARPORT,
                  HATCHERY, LAIR, HIVE,
                  GATEWAY, ROBOTICS_FACILITY, STARGATE -> true;
-            default -> false;
+            case NEXUS, PYLON, CYBERNETICS_CORE, ASSIMILATOR, ASSIMILATOR_RICH,
+                 FORGE, TWILIGHT_COUNCIL, PHOTON_CANNON, SHIELD_BATTERY,
+                 DARK_SHRINE, TEMPLAR_ARCHIVES, FLEET_BEACON, ROBOTICS_BAY,
+                 COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS,
+                 SUPPLY_DEPOT, ENGINEERING_BAY, ARMORY, MISSILE_TURRET,
+                 BUNKER, SENSOR_TOWER, GHOST_ACADEMY, FUSION_CORE, REFINERY,
+                 SPAWNING_POOL, EVOLUTION_CHAMBER, ROACH_WARREN, BANELING_NEST,
+                 SPINE_CRAWLER, SPORE_CRAWLER, HYDRALISK_DEN, LURKER_DEN,
+                 INFESTATION_PIT, SPIRE, GREATER_SPIRE, NYDUS_NETWORK, NYDUS_CANAL,
+                 ULTRALISK_CAVERN, EXTRACTOR,
+                 CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP, UNKNOWN -> false;
         };
     }
 

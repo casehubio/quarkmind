@@ -627,7 +627,7 @@ public class StrippedReplayFeatureExtractor {
     // --- Economy ---
 
     private static final int STATS_INTERVAL = 160;
-    private static final Set<String> GAS_BUILDINGS = Set.of("Assimilator", "Refinery", "Extractor");
+    private static final Set<String> GAS_BUILDINGS = Set.of("Assimilator", "AssimilatorRich", "Refinery", "Extractor");
     private static final Set<String> SUPPLY_BUILDINGS = Set.of("Pylon", "SupplyDepot");
     private static final Set<String> BASE_BUILDINGS = Set.of(
         "Nexus", "CommandCenter", "OrbitalCommand", "PlanetaryFortress",
@@ -796,7 +796,15 @@ public class StrippedReplayFeatureExtractor {
                  GREATER_SPIRE, INFESTATION_PIT -> 200;
             case LAIR -> 100;
             case HIVE -> 150;
-            default -> 0;
+            case NEXUS, PYLON, GATEWAY, ASSIMILATOR, ASSIMILATOR_RICH,
+                 ROBOTICS_FACILITY, FORGE, PHOTON_CANNON, SHIELD_BATTERY,
+                 COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS,
+                 SUPPLY_DEPOT, BARRACKS, ENGINEERING_BAY, MISSILE_TURRET,
+                 BUNKER, SENSOR_TOWER, FACTORY, STARPORT, REFINERY, ARMORY, FUSION_CORE,
+                 HATCHERY, SPAWNING_POOL, EVOLUTION_CHAMBER, ROACH_WARREN,
+                 BANELING_NEST, SPINE_CRAWLER, SPORE_CRAWLER, HYDRALISK_DEN,
+                 NYDUS_NETWORK, NYDUS_CANAL, EXTRACTOR,
+                 CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP, UNKNOWN -> 0;
         };
     }
 
@@ -938,7 +946,13 @@ public class StrippedReplayFeatureExtractor {
             case TWILIGHT_COUNCIL -> "TwilightCouncil";
             case TEMPLAR_ARCHIVES -> "TemplarArchive";
             case DARK_SHRINE -> "DarkShrine";
-            default -> null;
+            case NYDUS_CANAL -> "NydusCanal";
+            case LURKER_DEN -> "LurkerDenMP";
+            case CREEP_TUMOR -> "CreepTumor";
+            case CREEP_TUMOR_QUEEN -> "CreepTumorQueen";
+            case ORACLE_STASIS_TRAP -> "OracleStasisTrap";
+            case ASSIMILATOR_RICH -> "AssimilatorRich";
+            case UNKNOWN -> null;
         };
     }
 
