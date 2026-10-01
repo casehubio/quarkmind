@@ -85,6 +85,11 @@ public class AbilityMapping {
     private static final int ABIL_LURKER_MORPH = 522;
     private static final int ABIL_OVERSEER_MORPH = 221;
     private static final int ABIL_CC_MORPH       = 120;
+    private static final int ABIL_CREEP_TUMOR_QUEEN = 260;
+    private static final int ABIL_CREEP_TUMOR_SPREAD = 265;
+    private static final int ABIL_NYDUS_SPAWN = 268;
+    private static final int ABIL_ORACLE_STASIS_WARD = 603;
+
 
     private static final int UNIT_LINK_DARK_TEMPLAR = 76;
 
@@ -455,6 +460,14 @@ public class AbilityMapping {
                 String target = CC_MORPH_TARGETS.get(idx);
                 yield target != null ? List.of(new ReplayCommand.MorphCommand(loop, "CommandCenter", target)) : null;
             }
+            case ABIL_CREEP_TUMOR_QUEEN -> isRace(Race.ZERG)
+                ? buildCommand(loop, "CreepTumorQueen", event) : null;
+            case ABIL_CREEP_TUMOR_SPREAD -> isRace(Race.ZERG)
+                ? buildCommand(loop, "CreepTumor", event) : null;
+            case ABIL_NYDUS_SPAWN -> isRace(Race.ZERG)
+                ? buildCommand(loop, "NydusCanal", event) : null;
+            case ABIL_ORACLE_STASIS_WARD -> isRace(Race.PROTOSS)
+                ? buildCommand(loop, "OracleStasisTrap", event) : null;
             default -> null;
         };
     }

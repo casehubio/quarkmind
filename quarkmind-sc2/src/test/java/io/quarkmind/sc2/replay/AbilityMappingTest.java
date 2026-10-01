@@ -47,6 +47,10 @@ class AbilityMappingTest {
     static final int ABIL_LURKER_MORPH     = 522;
     static final int ABIL_OVERSEER_MORPH   = 221;
     static final int ABIL_CC_MORPH         = 120;
+    static final int ABIL_CREEP_TUMOR_QUEEN = 260;
+    static final int ABIL_CREEP_TUMOR_SPREAD = 265;
+    static final int ABIL_NYDUS_SPAWN = 268;
+    static final int ABIL_ORACLE_STASIS_WARD = 603;
 
 
     // Zerg constants
@@ -536,6 +540,61 @@ class AbilityMappingTest {
         TrainIntent                 t  = (TrainIntent) ic.intent().intent();
         assertThat(t.unitType()).isEqualTo(UnitType.PROBE);
     }
+
+    @Test
+    void humanMode_queenCreepTumor_producesBuildCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-queen-1"));
+        List<ReplayCommand> result = zergMapping.process(
+                fakeCmdEvent(ABIL_CREEP_TUMOR_QUEEN, 0, 3000, new float[]{25f, 35f}, null, 0));
+        assertThat(result).hasSize(1);
+        ReplayCommand.BuildCommand bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.buildingName()).isEqualTo("CreepTumorQueen");
+        assertThat(bc.loop()).isEqualTo(3000);
+    }
+
+    @Test
+    void humanMode_creepTumorSpread_producesBuildCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-tumor-1"));
+        List<ReplayCommand> result = zergMapping.process(
+                fakeCmdEvent(ABIL_CREEP_TUMOR_SPREAD, 0, 4000, new float[]{30f, 40f}, null, 0));
+        assertThat(result).hasSize(1);
+        ReplayCommand.BuildCommand bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.buildingName()).isEqualTo("CreepTumor");
+    }
+
+    @Test
+    void humanMode_nydusSpawn_producesBuildCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-nydus-1"));
+        List<ReplayCommand> result = zergMapping.process(
+                fakeCmdEvent(ABIL_NYDUS_SPAWN, 0, 5000, new float[]{50f, 50f}, null, 0));
+        assertThat(result).hasSize(1);
+        ReplayCommand.BuildCommand bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.buildingName()).isEqualTo("NydusCanal");
+    }
+
+    @Test
+    void humanMode_oracleStasisWard_producesBuildCommand() {
+        var protossMapping = new AbilityMapping(1, true, Race.PROTOSS);
+        protossMapping.setSelectionForTest(0, List.of("r-oracle-1"));
+        List<ReplayCommand> result = protossMapping.process(
+                fakeCmdEvent(ABIL_ORACLE_STASIS_WARD, 0, 6000, new float[]{45f, 55f}, null, 0));
+        assertThat(result).hasSize(1);
+        ReplayCommand.BuildCommand bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.buildingName()).isEqualTo("OracleStasisTrap");
+    }
+
+    @Test
+    void humanMode_creepTumorQueen_wrongRace_returnsEmpty() {
+        var protossMapping = new AbilityMapping(1, true, Race.PROTOSS);
+        protossMapping.setSelectionForTest(0, List.of("r-1"));
+        List<ReplayCommand> result = protossMapping.process(
+                fakeCmdEvent(ABIL_CREEP_TUMOR_QUEEN, 0, 3000, new float[]{25f, 35f}, null, 0));
+        assertThat(result).isEmpty();
+    }
+
 
     @Test
     void botMode_abilLink170_producesMovement() {
