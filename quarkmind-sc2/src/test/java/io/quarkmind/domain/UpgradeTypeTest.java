@@ -8,19 +8,23 @@ class UpgradeTypeTest {
 
     @Test
     void allClassifierUpgradesCovered() {
-        String[] expected = {
+        String[] classifierUpgrades = {
             "Stimpack", "ShieldWall", "PunisherGrenades", "BansheeCloak",
             "TerranVehicleWeaponsLevel1", "PersonalCloaking", "DrillClaws",
             "zerglingmovementspeed", "GlialReconstitution", "CentrificalHooks",
             "Burrow", "WarpGateResearch", "BlinkTech", "Charge",
             "AdeptPiercingAttack"
         };
-        assertThat(UpgradeType.values()).hasSize(expected.length);
-        for (String name : expected) {
+        for (String name : classifierUpgrades) {
             assertThat(UpgradeType.fromPythonName(name))
-                .as("UpgradeType for Python name '%s'", name)
+                .as("UpgradeType for classifier Python name '%s'", name)
                 .isNotNull();
         }
+    }
+
+    @Test
+    void allGameplayUpgradesCovered() {
+        assertThat(UpgradeType.values()).hasSize(82);
     }
 
     @Test
@@ -39,5 +43,13 @@ class UpgradeTypeTest {
                 .as("upgradeTimeInLoops(%s)", ut)
                 .isGreaterThan(0);
         }
+    }
+
+    @Test
+    void pythonNamesAreUnique() {
+        var names = java.util.Arrays.stream(UpgradeType.values())
+                .map(UpgradeType::pythonName)
+                .toList();
+        assertThat(names).doesNotHaveDuplicates();
     }
 }

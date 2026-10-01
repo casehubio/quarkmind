@@ -312,23 +312,99 @@ public final class SC2Data {
         return buildTimeInLoops(type) / LOOPS_PER_TICK;
     }
 
-    private static final Map<UpgradeType, Integer> UPGRADE_TIMES = Map.ofEntries(
-            Map.entry(UpgradeType.STIMPACK, (int) (100 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.COMBAT_SHIELD, (int) (100 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.CONCUSSIVE_SHELLS, (int) (43 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.BANSHEE_CLOAK, (int) (79 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.TERRAN_VEHICLE_WEAPONS_1, (int) (114 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.PERSONAL_CLOAKING, (int) (86 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.DRILL_CLAWS, (int) (79 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.ZERGLING_SPEED, (int) (71 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.GLIAL_RECONSTITUTION, (int) (57 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.CENTRIFUGAL_HOOKS, (int) (43 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.BURROW, (int) (71 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.WARP_GATE_RESEARCH, (int) (114 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.BLINK, (int) (121 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.CHARGE, (int) (100 * GAME_LOOPS_PER_SECOND)),
-            Map.entry(UpgradeType.ADEPT_PIERCING, (int) (100 * GAME_LOOPS_PER_SECOND))
-                                                                                );
+    private static final Map<UpgradeType, Integer> UPGRADE_TIMES;
+    static {
+        var map = new EnumMap<UpgradeType, Integer>(UpgradeType.class);
+        // Terran ability upgrades
+        map.put(UpgradeType.STIMPACK, (int) (100 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.COMBAT_SHIELD, (int) (100 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.CONCUSSIVE_SHELLS, (int) (43 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.BANSHEE_CLOAK, (int) (79 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.BANSHEE_SPEED, (int) (121 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.BATTLECRUISER_SPECIALIZATIONS, (int) (43 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.SMART_SERVOS, (int) (79 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.HI_SEC_AUTO_TRACKING, (int) (57 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_BUILDING_ARMOR, (int) (100 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.CYCLONE_LOCK_ON_UPGRADE, (int) (79 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.HIGH_CAPACITY_BARRELS, (int) (79 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.LIBERATOR_RANGE, (int) (79 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.MEDIVAC_SPEED_BOOST, (int) (57 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.RAVEN_CORVID_REACTOR, (int) (79 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PERSONAL_CLOAKING, (int) (86 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.DRILL_CLAWS, (int) (79 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TUNNELING_CLAWS, (int) (79 * GAME_LOOPS_PER_SECOND));
+        // Terran tiered upgrades
+        map.put(UpgradeType.TERRAN_INFANTRY_WEAPONS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_INFANTRY_WEAPONS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_INFANTRY_WEAPONS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_INFANTRY_ARMORS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_INFANTRY_ARMORS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_INFANTRY_ARMORS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_VEHICLE_WEAPONS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_VEHICLE_WEAPONS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_VEHICLE_WEAPONS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_SHIP_WEAPONS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_SHIP_WEAPONS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_SHIP_WEAPONS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_VEHICLE_AND_SHIP_ARMORS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_VEHICLE_AND_SHIP_ARMORS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.TERRAN_VEHICLE_AND_SHIP_ARMORS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        // Zerg ability upgrades
+        map.put(UpgradeType.ZERGLING_SPEED, (int) (71 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERGLING_ATTACK_SPEED, (int) (93 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.GLIAL_RECONSTITUTION, (int) (57 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.CENTRIFUGAL_HOOKS, (int) (43 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.BURROW, (int) (71 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.OVERLORD_SPEED, (int) (43 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.GROOVED_SPINES, (int) (71 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.MUSCULAR_AUGMENTS, (int) (71 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.NEURAL_PARASITE, (int) (79 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.INFESTOR_ENERGY, (int) (57 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.CHITINOUS_PLATING, (int) (57 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ANABOLIC_SYNTHESIS, (int) (43 * GAME_LOOPS_PER_SECOND));
+        // Zerg tiered upgrades
+        map.put(UpgradeType.ZERG_MELEE_WEAPONS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_MELEE_WEAPONS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_MELEE_WEAPONS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_MISSILE_WEAPONS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_MISSILE_WEAPONS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_MISSILE_WEAPONS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_GROUND_ARMORS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_GROUND_ARMORS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_GROUND_ARMORS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_FLYER_WEAPONS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_FLYER_WEAPONS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_FLYER_WEAPONS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_FLYER_ARMORS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_FLYER_ARMORS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ZERG_FLYER_ARMORS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        // Protoss ability upgrades
+        map.put(UpgradeType.WARP_GATE_RESEARCH, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.BLINK, (int) (121 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.CHARGE, (int) (100 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.ADEPT_PIERCING, (int) (100 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PSI_STORM, (int) (79 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.EXTENDED_THERMAL_LANCE, (int) (100 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.DARK_TEMPLAR_BLINK, (int) (121 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PHOENIX_RANGE, (int) (64 * GAME_LOOPS_PER_SECOND));
+        // Protoss tiered upgrades
+        map.put(UpgradeType.PROTOSS_GROUND_WEAPONS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_GROUND_WEAPONS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_GROUND_WEAPONS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_GROUND_ARMORS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_GROUND_ARMORS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_GROUND_ARMORS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_AIR_WEAPONS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_AIR_WEAPONS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_AIR_WEAPONS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_AIR_ARMORS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_AIR_ARMORS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_AIR_ARMORS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_SHIELDS_1, (int) (114 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_SHIELDS_2, (int) (136 * GAME_LOOPS_PER_SECOND));
+        map.put(UpgradeType.PROTOSS_SHIELDS_3, (int) (157 * GAME_LOOPS_PER_SECOND));
+        UPGRADE_TIMES = Map.copyOf(map);
+    }
 
     public static int upgradeTimeInLoops(UpgradeType type) {
         return UPGRADE_TIMES.getOrDefault(type, (int) (100 * GAME_LOOPS_PER_SECOND));
