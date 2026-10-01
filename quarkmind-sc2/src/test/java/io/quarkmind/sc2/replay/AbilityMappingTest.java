@@ -51,7 +51,9 @@ class AbilityMappingTest {
     static final int ABIL_CREEP_TUMOR_SPREAD = 265;
     static final int ABIL_NYDUS_SPAWN = 268;
     static final int ABIL_ORACLE_STASIS_WARD = 603;
-
+    static final int ABIL_LAIR_MORPH          = 249;
+    static final int ABIL_HIVE_MORPH          = 250;
+    static final int ABIL_GREATER_SPIRE_MORPH = 252;
 
     // Zerg constants
     static final int ABIL_LARVA            = 193;
@@ -663,6 +665,46 @@ class AbilityMappingTest {
         assertThat(t.buildingTag()).isNull();
     }
 
+
+    @Test
+    void humanMode_lairMorph_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-h-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_LAIR_MORPH, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Hatchery");
+        assertThat(mc.targetName()).isEqualTo("Lair");
+    }
+
+    @Test
+    void humanMode_hiveMorph_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-l-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_HIVE_MORPH, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Lair");
+        assertThat(mc.targetName()).isEqualTo("Hive");
+    }
+
+    @Test
+    void humanMode_greaterSpireMorph_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-s-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_GREATER_SPIRE_MORPH, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Spire");
+        assertThat(mc.targetName()).isEqualTo("GreaterSpire");
+    }
+
+    @Test
+    void humanMode_lairMorph_nonZerg_returnsNull() {
+        var terranMapping = new AbilityMapping(1, true, Race.TERRAN);
+        var result = terranMapping.process(fakeCmdEvent(ABIL_LAIR_MORPH, 0, 1000, null, null, 0));
+        assertThat(result).isEmpty();
+    }
 
     /**
      * Construct a minimal CmdEvent via its public constructor.

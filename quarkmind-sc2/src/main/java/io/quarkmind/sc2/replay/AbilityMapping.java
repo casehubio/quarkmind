@@ -90,6 +90,9 @@ public class AbilityMapping {
     private static final int ABIL_NYDUS_SPAWN = 268;
     private static final int ABIL_ORACLE_STASIS_WARD = 603;
     private static final int ABIL_MULE_CALLDOWN = 171; // uncalibrated — pending MuleAbilLinkDiscoveryTest
+    private static final int ABIL_LAIR_MORPH          = 249; // calibrated: BuildingMorphDiscoveryTest
+    private static final int ABIL_HIVE_MORPH          = 250; // calibrated: BuildingMorphDiscoveryTest
+    private static final int ABIL_GREATER_SPIRE_MORPH = 252; // calibrated: BuildingMorphDiscoveryTest
 
     private static final int UNIT_LINK_DARK_TEMPLAR = 76;
 
@@ -469,6 +472,9 @@ public class AbilityMapping {
             case ABIL_ORACLE_STASIS_WARD -> isRace(Race.PROTOSS)
                 ? buildCommand(loop, "OracleStasisTrap", event) : null;
             case ABIL_MULE_CALLDOWN -> isRace(Race.TERRAN) ? trainIntent(loop, UnitType.MULE) : null;
+            case ABIL_LAIR_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Hatchery", "Lair")) : null;
+            case ABIL_HIVE_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Lair", "Hive")) : null;
+            case ABIL_GREATER_SPIRE_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Spire", "GreaterSpire")) : null;
             default -> null;
         };
     }
