@@ -187,6 +187,7 @@ public final class SC2Data {
         map.put(UnitType.INFESTED_TERRAN, 672);  // uncalibrated
         map.put(UnitType.CHANGELING, 672);  // uncalibrated
         map.put(UnitType.EGG, 672);  // uncalibrated
+        map.put(UnitType.LARVA, 0);  // auto-spawned by timer, not trained
         // Terran — uncalibrated estimates; pending Terran replays from #140
         map.put(UnitType.MARINE, 563);  // estimate: ceil(25.13s × 22.4)
         map.put(UnitType.MARAUDER, 757);  // estimate: ceil(33.8s × 22.4)
@@ -206,7 +207,7 @@ public final class SC2Data {
         map.put(UnitType.REAPER, 672);  // uncalibrated
         map.put(UnitType.HELLION, 672);  // uncalibrated
         map.put(UnitType.HELLBAT, 672);  // uncalibrated
-        map.put(UnitType.MULE, 672);  // uncalibrated
+        map.put(UnitType.MULE, 0);  // instant calldown
         map.put(UnitType.VIKING_ASSAULT, 672);  // uncalibrated
         map.put(UnitType.LIBERATOR_AG, 672);  // uncalibrated
         map.put(UnitType.AUTO_TURRET, 672);  // uncalibrated
@@ -463,6 +464,7 @@ public final class SC2Data {
         map.put(UnitType.INFESTED_TERRAN,    new UnitCosts(  0,   0, 0));
         map.put(UnitType.CHANGELING,         new UnitCosts(  0,   0, 0));
         map.put(UnitType.EGG,                new UnitCosts(  0,   0, 0));
+        map.put(UnitType.LARVA,              new UnitCosts(  0,   0, 0));
         // Terran
         map.put(UnitType.MARINE,             new UnitCosts( 50,   0, 1));
         map.put(UnitType.MARAUDER,           new UnitCosts(100,  25, 2));
@@ -571,6 +573,7 @@ public final class SC2Data {
         map.put(UnitType.INFESTED_TERRAN, new UnitDefenses(100, 0, 0));
         map.put(UnitType.CHANGELING, new UnitDefenses(100, 0, 0));
         map.put(UnitType.EGG, new UnitDefenses(200, 0, 0));
+        map.put(UnitType.LARVA, new UnitDefenses(25, 0, 0));
         // Terran                                     HP   Sh  Ar
         map.put(UnitType.MARINE, new UnitDefenses(45, 0, 0));
         map.put(UnitType.MARAUDER, new UnitDefenses(125, 0, 1));
@@ -657,6 +660,7 @@ public final class SC2Data {
         map.put(UnitType.INFESTED_TERRAN, Set.of());
         map.put(UnitType.CHANGELING, Set.of());
         map.put(UnitType.EGG, Set.of());
+        map.put(UnitType.LARVA, Set.of(LIGHT, BIOLOGICAL));
         // Terran
         map.put(UnitType.MARINE, Set.of(LIGHT, BIOLOGICAL));
         map.put(UnitType.MARAUDER, Set.of(BIOLOGICAL, ARMORED));
@@ -906,6 +910,7 @@ public final class SC2Data {
         map.put(UnitType.INFESTED_TERRAN, new UnitCombatStats(5, 2, 3.0f));
         map.put(UnitType.CHANGELING, new UnitCombatStats(5, 2, 3.0f));
         map.put(UnitType.EGG, new UnitCombatStats(0, Integer.MAX_VALUE, 0.0f));
+        map.put(UnitType.LARVA, new UnitCombatStats(0, Integer.MAX_VALUE, 0.0f));
         // Terran                                     dmg  cd   range  bonus
         map.put(UnitType.MARINE, new UnitCombatStats(6, 1, 5.0f));
         map.put(UnitType.MARAUDER, new UnitCombatStats(10, 2, 5.0f, Map.of(ARMORED, 10)));
@@ -1002,6 +1007,7 @@ public final class SC2Data {
         map.put(UnitType.INFESTED_TERRAN, 9);
         map.put(UnitType.CHANGELING, 9);
         map.put(UnitType.EGG, 9);
+        map.put(UnitType.LARVA, 9);
         // Terran
         map.put(UnitType.MARINE, 9);
         map.put(UnitType.MARAUDER, 9);

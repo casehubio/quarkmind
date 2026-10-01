@@ -197,7 +197,7 @@ public final class ActionTranslator {
                  ADEPT, DISRUPTOR, SENTRY,
                  PHOENIX, ORACLE, TEMPEST, MOTHERSHIP, WARP_PRISM, WARP_PRISM_PHASING,
                  INTERCEPTOR, ADEPT_PHASE_SHIFT,
-                 EGG,
+                 EGG, LARVA,
                  UNKNOWN      -> null;
         };
     }

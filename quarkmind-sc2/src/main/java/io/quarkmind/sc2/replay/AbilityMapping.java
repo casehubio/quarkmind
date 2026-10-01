@@ -89,7 +89,7 @@ public class AbilityMapping {
     private static final int ABIL_CREEP_TUMOR_SPREAD = 265;
     private static final int ABIL_NYDUS_SPAWN = 268;
     private static final int ABIL_ORACLE_STASIS_WARD = 603;
-
+    private static final int ABIL_MULE_CALLDOWN = 171; // uncalibrated — pending MuleAbilLinkDiscoveryTest
 
     private static final int UNIT_LINK_DARK_TEMPLAR = 76;
 
@@ -468,6 +468,7 @@ public class AbilityMapping {
                 ? buildCommand(loop, "NydusCanal", event) : null;
             case ABIL_ORACLE_STASIS_WARD -> isRace(Race.PROTOSS)
                 ? buildCommand(loop, "OracleStasisTrap", event) : null;
+            case ABIL_MULE_CALLDOWN -> isRace(Race.TERRAN) ? trainIntent(loop, UnitType.MULE) : null;
             default -> null;
         };
     }

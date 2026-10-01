@@ -626,6 +626,12 @@ class SC2DataTest {
     @Test
     void allUnitTypesHaveTrainTime() {
         for (UnitType type : UnitType.values()) {
+            if (type == UnitType.LARVA || type == UnitType.MULE) {
+                assertThat(SC2Data.trainTimeInLoops(type))
+                        .as(type + " has zero train time (auto-spawned or instant)")
+                        .isZero();
+                continue;
+            }
             assertThat(SC2Data.trainTimeInLoops(type))
                     .as("Missing trainTimeInLoops for " + type)
                     .isGreaterThan(0);

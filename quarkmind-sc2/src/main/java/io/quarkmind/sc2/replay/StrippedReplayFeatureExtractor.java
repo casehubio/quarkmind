@@ -59,6 +59,7 @@ public class StrippedReplayFeatureExtractor {
         map.put(UnitType.RAVEN, "Raven");
         map.put(UnitType.WIDOW_MINE, "WidowMine");
         map.put(UnitType.BATTLECRUISER, "Battlecruiser");
+        map.put(UnitType.MULE, "MULE");
         // Zerg
         map.put(UnitType.DRONE, "Drone");
         map.put(UnitType.ZERGLING, "Zergling");
