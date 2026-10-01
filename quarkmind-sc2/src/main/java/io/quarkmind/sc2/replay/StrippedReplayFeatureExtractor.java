@@ -255,6 +255,8 @@ public class StrippedReplayFeatureExtractor {
             long gameLength = elapsedLoops != null ? elapsedLoops : 0;
             tagCounter = emitAutoSpawnedLarva(playerId, playerRace, state,
                                               syntheticEvents, tagCounter, gameLength);
+            tagCounter = emitAutoSpawnedInterceptor(playerId, playerRace,
+                                                     syntheticEvents, tagCounter, gameLength);
             if (elapsedLoops != null && elapsedLoops > 0) {
                 generatePlayerStats(playerId, state, syntheticEvents, elapsedLoops);
             }
@@ -574,6 +576,51 @@ public class StrippedReplayFeatureExtractor {
         var events = new ArrayList<SyntheticEvent>();
         emitAutoSpawnedLarva(playerId, race, state, events, startTag, elapsedLoops);
         return events.stream().map(SyntheticEvent::data).toList();
+    }
+
+    private int emitAutoSpawnedInterceptor(int playerId, Race race,
+                                           List<SyntheticEvent> existingEvents,
+                                           int tagCounter, long elapsedLoops) {
+        if (race != Race.PROTOSS) return tagCounter;
+
+        List<Long> carrierBirthLoops = existingEvents.stream()
+            .filter(e -> e.playerId() == playerId)
+            .filter(e -> "Carrier".equals(e.data().get("unitTypeName")))
+            .filter(e -> "UnitBorn".equals(e.data().get("evtTypeName")))
+            .map(SyntheticEvent::loop)
+            .toList();
+
+        for (long carrierBirth : carrierBirthLoops) {
+            int built = 0;
+            long nextBuild = carrierBirth + SC2Data.INTERCEPTOR_BUILD_TIME;
+            while (built < 8 && nextBuild <= elapsedLoops) {
+                int tag = tagCounter++;
+                existingEvents.add(new SyntheticEvent(nextBuild, EventOrdinal.UNIT_BORN, playerId,
+                    Map.of("evtTypeName", "UnitBorn",
+                        "loop", nextBuild,
+                        "controlPlayerId", playerId,
+                        "unitTypeName", "Interceptor",
+                        "unitTagIndex", tag,
+                        "unitTagRecycle", 0)));
+                built++;
+                nextBuild += SC2Data.INTERCEPTOR_BUILD_TIME;
+            }
+        }
+        return tagCounter;
+    }
+
+    List<Map<String, Object>> emitAutoSpawnedInterceptorForTest(int playerId, Race race,
+                                                                 long carrierBirthLoop,
+                                                                 long elapsedLoops, int startTag) {
+        var existing = new ArrayList<SyntheticEvent>();
+        existing.add(new SyntheticEvent(carrierBirthLoop, EventOrdinal.UNIT_BORN, playerId,
+            Map.of("evtTypeName", "UnitBorn", "loop", carrierBirthLoop,
+                "controlPlayerId", playerId, "unitTypeName", "Carrier",
+                "unitTagIndex", 0, "unitTagRecycle", 0)));
+        emitAutoSpawnedInterceptor(playerId, race, existing, startTag, elapsedLoops);
+        return existing.stream()
+            .filter(e -> "Interceptor".equals(e.data().get("unitTypeName")))
+            .map(SyntheticEvent::data).toList();
     }
 
     List<Map<String, Object>> processMorphForTest(ReplayCommand.MorphCommand mc,

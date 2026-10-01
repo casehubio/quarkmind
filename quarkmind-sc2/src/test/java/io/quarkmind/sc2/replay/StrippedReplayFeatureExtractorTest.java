@@ -319,6 +319,41 @@ class StrippedReplayFeatureExtractorTest {
         assertThat(events).isEmpty();
     }
 
+    // --- Interceptor auto-build tests ---
+
+    @Test
+    void interceptorAutoSpawnCapsAtEight() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var events = extractor.emitAutoSpawnedInterceptorForTest(
+            1, Race.PROTOSS, 500, 50000, 1);
+        long interceptorCount = events.stream()
+            .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
+            .filter(e -> "Interceptor".equals(e.get("unitTypeName")))
+            .count();
+        assertThat(interceptorCount).as("Should cap at 8 Interceptors per Carrier").isEqualTo(8);
+    }
+
+    @Test
+    void interceptorTimingStartsAfterCarrierBirth() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        int buildTime = SC2Data.INTERCEPTOR_BUILD_TIME;
+        var events = extractor.emitAutoSpawnedInterceptorForTest(
+            1, Race.PROTOSS, 1000, 1000 + buildTime * 2, 1);
+        long interceptorCount = events.stream()
+            .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
+            .filter(e -> "Interceptor".equals(e.get("unitTypeName")))
+            .count();
+        assertThat(interceptorCount).isEqualTo(2);
+    }
+
+    @Test
+    void nonProtossProducesNoInterceptors() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var events = extractor.emitAutoSpawnedInterceptorForTest(
+            1, Race.ZERG, 500, 20000, 1);
+        assertThat(events).isEmpty();
+    }
+
     @Test
     void larvaSpawnTimingCorrect() {
         var extractor = new StrippedReplayFeatureExtractor();
