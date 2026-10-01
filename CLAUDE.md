@@ -301,6 +301,8 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - `AbilityDiscoveryCalibrationTest.discoverMorphSourceUnitLinks` — discovers unitLink values for morph source units from UnitBorn tracker events
 - `BarracksUnitLinkDiscoveryTest`, `UnitLinkDiscoveryTest` — discovers unitLink values for production buildings from SelectionDelta subgroups
 - `MarineMultiplicationDiagnosticTest` — traces per-replay Marine over-counting from selection-based multiplication; validates multiplication cap
+- `MuleAbilLinkDiscoveryTest` — discovers MULE calldown abilLink by correlating CmdEvents with oracle UnitBorn("MULE") events; feeds ABIL_MULE_CALLDOWN constant in AbilityMapping
+- `AutoSpawnCalibrationTest` — calibrates Larva spawn interval, Interceptor build time, and Inject Larva abilLink from oracle replays; feeds SC2Data.LARVA_SPAWN_INTERVAL and INTERCEPTOR_BUILD_TIME constants
 - Run with: `mvn test -pl quarkmind-sc2 -Pdiagnostic`
 
 **Never use `@QuarkusTest` for tests that can be plain JUnit** — boot cost is significant.

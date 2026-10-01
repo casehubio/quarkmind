@@ -56,6 +56,7 @@ UNITS = [
     "Immortal", "Colossus", "Disruptor", "WarpPrism",
     "Phoenix", "Oracle", "VoidRay", "Carrier", "Tempest", "Mothership",
     "Observer",
+    "Larva", "MULE", "Interceptor",
 ]
 
 STAT_KEYS = [

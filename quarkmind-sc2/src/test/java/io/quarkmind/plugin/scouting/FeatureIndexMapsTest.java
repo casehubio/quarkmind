@@ -9,7 +9,7 @@ class FeatureIndexMapsTest {
     @Test
     void featureLayout_constants() {
         assertThat(FeatureIndexMaps.N_BUILDINGS).isEqualTo(53);
-        assertThat(FeatureIndexMaps.N_UNITS).isEqualTo(53);
+        assertThat(FeatureIndexMaps.N_UNITS).isEqualTo(56);
         assertThat(FeatureIndexMaps.N_STATS).isEqualTo(13);
         assertThat(FeatureIndexMaps.N_UPGRADES).isEqualTo(15);
         assertThat(FeatureIndexMaps.N_SPATIAL).isEqualTo(7);
@@ -20,41 +20,41 @@ class FeatureIndexMapsTest {
     @Test
     void featureLayout_perPlayerSizes() {
         assertThat(FeatureIndexMaps.N_TICK_FEATURES_PER_PLAYER)
-            .as("134 original + 7 spatial + 3 ratios = 144")
-            .isEqualTo(144);
+            .as("137 original + 7 spatial + 3 ratios = 147")
+            .isEqualTo(147);
         assertThat(FeatureIndexMaps.N_FEATURES_PER_PLAYER)
-            .as("144 tick features + 4 deltas = 148")
-            .isEqualTo(148);
+            .as("147 tick features + 4 deltas = 151")
+            .isEqualTo(151);
     }
 
     @Test
     void featureLayout_windowSize() {
         assertThat(FeatureIndexMaps.FEATURES_PER_WINDOW)
-            .as("2 * 148 + army_gap + has_vision = 298")
-            .isEqualTo(298);
+            .as("2 * 151 + army_gap + has_vision = 304")
+            .isEqualTo(304);
     }
 
     @Test
     void featureLayout_offsets() {
         assertThat(FeatureIndexMaps.SPATIAL_OFFSET)
-            .as("after buildings(53) + units(53) + economy(13) + upgrades(15)")
-            .isEqualTo(134);
+            .as("after buildings(53) + units(56) + economy(13) + upgrades(15)")
+            .isEqualTo(137);
         assertThat(FeatureIndexMaps.RATIO_OFFSET)
             .as("after spatial(7)")
-            .isEqualTo(141);
+            .isEqualTo(144);
         assertThat(FeatureIndexMaps.DELTA_OFFSET)
             .as("after ratios(3)")
-            .isEqualTo(144);
+            .isEqualTo(147);
     }
 
     @Test
     void featureLayout_crossPlayerIndices() {
         assertThat(FeatureIndexMaps.ARMY_GAP_INDEX)
-            .as("after both player blocks: 2 * 148 = 296")
-            .isEqualTo(296);
+            .as("after both player blocks: 2 * 151 = 302")
+            .isEqualTo(302);
         assertThat(FeatureIndexMaps.HAS_VISION_INDEX)
-            .as("last feature: 297")
-            .isEqualTo(297);
+            .as("last feature: 303")
+            .isEqualTo(303);
     }
 
     @Test

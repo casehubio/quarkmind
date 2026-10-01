@@ -523,11 +523,9 @@ public class StrippedReplayFeatureExtractor {
                 ? consumptions.get(consumptionIdx) : Long.MAX_VALUE;
 
             long earliestSpawn = Long.MAX_VALUE;
-            int earliestBase = -1;
             for (int i = 0; i < hatcheries.size(); i++) {
                 if (spawnedPerBase[i] < 3 && nextSpawnLoop[i] < earliestSpawn) {
                     earliestSpawn = nextSpawnLoop[i];
-                    earliestBase = i;
                 }
             }
 

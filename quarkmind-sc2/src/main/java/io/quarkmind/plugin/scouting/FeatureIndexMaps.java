@@ -10,7 +10,7 @@ import java.util.Map;
 public final class FeatureIndexMaps {
 
     static final int N_BUILDINGS = 53;
-    static final int N_UNITS = 53;
+    static final int N_UNITS = 56;
     static final int N_STATS = 13;
     static final int N_UPGRADES = 15;
     static final int N_SPATIAL = 7;
@@ -168,6 +168,9 @@ public final class FeatureIndexMaps {
         map.put(UnitType.TEMPEST, 50);
         map.put(UnitType.MOTHERSHIP, 51);
         map.put(UnitType.OBSERVER, 52);
+        map.put(UnitType.LARVA, 53);
+        map.put(UnitType.MULE, 54);
+        map.put(UnitType.INTERCEPTOR, 55);
         return Map.copyOf(map);
     }
 

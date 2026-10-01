@@ -230,5 +230,37 @@ class StrippedReplayValidationTest {
             .isGreaterThan(0);
         assertThat(totalJavaUnitInit).as("Java must produce UnitInit events")
             .isGreaterThan(0);
+
+        // Auto-spawn accuracy assertions (#324)
+        int oracleLarvaTotal = unitBornDivergence.entrySet().stream()
+            .filter(e -> e.getKey().contains(":Larva"))
+            .mapToInt(e -> e.getValue()[0]).sum();
+        int javaLarvaTotal = unitBornDivergence.entrySet().stream()
+            .filter(e -> e.getKey().contains(":Larva"))
+            .mapToInt(e -> e.getValue()[1]).sum();
+        if (oracleLarvaTotal > 0) {
+            double larvaRatio = (double) javaLarvaTotal / oracleLarvaTotal;
+            System.out.printf("%nLarva accuracy: %.1f%% (java=%d, oracle=%d)%n",
+                larvaRatio * 100, javaLarvaTotal, oracleLarvaTotal);
+            assertThat(larvaRatio).as("Larva count within 20%% of oracle")
+                .isBetween(0.8, 1.2);
+        }
+
+        int oracleMuleTotal = unitBornDivergence.entrySet().stream()
+            .filter(e -> e.getKey().contains(":MULE"))
+            .mapToInt(e -> e.getValue()[0]).sum();
+        int javaMuleTotal = unitBornDivergence.entrySet().stream()
+            .filter(e -> e.getKey().contains(":MULE"))
+            .mapToInt(e -> e.getValue()[1]).sum();
+        System.out.printf("MULE accuracy: java=%d, oracle=%d%n", javaMuleTotal, oracleMuleTotal);
+
+        int oracleInterceptorTotal = unitBornDivergence.entrySet().stream()
+            .filter(e -> e.getKey().contains(":Interceptor"))
+            .mapToInt(e -> e.getValue()[0]).sum();
+        int javaInterceptorTotal = unitBornDivergence.entrySet().stream()
+            .filter(e -> e.getKey().contains(":Interceptor"))
+            .mapToInt(e -> e.getValue()[1]).sum();
+        System.out.printf("Interceptor accuracy: java=%d, oracle=%d (bidirectional divergence expected)%n",
+            javaInterceptorTotal, oracleInterceptorTotal);
     }
 }
