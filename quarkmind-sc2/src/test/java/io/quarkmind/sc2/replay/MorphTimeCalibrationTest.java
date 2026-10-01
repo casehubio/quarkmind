@@ -42,6 +42,8 @@ class MorphTimeCalibrationTest {
     private static final Path AIARENA_DIR = Path.of("replays/aiarena_protoss");
     private static final Path LADDER_DIR = Path.of(
             "../quarkmind-classifier/data/replay_packs/blizzard_ladder/4.10.1/replays");
+    private static final Path TOURNAMENT_DIR = Path.of(
+            "../quarkmind-classifier/data/replay_packs/2025_HomeStory_Cup_XXVII");
 
     private static final Map<String, String> MORPH_TARGET_TO_SOURCE = Map.of(
         "Baneling", "Zergling",
@@ -65,6 +67,10 @@ class MorphTimeCalibrationTest {
 
     static boolean ladderExists() {
         return Files.isDirectory(LADDER_DIR);
+    }
+
+    static boolean tournamentExists() {
+        return Files.isDirectory(TOURNAMENT_DIR);
     }
 
     @Test
@@ -138,6 +144,37 @@ class MorphTimeCalibrationTest {
         if (calibrated.isEmpty()) {
             System.out.println("  (No morph times calibrated — ladder replays lack tracker events)");
         }
+    }
+
+    @Test
+    @EnabledIf("tournamentExists")
+    void calibrateMorphTimesFromTournament() throws Exception {
+        Map<String, List<Long>> allMorphCmds   = new TreeMap<>();
+        Map<String, List<Long>> allTypeChanges = new TreeMap<>();
+        int                     replayCount    = 0;
+
+        try (var stream = Files.walk(TOURNAMENT_DIR)) {
+            for (Path rp : stream.filter(p -> p.toString().endsWith(".SC2Replay")).sorted().toList()) {
+                try {
+                    accumulateFromReplay(rp, allMorphCmds, allTypeChanges);
+                    replayCount++;
+                } catch (Exception e) {
+                    // skip unparseable replays
+                }
+            }
+        }
+
+        System.out.printf("%n=== Tournament Morph Time Calibration (%d replays) ===%n", replayCount);
+        printRawCounts(allMorphCmds, allTypeChanges);
+        Map<String, Integer> calibrated = calibrate(allMorphCmds, allTypeChanges, "Tournament");
+
+        System.out.println("\n=== Calibrated Morph Times (Tournament) ===");
+        for (var e : calibrated.entrySet()) {
+            System.out.printf("  %-12s  T_real = %d loops  (%.1f seconds)%n",
+                              e.getKey(), e.getValue(), e.getValue() / 22.4);
+        }
+
+        assertThat(calibrated).as("Must calibrate at least one morph time from tournament replays").isNotEmpty();
     }
 
     private void accumulateFromReplay(Path replayPath,
