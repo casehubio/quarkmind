@@ -72,6 +72,22 @@ public final class SC2Data {
     public static final int MULE_LIFETIME_LOOPS = 1434;
 
     /**
+     * Larva auto-spawn interval in game loops.
+     * Each Hatchery/Lair/Hive spawns one Larva every interval, up to 3 per base.
+     * Uncalibrated — pending AutoSpawnCalibrationTest with oracle replays.
+     * Community value: ~11s × 22.4 = ~246 loops.
+     */
+    public static final int LARVA_SPAWN_INTERVAL = 246;
+
+    /**
+     * Interceptor auto-build time in game loops.
+     * Carriers auto-build Interceptors up to 8.
+     * Uncalibrated — pending AutoSpawnCalibrationTest with oracle replays.
+     * Community value: ~9s × 22.4 = ~202 loops.
+     */
+    public static final int INTERCEPTOR_BUILD_TIME = 202;
+
+    /**
      * Queen energy regeneration per game loop.
      * Standard SC2 spellcaster regen: 0.5625 energy/sec at Faster speed.
      * Per loop: 0.5625 / 22.4 ≈ 0.02511.

@@ -18,6 +18,7 @@ import io.quarkmind.sc2.intent.TrainIntent;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -78,6 +79,7 @@ public class StrippedReplayFeatureExtractor {
         map.put(UnitType.VIPER, "Viper");
         map.put(UnitType.OVERLORD, "Overlord");
         map.put(UnitType.OVERSEER, "Overseer");
+        map.put(UnitType.LARVA, "Larva");
         // Protoss
         map.put(UnitType.PROBE, "Probe");
         map.put(UnitType.ZEALOT, "Zealot");
@@ -98,6 +100,7 @@ public class StrippedReplayFeatureExtractor {
         map.put(UnitType.TEMPEST, "Tempest");
         map.put(UnitType.MOTHERSHIP, "Mothership");
         map.put(UnitType.OBSERVER, "Observer");
+        map.put(UnitType.INTERCEPTOR, "Interceptor");
         UNIT_PYTHON_NAMES = Map.copyOf(map);
     }
 
@@ -210,6 +213,11 @@ public class StrippedReplayFeatureExtractor {
                                         tagCounter = handleTrain(train, ti.loop(), playerId,
                                                                  state, syntheticEvents, tagCounter);
                                     }
+                                    if (abilLink != null && abilLink == ABIL_LARVA) {
+                                        for (int r = 0; r < repeatCount; r++) {
+                                            state.larvaConsumptionLoops.add(ti.loop());
+                                        }
+                                    }
                                 }
                             }
                             case ReplayCommand.BuildCommand bc -> {
@@ -244,6 +252,9 @@ public class StrippedReplayFeatureExtractor {
             }
 
             Integer elapsedLoops = replay.header.getElapsedGameLoops();
+            long gameLength = elapsedLoops != null ? elapsedLoops : 0;
+            tagCounter = emitAutoSpawnedLarva(playerId, playerRace, state,
+                                              syntheticEvents, tagCounter, gameLength);
             if (elapsedLoops != null && elapsedLoops > 0) {
                 generatePlayerStats(playerId, state, syntheticEvents, elapsedLoops);
             }
@@ -264,6 +275,7 @@ public class StrippedReplayFeatureExtractor {
         } else if (race == Race.ZERG) {
             state.productionBuildingCounts.put(193, 1); // Hatchery (larva)
             state.productionBuildingCounts.put(184, 1); // Hatchery (queen)
+            state.trackedBuildings.add(new TrackedBuilding(0, "Hatchery", 0));
         }
     }
 
@@ -482,6 +494,86 @@ public class StrippedReplayFeatureExtractor {
             }
         }
         return tagCounter;
+    }
+
+    private int emitAutoSpawnedLarva(int playerId, Race race, PlayerState state,
+                                     List<SyntheticEvent> events, int tagCounter,
+                                     long elapsedLoops) {
+        if (race != Race.ZERG) return tagCounter;
+
+        List<TrackedBuilding> hatcheries = state.trackedBuildings.stream()
+            .filter(b -> "Hatchery".equals(b.name()) || "Lair".equals(b.name()) || "Hive".equals(b.name()))
+            .toList();
+        if (hatcheries.isEmpty()) return tagCounter;
+
+        List<Long> consumptions = new ArrayList<>(state.larvaConsumptionLoops);
+        Collections.sort(consumptions);
+        int consumptionIdx = 0;
+
+        int[] spawnedPerBase = new int[hatcheries.size()];
+        long[] nextSpawnLoop = new long[hatcheries.size()];
+        for (int i = 0; i < hatcheries.size(); i++) {
+            nextSpawnLoop[i] = hatcheries.get(i).doneLoop() + SC2Data.LARVA_SPAWN_INTERVAL;
+        }
+
+        while (true) {
+            long nextConsumptionLoop = consumptionIdx < consumptions.size()
+                ? consumptions.get(consumptionIdx) : Long.MAX_VALUE;
+
+            long earliestSpawn = Long.MAX_VALUE;
+            int earliestBase = -1;
+            for (int i = 0; i < hatcheries.size(); i++) {
+                if (spawnedPerBase[i] < 3 && nextSpawnLoop[i] < earliestSpawn) {
+                    earliestSpawn = nextSpawnLoop[i];
+                    earliestBase = i;
+                }
+            }
+
+            long nextEvent = Math.min(nextConsumptionLoop, earliestSpawn);
+            if (nextEvent > elapsedLoops || nextEvent == Long.MAX_VALUE) break;
+
+            while (consumptionIdx < consumptions.size()
+                   && consumptions.get(consumptionIdx) <= nextEvent) {
+                int maxBase = 0;
+                for (int i = 1; i < spawnedPerBase.length; i++) {
+                    if (spawnedPerBase[i] > spawnedPerBase[maxBase]) maxBase = i;
+                }
+                if (spawnedPerBase[maxBase] > 0) spawnedPerBase[maxBase]--;
+                consumptionIdx++;
+            }
+
+            for (int i = 0; i < hatcheries.size(); i++) {
+                while (nextSpawnLoop[i] <= nextEvent
+                       && nextSpawnLoop[i] <= elapsedLoops
+                       && spawnedPerBase[i] < 3) {
+                    int tag = tagCounter++;
+                    events.add(new SyntheticEvent(nextSpawnLoop[i], EventOrdinal.UNIT_BORN, playerId,
+                        Map.of("evtTypeName", "UnitBorn",
+                            "loop", nextSpawnLoop[i],
+                            "controlPlayerId", playerId,
+                            "unitTypeName", "Larva",
+                            "unitTagIndex", tag,
+                            "unitTagRecycle", 0)));
+                    spawnedPerBase[i]++;
+                    nextSpawnLoop[i] += SC2Data.LARVA_SPAWN_INTERVAL;
+                }
+            }
+        }
+        return tagCounter;
+    }
+
+    List<Map<String, Object>> emitAutoSpawnedLarvaForTest(int playerId, Race race,
+                                                          List<Long> consumptionLoops,
+                                                          List<long[]> hatcheryDoneLoops,
+                                                          long elapsedLoops, int startTag) {
+        var state = new PlayerState();
+        for (long[] h : hatcheryDoneLoops) {
+            state.trackedBuildings.add(new TrackedBuilding((int) h[0], "Hatchery", h[1]));
+        }
+        state.larvaConsumptionLoops.addAll(consumptionLoops);
+        var events = new ArrayList<SyntheticEvent>();
+        emitAutoSpawnedLarva(playerId, race, state, events, startTag, elapsedLoops);
+        return events.stream().map(SyntheticEvent::data).toList();
     }
 
     List<Map<String, Object>> processMorphForTest(ReplayCommand.MorphCommand mc,
@@ -971,6 +1063,7 @@ public class StrippedReplayFeatureExtractor {
         final List<TrackedBuilding> trackedBuildings = new ArrayList<>();
         final Map<Integer, Integer> productionBuildingCounts = new HashMap<>();
         long warpGateCompletionLoop = -1;
+        final List<Long> larvaConsumptionLoops = new ArrayList<>();
 
         // Economy — Tier 1: cumulative spending
         int mineralsUsedArmy;

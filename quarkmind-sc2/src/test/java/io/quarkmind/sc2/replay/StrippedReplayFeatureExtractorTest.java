@@ -1,6 +1,8 @@
 package io.quarkmind.sc2.replay;
 
+import hu.scelight.sc2.rep.model.details.Race;
 import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.junit.jupiter.api.Test;
@@ -266,5 +268,67 @@ class StrippedReplayFeatureExtractorTest {
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("No replays found"));
         }
+    }
+
+    // --- Larva auto-spawn tests ---
+
+    @Test
+    void larvaAutoSpawnCapsAtThreePerBase() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var events = extractor.emitAutoSpawnedLarvaForTest(
+            1, Race.ZERG, List.of(), List.of(new long[]{0, 0}), 10000, 1);
+        long larvaCount = events.stream()
+            .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
+            .filter(e -> "Larva".equals(e.get("unitTypeName")))
+            .count();
+        assertThat(larvaCount).as("Should cap at 3 Larva per base").isEqualTo(3);
+    }
+
+    @Test
+    void larvaConsumptionResumesSpawning() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        int interval = SC2Data.LARVA_SPAWN_INTERVAL;
+        long consumeLoop = (long) interval * 4;
+        var events = extractor.emitAutoSpawnedLarvaForTest(
+            1, Race.ZERG, List.of(consumeLoop), List.of(new long[]{0, 0}), 20000, 1);
+        long larvaCount = events.stream()
+            .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
+            .filter(e -> "Larva".equals(e.get("unitTypeName")))
+            .count();
+        assertThat(larvaCount).as("Consuming Larva should allow more spawning").isGreaterThan(3);
+    }
+
+    @Test
+    void larvaMultipleBasesSpawnIndependently() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var events = extractor.emitAutoSpawnedLarvaForTest(
+            1, Race.ZERG, List.of(),
+            List.of(new long[]{0, 0}, new long[]{1, 2000}), 20000, 1);
+        long larvaCount = events.stream()
+            .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
+            .filter(e -> "Larva".equals(e.get("unitTypeName")))
+            .count();
+        assertThat(larvaCount).as("Two bases should produce 6 Larva (3 each)").isEqualTo(6);
+    }
+
+    @Test
+    void nonZergProducesNoLarva() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var events = extractor.emitAutoSpawnedLarvaForTest(
+            1, Race.TERRAN, List.of(), List.of(new long[]{0, 0}), 10000, 1);
+        assertThat(events).isEmpty();
+    }
+
+    @Test
+    void larvaSpawnTimingCorrect() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        int interval = SC2Data.LARVA_SPAWN_INTERVAL;
+        var events = extractor.emitAutoSpawnedLarvaForTest(
+            1, Race.ZERG, List.of(), List.of(new long[]{0, 0}), 10000, 1);
+        var loops = events.stream()
+            .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
+            .map(e -> ((Number) e.get("loop")).longValue())
+            .toList();
+        assertThat(loops).containsExactly((long) interval, (long) interval * 2, (long) interval * 3);
     }
 }
