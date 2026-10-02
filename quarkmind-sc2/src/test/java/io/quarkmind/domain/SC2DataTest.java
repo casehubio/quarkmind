@@ -202,6 +202,19 @@ class SC2DataTest {
     }
 
     @Test
+    void trainTimeInLoopsCalibratedForZergMorphs() {
+        // Calibrated from HSC XXVII tournament replays (MorphTimeCalibrationTest)
+        assertThat(SC2Data.trainTimeInLoops(UnitType.BANELING)).isEqualTo(322);    // 166 modal obs
+        assertThat(SC2Data.trainTimeInLoops(UnitType.BROOD_LORD)).isEqualTo(542);  // 6 modal obs
+        // Previously calibrated from AI Arena replays
+        assertThat(SC2Data.trainTimeInLoops(UnitType.RAVAGER)).isEqualTo(271);     // 62 modal obs
+        assertThat(SC2Data.trainTimeInLoops(UnitType.OVERSEER)).isEqualTo(267);    // 13 modal obs
+        // Lurker: uncalibrated — insufficient tournament data
+        assertThat(SC2Data.trainTimeInLoops(UnitType.LURKER)).isEqualTo(403);
+    }
+
+
+    @Test
     void trainTimeInTicksDefinedForProtossUnits() {
         assertThat(SC2Data.trainTimeInTicks(UnitType.PROBE))    .isEqualTo(12);
         assertThat(SC2Data.trainTimeInTicks(UnitType.ZEALOT))   .isEqualTo(28);
