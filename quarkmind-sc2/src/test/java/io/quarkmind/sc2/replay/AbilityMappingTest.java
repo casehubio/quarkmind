@@ -55,6 +55,13 @@ class AbilityMappingTest {
     static final int ABIL_HIVE_MORPH          = 250;
     static final int ABIL_GREATER_SPIRE_MORPH = 252;
 
+    // Tournament-era morph abilLinks (post-4.9.x patches, +2 shift)
+    static final int ABIL_BANELING_MORPH_TOURNAMENT   = 730;
+    static final int ABIL_RAVAGER_MORPH_TOURNAMENT    = 311;
+    static final int ABIL_BROODLORD_MORPH_TOURNAMENT  = 196;
+    static final int ABIL_LURKER_MORPH_TOURNAMENT     = 524;
+    static final int ABIL_OVERSEER_MORPH_TOURNAMENT   = 223;
+
     // Zerg constants
     static final int ABIL_LARVA            = 193;
     static final int ABIL_HATCHERY         = 184;
@@ -705,6 +712,63 @@ class AbilityMappingTest {
         var result = terranMapping.process(fakeCmdEvent(ABIL_LAIR_MORPH, 0, 1000, null, null, 0));
         assertThat(result).isEmpty();
     }
+// --- Tournament-era shifted abilLink tests ---
+
+    @Test
+    void humanMode_ravagerMorph_tournamentAbilLink_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-r-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_RAVAGER_MORPH_TOURNAMENT, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Roach");
+        assertThat(mc.targetName()).isEqualTo("Ravager");
+    }
+
+    @Test
+    void humanMode_broodlordMorph_tournamentAbilLink_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-c-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_BROODLORD_MORPH_TOURNAMENT, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Corruptor");
+        assertThat(mc.targetName()).isEqualTo("BroodLord");
+    }
+
+    @Test
+    void humanMode_overseerMorph_tournamentAbilLink_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-o-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_OVERSEER_MORPH_TOURNAMENT, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Overlord");
+        assertThat(mc.targetName()).isEqualTo("Overseer");
+    }
+
+    @Test
+    void humanMode_banelingMorph_tournamentAbilLink_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-z-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_BANELING_MORPH_TOURNAMENT, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Zergling");
+        assertThat(mc.targetName()).isEqualTo("Baneling");
+    }
+
+    @Test
+    void humanMode_lurkerMorph_tournamentAbilLink_producesMorphCommand() {
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        zergMapping.setSelectionForTest(0, List.of("r-h-1"));
+        var result = zergMapping.process(fakeCmdEvent(ABIL_LURKER_MORPH_TOURNAMENT, 0, 1000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Hydralisk");
+        assertThat(mc.targetName()).isEqualTo("Lurker");
+    }
+
 
     /**
      * Construct a minimal CmdEvent via its public constructor.

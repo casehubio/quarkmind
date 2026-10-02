@@ -90,6 +90,16 @@ public class AbilityMapping {
     private static final int ABIL_NYDUS_SPAWN = 268;
     private static final int ABIL_ORACLE_STASIS_WARD = 603;
     private static final int ABIL_MULE_CALLDOWN = 171; // uncalibrated — pending MuleAbilLinkDiscoveryTest
+    // Tournament-era morph abilLinks (post-4.9.x patches, +2 shift)
+    // Confirmed: Ravager, BroodLord, Overseer (MorphTimeCalibrationTest, HSC XXVII)
+    // Discovered: Baneling uses 730 in tournament replays (not +2 shift — different ability block)
+    // Inferred: Lurker (consistent +2 pattern, insufficient tournament data to confirm)
+    private static final int ABIL_BANELING_MORPH_T   = 730;
+    private static final int ABIL_RAVAGER_MORPH_T    = 311;
+    private static final int ABIL_BROODLORD_MORPH_T  = 196;
+    private static final int ABIL_LURKER_MORPH_T     = 524;
+    private static final int ABIL_OVERSEER_MORPH_T   = 223;
+
     private static final int ABIL_LAIR_MORPH          = 249; // calibrated: BuildingMorphDiscoveryTest
     private static final int ABIL_HIVE_MORPH          = 250; // calibrated: BuildingMorphDiscoveryTest
     private static final int ABIL_GREATER_SPIRE_MORPH = 252; // calibrated: BuildingMorphDiscoveryTest
@@ -453,11 +463,11 @@ public class AbilityMapping {
                 String archonSource = resolveArchonSource();
                 yield List.of(new ReplayCommand.MorphCommand(loop, archonSource, "Archon"));
             }
-            case ABIL_BANELING_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Zergling", "Baneling")) : null;
-            case ABIL_RAVAGER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Roach", "Ravager")) : null;
-            case ABIL_BROODLORD_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Corruptor", "BroodLord")) : null;
-            case ABIL_LURKER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Hydralisk", "Lurker")) : null;
-            case ABIL_OVERSEER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Overlord", "Overseer")) : null;
+            case ABIL_BANELING_MORPH, ABIL_BANELING_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Zergling", "Baneling")) : null;
+            case ABIL_RAVAGER_MORPH, ABIL_RAVAGER_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Roach", "Ravager")) : null;
+            case ABIL_BROODLORD_MORPH, ABIL_BROODLORD_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Corruptor", "BroodLord")) : null;
+            case ABIL_LURKER_MORPH, ABIL_LURKER_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Hydralisk", "Lurker")) : null;
+            case ABIL_OVERSEER_MORPH, ABIL_OVERSEER_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Overlord", "Overseer")) : null;
             case ABIL_CC_MORPH -> {
                 if (!isRace(Race.TERRAN)) {yield null;}
                 String target = CC_MORPH_TARGETS.get(idx);
