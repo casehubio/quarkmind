@@ -983,6 +983,6 @@ class AbilityDiscoveryCalibrationTest {
             System.out.printf("    %-40s %d/%d%n", entry.getKey(), detected, oracle);
         }
 
-        assertThat(accuracy).as("Upgrade detection accuracy").isGreaterThan(70.0);
+        assertThat(accuracy).as("Upgrade detection accuracy").isGreaterThan(75.0);
     }
 }

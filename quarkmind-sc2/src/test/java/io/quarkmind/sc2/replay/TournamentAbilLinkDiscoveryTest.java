@@ -5,6 +5,7 @@ import hu.scelight.sc2.rep.factory.RepParserEngine;
 import hu.scelight.sc2.rep.model.Replay;
 import hu.scelight.sc2.rep.model.details.Race;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
+import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
 import hu.scelight.sc2.rep.s2prot.Event;
 import hu.scelightapi.sc2.rep.model.trackerevents.ITrackerEvents;
 import hu.scelightapi.sc2.rep.model.trackerevents.IUpgradeEvent;
@@ -33,6 +34,8 @@ class TournamentAbilLinkDiscoveryTest {
         return Files.isDirectory(DATA_ROOT.resolve("2025_HomeStory_Cup_XXVII"));
     }
 
+    record CmdRecord(int userId, long loop, int abilLink, int abilCmdIndex, int selectionSize) {}
+
     @Test
     @EnabledIf("tournamentExists")
     void discoverTournamentUpgradeAbilLinks() throws Exception {
@@ -49,7 +52,8 @@ class TournamentAbilLinkDiscoveryTest {
             }
         }
 
-        Map<String, Map<String, Integer>> upgradeToAbilLink = new TreeMap<>();
+        Map<String, Map<String, Integer>> allResults = new TreeMap<>();
+        Map<String, Map<String, Integer>> singleSelResults = new TreeMap<>();
 
         for (Path rp : replays.stream().sorted().toList()) {
             Replay rep;
@@ -59,14 +63,27 @@ class TournamentAbilLinkDiscoveryTest {
             if (rep == null || rep.details == null || rep.trackerEvents == null || rep.gameEvents == null) { continue; }
 
             var players = rep.details.getPlayerList();
-            Map<Integer, Race> playerRaces = new HashMap<>();
+            Map<Integer, AbilityMapping> mappings = new HashMap<>();
             for (int i = 0; i < players.length; i++) {
-                if (players[i].getRace() != null) { playerRaces.put(i, players[i].getRace()); }
+                if (players[i].getRace() != null) {
+                    mappings.put(i, new AbilityMapping(i + 1, true, players[i].getRace()));
+                }
             }
 
-            List<CmdEvent> cmdEvents = new ArrayList<>();
+            List<CmdRecord> cmdRecords = new ArrayList<>();
             for (Event raw : rep.gameEvents.getEvents()) {
-                if (raw instanceof CmdEvent cmd) { cmdEvents.add(cmd); }
+                if (raw instanceof SelectionDeltaEvent sel) {
+                    for (var m : mappings.values()) { m.onSelection(sel); }
+                } else if (raw instanceof CmdEvent cmd) {
+                    Integer abilLink = cmd.getAbilLink();
+                    if (abilLink == null || abilLink == 42 || abilLink == 45) { continue; }
+                    if (cmd.getTargetPoint() != null) { continue; }
+                    if (cmd.getTargetUnit() != null) { continue; }
+                    AbilityMapping mapping = mappings.get(cmd.getUserId());
+                    int selSize = mapping != null ? mapping.selectionSize() : 0;
+                    cmdRecords.add(new CmdRecord(cmd.getUserId(), cmd.getLoop(),
+                            abilLink, Objects.requireNonNullElse(cmd.getAbilCmdIndex(), 0), selSize));
+                }
             }
 
             for (var raw : rep.trackerEvents.getEvents()) {
@@ -79,42 +96,46 @@ class TournamentAbilLinkDiscoveryTest {
                 int userId = upgrade.getPlayerId() - 1;
                 long upgradeLoop = upgrade.getLoop();
 
-                CmdEvent nearest = null;
+                CmdRecord nearest = null;
+                CmdRecord nearestSingle = null;
                 long bestDist = Long.MAX_VALUE;
-                for (CmdEvent cmd : cmdEvents) {
-                    if (cmd.getUserId() != userId) { continue; }
-                    Integer abilLink = cmd.getAbilLink();
-                    if (abilLink == null || abilLink == 42 || abilLink == 45) { continue; }
-                    if (cmd.getTargetPoint() != null) { continue; }
-                    if (cmd.getTargetUnit() != null) { continue; }
-                    long dist = upgradeLoop - cmd.getLoop();
-                    if (dist >= 0 && dist < WINDOW && dist < bestDist) {
-                        nearest = cmd;
-                        bestDist = dist;
+                long bestDistSingle = Long.MAX_VALUE;
+                for (CmdRecord cr : cmdRecords) {
+                    if (cr.userId() != userId) { continue; }
+                    long dist = upgradeLoop - cr.loop();
+                    if (dist >= 0 && dist < WINDOW) {
+                        if (dist < bestDist) { nearest = cr; bestDist = dist; }
+                        if (cr.selectionSize() == 1 && dist < bestDistSingle) { nearestSingle = cr; bestDistSingle = dist; }
                     }
                 }
 
                 if (nearest != null) {
-                    Integer al = nearest.getAbilLink();
-                    int idx = Objects.requireNonNullElse(nearest.getAbilCmdIndex(), 0);
-                    String key = al + "/" + idx;
-                    upgradeToAbilLink.computeIfAbsent(name, k -> new TreeMap<>())
-                            .merge(key, 1, Integer::sum);
+                    String key = nearest.abilLink() + "/" + nearest.abilCmdIndex();
+                    allResults.computeIfAbsent(name, k -> new TreeMap<>()).merge(key, 1, Integer::sum);
+                }
+                if (nearestSingle != null) {
+                    String key = nearestSingle.abilLink() + "/" + nearestSingle.abilCmdIndex();
+                    singleSelResults.computeIfAbsent(name, k -> new TreeMap<>()).merge(key, 1, Integer::sum);
                 }
             }
         }
 
-        System.out.printf("%n=== Tournament Upgrade → AbilLink Discovery (HSC, %d replays) ===%n", replays.size());
-        System.out.printf("  Window: %d loops%n%n", WINDOW);
+        System.out.printf("%n=== Tournament Upgrade → AbilLink Discovery (selection-aware, %d replays) ===%n", replays.size());
+        System.out.printf("  Window: %d loops | Columns: [single-selection] / [all]%n%n", WINDOW);
 
-        for (var entry : upgradeToAbilLink.entrySet()) {
-            String upgrade = entry.getKey();
-            var candidates = entry.getValue();
-            String modal = candidates.entrySet().stream()
-                    .max(Map.Entry.comparingByValue())
-                    .map(Map.Entry::getKey).orElse("?");
-            int totalHits = candidates.values().stream().mapToInt(Integer::intValue).sum();
-            System.out.printf("  %-40s modal=%-8s n=%-4d  all=%s%n", upgrade, modal, totalHits, candidates);
+        Set<String> allUpgrades = new java.util.TreeSet<>(allResults.keySet());
+        allUpgrades.addAll(singleSelResults.keySet());
+        for (String upgrade : allUpgrades) {
+            var single = singleSelResults.getOrDefault(upgrade, Map.of());
+            var all = allResults.getOrDefault(upgrade, Map.of());
+            String singleModal = single.entrySet().stream().max(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey).orElse("-");
+            int singleN = single.values().stream().mapToInt(Integer::intValue).sum();
+            String allModal = all.entrySet().stream().max(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey).orElse("-");
+            int allN = all.values().stream().mapToInt(Integer::intValue).sum();
+            System.out.printf("  %-40s single=%-8s (n=%-3d)  all=%-8s (n=%-3d)  detail=%s%n",
+                    upgrade, singleModal, singleN, allModal, allN, single);
         }
     }
 }

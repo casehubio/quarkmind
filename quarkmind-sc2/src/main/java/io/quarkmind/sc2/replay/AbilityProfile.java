@@ -108,6 +108,50 @@ public enum AbilityProfile {
         m.put(174, (idx, event, loop, race) -> race == Race.PROTOSS && cyberUpgrades.containsKey(idx)
                 ? List.of(new ReplayCommand.UpgradeCommand(loop, cyberUpgrades.get(idx))) : null);
 
+        // 177: CyberneticsCore in tournament (was DarkShrine in 4.9.3)
+        // Strong signal: 17 single-selection hits for WarpGateResearch at idx=0
+        m.put(177, (idx, event, loop, race) -> {
+            if (race != Race.PROTOSS) { return null; }
+            if (idx == 0) { return List.of(new ReplayCommand.UpgradeCommand(loop, "WarpGateResearch")); }
+            return cyberUpgrades.containsKey(idx) ? List.of(new ReplayCommand.UpgradeCommand(loop, cyberUpgrades.get(idx))) : null;
+        });
+
+        // 245: SpawningPool in tournament — zerglingmovementspeed (6 single-sel hits)
+        m.put(245, (idx, event, loop, race) -> {
+            if (race != Race.ZERG) { return null; }
+            return switch (idx) {
+                case 0 -> List.of(new ReplayCommand.UpgradeCommand(loop, "zerglingmovementspeed"));
+                case 1 -> List.of(new ReplayCommand.UpgradeCommand(loop, "zerglingattackspeed"));
+                default -> null;
+            };
+        });
+
+        // 399: BarracksTechLab tournament variant — PunisherGrenades (3 single-sel hits)
+        m.put(399, (idx, event, loop, race) -> {
+            if (race != Race.TERRAN) { return null; }
+            return switch (idx) {
+                case 0 -> List.of(new ReplayCommand.UpgradeCommand(loop, "PunisherGrenades"));
+                default -> null;
+            };
+        });
+
+        // 406: BarracksTechLab tournament variant — ShieldWall (3 single-sel hits)
+        m.put(406, (idx, event, loop, race) -> {
+            if (race != Race.TERRAN) { return null; }
+            return switch (idx) {
+                case 0 -> List.of(new ReplayCommand.UpgradeCommand(loop, "ShieldWall"));
+                default -> null;
+            };
+        });
+
+        // 716: TwilightCouncil tournament variant — Charge (2 single-sel hits)
+        m.put(716, (idx, event, loop, race) -> race == Race.PROTOSS && idx == 0
+                ? List.of(new ReplayCommand.UpgradeCommand(loop, "Charge")) : null);
+
+        // 157: Stimpack tournament variant (4 single-sel hits)
+        m.put(157, (idx, event, loop, race) -> race == Race.TERRAN && idx == 0
+                ? List.of(new ReplayCommand.UpgradeCommand(loop, "Stimpack")) : null);
+
         return Collections.unmodifiableMap(m);
     }
 }
