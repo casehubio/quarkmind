@@ -230,7 +230,7 @@ public class QuarkMindCaseHub extends CaseHub {
         } catch (Exception | Error e) {
             log.debugf("Engine signal skipped (upstream API change): %s", e.getMessage());
         }
-        return new io.casehub.engine.internal.context.CaseContextImpl(enriched);
+        return new io.casehub.engine.runtime.context.CaseContextImpl(enriched);
     }
 
     /**

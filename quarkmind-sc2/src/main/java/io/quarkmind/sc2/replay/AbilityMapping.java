@@ -104,6 +104,41 @@ public class AbilityMapping {
     private static final int ABIL_HIVE_MORPH          = 250; // calibrated: BuildingMorphDiscoveryTest
     private static final int ABIL_GREATER_SPIRE_MORPH = 252; // calibrated: BuildingMorphDiscoveryTest
 
+    // --- Upgrade research abilLinks (from correlateUpgradesWithUnmappedAbilLinks, 118 oracle replays) ---
+    // Terran
+    private static final int ABIL_ENGINEERING_BAY   = 162;
+    private static final int ABIL_STIMPACK          = 165;
+    private static final int ABIL_CONCUSSIVE_SHELLS = 152;
+    private static final int ABIL_STARPORT_TECHLAB  = 167;
+    private static final int ABIL_FACTORY_TECHLAB   = 166;
+    private static final int ABIL_ARMORY            = 169;
+    private static final int ABIL_FUSION_CORE       = 235;
+    private static final int ABIL_CYCLONE_LOCK_ON   = 148;
+    private static final int ABIL_COMBAT_SHIELD     = 124;
+    private static final int ABIL_ENGINEERING_BAY_T = 164; // tournament-era EngBay (HSC replays)
+    // Zerg
+    private static final int ABIL_BANELING_NEST     = 224;
+    private static final int ABIL_ROACH_WARREN      = 107;
+    private static final int ABIL_EVOLUTION_CHAMBER = 185;
+    private static final int ABIL_SPIRE_UPGRADE     = 192;
+    private static final int ABIL_HYDRALISK_DEN     = 262;
+    private static final int ABIL_MUSCULAR_AUGMENTS = 310;
+    private static final int ABIL_ULTRALISK_CAVERN  = 117;
+    private static final int ABIL_SPAWNING_POOL     = 190;
+    private static final int ABIL_HATCHERY_UPGRADE  = 189;
+    // 223 = InfestationPit upgrades (4.9.3) — same abilLink as ABIL_OVERSEER_MORPH_T (tournament)
+    // No collision: morph uses idx=0, upgrades use idx=2/3
+    private static final int ABIL_INFESTATION_PIT   = 223;
+    // Protoss
+    private static final int ABIL_FORGE             = 180;
+    private static final int ABIL_CYBERNETICS_CORE  = 236;
+    private static final int ABIL_TWILIGHT_COUNCIL  = 547;
+    private static final int ABIL_TWILIGHT_RESEARCH = 237;
+    private static final int ABIL_TEMPLAR_ARCHIVE   = 182;
+    private static final int ABIL_ROBOTICS_BAY      = 181;
+    private static final int ABIL_DARK_SHRINE       = 177;
+    private static final int ABIL_FLEET_BEACON      = 71;
+
     private static final int UNIT_LINK_DARK_TEMPLAR = 76;
 
 
@@ -215,6 +250,112 @@ public class AbilityMapping {
             1, "OrbitalCommand"
                                                                          );
 
+
+    // --- Upgrade research maps (abilCmdIndex → upgrade pythonName) ---
+    // Engineering Bay (abilLink=162) — abilityId 650-658 sequential (ocraft Abilities enum)
+    private static final Map<Integer, String> ENGINEERING_BAY_UPGRADES = Map.ofEntries(
+            Map.entry(0, "HiSecAutoTracking"),
+            Map.entry(1, "TerranBuildingArmor"),
+            Map.entry(2, "TerranInfantryWeaponsLevel1"),
+            Map.entry(3, "TerranInfantryWeaponsLevel2"),
+            Map.entry(4, "TerranInfantryWeaponsLevel3"),
+            Map.entry(6, "TerranInfantryArmorsLevel1"),
+            Map.entry(7, "TerranInfantryArmorsLevel2"),
+            Map.entry(8, "TerranInfantryArmorsLevel3")
+    );
+
+    // StarportTechLab (abilLink=167) — n=8 Cloak, n=5 LibRange, n=1 MedivacSpeed (domain-consistent)
+    private static final Map<Integer, String> STARPORT_TECHLAB_UPGRADES = Map.ofEntries(
+            Map.entry(0, "BansheeCloak"),
+            Map.entry(3, "RavenCorvidReactor"),
+            Map.entry(9, "BansheeSpeed"),
+            Map.entry(14, "MedivacIncreaseSpeedBoost"),
+            Map.entry(15, "LiberatorAGRangeUpgrade")
+    );
+
+    // FactoryTechLab (abilLink=166) — n=6 HiCap, n=3 SmartServos, n=7 DrillClaws (100% hit)
+    private static final Map<Integer, String> FACTORY_TECHLAB_UPGRADES = Map.of(
+            1, "HighCapacityBarrels",
+            4, "DrillClaws",
+            6, "SmartServos"
+    );
+
+    // Armory (abilLink=169) — n=17 VehShipArmor1; VehWeap1/ShipWeap1 inferred from tiered pattern
+    private static final Map<Integer, String> ARMORY_UPGRADES = Map.ofEntries(
+            Map.entry(5, "TerranVehicleWeaponsLevel1"),
+            Map.entry(6, "TerranVehicleWeaponsLevel2"),
+            Map.entry(7, "TerranVehicleWeaponsLevel3"),
+            Map.entry(11, "TerranShipWeaponsLevel1"),
+            Map.entry(12, "TerranShipWeaponsLevel2"),
+            Map.entry(13, "TerranShipWeaponsLevel3"),
+            Map.entry(14, "TerranVehicleAndShipArmorsLevel1"),
+            Map.entry(15, "TerranVehicleAndShipArmorsLevel2"),
+            Map.entry(16, "TerranVehicleAndShipArmorsLevel3")
+    );
+
+    // EvolutionChamber (abilLink=185) — n=15 Melee1, n=19 GrndArmor1(alt), n=23 Missile1
+    private static final Map<Integer, String> EVOLUTION_CHAMBER_UPGRADES = Map.ofEntries(
+            Map.entry(0, "ZergMeleeWeaponsLevel1"),
+            Map.entry(1, "ZergMeleeWeaponsLevel2"),
+            Map.entry(2, "ZergMeleeWeaponsLevel3"),
+            Map.entry(3, "ZergGroundArmorsLevel1"),
+            Map.entry(4, "ZergGroundArmorsLevel2"),
+            Map.entry(5, "ZergGroundArmorsLevel3"),
+            Map.entry(6, "ZergMissileWeaponsLevel1"),
+            Map.entry(7, "ZergMissileWeaponsLevel2"),
+            Map.entry(8, "ZergMissileWeaponsLevel3")
+    );
+
+    // Spire (abilLink=192) — n=4 FlyWeap1, n=3 FlyArmor1; Level3 inferred from tiered pattern
+    private static final Map<Integer, String> SPIRE_UPGRADES = Map.ofEntries(
+            Map.entry(0, "ZergFlyerWeaponsLevel1"),
+            Map.entry(1, "ZergFlyerWeaponsLevel2"),
+            Map.entry(2, "ZergFlyerWeaponsLevel3"),
+            Map.entry(3, "ZergFlyerArmorsLevel1"),
+            Map.entry(4, "ZergFlyerArmorsLevel2"),
+            Map.entry(5, "ZergFlyerArmorsLevel3")
+    );
+
+    // Forge (abilLink=180) — n=18 GrndWeap1(alt); GrndArmor1 freq n=12 at 180/3; Shields L2/L3 by pattern
+    private static final Map<Integer, String> FORGE_UPGRADES = Map.ofEntries(
+            Map.entry(0, "ProtossGroundWeaponsLevel1"),
+            Map.entry(1, "ProtossGroundWeaponsLevel2"),
+            Map.entry(2, "ProtossGroundWeaponsLevel3"),
+            Map.entry(3, "ProtossGroundArmorsLevel1"),
+            Map.entry(4, "ProtossGroundArmorsLevel2"),
+            Map.entry(5, "ProtossGroundArmorsLevel3"),
+            Map.entry(6, "ProtossShieldsLevel1"),
+            Map.entry(7, "ProtossShieldsLevel2"),
+            Map.entry(8, "ProtossShieldsLevel3")
+    );
+
+    // CyberneticsCore (abilLink=236) — n=48 WarpGate; AirWeap1 freq n=6; AirArmor pattern-inferred
+    private static final Map<Integer, String> CYBERNETICS_CORE_UPGRADES = Map.ofEntries(
+            Map.entry(0, "ProtossAirWeaponsLevel1"),
+            Map.entry(1, "ProtossAirWeaponsLevel2"),
+            Map.entry(2, "ProtossAirWeaponsLevel3"),
+            Map.entry(3, "ProtossAirArmorsLevel1"),
+            Map.entry(4, "ProtossAirArmorsLevel2"),
+            Map.entry(5, "ProtossAirArmorsLevel3"),
+            Map.entry(6, "WarpGateResearch")
+    );
+
+    // TwilightCouncil research (abilLink=237) — Charge/Blink/AdeptPiercing share one abilLink
+    private static final Map<Integer, String> TWILIGHT_RESEARCH_UPGRADES = Map.of(
+            0, "Charge",
+            1, "BlinkTech",
+            2, "AdeptPiercingAttack"
+    );
+
+    // BarracksTechLab unified (abilLink=165) — tournament replays use one abilLink for all research
+    private static final Map<Integer, String> BARRACKS_TECHLAB_UPGRADES = Map.of(
+            0, "Stimpack",
+            1, "ShieldWall",
+            2, "PunisherGrenades"
+    );
+
+    // HydraliskDen tournament (abilLink=191) — oracle uses 262/310, tournament uses 191
+    private static final int ABIL_HYDRALISK_DEN_T = 191;
 
     // WarpGate warp-in (human replays) abilCmdIndex → UnitType
     private static final Map<Integer, UnitType> WARPGATE_WARPIN_UNITS = Map.of(
@@ -438,7 +579,11 @@ public class AbilityMapping {
     private List<ReplayCommand> dispatchHuman(int abilLink, int idx, CmdEvent event, long loop) {
         return switch (abilLink) {
             case ABIL_SCV_BUILD -> isRace(Race.TERRAN) ? buildCommand(loop, SCV_BUILD_BUILDINGS.get(idx), event) : null;
-            case ABIL_PROBE_BUILD -> isRace(Race.PROTOSS) ? buildCommand(loop, PROBE_BUILD_BUILDINGS.get(idx), event) : null;
+            case ABIL_PROBE_BUILD -> {
+                if (isRace(Race.PROTOSS)) {yield buildCommand(loop, PROBE_BUILD_BUILDINGS.get(idx), event);}
+                if (isRace(Race.TERRAN) && idx == 0) {yield upgradeCommand(loop, "PersonalCloaking");}
+                yield null;
+            }
             case ABIL_DRONE_BUILD -> isRace(Race.ZERG) ? buildCommand(loop, DRONE_BUILD_BUILDINGS.get(idx), event) : null;
             case ABIL_BARRACKS_ADDON -> isRace(Race.TERRAN) ? buildCommand(loop, BARRACKS_ADDON_MAP.get(idx), event) : null;
             case ABIL_FACTORY_ADDON -> isRace(Race.TERRAN) ? buildCommand(loop, FACTORY_ADDON_MAP.get(idx), event) : null;
@@ -467,7 +612,16 @@ public class AbilityMapping {
             case ABIL_RAVAGER_MORPH, ABIL_RAVAGER_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Roach", "Ravager")) : null;
             case ABIL_BROODLORD_MORPH, ABIL_BROODLORD_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Corruptor", "BroodLord")) : null;
             case ABIL_LURKER_MORPH, ABIL_LURKER_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Hydralisk", "Lurker")) : null;
-            case ABIL_OVERSEER_MORPH, ABIL_OVERSEER_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Overlord", "Overseer")) : null;
+            case ABIL_OVERSEER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Overlord", "Overseer")) : null;
+            case ABIL_OVERSEER_MORPH_T -> {
+                if (!isRace(Race.ZERG)) {yield null;}
+                yield switch (idx) {
+                    case 0 -> List.of(new ReplayCommand.MorphCommand(loop, "Overlord", "Overseer"));
+                    case 2 -> upgradeCommand(loop, "InfestorEnergyUpgrade");
+                    case 3 -> upgradeCommand(loop, "NeuralParasite");
+                    default -> null;
+                };
+            }
             case ABIL_CC_MORPH -> {
                 if (!isRace(Race.TERRAN)) {yield null;}
                 String target = CC_MORPH_TARGETS.get(idx);
@@ -485,8 +639,69 @@ public class AbilityMapping {
             case ABIL_LAIR_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Hatchery", "Lair")) : null;
             case ABIL_HIVE_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Lair", "Hive")) : null;
             case ABIL_GREATER_SPIRE_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Spire", "GreaterSpire")) : null;
+            // --- Upgrade research ---
+            // Terran
+            case ABIL_ENGINEERING_BAY -> isRace(Race.TERRAN) ? upgradeCommand(loop, ENGINEERING_BAY_UPGRADES.get(idx)) : null;
+            case ABIL_ENGINEERING_BAY_T -> isRace(Race.TERRAN) && idx == 3 ? upgradeCommand(loop, "TerranInfantryWeaponsLevel2") : null;
+            case ABIL_STIMPACK -> isRace(Race.TERRAN) ? upgradeCommand(loop, BARRACKS_TECHLAB_UPGRADES.get(idx)) : null;
+            case ABIL_CONCUSSIVE_SHELLS -> isRace(Race.TERRAN) && idx == 0 ? upgradeCommand(loop, "PunisherGrenades") : null;
+            case ABIL_COMBAT_SHIELD -> isRace(Race.TERRAN) && idx == 1 ? upgradeCommand(loop, "ShieldWall") : null;
+            case ABIL_STARPORT_TECHLAB -> isRace(Race.TERRAN) ? upgradeCommand(loop, STARPORT_TECHLAB_UPGRADES.get(idx)) : null;
+            case ABIL_FACTORY_TECHLAB -> isRace(Race.TERRAN) ? upgradeCommand(loop, FACTORY_TECHLAB_UPGRADES.get(idx)) : null;
+            case ABIL_ARMORY -> isRace(Race.TERRAN) ? upgradeCommand(loop, ARMORY_UPGRADES.get(idx)) : null;
+            case ABIL_FUSION_CORE -> isRace(Race.TERRAN) && idx == 0 ? upgradeCommand(loop, "BattlecruiserEnableSpecializations") : null;
+            case ABIL_CYCLONE_LOCK_ON -> isRace(Race.TERRAN) && idx == 0 ? upgradeCommand(loop, "CycloneLockOnDamageUpgrade") : null;
+            // Zerg
+            case ABIL_BANELING_NEST -> isRace(Race.ZERG) && idx == 0 ? upgradeCommand(loop, "CentrificalHooks") : null;
+            case ABIL_ROACH_WARREN -> {
+                if (!isRace(Race.ZERG)) {yield null;}
+                yield switch (idx) {
+                    case 1 -> upgradeCommand(loop, "GlialReconstitution");
+                    case 2 -> upgradeCommand(loop, "TunnelingClaws");
+                    default -> null;
+                };
+            }
+            case ABIL_EVOLUTION_CHAMBER -> isRace(Race.ZERG) ? upgradeCommand(loop, EVOLUTION_CHAMBER_UPGRADES.get(idx)) : null;
+            case ABIL_SPIRE_UPGRADE -> isRace(Race.ZERG) ? upgradeCommand(loop, SPIRE_UPGRADES.get(idx)) : null;
+            case ABIL_HYDRALISK_DEN -> isRace(Race.ZERG) && idx == 0 ? upgradeCommand(loop, "EvolveGroovedSpines") : null;
+            case ABIL_MUSCULAR_AUGMENTS -> isRace(Race.ZERG) && idx == 0 ? upgradeCommand(loop, "EvolveMuscularAugments") : null;
+            case ABIL_HYDRALISK_DEN_T -> isRace(Race.ZERG) ? switch (idx) {
+                case 0 -> upgradeCommand(loop, "EvolveGroovedSpines");
+                case 1 -> upgradeCommand(loop, "EvolveMuscularAugments");
+                default -> null;
+            } : null;
+            case ABIL_ULTRALISK_CAVERN -> isRace(Race.ZERG) ? switch (idx) {
+                case 0 -> upgradeCommand(loop, "AnabolicSynthesis");
+                case 2 -> upgradeCommand(loop, "ChitinousPlating");
+                default -> null;
+            } : null;
+            case ABIL_SPAWNING_POOL -> isRace(Race.ZERG) ? switch (idx) {
+                case 0 -> upgradeCommand(loop, "zerglingattackspeed");
+                case 1 -> upgradeCommand(loop, "zerglingmovementspeed");
+                default -> null;
+            } : null;
+            case ABIL_HATCHERY_UPGRADE -> isRace(Race.ZERG) ? switch (idx) {
+                case 1 -> upgradeCommand(loop, "overlordspeed");
+                case 3 -> upgradeCommand(loop, "Burrow");
+                default -> null;
+            } : null;
+            // Protoss
+            case ABIL_FORGE -> isRace(Race.PROTOSS) ? upgradeCommand(loop, FORGE_UPGRADES.get(idx)) : null;
+            case ABIL_CYBERNETICS_CORE -> isRace(Race.PROTOSS) ? upgradeCommand(loop, CYBERNETICS_CORE_UPGRADES.get(idx)) : null;
+            case ABIL_TWILIGHT_COUNCIL -> isRace(Race.PROTOSS) && idx == 0 ? upgradeCommand(loop, "Charge") : null;
+            case ABIL_TWILIGHT_RESEARCH -> isRace(Race.PROTOSS) ? upgradeCommand(loop, TWILIGHT_RESEARCH_UPGRADES.get(idx)) : null;
+            case ABIL_TEMPLAR_ARCHIVE -> isRace(Race.PROTOSS) && idx == 4 ? upgradeCommand(loop, "PsiStormTech") : null;
+            case ABIL_ROBOTICS_BAY -> isRace(Race.PROTOSS) && idx == 5 ? upgradeCommand(loop, "ExtendedThermalLance") : null;
+            case ABIL_DARK_SHRINE -> isRace(Race.PROTOSS) && idx == 0 ? upgradeCommand(loop, "DarkTemplarBlinkUpgrade") : null;
+            case ABIL_FLEET_BEACON -> isRace(Race.PROTOSS) && idx == 2 ? upgradeCommand(loop, "PhoenixRangeUpgrade") : null;
+            case ABIL_ROBOTICS -> isRace(Race.PROTOSS) && idx == 6 ? upgradeCommand(loop, "WarpGateResearch") : null;
             default -> null;
         };
+    }
+
+    private List<ReplayCommand> upgradeCommand(long loop, String upgradeName) {
+        if (upgradeName == null) {return null;}
+        return List.of(new ReplayCommand.UpgradeCommand(loop, upgradeName));
     }
 
     private List<ReplayCommand> buildCommand(long loop, String buildingName, CmdEvent event) {

@@ -712,6 +712,656 @@ class AbilityMappingTest {
         var result = terranMapping.process(fakeCmdEvent(ABIL_LAIR_MORPH, 0, 1000, null, null, 0));
         assertThat(result).isEmpty();
     }
+
+    // --- Upgrade research tests (from correlateUpgradesWithUnmappedAbilLinks, 118 oracle replays) ---
+
+    // --- Engineering Bay (abilLink=162) ---
+
+    @Test
+    void humanMode_engBay_infantryWeaponsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(162, 0, 5000, null, null, 2));
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0)).isInstanceOf(ReplayCommand.UpgradeCommand.class);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TerranInfantryWeaponsLevel1");
+        assertThat(uc.loop()).isEqualTo(5000);
+    }
+
+    @Test
+    void humanMode_engBay_buildingArmor_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(162, 0, 6000, null, null, 1));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TerranBuildingArmor");
+    }
+
+    @Test
+    void humanMode_engBay_infantryWeaponsLevel2_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(162, 0, 7000, null, null, 3));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TerranInfantryWeaponsLevel2");
+    }
+
+    @Test
+    void humanMode_engBay_infantryArmorsLevel1_atIdx6_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(162, 0, 7000, null, null, 6));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TerranInfantryArmorsLevel1");
+    }
+
+    @Test
+    void humanMode_engBay_infantryArmorsLevel2_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(162, 0, 7000, null, null, 7));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TerranInfantryArmorsLevel2");
+    }
+
+    @Test
+    void humanMode_engBay_infantryWeaponsLevel3_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(162, 0, 8000, null, null, 4));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TerranInfantryWeaponsLevel3");
+    }
+
+    @Test
+    void humanMode_engBay_wrongRace_returnsEmpty() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(162, 0, 5000, null, null, 2));
+        assertThat(result).isEmpty();
+    }
+
+    // --- BarracksTechLab (abilLink=165 Stimpack, abilLink=152 ConcussiveShells) ---
+
+    @Test
+    void humanMode_barracksTechLab_stimpack_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(165, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("Stimpack");
+    }
+
+    @Test
+    void humanMode_barracksTechLab_concussiveShells_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(152, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("PunisherGrenades");
+    }
+
+    // --- StarportTechLab (abilLink=167) ---
+
+    @Test
+    void humanMode_starportTechLab_bansheeCloak_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(167, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("BansheeCloak");
+    }
+
+    @Test
+    void humanMode_starportTechLab_bansheeSpeed_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(167, 0, 5000, null, null, 9));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("BansheeSpeed");
+    }
+
+    @Test
+    void humanMode_starportTechLab_liberatorRange_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(167, 0, 5000, null, null, 15));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("LiberatorAGRangeUpgrade");
+    }
+
+    // --- FactoryTechLab (abilLink=166) ---
+
+    @Test
+    void humanMode_factoryTechLab_highCapacityBarrels_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(166, 0, 5000, null, null, 1));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("HighCapacityBarrels");
+    }
+
+    @Test
+    void humanMode_factoryTechLab_smartServos_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(166, 0, 5000, null, null, 6));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("SmartServos");
+    }
+
+    // --- Armory (abilLink=169) ---
+
+    @Test
+    void humanMode_armory_vehicleWeaponsLevel2_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(169, 0, 5000, null, null, 6));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TerranVehicleWeaponsLevel2");
+    }
+
+    @Test
+    void humanMode_armory_vehicleAndShipArmorsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(169, 0, 5000, null, null, 14));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TerranVehicleAndShipArmorsLevel1");
+    }
+
+    @Test
+    void humanMode_armory_shipWeaponsLevel3_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(169, 0, 5000, null, null, 13));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TerranShipWeaponsLevel3");
+    }
+
+    // --- FusionCore (abilLink=235) ---
+
+    @Test
+    void humanMode_fusionCore_battlecruiserSpecializations_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(235, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("BattlecruiserEnableSpecializations");
+    }
+
+    // --- EvolutionChamber (abilLink=185) ---
+
+    @Test
+    void humanMode_evoChamber_meleeWeaponsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(185, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ZergMeleeWeaponsLevel1");
+    }
+
+    @Test
+    void humanMode_evoChamber_groundArmorsLevel2_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(185, 0, 5000, null, null, 4));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ZergGroundArmorsLevel2");
+    }
+
+    @Test
+    void humanMode_evoChamber_wrongRace_returnsEmpty() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(185, 0, 5000, null, null, 0));
+        assertThat(result).isEmpty();
+    }
+
+    // --- Spire (abilLink=192) ---
+
+    @Test
+    void humanMode_spire_flyerWeaponsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(192, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ZergFlyerWeaponsLevel1");
+    }
+
+    @Test
+    void humanMode_spire_flyerArmorsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(192, 0, 5000, null, null, 3));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ZergFlyerArmorsLevel1");
+    }
+
+    // --- BanelingNest (abilLink=224) ---
+
+    @Test
+    void humanMode_banelingNest_centrifugalHooks_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(224, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("CentrificalHooks");
+    }
+
+    // --- RoachWarren (abilLink=107) ---
+
+    @Test
+    void humanMode_roachWarren_glialReconstitution_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(107, 0, 5000, null, null, 1));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("GlialReconstitution");
+    }
+
+    // --- HydraliskDen (abilLink=262 GroovedSpines, abilLink=310 MuscularAugments) ---
+
+    @Test
+    void humanMode_hydraliskDen_groovedSpines_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(262, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("EvolveGroovedSpines");
+    }
+
+    @Test
+    void humanMode_hydraliskDen_muscularAugments_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(310, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("EvolveMuscularAugments");
+    }
+
+    // --- UltraliskCavern (abilLink=117) ---
+
+    @Test
+    void humanMode_ultraliskCavern_chitinousPlating_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(117, 0, 5000, null, null, 2));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ChitinousPlating");
+    }
+
+    // --- Forge (abilLink=180) ---
+
+    @Test
+    void humanMode_forge_groundWeaponsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(180, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ProtossGroundWeaponsLevel1");
+    }
+
+    @Test
+    void humanMode_forge_shieldsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(180, 0, 5000, null, null, 6));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ProtossShieldsLevel1");
+    }
+
+    @Test
+    void humanMode_forge_wrongRace_returnsEmpty() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(180, 0, 5000, null, null, 0));
+        assertThat(result).isEmpty();
+    }
+
+    // --- CyberneticsCore (abilLink=236) ---
+
+    @Test
+    void humanMode_cyberneticsCore_warpGateResearch_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(236, 0, 5000, null, null, 6));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("WarpGateResearch");
+    }
+
+    // --- TwilightCouncil (abilLink=547) ---
+
+    @Test
+    void humanMode_twilightCouncil_charge_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(547, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("Charge");
+    }
+
+    // --- TemplarArchive (abilLink=182) ---
+
+    @Test
+    void humanMode_templarArchive_psiStorm_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(182, 0, 5000, null, null, 4));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("PsiStormTech");
+    }
+
+    // --- Gap-filling: pattern-inferred and frequency-confirmed mappings ---
+
+    @Test
+    void humanMode_engBay_hiSecAutoTracking_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(162, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("HiSecAutoTracking");
+    }
+
+    @Test
+    void humanMode_armory_vehicleWeaponsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(169, 0, 5000, null, null, 5));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TerranVehicleWeaponsLevel1");
+    }
+
+    @Test
+    void humanMode_armory_shipWeaponsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(169, 0, 5000, null, null, 11));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TerranShipWeaponsLevel1");
+    }
+
+    @Test
+    void humanMode_cycloneLockOn_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(148, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("CycloneLockOnDamageUpgrade");
+    }
+
+    @Test
+    void humanMode_roachWarren_tunnelingClaws_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(107, 0, 5000, null, null, 2));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TunnelingClaws");
+    }
+
+    @Test
+    void humanMode_spire_flyerWeaponsLevel3_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(192, 0, 5000, null, null, 2));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ZergFlyerWeaponsLevel3");
+    }
+
+    @Test
+    void humanMode_spire_flyerArmorsLevel3_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(192, 0, 5000, null, null, 5));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ZergFlyerArmorsLevel3");
+    }
+
+    @Test
+    void humanMode_forge_groundArmorsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(180, 0, 5000, null, null, 3));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ProtossGroundArmorsLevel1");
+    }
+
+    @Test
+    void humanMode_forge_shieldsLevel2_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(180, 0, 5000, null, null, 7));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ProtossShieldsLevel2");
+    }
+
+    @Test
+    void humanMode_cyberneticsCore_airWeaponsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(236, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ProtossAirWeaponsLevel1");
+    }
+
+    @Test
+    void humanMode_twilightResearch_blink_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(237, 0, 5000, null, null, 1));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("BlinkTech");
+    }
+
+    @Test
+    void humanMode_twilightResearch_adeptPiercing_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(237, 0, 5000, null, null, 2));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("AdeptPiercingAttack");
+    }
+
+    @Test
+    void humanMode_roboticsBay_extendedThermalLance_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(181, 0, 5000, null, null, 5));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ExtendedThermalLance");
+    }
+
+    // --- Second-pass gap-filling ---
+
+    @Test
+    void humanMode_combatShield_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(124, 0, 5000, null, null, 1));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ShieldWall");
+    }
+
+    @Test
+    void humanMode_evoChamber_missileWeaponsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(185, 0, 5000, null, null, 6));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ZergMissileWeaponsLevel1");
+    }
+
+    @Test
+    void humanMode_evoChamber_missileWeaponsLevel2_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(185, 0, 5000, null, null, 7));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ZergMissileWeaponsLevel2");
+    }
+
+    @Test
+    void humanMode_spawningPool_zerglingSpeed_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(190, 0, 5000, null, null, 1));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("zerglingmovementspeed");
+    }
+
+    @Test
+    void humanMode_spawningPool_zerglingAttackSpeed_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(190, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("zerglingattackspeed");
+    }
+
+    @Test
+    void humanMode_hatcheryUpgrade_overlordSpeed_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(189, 0, 5000, null, null, 1));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("overlordspeed");
+    }
+
+    @Test
+    void humanMode_ultraliskCavern_anabolicSynthesis_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(117, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("AnabolicSynthesis");
+    }
+
+    @Test
+    void humanMode_cyberneticsCore_airArmorsLevel1_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(236, 0, 5000, null, null, 3));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ProtossAirArmorsLevel1");
+    }
+
+    // --- InfestationPit (abilLink=223, shares with OVERSEER_MORPH_T) ---
+
+    @Test
+    void humanMode_infestationPit_infestorEnergy_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(223, 0, 5000, null, null, 2));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("InfestorEnergyUpgrade");
+    }
+
+    @Test
+    void humanMode_infestationPit_neuralParasite_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(223, 0, 5000, null, null, 3));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("NeuralParasite");
+    }
+
+    @Test
+    void humanMode_overseerMorphT_idx0_stillProducesMorphCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        m.setSelectionForTest(0, List.of("r-o-1"));
+        var result = m.process(fakeCmdEvent(223, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var mc = (ReplayCommand.MorphCommand) result.get(0);
+        assertThat(mc.sourceName()).isEqualTo("Overlord");
+        assertThat(mc.targetName()).isEqualTo("Overseer");
+    }
+
+    // --- Pair-filtered tight-window discoveries ---
+
+    @Test
+    void humanMode_hatcheryUpgrade_burrow_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(189, 0, 5000, null, null, 3));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("Burrow");
+    }
+
+    @Test
+    void humanMode_factoryTechLab_drillClaws_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(166, 0, 5000, null, null, 4));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("DrillClaws");
+    }
+
+    @Test
+    void humanMode_starportTechLab_medivacSpeedBoost_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(167, 0, 5000, null, null, 14));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("MedivacIncreaseSpeedBoost");
+    }
+
+    // --- GhostAcademy (abilLink=170 for Terran, same value as Protoss probe build) ---
+
+    @Test
+    void humanMode_ghostAcademy_personalCloaking_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(170, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("PersonalCloaking");
+    }
+
+    @Test
+    void humanMode_probeBuild_protoss_stillWorks() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(170, 0, 700, new float[]{50f, 50f}, null, 1));
+        assertThat(result).hasSize(1);
+        var bc = (ReplayCommand.BuildCommand) result.get(0);
+        assertThat(bc.buildingName()).isEqualTo("Pylon");
+    }
+
+    // --- Tournament-era EngBay (abilLink=164) ---
+
+    @Test
+    void humanMode_engBayTournament_infantryWeaponsLevel2_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(164, 0, 5000, null, null, 3));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("TerranInfantryWeaponsLevel2");
+    }
+
+    // --- DarkShrine (abilLink=177) and FleetBeacon (abilLink=71) ---
+
+    @Test
+    void humanMode_darkShrine_darkTemplarBlink_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(177, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("DarkTemplarBlinkUpgrade");
+    }
+
+    @Test
+    void humanMode_fleetBeacon_phoenixRange_producesUpgradeCommand() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(71, 0, 5000, null, null, 2));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("PhoenixRangeUpgrade");
+    }
+
+    // --- Upgrade unknown idx returns empty ---
+
+    @Test
+    void humanMode_upgrade_unknownIdx_returnsEmpty() {
+        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var result = m.process(fakeCmdEvent(162, 0, 5000, null, null, 99));
+        assertThat(result).isEmpty();
+    }
+
 // --- Tournament-era shifted abilLink tests ---
 
     @Test
