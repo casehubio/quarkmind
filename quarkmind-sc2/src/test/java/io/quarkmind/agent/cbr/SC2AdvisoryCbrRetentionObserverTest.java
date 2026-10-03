@@ -143,24 +143,24 @@ class SC2AdvisoryCbrRetentionObserverTest {
             return "case-" + counter++;
         }
 
-        @Override public void recordOutcome(String caseId, String cbrType, CbrOutcome outcome) {
+        @Override public void recordOutcome(String caseId, CbrOutcome outcome, String reason) {
             outcomes.add(new StoredOutcome(caseId, outcome));
         }
 
         @Override public void registerSchema(CbrRecordSchema schema) {}
         @Override public <C extends CbrRecord> List<CbrMatch<C>> retrieveSimilar(CbrQuery query, Class<C> type) { return List.of(); }
-        @Override public Integer erase(EraseRequest request) { return 0; }
-        @Override public Integer eraseEntity(String entityId, String tenancyId) { return 0; }
-        @Override public Integer eraseByScope(Path scope, String tenancyId) { return 0; }
-        @Override public Integer purge(CbrRetentionPolicy policy) { return 0; }
+        @Override public int erase(io.casehub.neocortex.memory.EraseRequest request) { return 0; }
+        @Override public int eraseEntity(String entityId, String tenancyId) { return 0; }
+        @Override public int eraseByScope(Path scope, String tenancyId) { return 0; }
+        @Override public int purge(CbrRetentionPolicy policy) { return 0; }
         @Override public boolean supersede(String caseId, String cbrType, String reason, String supersededBy) { return false; }
         @Override public boolean reinstate(String caseId, String cbrType) { return false; }
         @Override public SupersessionStatus getSupersessionStatus(String caseId, String cbrType) { return null; }
-        @Override public List<SupersessionStatus> findSupersededCases(String cbrType, MemoryDomain domain) { return List.of(); }
-        @Override public List<String> findCaseIds(String tenancyId, MemoryDomain domain, String cbrType, Map<String, CbrFilter> filters) { return List.of(); }
-        @Override public int supersedeMatching(String cbrType, MemoryDomain domain, String tenancyId, Map<String, CbrFilter> filters, String reason) { return 0; }
+        @Override public List<SupersessionStatus> findSupersededCases(MemoryDomain domain, String cbrType) { return List.of(); }
+        @Override public List<String> findCaseIds(MemoryDomain domain, String cbrType, Map<String, CbrFilter> filters, String tenancyId) { return List.of(); }
+        @Override public int supersedeMatching(MemoryDomain domain, String cbrType, Map<String, CbrFilter> filters, String reason, String supersededBy) { return 0; }
         @Override public int supersedeAll(java.util.Collection<String> caseIds, String cbrType, String reason) { return 0; }
-        @Override public int reinstateMatching(String cbrType, MemoryDomain domain, String tenancyId, Map<String, CbrFilter> filters) { return 0; }
+        @Override public int reinstateMatching(MemoryDomain domain, String cbrType, Map<String, CbrFilter> filters, String reason) { return 0; }
         @Override public int reinstateAll(java.util.Collection<String> caseIds, String cbrType) { return 0; }
     }
 }

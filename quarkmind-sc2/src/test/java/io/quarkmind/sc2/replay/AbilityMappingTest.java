@@ -1263,8 +1263,8 @@ class AbilityMappingTest {
     }
 
     @Test
-    void humanMode_overseerMorphT_idx0_stillProducesMorphCommand() {
-        var m = new AbilityMapping(1, true, Race.ZERG);
+    void humanMode_overseerMorphT_idx0_requiresHsc2025Profile() {
+        var m = new AbilityMapping(1, true, Race.ZERG, AbilityProfile.HSC_2025);
         m.setSelectionForTest(0, List.of("r-o-1"));
         var result = m.process(fakeCmdEvent(223, 0, 5000, null, null, 0));
         assertThat(result).hasSize(1);
@@ -1326,7 +1326,7 @@ class AbilityMappingTest {
 
     @Test
     void humanMode_engBayTournament_infantryWeaponsLevel2_producesUpgradeCommand() {
-        var m = new AbilityMapping(1, true, Race.TERRAN);
+        var m = new AbilityMapping(1, true, Race.TERRAN, AbilityProfile.HSC_2025);
         var result = m.process(fakeCmdEvent(164, 0, 5000, null, null, 3));
         assertThat(result).hasSize(1);
         var uc = (ReplayCommand.UpgradeCommand) result.get(0);
@@ -1362,11 +1362,11 @@ class AbilityMappingTest {
         assertThat(result).isEmpty();
     }
 
-// --- Tournament-era shifted abilLink tests ---
+// --- Tournament-era shifted abilLink tests (require HSC_2025 profile) ---
 
     @Test
     void humanMode_ravagerMorph_tournamentAbilLink_producesMorphCommand() {
-        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG, AbilityProfile.HSC_2025);
         zergMapping.setSelectionForTest(0, List.of("r-r-1"));
         var result = zergMapping.process(fakeCmdEvent(ABIL_RAVAGER_MORPH_TOURNAMENT, 0, 1000, null, null, 0));
         assertThat(result).hasSize(1);
@@ -1377,7 +1377,7 @@ class AbilityMappingTest {
 
     @Test
     void humanMode_broodlordMorph_tournamentAbilLink_producesMorphCommand() {
-        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG, AbilityProfile.HSC_2025);
         zergMapping.setSelectionForTest(0, List.of("r-c-1"));
         var result = zergMapping.process(fakeCmdEvent(ABIL_BROODLORD_MORPH_TOURNAMENT, 0, 1000, null, null, 0));
         assertThat(result).hasSize(1);
@@ -1388,7 +1388,7 @@ class AbilityMappingTest {
 
     @Test
     void humanMode_overseerMorph_tournamentAbilLink_producesMorphCommand() {
-        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG, AbilityProfile.HSC_2025);
         zergMapping.setSelectionForTest(0, List.of("r-o-1"));
         var result = zergMapping.process(fakeCmdEvent(ABIL_OVERSEER_MORPH_TOURNAMENT, 0, 1000, null, null, 0));
         assertThat(result).hasSize(1);
@@ -1399,7 +1399,7 @@ class AbilityMappingTest {
 
     @Test
     void humanMode_banelingMorph_tournamentAbilLink_producesMorphCommand() {
-        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG, AbilityProfile.HSC_2025);
         zergMapping.setSelectionForTest(0, List.of("r-z-1"));
         var result = zergMapping.process(fakeCmdEvent(ABIL_BANELING_MORPH_TOURNAMENT, 0, 1000, null, null, 0));
         assertThat(result).hasSize(1);
@@ -1410,7 +1410,7 @@ class AbilityMappingTest {
 
     @Test
     void humanMode_lurkerMorph_tournamentAbilLink_producesMorphCommand() {
-        var zergMapping = new AbilityMapping(1, true, Race.ZERG);
+        var zergMapping = new AbilityMapping(1, true, Race.ZERG, AbilityProfile.HSC_2025);
         zergMapping.setSelectionForTest(0, List.of("r-h-1"));
         var result = zergMapping.process(fakeCmdEvent(ABIL_LURKER_MORPH_TOURNAMENT, 0, 1000, null, null, 0));
         assertThat(result).hasSize(1);

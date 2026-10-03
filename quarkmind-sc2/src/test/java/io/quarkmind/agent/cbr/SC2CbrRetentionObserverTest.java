@@ -3,6 +3,7 @@ package io.quarkmind.agent.cbr;
 import io.casehub.api.spi.CaseOutcomeEvent;
 import io.casehub.blocks.summarisation.EventLevel;
 import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.neocortex.memory.cbr.CbrOutcome;
 import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.cbr.FeatureValue;
 import io.quarkmind.agent.MultiFactorDominanceAssessor;
@@ -78,8 +79,8 @@ class SC2CbrRetentionObserverTest {
                         && "strategy.early-pressure".equals(c.solution())
                         && "WIN".equals(c.outcome())),
                 any(), any(), any(), any(), any(), any());
-        verify(store).recordOutcome(eq("stored-case-1"), eq(SC2GameCbrCase.CBR_TYPE),
-                argThat(o -> o.successRate() == 1.0));
+        verify(store).recordOutcome(eq("stored-case-1"),
+                argThat((CbrOutcome o) -> o.successRate() == 1.0), any());
     }
 
     @Test
@@ -92,8 +93,8 @@ class SC2CbrRetentionObserverTest {
 
         observer.onOutcome(event);
 
-        verify(store).recordOutcome(any(), any(),
-                argThat(o -> o.successRate() == 0.0));
+        verify(store).recordOutcome(any(),
+                argThat((CbrOutcome o) -> o.successRate() == 0.0), any());
     }
 
     @Test
@@ -106,8 +107,8 @@ class SC2CbrRetentionObserverTest {
 
         observer.onOutcome(event);
 
-        verify(store).recordOutcome(any(), any(),
-                argThat(o -> o.successRate() == 0.5));
+        verify(store).recordOutcome(any(),
+                argThat((CbrOutcome o) -> o.successRate() == 0.5), any());
     }
 
     @Test

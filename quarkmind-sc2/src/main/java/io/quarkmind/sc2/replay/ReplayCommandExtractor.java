@@ -1,5 +1,8 @@
 package io.quarkmind.sc2.replay;
 
+import hu.scelight.sc2.rep.factory.RepContent;
+import hu.scelight.sc2.rep.factory.RepParserEngine;
+import hu.scelight.sc2.rep.model.Replay;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
 import hu.scelight.sc2.rep.s2prot.Event;
@@ -8,22 +11,29 @@ import io.quarkmind.sc2.intent.TimedIntent;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 public final class ReplayCommandExtractor {
 
     private ReplayCommandExtractor() {}
 
-    /**
-     * Parses GAME_EVENTS for the given player and returns movement orders
-     * and train intents in loop-ascending order.
-     *
-     * @param replayPath  path to the .SC2Replay file
-     * @param playerId    1-indexed player ID (matches starcraft.replay.player config)
-     */
     public static ReplayCommandStream extract(Path replayPath, int playerId) {
-        List<Event> events = GameEventStream.events(replayPath);
-        AbilityMapping mapping = new AbilityMapping(playerId);
+        Replay replay;
+        try {
+            replay = RepParserEngine.parseReplay(replayPath, EnumSet.of(RepContent.GAME_EVENTS));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Cannot parse replay: " + replayPath, e);
+        }
+        if (replay == null || replay.gameEvents == null) {
+            throw new IllegalArgumentException("No game events in replay: " + replayPath);
+        }
+        List<Event> events = List.of(replay.gameEvents.getEvents());
+
+        AbilityProfile profile = AbilityProfile.resolve(
+                replay.header != null && replay.header.baseBuild != null
+                        ? replay.header.baseBuild : 75689);
+        AbilityMapping mapping = new AbilityMapping(playerId, false, null, profile);
         List<UnitOrder>   orders  = new ArrayList<>();
         List<TimedIntent> intents = new ArrayList<>();
 

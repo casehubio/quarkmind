@@ -90,15 +90,6 @@ public class AbilityMapping {
     private static final int ABIL_NYDUS_SPAWN = 268;
     private static final int ABIL_ORACLE_STASIS_WARD = 603;
     private static final int ABIL_MULE_CALLDOWN = 171; // uncalibrated — pending MuleAbilLinkDiscoveryTest
-    // Tournament-era morph abilLinks (post-4.9.x patches, +2 shift)
-    // Confirmed: Ravager, BroodLord, Overseer (MorphTimeCalibrationTest, HSC XXVII)
-    // Discovered: Baneling uses 730 in tournament replays (not +2 shift — different ability block)
-    // Inferred: Lurker (consistent +2 pattern, insufficient tournament data to confirm)
-    private static final int ABIL_BANELING_MORPH_T   = 730;
-    private static final int ABIL_RAVAGER_MORPH_T    = 311;
-    private static final int ABIL_BROODLORD_MORPH_T  = 196;
-    private static final int ABIL_LURKER_MORPH_T     = 524;
-    private static final int ABIL_OVERSEER_MORPH_T   = 223;
 
     private static final int ABIL_LAIR_MORPH          = 249; // calibrated: BuildingMorphDiscoveryTest
     private static final int ABIL_HIVE_MORPH          = 250; // calibrated: BuildingMorphDiscoveryTest
@@ -115,7 +106,7 @@ public class AbilityMapping {
     private static final int ABIL_FUSION_CORE       = 235;
     private static final int ABIL_CYCLONE_LOCK_ON   = 148;
     private static final int ABIL_COMBAT_SHIELD     = 124;
-    private static final int ABIL_ENGINEERING_BAY_T = 164; // tournament-era EngBay (HSC replays)
+
     // Zerg
     private static final int ABIL_BANELING_NEST     = 224;
     private static final int ABIL_ROACH_WARREN      = 107;
@@ -354,8 +345,6 @@ public class AbilityMapping {
             2, "PunisherGrenades"
     );
 
-    // HydraliskDen tournament (abilLink=191) — oracle uses 262/310, tournament uses 191
-    private static final int ABIL_HYDRALISK_DEN_T = 191;
 
     // WarpGate warp-in (human replays) abilCmdIndex → UnitType
     private static final Map<Integer, UnitType> WARPGATE_WARPIN_UNITS = Map.of(
@@ -370,6 +359,7 @@ public class AbilityMapping {
     private final Map<String, Integer> tagToUnitLink = new HashMap<>();
 
     private final Race           race;
+    private final AbilityProfile profile;
     private       boolean        warpGateResearchEmitted = false;
 
 
@@ -382,9 +372,14 @@ public class AbilityMapping {
     }
 
     public AbilityMapping(int playerId, boolean humanReplay, Race race) {
+        this(playerId, humanReplay, race, AbilityProfile.V4_9_3);
+    }
+
+    public AbilityMapping(int playerId, boolean humanReplay, Race race, AbilityProfile profile) {
         this.userId = playerId - 1;
         this.humanReplay = humanReplay;
         this.race = race;
+        this.profile = profile;
     }
 
     public void onSelection(SelectionDeltaEvent event) {
@@ -577,6 +572,11 @@ public class AbilityMapping {
     }
 
     private List<ReplayCommand> dispatchHuman(int abilLink, int idx, CmdEvent event, long loop) {
+        AbilityDispatch override = profile.overrides().get(abilLink);
+        if (override != null) {
+            List<ReplayCommand> result = override.dispatch(idx, event, loop, race);
+            if (result != null) { return result; }
+        }
         return switch (abilLink) {
             case ABIL_SCV_BUILD -> isRace(Race.TERRAN) ? buildCommand(loop, SCV_BUILD_BUILDINGS.get(idx), event) : null;
             case ABIL_PROBE_BUILD -> {
@@ -608,20 +608,11 @@ public class AbilityMapping {
                 String archonSource = resolveArchonSource();
                 yield List.of(new ReplayCommand.MorphCommand(loop, archonSource, "Archon"));
             }
-            case ABIL_BANELING_MORPH, ABIL_BANELING_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Zergling", "Baneling")) : null;
-            case ABIL_RAVAGER_MORPH, ABIL_RAVAGER_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Roach", "Ravager")) : null;
-            case ABIL_BROODLORD_MORPH, ABIL_BROODLORD_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Corruptor", "BroodLord")) : null;
-            case ABIL_LURKER_MORPH, ABIL_LURKER_MORPH_T -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Hydralisk", "Lurker")) : null;
+            case ABIL_BANELING_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Zergling", "Baneling")) : null;
+            case ABIL_RAVAGER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Roach", "Ravager")) : null;
+            case ABIL_BROODLORD_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Corruptor", "BroodLord")) : null;
+            case ABIL_LURKER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Hydralisk", "Lurker")) : null;
             case ABIL_OVERSEER_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Overlord", "Overseer")) : null;
-            case ABIL_OVERSEER_MORPH_T -> {
-                if (!isRace(Race.ZERG)) {yield null;}
-                yield switch (idx) {
-                    case 0 -> List.of(new ReplayCommand.MorphCommand(loop, "Overlord", "Overseer"));
-                    case 2 -> upgradeCommand(loop, "InfestorEnergyUpgrade");
-                    case 3 -> upgradeCommand(loop, "NeuralParasite");
-                    default -> null;
-                };
-            }
             case ABIL_CC_MORPH -> {
                 if (!isRace(Race.TERRAN)) {yield null;}
                 String target = CC_MORPH_TARGETS.get(idx);
@@ -642,7 +633,6 @@ public class AbilityMapping {
             // --- Upgrade research ---
             // Terran
             case ABIL_ENGINEERING_BAY -> isRace(Race.TERRAN) ? upgradeCommand(loop, ENGINEERING_BAY_UPGRADES.get(idx)) : null;
-            case ABIL_ENGINEERING_BAY_T -> isRace(Race.TERRAN) && idx == 3 ? upgradeCommand(loop, "TerranInfantryWeaponsLevel2") : null;
             case ABIL_STIMPACK -> isRace(Race.TERRAN) ? upgradeCommand(loop, BARRACKS_TECHLAB_UPGRADES.get(idx)) : null;
             case ABIL_CONCUSSIVE_SHELLS -> isRace(Race.TERRAN) && idx == 0 ? upgradeCommand(loop, "PunisherGrenades") : null;
             case ABIL_COMBAT_SHIELD -> isRace(Race.TERRAN) && idx == 1 ? upgradeCommand(loop, "ShieldWall") : null;
@@ -665,11 +655,6 @@ public class AbilityMapping {
             case ABIL_SPIRE_UPGRADE -> isRace(Race.ZERG) ? upgradeCommand(loop, SPIRE_UPGRADES.get(idx)) : null;
             case ABIL_HYDRALISK_DEN -> isRace(Race.ZERG) && idx == 0 ? upgradeCommand(loop, "EvolveGroovedSpines") : null;
             case ABIL_MUSCULAR_AUGMENTS -> isRace(Race.ZERG) && idx == 0 ? upgradeCommand(loop, "EvolveMuscularAugments") : null;
-            case ABIL_HYDRALISK_DEN_T -> isRace(Race.ZERG) ? switch (idx) {
-                case 0 -> upgradeCommand(loop, "EvolveGroovedSpines");
-                case 1 -> upgradeCommand(loop, "EvolveMuscularAugments");
-                default -> null;
-            } : null;
             case ABIL_ULTRALISK_CAVERN -> isRace(Race.ZERG) ? switch (idx) {
                 case 0 -> upgradeCommand(loop, "AnabolicSynthesis");
                 case 2 -> upgradeCommand(loop, "ChitinousPlating");
@@ -678,6 +663,11 @@ public class AbilityMapping {
             case ABIL_SPAWNING_POOL -> isRace(Race.ZERG) ? switch (idx) {
                 case 0 -> upgradeCommand(loop, "zerglingattackspeed");
                 case 1 -> upgradeCommand(loop, "zerglingmovementspeed");
+                default -> null;
+            } : null;
+            case ABIL_INFESTATION_PIT -> isRace(Race.ZERG) ? switch (idx) {
+                case 2 -> upgradeCommand(loop, "InfestorEnergyUpgrade");
+                case 3 -> upgradeCommand(loop, "NeuralParasite");
                 default -> null;
             } : null;
             case ABIL_HATCHERY_UPGRADE -> isRace(Race.ZERG) ? switch (idx) {

@@ -245,8 +245,9 @@ public class SC2CbrRetentionObserver implements CaseOutcomeObserver {
                 SC2GameCbrCase.CBR_TYPE,
                 Path.of("quarkmind", "strategy", "cases"));
 
-        cbrStore.recordOutcome(storedCaseId, SC2GameCbrCase.CBR_TYPE,
-                               CbrOutcome.of(successRate, event.outcomeLabel(), event.closedAt()));
+        cbrStore.recordOutcome(storedCaseId,
+                               CbrOutcome.of(successRate, event.outcomeLabel(), event.closedAt()),
+                               "sc2-cbr-retention");
 
         log.infof("[CBR-RETAIN] Stored: archetype=%s strategy=%s outcome=%s enriched=%b caseId=%s",
                   archetype, strategyId, event.outcomeLabel(), !phaseSequence.isEmpty(), storedCaseId);

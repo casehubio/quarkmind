@@ -69,8 +69,9 @@ public class SC2AdvisoryCbrRetentionObserver implements CaseOutcomeObserver {
                     SC2AdvisoryCbrCase.CBR_TYPE,
                     Path.of("quarkmind", "advisory", "cases"));
 
-            cbrStore.recordOutcome(storedCaseId, SC2AdvisoryCbrCase.CBR_TYPE,
-                    CbrOutcome.of(successRate, event.outcomeLabel(), event.closedAt()));
+            cbrStore.recordOutcome(storedCaseId,
+                    CbrOutcome.of(successRate, event.outcomeLabel(), event.closedAt()),
+                    "sc2-advisory-retention");
 
             log.infof("[CBR-ADVISORY] Stored: advisor=%s archetype=%s strategy=%s outcome=%s",
                     advisorId, archetype, strategyId, event.outcomeLabel());

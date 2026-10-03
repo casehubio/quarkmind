@@ -916,9 +916,11 @@ class AbilityDiscoveryCalibrationTest {
                 if (players[i].getRace() != null) {playerRaces.put(i, players[i].getRace());}
             }
 
+            AbilityProfile profile = AbilityProfile.resolve(
+                    rep.header != null && rep.header.baseBuild != null ? rep.header.baseBuild : 75689);
             Map<Integer, AbilityMapping> mappings = new HashMap<>();
             for (var entry : playerRaces.entrySet()) {
-                mappings.put(entry.getKey(), new AbilityMapping(entry.getKey() + 1, true, entry.getValue()));
+                mappings.put(entry.getKey(), new AbilityMapping(entry.getKey() + 1, true, entry.getValue(), profile));
             }
 
             Map<Integer, Set<String>> detectedUpgrades = new HashMap<>();
@@ -981,6 +983,6 @@ class AbilityDiscoveryCalibrationTest {
             System.out.printf("    %-40s %d/%d%n", entry.getKey(), detected, oracle);
         }
 
-        assertThat(accuracy).as("Upgrade detection accuracy").isGreaterThan(50.0);
+        assertThat(accuracy).as("Upgrade detection accuracy").isGreaterThan(70.0);
     }
 }

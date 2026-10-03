@@ -175,9 +175,12 @@ public class StrippedReplayFeatureExtractor {
         List<SyntheticEvent> syntheticEvents = new ArrayList<>();
         int                  tagCounter      = 1;
 
+        AbilityProfile profile = AbilityProfile.resolve(
+                replay.header != null && replay.header.baseBuild != null ? replay.header.baseBuild : 75689);
+
         for (int playerId = 1; playerId <= 2; playerId++) {
             var            playerRace = players[playerId - 1].getRace();
-            AbilityMapping mapping    = new AbilityMapping(playerId, true, playerRace);
+            AbilityMapping mapping    = new AbilityMapping(playerId, true, playerRace, profile);
             var            state      = new PlayerState();
             initStartingBuildings(playerRace, state);
             int            userId     = playerId - 1;
