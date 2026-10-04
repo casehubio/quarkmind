@@ -574,7 +574,7 @@ public class AbilityMapping {
     private List<ReplayCommand> dispatchHuman(int abilLink, int idx, CmdEvent event, long loop) {
         AbilityDispatch override = profile.overrides().get(abilLink);
         if (override != null) {
-            List<ReplayCommand> result = override.dispatch(idx, event, loop, race);
+            List<ReplayCommand> result = override.dispatch(idx, event, loop, race, resolveSelectedUnitLink());
             if (result != null) { return result; }
         }
         return switch (abilLink) {
@@ -711,6 +711,13 @@ public class AbilityMapping {
             }
         }
         return "HighTemplar";
+    }
+
+    private int resolveSelectedUnitLink() {
+        String first = selection.first();
+        if (first == null) {return -1;}
+        Integer link = tagToUnitLink.get(first);
+        return link != null ? link : -1;
     }
 
 

@@ -7,5 +7,5 @@ import java.util.List;
 
 @FunctionalInterface
 public interface AbilityDispatch {
-    List<ReplayCommand> dispatch(int idx, CmdEvent event, long loop, Race race);
+    List<ReplayCommand> dispatch(int idx, CmdEvent event, long loop, Race race, int unitLink);
 }

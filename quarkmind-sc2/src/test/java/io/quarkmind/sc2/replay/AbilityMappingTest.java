@@ -1344,6 +1344,150 @@ class AbilityMappingTest {
         assertThat(uc.upgradeName()).isEqualTo("DarkTemplarBlinkUpgrade");
     }
 
+// --- abilLink 177 unitLink disambiguation (tournament generic research) ---
+
+    @Test
+    void humanMode_abilLink177_cyberneticsCore_warpGateResearch() {
+        int cyberneticsCoreUnitLink = 95;
+        var m                       = new AbilityMapping(1, true, Race.PROTOSS, AbilityProfile.HSC_2025);
+        m.onSelection(selectionEvent(0, null, null,
+                                     new int[][]{{cyberneticsCoreUnitLink, 1}},
+                                     new Integer[]{(1 << 18) | 1}));
+        var result = m.process(fakeCmdEvent(177, 0, 5000, null, null, 6));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("WarpGateResearch");
+    }
+
+    @Test
+    void humanMode_abilLink177_cyberneticsCore_airWeaponsLevel1() {
+        int cyberneticsCoreUnitLink = 95;
+        var m = new AbilityMapping(1, true, Race.PROTOSS, AbilityProfile.HSC_2025);
+        m.onSelection(selectionEvent(0, null, null,
+            new int[][]{{cyberneticsCoreUnitLink, 1}},
+            new Integer[]{(1 << 18) | 1}));
+        var result = m.process(fakeCmdEvent(177, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ProtossAirWeaponsLevel1");
+    }
+
+    @Test
+    void humanMode_abilLink177_twilightCouncil_charge() {
+        int twilightCouncilUnitLink = 88;
+        var m                       = new AbilityMapping(1, true, Race.PROTOSS, AbilityProfile.HSC_2025);
+        m.onSelection(selectionEvent(0, null, null,
+                                     new int[][]{{twilightCouncilUnitLink, 1}},
+                                     new Integer[]{(2 << 18) | 1}));
+        var result = m.process(fakeCmdEvent(177, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("Charge");
+    }
+
+    @Test
+    void humanMode_abilLink177_twilightCouncil_blinkTech() {
+        int twilightCouncilUnitLink = 88;
+        var m                       = new AbilityMapping(1, true, Race.PROTOSS, AbilityProfile.HSC_2025);
+        m.onSelection(selectionEvent(0, null, null,
+                                     new int[][]{{twilightCouncilUnitLink, 1}},
+                                     new Integer[]{(3 << 18) | 1}));
+        var result = m.process(fakeCmdEvent(177, 0, 5000, null, null, 1));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("BlinkTech");
+    }
+
+    @Test
+    void humanMode_abilLink177_twilightCouncil_adeptPiercing() {
+        int twilightCouncilUnitLink = 88;
+        var m                       = new AbilityMapping(1, true, Race.PROTOSS, AbilityProfile.HSC_2025);
+        m.onSelection(selectionEvent(0, null, null,
+                                     new int[][]{{twilightCouncilUnitLink, 1}},
+                                     new Integer[]{(4 << 18) | 1}));
+        var result = m.process(fakeCmdEvent(177, 0, 5000, null, null, 2));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("AdeptPiercingAttack");
+    }
+
+    @Test
+    void humanMode_abilLink177_forge_groundWeaponsLevel1() {
+        int forgeUnitLink = 86;
+        var m             = new AbilityMapping(1, true, Race.PROTOSS, AbilityProfile.HSC_2025);
+        m.onSelection(selectionEvent(0, null, null,
+                                     new int[][]{{forgeUnitLink, 1}},
+                                     new Integer[]{(5 << 18) | 1}));
+        var result = m.process(fakeCmdEvent(177, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ProtossGroundWeaponsLevel1");
+    }
+
+    @Test
+    void humanMode_abilLink177_templarArchive_psiStorm() {
+        int templarArchiveUnitLink = 91;
+        var m                      = new AbilityMapping(1, true, Race.PROTOSS, AbilityProfile.HSC_2025);
+        m.onSelection(selectionEvent(0, null, null,
+                                     new int[][]{{templarArchiveUnitLink, 1}},
+                                     new Integer[]{(6 << 18) | 1}));
+        var result = m.process(fakeCmdEvent(177, 0, 5000, null, null, 4));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("PsiStormTech");
+    }
+
+    @Test
+    void humanMode_abilLink177_darkShrine_dtBlink() {
+        int darkShrineUnitLink = 92;
+        var m                  = new AbilityMapping(1, true, Race.PROTOSS, AbilityProfile.HSC_2025);
+        m.onSelection(selectionEvent(0, null, null,
+                                     new int[][]{{darkShrineUnitLink, 1}},
+                                     new Integer[]{(7 << 18) | 1}));
+        var result = m.process(fakeCmdEvent(177, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("DarkTemplarBlinkUpgrade");
+    }
+
+    @Test
+    void humanMode_abilLink177_roboticsBay_thermalLance() {
+        int roboticsBayUnitLink = 93;
+        var m                   = new AbilityMapping(1, true, Race.PROTOSS, AbilityProfile.HSC_2025);
+        m.onSelection(selectionEvent(0, null, null,
+                                     new int[][]{{roboticsBayUnitLink, 1}},
+                                     new Integer[]{(8 << 18) | 1}));
+        var result = m.process(fakeCmdEvent(177, 0, 5000, null, null, 5));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("ExtendedThermalLance");
+    }
+
+    @Test
+    void humanMode_abilLink177_fleetBeacon_phoenixRange() {
+        int fleetBeaconUnitLink = 87;
+        var m                   = new AbilityMapping(1, true, Race.PROTOSS, AbilityProfile.HSC_2025);
+        m.onSelection(selectionEvent(0, null, null,
+                                     new int[][]{{fleetBeaconUnitLink, 1}},
+                                     new Integer[]{(9 << 18) | 1}));
+        var result = m.process(fakeCmdEvent(177, 0, 5000, null, null, 2));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("PhoenixRangeUpgrade");
+    }
+
+    @Test
+    void humanMode_abilLink177_noSelection_fallsThroughToV493Switch() {
+        var m = new AbilityMapping(1, true, Race.PROTOSS, AbilityProfile.HSC_2025);
+        // No selection → unitLink=-1 → override returns null → falls through to V4_9_3 switch
+        // V4_9_3 maps abilLink 177 (ABIL_DARK_SHRINE) → DarkTemplarBlinkUpgrade at idx=0
+        var result = m.process(fakeCmdEvent(177, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("DarkTemplarBlinkUpgrade");
+    }
+
+
     @Test
     void humanMode_fleetBeacon_phoenixRange_producesUpgradeCommand() {
         var m = new AbilityMapping(1, true, Race.PROTOSS);
