@@ -978,6 +978,52 @@ class AbilityMappingTest {
         assertThat(uc.upgradeName()).isEqualTo("EvolveMuscularAugments");
     }
 
+    @Test
+    void humanMode_hydraliskDenAlt191_groovedSpines_producesUpgradeCommand() {
+        var m      = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(191, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("EvolveGroovedSpines");
+    }
+
+    @Test
+    void humanMode_hydraliskDenAlt191_muscularAugments_producesUpgradeCommand() {
+        var m      = new AbilityMapping(1, true, Race.ZERG);
+        var result = m.process(fakeCmdEvent(191, 0, 5000, null, null, 1));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("EvolveMuscularAugments");
+    }
+
+    @Test
+    void humanMode_darkShrineAlt608_blinkUpgrade_producesUpgradeCommand() {
+        var m      = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(608, 0, 5000, null, null, 0));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("DarkTemplarBlinkUpgrade");
+    }
+
+    @Test
+    void humanMode_darkShrineAlt608_emitsOnlyOnce() {
+        var m     = new AbilityMapping(1, true, Race.PROTOSS);
+        var first = m.process(fakeCmdEvent(608, 0, 5000, null, null, 0));
+        assertThat(first).hasSize(1);
+        var second = m.process(fakeCmdEvent(608, 0, 6000, null, null, 0));
+        assertThat(second).isEmpty();
+    }
+
+    @Test
+    void humanMode_fleetBeaconAlt69_phoenixRange_producesUpgradeCommand() {
+        var m      = new AbilityMapping(1, true, Race.PROTOSS);
+        var result = m.process(fakeCmdEvent(69, 0, 5000, null, null, 2));
+        assertThat(result).hasSize(1);
+        var uc = (ReplayCommand.UpgradeCommand) result.get(0);
+        assertThat(uc.upgradeName()).isEqualTo("PhoenixRangeUpgrade");
+    }
+
+
     // --- UltraliskCavern (abilLink=117) ---
 
     @Test

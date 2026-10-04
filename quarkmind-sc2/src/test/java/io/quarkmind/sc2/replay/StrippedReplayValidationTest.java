@@ -266,7 +266,7 @@ class StrippedReplayValidationTest {
         System.out.println("=================================");
 
         assertThat(gameplayAccuracy).as("Gameplay upgrade detection accuracy")
-            .isGreaterThanOrEqualTo(95.0);
+            .isGreaterThanOrEqualTo(99.0);
 
         System.out.printf("%nProcessed %d/%d replays successfully%n", passedReplays, totalReplays);
 

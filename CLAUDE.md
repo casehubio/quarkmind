@@ -303,6 +303,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - `MarineMultiplicationDiagnosticTest` — traces per-replay Marine over-counting from selection-based multiplication; validates multiplication cap
 - `MuleAbilLinkDiscoveryTest` — discovers MULE calldown abilLink by correlating CmdEvents with oracle UnitBorn("MULE") events; feeds ABIL_MULE_CALLDOWN constant in AbilityMapping
 - `AutoSpawnCalibrationTest` — calibrates Larva spawn interval, Interceptor build time, and Inject Larva abilLink from oracle replays; feeds SC2Data.LARVA_SPAWN_INTERVAL and INTERCEPTOR_BUILD_TIME constants
+- `AbilityDiscoveryCalibrationTest.dumpAllCmdEventsNearMissedUpgrades` — per-replay CmdEvent dump (including null-abilLink) within 5000 loops of each missed upgrade; discovered abilLinks 191 (HydraliskDen), 608 (DarkShrine), 69 (FleetBeacon) that standard correlation missed due to noise
 - Run with: `mvn test -pl quarkmind-sc2 -Pdiagnostic`
 
 **Never use `@QuarkusTest` for tests that can be plain JUnit** — boot cost is significant.

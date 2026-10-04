@@ -114,6 +114,7 @@ public class AbilityMapping {
     private static final int ABIL_SPIRE_UPGRADE     = 192;
     private static final int ABIL_HYDRALISK_DEN     = 262;
     private static final int ABIL_MUSCULAR_AUGMENTS = 310;
+    private static final int ABIL_HYDRALISK_DEN_ALT = 191;
     private static final int ABIL_ULTRALISK_CAVERN  = 117;
     private static final int ABIL_SPAWNING_POOL     = 190;
     private static final int ABIL_HATCHERY_UPGRADE  = 189;
@@ -129,6 +130,8 @@ public class AbilityMapping {
     private static final int ABIL_ROBOTICS_BAY      = 181;
     private static final int ABIL_DARK_SHRINE       = 177;
     private static final int ABIL_FLEET_BEACON      = 71;
+    private static final int ABIL_DARK_SHRINE_ALT   = 608;
+    private static final int ABIL_FLEET_BEACON_ALT  = 69;
 
     private static final int UNIT_LINK_DARK_TEMPLAR = 76;
 
@@ -361,6 +364,8 @@ public class AbilityMapping {
     private final Race           race;
     private final AbilityProfile profile;
     private       boolean        warpGateResearchEmitted = false;
+    private       boolean        darkTemplarBlinkEmitted = false;
+    private       boolean        phoenixRangeEmitted = false;
 
 
     public AbilityMapping(int playerId) {
@@ -655,6 +660,11 @@ public class AbilityMapping {
             case ABIL_SPIRE_UPGRADE -> isRace(Race.ZERG) ? upgradeCommand(loop, SPIRE_UPGRADES.get(idx)) : null;
             case ABIL_HYDRALISK_DEN -> isRace(Race.ZERG) && idx == 0 ? upgradeCommand(loop, "EvolveGroovedSpines") : null;
             case ABIL_MUSCULAR_AUGMENTS -> isRace(Race.ZERG) && idx == 0 ? upgradeCommand(loop, "EvolveMuscularAugments") : null;
+            case ABIL_HYDRALISK_DEN_ALT -> isRace(Race.ZERG) ? switch (idx) {
+                case 0 -> upgradeCommand(loop, "EvolveGroovedSpines");
+                case 1 -> upgradeCommand(loop, "EvolveMuscularAugments");
+                default -> null;
+            } : null;
             case ABIL_ULTRALISK_CAVERN -> isRace(Race.ZERG) ? switch (idx) {
                 case 0 -> upgradeCommand(loop, "AnabolicSynthesis");
                 case 2 -> upgradeCommand(loop, "ChitinousPlating");
@@ -687,8 +697,21 @@ public class AbilityMapping {
             case ABIL_TWILIGHT_RESEARCH -> isRace(Race.PROTOSS) ? upgradeCommand(loop, TWILIGHT_RESEARCH_UPGRADES.get(idx)) : null;
             case ABIL_TEMPLAR_ARCHIVE -> isRace(Race.PROTOSS) && idx == 4 ? upgradeCommand(loop, "PsiStormTech") : null;
             case ABIL_ROBOTICS_BAY -> isRace(Race.PROTOSS) && idx == 5 ? upgradeCommand(loop, "ExtendedThermalLance") : null;
-            case ABIL_DARK_SHRINE -> isRace(Race.PROTOSS) && idx == 0 ? upgradeCommand(loop, "DarkTemplarBlinkUpgrade") : null;
-            case ABIL_FLEET_BEACON -> isRace(Race.PROTOSS) && idx == 2 ? upgradeCommand(loop, "PhoenixRangeUpgrade") : null;
+            case ABIL_DARK_SHRINE -> {
+                if (!isRace(Race.PROTOSS) || idx != 0) {yield null;}
+                darkTemplarBlinkEmitted = true;
+                yield upgradeCommand(loop, "DarkTemplarBlinkUpgrade");
+            }
+            case ABIL_DARK_SHRINE_ALT -> {
+                if (!isRace(Race.PROTOSS) || darkTemplarBlinkEmitted) {yield null;}
+                darkTemplarBlinkEmitted = true;
+                yield upgradeCommand(loop, "DarkTemplarBlinkUpgrade");
+            }
+            case ABIL_FLEET_BEACON, ABIL_FLEET_BEACON_ALT -> {
+                if (!isRace(Race.PROTOSS) || idx != 2 || phoenixRangeEmitted) {yield null;}
+                phoenixRangeEmitted = true;
+                yield upgradeCommand(loop, "PhoenixRangeUpgrade");
+            }
             // ABIL_ROBOTICS WarpGateResearch removed — duplicates CYBERNETICS_CORE_UPGRADES idx=6 via ABIL_CYBERNETICS_CORE (236)
             default -> null;
         };

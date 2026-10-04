@@ -3,6 +3,7 @@ package io.quarkmind.sc2.replay;
 import hu.scelight.sc2.rep.factory.RepContent;
 import hu.scelight.sc2.rep.factory.RepParserEngine;
 import hu.scelight.sc2.rep.model.Replay;
+import hu.scelight.sc2.rep.model.details.Race;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
 import hu.scelight.sc2.rep.s2prot.Event;
 import hu.scelightapi.sc2.rep.model.trackerevents.IBaseUnitEvent;
@@ -11,8 +12,6 @@ import hu.scelightapi.sc2.rep.model.trackerevents.IUpgradeEvent;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
-
-import hu.scelight.sc2.rep.model.details.Race;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -164,6 +163,75 @@ class AbilityDiscoveryCalibrationTest {
         }
         System.out.println("\n  ★ = ratio > 50% (strong candidate)");
     }
+
+    @Test
+    @Tag("diagnostic")
+    @EnabledIf("oracleExists")
+    void dumpAllCmdEventsNearMissedUpgrades() throws Exception {
+        Path restoredDir = ORACLE_RESTORED;
+        Path strippedDir = Path.of(System.getProperty("user.dir")).getParent()
+                               .resolve("quarkmind-classifier/data/replay_packs/blizzard_ladder/4.9.3/replays");
+
+        var targetUpgrades = Set.of("EvolveGroovedSpines", "EvolveMuscularAugments",
+                                    "DarkTemplarBlinkUpgrade", "PhoenixRangeUpgrade");
+
+        try (var oracleStream = Files.list(restoredDir)) {
+            for (Path oracleReplay : oracleStream
+                                             .filter(p -> p.toString().endsWith(".SC2Replay"))
+                                             .sorted().toList()) {
+                Path stripped = strippedDir.resolve(oracleReplay.getFileName());
+                if (!Files.exists(stripped)) {continue;}
+
+                Replay rep = RepParserEngine.parseReplay(oracleReplay,
+                                                         EnumSet.of(RepContent.TRACKER_EVENTS));
+                if (rep == null || rep.trackerEvents == null) {continue;}
+
+                // Find target upgrades in oracle
+                List<int[]>         upgradeHits = new ArrayList<>(); // [playerId, loop]
+                Map<String, String> loopToName  = new HashMap<>();
+                for (Event raw : rep.trackerEvents.getEvents()) {
+                    if (raw.getId() != ITrackerEvents.ID_UPGRADE) {continue;}
+                    IUpgradeEvent upgrade = (IUpgradeEvent) raw;
+                    if (upgrade.getPlayerId() == null) {continue;}
+                    String name = upgrade.getUpgradeTypeName().toString();
+                    if (!targetUpgrades.contains(name)) {continue;}
+                    upgradeHits.add(new int[]{upgrade.getPlayerId(), (int) upgrade.getLoop()});
+                    loopToName.put(upgrade.getPlayerId() + ":" + upgrade.getLoop(), name);
+                }
+                if (upgradeHits.isEmpty()) {continue;}
+
+                // Parse ALL game events (including null abilLink)
+                List<Event> gameEvents;
+                try {gameEvents = GameEventStream.events(stripped);} catch (Exception e) {continue;}
+
+                for (int[] hit : upgradeHits) {
+                    int    playerId       = hit[0];
+                    long   completionLoop = hit[1];
+                    String upgradeName    = loopToName.get(playerId + ":" + completionLoop);
+                    int    userId         = playerId - 1;
+
+                    System.out.printf("%n=== %s player=%d completion=%d replay=%s ===%n",
+                                      upgradeName, playerId, completionLoop, oracleReplay.getFileName().toString().substring(0, 12));
+
+                    for (Event raw : gameEvents) {
+                        if (!(raw instanceof CmdEvent cmd)) {continue;}
+                        if (cmd.getUserId() != userId) {continue;}
+                        long dist = completionLoop - cmd.getLoop();
+                        if (dist < 0 || dist > 5000) {continue;}
+
+                        Integer abilLink = cmd.getAbilLink();
+                        Integer idx      = cmd.getAbilCmdIndex();
+                        boolean hasTP    = cmd.getTargetPoint() != null;
+                        String abilStr = abilLink != null
+                                         ? String.format("abilLink=%d idx=%d hasTP=%s", abilLink, idx, hasTP)
+                                         : "abil=NULL hasTP=" + hasTP;
+                        System.out.printf("  loop=%6d dist=%5d %s%n", cmd.getLoop(), dist, abilStr);
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
      * Enumerates ALL unmapped abilLinks that appear as no-target commands.
