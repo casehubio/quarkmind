@@ -794,7 +794,7 @@ class AbilityMappingTest {
     @Test
     void humanMode_barracksTechLab_concussiveShells_producesUpgradeCommand() {
         var m = new AbilityMapping(1, true, Race.TERRAN);
-        var result = m.process(fakeCmdEvent(152, 0, 5000, null, null, 0));
+        var result = m.process(fakeCmdEvent(165, 0, 5000, null, null, 2));
         assertThat(result).hasSize(1);
         var uc = (ReplayCommand.UpgradeCommand) result.get(0);
         assertThat(uc.upgradeName()).isEqualTo("PunisherGrenades");
@@ -1032,7 +1032,7 @@ class AbilityMappingTest {
     @Test
     void humanMode_twilightCouncil_charge_producesUpgradeCommand() {
         var m = new AbilityMapping(1, true, Race.PROTOSS);
-        var result = m.process(fakeCmdEvent(547, 0, 5000, null, null, 0));
+        var result = m.process(fakeCmdEvent(237, 0, 5000, null, null, 0));
         assertThat(result).hasSize(1);
         var uc = (ReplayCommand.UpgradeCommand) result.get(0);
         assertThat(uc.upgradeName()).isEqualTo("Charge");
@@ -1173,7 +1173,7 @@ class AbilityMappingTest {
     @Test
     void humanMode_combatShield_producesUpgradeCommand() {
         var m = new AbilityMapping(1, true, Race.TERRAN);
-        var result = m.process(fakeCmdEvent(124, 0, 5000, null, null, 1));
+        var result = m.process(fakeCmdEvent(165, 0, 5000, null, null, 1));
         assertThat(result).hasSize(1);
         var uc = (ReplayCommand.UpgradeCommand) result.get(0);
         assertThat(uc.upgradeName()).isEqualTo("ShieldWall");

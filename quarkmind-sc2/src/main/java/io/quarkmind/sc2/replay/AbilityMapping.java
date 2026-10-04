@@ -634,8 +634,8 @@ public class AbilityMapping {
             // Terran
             case ABIL_ENGINEERING_BAY -> isRace(Race.TERRAN) ? upgradeCommand(loop, ENGINEERING_BAY_UPGRADES.get(idx)) : null;
             case ABIL_STIMPACK -> isRace(Race.TERRAN) ? upgradeCommand(loop, BARRACKS_TECHLAB_UPGRADES.get(idx)) : null;
-            case ABIL_CONCUSSIVE_SHELLS -> isRace(Race.TERRAN) && idx == 0 ? upgradeCommand(loop, "PunisherGrenades") : null;
-            case ABIL_COMBAT_SHIELD -> isRace(Race.TERRAN) && idx == 1 ? upgradeCommand(loop, "ShieldWall") : null;
+            // ABIL_CONCUSSIVE_SHELLS (152) removed — duplicates BARRACKS_TECHLAB_UPGRADES idx=2 via ABIL_STIMPACK (165)
+            // ABIL_COMBAT_SHIELD (124) removed — duplicates BARRACKS_TECHLAB_UPGRADES idx=1 via ABIL_STIMPACK (165)
             case ABIL_STARPORT_TECHLAB -> isRace(Race.TERRAN) ? upgradeCommand(loop, STARPORT_TECHLAB_UPGRADES.get(idx)) : null;
             case ABIL_FACTORY_TECHLAB -> isRace(Race.TERRAN) ? upgradeCommand(loop, FACTORY_TECHLAB_UPGRADES.get(idx)) : null;
             case ABIL_ARMORY -> isRace(Race.TERRAN) ? upgradeCommand(loop, ARMORY_UPGRADES.get(idx)) : null;
@@ -677,14 +677,19 @@ public class AbilityMapping {
             } : null;
             // Protoss
             case ABIL_FORGE -> isRace(Race.PROTOSS) ? upgradeCommand(loop, FORGE_UPGRADES.get(idx)) : null;
-            case ABIL_CYBERNETICS_CORE -> isRace(Race.PROTOSS) ? upgradeCommand(loop, CYBERNETICS_CORE_UPGRADES.get(idx)) : null;
-            case ABIL_TWILIGHT_COUNCIL -> isRace(Race.PROTOSS) && idx == 0 ? upgradeCommand(loop, "Charge") : null;
+            case ABIL_CYBERNETICS_CORE -> {
+                if (!isRace(Race.PROTOSS)) {yield null;}
+                String cyberUpgrade = CYBERNETICS_CORE_UPGRADES.get(idx);
+                if ("WarpGateResearch".equals(cyberUpgrade)) {warpGateResearchEmitted = true;}
+                yield upgradeCommand(loop, cyberUpgrade);
+            }
+            // ABIL_TWILIGHT_COUNCIL (547) removed — duplicates TWILIGHT_RESEARCH_UPGRADES idx=0 via ABIL_TWILIGHT_RESEARCH (237)
             case ABIL_TWILIGHT_RESEARCH -> isRace(Race.PROTOSS) ? upgradeCommand(loop, TWILIGHT_RESEARCH_UPGRADES.get(idx)) : null;
             case ABIL_TEMPLAR_ARCHIVE -> isRace(Race.PROTOSS) && idx == 4 ? upgradeCommand(loop, "PsiStormTech") : null;
             case ABIL_ROBOTICS_BAY -> isRace(Race.PROTOSS) && idx == 5 ? upgradeCommand(loop, "ExtendedThermalLance") : null;
             case ABIL_DARK_SHRINE -> isRace(Race.PROTOSS) && idx == 0 ? upgradeCommand(loop, "DarkTemplarBlinkUpgrade") : null;
             case ABIL_FLEET_BEACON -> isRace(Race.PROTOSS) && idx == 2 ? upgradeCommand(loop, "PhoenixRangeUpgrade") : null;
-            case ABIL_ROBOTICS -> isRace(Race.PROTOSS) && idx == 6 ? upgradeCommand(loop, "WarpGateResearch") : null;
+            // ABIL_ROBOTICS WarpGateResearch removed — duplicates CYBERNETICS_CORE_UPGRADES idx=6 via ABIL_CYBERNETICS_CORE (236)
             default -> null;
         };
     }

@@ -221,6 +221,53 @@ class StrippedReplayValidationTest {
                 marker, entry.getKey(), oracle, java);
         }
 
+        // Per-upgrade-type accuracy summary (#351)
+        Map<String, int[]> perTypeTotals = new TreeMap<>();
+        for (var entry : upgradeDivergence.entrySet()) {
+            String upgradeType = entry.getKey().substring(entry.getKey().indexOf(':') + 1);
+            int[] counts = perTypeTotals.computeIfAbsent(upgradeType, k -> new int[2]);
+            counts[0] += entry.getValue()[0];
+            counts[1] += entry.getValue()[1];
+        }
+
+        var cosmeticPrefixes = List.of("RewardDance", "Spray", "GhostAlternate");
+        int totalOracleUpgrades = 0, totalDetectedUpgrades = 0;
+        int gameplayOracle = 0, gameplayDetected = 0;
+        System.out.println("\n=== Per-Upgrade-Type Accuracy ===");
+        System.out.printf("%-45s %6s %6s %6s %8s%n", "UpgradeType", "Oracle", "Java", "Missed", "Accuracy");
+        System.out.println("-".repeat(75));
+        for (var entry : perTypeTotals.entrySet()) {
+            int oracle = entry.getValue()[0];
+            int java = entry.getValue()[1];
+            int missed = oracle - java;
+            double accuracy = oracle > 0 ? 100.0 * Math.min(java, oracle) / oracle : 100.0;
+            totalOracleUpgrades += oracle;
+            totalDetectedUpgrades += java;
+            boolean cosmetic = cosmeticPrefixes.stream().anyMatch(p -> entry.getKey().startsWith(p));
+            if (!cosmetic) {
+                gameplayOracle += oracle;
+                gameplayDetected += Math.min(java, oracle);
+            }
+            String marker = missed == 0 ? "✓" : "✗";
+            String tag = cosmetic ? " [cosmetic]" : "";
+            System.out.printf("%s %-43s %6d %6d %6d %7.1f%%%s%n",
+                marker, entry.getKey(), oracle, java, missed, accuracy, tag);
+        }
+        System.out.println("-".repeat(75));
+        double overallUpgradeAccuracy = totalOracleUpgrades > 0
+            ? 100.0 * totalDetectedUpgrades / totalOracleUpgrades : 100.0;
+        System.out.printf("  %-43s %6d %6d %6d %7.1f%%%n",
+            "TOTAL (all)", totalOracleUpgrades, totalDetectedUpgrades,
+            totalOracleUpgrades - totalDetectedUpgrades, overallUpgradeAccuracy);
+        double gameplayAccuracy = gameplayOracle > 0 ? 100.0 * gameplayDetected / gameplayOracle : 100.0;
+        System.out.printf("  %-43s %6d %6d %6d %7.1f%%%n",
+            "TOTAL (gameplay only)", gameplayOracle, gameplayDetected,
+            gameplayOracle - gameplayDetected, gameplayAccuracy);
+        System.out.println("=================================");
+
+        assertThat(gameplayAccuracy).as("Gameplay upgrade detection accuracy")
+            .isGreaterThanOrEqualTo(95.0);
+
         System.out.printf("%nProcessed %d/%d replays successfully%n", passedReplays, totalReplays);
 
         assertThat(passedReplays).as("All oracle replays must be processable")
