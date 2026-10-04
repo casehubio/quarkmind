@@ -10,15 +10,21 @@ import java.util.Map;
 
 public enum AbilityProfile {
 
-    V4_9_3(Collections.emptyMap()),
-    HSC_2025(buildHsc2025Overrides());
+    V4_9_3(0, Collections.emptyMap()),
+    HSC_2025(2, buildHsc2025MorphOverrides());
 
     private static final Logger log = Logger.getLogger(AbilityProfile.class);
 
+    private final int abilLinkOffset;
     private final Map<Integer, AbilityDispatch> overrides;
 
-    AbilityProfile(Map<Integer, AbilityDispatch> overrides) {
+    AbilityProfile(int abilLinkOffset, Map<Integer, AbilityDispatch> overrides) {
+        this.abilLinkOffset = abilLinkOffset;
         this.overrides = overrides;
+    }
+
+    public int abilLinkOffset() {
+        return abilLinkOffset;
     }
 
     public Map<Integer, AbilityDispatch> overrides() {
@@ -36,6 +42,19 @@ public enum AbilityProfile {
     private static final int UNIT_LINK_DARK_SHRINE      = 92;
     private static final int UNIT_LINK_FLEET_BEACON     = 87;
 
+    // Zerg building unitLinks (discovered from HSC XXVII tracker events)
+    private static final int UNIT_LINK_SPAWNING_POOL     = 112;
+    private static final int UNIT_LINK_EVOLUTION_CHAMBER = 113;
+    private static final int UNIT_LINK_HYDRALISK_DEN     = 114;
+    private static final int UNIT_LINK_SPIRE             = 115;
+    private static final int UNIT_LINK_ULTRALISK_CAVERN  = 116;
+    private static final int UNIT_LINK_INFESTATION_PIT   = 117;
+    private static final int UNIT_LINK_BANELING_NEST     = 119;
+    private static final int UNIT_LINK_ROACH_WARREN      = 120;
+    private static final int UNIT_LINK_HATCHERY          = 109;
+
+    // Terran building unitLinks (discovered from HSC XXVII tracker events)
+    private static final int UNIT_LINK_TECHLAB           = 60;
 
     public static AbilityProfile resolve(int baseBuild) {
         if (baseBuild <= BASEBUILD_THRESHOLD_4_9_3) { return V4_9_3; }
@@ -47,6 +66,29 @@ public enum AbilityProfile {
     }
 
 
+    private static Map<Integer, AbilityDispatch> buildHsc2025MorphOverrides() {
+        Map<Integer, AbilityDispatch> m = new HashMap<>();
+        m.put(730, (idx, event, loop, race, unitLink) -> race == Race.ZERG
+                ? List.of(new ReplayCommand.MorphCommand(loop, "Zergling", "Baneling")) : null);
+        m.put(311, (idx, event, loop, race, unitLink) -> race == Race.ZERG
+                ? List.of(new ReplayCommand.MorphCommand(loop, "Roach", "Ravager")) : null);
+        m.put(196, (idx, event, loop, race, unitLink) -> race == Race.ZERG
+                ? List.of(new ReplayCommand.MorphCommand(loop, "Corruptor", "BroodLord")) : null);
+        m.put(524, (idx, event, loop, race, unitLink) -> race == Race.ZERG
+                ? List.of(new ReplayCommand.MorphCommand(loop, "Hydralisk", "Lurker")) : null);
+        m.put(223, (idx, event, loop, race, unitLink) -> {
+            if (race != Race.ZERG || idx != 0) { return null; }
+            return List.of(new ReplayCommand.MorphCommand(loop, "Overlord", "Overseer"));
+        });
+        return Collections.unmodifiableMap(m);
+    }
+
+    // buildHsc2025Overrides() removed — replaced by abilLinkOffset mechanism.
+    // The override approach (generic abilLink dispatchers 177/195/216/220/723/234/605) caused
+    // 700+ false positive upgrade detections because the same abilLink values are used for
+    // unit ability activations in newer patches. See git history (commit 358c5d0b) for the
+    // original implementation. Morph overrides retained in buildHsc2025MorphOverrides().
+    @SuppressWarnings("unused")
     private static Map<Integer, AbilityDispatch> buildHsc2025Overrides() {
         Map<Integer, AbilityDispatch> m = new HashMap<>();
 
@@ -140,17 +182,6 @@ public enum AbilityProfile {
                 default -> null;
             };
         });
-
-        // Zerg building unitLinks (discovered from HSC XXVII tracker events)
-        final int UNIT_LINK_SPAWNING_POOL     = 112;
-        final int UNIT_LINK_EVOLUTION_CHAMBER = 113;
-        final int UNIT_LINK_HYDRALISK_DEN    = 114;
-        final int UNIT_LINK_BANELING_NEST    = 119;
-        final int UNIT_LINK_ROACH_WARREN     = 120;
-        final int UNIT_LINK_ULTRALISK_CAVERN = 116;
-        final int UNIT_LINK_INFESTATION_PIT  = 117;
-        final int UNIT_LINK_HATCHERY         = 109;
-        final int UNIT_LINK_SPIRE            = 115;
 
         Map<Integer, String> evoChamberUpgrades = Map.ofEntries(
                 Map.entry(0, "ZergMeleeWeaponsLevel1"), Map.entry(1, "ZergMeleeWeaponsLevel2"),

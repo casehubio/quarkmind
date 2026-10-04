@@ -505,8 +505,9 @@ public class AbilityMapping {
 
     private List<ReplayCommand> dispatch(int abilLink, int idx, CmdEvent event) {
         long loop = event.getLoop();
+        int normalized = abilLink - profile.abilLinkOffset();
 
-        return switch (abilLink) {
+        return switch (normalized) {
             case ABIL_SMART, ABIL_ATTACK_MOVE, ABIL_WARPGATE -> moveOrders(event, loop);
 
             case ABIL_NEXUS -> isRace(Race.PROTOSS) ? trainIntent(loop, UnitType.PROBE) : unknown(abilLink, idx);
@@ -582,7 +583,8 @@ public class AbilityMapping {
             List<ReplayCommand> result = override.dispatch(idx, event, loop, race, resolveSelectedUnitLink());
             if (result != null) { return result; }
         }
-        return switch (abilLink) {
+        int normalized = abilLink - profile.abilLinkOffset();
+        return switch (normalized) {
             case ABIL_SCV_BUILD -> isRace(Race.TERRAN) ? buildCommand(loop, SCV_BUILD_BUILDINGS.get(idx), event) : null;
             case ABIL_PROBE_BUILD -> {
                 if (isRace(Race.PROTOSS)) {yield buildCommand(loop, PROBE_BUILD_BUILDINGS.get(idx), event);}
@@ -696,7 +698,15 @@ public class AbilityMapping {
             // ABIL_TWILIGHT_COUNCIL (547) removed — duplicates TWILIGHT_RESEARCH_UPGRADES idx=0 via ABIL_TWILIGHT_RESEARCH (237)
             case ABIL_TWILIGHT_RESEARCH -> isRace(Race.PROTOSS) ? upgradeCommand(loop, TWILIGHT_RESEARCH_UPGRADES.get(idx)) : null;
             case ABIL_TEMPLAR_ARCHIVE -> isRace(Race.PROTOSS) && idx == 4 ? upgradeCommand(loop, "PsiStormTech") : null;
-            case ABIL_ROBOTICS_BAY -> isRace(Race.PROTOSS) && idx == 5 ? upgradeCommand(loop, "ExtendedThermalLance") : null;
+            case ABIL_ROBOTICS_BAY -> {
+                if (!isRace(Race.PROTOSS)) {yield null;}
+                yield switch (idx) {
+                    case 1 -> upgradeCommand(loop, "GraviticDrive");
+                    case 5 -> upgradeCommand(loop, "ExtendedThermalLance");
+                    case 7 -> upgradeCommand(loop, "ObserverGraviticBooster");
+                    default -> null;
+                };
+            }
             case ABIL_DARK_SHRINE -> {
                 if (!isRace(Race.PROTOSS) || idx != 0) {yield null;}
                 darkTemplarBlinkEmitted = true;
@@ -708,9 +718,16 @@ public class AbilityMapping {
                 yield upgradeCommand(loop, "DarkTemplarBlinkUpgrade");
             }
             case ABIL_FLEET_BEACON, ABIL_FLEET_BEACON_ALT -> {
-                if (!isRace(Race.PROTOSS) || idx != 2 || phoenixRangeEmitted) {yield null;}
-                phoenixRangeEmitted = true;
-                yield upgradeCommand(loop, "PhoenixRangeUpgrade");
+                if (!isRace(Race.PROTOSS)) {yield null;}
+                yield switch (idx) {
+                    case 2 -> {
+                        if (phoenixRangeEmitted) {yield null;}
+                        phoenixRangeEmitted = true;
+                        yield upgradeCommand(loop, "PhoenixRangeUpgrade");
+                    }
+                    case 3 -> upgradeCommand(loop, "TempestGroundAttackUpgrade");
+                    default -> null;
+                };
             }
             // ABIL_ROBOTICS WarpGateResearch removed — duplicates CYBERNETICS_CORE_UPGRADES idx=6 via ABIL_CYBERNETICS_CORE (236)
             default -> null;

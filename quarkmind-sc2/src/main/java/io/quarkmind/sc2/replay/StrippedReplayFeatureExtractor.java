@@ -178,12 +178,14 @@ public class StrippedReplayFeatureExtractor {
         AbilityProfile profile = AbilityProfile.resolve(
                 replay.header != null && replay.header.baseBuild != null ? replay.header.baseBuild : 75689);
 
+        int[] actualUserIds = detectUserIds(gameEvents);
+
         for (int playerId = 1; playerId <= 2; playerId++) {
             var            playerRace = players[playerId - 1].getRace();
-            AbilityMapping mapping    = new AbilityMapping(playerId, true, playerRace, profile);
+            int            userId     = actualUserIds[playerId - 1];
+            AbilityMapping mapping    = new AbilityMapping(userId + 1, true, playerRace, profile);
             var            state      = new PlayerState();
             initStartingBuildings(playerRace, state);
-            int            userId     = playerId - 1;
             TrainIntent    lastWarpIn = null;
 
             for (Event raw : gameEvents) {
@@ -1241,5 +1243,24 @@ public class StrippedReplayFeatureExtractor {
         List<Integer> unitLinksSnapshot() {
             return units.stream().map(TaggedUnit::unitLink).toList();
         }
+    }
+
+    private static int[] detectUserIds(List<Event> gameEvents) {
+        Map<Integer, Integer> cmdCounts = new HashMap<>();
+        for (Event e : gameEvents) {
+            if (e instanceof CmdEvent cmd && cmd.getUserId() >= 0) {
+                cmdCounts.merge(cmd.getUserId(), 1, Integer::sum);
+            }
+        }
+        List<Integer> sorted = cmdCounts.entrySet().stream()
+            .sorted(Map.Entry.<Integer, Integer>comparingByValue().reversed())
+            .map(Map.Entry::getKey)
+            .toList();
+        if (sorted.size() >= 2) {
+            int first = Math.min(sorted.get(0), sorted.get(1));
+            int second = Math.max(sorted.get(0), sorted.get(1));
+            return new int[]{first, second};
+        }
+        return new int[]{0, 1};
     }
 }

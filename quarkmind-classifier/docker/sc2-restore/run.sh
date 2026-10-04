@@ -49,7 +49,8 @@ echo "Output:  $OUTPUT_DIR"
 echo "Args:    $@"
 echo ""
 
-docker run --rm \
+CONTAINER_CMD="${CONTAINER_CMD:-podman}"
+$CONTAINER_CMD run --rm \
     --platform linux/amd64 \
     -v "$SC2_DIR:/opt/StarCraftII:ro" \
     -v "$INPUT_DIR:/data/input:ro" \

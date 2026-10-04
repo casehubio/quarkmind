@@ -79,11 +79,70 @@ The JSON files in each dataset contain the full event stream. Key fields:
 
 ---
 
+## Dataset 3: IEM PyeongChang 2018 — Cross-Patch Validation
+
+**Source:** [SC2ReSet on Zenodo](https://zenodo.org/records/5575797) (CC BY 4.0)
+**Downloaded:** 2026-10-05
+**Local path:** `../quarkmind-classifier/data/replay_packs/2018_IEM_PyeongChang/`
+**Format:** Raw `.SC2Replay` — full replays with tracker events
+**baseBuild:** 60321 (SC2 ~4.1.x, February 2018)
+**Total replays:** 62
+**AbilityProfile:** V4_9_3 (offset=0)
+**Gameplay upgrade accuracy:** 98.2%
+
+---
+
+## Dataset 4: ASUS ROG Online 2020 — Cross-Patch Validation
+
+**Source:** [SC2ReSet on Zenodo](https://zenodo.org/records/5575797) (CC BY 4.0)
+**Downloaded:** 2026-10-05
+**Local path:** `../quarkmind-classifier/data/replay_packs/2020_ASUS_ROG_Online/`
+**Format:** Raw `.SC2Replay` — full replays with tracker events
+**baseBuild:** 82457 (SC2 ~5.0.x, 2020)
+**Total replays:** 107
+**AbilityProfile:** HSC_2025 (offset=2)
+**Gameplay upgrade accuracy:** 95.3%
+
+---
+
+## Dataset 5: DreamHack Dallas 2025 — Cross-Patch Validation
+
+**Source:** Tournament replay pack
+**Downloaded:** 2025-05-25
+**Local path:** `../quarkmind-classifier/data/replay_packs/2025_DreamHack_Dallas/`
+**Format:** Raw `.SC2Replay` — full replays with tracker events
+**baseBuild:** 93333 (SC2 ~5.0.13, 2025)
+**Total replays:** 64
+**AbilityProfile:** HSC_2025 (offset=2)
+**Gameplay upgrade accuracy:** 95.8%
+
+---
+
+## Dataset 6: Esports World Cup 2025
+
+**Source:** Tournament replay pack
+**Downloaded:** 2025-07-25
+**Local path:** `../quarkmind-classifier/data/replay_packs/2025_Esports_World_Cup/`
+**Format:** Raw `.SC2Replay` — full replays with tracker events
+**Total replays:** 113
+
+---
+
+## Dataset 7: FEL Cracow 2025
+
+**Source:** Tournament replay pack
+**Downloaded:** 2025-07-28
+**Local path:** `../quarkmind-classifier/data/replay_packs/2025_FEL_Cracow/`
+**Format:** Raw `.SC2Replay` — full replays with tracker events
+**baseBuild:** 94137 (SC2 5.0.14, 2025)
+**Total replays:** 77
+
+---
+
 ## TODO — Additional Datasets to Download
 
 | Dataset | Source | Priority | Why |
 |---|---|---|---|
-| AI Arena Protoss bot games | `aiarena.net` (requires API token) | High | Bot games are more regular/machine-readable than human esports |
 | SC2EGSet 2022 DH Masters Atlanta | Zenodo (662 MB) | Medium | More recent LotV meta, larger variety |
 | SC2EGSet 2019 WCS Summer | Zenodo (265 MB) | Low | More variety but older meta |
 | Any local SC2 replays | `~/Documents/StarCraft II/...` | — | None found on this machine yet |
