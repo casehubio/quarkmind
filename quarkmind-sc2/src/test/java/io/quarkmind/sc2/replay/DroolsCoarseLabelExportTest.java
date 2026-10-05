@@ -137,9 +137,9 @@ class DroolsCoarseLabelExportTest {
 
     private static String detectMatchup(Map<String, Map<String, Object>> toonMap) {
         if (toonMap == null || toonMap.size() < 2) return "unknown";
-        var players = toonMap.values().iterator();
-        players.next();
-        String r2 = raceShortToFull((String) players.next().getOrDefault("race", ""));
+        var p2 = toonMap.get("2");
+        if (p2 == null) return "unknown";
+        String r2 = raceShortToFull((String) p2.getOrDefault("race", ""));
         if ("Terran".equals(r2)) return "vs_terran";
         if ("Zerg".equals(r2)) return "vs_zerg";
         if ("Protoss".equals(r2)) return "vs_protoss";
@@ -160,11 +160,11 @@ class DroolsCoarseLabelExportTest {
         var counts = new EnumMap<UnitType, Long>(UnitType.class);
 
         for (var event : events) {
-            String evtType = (String) event.get("_event");
-            if (!"NNet.Replay.Tracker.SUnitBornEvent".equals(evtType)) continue;
+            String evtType = (String) event.get("evtTypeName");
+            if (!"UnitBorn".equals(evtType)) continue;
 
-            int loop = event.containsKey("_gameloop") ? ((Number) event.get("_gameloop")).intValue() : 0;
-            if (loop > targetLoop) break;
+            int loop = event.containsKey("loop") ? ((Number) event.get("loop")).intValue() : 0;
+            if (loop > targetLoop) continue;
 
             int playerId = event.containsKey("controlPlayerId")
                     ? ((Number) event.get("controlPlayerId")).intValue() : 0;

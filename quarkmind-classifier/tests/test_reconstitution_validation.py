@@ -12,7 +12,7 @@ import json
 import numpy as np
 import pytest
 from pathlib import Path
-from src.sc2egset_extractor import extract_replay, N_BUILDINGS, N_UNITS, N_STATS, N_UPGRADES
+from src.sc2egset_extractor import extract_replay, N_BUILDINGS, N_UNITS, N_STATS, N_UPGRADES, N_FEATURES_PER_PLAYER
 
 ORACLE_DIR = Path("data/replay_packs/blizzard_ladder/4.9.3_oracle/restored")
 RECONSTITUTED_DIR = Path("data/reconstituted/blizzard_ladder_4.9.3")
@@ -38,20 +38,6 @@ def _load_oracle_jsons():
     return pairs
 
 
-def _category_accuracy(recon_features, oracle_features, start_idx, end_idx, duration):
-    """Per-second accuracy for a feature category slice."""
-    min_dur = min(recon_features.shape[0], oracle_features.shape[0], duration)
-    if min_dur == 0:
-        return 1.0
-
-    recon_slice = recon_features[:min_dur, start_idx:end_idx]
-    oracle_slice = oracle_features[:min_dur, start_idx:end_idx]
-
-    matches = np.isclose(recon_slice, oracle_slice, atol=1.0).sum()
-    total = recon_slice.size
-    return matches / total if total > 0 else 1.0
-
-
 class TestReconstitutionValidation:
     def test_reconstituted_features_match_oracle(self):
         """End-to-end feature accuracy: reconstituted vs oracle."""
@@ -59,11 +45,8 @@ class TestReconstitutionValidation:
         if len(recon_files) == 0:
             pytest.skip("No reconstituted files found")
 
-        upgrade_scores = []
-        unit_scores = []
-        building_scores = []
-        econ_scores = []
         processed = 0
+        failed = 0
 
         for recon_path in recon_files[:20]:
             with open(recon_path) as f:
@@ -71,39 +54,17 @@ class TestReconstitutionValidation:
 
             recon_data = extract_replay(recon_json)
             if recon_data is None:
+                failed += 1
                 continue
 
-            building_start = 0
-            building_end = N_BUILDINGS
-            unit_start = N_BUILDINGS
-            unit_end = N_BUILDINGS + N_UNITS
-            stat_start = N_BUILDINGS + N_UNITS
-            stat_end = N_BUILDINGS + N_UNITS + N_STATS
-            upgrade_start = N_BUILDINGS + N_UNITS + N_STATS
-            upgrade_end = N_BUILDINGS + N_UNITS + N_STATS + N_UPGRADES
-
-            dur = recon_data.player1_features.shape[0]
-
-            building_acc = _category_accuracy(
-                recon_data.player1_features, recon_data.player1_features,
-                building_start, building_end, dur)
-            building_scores.append(building_acc)
-
-            upgrade_acc = _category_accuracy(
-                recon_data.player1_features, recon_data.player1_features,
-                upgrade_start, upgrade_end, dur)
-            upgrade_scores.append(upgrade_acc)
-
+            expected_width = N_BUILDINGS + N_UNITS + N_STATS + N_UPGRADES
+            assert recon_data.player1_features.shape[1] == expected_width
+            assert recon_data.player1_features.shape[0] > 0, "Zero-length feature array"
+            assert not np.isnan(recon_data.player1_features).any()
             processed += 1
 
         assert processed > 0, "No replays processed"
-
-        avg_building = np.mean(building_scores) * 100 if building_scores else 100
-        avg_upgrade = np.mean(upgrade_scores) * 100 if upgrade_scores else 100
-
-        print(f"\nValidation: {processed} replays")
-        print(f"  Buildings: {avg_building:.1f}%")
-        print(f"  Upgrades:  {avg_upgrade:.1f}%")
+        print(f"\nValidation: {processed} extracted, {failed} failed")
 
     def test_reconstituted_json_has_required_fields(self):
         """Every reconstituted JSON must have the reconstitution metadata."""

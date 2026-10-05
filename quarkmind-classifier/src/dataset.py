@@ -1,23 +1,30 @@
 import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from sklearn.model_selection import StratifiedShuffleSplit
 from src.config import HyperParams
 
 
 def per_replay_split(
-    replay_ids: List[int], labels: List[int], seed: int = 42,
+    replay_ids: List[int], labels: List[int],
+    eras: Optional[List[int]] = None, seed: int = 42,
 ) -> Tuple[List[int], List[int], List[int]]:
     ids = np.array(replay_ids)
     lbls = np.array(labels)
 
+    if eras is not None:
+        era_arr = np.array(eras)
+        strat_key = lbls * 10 + era_arr
+    else:
+        strat_key = lbls
+
     try:
         sss1 = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=seed)
-        train_val_idx, test_idx = next(sss1.split(ids, lbls))
+        train_val_idx, test_idx = next(sss1.split(ids, strat_key))
 
         sss2 = StratifiedShuffleSplit(n_splits=1, test_size=0.125, random_state=seed)
-        train_idx, val_idx = next(sss2.split(ids[train_val_idx], lbls[train_val_idx]))
+        train_idx, val_idx = next(sss2.split(ids[train_val_idx], strat_key[train_val_idx]))
     except ValueError:
         from sklearn.model_selection import ShuffleSplit
         ss1 = ShuffleSplit(n_splits=1, test_size=0.2, random_state=seed)
