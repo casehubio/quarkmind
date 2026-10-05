@@ -757,8 +757,10 @@ public class StrippedReplayFeatureExtractor {
 
         // header
         Integer elapsedLoops = replay.header.getElapsedGameLoops();
+        int baseBuild = replay.header.baseBuild != null ? replay.header.baseBuild : 0;
         gameJson.put("header", Map.of(
-            "elapsedGameLoops", elapsedLoops != null ? elapsedLoops : 0));
+            "elapsedGameLoops", elapsedLoops != null ? elapsedLoops : 0,
+            "baseBuild", baseBuild));
 
         // metadata
         gameJson.put("metadata", Map.of(
