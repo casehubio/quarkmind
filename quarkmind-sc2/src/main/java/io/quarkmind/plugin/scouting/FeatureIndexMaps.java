@@ -2,7 +2,9 @@ package io.quarkmind.plugin.scouting;
 
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.domain.UpgradeType;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +14,7 @@ public final class FeatureIndexMaps {
     static final int N_BUILDINGS = 53;
     static final int N_UNITS = 56;
     static final int N_STATS = 13;
-    static final int N_UPGRADES = 15;
+    static final int N_UPGRADES = UpgradeType.values().length;
     static final int N_SPATIAL = 7;
     static final int N_RATIOS = 3;
     static final int N_DELTAS = 4;
@@ -30,23 +32,9 @@ public final class FeatureIndexMaps {
     static final Map<BuildingType, Integer> BUILDING_INDEX = buildBuildingIndex();
     static final Map<UnitType, Integer> UNIT_INDEX = buildUnitIndex();
 
-    static final List<String> UPGRADE_NAMES = List.of(
-        "Stimpack",
-        "ShieldWall",
-        "PunisherGrenades",
-        "BansheeCloak",
-        "TerranVehicleWeaponsLevel1",
-        "PersonalCloaking",
-        "DrillClaws",
-        "zerglingmovementspeed",
-        "GlialReconstitution",
-        "CentrificalHooks",
-        "Burrow",
-        "WarpGateResearch",
-        "BlinkTech",
-        "Charge",
-        "AdeptPiercingAttack"
-    );
+    static final List<String> UPGRADE_NAMES = Arrays.stream(UpgradeType.values())
+            .map(UpgradeType::pythonName)
+            .toList();
 
     private static Map<BuildingType, Integer> buildBuildingIndex() {
         // Ordering matches sc2egset_extractor.py BUILDINGS list exactly (53 entries)
