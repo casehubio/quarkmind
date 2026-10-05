@@ -10,6 +10,7 @@ import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.Intent;
 import io.quarkmind.sc2.intent.MoveIntent;
 import io.quarkmind.sc2.intent.MuleCalldownIntent;
+import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.jboss.logging.Logger;
 
@@ -44,6 +45,7 @@ public final class ActionTranslator {
                     case MoveIntent         m -> move(m);
                     case BlinkIntent        b -> blink(b);
                     case MuleCalldownIntent m -> muleCalldown(m);
+                    case ResearchIntent    r -> research(r);
                 };
                 if (cmd != null) commands.add(cmd);
             } catch (Exception e) {
@@ -104,6 +106,11 @@ public final class ActionTranslator {
 
     private static ResolvedCommand muleCalldown(MuleCalldownIntent intent) {
         log.warnf("[ACTION] MULE calldown not yet wired to real SC2 OC ability — dropping intent for building %s", intent.buildingTag());
+        return null;
+    }
+
+    private static ResolvedCommand research(ResearchIntent intent) {
+        log.warnf("[ACTION] Research not yet wired to real SC2 ability — dropping intent for %s at building %s", intent.upgradeType(), intent.buildingTag());
         return null;
     }
 

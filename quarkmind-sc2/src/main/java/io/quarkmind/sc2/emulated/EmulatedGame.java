@@ -233,6 +233,7 @@ public class EmulatedGame {
             case BuildIntent        b -> () -> handleBuild(b, friendly, friendlyPhysics, ti.loop());
             case BlinkIntent        b -> () -> executeBlink(b.unitTag(), friendly, friendlyPhysics);
             case MuleCalldownIntent m -> () -> handleMuleCalldown(m, friendly, friendlyPhysics, ti.loop());
+            case ResearchIntent    r -> () -> handleResearch(r, friendly, friendlyPhysics, ti.loop());
         };
         action.run();
     }
@@ -245,6 +246,7 @@ public class EmulatedGame {
             case BuildIntent        b -> () -> handleBuild(b, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
             case BlinkIntent        b -> () -> executeBlink(b.unitTag(), state, physics);
             case MuleCalldownIntent m -> () -> handleMuleCalldown(m, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
+            case ResearchIntent    r -> () -> handleResearch(r, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
         };
         action.run();
     }
@@ -534,6 +536,39 @@ public class EmulatedGame {
         model.onCalldown(state, m.buildingTag(), absLoop);
     }
 
+    private void handleResearch(final ResearchIntent r, final PlayerState state,
+                                 final PhysicsState physics, final long absLoop) {
+        if (state.hasUpgrade(r.upgradeType())) {
+            log.debugf("[EMULATED] Research rejected — %s already completed", r.upgradeType());
+            return;
+        }
+        if (physics.buildingResearching.containsKey(r.buildingTag())) {
+            log.debugf("[EMULATED] Research rejected — building %s already researching %s",
+                r.buildingTag(), physics.buildingResearching.get(r.buildingTag()));
+            return;
+        }
+        final Building building = state.buildings().stream()
+            .filter(b -> b.tag().equals(r.buildingTag()) && b.isComplete())
+            .findFirst().orElse(null);
+        if (building == null) {
+            log.debugf("[EMULATED] Research rejected — building %s not found or incomplete", r.buildingTag());
+            return;
+        }
+        int durationLoops = SC2Data.upgradeTimeInLoops(r.upgradeType());
+        long completionLoop = absLoop + durationLoops;
+        long completionTick = completionLoop / SC2Data.LOOPS_PER_TICK;
+        physics.buildingResearching.put(r.buildingTag(), r.upgradeType());
+        physics.buildingResearchUntil.put(r.buildingTag(), completionLoop);
+        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completionTick, () -> {
+            state.completeUpgrade(r.upgradeType());
+            physics.buildingResearching.remove(r.buildingTag());
+            physics.buildingResearchUntil.remove(r.buildingTag());
+            log.debugf("[EMULATED] Research complete — %s", r.upgradeType());
+        }));
+        log.debugf("[EMULATED] Research started — %s at building %s, completes at loop %d",
+            r.upgradeType(), r.buildingTag(), completionLoop);
+    }
+
     /**
      * Returns true if this attack should miss due to low-ground-to-high-ground penalty.
      * Condition: attacker on LOW, target on HIGH, attack is ranged (range > 1.0), and RNG says miss.
@@ -601,9 +636,9 @@ public class EmulatedGame {
             List<Unit> visibleStaging = stagingArea.stream()
                 .filter(u -> visibility.isVisible(u.position()))
                 .toList();
-            return new GameState((int) friendly.minerals(), friendly.vespene(), friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), visibleEnemies, List.copyOf(enemy.buildings()), visibleStaging, List.copyOf(geysers), List.of(), gameFrame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());       // mapInfo: not yet wired in emulated
+            return new GameState((int) friendly.minerals(), friendly.vespene(), friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), visibleEnemies, List.copyOf(enemy.buildings()), visibleStaging, List.copyOf(geysers), List.of(), gameFrame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, friendly.completedUpgradeNames(), Set.of());
         }
-        return new GameState((int) friendly.minerals(), friendly.vespene(), friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), List.copyOf(enemy.units()), List.copyOf(enemy.buildings()), List.copyOf(stagingArea), List.copyOf(geysers), List.of(), gameFrame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());       // mapInfo: not yet wired in emulated
+        return new GameState((int) friendly.minerals(), friendly.vespene(), friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), List.copyOf(enemy.units()), List.copyOf(enemy.buildings()), List.copyOf(stagingArea), List.copyOf(geysers), List.of(), gameFrame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, friendly.completedUpgradeNames(), Set.of());
     }
 
     private GameState snapshotForEnemy() {

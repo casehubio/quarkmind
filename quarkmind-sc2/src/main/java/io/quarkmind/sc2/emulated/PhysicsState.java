@@ -2,6 +2,7 @@ package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.domain.UpgradeType;
 
 import java.util.*;
 
@@ -28,6 +29,10 @@ class PhysicsState {
     final Map<String, Long>            buildingTrainingUntil    = new HashMap<>();
     final Map<String, Long>            buildingCompletionAtLoop = new HashMap<>();
 
+    // Research queues — one upgrade at a time per building (mirrors SC2 research mechanic)
+    final Map<String, UpgradeType> buildingResearching  = new HashMap<>();
+    final Map<String, Long>        buildingResearchUntil = new HashMap<>();
+
     // In-flight completion callbacks
     final List<PendingCompletion> pendingCompletions = new ArrayList<>();
 
@@ -46,6 +51,8 @@ class PhysicsState {
         buildingQueues.clear();
         buildingTrainingUntil.clear();
         buildingCompletionAtLoop.clear();
+        buildingResearching.clear();
+        buildingResearchUntil.clear();
         pendingCompletions.clear();
     }
 

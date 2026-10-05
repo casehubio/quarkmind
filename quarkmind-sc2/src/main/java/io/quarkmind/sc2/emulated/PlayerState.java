@@ -5,6 +5,7 @@ import io.quarkmind.domain.*;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 /**
  * Per-player mutable game state: units, buildings, and resources. Public so that
@@ -22,6 +23,7 @@ public class PlayerState implements PlayerStateView {
 
     private final List<Unit>     units     = new ArrayList<>();
     private final List<Building> buildings = new ArrayList<>();
+    private final Set<UpgradeType> completedUpgrades = EnumSet.noneOf(UpgradeType.class);
     private double minerals;
     private int    vespene;
     private int    supply;
@@ -53,6 +55,10 @@ public class PlayerState implements PlayerStateView {
     public void addBuilding(Building b)      { buildings.add(b); }
     public List<Building> buildings()       { return Collections.unmodifiableList(buildings); }
 
+    public void completeUpgrade(UpgradeType type)        { completedUpgrades.add(type); }
+    public boolean hasUpgrade(UpgradeType type)           { return completedUpgrades.contains(type); }
+    public Set<String> completedUpgradeNames()            { return completedUpgrades.stream().map(UpgradeType::pythonName).collect(Collectors.toUnmodifiableSet()); }
+
     // --- Package-private bulk ops for EmulatedGame physics ---
 
     List<Unit> removeUnitsWhere(Predicate<Unit> pred) {
@@ -70,6 +76,7 @@ public class PlayerState implements PlayerStateView {
     void clear() {
         units.clear();
         buildings.clear();
+        completedUpgrades.clear();
         minerals   = 0;
         vespene    = 0;
         supply     = 0;
