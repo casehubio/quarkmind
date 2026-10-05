@@ -288,6 +288,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - `IEM10MultiGameValidationTest` — runs `ReplayValidationHarness` across all 30 IEM10 JSON games; prints per-matchup aggregate divergence stats (PvT/PvZ/PvP)
 - `StrippedReplayValidationTest` — compares Java StrippedReplayFeatureExtractor output against 118 Docker-restored oracle replays; prints per-type UnitBorn/UnitInit/Upgrade divergence
 - `DivergenceBaselineReportTest` — runs `ReplayValidationHarness` against oracle (118) + HSC XXVII (61) replays; prints per-matchup divergence at 1-min intervals (minerals, vespene, units, buildings)
+- `DivergenceRegressionTest` — asserts per-matchup unit and building deltas at 5-min checkpoint stay within baseline + 10% margin (oracle dataset); fails loudly on regression
 - Run with: `mvn test -pl quarkmind-sc2 -Preport`
 
 **Diagnostic tests** (`@Tag("diagnostic")`, excluded from default surefire run):
