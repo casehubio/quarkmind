@@ -38,9 +38,25 @@ def all_archetype_names() -> List[str]:
 
 COARSE_HIERARCHY: Dict[str, Dict[str, List[str]]] = {
     "vs_terran": {
-        "AGGRESSIVE": ["RUSH"],
+        "AGGRESSIVE": ["RUSH", "PROXY"],
         "TECH_AIR": ["BANSHEE_HARASS", "AIR_SUPERIORITY"],
         "GROUND": ["MECH_PUSH", "BIO_TIMING"],
+        "MACRO": ["MACRO_ECONOMY"],
+        "TECH": ["TECH_RUSH"],
+    },
+    "vs_zerg": {
+        "AGGRESSIVE": ["RUSH", "ROACH_RUSH", "LING_BANE"],
+        "TECH_AIR": ["MUTA_HARASS"],
+        "GROUND": ["HYDRA_PUSH"],
+        "MACRO": ["MACRO_ECONOMY"],
+        "TECH": ["TECH_RUSH"],
+    },
+    "vs_protoss": {
+        "AGGRESSIVE": ["RUSH", "PROXY", "CANNON_RUSH", "DT_RUSH"],
+        "TECH_AIR": ["AIR_SUPERIORITY"],
+        "GROUND": ["BLINK_STALKER", "COLOSSUS_PUSH"],
+        "MACRO": ["MACRO_ECONOMY"],
+        "TECH": ["TECH_RUSH"],
     },
 }
 
