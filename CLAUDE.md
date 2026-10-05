@@ -287,6 +287,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - `ReplayValidationReportTest` — runs `ReplayValidationHarness` against the default AI Arena binary replay; prints full economic divergence report to stdout
 - `IEM10MultiGameValidationTest` — runs `ReplayValidationHarness` across all 30 IEM10 JSON games; prints per-matchup aggregate divergence stats (PvT/PvZ/PvP)
 - `StrippedReplayValidationTest` — compares Java StrippedReplayFeatureExtractor output against 118 Docker-restored oracle replays; prints per-type UnitBorn/UnitInit/Upgrade divergence
+- `DivergenceBaselineReportTest` — runs `ReplayValidationHarness` against oracle (118) + HSC XXVII (61) replays; prints per-matchup divergence at 1-min intervals (minerals, vespene, units, buildings)
 - Run with: `mvn test -pl quarkmind-sc2 -Preport`
 
 **Diagnostic tests** (`@Tag("diagnostic")`, excluded from default surefire run):
