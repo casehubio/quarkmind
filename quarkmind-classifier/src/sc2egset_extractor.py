@@ -70,13 +70,7 @@ STAT_KEYS = [
     "scoreValueVespeneUsedCurrentTechnology",
 ]
 
-UPGRADES = [
-    "Stimpack", "ShieldWall", "PunisherGrenades", "BansheeCloak",
-    "TerranVehicleWeaponsLevel1", "PersonalCloaking", "DrillClaws",
-    "zerglingmovementspeed", "GlialReconstitution", "CentrificalHooks",
-    "Burrow", "WarpGateResearch", "BlinkTech", "Charge",
-    "AdeptPiercingAttack",
-]
+from src.upgrade_mapping import UPGRADES
 
 BUILDING_IDX = {b: i for i, b in enumerate(BUILDINGS)}
 UNIT_IDX = {u: i for i, u in enumerate(UNITS)}

@@ -53,8 +53,9 @@ class ModalityDropoutDataset(Dataset):
     """Wraps samples with random modality dropout during training.
 
     With probability `drop_prob`, zeros out the player feature block
-    (features 0:119) OR the opponent feature block (features 119:238)
-    and sets the corresponding availability flag in map_feat to 0.
+    (features 0:N_FEATURES_PER_PLAYER) OR the opponent feature block
+    (features N_FEATURES_PER_PLAYER:2*N_FEATURES_PER_PLAYER) and sets the
+    corresponding availability flag in map_feat to 0.
 
     Expects map_feat to have 6 elements: [map1..4, has_player, has_opponent].
     """
