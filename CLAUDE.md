@@ -294,6 +294,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - `IEM10MultiGameValidationTest` — runs `ReplayValidationHarness` across all 30 IEM10 JSON games; prints per-matchup aggregate divergence stats (PvT/PvZ/PvP)
 - `StrippedReplayValidationTest` — compares Java StrippedReplayFeatureExtractor output against 118 Docker-restored oracle replays; prints per-type UnitBorn/UnitInit/Upgrade divergence
 - `DivergenceBaselineReportTest` — runs `ReplayValidationHarness` against oracle (118) + HSC XXVII (61) replays; prints per-matchup divergence at 1-min intervals (minerals, vespene, units, buildings)
+- `OracleAccuracyBaselineTest` — consolidated per-category accuracy report: units, buildings, upgrades, economy (PlayerStats MAPE) against 118 oracle replays; writes docs/benchmarks/oracle-accuracy-baseline.md
 - `DivergenceRegressionTest` — asserts per-matchup unit and building deltas at 5-min checkpoint stay within baseline + 10% margin (oracle dataset); fails loudly on regression
 - `ReconstitutionExportTest` — runs StrippedReplayFeatureExtractor across all replay datasets; writes reconstituted JSON with metadata to quarkmind-classifier/data/reconstituted/
 - `DroolsCoarseLabelExportTest` — classifies reconstituted replays via heuristic archetype rules at 3min/5min; writes .label.json sidecars

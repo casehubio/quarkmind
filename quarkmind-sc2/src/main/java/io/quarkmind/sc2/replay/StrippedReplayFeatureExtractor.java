@@ -471,35 +471,8 @@ public class StrippedReplayFeatureExtractor {
 
     private int emitWarpGateAutoMorph(int playerId, PlayerState state,
                                       List<SyntheticEvent> events, int tagCounter) {
-        long completionLoop = state.warpGateCompletionLoop;
-
-        for (TrackedBuilding b : state.trackedBuildings) {
-            if ("Gateway".equals(b.name) && b.doneLoop <= completionLoop) {
-                events.add(new SyntheticEvent(completionLoop, EventOrdinal.UNIT_DIED, playerId,
-                    Map.of("evtTypeName", "UnitDied",
-                        "loop", completionLoop,
-                        "controlPlayerId", playerId,
-                        "unitTypeName", "Gateway",
-                        "unitTagIndex", b.tag,
-                        "unitTagRecycle", 0)));
-
-                int wgTag = tagCounter++;
-                events.add(new SyntheticEvent(completionLoop, EventOrdinal.UNIT_INIT, playerId,
-                    Map.of("evtTypeName", "UnitInit",
-                        "loop", completionLoop,
-                        "controlPlayerId", playerId,
-                        "unitTypeName", "WarpGate",
-                        "unitTagIndex", wgTag,
-                        "unitTagRecycle", 0)));
-                events.add(new SyntheticEvent(completionLoop, EventOrdinal.UNIT_DONE, playerId,
-                    Map.of("evtTypeName", "UnitDone",
-                        "loop", completionLoop,
-                        "controlPlayerId", playerId,
-                        "unitTypeName", "WarpGate",
-                        "unitTagIndex", wgTag,
-                        "unitTagRecycle", 0)));
-            }
-        }
+        // Oracle tracks Gateway→WarpGate as a type change, not a new building.
+        // No events emitted — internal state only.
         return tagCounter;
     }
 

@@ -67,7 +67,8 @@ class MuleAbilLinkDiscoveryTest {
                                 if (ge instanceof CmdEvent cmd && cmd.getLoop() >= birthLoop - 50
                                     && cmd.getLoop() <= birthLoop + 10) {
                                     Integer abl = cmd.getAbilLink();
-                                    int idx = cmd.getAbilCmdIndex();
+                                    Integer idxObj = cmd.getAbilCmdIndex();
+                                    int idx = idxObj != null ? idxObj : 0;
                                     if (abl != null && abl > 0) {
                                         String key = abl + "/" + idx;
                                         mappings.computeIfAbsent("MULE", k -> new TreeMap<>())

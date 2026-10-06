@@ -89,7 +89,7 @@ public class AbilityMapping {
     private static final int ABIL_CREEP_TUMOR_SPREAD = 265;
     private static final int ABIL_NYDUS_SPAWN = 268;
     private static final int ABIL_ORACLE_STASIS_WARD = 603;
-    private static final int ABIL_MULE_CALLDOWN = 171; // uncalibrated — pending MuleAbilLinkDiscoveryTest
+    private static final int ABIL_MULE_CALLDOWN = 90;
 
     private static final int ABIL_LAIR_MORPH          = 249; // calibrated: BuildingMorphDiscoveryTest
     private static final int ABIL_HIVE_MORPH          = 250; // calibrated: BuildingMorphDiscoveryTest
