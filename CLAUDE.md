@@ -295,8 +295,9 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - `StrippedReplayValidationTest` — compares Java StrippedReplayFeatureExtractor output against 118 Docker-restored oracle replays; prints per-type UnitBorn/UnitInit/Upgrade divergence
 - `DivergenceBaselineReportTest` — runs `ReplayValidationHarness` against oracle (118) + HSC XXVII (61) replays; prints per-matchup divergence at 1-min intervals (minerals, vespene, units, buildings)
 - `OracleAccuracyBaselineTest` — consolidated per-category accuracy report: units, buildings, upgrades, economy (PlayerStats MAPE) against 118 oracle replays; writes docs/benchmarks/oracle-accuracy-baseline.md
+- `TrackerVsStrippedComparisonTest` — compares TrackerEventFeatureExtractor (ground truth) vs StrippedReplayFeatureExtractor (CmdEvent-based) output across 118 oracle replays; prints per-type UnitBorn deltas
 - `DivergenceRegressionTest` — asserts per-matchup unit and building deltas at 5-min checkpoint stay within baseline + 10% margin (oracle dataset); fails loudly on regression
-- `ReconstitutionExportTest` — runs StrippedReplayFeatureExtractor across all replay datasets; writes reconstituted JSON with metadata to quarkmind-classifier/data/reconstituted/
+- `ReconstitutionExportTest` — runs ReplayFeatureExtractor (auto-detects tracker events for ground truth, falls back to CmdEvent reconstruction) across all replay datasets; writes reconstituted JSON with metadata to quarkmind-classifier/data/reconstituted/
 - `DroolsCoarseLabelExportTest` — classifies reconstituted replays via heuristic archetype rules at 3min/5min; writes .label.json sidecars
 - `UpgradeMappingGeneratorTest` — generates quarkmind-classifier/src/upgrade_mapping.py from Java UpgradeType enum (82 entries)
 - Run with: `mvn test -pl quarkmind-sc2 -Preport`
@@ -315,6 +316,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - `MarineMultiplicationDiagnosticTest` — traces per-replay Marine over-counting from selection-based multiplication; validates multiplication cap
 - `MuleAbilLinkDiscoveryTest` — discovers MULE calldown abilLink by correlating CmdEvents with oracle UnitBorn("MULE") events; feeds ABIL_MULE_CALLDOWN constant in AbilityMapping
 - `AbilLinkGapDiscoveryTest` — correlates oracle UnitInit/UnitBorn events with CmdEvents to discover abilLinks for Baneling morph, CreepTumor spread, SupplyDepot/Pylon/MissileTurret builds; confirmed all building abilLinks correct, Baneling morph abilLink 73 wrong for V4_9_3
+- `CmdEventGapDiagnosticTest` — counts CmdEvents vs oracle UnitBorn events across 118 replays; confirmed Blizzard API replays contain only ~43% of production CmdEvents; compares full (AI Arena) vs restored replay detection rates
 - `AutoSpawnCalibrationTest` — calibrates Larva spawn interval, Interceptor build time, and Inject Larva abilLink from oracle replays; feeds SC2Data.LARVA_SPAWN_INTERVAL and INTERCEPTOR_BUILD_TIME constants
 - `AbilityDiscoveryCalibrationTest.dumpAllCmdEventsNearMissedUpgrades` — per-replay CmdEvent dump (including null-abilLink) within 5000 loops of each missed upgrade; discovered abilLinks 191 (HydraliskDen), 608 (DarkShrine), 69 (FleetBeacon) that standard correlation missed due to noise
 - Run with: `mvn test -pl quarkmind-sc2 -Pdiagnostic`

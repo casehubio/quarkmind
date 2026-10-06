@@ -43,7 +43,7 @@ class ReconstitutionExportTest {
 
     @Test
     void exportAllDatasets() throws Exception {
-        var extractor = new StrippedReplayFeatureExtractor();
+        var extractor = new ReplayFeatureExtractor();
         int total = 0, success = 0, failed = 0;
         String gitSha = getGitSha();
 

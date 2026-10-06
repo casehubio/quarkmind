@@ -69,7 +69,7 @@ public class BulkFeatureExtractor {
 
                     executor.submit(() -> {
                         try {
-                            var extractor = new StrippedReplayFeatureExtractor();
+                            var extractor = new ReplayFeatureExtractor();
                             Map<String, Object> gameJson = extractor.extract(replay);
                             Path tmpFile = outputDir.resolve(baseName + ".tmp");
                             mapper.writeValue(tmpFile.toFile(), gameJson);
