@@ -176,6 +176,11 @@ cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m pytest tests/ -v
 cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.run_pipeline --data combined
 ```
 
+**Reconstitute replays (classifier — requires reconstituted data in data/reconstituted/):**
+```bash
+cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.reconstitution_pipeline
+```
+
 **Run (mock mode, no SC2 needed):**
 ```bash
 mvn quarkus:dev -pl quarkmind-sc2
@@ -258,6 +263,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - Chat agent tests: `DiscordIdentityDetectorTest`, `DiscordEventSourceTest`, `DiscordGatewayMessageHistoryTest`, `ChatWorldBridgeTest`, `ChatAgencyLoopTest`, `ChatAgentEndToEndTest`, `ChatMemoryFacadeTest`, `ChatCharacterManagerTest`
 - quarkmind-core chat tests: `AttentionClassifierTest`, `ChatDeltaReportTest`, `ChatObservationRendererTest`, `IdleReflectionTriggerTest`, `PersonalityEvolutionPipelineTest`
 - QuarkVille unit tests: `VilleIntentTest`, `VillePerceptionTest`, `WorldStateTest`, `GameTickTest`, `PerceptionBuilderTest`, `VilleAgencyLoopTest`, `VilleWorldBridgeTest`
+- Classifier Python tests: `test_upgrade_mapping_sync`, `test_feature_vector_dimensions`, `test_labelling_hybrid`, `test_era_stratification`, `test_reconstituted_ingest`, `test_reconstitution_validation`
 - Package-private static methods on CDI beans are tested from the same package without CDI — make them `static` (not `private`) to enable this.
 
 **Integration tests** (`@QuarkusTest`, full CDI context):
@@ -289,6 +295,9 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - `StrippedReplayValidationTest` — compares Java StrippedReplayFeatureExtractor output against 118 Docker-restored oracle replays; prints per-type UnitBorn/UnitInit/Upgrade divergence
 - `DivergenceBaselineReportTest` — runs `ReplayValidationHarness` against oracle (118) + HSC XXVII (61) replays; prints per-matchup divergence at 1-min intervals (minerals, vespene, units, buildings)
 - `DivergenceRegressionTest` — asserts per-matchup unit and building deltas at 5-min checkpoint stay within baseline + 10% margin (oracle dataset); fails loudly on regression
+- `ReconstitutionExportTest` — runs StrippedReplayFeatureExtractor across all replay datasets; writes reconstituted JSON with metadata to quarkmind-classifier/data/reconstituted/
+- `DroolsCoarseLabelExportTest` — classifies reconstituted replays via heuristic archetype rules at 3min/5min; writes .label.json sidecars
+- `UpgradeMappingGeneratorTest` — generates quarkmind-classifier/src/upgrade_mapping.py from Java UpgradeType enum (82 entries)
 - Run with: `mvn test -pl quarkmind-sc2 -Preport`
 
 **Diagnostic tests** (`@Tag("diagnostic")`, excluded from default surefire run):
