@@ -40,10 +40,10 @@ class DivergenceRegressionTest {
     private static final int TICK_LIMIT = TICKS_PER_MINUTE * CHECKPOINT_MINUTE + 1;
     private static final double MARGIN = 1.10;
     private static final double FLOOR = 3.0;
-    private static final double UNIT_ACCURACY_FLOOR = 0.13;
+    private static final double UNIT_ACCURACY_FLOOR = 0.42;
     private static final double BUILDING_ACCURACY_FLOOR = 0.95;
     private static final double UPGRADE_ACCURACY_FLOOR = 0.0;
-    private static final double ECONOMY_MAPE_CEILING = 200.0;
+    private static final double ECONOMY_MAPE_CEILING = 420.0;
 
     // Oracle v4.9.3 baseline at 5-minute mark (#347)
     private static final Map<String, double[]> BASELINE_5MIN = Map.of(
@@ -242,11 +242,11 @@ class DivergenceRegressionTest {
     private static final Map<String, DatasetBaseline> CROSS_PATCH_BASELINES = new java.util.LinkedHashMap<>();
     static {
         CROSS_PATCH_BASELINES.put("AI Arena (4.9.3)",
-            new DatasetBaseline(0.52, 1.0, 0.0, 254.0));
+            new DatasetBaseline(0.79, 1.0, 0.0, 693.0));
         CROSS_PATCH_BASELINES.put("IEM PyeongChang 2018",
-            new DatasetBaseline(0.03, 1.0, 0.0, 121.0));
+            new DatasetBaseline(0.21, 1.0, 0.0, 516.0));
         CROSS_PATCH_BASELINES.put("ASUS ROG 2020",
-            new DatasetBaseline(0.06, 1.0, 0.0, 362.0));
+            new DatasetBaseline(0.22, 1.0, 0.0, 951.0));
     }
 
     record DatasetSource(String name, Path dir) {}

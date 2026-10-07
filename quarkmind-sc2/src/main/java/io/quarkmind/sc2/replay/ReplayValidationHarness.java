@@ -1,16 +1,22 @@
 package io.quarkmind.sc2.replay;
 
+import hu.scelight.sc2.rep.factory.RepContent;
+import hu.scelight.sc2.rep.factory.RepParserEngine;
+import hu.scelight.sc2.rep.model.Replay;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.emulated.EmulatedGame;
+import io.quarkmind.sc2.emulated.RaceModelFactory;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.mock.ReplaySimulatedGame;
 import io.quarkmind.sc2.mock.SimulatedGame;
 import java.nio.file.Path;
+import java.util.EnumSet;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -47,7 +53,12 @@ public final class ReplayValidationHarness {
      * @return divergence report comparing emulated vs ground-truth state at each tick
      */
     public static DivergenceReport run(SimulatedGame groundTruth, List<TimedIntent> intents, int tickLimit) {
+        return run(groundTruth, intents, tickLimit, Race.PROTOSS);
+    }
+
+    public static DivergenceReport run(SimulatedGame groundTruth, List<TimedIntent> intents, int tickLimit, Race race) {
         EmulatedGame emulated = new EmulatedGame();
+        emulated.setPlayerRaceModel(RaceModelFactory.forRace(race));
 
         groundTruth.reset();
         emulated.reset();
@@ -68,7 +79,7 @@ public final class ReplayValidationHarness {
             // per-outer-tick income. SC2Data.mineralIncomePerTick handles the per-tick
             // rate internally; the raw probe count is the correct input.
             GameState gtBefore = groundTruth.snapshot();
-            emulated.setMiningProbesPerBase(countWorkersPerBase(gtBefore));
+            emulated.setMiningProbesPerBase(countWorkersPerBase(race, gtBefore));
 
             emulated.tick();
             groundTruth.tick();
@@ -137,7 +148,25 @@ public final class ReplayValidationHarness {
     public static DivergenceReport run(Path replayPath, int playerId, int tickLimit) {
         ReplaySimulatedGame game    = new ReplaySimulatedGame(replayPath, playerId);
         List<TimedIntent>   intents = ReplayCommandExtractor.extract(replayPath, playerId).intents();
-        return run(game, intents, tickLimit);
+        Race race = resolvePlayerRace(replayPath, playerId);
+        return run(game, intents, tickLimit, race);
+    }
+
+    private static Race resolvePlayerRace(Path replayPath, int playerId) {
+        try {
+            Replay replay = RepParserEngine.parseReplay(replayPath, EnumSet.of(RepContent.DETAILS));
+            if (replay != null && replay.details != null) {
+                var players = replay.details.getPlayerList();
+                if (players.length >= playerId) {
+                    hu.scelight.sc2.rep.model.details.Race scRace = players[playerId - 1].getRace();
+                    if (scRace == hu.scelight.sc2.rep.model.details.Race.TERRAN) return Race.TERRAN;
+                    if (scRace == hu.scelight.sc2.rep.model.details.Race.ZERG) return Race.ZERG;
+                }
+            }
+        } catch (Exception e) {
+            // fall through to default
+        }
+        return Race.PROTOSS;
     }
 
     /**
@@ -158,8 +187,8 @@ public final class ReplayValidationHarness {
     }
 
     /** Counts worker units per base, assigning each to its nearest complete town hall. */
-    static int[] countWorkersPerBase(GameState state) {
-        return EmulatedGame.countWorkersPerBase(io.quarkmind.domain.Race.PROTOSS,
+    static int[] countWorkersPerBase(Race race, GameState state) {
+        return EmulatedGame.countWorkersPerBase(race,
             state.myBuildings(), state.myUnits());
     }
 

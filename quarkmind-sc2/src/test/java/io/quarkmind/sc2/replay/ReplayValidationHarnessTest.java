@@ -22,7 +22,7 @@ class ReplayValidationHarnessTest {
             List.of(probe("p-0", 9, 9), probe("p-1", 10, 9)),
             List.of(incompleteNexus));
 
-        assertThat(ReplayValidationHarness.countWorkersPerBase(state)).isEmpty();
+        assertThat(ReplayValidationHarness.countWorkersPerBase(Race.PROTOSS, state)).isEmpty();
     }
 
     @Test
@@ -34,7 +34,7 @@ class ReplayValidationHarnessTest {
             List.of(probe("p-0", 9, 9), probe("p-1", 10, 9), probe("p-2", 7, 8)),
             List.of(nexus));
 
-        assertThat(ReplayValidationHarness.countWorkersPerBase(state)).containsExactly(3);
+        assertThat(ReplayValidationHarness.countWorkersPerBase(Race.PROTOSS, state)).containsExactly(3);
     }
 
     @Test
@@ -48,7 +48,7 @@ class ReplayValidationHarnessTest {
             List.of(probe("p-0", 9, 9), probe("p-1", 10, 8), probe("p-2", 29, 30)),
             List.of(nexus0, nexus1));
 
-        assertThat(ReplayValidationHarness.countWorkersPerBase(state)).containsExactly(2, 1);
+        assertThat(ReplayValidationHarness.countWorkersPerBase(Race.PROTOSS, state)).containsExactly(2, 1);
     }
 
     @Test
@@ -62,7 +62,7 @@ class ReplayValidationHarnessTest {
             List.of(probe("p-0", 9, 9), zealot),
             List.of(nexus));
 
-        assertThat(ReplayValidationHarness.countWorkersPerBase(state)).containsExactly(1);
+        assertThat(ReplayValidationHarness.countWorkersPerBase(Race.PROTOSS, state)).containsExactly(1);
     }
 
     @Test
