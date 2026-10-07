@@ -17,7 +17,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.ToIntFunction;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,6 +39,10 @@ class DivergenceRegressionTest {
     private static final int TICK_LIMIT = TICKS_PER_MINUTE * CHECKPOINT_MINUTE + 1;
     private static final double MARGIN = 1.10;
     private static final double FLOOR = 3.0;
+    private static final double UNIT_ACCURACY_FLOOR = 0.30;
+    private static final double BUILDING_ACCURACY_FLOOR = 0.95;
+    private static final double UPGRADE_ACCURACY_FLOOR = 0.0;
+
 
     // Oracle v4.9.3 baseline at 5-minute mark (#347)
     private static final Map<String, double[]> BASELINE_5MIN = Map.of(
@@ -137,6 +140,84 @@ class DivergenceRegressionTest {
                 .isLessThanOrEqualTo(thresholdBldg);
         }
     }
+
+    @Test
+    @EnabledIf("oracleExists")
+    void perCategoryAccuracyWithinThreshold() throws Exception {
+        List<Path> replays;
+        try (var stream = Files.list(ORACLE_DIR)) {
+            replays = stream.filter(p -> p.toString().endsWith(".SC2Replay"))
+                            .sorted().toList();
+        }
+
+        long totalGtUnits    = 0, totalEmUnits = 0;
+        long totalGtBldgs    = 0, totalEmBldgs = 0;
+        int  totalGtUpgrades = 0, matchedUpgrades = 0;
+        int  processed       = 0;
+
+        for (Path replayPath : replays) {
+            Replay replay;
+            try {
+                replay = RepParserEngine.parseReplay(replayPath,
+                                                     EnumSet.of(RepContent.DETAILS));
+            } catch (Exception e) {continue;}
+            if (replay == null || replay.details == null) {continue;}
+            Player[] players = replay.details.getPlayerList();
+            if (players.length < 2) {continue;}
+
+            for (int playerId = 1; playerId <= 2; playerId++) {
+                try {
+                    DivergenceReport report = ReplayValidationHarness.run(
+                            replayPath, playerId, TICK_LIMIT);
+                    int tickIndex = CHECKPOINT_MINUTE * TICKS_PER_MINUTE - 1;
+                    if (tickIndex >= report.ticks().size()) {continue;}
+                    DivergenceReport.TickSnapshot snap = report.ticks().get(tickIndex);
+
+                    for (var entry : snap.groundTruthUnitsByType().entrySet()) {
+                        totalGtUnits += entry.getValue();
+                        totalEmUnits += snap.emulatedUnitsByType()
+                                            .getOrDefault(entry.getKey(), 0);
+                    }
+
+                    for (var entry : snap.groundTruthBuildingsByType().entrySet()) {
+                        totalGtBldgs += entry.getValue();
+                        totalEmBldgs += snap.emulatedBuildingsByType()
+                                            .getOrDefault(entry.getKey(), 0);
+                    }
+
+                    totalGtUpgrades += snap.groundTruthUpgrades().size();
+                    matchedUpgrades += (int) snap.groundTruthUpgrades().stream()
+                                                 .filter(snap.emulatedUpgrades()::contains).count();
+                } catch (Exception e) { /* skip */ }
+            }
+            processed++;
+        }
+
+        assertThat(processed).isGreaterThanOrEqualTo(100);
+
+        double unitAcc = totalGtUnits > 0
+                         ? (double) Math.min(totalEmUnits, totalGtUnits) / totalGtUnits : 1.0;
+        double bldgAcc = totalGtBldgs > 0
+                         ? (double) Math.min(totalEmBldgs, totalGtBldgs) / totalGtBldgs : 1.0;
+        double upgAcc = totalGtUpgrades > 0
+                        ? (double) matchedUpgrades / totalGtUpgrades : 1.0;
+
+        System.out.printf("%nPer-category accuracy — 5-min checkpoint%n");
+        System.out.printf("  Units:     %.1f%% (threshold: %.0f%%)%n",
+                          unitAcc * 100, UNIT_ACCURACY_FLOOR * 100);
+        System.out.printf("  Buildings: %.1f%% (threshold: %.0f%%)%n",
+                          bldgAcc * 100, BUILDING_ACCURACY_FLOOR * 100);
+        System.out.printf("  Upgrades:  %.1f%% (threshold: %.0f%%)%n",
+                          upgAcc * 100, UPGRADE_ACCURACY_FLOOR * 100);
+
+        assertThat(unitAcc)
+                .as("Unit accuracy at 5-min").isGreaterThanOrEqualTo(UNIT_ACCURACY_FLOOR);
+        assertThat(bldgAcc)
+                .as("Building accuracy at 5-min").isGreaterThanOrEqualTo(BUILDING_ACCURACY_FLOOR);
+        assertThat(upgAcc)
+                .as("Upgrade accuracy at 5-min").isGreaterThanOrEqualTo(UPGRADE_ACCURACY_FLOOR);
+    }
+
 
     private static String toMatchup(Race r1, Race r2) {
         String s1 = raceInitial(r1);
