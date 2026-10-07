@@ -1,11 +1,42 @@
 package io.quarkmind.sc2.emulated;
 
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.EnemyStrategy;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.PlayerEconomyStats;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Race;
+import io.quarkmind.domain.Resource;
+import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.TechTree;
+import io.quarkmind.domain.TerrainGrid;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.IntentQueue;
-import io.quarkmind.sc2.intent.*;
+import io.quarkmind.sc2.intent.AttackIntent;
+import io.quarkmind.sc2.intent.BlinkIntent;
+import io.quarkmind.sc2.intent.BuildIntent;
+import io.quarkmind.sc2.intent.Intent;
+import io.quarkmind.sc2.intent.MoveIntent;
+import io.quarkmind.sc2.intent.MuleCalldownIntent;
+import io.quarkmind.sc2.intent.ResearchIntent;
+import io.quarkmind.sc2.intent.TimedIntent;
+import io.quarkmind.sc2.intent.TrainIntent;
 import org.jboss.logging.Logger;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * Physics engine for emulated SC2 game state.
@@ -42,6 +73,8 @@ public class EmulatedGame {
     private final List<Resource> geysers = new ArrayList<>();
     private final List<EnemyWave> pendingWaves = new ArrayList<>();
     private final DamageCalculator damageCalculator = new DamageCalculator();
+    private final EconomyTracker   economyTracker   = new EconomyTracker();
+
     private MovementStrategy movementStrategy = new DirectMovement();
     // E7: hard physics constraint — no unit may land on a wall tile regardless of movement strategy.
     // Null in mock/test contexts where no terrain exists.
@@ -55,6 +88,7 @@ public class EmulatedGame {
         friendlyPhysics.clear();
         enemy.clear();
         enemyPhysics.clear();
+        economyTracker.reset();
         nextTag     = 200;
         gameFrame   = 0;
         miningProbesOverridden = false;
@@ -105,6 +139,11 @@ public class EmulatedGame {
             enemyBehavior.tick(enemyPov, enemyIntentQueue);
             enemyIntentQueue.drainAll().forEach(intent -> applyIntent(intent, enemy, enemyPhysics));
         }
+
+        int workerCount = (int) friendly.units().stream()
+            .filter(u -> SC2Data.isWorker(u.type())).count();
+        economyTracker.tickUpdate(friendly.minerals(), friendly.vespene(),
+            friendly.supply(), friendly.supplyUsed(), workerCount);
     }
 
     /**
@@ -313,6 +352,9 @@ public class EmulatedGame {
         state.addSupplyUsed(sCost);
         state.deductMinerals(mCost);
         state.deductVespene(gCost);
+        if (state == friendly) {
+            economyTracker.recordTrainSpending(t.unitType(), mCost, gCost);
+        }
 
         // Phase 5: race-specific post-commit (larva consume, EGG spawn)
         if (model != null) {
@@ -385,6 +427,9 @@ public class EmulatedGame {
             return;
         }
         state.deductMinerals(mCost);
+        if (state == friendly) {
+            economyTracker.recordBuildSpending(b.buildingType(), mCost);
+        }
         final String tag = "bldg-" + nextTag++;
         final BuildingType bt = b.buildingType();
         state.addBuilding(new Building(tag, bt, b.location(),
@@ -629,6 +674,12 @@ public class EmulatedGame {
             ? enemyBehavior.stagingArea
             : List.of();
 
+        int workerCount = (int) friendlyWithCooldown.stream()
+            .filter(u -> SC2Data.isWorker(u.type())).count();
+        PlayerEconomyStats friendlyEconomy = economyTracker.currentStats(
+            (int) friendly.minerals(), friendly.vespene(),
+            friendly.supply(), friendly.supplyUsed(), workerCount);
+
         if (terrainGrid != null) {
             List<Unit> visibleEnemies = enemy.units().stream()
                 .filter(u -> visibility.isVisible(u.position()))
@@ -636,9 +687,9 @@ public class EmulatedGame {
             List<Unit> visibleStaging = stagingArea.stream()
                 .filter(u -> visibility.isVisible(u.position()))
                 .toList();
-            return new GameState((int) friendly.minerals(), friendly.vespene(), friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), visibleEnemies, List.copyOf(enemy.buildings()), visibleStaging, List.copyOf(geysers), List.of(), gameFrame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, friendly.completedUpgradeNames(), Set.of());
+            return new GameState((int) friendly.minerals(), friendly.vespene(), friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), visibleEnemies, List.copyOf(enemy.buildings()), visibleStaging, List.copyOf(geysers), List.of(), gameFrame, null, friendlyEconomy, PlayerEconomyStats.EMPTY, friendly.completedUpgradeNames(), Set.of());
         }
-        return new GameState((int) friendly.minerals(), friendly.vespene(), friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), List.copyOf(enemy.units()), List.copyOf(enemy.buildings()), List.copyOf(stagingArea), List.copyOf(geysers), List.of(), gameFrame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, friendly.completedUpgradeNames(), Set.of());
+        return new GameState((int) friendly.minerals(), friendly.vespene(), friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), List.copyOf(enemy.units()), List.copyOf(enemy.buildings()), List.copyOf(stagingArea), List.copyOf(geysers), List.of(), gameFrame, null, friendlyEconomy, PlayerEconomyStats.EMPTY, friendly.completedUpgradeNames(), Set.of());
     }
 
     private GameState snapshotForEnemy() {
