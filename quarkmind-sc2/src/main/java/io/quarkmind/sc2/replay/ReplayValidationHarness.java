@@ -1,8 +1,11 @@
 package io.quarkmind.sc2.replay;
 
 import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.emulated.EmulatedGame;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.mock.ReplaySimulatedGame;
@@ -11,7 +14,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Validates EmulatedGame economic accuracy against real SC2 replay data.
@@ -95,12 +100,27 @@ public final class ReplayValidationHarness {
 
             GameState em = emulated.snapshot();
 
+            Map<UnitType, Integer> gtUnitsByType = gt.myUnits().stream()
+                .collect(Collectors.groupingBy(Unit::type, Collectors.summingInt(u -> 1)));
+            Map<UnitType, Integer> emUnitsByType = em.myUnits().stream()
+                .collect(Collectors.groupingBy(Unit::type, Collectors.summingInt(u -> 1)));
+            Map<BuildingType, Integer> gtBldgsByType = gt.myBuildings().stream()
+                .filter(Building::isComplete)
+                .collect(Collectors.groupingBy(Building::type, Collectors.summingInt(b -> 1)));
+            Map<BuildingType, Integer> emBldgsByType = em.myBuildings().stream()
+                .filter(Building::isComplete)
+                .collect(Collectors.groupingBy(Building::type, Collectors.summingInt(b -> 1)));
+
             snapshots.add(new DivergenceReport.TickSnapshot(
                 tick,
                 gt.myUnits().size(),     em.myUnits().size(),
                 gt.myBuildings().size(), em.myBuildings().size(),
                 gt.minerals(),           em.minerals(),
-                gt.vespene(),            em.vespene()));
+                gt.vespene(),            em.vespene(),
+                gtUnitsByType,           emUnitsByType,
+                gtBldgsByType,           emBldgsByType,
+                gt.playerUpgrades(),     em.playerUpgrades(),
+                gt.playerEconomy(),      em.playerEconomy()));
         }
 
         return DivergenceReport.from(snapshots);

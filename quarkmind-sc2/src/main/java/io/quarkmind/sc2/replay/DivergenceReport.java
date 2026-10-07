@@ -1,6 +1,12 @@
 package io.quarkmind.sc2.replay;
 
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.PlayerEconomyStats;
+import io.quarkmind.domain.UnitType;
+
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public record DivergenceReport(List<TickSnapshot> ticks, Summary summary) {
 
@@ -9,7 +15,15 @@ public record DivergenceReport(List<TickSnapshot> ticks, Summary summary) {
         int groundTruthUnits,     int emulatedUnits,
         int groundTruthBuildings, int emulatedBuildings,
         int groundTruthMinerals,  int emulatedMinerals,
-        int groundTruthVespene,   int emulatedVespene) {
+        int groundTruthVespene,   int emulatedVespene,
+        Map<UnitType, Integer> groundTruthUnitsByType,
+        Map<UnitType, Integer> emulatedUnitsByType,
+        Map<BuildingType, Integer> groundTruthBuildingsByType,
+        Map<BuildingType, Integer> emulatedBuildingsByType,
+        Set<String> groundTruthUpgrades,
+        Set<String> emulatedUpgrades,
+        PlayerEconomyStats groundTruthEconomy,
+        PlayerEconomyStats emulatedEconomy) {
 
         public int unitDelta()     { return Math.abs(emulatedUnits     - groundTruthUnits); }
         public int buildingDelta() { return Math.abs(emulatedBuildings - groundTruthBuildings); }
