@@ -305,6 +305,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2
 - `ReconstitutionDeltaReportTest` — compares old reconstituted JSON (StrippedReplayFeatureExtractor) against fresh TrackerEventFeatureExtractor output for 118 oracle replays; reports per-category training data delta
 - `RestorationFidelityTest` — compares Docker-restored replay tracker events against original full replays (AI Arena); guarded: only runs when `aiarena_protoss_restored/` exists
 - `CrossPatchExtractionTest` — validates TrackerEventFeatureExtractor across tournament replays from different baseBuild versions (4.1→5.0); asserts ≥2 distinct patch versions
+- `RestorationCoverageAuditTest` — scans all replay datasets (152K+ replays), reports per-dataset tracker vs stripped fallback coverage; writes docs/benchmarks/restoration-coverage.md
 - Run with: `mvn test -pl quarkmind-sc2 -Preport`
 
 **Diagnostic tests** (`@Tag("diagnostic")`, excluded from default surefire run):
