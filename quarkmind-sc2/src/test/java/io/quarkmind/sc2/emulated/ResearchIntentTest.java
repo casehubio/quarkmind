@@ -21,6 +21,9 @@ class ResearchIntentTest {
     void setUp() {
         game = new EmulatedGame();
         game.reset();
+        game.setMineralsForTesting(5000);
+        game.setVespeneForHarness(5000);
+        game.setSupplyForTesting(200, 12);
     }
 
     @Test

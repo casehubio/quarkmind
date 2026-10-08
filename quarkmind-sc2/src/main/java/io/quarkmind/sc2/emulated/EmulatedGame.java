@@ -305,53 +305,68 @@ public class EmulatedGame {
     }
 
     private void handleTrain(final TrainIntent t, final PlayerState state,
-                              final PhysicsState physics, final long absLoop) {
-        final String buildingTag = t.buildingTag();
-        final Building building = state.buildings().stream()
-            .filter(b -> b.tag().equals(buildingTag) && b.isComplete())
-            .findFirst().orElse(null);
+                             final PhysicsState physics, final long absLoop) {
+        String buildingTag = t.buildingTag();
+        Building building = state.buildings().stream()
+                                 .filter(b -> b.tag().equals(buildingTag) && b.isComplete())
+                                 .findFirst().orElse(null);
+
         if (building == null) {
-            log.debugf("[EMULATED] Train rejected — building %s not ready", buildingTag);
-            return;
+            final RaceModel model = (state == friendly) ? playerRaceModel : null;
+            if (model != null && buildingTag != null && buildingTag.startsWith("r-")) {
+                final BuildingType required = SC2Data.trainedBy(t.unitType());
+                if (required != BuildingType.UNKNOWN) {
+                    building = shortestQueue(state.buildings().stream()
+                                    .filter(b -> b.isComplete() && SC2Data.canTrainFrom(b.type(), required))
+                                    .toList(), physics);
+                }
+                if (building == null) {
+                    building = shortestQueue(state.buildings().stream()
+                                    .filter(b -> b.isComplete() && model.townHallTypes().contains(b.type()))
+                                    .toList(), physics);
+                }
+            }
+            if (building == null) {
+                log.debugf("[EMULATED] Train rejected — building %s not ready", buildingTag);
+                return;
+            }
         }
-        final BuildingType required = SC2Data.trainedBy(t.unitType());
-        if (required != BuildingType.UNKNOWN && building.type() != required) {
+
+        final String       resolvedTag = building.tag();
+        final BuildingType required    = SC2Data.trainedBy(t.unitType());
+        if (required != BuildingType.UNKNOWN && !SC2Data.canTrainFrom(building.type(), required)) {
             log.debugf("[EMULATED] Train rejected — %s cannot train %s (needs %s)",
-                building.type(), t.unitType(), required);
+                       building.type(), t.unitType(), required);
             return;
         }
 
-        // Phase 1: race-specific pre-check (read-only by construction — view upcast enforces this)
         final RaceModel model = (state == friendly) ? playerRaceModel : null;
         if (model != null) {
-            final PlayerStateView view = state; // upcast: canProduce sees read-only projection
-            if (model.canProduce(view, buildingTag, t.unitType()) == ProductionDecision.BLOCKED) {
+            final PlayerStateView view = state;
+            if (model.canProduce(view, resolvedTag, t.unitType()) == ProductionDecision.BLOCKED) {
                 log.debugf("[EMULATED] Train rejected — production resource unavailable for %s", t.unitType());
                 return;
             }
         }
 
-        // Phase 2: resource check (batch-aware — Zergling costs 50 minerals for 2 units)
         final int count = SC2Data.trainCount(t.unitType());
         final int mCost = SC2Data.mineralCost(t.unitType()) * count;
         final int gCost = SC2Data.gasCost(t.unitType()) * count;
         final int sCost = SC2Data.supplyCost(t.unitType());
         if ((int) state.minerals() < mCost || state.vespene() < gCost
-                || state.supplyUsed() + sCost > state.supply()) {
+            || state.supplyUsed() + sCost > state.supply()) {
             log.debugf("[EMULATED] Cannot train %s — insufficient resources", t.unitType());
             return;
         }
 
-        // Phase 3: queue check
-        final boolean isBusy = physics.buildingTrainingUntil.containsKey(buildingTag);
-        final Deque<UnitType> existingQueue = physics.buildingQueues.get(buildingTag);
-        final int total = (isBusy ? 1 : 0) + (existingQueue != null ? existingQueue.size() : 0);
+        final boolean         isBusy        = physics.buildingTrainingUntil.containsKey(resolvedTag);
+        final Deque<UnitType> existingQueue = physics.buildingQueues.get(resolvedTag);
+        final int             total         = (isBusy ? 1 : 0) + (existingQueue != null ? existingQueue.size() : 0);
         if (total >= 5) {
-            log.debugf("[EMULATED] Train rejected — building %s queue full", buildingTag);
+            log.debugf("[EMULATED] Train rejected — building %s queue full", resolvedTag);
             return;
         }
 
-        // Phase 4: deduct resources
         state.addSupplyUsed(sCost);
         state.deductMinerals(mCost);
         state.deductVespene(gCost);
@@ -359,16 +374,15 @@ public class EmulatedGame {
             economyTracker.recordTrainSpending(t.unitType(), mCost, gCost);
         }
 
-        // Phase 5: race-specific post-commit (larva consume, EGG spawn)
         if (model != null) {
-            model.onProductionCommitted(state, buildingTag, t.unitType(), this::nextTagString);
+            model.onProductionCommitted(state, resolvedTag, t.unitType(), this::nextTagString);
         }
 
         if (!isBusy) {
-            startTraining(buildingTag, t.unitType(), state, physics, absLoop);
+            startTraining(resolvedTag, t.unitType(), state, physics, absLoop);
         } else {
-            physics.buildingQueues.computeIfAbsent(buildingTag, k -> new ArrayDeque<>())
-                .add(t.unitType());
+            physics.buildingQueues.computeIfAbsent(resolvedTag, k -> new ArrayDeque<>())
+                                  .add(t.unitType());
         }
     }
 
@@ -440,9 +454,11 @@ public class EmulatedGame {
         final int loopOffset = (int)(absLoop % SC2Data.LOOPS_PER_TICK);
         final long completesAt = gameFrame
             + (loopOffset + SC2Data.buildTimeInLoops(bt)) / SC2Data.LOOPS_PER_TICK;
+        final RaceModel model = (state == friendly) ? playerRaceModel : null;
         physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
             markBuildingComplete(tag, state);
             state.addSupply(SC2Data.supplyBonus(bt));
+            if (model != null) model.onBuildingComplete(state, bt, tag);
             log.debugf("[EMULATED] Completed %s (tag=%s)", bt, tag);
         }));
     }
@@ -452,6 +468,22 @@ public class EmulatedGame {
             ? new Building(b.tag(), b.type(), b.position(), b.health(), b.maxHealth(), true)
             : b);
     }
+
+    private Building shortestQueue(List<Building> candidates, PhysicsState physics) {
+        Building best      = null;
+        int      bestDepth = Integer.MAX_VALUE;
+        for (Building b : candidates) {
+            int             busy  = physics.buildingTrainingUntil.containsKey(b.tag()) ? 1 : 0;
+            Deque<UnitType> q     = physics.buildingQueues.get(b.tag());
+            int             depth = busy + (q != null ? q.size() : 0);
+            if (depth < bestDepth) {
+                bestDepth = depth;
+                best      = b;
+            }
+        }
+        return best;
+    }
+
 
     private void resolveCombat() {
         // Step 1: decrement all cooldowns (floor 0)
@@ -569,11 +601,22 @@ public class EmulatedGame {
 
     private void handleMuleCalldown(final MuleCalldownIntent m, final PlayerState state,
                                      final PhysicsState physics, final long absLoop) {
-        final boolean ocPresent = state.buildings().stream()
-            .anyMatch(b -> b.tag().equals(m.buildingTag()) && b.isComplete()
+        final String inputTag = m.buildingTag();
+        boolean ocPresent = state.buildings().stream()
+            .anyMatch(b -> b.tag().equals(inputTag) && b.isComplete()
                       && b.type() == BuildingType.ORBITAL_COMMAND);
+        String calldownTag = inputTag;
+        if (!ocPresent && inputTag != null && inputTag.startsWith("r-")) {
+            final Building oc = state.buildings().stream()
+                .filter(b -> b.isComplete() && b.type() == BuildingType.ORBITAL_COMMAND)
+                .findFirst().orElse(null);
+            if (oc != null) {
+                ocPresent = true;
+                calldownTag = oc.tag();
+            }
+        }
         if (!ocPresent) {
-            log.debugf("[EMULATED] MULE calldown rejected — OC %s not ready", m.buildingTag());
+            log.debugf("[EMULATED] MULE calldown rejected — OC %s not ready", inputTag);
             return;
         }
         final RaceModel model = (state == friendly) ? playerRaceModel : null;
@@ -581,40 +624,57 @@ public class EmulatedGame {
             log.debugf("[EMULATED] MULE calldown skipped — no race model for non-friendly state");
             return;
         }
-        model.onCalldown(state, m.buildingTag(), absLoop);
+        model.onCalldown(state, calldownTag, absLoop);
     }
 
     private void handleResearch(final ResearchIntent r, final PlayerState state,
-                                 final PhysicsState physics, final long absLoop) {
+                                final PhysicsState physics, final long absLoop) {
         if (state.hasUpgrade(r.upgradeType())) {
             log.debugf("[EMULATED] Research rejected — %s already completed", r.upgradeType());
             return;
         }
         if (physics.buildingResearching.containsKey(r.buildingTag())) {
             log.debugf("[EMULATED] Research rejected — building %s already researching %s",
-                r.buildingTag(), physics.buildingResearching.get(r.buildingTag()));
+                       r.buildingTag(), physics.buildingResearching.get(r.buildingTag()));
             return;
         }
-        final Building building = state.buildings().stream()
-            .filter(b -> b.tag().equals(r.buildingTag()) && b.isComplete())
-            .findFirst().orElse(null);
+        Building building = state.buildings().stream()
+                                 .filter(b -> b.tag().equals(r.buildingTag()) && b.isComplete())
+                                 .findFirst().orElse(null);
+        if (building == null && r.buildingTag() != null && r.buildingTag().startsWith("r-")) {
+            building = state.buildings().stream()
+                            .filter(b -> b.isComplete() && !physics.buildingResearching.containsKey(b.tag()))
+                            .findFirst().orElse(null);
+        }
         if (building == null) {
             log.debugf("[EMULATED] Research rejected — building %s not found or incomplete", r.buildingTag());
             return;
         }
-        int durationLoops = SC2Data.upgradeTimeInLoops(r.upgradeType());
+        final String resolvedTag = building.tag();
+        int          mCost       = SC2Data.upgradeMineralCost(r.upgradeType());
+        int          gCost       = SC2Data.upgradeVespeneCost(r.upgradeType());
+        if ((int) state.minerals() < mCost || state.vespene() < gCost) {
+            log.debugf("[EMULATED] Research rejected — insufficient resources for %s", r.upgradeType());
+            return;
+        }
+        state.deductMinerals(mCost);
+        state.deductVespene(gCost);
+        if (state == friendly) {
+            economyTracker.recordResearchSpending(mCost, gCost);
+        }
+        int  durationLoops  = SC2Data.upgradeTimeInLoops(r.upgradeType());
         long completionLoop = absLoop + durationLoops;
         long completionTick = completionLoop / SC2Data.LOOPS_PER_TICK;
-        physics.buildingResearching.put(r.buildingTag(), r.upgradeType());
-        physics.buildingResearchUntil.put(r.buildingTag(), completionLoop);
+        physics.buildingResearching.put(resolvedTag, r.upgradeType());
+        physics.buildingResearchUntil.put(resolvedTag, completionLoop);
         physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completionTick, () -> {
             state.completeUpgrade(r.upgradeType());
-            physics.buildingResearching.remove(r.buildingTag());
-            physics.buildingResearchUntil.remove(r.buildingTag());
+            physics.buildingResearching.remove(resolvedTag);
+            physics.buildingResearchUntil.remove(resolvedTag);
             log.debugf("[EMULATED] Research complete — %s", r.upgradeType());
         }));
         log.debugf("[EMULATED] Research started — %s at building %s, completes at loop %d",
-            r.upgradeType(), r.buildingTag(), completionLoop);
+                   r.upgradeType(), resolvedTag, completionLoop);
     }
 
 
@@ -1011,10 +1071,27 @@ public class EmulatedGame {
      * Used by ReplayValidationHarness when a building finishes construction in the replay ground truth.
      */
     public void markReplayBuildingComplete(String tag) {
+        BuildingType completedType = friendly.buildings().stream()
+            .filter(b -> b.tag().equals(tag)).findFirst()
+            .map(Building::type).orElse(null);
         friendly.replaceAllBuildings(b -> b.tag().equals(tag)
             ? new Building(b.tag(), b.type(), b.position(), b.health(), b.maxHealth(), true)
             : b);
+        if (playerRaceModel != null && completedType != null) {
+            playerRaceModel.onBuildingComplete(friendly, completedType, tag);
+        }
     }
+
+    public void syncReplayBuilding(Building gtBuilding) {
+        friendly.replaceAllBuildings(b -> b.tag().equals(gtBuilding.tag())
+                                          ? new Building(b.tag(), gtBuilding.type(), b.position(),
+                                                         b.health(), b.maxHealth(), gtBuilding.isComplete())
+                                          : b);
+        if (gtBuilding.isComplete() && playerRaceModel != null) {
+            playerRaceModel.onBuildingComplete(friendly, gtBuilding.type(), gtBuilding.tag());
+        }
+    }
+
 
     public void spawnUnit(int owner, UnitType type, Point2d position) {
         String tag = nextTagString();

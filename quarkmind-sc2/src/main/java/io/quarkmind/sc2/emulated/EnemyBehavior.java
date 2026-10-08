@@ -147,7 +147,7 @@ public class EnemyBehavior implements PlayerBehavior {
         // Do NOT deduct here: double deduction was the bug (EnemyBehavior deducted, then handleTrain deducted again).
         BuildingType needed = SC2Data.trainedBy(target);
         Optional<Building> trainer = enemy.buildings().stream()
-            .filter(b -> b.isComplete() && b.type() == needed)
+            .filter(b -> b.isComplete() && SC2Data.canTrainFrom(b.type(), needed))
             .findFirst();
         if (trainer.isEmpty()) {
             log.debugf("[ENEMY] No ready %s to train %s — waiting", needed, target);

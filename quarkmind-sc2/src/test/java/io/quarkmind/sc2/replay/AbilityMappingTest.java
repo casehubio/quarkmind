@@ -359,7 +359,7 @@ class AbilityMappingTest {
         assertThat(intents).hasSize(1);
         TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) intents.get(0)).intent().intent();
         assertThat(t.unitType()).isEqualTo(UnitType.STALKER);
-        assertThat(t.buildingTag()).isNull();
+        assertThat(t.buildingTag()).isEqualTo("r-stalker");
     }
 
     @Test
@@ -385,7 +385,7 @@ class AbilityMappingTest {
         assertThat(result).hasSize(1);
         TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) result.get(0)).intent().intent();
         assertThat(t.unitType()).isEqualTo(UnitType.STALKER);
-        assertThat(t.buildingTag()).isNull();
+        assertThat(t.buildingTag()).isEqualTo("r-stalker");
     }
 
 
@@ -669,7 +669,7 @@ class AbilityMappingTest {
         assertThat(result).hasSize(1);
         TrainIntent t = (TrainIntent) ((ReplayCommand.IntentCommand) result.get(0)).intent().intent();
         assertThat(t.unitType()).isEqualTo(UnitType.DRONE);
-        assertThat(t.buildingTag()).isNull();
+        assertThat(t.buildingTag()).isEqualTo("r-drone");
     }
 
 

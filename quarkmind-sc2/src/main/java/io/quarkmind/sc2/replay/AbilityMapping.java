@@ -8,6 +8,7 @@ import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.UpgradeType;
 import io.quarkmind.sc2.SelectionState;
+import io.quarkmind.sc2.intent.MuleCalldownIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.jboss.logging.Logger;
@@ -633,7 +634,7 @@ public class AbilityMapping {
                 ? buildCommand(loop, "NydusCanal", event) : null;
             case ABIL_ORACLE_STASIS_WARD -> isRace(Race.PROTOSS)
                 ? buildCommand(loop, "OracleStasisTrap", event) : null;
-            case ABIL_MULE_CALLDOWN -> isRace(Race.TERRAN) ? trainIntent(loop, UnitType.MULE) : null;
+            case ABIL_MULE_CALLDOWN -> isRace(Race.TERRAN) ? muleCalldownIntent(loop) : null;
             case ABIL_LAIR_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Hatchery", "Lair")) : null;
             case ABIL_HIVE_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Lair", "Hive")) : null;
             case ABIL_GREATER_SPIRE_MORPH -> isRace(Race.ZERG) ? List.of(new ReplayCommand.MorphCommand(loop, "Spire", "GreaterSpire")) : null;
@@ -730,6 +731,8 @@ public class AbilityMapping {
                 };
             }
             // ABIL_ROBOTICS WarpGateResearch removed — duplicates CYBERNETICS_CORE_UPGRADES idx=6 via ABIL_CYBERNETICS_CORE (236)
+            case ABIL_HATCHERY -> isRace(Race.ZERG) && idx == 1 ? trainIntent(loop, UnitType.QUEEN) : null;
+            case ABIL_LAIR -> isRace(Race.ZERG) && idx == 0 ? trainIntent(loop, UnitType.QUEEN) : null;
             default -> null;
         };
     }
@@ -767,10 +770,17 @@ public class AbilityMapping {
 
 
     private List<ReplayCommand> trainIntent(long loop, UnitType unitType) {
-        String buildingTag = selection.first();
+        String tag = selection.isEmpty() ? "r-" + unitType.name().toLowerCase() : selection.first();
         return List.of(new ReplayCommand.IntentCommand(
-                new TimedIntent(loop, new TrainIntent(buildingTag, unitType))));
+                new TimedIntent(loop, new TrainIntent(tag, unitType))));
     }
+
+    private List<ReplayCommand> muleCalldownIntent(long loop) {
+        String tag = selection.isEmpty() ? "r-mule" : selection.first();
+        return List.of(new ReplayCommand.IntentCommand(
+                new TimedIntent(loop, new MuleCalldownIntent(tag))));
+    }
+
 
     private List<ReplayCommand> moveOrders(CmdEvent event, long loop) {
         var                 tu     = event.getTargetUnit();

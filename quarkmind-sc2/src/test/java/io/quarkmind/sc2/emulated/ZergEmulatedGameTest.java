@@ -226,19 +226,18 @@ class ZergEmulatedGameTest {
         game.setSupplyForTesting(30, 12);
         final String hatchTag = hatcheryTag();
 
-        // Drain only 2 larva — leave 1 for Queen training
         game.applyIntent(new TrainIntent(hatchTag, UnitType.DRONE));
         game.applyIntent(new TrainIntent(hatchTag, UnitType.DRONE));
-        assertThat(model.larvaCount(hatchTag)).isEqualTo(1);
+        game.applyIntent(new TrainIntent(hatchTag, UnitType.DRONE));
+        assertThat(model.larvaCount(hatchTag)).isEqualTo(0);
 
-        // Train a Queen with the remaining larva
+        // Queens don't consume Larva — train directly from Hatchery
         game.applyIntent(new TrainIntent(hatchTag, UnitType.QUEEN));
         assertThat(model.larvaCount(hatchTag)).isEqualTo(0);
 
-        // Queen is 3rd in queue: Drone(12) + Drone(12) + Queen(40) = 64 ticks min
         final int droneTicks  = SC2Data.trainTimeInTicks(UnitType.DRONE);
         final int queenTicks  = SC2Data.trainTimeInTicks(UnitType.QUEEN);
-        final int totalTicks  = droneTicks + droneTicks + queenTicks + 2; // +2 buffer
+        final int totalTicks  = droneTicks * 3 + queenTicks + 2;
         for (int i = 0; i < totalTicks; i++) game.tick();
 
         final String queenTag = game.snapshot().myUnits().stream()

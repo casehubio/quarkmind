@@ -430,6 +430,107 @@ public final class SC2Data {
         return UPGRADE_TIMES.getOrDefault(type, (int) (100 * GAME_LOOPS_PER_SECOND));
     }
 
+    private record UpgradeCost(int minerals, int vespene) {}
+
+    private static final Map<UpgradeType, UpgradeCost> UPGRADE_COSTS   = Map.ofEntries(
+            Map.entry(UpgradeType.STIMPACK, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.COMBAT_SHIELD, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.CONCUSSIVE_SHELLS, new UpgradeCost(50, 50)),
+            Map.entry(UpgradeType.BANSHEE_CLOAK, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.BANSHEE_SPEED, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.BATTLECRUISER_SPECIALIZATIONS, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.SMART_SERVOS, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.HI_SEC_AUTO_TRACKING, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.TERRAN_BUILDING_ARMOR, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.CYCLONE_LOCK_ON_UPGRADE, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.PERSONAL_CLOAKING, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.DRILL_CLAWS, new UpgradeCost(75, 75)),
+            Map.entry(UpgradeType.TUNNELING_CLAWS, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.TERRAN_INFANTRY_WEAPONS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.TERRAN_INFANTRY_WEAPONS_2, new UpgradeCost(175, 175)),
+            Map.entry(UpgradeType.TERRAN_INFANTRY_WEAPONS_3, new UpgradeCost(250, 250)),
+            Map.entry(UpgradeType.TERRAN_INFANTRY_ARMORS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.TERRAN_INFANTRY_ARMORS_2, new UpgradeCost(175, 175)),
+            Map.entry(UpgradeType.TERRAN_INFANTRY_ARMORS_3, new UpgradeCost(250, 250)),
+            Map.entry(UpgradeType.TERRAN_VEHICLE_WEAPONS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.TERRAN_VEHICLE_WEAPONS_2, new UpgradeCost(175, 175)),
+            Map.entry(UpgradeType.TERRAN_VEHICLE_WEAPONS_3, new UpgradeCost(250, 250)),
+            Map.entry(UpgradeType.TERRAN_SHIP_WEAPONS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.TERRAN_SHIP_WEAPONS_2, new UpgradeCost(175, 175)),
+            Map.entry(UpgradeType.TERRAN_SHIP_WEAPONS_3, new UpgradeCost(250, 250)),
+            Map.entry(UpgradeType.TERRAN_VEHICLE_AND_SHIP_ARMORS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.TERRAN_VEHICLE_AND_SHIP_ARMORS_2, new UpgradeCost(175, 175)),
+            Map.entry(UpgradeType.TERRAN_VEHICLE_AND_SHIP_ARMORS_3, new UpgradeCost(250, 250)),
+            Map.entry(UpgradeType.ZERGLING_SPEED, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.ZERGLING_ATTACK_SPEED, new UpgradeCost(200, 200)),
+            Map.entry(UpgradeType.GLIAL_RECONSTITUTION, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.CENTRIFUGAL_HOOKS, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.BURROW, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.OVERLORD_SPEED, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.GROOVED_SPINES, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.MUSCULAR_AUGMENTS, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.NEURAL_PARASITE, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.INFESTOR_ENERGY, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.CHITINOUS_PLATING, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.ANABOLIC_SYNTHESIS, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.ZERG_MELEE_WEAPONS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.ZERG_MELEE_WEAPONS_2, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.ZERG_MELEE_WEAPONS_3, new UpgradeCost(200, 200)),
+            Map.entry(UpgradeType.ZERG_MISSILE_WEAPONS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.ZERG_MISSILE_WEAPONS_2, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.ZERG_MISSILE_WEAPONS_3, new UpgradeCost(200, 200)),
+            Map.entry(UpgradeType.ZERG_GROUND_ARMORS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.ZERG_GROUND_ARMORS_2, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.ZERG_GROUND_ARMORS_3, new UpgradeCost(200, 200))
+                                                                                      );
+    private static final Map<UpgradeType, UpgradeCost> UPGRADE_COSTS_2 = Map.ofEntries(
+            Map.entry(UpgradeType.ZERG_FLYER_WEAPONS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.ZERG_FLYER_WEAPONS_2, new UpgradeCost(175, 175)),
+            Map.entry(UpgradeType.ZERG_FLYER_WEAPONS_3, new UpgradeCost(250, 250)),
+            Map.entry(UpgradeType.ZERG_FLYER_ARMORS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.ZERG_FLYER_ARMORS_2, new UpgradeCost(175, 175)),
+            Map.entry(UpgradeType.ZERG_FLYER_ARMORS_3, new UpgradeCost(250, 250)),
+            Map.entry(UpgradeType.WARP_GATE_RESEARCH, new UpgradeCost(50, 50)),
+            Map.entry(UpgradeType.BLINK, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.CHARGE, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.ADEPT_PIERCING, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.PSI_STORM, new UpgradeCost(200, 200)),
+            Map.entry(UpgradeType.EXTENDED_THERMAL_LANCE, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.DARK_TEMPLAR_BLINK, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.PHOENIX_RANGE, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.PROTOSS_GROUND_WEAPONS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.PROTOSS_GROUND_WEAPONS_2, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.PROTOSS_GROUND_WEAPONS_3, new UpgradeCost(200, 200)),
+            Map.entry(UpgradeType.PROTOSS_GROUND_ARMORS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.PROTOSS_GROUND_ARMORS_2, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.PROTOSS_GROUND_ARMORS_3, new UpgradeCost(200, 200)),
+            Map.entry(UpgradeType.PROTOSS_AIR_WEAPONS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.PROTOSS_AIR_WEAPONS_2, new UpgradeCost(175, 175)),
+            Map.entry(UpgradeType.PROTOSS_AIR_WEAPONS_3, new UpgradeCost(250, 250)),
+            Map.entry(UpgradeType.PROTOSS_AIR_ARMORS_1, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.PROTOSS_AIR_ARMORS_2, new UpgradeCost(175, 175)),
+            Map.entry(UpgradeType.PROTOSS_AIR_ARMORS_3, new UpgradeCost(250, 250)),
+            Map.entry(UpgradeType.PROTOSS_SHIELDS_1, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.PROTOSS_SHIELDS_2, new UpgradeCost(225, 225)),
+            Map.entry(UpgradeType.PROTOSS_SHIELDS_3, new UpgradeCost(300, 300)),
+            Map.entry(UpgradeType.LIBERATOR_RANGE, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.MEDIVAC_SPEED_BOOST, new UpgradeCost(100, 100)),
+            Map.entry(UpgradeType.RAVEN_CORVID_REACTOR, new UpgradeCost(150, 150)),
+            Map.entry(UpgradeType.HIGH_CAPACITY_BARRELS, new UpgradeCost(100, 100))
+                                                                                      );
+
+    public static int upgradeMineralCost(UpgradeType type) {
+        UpgradeCost c = UPGRADE_COSTS.get(type);
+        if (c == null) {c = UPGRADE_COSTS_2.get(type);}
+        return c != null ? c.minerals() : 100;
+    }
+
+    public static int upgradeVespeneCost(UpgradeType type) {
+        UpgradeCost c = UPGRADE_COSTS.get(type);
+        if (c == null) {c = UPGRADE_COSTS_2.get(type);}
+        return c != null ? c.vespene() : 100;
+    }
+
 
     private static final Map<UnitType, UnitCosts> UNIT_COSTS;
     static {
@@ -872,6 +973,16 @@ public final class SC2Data {
                  MUTALISK, BANELING, ULTRALISK,
                  OVERLORD, OVERSEER, QUEEN             -> BuildingType.HATCHERY;
             default                                    -> BuildingType.UNKNOWN;
+        };
+    }
+
+    public static boolean canTrainFrom(BuildingType actual, BuildingType required) {
+        if (actual == required) {return true;}
+        return switch (required) {
+            case HATCHERY -> actual == BuildingType.LAIR || actual == BuildingType.HIVE;
+            case COMMAND_CENTER -> actual == BuildingType.ORBITAL_COMMAND || actual == BuildingType.PLANETARY_FORTRESS;
+            case SPIRE -> actual == BuildingType.GREATER_SPIRE;
+            default -> false;
         };
     }
 

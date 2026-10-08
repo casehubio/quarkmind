@@ -256,6 +256,37 @@ class SC2DataTest {
         assertThat(SC2Data.trainedBy(UnitType.SCV)).isEqualTo(BuildingType.COMMAND_CENTER);
     }
 
+    // --- canTrainFrom (building upgrade chains) ---
+
+    @Test
+    void canTrainFrom_exactMatch() {
+        assertThat(SC2Data.canTrainFrom(BuildingType.HATCHERY, BuildingType.HATCHERY)).isTrue();
+        assertThat(SC2Data.canTrainFrom(BuildingType.GATEWAY, BuildingType.GATEWAY)).isTrue();
+    }
+
+    @Test
+    void canTrainFrom_zergUpgradeChain() {
+        assertThat(SC2Data.canTrainFrom(BuildingType.LAIR, BuildingType.HATCHERY)).isTrue();
+        assertThat(SC2Data.canTrainFrom(BuildingType.HIVE, BuildingType.HATCHERY)).isTrue();
+    }
+
+    @Test
+    void canTrainFrom_terranUpgradeChain() {
+        assertThat(SC2Data.canTrainFrom(BuildingType.ORBITAL_COMMAND, BuildingType.COMMAND_CENTER)).isTrue();
+        assertThat(SC2Data.canTrainFrom(BuildingType.PLANETARY_FORTRESS, BuildingType.COMMAND_CENTER)).isTrue();
+    }
+
+    @Test
+    void canTrainFrom_spireUpgradeChain() {
+        assertThat(SC2Data.canTrainFrom(BuildingType.GREATER_SPIRE, BuildingType.SPIRE)).isTrue();
+    }
+
+    @Test
+    void canTrainFrom_mismatch() {
+        assertThat(SC2Data.canTrainFrom(BuildingType.GATEWAY, BuildingType.HATCHERY)).isFalse();
+        assertThat(SC2Data.canTrainFrom(BuildingType.LAIR, BuildingType.COMMAND_CENTER)).isFalse();
+    }
+
     // --- Terran unit stats ---
 
     @Test

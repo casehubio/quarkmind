@@ -89,6 +89,9 @@ public interface RaceModel {
      */
     default void onCalldown(PlayerState state, String buildingTag, long absLoop) {}
 
+    default void onBuildingComplete(PlayerState state, BuildingType type, String buildingTag) {}
+
+
     /**
      * Number of units spawned from a single TrainIntent for this race.
      * Default is 1. ZergRaceModel overrides for ZERGLING (returns 2).

@@ -1,7 +1,19 @@
 package io.quarkmind.sc2.emulated;
 
-import io.quarkmind.domain.*;
-import java.util.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Resource;
+import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 class ZergRaceModel implements RaceModel {
@@ -103,6 +115,7 @@ class ZergRaceModel implements RaceModel {
     @Override
     public ProductionDecision canProduce(final PlayerStateView view, final String buildingTag,
                                          final UnitType unitType) {
+        if (unitType == UnitType.QUEEN) return ProductionDecision.PROCEED;
         if (hatcheryLarvaCount.getOrDefault(buildingTag, 0) > 0) return ProductionDecision.PROCEED;
         return ProductionDecision.BLOCKED;
     }
@@ -110,6 +123,7 @@ class ZergRaceModel implements RaceModel {
     @Override
     public void onProductionCommitted(final PlayerState state, final String buildingTag,
                                       final UnitType unitType, final Supplier<String> tagSupplier) {
+        if (unitType == UnitType.QUEEN) return;
         hatcheryLarvaCount.merge(buildingTag, -1, Integer::sum);
 
         final Building hatchery = state.buildings().stream()
@@ -134,6 +148,15 @@ class ZergRaceModel implements RaceModel {
         if (type == UnitType.OVERLORD) state.addSupply(8);
         if (type == UnitType.QUEEN)    queenEnergyMap.put(unitTag, INJECT_COST_ENERGY);
     }
+
+    @Override
+    public void onBuildingComplete(final PlayerState state, final BuildingType type, final String tag) {
+        if (townHallTypes().contains(type)) {
+            hatcheryLarvaCount.put(tag, MAX_LARVA);
+            hatcheryNextLarvaLoop.remove(tag);
+        }
+    }
+
 
     @Override
     public int trainCount(final UnitType type) { return type == UnitType.ZERGLING ? 2 : 1; }

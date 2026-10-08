@@ -40,6 +40,12 @@ class EconomyTracker {
         }
     }
 
+    void recordResearchSpending(int mineralCost, int gasCost) {
+        mineralsUsedTechnology += mineralCost;
+        vespeneUsedTechnology += gasCost;
+    }
+
+
     void tickUpdate(double minerals, int vespene,
                     int supply, int supplyUsed, int workerCount) {
         ticksSinceRateUpdate++;

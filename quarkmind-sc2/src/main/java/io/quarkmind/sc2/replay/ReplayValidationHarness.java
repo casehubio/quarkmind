@@ -179,9 +179,8 @@ public final class ReplayValidationHarness {
             if (!injectedTags.contains(gtBuilding.tag())) {
                 emulated.injectReplayBuilding(gtBuilding);
                 injectedTags.add(gtBuilding.tag());
-            } else if (gtBuilding.isComplete()) {
-                // Building may have finished construction this tick — ensure EmulatedGame reflects it
-                emulated.markReplayBuildingComplete(gtBuilding.tag());
+            } else {
+                emulated.syncReplayBuilding(gtBuilding);
             }
         }
     }

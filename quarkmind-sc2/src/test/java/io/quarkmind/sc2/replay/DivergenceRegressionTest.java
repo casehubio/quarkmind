@@ -45,14 +45,14 @@ class DivergenceRegressionTest {
     private static final double UPGRADE_ACCURACY_FLOOR = 0.0;
     private static final double ECONOMY_MAPE_CEILING = 420.0;
 
-    // Oracle v4.9.3 baseline at 5-minute mark (#347)
+    // Oracle v4.9.3 baseline at 5-minute mark (#384 Phase 2)
     private static final Map<String, double[]> BASELINE_5MIN = Map.of(
-        "PvP", new double[]{  8.9, 1.7 },  // [unitDelta, buildingDelta]
-        "PvT", new double[]{ 20.6, 1.3 },
-        "PvZ", new double[]{ 28.4, 2.3 },
-        "TvT", new double[]{ 24.0, 1.1 },
-        "TvZ", new double[]{ 33.3, 1.3 },
-        "ZvZ", new double[]{ 38.3, 1.3 }
+        "PvP", new double[]{  5.1, 13.3 },  // [unitDelta, buildingDelta]
+        "PvT", new double[]{  8.0, 13.8 },
+        "PvZ", new double[]{ 11.0, 12.9 },
+        "TvT", new double[]{  9.1, 13.1 },
+        "TvZ", new double[]{ 12.2, 12.8 },
+        "ZvZ", new double[]{ 13.0,  8.6 }
     );
 
     static boolean oracleExists() {

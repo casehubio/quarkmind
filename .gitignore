@@ -57,6 +57,7 @@ package-lock.json
 proj
 **/data/
 **/replays/sc2egset/
+**/replays/own/
 .mvn/maven.config
 .mvn/slot-settings.xml
 .playwright-mcp/
