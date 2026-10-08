@@ -163,6 +163,19 @@
             <groupId>io.casehub</groupId>
             <artifactId>casehub-blocks</artifactId>
         </dependency>
+        <!-- Type-resolution only: BlocksBeans producers reference NarrativePipeline.
+             Exclude all transitives to avoid split-package CDI ambiguities. -->
+        <dependency>
+            <groupId>io.casehub</groupId>
+            <artifactId>casehub-neocortex-cognition</artifactId>
+            <version>0.2-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <!-- CaseHub npm packages (unpacked by maven-dependency-plugin) -->
         <dependency>
             <groupId>io.casehub</groupId>
@@ -190,11 +203,7 @@
             <version>0.4.21</version>
         </dependency>
 
-        <!-- Drools Quarkus extension -->
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-quarkus</artifactId>
-        </dependency>
+        <!-- Drools rule units (pure Drools — no Quarkus extension) -->
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-ruleunits-api</artifactId>
