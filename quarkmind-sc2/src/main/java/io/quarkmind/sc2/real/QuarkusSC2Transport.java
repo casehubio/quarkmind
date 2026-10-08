@@ -98,6 +98,7 @@ public class QuarkusSC2Transport {
 
     public void connect() {
         try {
+            quitting.set(false);
             if (!skipProcessLaunch) launchSC2();
             tcpProbe(sc2Port);
             openSocket(sc2Port);
@@ -392,10 +393,23 @@ public class QuarkusSC2Transport {
     // ---------------------------------------------------------------------------
 
     private void launchSC2() throws IOException {
+        if (isPortOpen(sc2Port)) {
+            log.info("[SC2] Port already open — SC2 is running, skipping launch");
+            return;
+        }
         SC2Executable sc2 = resolveSC2Executable();
         log.infof("[SC2] Launching: %s", sc2.path());
         new ProcessBuilder(sc2.path().toString(),
-            "-listen", "-port", String.valueOf(sc2Port), "-displayMode", "0").start();
+            "-listen", "127.0.0.1", "-port", String.valueOf(sc2Port), "-displayMode", "0").start();
+    }
+
+    private static boolean isPortOpen(int port) {
+        try (Socket probe = new Socket()) {
+            probe.connect(new InetSocketAddress("127.0.0.1", port), 200);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     private void tcpProbe(int port) throws InterruptedException {
