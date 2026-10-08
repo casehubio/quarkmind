@@ -76,4 +76,36 @@ class ReplayCommandExtractorTest {
         assertThat(stream.movementOrders()).isUnmodifiable();
         assertThat(stream.intents()).isUnmodifiable();
     }
+
+    @Test
+    void extractsBuildCommandsForProtossPlayer() {
+        assertThat(stream.buildCommands()).isNotEmpty();
+        assertThat(stream.buildCommands().get(0).buildingName()).isNotNull();
+    }
+
+    @Test
+    void extractsUpgradeCommandsOrIsEmpty() {
+        assertThat(stream.upgradeCommands()).isNotNull();
+    }
+
+    @Test
+    void extractsMorphCommandsOrIsEmpty() {
+        assertThat(stream.morphCommands()).isNotNull();
+    }
+
+    @Test
+    void buildUpgradeMorphListsAreUnmodifiable() {
+        assertThat(stream.buildCommands()).isUnmodifiable();
+        assertThat(stream.upgradeCommands()).isUnmodifiable();
+        assertThat(stream.morphCommands()).isUnmodifiable();
+    }
+
+    @Test
+    void intentsIncludeBuildIntents() {
+        boolean hasBuild = stream.intents().stream()
+                                 .anyMatch(ti -> ti.intent() instanceof io.quarkmind.sc2.intent.BuildIntent);
+        assertThat(hasBuild).as("AI Arena Protoss replay should contain at least one BuildIntent").isTrue();
+    }
+
+
 }

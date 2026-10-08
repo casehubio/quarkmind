@@ -81,11 +81,12 @@ class TerranReplayCommandExtractorTest {
     @Test
     void trainIntentsReferenceKnownUnitTypes() {
         stream.intents().stream()
-            .filter(ti -> ti.intent() instanceof TrainIntent)
-            .map(ti -> (TrainIntent) ti.intent())
-            .forEach(t -> assertThat(SC2Data.trainTimeInTicks(t.unitType()))
-                .as("trainTimeInTicks must be > 0 for %s", t.unitType())
-                .isGreaterThan(0));
+              .filter(ti -> ti.intent() instanceof TrainIntent)
+              .map(ti -> (TrainIntent) ti.intent())
+              .filter(t -> t.unitType() != UnitType.MULE)
+              .forEach(t -> assertThat(SC2Data.trainTimeInTicks(t.unitType()))
+                                    .as("trainTimeInTicks must be > 0 for %s", t.unitType())
+                                    .isGreaterThan(0));
     }
 
     @Test

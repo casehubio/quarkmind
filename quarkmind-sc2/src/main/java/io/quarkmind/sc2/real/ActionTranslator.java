@@ -8,6 +8,7 @@ import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.Intent;
+import io.quarkmind.sc2.intent.MorphIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
 import io.quarkmind.sc2.intent.MuleCalldownIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
@@ -46,6 +47,7 @@ public final class ActionTranslator {
                     case BlinkIntent        b -> blink(b);
                     case MuleCalldownIntent m -> muleCalldown(m);
                     case ResearchIntent    r -> research(r);
+                    case MorphIntent        m -> null;
                 };
                 if (cmd != null) commands.add(cmd);
             } catch (Exception e) {

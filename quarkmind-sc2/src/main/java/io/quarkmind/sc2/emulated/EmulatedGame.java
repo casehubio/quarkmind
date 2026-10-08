@@ -18,6 +18,7 @@ import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.Intent;
+import io.quarkmind.sc2.intent.MorphIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
 import io.quarkmind.sc2.intent.MuleCalldownIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
@@ -273,6 +274,7 @@ public class EmulatedGame {
             case BlinkIntent        b -> () -> executeBlink(b.unitTag(), friendly, friendlyPhysics);
             case MuleCalldownIntent m -> () -> handleMuleCalldown(m, friendly, friendlyPhysics, ti.loop());
             case ResearchIntent    r -> () -> handleResearch(r, friendly, friendlyPhysics, ti.loop());
+            case MorphIntent        m -> () -> handleMorph(m, friendly, friendlyPhysics, ti.loop());
         };
         action.run();
     }
@@ -286,6 +288,7 @@ public class EmulatedGame {
             case BlinkIntent        b -> () -> executeBlink(b.unitTag(), state, physics);
             case MuleCalldownIntent m -> () -> handleMuleCalldown(m, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
             case ResearchIntent    r -> () -> handleResearch(r, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
+            case MorphIntent        m -> () -> handleMorph(m, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
         };
         action.run();
     }
@@ -613,6 +616,66 @@ public class EmulatedGame {
         log.debugf("[EMULATED] Research started — %s at building %s, completes at loop %d",
             r.upgradeType(), r.buildingTag(), completionLoop);
     }
+
+
+    private static final Map<String, BuildingType> MORPH_BUILDING_TARGETS = Map.of(
+            "Lair", BuildingType.LAIR,
+            "Hive", BuildingType.HIVE,
+            "GreaterSpire", BuildingType.GREATER_SPIRE,
+            "OrbitalCommand", BuildingType.ORBITAL_COMMAND,
+            "PlanetaryFortress", BuildingType.PLANETARY_FORTRESS
+                                                                                    );
+
+    private static final Map<String, UnitType> MORPH_UNIT_TARGETS = Map.ofEntries(
+            Map.entry("Baneling", UnitType.BANELING),
+            Map.entry("Ravager", UnitType.RAVAGER),
+            Map.entry("BroodLord", UnitType.BROOD_LORD),
+            Map.entry("Lurker", UnitType.LURKER),
+            Map.entry("Overseer", UnitType.OVERSEER),
+            Map.entry("Archon", UnitType.ARCHON),
+            Map.entry("Hellbat", UnitType.HELLBAT)
+                                                                                 );
+
+
+    private void handleMorph(MorphIntent m, PlayerState state, PhysicsState physics, long absLoop) {
+        BuildingType targetBt = MORPH_BUILDING_TARGETS.get(m.targetName());
+        if (targetBt != null) {
+            Building source = state.buildings().stream()
+                                   .filter(b -> b.tag().equals(m.unitTag()) && b.isComplete())
+                                   .findFirst().orElse(null);
+            if (source == null) {
+                log.debugf("[EMULATED] Building morph rejected — building %s not found or incomplete", m.unitTag());
+                return;
+            }
+            state.replaceAllBuildings(b -> b.tag().equals(m.unitTag())
+                                           ? new Building(b.tag(), targetBt, b.position(), b.health(), b.maxHealth(), false)
+                                           : b);
+            long completesAt = gameFrame + SC2Data.buildTimeInLoops(targetBt) / SC2Data.LOOPS_PER_TICK;
+            physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
+                markBuildingComplete(m.unitTag(), state);
+                log.debugf("[EMULATED] Building morph complete — %s → %s", m.sourceName(), targetBt);
+            }));
+            return;
+        }
+        UnitType targetUnit = MORPH_UNIT_TARGETS.get(m.targetName());
+        if (targetUnit == null) {
+            log.debugf("[EMULATED] Morph rejected — unknown target %s", m.targetName());
+            return;
+        }
+        Unit source = state.units().stream()
+                           .filter(u -> u.tag().equals(m.unitTag()))
+                           .findFirst().orElse(null);
+        if (source == null) {
+            log.debugf("[EMULATED] Unit morph rejected — unit %s not found", m.unitTag());
+            return;
+        }
+        state.removeUnit(m.unitTag());
+        String tag = nextTagString();
+        int    hp  = SC2Data.maxHealth(targetUnit);
+        state.addUnit(new Unit(tag, targetUnit, source.position(), hp, hp, 0, 0, 0, 0));
+        log.debugf("[EMULATED] Unit morph %s → %s (tag=%s)", m.sourceName(), m.targetName(), tag);
+    }
+
 
     /**
      * Returns true if this attack should miss due to low-ground-to-high-ground penalty.
