@@ -17,6 +17,9 @@ steps:
   - train: OVERLORD
     at: 21 supply
 
+  - train: QUEEN
+    at: 26 supply
+
   - train: OVERLORD
     at: 29 supply
 
@@ -28,6 +31,9 @@ steps:
 
   - train: OVERLORD
     at: 53 supply
+
+  - train: OVERLORD
+    at: 61 supply
 
   - train: DRONE
     loop: continuous
@@ -42,10 +48,10 @@ steps:
     at: 183 ticks
     expect:
       units:
-        DRONE: { min: 19 }
+        DRONE: { min: 24 }
 
   - assert: tick-305
     at: 305 ticks
     expect:
       units:
-        DRONE: { min: 35 }
+        DRONE: { min: 45 }

@@ -106,6 +106,9 @@ public interface RaceModel {
     default boolean handleAbility(PlayerState state, String casterTag, String ability,
                                   String targetTag, long gameLoop) {return false;}
 
+
+    default boolean parallelProduction() {return false;}
+
     /** The worker unit type for this race — used by countWorkersPerBase. */
     UnitType workerType();
 

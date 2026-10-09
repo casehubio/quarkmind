@@ -362,10 +362,11 @@ public class EmulatedGame {
             return;
         }
 
+        final boolean parallel = model != null && model.parallelProduction();
         final boolean         isBusy        = physics.buildingTrainingUntil.containsKey(resolvedTag);
         final Deque<UnitType> existingQueue = physics.buildingQueues.get(resolvedTag);
         final int             total         = (isBusy ? 1 : 0) + (existingQueue != null ? existingQueue.size() : 0);
-        if (total >= 5) {
+        if (!parallel && total >= 5) {
             log.debugf("[EMULATED] Train rejected — building %s queue full", resolvedTag);
             return;
         }
@@ -381,7 +382,7 @@ public class EmulatedGame {
             model.onProductionCommitted(state, resolvedTag, t.unitType(), this::nextTagString);
         }
 
-        if (!isBusy) {
+        if (parallel || !isBusy) {
             startTraining(resolvedTag, t.unitType(), state, physics, absLoop);
         } else {
             physics.buildingQueues.computeIfAbsent(resolvedTag, k -> new ArrayDeque<>())

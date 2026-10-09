@@ -164,6 +164,10 @@ class ZergRaceModel implements RaceModel {
     private static final Set<BuildingType> TOWN_HALLS =
         Set.of(BuildingType.HATCHERY, BuildingType.LAIR, BuildingType.HIVE);
 
+
+    @Override
+    public boolean parallelProduction()                {return true;}
+
     @Override public UnitType workerType()             { return UnitType.DRONE; }
     @Override public Set<BuildingType> townHallTypes() { return TOWN_HALLS; }
 
