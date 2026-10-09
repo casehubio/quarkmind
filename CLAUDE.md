@@ -266,6 +266,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - Tests: (continued) `PatternConfidenceTest`, `DominanceWeightsTest`, `AnchorInterpolatorTest`, `TemporalDominanceWeightStrategyTest`, `SituationalDominanceWeightStrategyTest`, `DroolsDominanceWeightStrategyTest`, `UnitTypeTest`, `StrategyArchetypeTest`, `GamePhaseTest`, `ArchetypeCategoryTest`, `StrategyTaxonomyTest`, `StrategyTransitionTest`, `TimeBasedPhaseResolverTest`, `StateBasedPhaseResolverTest`, `PhaseResolverProducerTest`, `SC2GameCbrCaseTest`, `SC2CbrRetentionObserverTest`, `SC2AdvisoryCbrRetentionObserverTest`, `SC2ImplementationRoutingStrategyTest`, `SC2StrategyRouterTaskTest`, `ScoutingConvergenceEvaluatorTest`, `FeatureAlignmentTest`, `FeatureIndexMapsTest`, `OnnxClassificationCalibrationTest`
 - Tests: (continued) `CoachingAdviceTest`, `CoachingDispositionTermTest`, `CoachingTriggerBuilderTest`, `CoachingSessionSelectorTest`, `CoachingWorkerFactoryTest`, `CoachingChannelBrokerTest`, `CoachingComplianceEvaluatorTest`, `CoachingStyleTest`, `CoachingAcknowledgmentHandlerTest`, `InlineCommentaryDispatcherTest`, `FewShotRetrieverTest`, `Point2dCentroidTest`, `UnitTypeWorkerTest`, `ExpansionLocationTest`, `TerrainGridRampTest`, `LocationResolverTest`, `CountDeltaTest`, `ArmyCentroidMovementTest`, `ExpansionPlacementTest`, `UnitsNearLocationTest`, `LlmPatternClassifierWorkerFactoryTest`, `ComplianceVerdictTest`, `ComplianceWorkerDispatcherTest`, `LlmComplianceWorkerFactoryTest`, `CbrLearningCurveEndpointTest`
 - Tests: (continued) `UpgradeTypeTest`, `AbilityDiscoveryCalibrationTest`, `StrippedReplayParseTest`, `StrippedReplayFeatureExtractorTest`, `StrippedReplayMorphTest`, `StrippedReplayEconomyTest`, `SelectionUnitLinkTrackerTest`, `LarvaTrainDiscoveryTest`, `TerranTrainDiscoveryTest`, `ProtossTrainDiscoveryTest`
+- Playbook tests: `SC2PlaybookCalibrationTest`, `SC2DeliveryHandlerTest`, `ProtossRaceModelChronoTest`, `TerranRaceModelMuleTest`, `EmulatedGameChronoTest`, `ZergParallelTrainingTest`
 - Chat protocol tests: `ChatIntentTest`, `ChatPerceptionTest`
 - Chat agent tests: `DiscordIdentityDetectorTest`, `DiscordEventSourceTest`, `DiscordGatewayMessageHistoryTest`, `ChatWorldBridgeTest`, `ChatAgencyLoopTest`, `ChatAgentEndToEndTest`, `ChatMemoryFacadeTest`, `ChatCharacterManagerTest`
 - quarkmind-core chat tests: `AttentionClassifierTest`, `ChatDeltaReportTest`, `ChatObservationRendererTest`, `IdleReflectionTriggerTest`, `PersonalityEvolutionPipelineTest`
@@ -292,6 +293,12 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 **Replay visual pixel tests** (`ReplayVisualizerIT`, `@Tag("browser")`):
 - Run with: `mvn test -pl quarkmind-sc2 -Pplaywright-replay`
 - **Run after any change to `visualizer.js`, `GameState`, or the domain model**
+
+**Playbook calibration tests** (plain JUnit, economy validation):
+- `SC2PlaybookCalibrationTest` — runs economy-only playbooks for all 3 races against EmulatedGame; asserts Probe/SCV/Drone counts at tick checkpoints
+- `SC2DeliveryHandlerTest` — unit tests for all 7 playbook actions (train/build/research/morph/ability/calldown/assert)
+- `ProtossRaceModelChronoTest`, `TerranRaceModelMuleTest`, `EmulatedGameChronoTest`, `ZergParallelTrainingTest` — race-specific ability and physics tests
+- Run with: `mvn test -pl quarkmind-sc2 -Dtest=SC2PlaybookCalibrationTest`
 
 **WebSocket integration tests** (`@QuarkusTest`, run in normal suite):
 - `GameStateWebSocketTest` — connects via `java.net.http.WebSocket`, calls `engine.observe()` directly
@@ -383,6 +390,7 @@ quarkmind/                           <- parent POM
 │     plugin/coaching/     CoachingTriggerBuilder, CoachingWorkerFactory, CoachingStyle
 │     plugin/flow/         EconomicsFlow, EconomicsDecisionService
 │     qa/                  QA REST endpoints (@UnlessBuildProfile("prod"))
+│     playbook/            SC2PlaybookRunner, SC2DeliveryHandler (7 actions: train/build/research/morph/ability/calldown/assert)
 │     qa/workbench/        WorkbenchSocket, CoachingAcknowledgmentHandler
 │   src/main/webui/        Vite + Lit components (Quinoa-managed)
 │     workbench/           qm-pattern-page, qm-coaching-page, qm-strategy-page, qm-commentary-page
