@@ -58,8 +58,8 @@ class TerranRaceModelMuleTest {
         morphToOC();
         model.onBuildingComplete(state, BuildingType.ORBITAL_COMMAND, "cc-0");
         model.handleAbility(state, "cc-0", "MULE_CALLDOWN", null, 0L);
-        long loopsFor50Energy = (long) (SC2Data.CHRONO_BOOST_ENERGY_COST
-            / SC2Data.NEXUS_ENERGY_REGEN_PER_LOOP);
+        long loopsFor50Energy = (long) (SC2Data.MULE_CALLDOWN_ENERGY_COST
+            / SC2Data.CASTER_ENERGY_REGEN_PER_LOOP);
         for (long loop = SC2Data.LOOPS_PER_TICK; loop <= loopsFor50Energy + SC2Data.LOOPS_PER_TICK; loop += SC2Data.LOOPS_PER_TICK) {
             model.tickPassive(state, loop);
         }

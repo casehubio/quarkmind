@@ -83,7 +83,7 @@ class ZergRaceModel implements RaceModel {
             if (u.type() != UnitType.QUEEN) continue;
             final double energy = queenEnergyMap.getOrDefault(u.tag(), INJECT_COST_ENERGY);
             queenEnergyMap.put(u.tag(), Math.min(200.0,
-                energy + SC2Data.QUEEN_ENERGY_REGEN_PER_LOOP * SC2Data.LOOPS_PER_TICK));
+                energy + SC2Data.CASTER_ENERGY_REGEN_PER_LOOP * SC2Data.LOOPS_PER_TICK));
         }
 
         for (final Unit queen : state.units()) {

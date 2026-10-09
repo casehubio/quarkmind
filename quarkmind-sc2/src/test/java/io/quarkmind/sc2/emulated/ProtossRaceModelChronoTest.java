@@ -52,7 +52,7 @@ class ProtossRaceModelChronoTest {
     void energyRegenerates_overTime() {
         model.handleAbility(state, "nexus-0", "CHRONO_BOOST", "nexus-0", 0L);
         long loopsFor50Energy = (long) (SC2Data.CHRONO_BOOST_ENERGY_COST
-            / SC2Data.NEXUS_ENERGY_REGEN_PER_LOOP);
+            / SC2Data.CASTER_ENERGY_REGEN_PER_LOOP);
         for (long loop = SC2Data.LOOPS_PER_TICK; loop <= loopsFor50Energy + SC2Data.LOOPS_PER_TICK; loop += SC2Data.LOOPS_PER_TICK) {
             model.tickPassive(state, loop);
         }

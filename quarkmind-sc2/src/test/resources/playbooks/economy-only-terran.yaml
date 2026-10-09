@@ -58,6 +58,6 @@ steps:
     at: 305 ticks
     expect:
       units:
-        SCV: { min: 38 }
+        SCV: { min: 40 }
       minerals:
         min: 400

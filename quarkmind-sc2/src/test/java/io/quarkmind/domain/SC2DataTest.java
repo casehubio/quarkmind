@@ -371,7 +371,7 @@ class SC2DataTest {
 
     @Test
     void queenEnergyRegenPerLoopIsPositive() {
-        assertThat(SC2Data.QUEEN_ENERGY_REGEN_PER_LOOP).isGreaterThan(0);
+        assertThat(SC2Data.CASTER_ENERGY_REGEN_PER_LOOP).isGreaterThan(0);
     }
 
     // --- techTier ---

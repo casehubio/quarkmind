@@ -91,8 +91,8 @@ public class SC2DeliveryHandler implements DeliveryHandler {
     private StepOutcome doAbility(String stepName, Map<String, Object> data) {
         String        ability    = (String) data.get("ability");
         String        targetType = (String) data.get("target");
-        String        casterTag  = "r-ability";
-        String        targetTag  = "r-" + targetType.toLowerCase();
+        String        targetTag  = (targetType != null) ? "r-" + targetType.toLowerCase() : null;
+        String        casterTag  = (targetTag != null) ? targetTag : "r-ability";
         AbilityIntent intent     = new AbilityIntent(casterTag, ability, targetTag);
         boolean       accepted   = game.applyAbility(intent);
         if (!accepted) {

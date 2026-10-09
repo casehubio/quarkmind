@@ -681,12 +681,7 @@ public class EmulatedGame {
     private String resolveBuilding(String rTag, PlayerState state) {
         String       typeName = rTag.substring(2).toUpperCase();
         BuildingType type;
-        try {type = BuildingType.valueOf(typeName);} catch (IllegalArgumentException e) {
-            return state.buildings().stream()
-                        .filter(Building::isComplete)
-                        .map(Building::tag)
-                        .findFirst().orElse(null);
-        }
+        try {type = BuildingType.valueOf(typeName);} catch (IllegalArgumentException e) {return null;}
         return state.buildings().stream()
                     .filter(b -> b.isComplete() && b.type() == type)
                     .map(Building::tag)

@@ -52,7 +52,7 @@ class ProtossRaceModel implements RaceModel {
             if (b.type() != BuildingType.NEXUS || !b.isComplete()) {continue;}
             double energy = nexusEnergyMap.getOrDefault(b.tag(), 0.0);
             nexusEnergyMap.put(b.tag(), Math.min(SC2Data.MAX_CASTER_ENERGY,
-                                                 energy + SC2Data.NEXUS_ENERGY_REGEN_PER_LOOP * SC2Data.LOOPS_PER_TICK));
+                                                 energy + SC2Data.CASTER_ENERGY_REGEN_PER_LOOP * SC2Data.LOOPS_PER_TICK));
         }
     }
 

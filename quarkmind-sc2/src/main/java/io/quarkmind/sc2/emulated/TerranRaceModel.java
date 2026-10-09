@@ -66,7 +66,7 @@ class TerranRaceModel implements RaceModel {
             if (b.type() != BuildingType.ORBITAL_COMMAND || !b.isComplete()) {continue;}
             double energy = ocEnergyMap.getOrDefault(b.tag(), 0.0);
             ocEnergyMap.put(b.tag(), Math.min(SC2Data.MAX_CASTER_ENERGY,
-                                              energy + SC2Data.NEXUS_ENERGY_REGEN_PER_LOOP * SC2Data.LOOPS_PER_TICK));
+                                              energy + SC2Data.CASTER_ENERGY_REGEN_PER_LOOP * SC2Data.LOOPS_PER_TICK));
         }
     }
 
@@ -80,8 +80,8 @@ class TerranRaceModel implements RaceModel {
                            .findFirst().orElse(null);
         if (oc == null) {return false;}
         double energy = ocEnergyMap.getOrDefault(casterTag, 0.0);
-        if (energy < SC2Data.CHRONO_BOOST_ENERGY_COST) {return false;}
-        ocEnergyMap.put(casterTag, energy - SC2Data.CHRONO_BOOST_ENERGY_COST);
+        if (energy < SC2Data.MULE_CALLDOWN_ENERGY_COST) {return false;}
+        ocEnergyMap.put(casterTag, energy - SC2Data.MULE_CALLDOWN_ENERGY_COST);
         onCalldown(state, casterTag, gameLoop);
         return true;
     }
@@ -89,7 +89,7 @@ class TerranRaceModel implements RaceModel {
     @Override
     public void onBuildingComplete(PlayerState state, BuildingType type, String buildingTag) {
         if (type == BuildingType.ORBITAL_COMMAND) {
-            ocEnergyMap.put(buildingTag, SC2Data.NEXUS_STARTING_ENERGY);
+            ocEnergyMap.put(buildingTag, SC2Data.OC_STARTING_ENERGY);
         }
     }
 

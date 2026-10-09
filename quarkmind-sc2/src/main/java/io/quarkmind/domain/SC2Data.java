@@ -88,17 +88,18 @@ public final class SC2Data {
     public static final int INTERCEPTOR_BUILD_TIME = 202;
 
     /**
-     * Queen energy regeneration per game loop.
-     * Standard SC2 spellcaster regen: 0.5625 energy/sec at Faster speed.
+     * Standard SC2 spellcaster energy regeneration per game loop.
+     * All casters (Queen, Nexus, OC) regen at 0.5625 energy/sec at Faster speed.
      * Per loop: 0.5625 / 22.4 ≈ 0.02511.
      */
-    public static final double QUEEN_ENERGY_REGEN_PER_LOOP = 0.5625 / GAME_LOOPS_PER_SECOND;
-    public static final double NEXUS_ENERGY_REGEN_PER_LOOP = 0.5625 / GAME_LOOPS_PER_SECOND;
     public static final double CHRONO_BOOST_ENERGY_COST    = 50.0;
     public static final int    CHRONO_BOOST_DURATION_LOOPS = 448;
     public static final double CHRONO_BOOST_MULTIPLIER     = 0.5;
     public static final double NEXUS_STARTING_ENERGY       = 50.0;
     public static final double MAX_CASTER_ENERGY           = 200.0;
+    public static final double CASTER_ENERGY_REGEN_PER_LOOP = 0.5625 / GAME_LOOPS_PER_SECOND;
+    public static final double MULE_CALLDOWN_ENERGY_COST = 50.0;
+    public static final double OC_STARTING_ENERGY = 50.0;
 
 
     /**
