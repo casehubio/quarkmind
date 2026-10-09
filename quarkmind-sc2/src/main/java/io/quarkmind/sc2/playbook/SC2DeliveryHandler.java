@@ -115,13 +115,14 @@ public class SC2DeliveryHandler implements DeliveryHandler {
     @SuppressWarnings("unchecked")
     private StepOutcome doAssert(String stepName, Map<String, Object> data) {
         var expect = (Map<String, Object>) data.get("expect");
-        if (expect == null) return StepOutcome.ok(stepName, Map.of());
+        if (expect == null) {return StepOutcome.ok(stepName, Map.of());}
         GameState state = game.snapshot();
         System.out.println("[PLAYBOOK] " + stepName
-            + " units=" + state.myUnits().size()
-            + " buildings=" + state.myBuildings().size()
-            + " minerals=" + (int) state.minerals()
-            + " supply=" + (int) state.supplyUsed() + "/" + state.supply());
+                           + " units=" + state.myUnits().size()
+                           + " buildings=" + state.myBuildings().size()
+                           + " minerals=" + (int) state.minerals()
+                           + " vespene=" + state.vespene()
+                           + " supply=" + (int) state.supplyUsed() + "/" + state.supply());
         var errors = new ArrayList<String>();
 
         if (expect.containsKey("units")) {
@@ -129,7 +130,7 @@ public class SC2DeliveryHandler implements DeliveryHandler {
             for (var entry : unitExpect.entrySet()) {
                 UnitType ut = UnitType.valueOf(entry.getKey());
                 int actual = (int) state.myUnits().stream()
-                    .filter(u -> u.type() == ut).count();
+                                        .filter(u -> u.type() == ut).count();
                 var bounds = entry.getValue();
                 if (bounds.containsKey("min") && actual < bounds.get("min")) {
                     errors.add(ut + " expected >=" + bounds.get("min") + " but was " + actual);
@@ -142,9 +143,20 @@ public class SC2DeliveryHandler implements DeliveryHandler {
 
         if (expect.containsKey("minerals")) {
             var mineralBounds = (Map<String, Integer>) expect.get("minerals");
-            int actual = (int) state.minerals();
+            int actual        = (int) state.minerals();
             if (mineralBounds.containsKey("min") && actual < mineralBounds.get("min")) {
                 errors.add("minerals expected >=" + mineralBounds.get("min") + " but was " + actual);
+            }
+        }
+
+        if (expect.containsKey("vespene")) {
+            var vespeneBounds = (Map<String, Integer>) expect.get("vespene");
+            int actual        = state.vespene();
+            if (vespeneBounds.containsKey("min") && actual < vespeneBounds.get("min")) {
+                errors.add("vespene expected >=" + vespeneBounds.get("min") + " but was " + actual);
+            }
+            if (vespeneBounds.containsKey("max") && actual > vespeneBounds.get("max")) {
+                errors.add("vespene expected <=" + vespeneBounds.get("max") + " but was " + actual);
             }
         }
 
