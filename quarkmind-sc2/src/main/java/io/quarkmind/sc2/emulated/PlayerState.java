@@ -1,8 +1,14 @@
 package io.quarkmind.sc2.emulated;
 
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UpgradeType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -25,7 +31,7 @@ public class PlayerState implements PlayerStateView {
     private final List<Building> buildings = new ArrayList<>();
     private final Set<UpgradeType> completedUpgrades = EnumSet.noneOf(UpgradeType.class);
     private double minerals;
-    private int    vespene;
+    private double vespene;
     private int    supply;
     private int    supplyUsed;
 
@@ -37,8 +43,12 @@ public class PlayerState implements PlayerStateView {
     public double minerals()                 { return minerals; }
 
     public void setVespene(int v)            { this.vespene = v; }
+
+    public void addVespene(double amount)    {this.vespene += amount;}
+
     public void deductVespene(int cost)      { this.vespene -= cost; }
-    public int  vespene()                    { return vespene; }
+
+    public int vespene() {return (int) vespene;}
 
     public void setSupply(int s)             { this.supply = s; }
     public void addSupply(int amount)        { this.supply += amount; }

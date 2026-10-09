@@ -4,6 +4,7 @@ import com.github.ocraft.s2client.protocol.data.Abilities;
 import com.github.ocraft.s2client.protocol.unit.Tag;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.sc2.intent.AbilityIntent;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
@@ -48,6 +49,7 @@ public final class ActionTranslator {
                     case MuleCalldownIntent m -> muleCalldown(m);
                     case ResearchIntent    r -> research(r);
                     case MorphIntent        m -> null;
+                    case AbilityIntent      a -> null;
                 };
                 if (cmd != null) commands.add(cmd);
             } catch (Exception e) {

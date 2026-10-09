@@ -119,9 +119,49 @@ public class EmulatedGame {
         }
         miningProbesOverridden = false;
         gameFrame++;
+
+        // Gas worker budget: 3 workers per completed gas building, capped at total workers
+        final long completedGasBuildings = friendly.buildings().stream()
+                                                   .filter(b -> SC2Data.isGasBuilding(b.type()) && b.isComplete())
+                                                   .count();
+        final int totalWorkers = (int) friendly.units().stream()
+                                               .filter(u -> u.type() == playerRaceModel.workerType())
+                                               .count();
+        final int gasWorkerBudget = Math.min(
+                (int) completedGasBuildings * SC2Data.GAS_WORKERS_PER_BUILDING,
+                totalWorkers);
+
+        // Deduct gas workers from mineral counts (remove from largest base first)
+        int gasWorkersToDeduct = gasWorkerBudget;
+        if (gasWorkersToDeduct > 0 && miningProbesPerBase.length > 0) {
+            final int[] indices = java.util.stream.IntStream.range(0, miningProbesPerBase.length)
+                                                            .boxed()
+                                                            .sorted((a, b) -> Integer.compare(miningProbesPerBase[b], miningProbesPerBase[a]))
+                                                            .mapToInt(Integer::intValue)
+                                                            .toArray();
+            for (final int idx : indices) {
+                if (gasWorkersToDeduct <= 0) {break;}
+                final int deduct = Math.min(miningProbesPerBase[idx], gasWorkersToDeduct);
+                miningProbesPerBase[idx] -= deduct;
+                                            gasWorkersToDeduct -= deduct;
+            }
+        }
+
+        // Mineral income (uses reduced per-base counts)
         for (final int workersAtBase : miningProbesPerBase) {
             friendly.addMinerals(SC2Data.mineralIncomePerTick(workersAtBase));
         }
+
+        // Gas income
+        int gasWorkersRemaining = gasWorkerBudget;
+        for (final Building b : friendly.buildings()) {
+            if (gasWorkersRemaining <= 0) {break;}
+            if (!SC2Data.isGasBuilding(b.type()) || !b.isComplete()) {continue;}
+            final int workersOnThisGeyser = Math.min(SC2Data.GAS_WORKERS_PER_BUILDING, gasWorkersRemaining);
+            friendly.addVespene(SC2Data.gasIncomePerTick(workersOnThisGeyser));
+            gasWorkersRemaining -= workersOnThisGeyser;
+        }
+
         playerRaceModel.tickPassive(friendly, gameFrame * (long) SC2Data.LOOPS_PER_TICK);
         moveFriendlyUnits();
         // Recompute after movement, before combat: a unit that dies this tick still

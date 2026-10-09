@@ -59,6 +59,30 @@ public final class SC2Data {
         return income;
     }
 
+    public static final int GAS_WORKERS_PER_BUILDING = 3;
+
+    public static final double[] GAS_TIER_RATES_PER_TICK = {
+            38.0 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // worker 1  (~0.622 gas/tick)
+            38.0 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // worker 2  (~0.622 gas/tick)
+            20.0 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // worker 3  (~0.327 gas/tick)
+    };
+
+    public static double gasIncomePerTick(final int workerCount) {
+        if (workerCount < 0) {throw new IllegalArgumentException("workerCount must be >= 0, got: " + workerCount);}
+        double    income           = 0;
+        final int effectiveWorkers = Math.min(workerCount, GAS_TIER_RATES_PER_TICK.length);
+        for (int i = 0; i < effectiveWorkers; i++) {
+            income += GAS_TIER_RATES_PER_TICK[i];
+        }
+        return income;
+    }
+
+    public static boolean isGasBuilding(final BuildingType type) {
+        return type == BuildingType.ASSIMILATOR || type == BuildingType.ASSIMILATOR_RICH
+               || type == BuildingType.REFINERY || type == BuildingType.EXTRACTOR;
+    }
+
+
     public static final int INITIAL_MINERALS    = 50;
     public static final int INITIAL_VESPENE    = 0;
     public static final int INITIAL_SUPPLY     = 15;
