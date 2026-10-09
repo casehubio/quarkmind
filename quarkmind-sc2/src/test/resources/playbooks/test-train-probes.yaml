@@ -1,0 +1,14 @@
+playbook: test-train-probes
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 1m
+
+steps:
+  - train: PROBE
+
+  - assert: checkpoint
+    at: 30s
+    expect:
+      units:
+        PROBE: { min: 13 }

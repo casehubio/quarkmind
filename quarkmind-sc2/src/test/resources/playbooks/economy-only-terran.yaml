@@ -1,0 +1,51 @@
+playbook: economy-only-terran
+schema: sc2
+meta:
+  race: TERRAN
+  duration: 310 ticks
+
+steps:
+  - train: SCV
+    loop: continuous
+
+  - build: SUPPLY_DEPOT
+    at: 14 supply
+
+  - build: COMMAND_CENTER
+    at: 20 supply
+
+  - build: SUPPLY_DEPOT
+    at: 22 supply
+
+  - build: SUPPLY_DEPOT
+    at: 30 supply
+
+  - build: SUPPLY_DEPOT
+    at: 38 supply
+
+  - build: SUPPLY_DEPOT
+    at: 46 supply
+
+  - build: SUPPLY_DEPOT
+    at: 54 supply
+
+  - build: SUPPLY_DEPOT
+    at: 62 supply
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        SCV: { min: 15 }
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      units:
+        SCV: { min: 25 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        SCV: { min: 40 }

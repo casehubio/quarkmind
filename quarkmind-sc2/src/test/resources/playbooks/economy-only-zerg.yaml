@@ -1,0 +1,51 @@
+playbook: economy-only-zerg
+schema: sc2
+meta:
+  race: ZERG
+  duration: 310 ticks
+
+steps:
+  - train: OVERLORD
+    at: 13 supply
+
+  - train: QUEEN
+    at: 14 supply
+
+  - build: HATCHERY
+    at: 20 supply
+
+  - train: OVERLORD
+    at: 21 supply
+
+  - train: OVERLORD
+    at: 29 supply
+
+  - train: OVERLORD
+    at: 37 supply
+
+  - train: OVERLORD
+    at: 45 supply
+
+  - train: OVERLORD
+    at: 53 supply
+
+  - train: DRONE
+    loop: continuous
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        DRONE: { min: 14 }
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      units:
+        DRONE: { min: 19 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        DRONE: { min: 35 }

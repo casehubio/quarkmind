@@ -1,0 +1,63 @@
+playbook: economy-only-protoss
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 310 ticks
+
+steps:
+  - train: PROBE
+    loop: continuous
+
+  - build: PYLON
+    at: 14 supply
+
+  - build: NEXUS
+    at: 20 supply
+
+  - build: PYLON
+    at: 22 supply
+
+  - build: PYLON
+    at: 30 supply
+
+  - build: PYLON
+    at: 38 supply
+
+  - build: PYLON
+    at: 46 supply
+
+  - build: PYLON
+    at: 54 supply
+
+  - build: PYLON
+    at: 62 supply
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        PROBE: { min: 15 }
+
+  - assert: tick-122
+    at: 122 ticks
+    expect:
+      units:
+        PROBE: { min: 20 }
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      units:
+        PROBE: { min: 25 }
+
+  - assert: tick-244
+    at: 244 ticks
+    expect:
+      units:
+        PROBE: { min: 33 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        PROBE: { min: 42 }
