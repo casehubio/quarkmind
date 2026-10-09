@@ -105,4 +105,15 @@ class SC2DeliveryHandlerTest {
         assertThat(outcome.success()).isFalse();
     }
 
+    @Test
+    void calldownAction_mule_failsWithoutOC() {
+        game.setPlayerRaceModel(io.quarkmind.sc2.emulated.RaceModelFactory.forRace(io.quarkmind.domain.Race.TERRAN));
+        game.reset();
+        handler = new SC2DeliveryHandler(game);
+        var outcome = handler.execute("mule-1",
+                                      Map.of("action", "calldown", "calldown", "MULE"), null);
+        assertThat(outcome.success()).isFalse();
+    }
+
+
 }

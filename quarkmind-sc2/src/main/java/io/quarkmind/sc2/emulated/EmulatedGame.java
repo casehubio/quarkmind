@@ -650,33 +650,46 @@ public class EmulatedGame {
         String targetTag = a.targetTag();
 
         if (casterTag != null && casterTag.startsWith("r-")) {
-            Building caster = state.buildings().stream()
-                                   .filter(b -> b.isComplete() && b.type() == BuildingType.NEXUS)
-                                   .findFirst().orElse(null);
-            if (caster != null) {casterTag = caster.tag();} else {return false;}
+            casterTag = resolveBuilding(casterTag, state);
+            if (casterTag == null) {return false;}
         }
         if (targetTag != null && targetTag.startsWith("r-")) {
-            Building target = state.buildings().stream()
-                                   .filter(b -> b.isComplete() && b.type() == BuildingType.NEXUS)
-                                   .findFirst().orElse(null);
-            if (target != null) {targetTag = target.tag();} else {return false;}
+            targetTag = resolveBuilding(targetTag, state);
+            if (targetTag == null) {return false;}
         }
 
         if (!model.handleAbility(state, casterTag, a.ability(), targetTag, absLoop)) {
             return false;
         }
 
-        final String resolvedTarget = targetTag;
-        physics.pendingCompletions.replaceAll(pc -> {
-            Long trainingUntil = physics.buildingTrainingUntil.get(resolvedTarget);
-            if (trainingUntil == null || pc.completesAtTick() != trainingUntil) {return pc;}
-            long remaining = pc.completesAtTick() - gameFrame;
-            if (remaining <= 0) {return pc;}
-            long newCompletesAt = gameFrame + remaining / 2;
-            physics.buildingTrainingUntil.put(resolvedTarget, newCompletesAt);
-            return new PhysicsState.PendingCompletion(newCompletesAt, pc.action());
-        });
+        if (targetTag != null && model.trainingSpeedMultiplier(targetTag, absLoop) < 1.0) {
+            final String resolvedTarget = targetTag;
+            physics.pendingCompletions.replaceAll(pc -> {
+                Long trainingUntil = physics.buildingTrainingUntil.get(resolvedTarget);
+                if (trainingUntil == null || pc.completesAtTick() != trainingUntil) {return pc;}
+                long remaining = pc.completesAtTick() - gameFrame;
+                if (remaining <= 0) {return pc;}
+                long newCompletesAt = gameFrame + remaining / 2;
+                physics.buildingTrainingUntil.put(resolvedTarget, newCompletesAt);
+                return new PhysicsState.PendingCompletion(newCompletesAt, pc.action());
+            });
+        }
         return true;
+    }
+
+    private String resolveBuilding(String rTag, PlayerState state) {
+        String       typeName = rTag.substring(2).toUpperCase();
+        BuildingType type;
+        try {type = BuildingType.valueOf(typeName);} catch (IllegalArgumentException e) {
+            return state.buildings().stream()
+                        .filter(Building::isComplete)
+                        .map(Building::tag)
+                        .findFirst().orElse(null);
+        }
+        return state.buildings().stream()
+                    .filter(b -> b.isComplete() && b.type() == type)
+                    .map(Building::tag)
+                    .findFirst().orElse(null);
     }
 
 
@@ -753,19 +766,32 @@ public class EmulatedGame {
     private void handleMorph(MorphIntent m, PlayerState state, PhysicsState physics, long absLoop) {
         BuildingType targetBt = MORPH_BUILDING_TARGETS.get(m.targetName());
         if (targetBt != null) {
+            String buildingTag = m.unitTag();
+            if (buildingTag != null && buildingTag.startsWith("r-")) {
+                try {
+                    BuildingType sourceType = BuildingType.valueOf(m.sourceName());
+                    Building resolved = state.buildings().stream()
+                                             .filter(b -> b.isComplete() && b.type() == sourceType)
+                                             .findFirst().orElse(null);
+                    if (resolved != null) {buildingTag = resolved.tag();}
+                } catch (IllegalArgumentException ignored) {}
+            }
+            final String resolvedTag = buildingTag;
             Building source = state.buildings().stream()
-                                   .filter(b -> b.tag().equals(m.unitTag()) && b.isComplete())
+                                   .filter(b -> b.tag().equals(resolvedTag) && b.isComplete())
                                    .findFirst().orElse(null);
             if (source == null) {
-                log.debugf("[EMULATED] Building morph rejected — building %s not found or incomplete", m.unitTag());
+                log.debugf("[EMULATED] Building morph rejected — building %s not found or incomplete", resolvedTag);
                 return;
             }
-            state.replaceAllBuildings(b -> b.tag().equals(m.unitTag())
+            state.replaceAllBuildings(b -> b.tag().equals(resolvedTag)
                                            ? new Building(b.tag(), targetBt, b.position(), b.health(), b.maxHealth(), false)
                                            : b);
-            long completesAt = gameFrame + SC2Data.buildTimeInLoops(targetBt) / SC2Data.LOOPS_PER_TICK;
+            final RaceModel model       = (state == friendly) ? playerRaceModel : null;
+            long            completesAt = gameFrame + SC2Data.buildTimeInLoops(targetBt) / SC2Data.LOOPS_PER_TICK;
             physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
-                markBuildingComplete(m.unitTag(), state);
+                markBuildingComplete(resolvedTag, state);
+                if (model != null) {model.onBuildingComplete(state, targetBt, resolvedTag);}
                 log.debugf("[EMULATED] Building morph complete — %s → %s", m.sourceName(), targetBt);
             }));
             return;

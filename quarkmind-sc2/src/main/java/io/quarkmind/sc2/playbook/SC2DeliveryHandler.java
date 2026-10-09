@@ -39,6 +39,7 @@ public class SC2DeliveryHandler implements DeliveryHandler {
             case "research" -> doResearch(stepName, data);
             case "morph" -> doMorph(stepName, data);
             case "ability" -> doAbility(stepName, data);
+            case "calldown" -> doCalldown(stepName, data);
             case "assert" -> doAssert(stepName, data);
             default -> StepOutcome.fail(stepName, "Unknown SC2 action: " + action);
         };
@@ -99,6 +100,17 @@ public class SC2DeliveryHandler implements DeliveryHandler {
         }
         return StepOutcome.ok(stepName, Map.of("ability", ability));
     }
+
+    private StepOutcome doCalldown(String stepName, Map<String, Object> data) {
+        String        calldownType = (String) data.get("calldown");
+        AbilityIntent intent       = new AbilityIntent("r-orbital_command", "MULE_CALLDOWN", null);
+        boolean       accepted     = game.applyAbility(intent);
+        if (!accepted) {
+            return StepOutcome.fail(stepName, "calldown rejected: " + calldownType);
+        }
+        return StepOutcome.ok(stepName, Map.of("calldown", calldownType));
+    }
+
 
     @SuppressWarnings("unchecked")
     private StepOutcome doAssert(String stepName, Map<String, Object> data) {

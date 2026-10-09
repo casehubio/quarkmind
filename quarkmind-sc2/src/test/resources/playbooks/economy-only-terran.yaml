@@ -15,22 +15,32 @@ steps:
     at: 20 supply
 
   - build: SUPPLY_DEPOT
+    at: 20 supply
+
+  - morph: OrbitalCommand
+    source: COMMAND_CENTER
     at: 22 supply
 
-  - build: SUPPLY_DEPOT
-    at: 30 supply
+  - calldown: MULE
+    loop: continuous
 
   - build: SUPPLY_DEPOT
-    at: 38 supply
+    at: 28 supply
 
   - build: SUPPLY_DEPOT
-    at: 46 supply
+    at: 36 supply
 
   - build: SUPPLY_DEPOT
-    at: 54 supply
+    at: 44 supply
 
   - build: SUPPLY_DEPOT
-    at: 62 supply
+    at: 52 supply
+
+  - build: SUPPLY_DEPOT
+    at: 60 supply
+
+  - build: SUPPLY_DEPOT
+    at: 68 supply
 
   - assert: tick-61
     at: 61 ticks
@@ -48,4 +58,6 @@ steps:
     at: 305 ticks
     expect:
       units:
-        SCV: { min: 40 }
+        SCV: { min: 38 }
+      minerals:
+        min: 400
