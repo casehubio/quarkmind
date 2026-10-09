@@ -3,9 +3,18 @@ package io.quarkmind.sc2.playbook;
 import io.casehub.pages.playbook.DeliveryContext;
 import io.casehub.pages.playbook.DeliveryHandler;
 import io.casehub.pages.playbook.StepOutcome;
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.UnitType;
+import io.quarkmind.domain.UpgradeType;
 import io.quarkmind.sc2.emulated.EmulatedGame;
-import io.quarkmind.sc2.intent.*;
+import io.quarkmind.sc2.intent.AbilityIntent;
+import io.quarkmind.sc2.intent.BuildIntent;
+import io.quarkmind.sc2.intent.MorphIntent;
+import io.quarkmind.sc2.intent.ResearchIntent;
+import io.quarkmind.sc2.intent.TrainIntent;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -25,11 +34,12 @@ public class SC2DeliveryHandler implements DeliveryHandler {
     public StepOutcome execute(String stepName, Map<String, Object> data, DeliveryContext ctx) {
         String action = (String) data.get("action");
         return switch (action) {
-            case "train"    -> doTrain(stepName, data);
-            case "build"    -> doBuild(stepName, data);
+            case "train" -> doTrain(stepName, data);
+            case "build" -> doBuild(stepName, data);
             case "research" -> doResearch(stepName, data);
-            case "morph"    -> doMorph(stepName, data);
-            case "assert"   -> doAssert(stepName, data);
+            case "morph" -> doMorph(stepName, data);
+            case "ability" -> doAbility(stepName, data);
+            case "assert" -> doAssert(stepName, data);
             default -> StepOutcome.fail(stepName, "Unknown SC2 action: " + action);
         };
     }
@@ -74,6 +84,20 @@ public class SC2DeliveryHandler implements DeliveryHandler {
         String source = (String) data.get("source");
         game.applyIntent(new MorphIntent("r-playbook", source, target));
         return StepOutcome.ok(stepName, Map.of("morph", target));
+    }
+
+
+    private StepOutcome doAbility(String stepName, Map<String, Object> data) {
+        String        ability    = (String) data.get("ability");
+        String        targetType = (String) data.get("target");
+        String        casterTag  = "r-ability";
+        String        targetTag  = "r-" + targetType.toLowerCase();
+        AbilityIntent intent     = new AbilityIntent(casterTag, ability, targetTag);
+        boolean       accepted   = game.applyAbility(intent);
+        if (!accepted) {
+            return StepOutcome.fail(stepName, "ability rejected: " + ability);
+        }
+        return StepOutcome.ok(stepName, Map.of("ability", ability));
     }
 
     @SuppressWarnings("unchecked")

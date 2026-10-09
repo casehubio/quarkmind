@@ -100,6 +100,12 @@ public interface RaceModel {
         return 1;
     }
 
+
+    default double trainingSpeedMultiplier(String buildingTag, long gameLoop) {return 1.0;}
+
+    default boolean handleAbility(PlayerState state, String casterTag, String ability,
+                                  String targetTag, long gameLoop) {return false;}
+
     /** The worker unit type for this race — used by countWorkersPerBase. */
     UnitType workerType();
 

@@ -14,6 +14,7 @@ import io.quarkmind.domain.TerrainGrid;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.IntentQueue;
+import io.quarkmind.sc2.intent.AbilityIntent;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
@@ -267,28 +268,30 @@ public class EmulatedGame {
 
     public void applyIntent(TimedIntent ti) {
         Runnable action = switch (ti.intent()) {
-            case TrainIntent        t -> () -> handleTrain(t, friendly, friendlyPhysics, ti.loop());
-            case MoveIntent         m -> () -> setTarget(m.unitTag(), m.targetLocation(), friendly, friendlyPhysics);
-            case AttackIntent       a -> () -> setTarget(a.unitTag(), a.targetLocation(), friendly, friendlyPhysics);
-            case BuildIntent        b -> () -> handleBuild(b, friendly, friendlyPhysics, ti.loop());
-            case BlinkIntent        b -> () -> executeBlink(b.unitTag(), friendly, friendlyPhysics);
+            case TrainIntent t -> () -> handleTrain(t, friendly, friendlyPhysics, ti.loop());
+            case MoveIntent m -> () -> setTarget(m.unitTag(), m.targetLocation(), friendly, friendlyPhysics);
+            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), friendly, friendlyPhysics);
+            case BuildIntent b -> () -> handleBuild(b, friendly, friendlyPhysics, ti.loop());
+            case BlinkIntent b -> () -> executeBlink(b.unitTag(), friendly, friendlyPhysics);
             case MuleCalldownIntent m -> () -> handleMuleCalldown(m, friendly, friendlyPhysics, ti.loop());
-            case ResearchIntent    r -> () -> handleResearch(r, friendly, friendlyPhysics, ti.loop());
-            case MorphIntent        m -> () -> handleMorph(m, friendly, friendlyPhysics, ti.loop());
+            case ResearchIntent r -> () -> handleResearch(r, friendly, friendlyPhysics, ti.loop());
+            case MorphIntent m -> () -> handleMorph(m, friendly, friendlyPhysics, ti.loop());
+            case AbilityIntent a -> () -> handleAbilityInternal(a, friendly, friendlyPhysics, ti.loop());
         };
         action.run();
     }
 
     void applyIntent(Intent intent, PlayerState state, PhysicsState physics) {
         Runnable action = switch (intent) {
-            case MoveIntent         m -> () -> setTarget(m.unitTag(), m.targetLocation(), state, physics);
-            case AttackIntent       a -> () -> setTarget(a.unitTag(), a.targetLocation(), state, physics);
-            case TrainIntent        t -> () -> handleTrain(t, state, physics);
-            case BuildIntent        b -> () -> handleBuild(b, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
-            case BlinkIntent        b -> () -> executeBlink(b.unitTag(), state, physics);
+            case MoveIntent m -> () -> setTarget(m.unitTag(), m.targetLocation(), state, physics);
+            case AttackIntent a -> () -> setTarget(a.unitTag(), a.targetLocation(), state, physics);
+            case TrainIntent t -> () -> handleTrain(t, state, physics);
+            case BuildIntent b -> () -> handleBuild(b, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
+            case BlinkIntent b -> () -> executeBlink(b.unitTag(), state, physics);
             case MuleCalldownIntent m -> () -> handleMuleCalldown(m, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
-            case ResearchIntent    r -> () -> handleResearch(r, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
-            case MorphIntent        m -> () -> handleMorph(m, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
+            case ResearchIntent r -> () -> handleResearch(r, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
+            case MorphIntent m -> () -> handleMorph(m, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
+            case AbilityIntent a -> () -> handleAbilityInternal(a, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
         };
         action.run();
     }
@@ -391,16 +394,18 @@ public class EmulatedGame {
     }
 
     private void startTraining(final String buildingTag, final UnitType unitType,
-                                final PlayerState state, final PhysicsState physics,
-                                final long absLoop) {
-        final boolean isEnemy  = (state == enemy);
-        final RaceModel model  = (state == friendly) ? playerRaceModel : null;
-        final int  loopOffset  = (int)(absLoop % SC2Data.LOOPS_PER_TICK);
+                               final PlayerState state, final PhysicsState physics,
+                               final long absLoop) {
+        final boolean   isEnemy = (state == enemy);
+        final RaceModel model   = (state == friendly) ? playerRaceModel : null;
+        final double speedMult = (model != null)
+                                 ? model.trainingSpeedMultiplier(buildingTag, absLoop) : 1.0;
+        final int effectiveTrainLoops = (int) (SC2Data.trainTimeInLoops(unitType) * speedMult);
+        final int loopOffset          = (int) (absLoop % SC2Data.LOOPS_PER_TICK);
         final long completesAt = gameFrame
-            + (loopOffset + SC2Data.trainTimeInLoops(unitType)) / SC2Data.LOOPS_PER_TICK;
+                                 + (loopOffset + effectiveTrainLoops) / SC2Data.LOOPS_PER_TICK;
         physics.buildingTrainingUntil.put(buildingTag, completesAt);
-        physics.buildingCompletionAtLoop.put(buildingTag,
-            absLoop + SC2Data.trainTimeInLoops(unitType));
+        physics.buildingCompletionAtLoop.put(buildingTag, absLoop + effectiveTrainLoops);
         final int spawnCount = (model != null) ? model.trainCount(unitType) : SC2Data.trainCount(unitType);
         physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
             physics.buildingTrainingUntil.remove(buildingTag);
@@ -409,13 +414,13 @@ public class EmulatedGame {
             }
             for (int i = 0; i < spawnCount; i++) {
                 final String tag = nextTagString();
-                final int hp = SC2Data.maxHealth(unitType);
+                final int    hp  = SC2Data.maxHealth(unitType);
                 state.addUnit(new Unit(tag, unitType,
-                    new Point2d(9 + i * 0.5f, 9), hp, hp,
-                    SC2Data.maxShields(unitType), SC2Data.maxShields(unitType), 0, 0));
+                                       new Point2d(9 + i * 0.5f, 9), hp, hp,
+                                       SC2Data.maxShields(unitType), SC2Data.maxShields(unitType), 0, 0));
                 log.debugf("[EMULATED] Trained %s (tag=%s)", unitType, tag);
-                if (model != null) model.onUnitSpawned(state, unitType, tag, buildingTag);
-                if (isEnemy && enemyBehavior != null) enemyBehavior.notifyUnitTrained();
+                if (model != null) {model.onUnitSpawned(state, unitType, tag, buildingTag);}
+                if (isEnemy && enemyBehavior != null) {enemyBehavior.notifyUnitTrained();}
             }
         }));
     }
@@ -626,6 +631,54 @@ public class EmulatedGame {
         }
         model.onCalldown(state, calldownTag, absLoop);
     }
+
+    private void handleAbilityInternal(final AbilityIntent a, final PlayerState state,
+                                       final PhysicsState physics, final long absLoop) {
+        applyAbilityResolved(a, state, physics, absLoop);
+    }
+
+    public boolean applyAbility(AbilityIntent a) {
+        return applyAbilityResolved(a, friendly, friendlyPhysics, gameFrame * SC2Data.LOOPS_PER_TICK);
+    }
+
+    private boolean applyAbilityResolved(final AbilityIntent a, final PlayerState state,
+                                         final PhysicsState physics, final long absLoop) {
+        final RaceModel model = (state == friendly) ? playerRaceModel : null;
+        if (model == null) {return false;}
+
+        String casterTag = a.casterTag();
+        String targetTag = a.targetTag();
+
+        if (casterTag != null && casterTag.startsWith("r-")) {
+            Building caster = state.buildings().stream()
+                                   .filter(b -> b.isComplete() && b.type() == BuildingType.NEXUS)
+                                   .findFirst().orElse(null);
+            if (caster != null) {casterTag = caster.tag();} else {return false;}
+        }
+        if (targetTag != null && targetTag.startsWith("r-")) {
+            Building target = state.buildings().stream()
+                                   .filter(b -> b.isComplete() && b.type() == BuildingType.NEXUS)
+                                   .findFirst().orElse(null);
+            if (target != null) {targetTag = target.tag();} else {return false;}
+        }
+
+        if (!model.handleAbility(state, casterTag, a.ability(), targetTag, absLoop)) {
+            return false;
+        }
+
+        final String resolvedTarget = targetTag;
+        physics.pendingCompletions.replaceAll(pc -> {
+            Long trainingUntil = physics.buildingTrainingUntil.get(resolvedTarget);
+            if (trainingUntil == null || pc.completesAtTick() != trainingUntil) {return pc;}
+            long remaining = pc.completesAtTick() - gameFrame;
+            if (remaining <= 0) {return pc;}
+            long newCompletesAt = gameFrame + remaining / 2;
+            physics.buildingTrainingUntil.put(resolvedTarget, newCompletesAt);
+            return new PhysicsState.PendingCompletion(newCompletesAt, pc.action());
+        });
+        return true;
+    }
+
 
     private void handleResearch(final ResearchIntent r, final PlayerState state,
                                 final PhysicsState physics, final long absLoop) {

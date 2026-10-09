@@ -72,4 +72,37 @@ class SC2DeliveryHandlerTest {
         var outcome = handler.execute("dance-0", data, null);
         assertThat(outcome.success()).isFalse();
     }
+
+    @Test
+    void abilityAction_chronoBoost_succeeds() {
+        game.setPlayerRaceModel(io.quarkmind.sc2.emulated.RaceModelFactory.forRace(io.quarkmind.domain.Race.PROTOSS));
+        game.reset();
+        handler = new SC2DeliveryHandler(game);
+        var outcome = handler.execute("chrono-1",
+                                      Map.of("action", "ability", "ability", "CHRONO_BOOST", "target", "NEXUS"), null);
+        assertThat(outcome.success()).isTrue();
+    }
+
+    @Test
+    void abilityAction_chronoBoost_insufficientEnergy_fails() {
+        game.setPlayerRaceModel(io.quarkmind.sc2.emulated.RaceModelFactory.forRace(io.quarkmind.domain.Race.PROTOSS));
+        game.reset();
+        handler = new SC2DeliveryHandler(game);
+        handler.execute("chrono-1",
+                        Map.of("action", "ability", "ability", "CHRONO_BOOST", "target", "NEXUS"), null);
+        var outcome = handler.execute("chrono-2",
+                                      Map.of("action", "ability", "ability", "CHRONO_BOOST", "target", "NEXUS"), null);
+        assertThat(outcome.success()).isFalse();
+    }
+
+    @Test
+    void abilityAction_unknownAbility_fails() {
+        game.setPlayerRaceModel(io.quarkmind.sc2.emulated.RaceModelFactory.forRace(io.quarkmind.domain.Race.PROTOSS));
+        game.reset();
+        handler = new SC2DeliveryHandler(game);
+        var outcome = handler.execute("unknown-1",
+                                      Map.of("action", "ability", "ability", "UNKNOWN", "target", "NEXUS"), null);
+        assertThat(outcome.success()).isFalse();
+    }
+
 }

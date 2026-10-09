@@ -8,6 +8,10 @@ steps:
   - train: PROBE
     loop: continuous
 
+  - ability: CHRONO_BOOST
+    target: NEXUS
+    loop: continuous
+
   - build: PYLON
     at: 14 supply
 
@@ -60,4 +64,4 @@ steps:
     at: 305 ticks
     expect:
       units:
-        PROBE: { min: 42 }
+        PROBE: { min: 50 }

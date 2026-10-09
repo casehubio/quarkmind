@@ -106,6 +106,8 @@ public class SC2PlaybookRunner {
                 } else if (action == null) {
                     action = key;
                     params.put(key, field.getValue().asText());
+                } else {
+                    params.put(key, field.getValue().asText());
                 }
             }
             if (action != null) steps.add(new PlaybookStep(action, params, fireTick, supplyTrigger, loop));

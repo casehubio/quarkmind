@@ -93,6 +93,13 @@ public final class SC2Data {
      * Per loop: 0.5625 / 22.4 ≈ 0.02511.
      */
     public static final double QUEEN_ENERGY_REGEN_PER_LOOP = 0.5625 / GAME_LOOPS_PER_SECOND;
+    public static final double NEXUS_ENERGY_REGEN_PER_LOOP = 0.5625 / GAME_LOOPS_PER_SECOND;
+    public static final double CHRONO_BOOST_ENERGY_COST    = 50.0;
+    public static final int    CHRONO_BOOST_DURATION_LOOPS = 448;
+    public static final double CHRONO_BOOST_MULTIPLIER     = 0.5;
+    public static final double NEXUS_STARTING_ENERGY       = 50.0;
+    public static final double MAX_CASTER_ENERGY           = 200.0;
+
 
     /**
      * Mineral income per active MULE per tick.
