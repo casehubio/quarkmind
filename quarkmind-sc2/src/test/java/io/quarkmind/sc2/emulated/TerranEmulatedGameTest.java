@@ -1,14 +1,19 @@
 package io.quarkmind.sc2.emulated;
 
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Race;
+import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.UnitType;
+import io.quarkmind.sc2.intent.MorphIntent;
 import io.quarkmind.sc2.intent.MuleCalldownIntent;
+import io.quarkmind.sc2.intent.TrainIntent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 
 class TerranEmulatedGameTest {
 
@@ -241,6 +246,79 @@ class TerranEmulatedGameTest {
         assertThat(model.canProduce(state, "any-tag", UnitType.MULE))
             .isEqualTo(ProductionDecision.PROCEED);
     }
+
+    @Test
+    void morphToOC_queuedSCVs_pauseDuringMorph() {
+        game.setMineralsForTesting(500);
+        final Building cc = game.snapshot().myBuildings().stream()
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
+
+        game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV));  // in-progress
+        game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV));  // queued
+
+        // Morph CC → OC mid-training
+        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
+
+        // Advance past the first SCV's completion but before morph completes
+        final int scvTicks = SC2Data.trainTimeInTicks(UnitType.SCV);
+        for (int i = 0; i < scvTicks + 1; i++) {game.tick();}
+
+        // First SCV should complete (in-progress training fires on tick count)
+        final long scvCount = game.snapshot().myUnits().stream()
+                                  .filter(u -> u.type() == UnitType.SCV).count();
+        assertThat(scvCount).isEqualTo(13); // 12 initial + 1 completed
+
+        // The QUEUED SCV should NOT have started training yet — building is mid-morph
+        // Advance 12 more ticks — if queued SCV started, it would complete by now
+        for (int i = 0; i < 12; i++) {game.tick();}
+        final long scvCountAfter = game.snapshot().myUnits().stream()
+                                       .filter(u -> u.type() == UnitType.SCV).count();
+        assertThat(scvCountAfter).isEqualTo(13);
+    }
+
+    @Test
+    void morphToOC_inProgressSCV_completesNormally() {
+        game.setMineralsForTesting(200);
+        final Building cc = game.snapshot().myBuildings().stream()
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
+
+        game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV));
+        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
+
+        // Advance past SCV completion
+        final int scvTicks = SC2Data.trainTimeInTicks(UnitType.SCV);
+        for (int i = 0; i < scvTicks + 1; i++) {game.tick();}
+
+        final long scvCount = game.snapshot().myUnits().stream()
+                                  .filter(u -> u.type() == UnitType.SCV).count();
+        assertThat(scvCount).isEqualTo(13); // 12 initial + 1 trained during morph
+    }
+
+    @Test
+    void morphToOC_queuedSCV_resumesAfterMorphComplete() {
+        game.setMineralsForTesting(500);
+        final Building cc = game.snapshot().myBuildings().stream()
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
+
+        game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV));  // in-progress
+        game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV));  // queued
+
+        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
+
+        // Advance past morph completion + SCV train time + margin
+        final int morphTicks = SC2Data.buildTimeInLoops(BuildingType.ORBITAL_COMMAND) / SC2Data.LOOPS_PER_TICK;
+        final int scvTicks   = SC2Data.trainTimeInTicks(UnitType.SCV);
+        for (int i = 0; i < morphTicks + scvTicks + 2; i++) {game.tick();}
+
+        // Both SCVs should have completed: first during morph, second after morph
+        final long scvCount = game.snapshot().myUnits().stream()
+                                  .filter(u -> u.type() == UnitType.SCV).count();
+        assertThat(scvCount).isEqualTo(14); // 12 initial + 2 trained
+    }
+
 
     @Test
     void onCalldown_spawnsAndRegistersExpiry() {
