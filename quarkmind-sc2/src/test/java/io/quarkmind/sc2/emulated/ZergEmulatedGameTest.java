@@ -301,13 +301,16 @@ class ZergEmulatedGameTest {
 
     @Test
     void multipleHatcheries_separateLarvaCounters() {
-        // Spawn a second hatchery
         final Building hatch2 = game.spawnBuildingForTesting(BuildingType.HATCHERY, new Point2d(30, 30));
-        // New hatchery starts with 0 larva (not seeded by seedInitialState)
-        assertThat(model.larvaCount(hatch2.tag())).isEqualTo(0);
-
-        // Original hatchery still has its larva intact
+        assertThat(model.larvaCount(hatch2.tag())).isEqualTo(3);
         assertThat(model.larvaCount(hatcheryTag())).isEqualTo(3);
+
+        // Consume larva from hatch1 — hatch2 must be unaffected
+        game.setMineralsForTesting(500);
+        game.setSupplyForTesting(30, 12);
+        game.applyIntent(new TrainIntent(hatcheryTag(), UnitType.DRONE));
+        assertThat(model.larvaCount(hatcheryTag())).isEqualTo(2);
+        assertThat(model.larvaCount(hatch2.tag())).isEqualTo(3);
     }
 
     // --- Reset clears ZergRaceModel state ---

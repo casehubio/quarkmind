@@ -1553,12 +1553,10 @@ class EmulatedGameTest {
         assertThat(game.snapshot().supplyUsed()).isEqualTo(12);
 
         game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE)); // starts training
-        assertThat(game.snapshot().supplyUsed()).isEqualTo(13); // reserved immediately
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(13); // consumed at training start
 
         game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE)); // queued behind first
-        assertThat(game.snapshot().supplyUsed()).isEqualTo(14); // queued unit also reserves supply
-
-        // No ticks yet — both increments are at queue time, not completion time
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(13); // queued unit does NOT consume supply
     }
 
     @Test
@@ -1570,11 +1568,11 @@ class EmulatedGameTest {
         for (int i = 0; i < 5; i++) {
             game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE));
         }
-        assertThat(game.snapshot().supplyUsed()).isEqualTo(5); // 5 probes at 1 supply each
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(1); // only training probe consumes supply
 
-        // 6th must be rejected — supply unchanged
+        // 6th must be rejected (queue full) — supply unchanged
         game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE));
-        assertThat(game.snapshot().supplyUsed()).isEqualTo(5);
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(1);
     }
 
     @Test

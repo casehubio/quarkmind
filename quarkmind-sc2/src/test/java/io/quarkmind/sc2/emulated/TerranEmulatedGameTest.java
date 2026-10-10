@@ -7,6 +7,7 @@ import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.sc2.intent.AbilityIntent;
 import io.quarkmind.sc2.intent.MorphIntent;
 import io.quarkmind.sc2.intent.MuleCalldownIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
@@ -346,4 +347,102 @@ class TerranEmulatedGameTest {
         assertThat(state.units()).isEmpty();
         assertThat(model.activeMuleCount()).isEqualTo(0);
     }
+// --- #399: Supply committed on training start, not queue entry ---
+
+    @Test
+    void supplyNotConsumed_whenUnitQueued() {
+        game.setMineralsForTesting(500);
+        game.setSupplyForTesting(20, 12);
+        final Building cc = game.snapshot().myBuildings().stream()
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
+
+        // First SCV starts training immediately — supply consumed
+        game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV));
+        final int supplyAfterFirst = game.snapshot().supplyUsed();
+        assertThat(supplyAfterFirst).isEqualTo(13); // 12 initial + 1 training
+
+        // Second SCV goes into queue — supply should NOT be consumed
+        game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV));
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(13); // unchanged
+    }
+
+    @Test
+    void supplyConsumed_whenQueueDrains() {
+        game.setMineralsForTesting(500);
+        game.setSupplyForTesting(20, 12);
+        final Building cc = game.snapshot().myBuildings().stream()
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
+
+        game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV)); // starts training
+        game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV)); // queued
+
+        // Advance past first SCV completion — queue drains, second starts training
+        final int buildTicks = SC2Data.trainTimeInTicks(UnitType.SCV);
+        for (int i = 0; i < buildTicks + 1; i++) {game.tick();}
+
+        // Now supply should include both: 12 initial + 1 completed + 1 training
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(14);
+    }
+
+    @Test
+    void queueDrain_blockedByInsufficientSupply() {
+        game.setMineralsForTesting(500);
+        // Supply cap = 13, used = 12 (matches 12 initial SCVs) — room for exactly 1 more
+        game.setSupplyForTesting(13, 12);
+        final Building cc = game.snapshot().myBuildings().stream()
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
+
+        game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV)); // starts training, supply→13
+        game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV)); // queued, supply stays 13
+
+        // Advance past first SCV completion — queue tries to drain but supply is full
+        final int buildTicks = SC2Data.trainTimeInTicks(UnitType.SCV);
+        for (int i = 0; i < buildTicks + 1; i++) {game.tick();}
+
+        // 12 initial + 1 completed = 13 SCVs, supply 13/13 — queued SCV can't start
+        assertThat(game.snapshot().supplyUsed()).isEqualTo(13);
+        final long scvCount = game.snapshot().myUnits().stream()
+                                  .filter(u -> u.type() == UnitType.SCV).count();
+        assertThat(scvCount).isEqualTo(13);
+    }
+// --- #400: Energy-aware OC resolution for MULE calldowns ---
+
+    @Test
+    void muleCalldown_twoOCs_usesOCWithEnergy() {
+        // Build two OCs
+        final Building oc1 = game.spawnBuildingForTesting(BuildingType.ORBITAL_COMMAND, new Point2d(12, 8));
+        final Building oc2 = game.spawnBuildingForTesting(BuildingType.ORBITAL_COMMAND, new Point2d(30, 30));
+
+        // Drain OC-1 energy by calling MULE directly
+        game.applyAbility(new AbilityIntent(oc1.tag(), "MULE_CALLDOWN", null));
+
+        // OC-1 is now drained; OC-2 still has starting energy
+        // Use r- prefix to trigger resolution — should pick OC-2
+        boolean accepted = game.applyAbility(new AbilityIntent("r-orbital_command", "MULE_CALLDOWN", null));
+        assertThat(accepted).isTrue();
+
+        // Verify MULE spawned at OC-2's position
+        final long muleCount = game.snapshot().myUnits().stream()
+                                   .filter(u -> u.type() == UnitType.MULE).count();
+        assertThat(muleCount).isEqualTo(2);
+    }
+
+    @Test
+    void muleCalldown_twoOCs_neitherHasEnergy_fails() {
+        final Building oc1 = game.spawnBuildingForTesting(BuildingType.ORBITAL_COMMAND, new Point2d(12, 8));
+        final Building oc2 = game.spawnBuildingForTesting(BuildingType.ORBITAL_COMMAND, new Point2d(30, 30));
+
+        // Drain both OCs
+        game.applyAbility(new AbilityIntent(oc1.tag(), "MULE_CALLDOWN", null));
+        game.applyAbility(new AbilityIntent(oc2.tag(), "MULE_CALLDOWN", null));
+
+        // r- resolution should fail — no OC has energy
+        boolean accepted = game.applyAbility(new AbilityIntent("r-orbital_command", "MULE_CALLDOWN", null));
+        assertThat(accepted).isFalse();
+    }
+
+
 }

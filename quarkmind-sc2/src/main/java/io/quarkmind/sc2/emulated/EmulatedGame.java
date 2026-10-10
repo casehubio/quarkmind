@@ -396,8 +396,10 @@ public class EmulatedGame {
         final int mCost = SC2Data.mineralCost(t.unitType()) * count;
         final int gCost = SC2Data.gasCost(t.unitType()) * count;
         final int sCost = SC2Data.supplyCost(t.unitType());
+        final int queuedSupply = physics.buildingQueues.values().stream()
+            .flatMapToInt(q -> q.stream().mapToInt(SC2Data::supplyCost)).sum();
         if ((int) state.minerals() < mCost || state.vespene() < gCost
-            || state.supplyUsed() + sCost > state.supply()) {
+            || state.supplyUsed() + queuedSupply + sCost > state.supply()) {
             log.debugf("[EMULATED] Cannot train %s — insufficient resources", t.unitType());
             return;
         }
@@ -411,7 +413,6 @@ public class EmulatedGame {
             return;
         }
 
-        state.addSupplyUsed(sCost);
         state.deductMinerals(mCost);
         state.deductVespene(gCost);
         if (state == friendly) {
@@ -437,6 +438,7 @@ public class EmulatedGame {
     private void startTraining(final String buildingTag, final UnitType unitType,
                                final PlayerState state, final PhysicsState physics,
                                final long absLoop) {
+        state.addSupplyUsed(SC2Data.supplyCost(unitType));
         final boolean   isEnemy = (state == enemy);
         final RaceModel model   = (state == friendly) ? playerRaceModel : null;
         final double speedMult = (model != null)
@@ -478,7 +480,10 @@ public class EmulatedGame {
                 physics.buildingCompletionAtLoop.remove(buildingTag);
                 continue;
             }
-            UnitType next = queue.poll();
+            UnitType next = queue.peek();
+            int sCost = SC2Data.supplyCost(next);
+            if (state.supplyUsed() + sCost > state.supply()) {continue;}
+            queue.poll();
             if (queue.isEmpty()) {physics.buildingQueues.remove(buildingTag);}
             long completionLoop = physics.buildingCompletionAtLoop.getOrDefault(buildingTag, 0L);
             physics.buildingCompletionAtLoop.remove(buildingTag);
@@ -693,18 +698,25 @@ public class EmulatedGame {
         String casterTag = a.casterTag();
         String targetTag = a.targetTag();
 
-        if (casterTag != null && casterTag.startsWith("r-")) {
-            casterTag = resolveBuilding(casterTag, state);
-            if (casterTag == null) {return false;}
-        }
         if (targetTag != null && targetTag.startsWith("r-")) {
             targetTag = resolveBuilding(targetTag, state);
             if (targetTag == null) {return false;}
         }
 
-        if (!model.handleAbility(state, casterTag, a.ability(), targetTag, absLoop)) {
-            return false;
+        boolean handled;
+        if (casterTag != null && casterTag.startsWith("r-")) {
+            List<String> candidates = resolveBuildingAll(casterTag, state);
+            handled = false;
+            for (String candidate : candidates) {
+                if (model.handleAbility(state, candidate, a.ability(), targetTag, absLoop)) {
+                    handled = true;
+                    break;
+                }
+            }
+        } else {
+            handled = model.handleAbility(state, casterTag, a.ability(), targetTag, absLoop);
         }
+        if (!handled) {return false;}
 
         if (targetTag != null && model.trainingSpeedMultiplier(targetTag, absLoop) < 1.0) {
             final String resolvedTarget = targetTag;
@@ -729,6 +741,16 @@ public class EmulatedGame {
                     .filter(b -> b.isComplete() && b.type() == type)
                     .map(Building::tag)
                     .findFirst().orElse(null);
+    }
+
+    private List<String> resolveBuildingAll(String rTag, PlayerState state) {
+        String       typeName = rTag.substring(2).toUpperCase();
+        BuildingType type;
+        try {type = BuildingType.valueOf(typeName);} catch (IllegalArgumentException e) {return List.of();}
+        return state.buildings().stream()
+                    .filter(b -> b.isComplete() && b.type() == type)
+                    .map(Building::tag)
+                    .toList();
     }
 
 
@@ -1124,6 +1146,9 @@ public class EmulatedGame {
         Building b = new Building(tag, type, position,
             SC2Data.maxBuildingHealth(type), SC2Data.maxBuildingHealth(type), true);
         friendly.addBuilding(b);
+        if (playerRaceModel != null) {
+            playerRaceModel.onBuildingComplete(friendly, type, tag);
+        }
         return b;
     }
 
