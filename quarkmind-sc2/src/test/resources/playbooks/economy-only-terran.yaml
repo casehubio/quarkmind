@@ -52,7 +52,7 @@ steps:
     at: 183 ticks
     expect:
       units:
-        SCV: { min: 25 }
+        SCV: { min: 24 }
 
   - assert: tick-305
     at: 305 ticks

@@ -468,7 +468,10 @@ public class EmulatedGame {
 
     private void drainBuildingQueues(PlayerState state, PhysicsState physics) {
         for (String buildingTag : new ArrayList<>(physics.buildingQueues.keySet())) {
-            if (physics.buildingTrainingUntil.containsKey(buildingTag)) continue;
+            if (physics.buildingTrainingUntil.containsKey(buildingTag)) {continue;}
+            boolean buildingReady = state.buildings().stream()
+                                         .anyMatch(b -> b.tag().equals(buildingTag) && b.isComplete());
+            if (!buildingReady) {continue;}
             Deque<UnitType> queue = physics.buildingQueues.get(buildingTag);
             if (queue == null || queue.isEmpty()) {
                 physics.buildingQueues.remove(buildingTag);
@@ -476,7 +479,7 @@ public class EmulatedGame {
                 continue;
             }
             UnitType next = queue.poll();
-            if (queue.isEmpty()) physics.buildingQueues.remove(buildingTag);
+            if (queue.isEmpty()) {physics.buildingQueues.remove(buildingTag);}
             long completionLoop = physics.buildingCompletionAtLoop.getOrDefault(buildingTag, 0L);
             physics.buildingCompletionAtLoop.remove(buildingTag);
             startTraining(buildingTag, next, state, physics, completionLoop);
