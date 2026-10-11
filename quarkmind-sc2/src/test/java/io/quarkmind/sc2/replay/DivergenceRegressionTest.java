@@ -40,7 +40,7 @@ class DivergenceRegressionTest {
     private static final int TICK_LIMIT = TICKS_PER_MINUTE * CHECKPOINT_MINUTE + 1;
     private static final double MARGIN = 1.10;
     private static final double FLOOR = 3.0;
-    private static final double UNIT_ACCURACY_FLOOR = 0.42;
+    private static final double UNIT_ACCURACY_FLOOR = 0.70;
     private static final double BUILDING_ACCURACY_FLOOR = 0.95;
     private static final double UPGRADE_ACCURACY_FLOOR = 0.0;
     private static final double ECONOMY_MAPE_CEILING = 420.0;

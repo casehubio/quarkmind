@@ -1,4 +1,4 @@
-# Oracle Accuracy Baseline — 2026-10-06
+# Oracle Accuracy Baseline — 2026-10-11
 
 **Context:** Phase 2.5 baseline (#367/#373, child of #366)
 **Dataset:** Oracle (118 replays, v4.9.3)
@@ -11,7 +11,7 @@
 
 | Category | Accuracy | Notes |
 |----------|----------|-------|
-| Units | 88.0% | count match across 118 replays |
+| Units | 88.7% | count match across 118 replays |
 | Buildings | 79.1% | count match, building types only |
 | Upgrades | 99.7% | gameplay only (excl. cosmetics) |
 | Economy | 328.7% MAPE | mean across 13 fields at 5min |
@@ -20,7 +20,7 @@
 
 | Tier | Category | Accuracy | Oracle | Java |
 |------|----------|----------|--------|------|
-| T1 Commanded | Units | 98.2% | 23571 | 23150 |
+| T1 Commanded | Units | 99.3% | 23571 | 23398 |
 | T1 Commanded | Buildings | 79.1% | 6084 | 4811 |
 | T2 Auto-spawn | Units | 80.2% | 10012 | 8031 |
 | T3 Combat | Units | excluded | 1838 | 0 |
@@ -32,14 +32,14 @@
 |------|--------|------|------|
 | P2:Zergling | 2778 | 2080 | -698 |
 | P1:SCV | 1293 | 1756 | +463 |
-| P2:Baneling | 454 | 0 | -454 |
 | P2:SCV | 1343 | 1742 | +399 |
+| P2:MULE | 350 | 0 | -350 |
 | P2:Overlord | 487 | 837 | +350 |
+| P1:MULE | 273 | 0 | -273 |
 | P1:Drone | 1377 | 1133 | -244 |
-| P1:Baneling | 207 | 0 | -207 |
+| P2:Baneling | 454 | 225 | -229 |
 | P1:Hydralisk | 323 | 509 | +186 |
 | P1:Zergling | 1510 | 1672 | +162 |
-| P2:MULE | 350 | 202 | -148 |
 
 ## T1 Commanded Buildings — Top Divergences
 
@@ -170,7 +170,7 @@
 | scoreValueVespeneCollectionRate | 33.2% | 36.4% | 39.4% | 40.7% |
 | scoreValueFoodMade | 193.2% | 102.4% | 66.0% | 52.8% |
 | scoreValueFoodUsed | 887.2% | 532.0% | 309.5% | 239.5% |
-| scoreValueWorkersActiveCount | 6.0% | 11.7% | 20.5% | 47.1% |
+| scoreValueWorkersActiveCount | 6.0% | 11.6% | 20.5% | 46.9% |
 | scoreValueMineralsUsedCurrentArmy | 94.7% | 4034.6% | 1252.8% | 642.2% |
 | scoreValueMineralsUsedCurrentEconomy | 200.3% | 109.7% | 67.5% | 50.1% |
 | scoreValueMineralsUsedCurrentTechnology | 99.0% | 553.1% | 219.3% | 132.2% |
@@ -182,13 +182,13 @@
 
 | Replay | Units | Buildings | Upgrades | Economy 5min |
 |--------|-------|-----------|----------|--------------|
-| 4822d7d400303ce45156b359bcb36d855a7b20a270005a0bd538acc397c57e42.SC2Replay | 62.7% | 42.6% | 36.4% | 100.0% |
-| 374df5fbb030c14733dcc9fc342e2acaba0d0bdd9f1341036b405b34eff4fa50.SC2Replay | 69.3% | 59.7% | 22.2% | 100.0% |
-| 1136f0e99a53c45134c4431ac21a69ca12aed360d8b9b5bb6255fbb0774a0e21.SC2Replay | 61.0% | 71.4% | 23.5% | 100.0% |
-| 0e3e1920fe525aa06f568f347c3ae19b02323c4f07affc5bf81e8bf17043aae1.SC2Replay | 52.8% | 65.8% | 37.8% | 100.0% |
-| 0f0377fe8e41e5794843108af53d0a1f816d6fbda4a4e04ddacd3276e52e63b4.SC2Replay | 69.0% | 60.5% | 27.3% | 100.0% |
-| 0ac98ac604576f838a01446b3772d85f4ed62486241a056ea5debc71e6dcd846.SC2Replay | 66.9% | 71.4% | 18.8% | 100.0% |
-| 1312af30a2b0801b6d28356c5aa37618f8ea26699786c16f7a134f76c3aa0978.SC2Replay | 50.4% | 65.0% | 44.4% | 100.0% |
-| 3e6edda4791cd7df6a0caac20c829a4c1bd9e8e98e034565f35ac3b7cbc38e90.SC2Replay | 64.0% | 63.1% | 38.2% | 100.0% |
-| 07fc1fc17f68744fd7c741e275f9f03621885f2d950a9d1688fff32da5b44e77.SC2Replay | 68.3% | 88.2% | 11.1% | 100.0% |
-| 1ef3257916e5ad9c675b532b1278918fb41104403d0f027a980b0ddd8cd51b8b.SC2Replay | 83.7% | 74.3% | 9.7% | 100.0% |
+| 4822d7d400303ce45156b359bcb36d855a7b20a270005a0bd538acc397c57e42.SC2Replay | 62.2% | 42.6% | 36.4% | 100.0% |
+| 0ac98ac604576f838a01446b3772d85f4ed62486241a056ea5debc71e6dcd846.SC2Replay | 62.1% | 71.4% | 18.8% | 100.0% |
+| 1136f0e99a53c45134c4431ac21a69ca12aed360d8b9b5bb6255fbb0774a0e21.SC2Replay | 57.9% | 71.4% | 23.5% | 100.0% |
+| 374df5fbb030c14733dcc9fc342e2acaba0d0bdd9f1341036b405b34eff4fa50.SC2Replay | 73.6% | 59.7% | 22.2% | 100.0% |
+| 0e3e1920fe525aa06f568f347c3ae19b02323c4f07affc5bf81e8bf17043aae1.SC2Replay | 52.2% | 65.8% | 37.8% | 100.0% |
+| 0f0377fe8e41e5794843108af53d0a1f816d6fbda4a4e04ddacd3276e52e63b4.SC2Replay | 70.6% | 60.5% | 27.3% | 100.0% |
+| 1312af30a2b0801b6d28356c5aa37618f8ea26699786c16f7a134f76c3aa0978.SC2Replay | 51.0% | 65.0% | 44.4% | 100.0% |
+| 3e6edda4791cd7df6a0caac20c829a4c1bd9e8e98e034565f35ac3b7cbc38e90.SC2Replay | 64.4% | 63.1% | 38.2% | 100.0% |
+| 07fc1fc17f68744fd7c741e275f9f03621885f2d950a9d1688fff32da5b44e77.SC2Replay | 69.9% | 88.2% | 11.1% | 100.0% |
+| 0ca47ed8edaa0c80446fca4824636802eb0ec5c9c8e690cde3054729f02e1f54.SC2Replay | 54.3% | 90.0% | 25.9% | 100.0% |

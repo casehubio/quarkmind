@@ -142,6 +142,7 @@ public class StrippedReplayFeatureExtractor {
 
     private static final int MAX_MULTIPLICATION = 4;
 
+
     private static final Map<String, Integer> BUILDING_TO_ABIL_LINK = Map.ofEntries(
             Map.entry("CommandCenter", 155), Map.entry("OrbitalCommand", 155),
             Map.entry("PlanetaryFortress", 155),
@@ -240,6 +241,9 @@ public class StrippedReplayFeatureExtractor {
                                                              state, syntheticEvents, tagCounter);
                                 }
                             }
+                            case ReplayCommand.InjectCommand inject -> {
+                                state.injectLoops.add(inject.loop());
+                            }
                             case ReplayCommand.CancelCommand ignored -> {}
                             case ReplayCommand.Movement ignored -> {}
                         }
@@ -262,6 +266,8 @@ public class StrippedReplayFeatureExtractor {
                                               syntheticEvents, tagCounter, gameLength);
             tagCounter = emitAutoSpawnedInterceptor(playerId, playerRace,
                                                      syntheticEvents, tagCounter, gameLength);
+            tagCounter = emitInjectedLarva(playerId, playerRace, state,
+                                            syntheticEvents, tagCounter, gameLength);
             if (elapsedLoops != null && elapsedLoops > 0) {
                 generatePlayerStats(playerId, state, syntheticEvents, elapsedLoops);
             }
@@ -276,12 +282,16 @@ public class StrippedReplayFeatureExtractor {
     private static void initStartingBuildings(Race race, PlayerState state) {
         if (race == Race.TERRAN) {
             state.productionBuildingCounts.put(155, 1); // CommandCenter
+            state.productionBuildingPool.computeIfAbsent(155, k -> new ArrayList<>()).add(0L);
         } else if (race == Race.PROTOSS) {
             state.productionBuildingCounts.put(175, 1); // Nexus
+            state.productionBuildingPool.computeIfAbsent(175, k -> new ArrayList<>()).add(0L);
             state.productionBuildingCounts.put(172, 0); // Gateway — none at start
         } else if (race == Race.ZERG) {
             state.productionBuildingCounts.put(193, 1); // Hatchery (larva)
+            state.productionBuildingPool.computeIfAbsent(193, k -> new ArrayList<>()).add(0L);
             state.productionBuildingCounts.put(184, 1); // Hatchery (queen)
+            state.productionBuildingPool.computeIfAbsent(184, k -> new ArrayList<>()).add(0L);
             state.trackedBuildings.add(new TrackedBuilding(0, "Hatchery", 0));
         }
     }
@@ -373,6 +383,9 @@ public class StrippedReplayFeatureExtractor {
         Integer abilForBuilding = BUILDING_TO_ABIL_LINK.get(buildingName);
         if (abilForBuilding != null) {
             state.productionBuildingCounts.merge(abilForBuilding, 1, Integer::sum);
+            state.productionBuildingPool
+                .computeIfAbsent(abilForBuilding, k -> new ArrayList<>())
+                .add(doneLoop);
         }
         trackBuildSpending(buildingName, state);
 
@@ -433,23 +446,35 @@ public class StrippedReplayFeatureExtractor {
                                                  "unitTagRecycle", 0)));
         }
 
-        int morphTime = getMorphTime(targetName);
-        int tag       = tagCounter++;
-        events.add(new SyntheticEvent(commandLoop, EventOrdinal.UNIT_INIT, playerId,
-                                      Map.of("evtTypeName", "UnitInit",
-                                             "loop", commandLoop,
-                                             "controlPlayerId", playerId,
-                                             "unitTypeName", targetName,
-                                             "unitTagIndex", tag,
-                                             "unitTagRecycle", 0)));
-        long doneLoop = commandLoop + morphTime;
-        events.add(new SyntheticEvent(doneLoop, EventOrdinal.UNIT_DONE, playerId,
-                                      Map.of("evtTypeName", "UnitDone",
-                                             "loop", doneLoop,
-                                             "controlPlayerId", playerId,
-                                             "unitTypeName", targetName,
-                                             "unitTagIndex", tag,
-                                             "unitTagRecycle", 0)));
+        int     morphTime       = getMorphTime(targetName);
+        int     tag             = tagCounter++;
+        boolean isBuildingMorph = BUILDING_MORPH_TARGETS.contains(targetName);
+        if (isBuildingMorph) {
+            events.add(new SyntheticEvent(commandLoop, EventOrdinal.UNIT_INIT, playerId,
+                                          Map.of("evtTypeName", "UnitInit",
+                                                 "loop", commandLoop,
+                                                 "controlPlayerId", playerId,
+                                                 "unitTypeName", targetName,
+                                                 "unitTagIndex", tag,
+                                                 "unitTagRecycle", 0)));
+            long doneLoop = commandLoop + morphTime;
+            events.add(new SyntheticEvent(doneLoop, EventOrdinal.UNIT_DONE, playerId,
+                                          Map.of("evtTypeName", "UnitDone",
+                                                 "loop", doneLoop,
+                                                 "controlPlayerId", playerId,
+                                                 "unitTypeName", targetName,
+                                                 "unitTagIndex", tag,
+                                                 "unitTagRecycle", 0)));
+        } else {
+            long birthLoop = commandLoop + morphTime;
+            events.add(new SyntheticEvent(birthLoop, EventOrdinal.UNIT_BORN, playerId,
+                                          Map.of("evtTypeName", "UnitBorn",
+                                                 "loop", birthLoop,
+                                                 "controlPlayerId", playerId,
+                                                 "unitTypeName", targetName,
+                                                 "unitTagIndex", tag,
+                                                 "unitTagRecycle", 0)));
+        }
 
         if (state != null) {
             trackMorphSpending(targetName, state);
@@ -599,6 +624,40 @@ public class StrippedReplayFeatureExtractor {
             .map(SyntheticEvent::data).toList();
     }
 
+    private static final int INJECT_LARVA_HATCH_TIME = 457;
+    private static final int INJECT_LARVA_COUNT      = 3;
+
+    private int emitInjectedLarva(int playerId, Race race, PlayerState state,
+                                  List<SyntheticEvent> events, int tagCounter,
+                                  long elapsedLoops) {
+        if (race != Race.ZERG) {return tagCounter;}
+        for (long injectLoop : state.injectLoops) {
+            long birthLoop = injectLoop + INJECT_LARVA_HATCH_TIME;
+            if (birthLoop > elapsedLoops) {continue;}
+            for (int i = 0; i < INJECT_LARVA_COUNT; i++) {
+                int tag = tagCounter++;
+                events.add(new SyntheticEvent(birthLoop, EventOrdinal.UNIT_BORN, playerId,
+                                              Map.of("evtTypeName", "UnitBorn",
+                                                     "loop", birthLoop,
+                                                     "controlPlayerId", playerId,
+                                                     "unitTypeName", "Larva",
+                                                     "unitTagIndex", tag,
+                                                     "unitTagRecycle", 0)));
+            }
+        }
+        return tagCounter;
+    }
+
+    List<Map<String, Object>> emitInjectLarvaForTest(
+            int playerId, long injectLoop, long elapsedLoops, int startTag) {
+        var state = new PlayerState();
+        state.injectLoops.add(injectLoop);
+        var events = new ArrayList<SyntheticEvent>();
+        emitInjectedLarva(playerId, Race.ZERG, state, events, startTag, elapsedLoops);
+        return events.stream().map(SyntheticEvent::data).toList();
+    }
+
+
     List<Map<String, Object>> processMorphForTest(ReplayCommand.MorphCommand mc,
                                                   int playerId, int startTag) {
         List<SyntheticEvent> events = new ArrayList<>();
@@ -669,6 +728,42 @@ public class StrippedReplayFeatureExtractor {
         handleTrain(train, commandLoop, playerId, state, events, startTag);
         return events.stream().map(SyntheticEvent::data).toList();
     }
+
+    List<Map<String, Object>> processTrainWithPoolForTest(
+            TrainIntent train, long commandLoop, int playerId, int startTag,
+            int abilKey, List<Long> busyUntils) {
+        var state = new PlayerState();
+        state.productionBuildingPool.put(abilKey, busyUntils);
+        state.productionBuildingCounts.put(abilKey, busyUntils.size());
+        var events      = new ArrayList<SyntheticEvent>();
+        int freeCount   = countFreeBuildings(busyUntils, commandLoop);
+        int repeatCount = Math.max(1, Math.min(freeCount, MAX_MULTIPLICATION));
+        int tagCounter  = startTag;
+        int trainTime   = SC2Data.trainTimeInLoops(train.unitType());
+        for (int r = 0; r < repeatCount; r++) {
+            tagCounter = handleTrain(train, commandLoop, playerId, state, events, tagCounter);
+            assignToEarliestFreeBuilding(busyUntils, commandLoop, trainTime);
+        }
+        return events.stream().map(SyntheticEvent::data).toList();
+    }
+
+    private static int countFreeBuildings(List<Long> busyUntils, long currentLoop) {
+        int free = 0;
+        for (long busyUntil : busyUntils) {
+            if (busyUntil <= currentLoop) {free++;}
+        }
+        return free;
+    }
+
+    private static void assignToEarliestFreeBuilding(List<Long> busyUntils, long commandLoop, int trainTime) {
+        int earliest = 0;
+        for (int i = 1; i < busyUntils.size(); i++) {
+            if (busyUntils.get(i) < busyUntils.get(earliest)) {earliest = i;}
+        }
+        long startLoop = Math.max(commandLoop, busyUntils.get(earliest));
+        busyUntils.set(earliest, startLoop + trainTime);
+    }
+
 
     List<Map<String, Object>> processZergBuildForTest(ReplayCommand.BuildCommand bc,
                                                       int playerId, int startTag) {
@@ -1087,8 +1182,12 @@ public class StrippedReplayFeatureExtractor {
         final Map<String, Long> buildingBusyUntil = new HashMap<>();
         final List<TrackedBuilding> trackedBuildings = new ArrayList<>();
         final Map<Integer, Integer> productionBuildingCounts = new HashMap<>();
+        final Map<Integer, List<Long>> productionBuildingPool = new HashMap<>();
+
         long warpGateCompletionLoop = -1;
         final List<Long> larvaConsumptionLoops = new ArrayList<>();
+        final List<Long> injectLoops           = new ArrayList<>();
+
 
         // Economy — Tier 1: cumulative spending
         int mineralsUsedArmy;

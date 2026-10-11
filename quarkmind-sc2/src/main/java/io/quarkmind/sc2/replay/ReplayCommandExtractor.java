@@ -69,6 +69,7 @@ public final class ReplayCommandExtractor {
                             convertMorph(m, mapping, intents);
                         }
                         case ReplayCommand.CancelCommand ignored -> {}
+                        case ReplayCommand.InjectCommand ignored -> {}
                     }
                 }
             }

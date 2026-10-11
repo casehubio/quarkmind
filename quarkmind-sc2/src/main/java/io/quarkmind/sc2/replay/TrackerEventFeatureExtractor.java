@@ -219,6 +219,7 @@ class TrackerEventFeatureExtractor {
                                 commands.add(m);
                             }
                             case ReplayCommand.CancelCommand ignored -> {}
+                            case ReplayCommand.InjectCommand ignored -> {}
                         }
                     }
                 }

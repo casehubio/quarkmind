@@ -6,7 +6,8 @@ import io.quarkmind.sc2.intent.TimedIntent;
 public sealed interface ReplayCommand permits
                                       ReplayCommand.Movement, ReplayCommand.IntentCommand,
                                       ReplayCommand.BuildCommand, ReplayCommand.UpgradeCommand,
-                                      ReplayCommand.MorphCommand, ReplayCommand.CancelCommand {
+                                      ReplayCommand.MorphCommand, ReplayCommand.CancelCommand,
+                                      ReplayCommand.InjectCommand {
     record Movement(UnitOrder order) implements ReplayCommand {}
 
     record IntentCommand(TimedIntent intent) implements ReplayCommand {}
@@ -18,4 +19,7 @@ public sealed interface ReplayCommand permits
     record MorphCommand(long loop, String sourceName, String targetName) implements ReplayCommand {}
 
     record CancelCommand(long loop, String unitTag) implements ReplayCommand {}
+
+    record InjectCommand(long loop) implements ReplayCommand {}
+
 }

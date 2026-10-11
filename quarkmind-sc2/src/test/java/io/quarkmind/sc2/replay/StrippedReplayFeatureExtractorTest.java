@@ -238,9 +238,52 @@ class StrippedReplayFeatureExtractorTest {
                                  .filter(e -> "Archon".equals(e.get("unitTypeName")))
                                  .toList();
 
-        assertThat(archonEvents).hasSize(2);
-        assertThat(archonEvents.get(0).get("evtTypeName")).isEqualTo("UnitInit");
-        assertThat(archonEvents.get(1).get("evtTypeName")).isEqualTo("UnitDone");
+        assertThat(archonEvents).hasSize(1);
+        assertThat(archonEvents.get(0).get("evtTypeName")).isEqualTo("UnitBorn");
+    }
+
+
+    @Test
+    void banelingMorphEmitsUnitBornNotUnitInit() {
+        var                       extractor = new StrippedReplayFeatureExtractor();
+        var                       morph     = new ReplayCommand.MorphCommand(3000L, "Zergling", "Baneling");
+        List<Map<String, Object>> events    = extractor.processMorphForTest(morph, 1, 100);
+
+        var banelingEvents = events.stream()
+                                   .filter(e -> "Baneling".equals(e.get("unitTypeName")))
+                                   .toList();
+
+        assertThat(banelingEvents).hasSize(1);
+        assertThat(banelingEvents.get(0).get("evtTypeName")).isEqualTo("UnitBorn");
+    }
+
+    @Test
+    void ravagerMorphEmitsUnitBorn() {
+        var                       extractor = new StrippedReplayFeatureExtractor();
+        var                       morph     = new ReplayCommand.MorphCommand(3000L, "Roach", "Ravager");
+        List<Map<String, Object>> events    = extractor.processMorphForTest(morph, 1, 100);
+
+        var ravagerEvents = events.stream()
+                                  .filter(e -> "Ravager".equals(e.get("unitTypeName")))
+                                  .toList();
+
+        assertThat(ravagerEvents).hasSize(1);
+        assertThat(ravagerEvents.get(0).get("evtTypeName")).isEqualTo("UnitBorn");
+    }
+
+    @Test
+    void buildingMorphKeepsUnitInit() {
+        var                       extractor = new StrippedReplayFeatureExtractor();
+        var                       morph     = new ReplayCommand.MorphCommand(3000L, "Hatchery", "Lair");
+        List<Map<String, Object>> events    = extractor.processMorphForTest(morph, 1, 100);
+
+        var lairEvents = events.stream()
+                               .filter(e -> "Lair".equals(e.get("unitTypeName")))
+                               .toList();
+
+        assertThat(lairEvents).hasSize(2);
+        assertThat(lairEvents.get(0).get("evtTypeName")).isEqualTo("UnitInit");
+        assertThat(lairEvents.get(1).get("evtTypeName")).isEqualTo("UnitDone");
     }
 
     @Test
@@ -271,6 +314,102 @@ class StrippedReplayFeatureExtractorTest {
     }
 
     // --- Larva auto-spawn tests ---
+
+
+// --- Busy-until-aware multiplication tests ---
+
+    @Test
+    void scvTrainWithBusyCCsReducesMultiplication() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        // 3 CCs: one just started training (busy for 272 loops), two free
+        // Train command at loop 5000 → should multiply by 2, not 3
+        var train      = new TrainIntent(null, UnitType.SCV);
+        int abilKey    = 155; // CC abilLink
+        var busyUntils = new java.util.ArrayList<>(List.of(5200L, 0L, 0L)); // CC1 busy, CC2+CC3 free
+        List<Map<String, Object>> events = extractor.processTrainWithPoolForTest(
+                train, 5000L, 1, 100, abilKey, busyUntils);
+
+        long scvCount = events.stream()
+                              .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
+                              .filter(e -> "SCV".equals(e.get("unitTypeName")))
+                              .count();
+        assertThat(scvCount).isEqualTo(2);
+    }
+
+    @Test
+    void trainMultipliesWhenAllBuildingsFree() {
+        var extractor  = new StrippedReplayFeatureExtractor();
+        var train      = new TrainIntent(null, UnitType.SCV);
+        var busyUntils = new java.util.ArrayList<>(List.of(0L, 0L, 0L));
+        List<Map<String, Object>> events = extractor.processTrainWithPoolForTest(
+                train, 5000L, 1, 100, 155, busyUntils);
+
+        long scvCount = events.stream()
+                              .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
+                              .count();
+        assertThat(scvCount).isEqualTo(3);
+    }
+
+    @Test
+    void trainWithAllBuildingsBusyStillProducesOne() {
+        var extractor  = new StrippedReplayFeatureExtractor();
+        var train      = new TrainIntent(null, UnitType.SCV);
+        var busyUntils = new java.util.ArrayList<>(List.of(5500L, 5300L, 5100L));
+        List<Map<String, Object>> events = extractor.processTrainWithPoolForTest(
+                train, 5000L, 1, 100, 155, busyUntils);
+
+        long scvCount = events.stream()
+                              .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
+                              .count();
+        assertThat(scvCount).isEqualTo(1);
+    }
+
+    @Test
+    void busyUntilUpdatedAfterTrainAssignment() {
+        var extractor  = new StrippedReplayFeatureExtractor();
+        var train      = new TrainIntent(null, UnitType.SCV);
+        var busyUntils = new java.util.ArrayList<>(List.of(0L, 0L));
+        // First train at loop 1000 — assigns both, marks them busy
+        extractor.processTrainWithPoolForTest(train, 1000L, 1, 100, 155, busyUntils);
+
+        // Both should now be busy (SCV train time ~272 loops)
+        assertThat(busyUntils.stream().allMatch(b -> b > 1000L)).isTrue();
+
+        // Second train at loop 1100 — both still busy, so only 1 SCV
+        List<Map<String, Object>> events = extractor.processTrainWithPoolForTest(
+                train, 1100L, 1, 200, 155, busyUntils);
+        long scvCount = events.stream()
+                              .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
+                              .count();
+        assertThat(scvCount).isEqualTo(1);
+    }
+
+
+// --- Inject Larva tests ---
+
+    @Test
+    void injectLarvaProducesThreeLarva() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var events    = extractor.emitInjectLarvaForTest(1, 5000L, 10000L, 200);
+
+        long larvaCount = events.stream()
+                                .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
+                                .filter(e -> "Larva".equals(e.get("unitTypeName")))
+                                .count();
+        assertThat(larvaCount).isEqualTo(3);
+
+        long expectedBirthLoop = 5000L + 457;
+        events.stream()
+              .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
+              .forEach(e -> assertThat(((Number) e.get("loop")).longValue()).isEqualTo(expectedBirthLoop));
+    }
+
+    @Test
+    void injectAfterGameEndProducesNoLarva() {
+        var extractor = new StrippedReplayFeatureExtractor();
+        var events    = extractor.emitInjectLarvaForTest(1, 9800L, 10000L, 200);
+        assertThat(events).isEmpty();
+    }
 
     @Test
     void larvaAutoSpawnCapsAtThreePerBase() {

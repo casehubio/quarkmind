@@ -731,7 +731,14 @@ public class AbilityMapping {
                 };
             }
             // ABIL_ROBOTICS WarpGateResearch removed — duplicates CYBERNETICS_CORE_UPGRADES idx=6 via ABIL_CYBERNETICS_CORE (236)
-            case ABIL_HATCHERY -> isRace(Race.ZERG) && idx == 1 ? trainIntent(loop, UnitType.QUEEN) : null;
+            case ABIL_HATCHERY -> {
+                if (!isRace(Race.ZERG)) { yield null; }
+                yield switch (idx) {
+                    case 0 -> List.of(new ReplayCommand.InjectCommand(loop));
+                    case 1 -> trainIntent(loop, UnitType.QUEEN);
+                    default -> null;
+                };
+            }
             case ABIL_LAIR -> isRace(Race.ZERG) && idx == 0 ? trainIntent(loop, UnitType.QUEEN) : null;
             default -> null;
         };
