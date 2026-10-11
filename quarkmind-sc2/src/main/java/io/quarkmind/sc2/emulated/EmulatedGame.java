@@ -148,19 +148,26 @@ public class EmulatedGame {
         }
 
         // Mineral income (uses reduced per-base counts)
+        double tickMineralIncome = 0;
         for (final int workersAtBase : miningProbesPerBase) {
-            friendly.addMinerals(SC2Data.mineralIncomePerTick(workersAtBase));
+            double income = SC2Data.mineralIncomePerTick(workersAtBase);
+            friendly.addMinerals(income);
+            tickMineralIncome += income;
         }
 
         // Gas income
+        double tickGasIncome = 0;
         int gasWorkersRemaining = gasWorkerBudget;
         for (final Building b : friendly.buildings()) {
             if (gasWorkersRemaining <= 0) {break;}
             if (!SC2Data.isGasBuilding(b.type()) || !b.isComplete()) {continue;}
             final int workersOnThisGeyser = Math.min(SC2Data.GAS_WORKERS_PER_BUILDING, gasWorkersRemaining);
-            friendly.addVespene(SC2Data.gasIncomePerTick(workersOnThisGeyser));
+            double gasIncome = SC2Data.gasIncomePerTick(workersOnThisGeyser);
+            friendly.addVespene(gasIncome);
+            tickGasIncome += gasIncome;
             gasWorkersRemaining -= workersOnThisGeyser;
         }
+        economyTracker.recordIncome(tickMineralIncome, tickGasIncome);
 
         playerRaceModel.tickPassive(friendly, gameFrame * (long) SC2Data.LOOPS_PER_TICK);
         moveFriendlyUnits();

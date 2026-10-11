@@ -14,11 +14,14 @@ class EconomyTracker {
     private int mineralsUsedTechnology;
     private int vespeneUsedTechnology;
 
-    private double prevMinerals;
-    private int prevVespene;
     private int mineralRate;
     private int vespeneRate;
     private int ticksSinceRateUpdate;
+    private double grossMinerals;
+    private double grossVespene;
+    private double prevGrossMinerals;
+    private double prevGrossVespene;
+
 
     private static final int RATE_INTERVAL_TICKS = 7;
 
@@ -46,16 +49,19 @@ class EconomyTracker {
     }
 
 
+    void recordIncome(double mineralIncome, double vespeneIncome) {
+        grossMinerals += mineralIncome;
+        grossVespene += vespeneIncome;
+    }
+
     void tickUpdate(double minerals, int vespene,
                     int supply, int supplyUsed, int workerCount) {
         ticksSinceRateUpdate++;
         if (ticksSinceRateUpdate >= RATE_INTERVAL_TICKS) {
-            double mineralDelta = minerals - prevMinerals;
-            int vespeneDelta = vespene - prevVespene;
-            mineralRate = (int) Math.max(0, mineralDelta);
-            vespeneRate = Math.max(0, vespeneDelta);
-            prevMinerals = minerals;
-            prevVespene = vespene;
+            mineralRate          = (int) Math.max(0, grossMinerals - prevGrossMinerals);
+            vespeneRate          = (int) Math.max(0, grossVespene - prevGrossVespene);
+            prevGrossMinerals    = grossMinerals;
+            prevGrossVespene     = grossVespene;
             ticksSinceRateUpdate = 0;
         }
     }
@@ -73,17 +79,19 @@ class EconomyTracker {
     }
 
     void reset() {
-        mineralsUsedArmy = 0;
-        vespeneUsedArmy = 0;
-        mineralsUsedEconomy = 0;
-        vespeneUsedEconomy = 0;
+        mineralsUsedArmy       = 0;
+        vespeneUsedArmy        = 0;
+        mineralsUsedEconomy    = 0;
+        vespeneUsedEconomy     = 0;
         mineralsUsedTechnology = 0;
-        vespeneUsedTechnology = 0;
-        prevMinerals = 0;
-        prevVespene = 0;
-        mineralRate = 0;
-        vespeneRate = 0;
-        ticksSinceRateUpdate = 0;
+        vespeneUsedTechnology  = 0;
+        grossMinerals          = 0;
+        grossVespene           = 0;
+        prevGrossMinerals      = 0;
+        prevGrossVespene       = 0;
+        mineralRate            = 0;
+        vespeneRate            = 0;
+        ticksSinceRateUpdate   = 0;
     }
 
     private static boolean isTechBuilding(BuildingType type) {

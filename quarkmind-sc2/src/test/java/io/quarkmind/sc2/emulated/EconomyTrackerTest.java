@@ -1,6 +1,7 @@
 package io.quarkmind.sc2.emulated;
 
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.UnitType;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +45,7 @@ class EconomyTrackerTest {
     void computesCollectionRateFromDelta() {
         var tracker = new EconomyTracker();
         for (int i = 0; i < 8; i++) {
+            tracker.recordIncome(60.0, 10.0);
             tracker.tickUpdate(50.0 + i * 60, i * 10, 23, 14, 12);
         }
         var stats = tracker.currentStats(530, 70, 23, 14, 12);
@@ -60,6 +62,21 @@ class EconomyTrackerTest {
         assertThat(stats.foodMade()).isEqualTo(31);
         assertThat(stats.foodUsed()).isEqualTo(18);
         assertThat(stats.workersActiveCount()).isEqualTo(16);
+    }
+
+
+    @Test
+    void collectionRateReflectsGrossIncomeNotNetDelta() {
+        var tracker = new EconomyTracker();
+        for (int i = 0; i < 8; i++) {
+            tracker.recordIncome(60.0, 10.0);
+            // Balance drops due to spending — pass decreasing balance
+            tracker.tickUpdate(50.0 - i * 5, Math.max(0, 80 - i * 10), 23, 14, 12);
+        }
+        var stats = tracker.currentStats(10, 10, 23, 14, 12);
+        // Rate should reflect gross income (~60/tick over 7 ticks), not net delta (negative)
+        assertThat(stats.mineralsCollectionRate()).isGreaterThanOrEqualTo(50);
+        assertThat(stats.vespeneCollectionRate()).isGreaterThanOrEqualTo(5);
     }
 
     @Test

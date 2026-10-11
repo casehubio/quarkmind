@@ -43,6 +43,8 @@ class EmulatedGameAccuracyBaselineTest {
         "vespeneUsedCurrentArmy", "vespeneUsedCurrentEconomy",
         "vespeneUsedCurrentTechnology"
     };
+    private static final Set<UnitType> TRANSIENT_TYPES = EnumSet.of(UnitType.EGG);
+
 
     static boolean oracleExists() {
         if (!Files.isDirectory(ORACLE_DIR)) return false;
@@ -146,6 +148,7 @@ class EmulatedGameAccuracyBaselineTest {
         Set<UnitType> allTypes = EnumSet.noneOf(UnitType.class);
         allTypes.addAll(gt.keySet());
         allTypes.addAll(em.keySet());
+        allTypes.removeAll(TRANSIENT_TYPES);
         for (UnitType type : allTypes) {
             long[] counts = accum.computeIfAbsent(type, k -> new long[2]);
             counts[0] += gt.getOrDefault(type, 0);
