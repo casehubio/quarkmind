@@ -65,6 +65,7 @@ class EmulatedGameAccuracyBaselineTest {
         Map<Integer, Map<UnitType, long[]>> unitAccum = new TreeMap<>();
         Map<Integer, Map<BuildingType, long[]>> bldgAccum = new TreeMap<>();
         Map<Integer, int[]> upgradeAccum = new TreeMap<>();
+        Map<Integer, Map<String, int[]>> upgradeByName = new TreeMap<>();
         Map<Integer, double[][]> economyAccum = new TreeMap<>();
         int totalPlayerRuns = 0;
 
@@ -72,6 +73,7 @@ class EmulatedGameAccuracyBaselineTest {
             unitAccum.put(cp, new EnumMap<>(UnitType.class));
             bldgAccum.put(cp, new EnumMap<>(BuildingType.class));
             upgradeAccum.put(cp, new int[]{0, 0});
+            upgradeByName.put(cp, new TreeMap<>());
             economyAccum.put(cp, new double[13][2]);
         }
 
@@ -106,6 +108,16 @@ class EmulatedGameAccuracyBaselineTest {
                             .filter(snap.emulatedUpgrades()::contains).count();
                         upgradeAccum.get(cp)[0] += gtSize;
                         upgradeAccum.get(cp)[1] += matchCount;
+                        for (String upName : snap.groundTruthUpgrades()) {
+                            int[] counts = upgradeByName.get(cp).computeIfAbsent(upName, k -> new int[]{0, 0});
+                            counts[0]++;
+                            if (snap.emulatedUpgrades().contains(upName)) counts[1]++;
+                        }
+                        for (String upName : snap.emulatedUpgrades()) {
+                            if (!snap.groundTruthUpgrades().contains(upName)) {
+                                upgradeByName.get(cp).computeIfAbsent(upName, k -> new int[]{0, 0});
+                            }
+                        }
 
                         accumulateEconomy(snap.groundTruthEconomy(),
                             snap.emulatedEconomy(), economyAccum.get(cp));
@@ -131,6 +143,15 @@ class EmulatedGameAccuracyBaselineTest {
             double upgAcc = upg[0] > 0 ? 100.0 * upg[1] / upg[0] : 100.0;
             sb.append(String.format("### Upgrades%n%nAccuracy: %.1f%% (%d/%d)%n%n",
                 upgAcc, upg[1], upg[0]));
+            if (!upgradeByName.get(cp).isEmpty()) {
+                sb.append(String.format("| %-40s | %6s | %7s |%n", "Upgrade", "GT", "Matched"));
+                sb.append(String.format("|%s|%s|%s|%n", "-".repeat(42), "-".repeat(8), "-".repeat(9)));
+                for (var entry : upgradeByName.get(cp).entrySet()) {
+                    sb.append(String.format("| %-40s | %6d | %7d |%n",
+                        entry.getKey(), entry.getValue()[0], entry.getValue()[1]));
+                }
+                sb.append("\n");
+            }
 
             appendEconomyMape(sb, economyAccum.get(cp));
         }

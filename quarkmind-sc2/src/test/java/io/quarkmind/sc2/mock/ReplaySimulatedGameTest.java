@@ -1,6 +1,12 @@
 package io.quarkmind.sc2.mock;
 
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Resource;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -226,4 +232,21 @@ class ReplaySimulatedGameTest {
             .as("applyIntent is a no-op; building count driven by replay only")
             .isGreaterThanOrEqualTo(buildingsBeforeIntent);
     }
+
+    @Test
+    void upgradesExcludeCosmeticTrackerEvents() {
+        ReplaySimulatedGame game = new ReplaySimulatedGame(REPLAY, 1);
+        // Advance 5 minutes — cosmetic upgrades fire at loop 0
+        for (int i = 0; i < 300; i++) {game.tick();}
+        GameState state = game.snapshot();
+        for (String upgrade : state.playerUpgrades()) {
+            assertThat(upgrade)
+                    .as("No cosmetic upgrades in playerUpgrades")
+                    .doesNotStartWith("Spray")
+                    .doesNotStartWith("RewardDance")
+                    .doesNotStartWith("GhostAlternate")
+                    .doesNotStartWith("GameHeartActive");
+        }
+    }
+
 }

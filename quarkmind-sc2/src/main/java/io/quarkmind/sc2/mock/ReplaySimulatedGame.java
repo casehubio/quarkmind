@@ -39,6 +39,9 @@ import java.util.Map;
  */
 public class ReplaySimulatedGame extends SimulatedGame {
 
+
+    private static final List<String> COSMETIC_UPGRADE_PREFIXES = List.of(
+            "RewardDance", "Spray", "GhostAlternate", "GameHeartActive");
     /** Game loops per tick — 22.4/sec at Faster speed, rounded to 22. */
     static final int LOOPS_PER_TICK = Sc2ReplayShared.LOOPS_PER_TICK;
 
@@ -175,6 +178,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
         if (playerId == null) {return;}
         IUpgradeEvent event       = (IUpgradeEvent) rawEvent;
         String        upgradeName = event.getUpgradeTypeName().toString();
+        if (COSMETIC_UPGRADE_PREFIXES.stream().anyMatch(upgradeName::startsWith)) {return;}
         if (playerId == watchedPlayerId) {
             playerUpgrades.add(upgradeName);
         } else {
