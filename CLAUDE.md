@@ -337,6 +337,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - `MuleAbilLinkDiscoveryTest` — discovers MULE calldown abilLink by correlating CmdEvents with oracle UnitBorn("MULE") events; feeds ABIL_MULE_CALLDOWN constant in AbilityMapping
 - `AbilLinkGapDiscoveryTest` — correlates oracle UnitInit/UnitBorn events with CmdEvents to discover abilLinks for Baneling morph, CreepTumor spread, SupplyDepot/Pylon/MissileTurret builds; confirmed all building abilLinks correct, Baneling morph abilLink 73 wrong for V4_9_3
 - `CmdEventGapDiagnosticTest` — counts CmdEvents vs oracle UnitBorn events across 118 replays; confirmed Blizzard API replays contain only ~43% of production CmdEvents; compares full (AI Arena) vs restored replay detection rates
+- `QueenExtractionDiagnosticTest` — counts Queen TrainIntents vs oracle Queen counts across 118 replays; confirmed 37% CmdEvent capture × 44% intent acceptance = 17% effective Queen production rate
 - `AutoSpawnCalibrationTest` — calibrates Larva spawn interval, Interceptor build time, and Inject Larva abilLink from oracle replays; feeds SC2Data.LARVA_SPAWN_INTERVAL and INTERCEPTOR_BUILD_TIME constants
 - `AbilityDiscoveryCalibrationTest.dumpAllCmdEventsNearMissedUpgrades` — per-replay CmdEvent dump (including null-abilLink) within 5000 loops of each missed upgrade; discovered abilLinks 191 (HydraliskDen), 608 (DarkShrine), 69 (FleetBeacon) that standard correlation missed due to noise
 - Run with: `mvn test -pl quarkmind-sc2 -Pdiagnostic`
