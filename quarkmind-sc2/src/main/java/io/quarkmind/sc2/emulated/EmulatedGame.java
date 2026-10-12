@@ -829,6 +829,15 @@ public class EmulatedGame {
             Map.entry("Archon", UnitType.ARCHON),
             Map.entry("Hellbat", UnitType.HELLBAT)
                                                                                  );
+    private static final Map<String, UnitType> MORPH_SOURCE_TYPES = Map.of(
+            "Zergling", UnitType.ZERGLING,
+            "Roach", UnitType.ROACH,
+            "Corruptor", UnitType.CORRUPTOR,
+            "Hydralisk", UnitType.HYDRALISK,
+            "Overlord", UnitType.OVERLORD,
+            "HighTemplar", UnitType.HIGH_TEMPLAR,
+            "Hellion", UnitType.HELLION
+                                                                          );
 
 
     private void handleMorph(MorphIntent m, PlayerState state, PhysicsState physics, long absLoop) {
@@ -872,11 +881,19 @@ public class EmulatedGame {
         Unit source = state.units().stream()
                            .filter(u -> u.tag().equals(m.unitTag()))
                            .findFirst().orElse(null);
+        if (source == null && m.unitTag() != null && m.unitTag().startsWith("r-")) {
+            UnitType sourceType = MORPH_SOURCE_TYPES.get(m.sourceName());
+            if (sourceType != null) {
+                source = state.units().stream()
+                              .filter(u -> u.type() == sourceType)
+                              .findFirst().orElse(null);
+            }
+        }
         if (source == null) {
             log.debugf("[EMULATED] Unit morph rejected — unit %s not found", m.unitTag());
             return;
         }
-        state.removeUnit(m.unitTag());
+        state.removeUnit(source.tag());
         String tag = nextTagString();
         int    hp  = SC2Data.maxHealth(targetUnit);
         state.addUnit(new Unit(tag, targetUnit, source.position(), hp, hp, 0, 0, 0, 0));
