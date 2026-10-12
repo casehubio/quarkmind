@@ -1,16 +1,35 @@
 package io.quarkmind.sc2.emulated;
 
-import io.quarkmind.domain.*;
-import io.quarkmind.sc2.intent.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.EnemyAttackConfig;
+import io.quarkmind.domain.EnemyObservation;
+import io.quarkmind.domain.EnemyStrategy;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Race;
+import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.TerrainGrid;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
+import io.quarkmind.domain.UpgradeType;
+import io.quarkmind.plugin.tactics.TerrainAwareKiteStrategy;
+import io.quarkmind.sc2.intent.AttackIntent;
+import io.quarkmind.sc2.intent.BlinkIntent;
+import io.quarkmind.sc2.intent.BuildIntent;
+import io.quarkmind.sc2.intent.MoveIntent;
+import io.quarkmind.sc2.intent.ResearchIntent;
+import io.quarkmind.sc2.intent.TimedIntent;
+import io.quarkmind.sc2.intent.TrainIntent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import io.quarkmind.plugin.tactics.TerrainAwareKiteStrategy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 class EmulatedGameTest {
 
@@ -237,6 +256,34 @@ class EmulatedGameTest {
             .as("Stalker must be trained after setVespeneForHarness(50)")
             .anyMatch(u -> u.type() == UnitType.STALKER);
     }
+
+    @Test
+    void researchCompletesWithSufficientMinerals() {
+        game.reset();
+        Building forge = new Building(
+                "forge-test", BuildingType.FORGE,
+                new Point2d(12, 12),
+                SC2Data.maxBuildingHealth(BuildingType.FORGE),
+                SC2Data.maxBuildingHealth(BuildingType.FORGE),
+                true);
+        game.injectReplayBuilding(forge);
+
+        // Give enough minerals and gas for the upgrade
+        game.setMinerals(300);
+        game.setVespeneForHarness(300);
+
+        game.applyIntent(new ResearchIntent("forge-test", UpgradeType.PROTOSS_GROUND_WEAPONS_1));
+
+        // Tick past the upgrade duration
+        int ticks = SC2Data.upgradeTimeInLoops(UpgradeType.PROTOSS_GROUND_WEAPONS_1)
+                    / SC2Data.LOOPS_PER_TICK + 2;
+        for (int i = 0; i < ticks; i++) {game.tick();}
+
+        assertThat(game.snapshot().playerUpgrades())
+                .as("Upgrade should complete after sufficient ticks")
+                .contains(UpgradeType.PROTOSS_GROUND_WEAPONS_1.pythonName());
+    }
+
 
     // ---- E2: build intent ----
 
