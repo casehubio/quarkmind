@@ -112,4 +112,7 @@ public enum UpgradeType {
     public String pythonName() { return pythonName; }
 
     public static UpgradeType fromPythonName(String name) { return BY_PYTHON_NAME.get(name); }
+
+    public static UpgradeType fromTrackerName(String name) {return fromPythonName(name);}
+
 }

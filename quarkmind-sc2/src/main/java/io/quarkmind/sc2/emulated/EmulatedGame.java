@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -97,6 +98,9 @@ public class EmulatedGame {
         movementStrategy.reset();
         visibility.reset();
         geysers.clear();
+        deferredTrains.clear();
+        deferredResearch.clear();
+        trackerTrainDiagnostics.clear();
         // pendingWaves intentionally NOT cleared — configured before reset() via configureWave()
         // terrainGrid and random intentionally NOT cleared — set by EmulatedEngine before reset()
 
@@ -356,87 +360,167 @@ public class EmulatedGame {
 
     private void handleTrain(final TrainIntent t, final PlayerState state,
                              final PhysicsState physics, final long absLoop) {
+        recordTrainDiagnostic(t, 0); // received
         String buildingTag = t.buildingTag();
         Building building = state.buildings().stream()
                                  .filter(b -> b.tag().equals(buildingTag) && b.isComplete())
                                  .findFirst().orElse(null);
 
+        boolean autoResolved = false;
         if (building == null) {
             final RaceModel model = (state == friendly) ? playerRaceModel : null;
             if (model != null && buildingTag != null && buildingTag.startsWith("r-")) {
+                autoResolved = true;
                 final BuildingType required = SC2Data.trainedBy(t.unitType());
                 if (required != BuildingType.UNKNOWN) {
                     building = shortestQueue(state.buildings().stream()
-                                    .filter(b -> b.isComplete() && SC2Data.canTrainFrom(b.type(), required))
-                                    .toList(), physics);
+                                                  .filter(b -> b.isComplete() && SC2Data.canTrainFrom(b.type(), required))
+                                                  .toList(), physics);
                 }
                 if (building == null) {
                     building = shortestQueue(state.buildings().stream()
-                                    .filter(b -> b.isComplete() && model.townHallTypes().contains(b.type()))
-                                    .toList(), physics);
+                                                  .filter(b -> b.isComplete() && model.townHallTypes().contains(b.type()))
+                                                  .toList(), physics);
                 }
             }
             if (building == null) {
-                log.debugf("[EMULATED] Train rejected — building %s not ready", buildingTag);
+                recordTrainDiagnostic(t, 2); // building_not_found
+                deferIntent(t, state, physics);
                 return;
             }
         }
 
-        final String       resolvedTag = building.tag();
-        final BuildingType required    = SC2Data.trainedBy(t.unitType());
-        if (required != BuildingType.UNKNOWN && !SC2Data.canTrainFrom(building.type(), required)) {
-            log.debugf("[EMULATED] Train rejected — %s cannot train %s (needs %s)",
-                       building.type(), t.unitType(), required);
-            return;
+        final String resolvedTag = building.tag();
+        if (!autoResolved) {
+            final BuildingType required = SC2Data.trainedBy(t.unitType());
+            if (required != BuildingType.UNKNOWN && !SC2Data.canTrainFrom(building.type(), required)) {
+                log.debugf("[EMULATED] Train rejected — %s cannot train %s (needs %s)",
+                           building.type(), t.unitType(), required);
+                return;
+            }
         }
 
         final RaceModel model = (state == friendly) ? playerRaceModel : null;
-        if (model != null) {
-            final PlayerStateView view = state;
-            if (model.canProduce(view, resolvedTag, t.unitType()) == ProductionDecision.BLOCKED) {
-                log.debugf("[EMULATED] Train rejected — production resource unavailable for %s", t.unitType());
+
+        // For tracker-driven (r- prefix) intents: skip economy gate checks.
+        // These intents represent units the real player DID produce — resource/production
+        // checks measure economy accuracy, not physics accuracy.
+        if (!autoResolved) {
+            if (model != null) {
+                final PlayerStateView view = state;
+                if (model.canProduce(view, resolvedTag, t.unitType()) == ProductionDecision.BLOCKED) {
+                    recordTrainDiagnostic(t, 3);
+                    return;
+                }
+            }
+
+            final int count = SC2Data.trainCount(t.unitType());
+            final int mCost = SC2Data.mineralCost(t.unitType()) * count;
+            final int gCost = SC2Data.gasCost(t.unitType()) * count;
+            final int sCost = SC2Data.supplyCost(t.unitType());
+            final int queuedSupply = physics.buildingQueues.values().stream()
+                                                           .flatMapToInt(q -> q.stream().mapToInt(SC2Data::supplyCost)).sum();
+            if ((int) state.minerals() < mCost || state.vespene() < gCost
+                || state.supplyUsed() + queuedSupply + sCost > state.supply()) {
+                recordTrainDiagnostic(t, 4);
                 return;
+            }
+
+            state.deductMinerals(mCost);
+            state.deductVespene(gCost);
+            if (state == friendly) {
+                economyTracker.recordTrainSpending(t.unitType(), mCost, gCost);
             }
         }
 
-        final int count = SC2Data.trainCount(t.unitType());
-        final int mCost = SC2Data.mineralCost(t.unitType()) * count;
-        final int gCost = SC2Data.gasCost(t.unitType()) * count;
-        final int sCost = SC2Data.supplyCost(t.unitType());
-        final int queuedSupply = physics.buildingQueues.values().stream()
-            .flatMapToInt(q -> q.stream().mapToInt(SC2Data::supplyCost)).sum();
-        if ((int) state.minerals() < mCost || state.vespene() < gCost
-            || state.supplyUsed() + queuedSupply + sCost > state.supply()) {
-            log.debugf("[EMULATED] Cannot train %s — insufficient resources", t.unitType());
-            return;
-        }
-
-        final boolean parallel = model != null && model.parallelProduction();
-        final boolean         isBusy        = physics.buildingTrainingUntil.containsKey(resolvedTag);
+        final boolean         parallel      = model != null && model.parallelProduction();
+        final boolean         reactored     = reactoredBuildings.contains(resolvedTag);
+        final int             activeSlots   = physics.activeTrainingCount(resolvedTag);
         final Deque<UnitType> existingQueue = physics.buildingQueues.get(resolvedTag);
-        final int             total         = (isBusy ? 1 : 0) + (existingQueue != null ? existingQueue.size() : 0);
-        if (!parallel && total >= 5) {
-            log.debugf("[EMULATED] Train rejected — building %s queue full", resolvedTag);
+        final int             total         = activeSlots + (existingQueue != null ? existingQueue.size() : 0);
+        final int queueLimit = autoResolved ? 20 : 5;
+        if (!parallel && total >= queueLimit) {
+            recordTrainDiagnostic(t, 5); // queue_full
+            if (autoResolved) {deferIntent(t, state, physics);}
             return;
-        }
-
-        state.deductMinerals(mCost);
-        state.deductVespene(gCost);
-        if (state == friendly) {
-            economyTracker.recordTrainSpending(t.unitType(), mCost, gCost);
         }
 
         if (model != null) {
             model.onProductionCommitted(state, resolvedTag, t.unitType(), this::nextTagString);
         }
 
-        if (parallel || !isBusy) {
+        recordTrainDiagnostic(t, 1); // trained
+        int maxConcurrent = reactored ? 2 : 1;
+        if (autoResolved && !reactored && activeSlots == 1) {
+            long prevStartLoop = physics.buildingCompletionAtLoop.getOrDefault(resolvedTag, 0L)
+                                 - SC2Data.trainTimeInLoops(t.unitType());
+            if (Math.abs(absLoop - prevStartLoop) <= 10) {
+                maxConcurrent = 2;
+                reactoredBuildings.add(resolvedTag);
+            }
+        }
+        if (parallel || activeSlots < maxConcurrent) {
             startTraining(resolvedTag, t.unitType(), state, physics, absLoop);
         } else {
             physics.buildingQueues.computeIfAbsent(resolvedTag, k -> new ArrayDeque<>())
                                   .add(t.unitType());
         }
     }
+
+    private final List<TrainIntent> deferredTrains = new ArrayList<>();
+    private boolean processingDeferred;
+    private final List<ResearchIntent> deferredResearch = new ArrayList<>();
+    // Diagnostic counters for tracker-driven (r- prefix) train intents.
+// Slots: [0]=received [1]=trained [2]=building_not_found [3]=production_blocked
+//        [4]=insufficient_resources [5]=queue_full [6]=defer_overflow
+    private final Map<UnitType, int[]> trackerTrainDiagnostics = new EnumMap<>(UnitType.class);
+
+    private void recordTrainDiagnostic(TrainIntent t, int slot) {
+        if (t.buildingTag() != null && t.buildingTag().startsWith("r-")) {
+            trackerTrainDiagnostics.computeIfAbsent(t.unitType(), k -> new int[7])[slot]++;
+        }
+    }
+
+    public Map<UnitType, int[]> trackerTrainDiagnostics() {
+        return Collections.unmodifiableMap(trackerTrainDiagnostics);
+    }
+
+
+    private void deferIntent(final TrainIntent t, final PlayerState state, final PhysicsState physics) {
+        if (processingDeferred || deferredTrains.size() > 200) {
+            recordTrainDiagnostic(t, 6); // defer_overflow
+            return;
+        }
+        deferredTrains.add(t);
+    }
+
+    public void processDeferredTrainIntents() {
+        if (deferredTrains.isEmpty()) return;
+        processingDeferred = true;
+        final var snapshot = new ArrayList<>(deferredTrains);
+        deferredTrains.clear();  // reset deferred train intents
+        final long absLoop = gameFrame * SC2Data.LOOPS_PER_TICK;
+        for (final TrainIntent t : snapshot) {
+            handleTrain(t, friendly, friendlyPhysics, absLoop);
+        }
+        processingDeferred = false;
+    }
+
+    private void deferResearchIntent(final ResearchIntent r) {
+        if (deferredResearch.size() > 200) {return;}
+        deferredResearch.add(r);
+    }
+
+    public void processDeferredResearchIntents() {
+        if (deferredResearch.isEmpty()) {return;}
+        final var snapshot = new ArrayList<>(deferredResearch);
+        deferredResearch.clear();
+        final long absLoop = gameFrame * SC2Data.LOOPS_PER_TICK;
+        for (final ResearchIntent r : snapshot) {
+            handleResearch(r, friendly, friendlyPhysics, absLoop);
+        }
+    }
+
 
     private String nextTagString() {
         return "unit-" + nextTag++;
@@ -454,12 +538,24 @@ public class EmulatedGame {
         final int loopOffset          = (int) (absLoop % SC2Data.LOOPS_PER_TICK);
         final long completesAt = gameFrame
                                  + (loopOffset + effectiveTrainLoops) / SC2Data.LOOPS_PER_TICK;
-        physics.buildingTrainingUntil.put(buildingTag, completesAt);
+
+        final boolean useSlot2 = physics.buildingTrainingUntil.containsKey(buildingTag);
+        if (useSlot2) {
+            physics.buildingTrainingUntil2.put(buildingTag, completesAt);
+        } else {
+            physics.buildingTrainingUntil.put(buildingTag, completesAt);
+        }
         physics.buildingCompletionAtLoop.put(buildingTag, absLoop + effectiveTrainLoops);
         final int spawnCount = (model != null) ? model.trainCount(unitType) : SC2Data.trainCount(unitType);
         physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
-            physics.buildingTrainingUntil.remove(buildingTag);
-            if (!physics.buildingQueues.containsKey(buildingTag)) {
+            if (useSlot2) {
+                physics.buildingTrainingUntil2.remove(buildingTag);
+            } else {
+                physics.buildingTrainingUntil.remove(buildingTag);
+            }
+            if (!physics.buildingQueues.containsKey(buildingTag)
+                && !physics.buildingTrainingUntil.containsKey(buildingTag)
+                && !physics.buildingTrainingUntil2.containsKey(buildingTag)) {
                 physics.buildingCompletionAtLoop.remove(buildingTag);
             }
             for (int i = 0; i < spawnCount; i++) {
@@ -477,24 +573,29 @@ public class EmulatedGame {
 
     private void drainBuildingQueues(PlayerState state, PhysicsState physics) {
         for (String buildingTag : new ArrayList<>(physics.buildingQueues.keySet())) {
-            if (physics.buildingTrainingUntil.containsKey(buildingTag)) {continue;}
+            int activeSlots = physics.activeTrainingCount(buildingTag);
+            int maxSlots    = reactoredBuildings.contains(buildingTag) ? 2 : 1;
+            if (activeSlots >= maxSlots) {continue;}
             boolean buildingReady = state.buildings().stream()
                                          .anyMatch(b -> b.tag().equals(buildingTag) && b.isComplete());
             if (!buildingReady) {continue;}
             Deque<UnitType> queue = physics.buildingQueues.get(buildingTag);
             if (queue == null || queue.isEmpty()) {
                 physics.buildingQueues.remove(buildingTag);
-                physics.buildingCompletionAtLoop.remove(buildingTag);
+                if (activeSlots == 0) {physics.buildingCompletionAtLoop.remove(buildingTag);}
                 continue;
             }
-            UnitType next = queue.peek();
-            int sCost = SC2Data.supplyCost(next);
-            if (state.supplyUsed() + sCost > state.supply()) {continue;}
-            queue.poll();
-            if (queue.isEmpty()) {physics.buildingQueues.remove(buildingTag);}
-            long completionLoop = physics.buildingCompletionAtLoop.getOrDefault(buildingTag, 0L);
-            physics.buildingCompletionAtLoop.remove(buildingTag);
-            startTraining(buildingTag, next, state, physics, completionLoop);
+            int slotsToFill = maxSlots - activeSlots;
+            for (int s = 0; s < slotsToFill && !queue.isEmpty(); s++) {
+                UnitType next  = queue.peek();
+                int      sCost = SC2Data.supplyCost(next);
+                if (state.supplyUsed() + sCost > state.supply()) {break;}
+                queue.poll();
+                if (queue.isEmpty()) {physics.buildingQueues.remove(buildingTag);}
+                long completionLoop = physics.buildingCompletionAtLoop.getOrDefault(buildingTag, 0L);
+                if (s == 0) {physics.buildingCompletionAtLoop.remove(buildingTag);}
+                startTraining(buildingTag, next, state, physics, completionLoop);
+            }
         }
     }
 
@@ -534,9 +635,10 @@ public class EmulatedGame {
         Building best      = null;
         int      bestDepth = Integer.MAX_VALUE;
         for (Building b : candidates) {
-            int             busy  = physics.buildingTrainingUntil.containsKey(b.tag()) ? 1 : 0;
-            Deque<UnitType> q     = physics.buildingQueues.get(b.tag());
-            int             depth = busy + (q != null ? q.size() : 0);
+            int             active   = physics.activeTrainingCount(b.tag());
+            int             maxSlots = reactoredBuildings.contains(b.tag()) ? 2 : 1;
+            Deque<UnitType> q        = physics.buildingQueues.get(b.tag());
+            int             depth    = active + (q != null ? q.size() : 0) - maxSlots;
             if (depth < bestDepth) {
                 bestDepth = depth;
                 best      = b;
@@ -715,7 +817,7 @@ public class EmulatedGame {
             List<String> candidates = resolveBuildingAll(casterTag, state);
             handled = false;
             for (String candidate : candidates) {
-                if (model.handleAbility(state, candidate, a.ability(), targetTag, absLoop)) {
+                if (model.forceAbility(state, candidate, a.ability(), targetTag, absLoop)) {
                     handled = true;
                     break;
                 }
@@ -741,6 +843,9 @@ public class EmulatedGame {
     }
 
     private String resolveBuilding(String rTag, PlayerState state) {
+        if (state.buildings().stream().anyMatch(b -> b.tag().equals(rTag) && b.isComplete())) {
+            return rTag;
+        }
         String       typeName = rTag.substring(2).toUpperCase();
         BuildingType type;
         try {type = BuildingType.valueOf(typeName);} catch (IllegalArgumentException e) {return null;}
@@ -767,7 +872,8 @@ public class EmulatedGame {
             log.debugf("[EMULATED] Research rejected — %s already completed", r.upgradeType());
             return;
         }
-        if (physics.buildingResearching.containsKey(r.buildingTag())) {
+        final boolean autoResolved = r.buildingTag() != null && r.buildingTag().startsWith("r-");
+        if (!autoResolved && physics.buildingResearching.containsKey(r.buildingTag())) {
             log.debugf("[EMULATED] Research rejected — building %s already researching %s",
                        r.buildingTag(), physics.buildingResearching.get(r.buildingTag()));
             return;
@@ -775,20 +881,26 @@ public class EmulatedGame {
         Building building = state.buildings().stream()
                                  .filter(b -> b.tag().equals(r.buildingTag()) && b.isComplete())
                                  .findFirst().orElse(null);
-        if (building == null && r.buildingTag() != null && r.buildingTag().startsWith("r-")) {
+        if (building == null && autoResolved) {
+            final BuildingType required = SC2Data.researchedAt(r.upgradeType());
             building = state.buildings().stream()
-                            .filter(b -> b.isComplete() && !physics.buildingResearching.containsKey(b.tag()))
+                            .filter(b -> b.isComplete()
+                                         && !physics.buildingResearching.containsKey(b.tag())
+                                         && SC2Data.canTrainFrom(b.type(), required))
                             .findFirst().orElse(null);
         }
         if (building == null) {
-            log.debugf("[EMULATED] Research rejected — building %s not found or incomplete", r.buildingTag());
+            if (autoResolved) {deferResearchIntent(r);}
+            log.debugf("[EMULATED] Research deferred/rejected — no %s building for %s",
+                       SC2Data.researchedAt(r.upgradeType()), r.upgradeType());
             return;
         }
         final String resolvedTag = building.tag();
         int          mCost       = SC2Data.upgradeMineralCost(r.upgradeType());
         int          gCost       = SC2Data.upgradeVespeneCost(r.upgradeType());
         if ((int) state.minerals() < mCost || state.vespene() < gCost) {
-            log.debugf("[EMULATED] Research rejected — insufficient resources for %s", r.upgradeType());
+            if (autoResolved) {deferResearchIntent(r);}
+            log.debugf("[EMULATED] Research deferred/rejected — insufficient resources for %s", r.upgradeType());
             return;
         }
         state.deductMinerals(mCost);
@@ -797,7 +909,8 @@ public class EmulatedGame {
             economyTracker.recordResearchSpending(mCost, gCost);
         }
         int  durationLoops  = SC2Data.upgradeTimeInLoops(r.upgradeType());
-        long completionLoop = absLoop + durationLoops;
+        long effectiveStart = (r.commandLoop() >= 0) ? r.commandLoop() : absLoop;
+        long completionLoop = effectiveStart + durationLoops;
         long completionTick = completionLoop / SC2Data.LOOPS_PER_TICK;
         physics.buildingResearching.put(resolvedTag, r.upgradeType());
         physics.buildingResearchUntil.put(resolvedTag, completionLoop);
@@ -1076,6 +1189,9 @@ public class EmulatedGame {
     /** Sets the player race model. Call before reset(). Default is ProtossRaceModel. */
     public void setPlayerRaceModel(RaceModel model) { this.playerRaceModel = model; }
 
+    public RaceModel playerRaceModel() {return playerRaceModel;}
+
+
     int  enemyMinerals()  { return (int) enemy.minerals(); }
     int  enemyStagingSize() { return enemyBehavior != null ? enemyBehavior.stagingArea.size() : 0; }
 
@@ -1209,6 +1325,17 @@ public class EmulatedGame {
     public void setVespeneForHarness(int vespene) {
         friendly.setVespene(vespene);
     }
+
+    public void setMineralsForHarness(double minerals) {
+        friendly.setMinerals(minerals);
+    }
+
+    private final Set<String> reactoredBuildings = new HashSet<>();
+
+    public void markBuildingReactored(String buildingTag) {reactoredBuildings.add(buildingTag);}
+
+    public boolean isReactored(String buildingTag)        {return reactoredBuildings.contains(buildingTag);}
+
 
     /**
      * Injects a building directly into the friendly player state without resource deduction.

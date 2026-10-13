@@ -4,7 +4,11 @@ import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.UpgradeType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Internal simulation state not exposed to external observers: production queues,
@@ -27,6 +31,14 @@ class PhysicsState {
     // Production machinery
     final Map<String, Deque<UnitType>> buildingQueues           = new HashMap<>();
     final Map<String, Long>            buildingTrainingUntil    = new HashMap<>();
+    final Map<String, Long>            buildingTrainingUntil2   = new HashMap<>();
+
+    int activeTrainingCount(String buildingTag) {
+        int count = buildingTrainingUntil.containsKey(buildingTag) ? 1 : 0;
+        if (buildingTrainingUntil2.containsKey(buildingTag)) {count++;}
+        return count;
+    }
+
     final Map<String, Long>            buildingCompletionAtLoop = new HashMap<>();
 
     // Research queues — one upgrade at a time per building (mirrors SC2 research mechanic)
@@ -50,6 +62,7 @@ class PhysicsState {
         blinkCooldowns.clear();
         buildingQueues.clear();
         buildingTrainingUntil.clear();
+        buildingTrainingUntil2.clear();
         buildingCompletionAtLoop.clear();
         buildingResearching.clear();
         buildingResearchUntil.clear();

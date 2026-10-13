@@ -185,6 +185,24 @@ class SC2DataTest {
         assertThat(SC2Data.trainedBy(UnitType.ZERGLING)) .isEqualTo(BuildingType.HATCHERY);
         assertThat(SC2Data.trainedBy(UnitType.ROACH))    .isEqualTo(BuildingType.HATCHERY);
         assertThat(SC2Data.trainedBy(UnitType.HYDRALISK)).isEqualTo(BuildingType.HATCHERY);
+        assertThat(SC2Data.trainedBy(UnitType.SENTRY))       .isEqualTo(BuildingType.GATEWAY);
+        assertThat(SC2Data.trainedBy(UnitType.DARK_TEMPLAR)) .isEqualTo(BuildingType.GATEWAY);
+        assertThat(SC2Data.trainedBy(UnitType.HIGH_TEMPLAR)) .isEqualTo(BuildingType.GATEWAY);
+        assertThat(SC2Data.trainedBy(UnitType.WARP_PRISM))   .isEqualTo(BuildingType.ROBOTICS_FACILITY);
+        assertThat(SC2Data.trainedBy(UnitType.REAPER))       .isEqualTo(BuildingType.BARRACKS);
+        assertThat(SC2Data.trainedBy(UnitType.GHOST))        .isEqualTo(BuildingType.BARRACKS);
+        assertThat(SC2Data.trainedBy(UnitType.SIEGE_TANK))   .isEqualTo(BuildingType.FACTORY);
+        assertThat(SC2Data.trainedBy(UnitType.WIDOW_MINE))   .isEqualTo(BuildingType.FACTORY);
+        assertThat(SC2Data.trainedBy(UnitType.CYCLONE))      .isEqualTo(BuildingType.FACTORY);
+        assertThat(SC2Data.trainedBy(UnitType.THOR))         .isEqualTo(BuildingType.FACTORY);
+        assertThat(SC2Data.trainedBy(UnitType.LIBERATOR))    .isEqualTo(BuildingType.STARPORT);
+        assertThat(SC2Data.trainedBy(UnitType.BANSHEE))      .isEqualTo(BuildingType.STARPORT);
+        assertThat(SC2Data.trainedBy(UnitType.RAVEN))        .isEqualTo(BuildingType.STARPORT);
+        assertThat(SC2Data.trainedBy(UnitType.BATTLECRUISER)).isEqualTo(BuildingType.STARPORT);
+        assertThat(SC2Data.trainedBy(UnitType.SWARM_HOST))   .isEqualTo(BuildingType.HATCHERY);
+        assertThat(SC2Data.trainedBy(UnitType.INFESTOR))     .isEqualTo(BuildingType.HATCHERY);
+        assertThat(SC2Data.trainedBy(UnitType.CORRUPTOR))    .isEqualTo(BuildingType.HATCHERY);
+        assertThat(SC2Data.trainedBy(UnitType.VIPER))        .isEqualTo(BuildingType.HATCHERY);
         // Unmapped types return UNKNOWN, not a plausible sentinel
         assertThat(SC2Data.trainedBy(UnitType.UNKNOWN)).isEqualTo(BuildingType.UNKNOWN);
     }

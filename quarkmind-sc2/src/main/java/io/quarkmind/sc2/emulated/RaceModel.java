@@ -106,6 +106,10 @@ public interface RaceModel {
     default boolean handleAbility(PlayerState state, String casterTag, String ability,
                                   String targetTag, long gameLoop) {return false;}
 
+    default boolean forceAbility(PlayerState state, String casterTag, String ability,
+                                 String targetTag, long gameLoop) {
+        return handleAbility(state, casterTag, ability, targetTag, gameLoop);
+    }
 
     default boolean parallelProduction() {return false;}
 

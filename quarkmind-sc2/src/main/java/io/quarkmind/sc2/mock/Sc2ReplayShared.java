@@ -4,7 +4,7 @@ import io.quarkmind.domain.*;
 import java.util.Set;
 
 /** Shared constants and lookup tables for replay-based SimulatedGame implementations. */
-final class Sc2ReplayShared {
+public final class Sc2ReplayShared {
     private Sc2ReplayShared() {}
 
     static final int LOOPS_PER_TICK = SC2Data.LOOPS_PER_TICK;
@@ -30,7 +30,7 @@ final class Sc2ReplayShared {
         return 1500;
     }
 
-    static final Set<String> BUILDING_NAMES = Set.of(
+    public static final Set<String> BUILDING_NAMES = Set.of(
         // Protoss
         "Nexus", "Pylon", "Gateway", "WarpGate", "CyberneticsCore", "Assimilator",
         "RoboticsFacility", "Stargate", "Forge", "TwilightCouncil",
@@ -52,7 +52,7 @@ final class Sc2ReplayShared {
         "UltraliskCavern", "Extractor"
     );
 
-    static UnitType toUnitType(String name) {
+    public static UnitType toUnitType(String name) {
         return switch (name) {
             // Protoss
             case "Probe"                                -> UnitType.PROBE;
@@ -129,7 +129,7 @@ final class Sc2ReplayShared {
         };
     }
 
-    static BuildingType toBuildingType(String name) {
+    public static BuildingType toBuildingType(String name) {
         return switch (name) {
             // Protoss
             case "Nexus"                          -> BuildingType.NEXUS;

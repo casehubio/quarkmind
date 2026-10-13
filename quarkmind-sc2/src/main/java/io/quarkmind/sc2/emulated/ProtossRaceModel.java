@@ -68,6 +68,14 @@ class ProtossRaceModel implements RaceModel {
     }
 
     @Override
+    public boolean forceAbility(PlayerState state, String casterTag, String ability,
+                                String targetTag, long gameLoop) {
+        if (!"CHRONO_BOOST".equals(ability)) {return false;}
+        chronoBoostedUntil.put(targetTag, gameLoop + SC2Data.CHRONO_BOOST_DURATION_LOOPS);
+        return true;
+    }
+
+    @Override
     public double trainingSpeedMultiplier(String buildingTag, long gameLoop) {
         Long expiresAt = chronoBoostedUntil.get(buildingTag);
         if (expiresAt != null && gameLoop < expiresAt) {return SC2Data.CHRONO_BOOST_MULTIPLIER;}

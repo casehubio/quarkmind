@@ -204,7 +204,7 @@ public final class SC2Data {
         map.put(UnitType.ADEPT, 672);  // uncalibrated
         map.put(UnitType.DISRUPTOR, 672);  // uncalibrated
         map.put(UnitType.SENTRY, 672);  // uncalibrated
-        map.put(UnitType.PHOENIX, 672);  // uncalibrated
+        map.put(UnitType.PHOENIX, 560);  // 25s × 22.4
         map.put(UnitType.ORACLE, 672);  // uncalibrated
         map.put(UnitType.TEMPEST, 672);  // uncalibrated
         map.put(UnitType.MOTHERSHIP, 672);  // uncalibrated
@@ -236,25 +236,25 @@ public final class SC2Data {
         map.put(UnitType.CHANGELING, 672);  // uncalibrated
         map.put(UnitType.EGG, 672);  // uncalibrated
         map.put(UnitType.LARVA, 0);  // auto-spawned by timer, not trained
-        // Terran — uncalibrated estimates; pending Terran replays from #140
-        map.put(UnitType.MARINE, 563);  // estimate: ceil(25.13s × 22.4)
-        map.put(UnitType.MARAUDER, 757);  // estimate: ceil(33.8s × 22.4)
-        map.put(UnitType.MEDIVAC, 672);  // uncalibrated
-        map.put(UnitType.SIEGE_TANK, 672);  // uncalibrated
-        map.put(UnitType.SIEGE_TANK_SIEGED, 672);  // uncalibrated
-        map.put(UnitType.THOR, 672);  // uncalibrated
-        map.put(UnitType.VIKING, 672);  // uncalibrated
-        map.put(UnitType.GHOST, 672);  // uncalibrated
-        map.put(UnitType.RAVEN, 672);  // uncalibrated
-        map.put(UnitType.BANSHEE, 672);  // uncalibrated
-        map.put(UnitType.BATTLECRUISER, 672);  // uncalibrated
-        map.put(UnitType.CYCLONE, 672);  // uncalibrated
-        map.put(UnitType.LIBERATOR, 672);  // uncalibrated
-        map.put(UnitType.WIDOW_MINE, 672);  // uncalibrated
-        map.put(UnitType.SCV, 275);  // estimate: ceil(12.25s × 22.4)
-        map.put(UnitType.REAPER, 672);  // uncalibrated
-        map.put(UnitType.HELLION, 672);  // uncalibrated
-        map.put(UnitType.HELLBAT, 672);  // uncalibrated
+        // Terran — calibrated from LotV 4.9.3 balance data (game_seconds × 22.4)
+        map.put(UnitType.MARINE, 563);  // calibrated: ceil(25.13s × 22.4)
+        map.put(UnitType.MARAUDER, 757);  // calibrated: ceil(33.8s × 22.4)
+        map.put(UnitType.MEDIVAC, 672);  // 30s × 22.4
+        map.put(UnitType.SIEGE_TANK, 717);  // 32s × 22.4
+        map.put(UnitType.SIEGE_TANK_SIEGED, 717);  // same as SIEGE_TANK
+        map.put(UnitType.THOR, 963);  // 43s × 22.4
+        map.put(UnitType.VIKING, 672);  // 30s × 22.4
+        map.put(UnitType.GHOST, 650);  // 29s × 22.4
+        map.put(UnitType.RAVEN, 963);  // 43s × 22.4
+        map.put(UnitType.BANSHEE, 963);  // 43s × 22.4
+        map.put(UnitType.BATTLECRUISER, 1434);  // 64s × 22.4
+        map.put(UnitType.CYCLONE, 717);  // 32s × 22.4
+        map.put(UnitType.LIBERATOR, 963);  // 43s × 22.4
+        map.put(UnitType.WIDOW_MINE, 470);  // 21s × 22.4
+        map.put(UnitType.SCV, 275);  // calibrated: ceil(12.25s × 22.4)
+        map.put(UnitType.REAPER, 717);  // 32s × 22.4
+        map.put(UnitType.HELLION, 470);  // 21s × 22.4
+        map.put(UnitType.HELLBAT, 470);  // 21s × 22.4 (same as Hellion)
         map.put(UnitType.MULE, 0);  // instant calldown
         map.put(UnitType.VIKING_ASSAULT, 672);  // uncalibrated
         map.put(UnitType.LIBERATOR_AG, 672);  // uncalibrated
@@ -991,22 +991,80 @@ public final class SC2Data {
     public static BuildingType trainedBy(UnitType type) {
         return switch (type) {
             case PROBE                                  -> BuildingType.NEXUS;
-            case ZEALOT, STALKER, ADEPT, ARCHON        -> BuildingType.GATEWAY;
+            case ZEALOT, STALKER, ADEPT, ARCHON,
+                 SENTRY, DARK_TEMPLAR, HIGH_TEMPLAR    -> BuildingType.GATEWAY;
             case IMMORTAL, OBSERVER, COLOSSUS,
-                 DISRUPTOR                             -> BuildingType.ROBOTICS_FACILITY;
+                 DISRUPTOR, WARP_PRISM                 -> BuildingType.ROBOTICS_FACILITY;
             case PHOENIX, ORACLE, VOID_RAY,
                  CARRIER, TEMPEST, MOTHERSHIP          -> BuildingType.STARGATE;
             case SCV                                   -> BuildingType.COMMAND_CENTER;
             case MULE                                  -> BuildingType.ORBITAL_COMMAND;
-            case MARINE, MARAUDER                      -> BuildingType.BARRACKS;
-            case MEDIVAC, VIKING                       -> BuildingType.STARPORT;
-            case HELLION                               -> BuildingType.FACTORY;
+            case MARINE, MARAUDER, REAPER, GHOST       -> BuildingType.BARRACKS;
+            case MEDIVAC, VIKING, LIBERATOR,
+                 BANSHEE, RAVEN, BATTLECRUISER         -> BuildingType.STARPORT;
+            case HELLION, SIEGE_TANK, WIDOW_MINE,
+                 CYCLONE, THOR                         -> BuildingType.FACTORY;
             case DRONE, ZERGLING, ROACH, HYDRALISK,
                  MUTALISK, BANELING, ULTRALISK,
-                 OVERLORD, OVERSEER, QUEEN             -> BuildingType.HATCHERY;
+                 OVERLORD, OVERSEER, QUEEN,
+                 SWARM_HOST, INFESTOR, CORRUPTOR,
+                 VIPER                                 -> BuildingType.HATCHERY;
             default                                    -> BuildingType.UNKNOWN;
         };
     }
+
+    public static BuildingType researchedAt(UpgradeType type) {
+        return switch (type) {
+            case STIMPACK, COMBAT_SHIELD,
+                 CONCUSSIVE_SHELLS -> BuildingType.BARRACKS;
+            case DRILL_CLAWS, SMART_SERVOS,
+                 CYCLONE_LOCK_ON_UPGRADE,
+                 HIGH_CAPACITY_BARRELS -> BuildingType.FACTORY;
+            case BANSHEE_CLOAK, BANSHEE_SPEED,
+                 LIBERATOR_RANGE, MEDIVAC_SPEED_BOOST,
+                 RAVEN_CORVID_REACTOR -> BuildingType.STARPORT;
+            case HI_SEC_AUTO_TRACKING,
+                 TERRAN_BUILDING_ARMOR -> BuildingType.ENGINEERING_BAY;
+            case PERSONAL_CLOAKING -> BuildingType.GHOST_ACADEMY;
+            case BATTLECRUISER_SPECIALIZATIONS -> BuildingType.FUSION_CORE;
+            case TERRAN_INFANTRY_WEAPONS_1, TERRAN_INFANTRY_WEAPONS_2, TERRAN_INFANTRY_WEAPONS_3,
+                 TERRAN_INFANTRY_ARMORS_1, TERRAN_INFANTRY_ARMORS_2,
+                 TERRAN_INFANTRY_ARMORS_3 -> BuildingType.ENGINEERING_BAY;
+            case TERRAN_VEHICLE_WEAPONS_1, TERRAN_VEHICLE_WEAPONS_2, TERRAN_VEHICLE_WEAPONS_3,
+                 TERRAN_SHIP_WEAPONS_1, TERRAN_SHIP_WEAPONS_2, TERRAN_SHIP_WEAPONS_3,
+                 TERRAN_VEHICLE_AND_SHIP_ARMORS_1, TERRAN_VEHICLE_AND_SHIP_ARMORS_2,
+                 TERRAN_VEHICLE_AND_SHIP_ARMORS_3 -> BuildingType.ARMORY;
+            case ZERGLING_SPEED, ZERGLING_ATTACK_SPEED -> BuildingType.SPAWNING_POOL;
+            case GLIAL_RECONSTITUTION,
+                 TUNNELING_CLAWS -> BuildingType.ROACH_WARREN;
+            case CENTRIFUGAL_HOOKS -> BuildingType.BANELING_NEST;
+            case BURROW, OVERLORD_SPEED -> BuildingType.HATCHERY;
+            case GROOVED_SPINES, MUSCULAR_AUGMENTS -> BuildingType.HYDRALISK_DEN;
+            case NEURAL_PARASITE, INFESTOR_ENERGY -> BuildingType.INFESTATION_PIT;
+            case CHITINOUS_PLATING, ANABOLIC_SYNTHESIS -> BuildingType.ULTRALISK_CAVERN;
+            case ZERG_MELEE_WEAPONS_1, ZERG_MELEE_WEAPONS_2, ZERG_MELEE_WEAPONS_3,
+                 ZERG_MISSILE_WEAPONS_1, ZERG_MISSILE_WEAPONS_2, ZERG_MISSILE_WEAPONS_3,
+                 ZERG_GROUND_ARMORS_1, ZERG_GROUND_ARMORS_2,
+                 ZERG_GROUND_ARMORS_3 -> BuildingType.EVOLUTION_CHAMBER;
+            case ZERG_FLYER_WEAPONS_1, ZERG_FLYER_WEAPONS_2, ZERG_FLYER_WEAPONS_3,
+                 ZERG_FLYER_ARMORS_1, ZERG_FLYER_ARMORS_2,
+                 ZERG_FLYER_ARMORS_3 -> BuildingType.SPIRE;
+            case WARP_GATE_RESEARCH -> BuildingType.CYBERNETICS_CORE;
+            case BLINK, CHARGE, ADEPT_PIERCING -> BuildingType.TWILIGHT_COUNCIL;
+            case PSI_STORM -> BuildingType.TEMPLAR_ARCHIVES;
+            case EXTENDED_THERMAL_LANCE -> BuildingType.ROBOTICS_BAY;
+            case DARK_TEMPLAR_BLINK -> BuildingType.DARK_SHRINE;
+            case PHOENIX_RANGE -> BuildingType.FLEET_BEACON;
+            case PROTOSS_GROUND_WEAPONS_1, PROTOSS_GROUND_WEAPONS_2, PROTOSS_GROUND_WEAPONS_3,
+                 PROTOSS_GROUND_ARMORS_1, PROTOSS_GROUND_ARMORS_2, PROTOSS_GROUND_ARMORS_3,
+                 PROTOSS_SHIELDS_1, PROTOSS_SHIELDS_2,
+                 PROTOSS_SHIELDS_3 -> BuildingType.FORGE;
+            case PROTOSS_AIR_WEAPONS_1, PROTOSS_AIR_WEAPONS_2, PROTOSS_AIR_WEAPONS_3,
+                 PROTOSS_AIR_ARMORS_1, PROTOSS_AIR_ARMORS_2,
+                 PROTOSS_AIR_ARMORS_3 -> BuildingType.CYBERNETICS_CORE;
+        };
+    }
+
 
     public static boolean canTrainFrom(BuildingType actual, BuildingType required) {
         if (actual == required) {return true;}

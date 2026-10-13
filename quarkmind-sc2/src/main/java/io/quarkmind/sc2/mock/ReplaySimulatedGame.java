@@ -21,10 +21,13 @@ import io.quarkmind.sc2.replay.UnitOrder;
 import io.quarkmind.sc2.replay.UnitOrderTracker;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A SimulatedGame variant that drives state from real replay tracker events.
@@ -51,6 +54,13 @@ public class ReplaySimulatedGame extends SimulatedGame {
     /** Tags of buildings that started construction (UnitInit) awaiting UnitDone. */
     private final Map<String, Building> pendingBuildings = new HashMap<>();
     private final Map<Integer, String>  tagIndexToTag    = new HashMap<>();
+    private final Set<BuildingType>     reactoredBuildingTypes = new HashSet<>();
+    private final Set<String>           reactoredBuildingTags  = new HashSet<>();
+    /** Production buildings only (excludes Reactor/TechLab add-ons) — for per-building Reactor lookup. */
+    private final Map<String, Building> productionBuildings    = new HashMap<>();
+
+    public Set<BuildingType> reactoredBuildingTypes() { return Collections.unmodifiableSet(reactoredBuildingTypes); }
+    public Set<String>       reactoredBuildingTags()  { return Collections.unmodifiableSet(reactoredBuildingTags); }
 
 
     private int eventCursor;
@@ -89,6 +99,8 @@ public class ReplaySimulatedGame extends SimulatedGame {
         setGameFrame(0);
         pendingBuildings.clear();
         tagIndexToTag.clear();
+        reactoredBuildingTags.clear();
+        productionBuildings.clear();
         if (orderTracker != null) orderTracker.reset();
         eventCursor = 0;
         currentLoop = 0;
@@ -259,10 +271,21 @@ public class ReplaySimulatedGame extends SimulatedGame {
         tagIndexToTag.put(event.getUnitTagIndex(), tag);
         BuildingType bt       = toBuildingType(unitName);
         Point2d      pos      = new Point2d(event.getXCoord(), event.getYCoord());
+        boolean isAddOn = unitName.endsWith("Reactor") || unitName.endsWith("TechLab");
+        if (ctrlId == watchedPlayerId && unitName.endsWith("Reactor")) {
+            reactoredBuildingTypes.add(bt);
+            String parentTag = findNearestProductionBuilding(bt, pos);
+            if (parentTag != null) {
+                reactoredBuildingTags.add(parentTag);
+            }
+        }
         if (ctrlId == watchedPlayerId) {
             Building b = new Building(tag, bt, pos, defaultBuildingHealth(bt), defaultBuildingHealth(bt), false);
             pendingBuildings.put(tag, b);
             addBuilding(b);
+            if (!isAddOn) {
+                productionBuildings.put(tag, b);
+            }
         } else if (ctrlId != 0 && bt != BuildingType.UNKNOWN) {
             // Enemy building under construction — add immediately as incomplete
             Building b = new Building(tag, bt, pos, defaultBuildingHealth(bt), defaultBuildingHealth(bt), false);
@@ -270,6 +293,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
             addEnemyBuilding(b);
         }
     }
+
 
     private void applyUnitDone(Event event) {
         // UnitDoneEvent has the tag in its raw struct but no typed accessor
@@ -360,6 +384,22 @@ public class ReplaySimulatedGame extends SimulatedGame {
     public boolean isComplete() { return eventCursor >= trackerEvents.length; }
 
     // --- Helpers ---
+
+    private String findNearestProductionBuilding(BuildingType type, Point2d addonPos) {
+        String bestTag = null;
+        double bestDist = Double.MAX_VALUE;
+        for (Building b : productionBuildings.values()) {
+            if (b.type() != type) continue;
+            double dx = b.position().x() - addonPos.x();
+            double dy = b.position().y() - addonPos.y();
+            double dist = dx * dx + dy * dy;
+            if (dist < bestDist) {
+                bestDist = dist;
+                bestTag = b.tag();
+            }
+        }
+        return bestTag;
+    }
 
     /** Thin delegate — preserves package-private accessibility for {@link ReplaySimulatedGameUnitTypeTest}. */
     static UnitType toUnitType(String name) { return Sc2ReplayShared.toUnitType(name); }
