@@ -4,10 +4,13 @@ import numpy as np
 from pathlib import Path
 from typing import List, Dict, Optional
 from src.sc2egset_extractor import extract_replay, N_FEATURES_PER_PLAYER
-from src.feature_engineering import build_temporal_features
-from src.config import archetypes_for_matchup, MATCHUPS
+from src.feature_engineering import build_temporal_features, build_map_tensor
+from src.fog_of_war import generate_scouting_mask
+from src.config import archetypes_for_matchup, MATCHUPS, HyperParams
 from src.dataset import per_replay_split
 from src.labelling.hybrid import HybridLabeller
+
+MINUTES = [2, 3, 4, 5]
 
 ABILITY_PROFILE_BOUNDARY = 75689
 
@@ -93,13 +96,24 @@ def run_pipeline(
             continue
 
         label_idx = archetypes.index(label_result.label)
-        t, m = build_temporal_features(replay_data.player1_features, replay_data.player2_features, replay_data.has_vision)
-        per_matchup[matchup].append({
-            "temporal": t,
-            "map_feat": m,
-            "label": label_idx,
-            "era": entry["era"],
-        })
+        hp = HyperParams()
+        rng = np.random.default_rng(42 + processed)
+        map_tensor = build_map_tensor(replay_data.map_name)
+        mask = generate_scouting_mask(replay_data.duration_seconds, rng)
+
+        for minute in MINUTES:
+            if minute * 60 > replay_data.duration_seconds:
+                continue
+            temporal = build_temporal_features(
+                replay_data.player1_features, replay_data.player2_features,
+                mask, minute, hp,
+            )
+            per_matchup[matchup].append({
+                "temporal": temporal,
+                "map_feat": map_tensor,
+                "label": label_idx,
+                "era": entry["era"],
+            })
 
         if processed % 5000 == 0:
             print(f"  Processed {processed} replays...")

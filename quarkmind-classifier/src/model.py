@@ -33,7 +33,8 @@ class StrategyClassifier(nn.Module):
 
         self.player_enc = ConvEncoder(N_PLAYER_FEATURES, d_proj, c1, c2, hp.max_windows)
         self.opponent_enc = ConvEncoder(f_opponent, d_proj, c1, c2, hp.max_windows)
-        self.gate = nn.Linear(2, 2)
+        self.has_avail_flags = f_map > 4
+        self.gate = nn.Linear(2, 2) if self.has_avail_flags else None
 
         self.pos_encoding = SinusoidalPositionalEncoding(c2, hp.max_windows)
 
@@ -53,15 +54,17 @@ class StrategyClassifier(nn.Module):
         player = temporal[:, :, :N_PLAYER_FEATURES]
         opponent = temporal[:, :, N_PLAYER_FEATURES:]
 
-        avail = map_feat[:, 4:6]
-        g = torch.sigmoid(self.gate(avail))
-        g_p = g[:, 0:1].unsqueeze(1)
-        g_o = g[:, 1:2].unsqueeze(1)
-
         p = self.player_enc(player)
         o = self.opponent_enc(opponent)
 
-        x = g_p * p + g_o * o
+        if self.has_avail_flags:
+            avail = map_feat[:, 4:6]
+            g = torch.sigmoid(self.gate(avail))
+            g_p = g[:, 0:1].unsqueeze(1)
+            g_o = g[:, 1:2].unsqueeze(1)
+            x = g_p * p + g_o * o
+        else:
+            x = 0.5 * p + 0.5 * o
 
         padding_mask = (temporal.abs().sum(dim=-1) == 0)
 
