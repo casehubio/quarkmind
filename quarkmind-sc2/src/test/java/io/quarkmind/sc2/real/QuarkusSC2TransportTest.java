@@ -378,7 +378,7 @@ class QuarkusSC2TransportTest {
         stepCanFinish.countDown(); // release onStep, then quit
         transport.quit();
         assertThat(ended.await(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
-        assertThat(transport.isRunning()).as("not running after quit").isFalse();
+        awaitNotRunning(transport);
     }
 
     // ---------------------------------------------------------------------------
@@ -433,7 +433,7 @@ class QuarkusSC2TransportTest {
         transport.quit();
         assertThat(ended.await(5, java.util.concurrent.TimeUnit.SECONDS))
             .as("onGameEnd fires after quit() interrupts onStep").isTrue();
-        assertThat(transport.isRunning()).as("not running after clean termination").isFalse();
+        awaitNotRunning(transport);
     }
 
     @Test @Timeout(10)
@@ -754,5 +754,12 @@ class QuarkusSC2TransportTest {
         transport.quit();
         assertThat(gameEnded.await(5, java.util.concurrent.TimeUnit.SECONDS)).isTrue();
         assertThat(capturedResult.get()).isEqualTo(io.quarkmind.sc2.GameResult.UNKNOWN);
+    }
+
+    private static void awaitNotRunning(QuarkusSC2Transport transport) throws InterruptedException {
+        for (int i = 0; i < 50 && transport.isRunning(); i++) {
+            Thread.sleep(20);
+        }
+        assertThat(transport.isRunning()).as("not running after quit").isFalse();
     }
 }
