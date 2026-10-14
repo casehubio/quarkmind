@@ -21,8 +21,16 @@
         <module>quarkmind-evennia</module>
         <module>quarkmind-sonaria</module>
         <module>quarkmind-godot-mcp</module>
-        <module>quarkmind-chat</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>chat</id>
+            <modules>
+                <module>quarkmind-chat</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <properties>
         <jandex-maven-plugin.version>3.3.1</jandex-maven-plugin.version>
