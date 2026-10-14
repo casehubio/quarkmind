@@ -51,9 +51,11 @@ quarkmind-sc2/src/main/webui/.yarn/
 quarkmind-sc2/src/main/webui/yarn.lock
 quarkmind-sc2/.quinoa/
 electron-app/package-lock.json
+!quarkmind-sc2/src/main/webui/package-lock.json
 wksp
 .claude
 package-lock.json
+!quarkmind-sc2/src/main/webui/package-lock.json
 proj
 **/data/
 **/replays/sc2egset/
