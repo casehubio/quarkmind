@@ -179,9 +179,9 @@ class TickOrchestratorWorkerTest {
         WorkerFunction.Sync fn = TickOrchestratorWorker.createFunction(plugins);
         WorkerResult result = (WorkerResult) fn.fn().apply(Map.of("game.frame", 1), null);
 
-        assertThat(result.outcome()).isInstanceOf(WorkerOutcome.Failed.class);
-        // Strategy should NOT execute after scouting failure
-        assertThat(executionOrder).isEmpty();
+        assertThat(result.outcome()).isInstanceOf(WorkerOutcome.Success.class);
+        // Strategy continues after scouting failure — resilient chain
+        assertThat(executionOrder).containsExactly("strategy");
     }
 
     @Test

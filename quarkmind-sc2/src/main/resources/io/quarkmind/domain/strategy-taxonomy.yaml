@@ -306,6 +306,43 @@ archetypes:
     detectionSignals:
       - "Banshee spotted before 8 minutes"
 
+  TERRAN_TECH_RUSH:
+    displayName: "Terran Tech Rush"
+    race: TERRAN
+    phase: EARLY
+    category: TECH
+    phaseWindow: [0.0, 6.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: BANSHEE
+          minCount: 1
+    counters:
+      PROTOSS:
+        strong:
+          - units: [OBSERVER, STALKER]
+            action: "Observer for detection — Stalkers chase down cloaked Banshees"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots cannot attack air tech units"
+      TERRAN:
+        strong:
+          - units: [VIKING, MARINE]
+            action: "Vikings counter air tech — Marines provide ground anti-air"
+        weak:
+          - units: [SCV]
+            action: "Workers cannot defend against cloaked tech units"
+      ZERG:
+        strong:
+          - units: [QUEEN, OVERSEER]
+            action: "Queens provide anti-air — Overseer reveals cloaked units"
+        weak:
+          - units: [DRONE]
+            action: "Workers cannot defend against air tech rushes"
+    detectionSignals:
+      - "Unusual tech buildings before 6 minutes"
+      - "Fast Starport or Factory without expansion"
+
   ZERG_ZERGLING_RUSH:
     displayName: "Zergling Rush"
     race: ZERG
@@ -608,6 +645,43 @@ archetypes:
             action: "Passive droning lets Protoss scale freely"
     detectionSignals:
       - "Expansion with fewer than 3 units before 5 minutes"
+
+  PROTOSS_TECH_RUSH:
+    displayName: "Protoss Tech Rush"
+    race: PROTOSS
+    phase: EARLY
+    category: TECH
+    phaseWindow: [0.0, 6.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: DARK_TEMPLAR
+          minCount: 1
+    counters:
+      PROTOSS:
+        strong:
+          - units: [OBSERVER, STALKER]
+            action: "Observer reveals hidden tech — Stalkers clean up"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots cannot detect cloaked tech units"
+      TERRAN:
+        strong:
+          - units: [RAVEN, MARINE]
+            action: "Raven provides detection — Marines clean up revealed tech"
+        weak:
+          - units: [SCV]
+            action: "Workers cannot detect hidden tech"
+      ZERG:
+        strong:
+          - units: [OVERSEER, QUEEN]
+            action: "Overseer reveals cloaked tech — Queens provide ground defense"
+        weak:
+          - units: [DRONE]
+            action: "Workers cannot detect hidden tech"
+    detectionSignals:
+      - "Unusual tech structure before 6 minutes"
+      - "Dark Shrine or Stargate rush detected"
 
   PROTOSS_DT_RUSH:
     displayName: "Dark Templar Rush"

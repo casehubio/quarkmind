@@ -9,8 +9,13 @@ import io.quarkmind.domain.Point2d;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import io.quarkmind.sc2.map.SC2MapCache;
+import io.quarkmind.qa.TerrainResponse;
+
 import java.lang.reflect.Field;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,6 +38,7 @@ class ReplayEngineTest {
         setField(engine, "replayFile", REPLAY);
         setField(engine, "watchedPlayerId", 1);
         setField(engine, "intentQueue", intentQueue);
+        setField(engine, "mapCache", new StubMapCache());
     }
 
     @Test
@@ -130,6 +136,13 @@ class ReplayEngineTest {
     @Test
     void mapNameIsNullBeforeConnect() {
         assertThat(engine.getMapName()).isNull();
+    }
+
+    static class StubMapCache extends SC2MapCache {
+        @Override
+        public Optional<TerrainResponse> get(String mapName) {
+            return Optional.empty();
+        }
     }
 
     // --- Helpers ---

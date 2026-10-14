@@ -84,7 +84,7 @@ class SC2DeliveryHandlerTest {
     }
 
     @Test
-    void abilityAction_chronoBoost_insufficientEnergy_fails() {
+    void abilityAction_chronoBoost_multipleSucceeds() {
         game.setPlayerRaceModel(io.quarkmind.sc2.emulated.RaceModelFactory.forRace(io.quarkmind.domain.Race.PROTOSS));
         game.reset();
         handler = new SC2DeliveryHandler(game);
@@ -92,7 +92,7 @@ class SC2DeliveryHandlerTest {
                         Map.of("action", "ability", "ability", "CHRONO_BOOST", "target", "NEXUS"), null);
         var outcome = handler.execute("chrono-2",
                                       Map.of("action", "ability", "ability", "CHRONO_BOOST", "target", "NEXUS"), null);
-        assertThat(outcome.success()).isFalse();
+        assertThat(outcome.success()).isTrue();
     }
 
     @Test

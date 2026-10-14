@@ -86,9 +86,7 @@ class GameStateRoundTripTest {
 
     @Test
     void unitTypeToProto_coversAllTypesExceptUnknown() {
-        // All UnitType values except UNKNOWN must have a mapping
-        // Currently 3 missing: LOCUST, INFESTED_TERRAN, WIDOW_MINE — ocraft constant names unknown
-        int expectedSize = UnitType.values().length - 1 - 3;
+        int expectedSize = UnitType.values().length - 1;
         assertThat(GameStateToProtobuf.UNIT_TYPE_TO_PROTO).hasSize(expectedSize);
     }
 

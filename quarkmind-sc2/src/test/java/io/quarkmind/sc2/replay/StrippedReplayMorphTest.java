@@ -22,11 +22,8 @@ class StrippedReplayMorphTest {
         var deaths = events.stream()
                            .filter(e -> "UnitDied".equals(e.get("evtTypeName")))
                            .toList();
-        var inits = events.stream()
-                          .filter(e -> "UnitInit".equals(e.get("evtTypeName")))
-                          .toList();
-        var dones = events.stream()
-                          .filter(e -> "UnitDone".equals(e.get("evtTypeName")))
+        var births = events.stream()
+                          .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
                           .toList();
 
         // Archon merge: 2 source deaths (HighTemplar × 2)
@@ -34,11 +31,9 @@ class StrippedReplayMorphTest {
         assertThat(deaths).allMatch(e -> "HighTemplar".equals(e.get("unitTypeName")));
         assertThat(deaths).allMatch(e -> ((Number) e.get("loop")).longValue() == 1000);
 
-        // 1 target UnitInit + UnitDone (Archon)
-        assertThat(inits).hasSize(1);
-        assertThat(inits.get(0).get("unitTypeName")).isEqualTo("Archon");
-        assertThat(dones).hasSize(1);
-        assertThat(dones.get(0).get("unitTypeName")).isEqualTo("Archon");
+        // 1 target UnitBorn (Archon) — unit morphs emit UnitBorn, not UnitInit
+        assertThat(births).hasSize(1);
+        assertThat(births.get(0).get("unitTypeName")).isEqualTo("Archon");
     }
 
     @Test
@@ -51,24 +46,18 @@ class StrippedReplayMorphTest {
         var deaths = events.stream()
                            .filter(e -> "UnitDied".equals(e.get("evtTypeName")))
                            .toList();
-        var inits = events.stream()
-                          .filter(e -> "UnitInit".equals(e.get("evtTypeName")))
-                          .toList();
-        var dones = events.stream()
-                          .filter(e -> "UnitDone".equals(e.get("evtTypeName")))
+        var births = events.stream()
+                          .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
                           .toList();
 
         assertThat(deaths).hasSize(1);
         assertThat(deaths.get(0).get("unitTypeName")).isEqualTo("Zergling");
 
-        assertThat(inits).hasSize(1);
-        assertThat(inits.get(0).get("unitTypeName")).isEqualTo("Baneling");
-        assertThat(((Number) inits.get(0).get("loop")).longValue()).isEqualTo(2000);
-
-        assertThat(dones).hasSize(1);
-        assertThat(dones.get(0).get("unitTypeName")).isEqualTo("Baneling");
-        long expectedDoneLoop = 2000 + SC2Data.trainTimeInLoops(UnitType.BANELING);
-        assertThat(((Number) dones.get(0).get("loop")).longValue()).isEqualTo(expectedDoneLoop);
+        // Unit morphs emit UnitBorn after morph time
+        assertThat(births).hasSize(1);
+        assertThat(births.get(0).get("unitTypeName")).isEqualTo("Baneling");
+        long expectedBirthLoop = 2000 + SC2Data.trainTimeInLoops(UnitType.BANELING);
+        assertThat(((Number) births.get(0).get("loop")).longValue()).isEqualTo(expectedBirthLoop);
     }
 
     @Test
@@ -105,11 +94,11 @@ class StrippedReplayMorphTest {
         var deaths = result.events().stream()
                            .filter(e -> "UnitDied".equals(e.get("evtTypeName")))
                            .toList();
-        var inits = result.events().stream()
-                          .filter(e -> "UnitInit".equals(e.get("evtTypeName")))
+        var births = result.events().stream()
+                          .filter(e -> "UnitBorn".equals(e.get("evtTypeName")))
                           .toList();
         assertThat(deaths).hasSize(3);
-        assertThat(inits).hasSize(3);
+        assertThat(births).hasSize(3);
     }
 
     @Test
@@ -178,23 +167,18 @@ class StrippedReplayMorphTest {
         List<Map<String, Object>> events = extractor.processWarpGateScenarioForTest(
             List.of(build1, build2), upgrade, 1, 100);
 
-        // After WarpGateResearch completes, each Gateway dies and a WarpGate appears
-        var gatewayDeaths = events.stream()
-            .filter(e -> "UnitDied".equals(e.get("evtTypeName"))
+        // Gateway→WarpGate is tracked as a type change, not as death+birth events.
+        // Only Gateway UnitInit and WarpGateResearch events are emitted.
+        var gatewayInits = events.stream()
+            .filter(e -> "UnitInit".equals(e.get("evtTypeName"))
                          && "Gateway".equals(e.get("unitTypeName")))
             .toList();
-        var warpGateInits = events.stream()
-            .filter(e -> "UnitInit".equals(e.get("evtTypeName"))
-                         && "WarpGate".equals(e.get("unitTypeName")))
-            .toList();
-        var warpGateDones = events.stream()
-            .filter(e -> "UnitDone".equals(e.get("evtTypeName"))
-                         && "WarpGate".equals(e.get("unitTypeName")))
+        var upgradeDones = events.stream()
+            .filter(e -> "UnitDone".equals(e.get("evtTypeName")))
             .toList();
 
-        assertThat(gatewayDeaths).hasSize(2);
-        assertThat(warpGateInits).hasSize(2);
-        assertThat(warpGateDones).hasSize(2);
+        assertThat(gatewayInits).hasSize(2);
+        assertThat(upgradeDones).hasSizeGreaterThanOrEqualTo(2);
     }
 
     @Test

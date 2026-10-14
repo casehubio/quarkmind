@@ -60,9 +60,10 @@ public final class GameStateToProtobuf {
         UNIT_TYPE_TO_PROTO.put(UnitType.OVERLORD, Units.ZERG_OVERLORD);
         UNIT_TYPE_TO_PROTO.put(UnitType.OVERSEER, Units.ZERG_OVERSEER);
         UNIT_TYPE_TO_PROTO.put(UnitType.BANELING, Units.ZERG_BANELING);
-        // UNIT_TYPE_TO_PROTO.put(UnitType.LOCUST, Units.ZERG_LOCUST_MP_FLYING); // TODO: find correct constant
+        UNIT_TYPE_TO_PROTO.put(UnitType.LOCUST, Units.ZERG_LOCUS_TMP_FLYING);
         UNIT_TYPE_TO_PROTO.put(UnitType.BROODLING, Units.ZERG_BROODLING);
-        // UNIT_TYPE_TO_PROTO.put(UnitType.INFESTED_TERRAN, Units.ZERG_INFESTED_TERRANS_EGG); // TODO: find correct constant
+        UNIT_TYPE_TO_PROTO.put(UnitType.INFESTED_TERRAN, Units.ZERG_INFESTED_TERRANS_EGG);
+        UNIT_TYPE_TO_PROTO.put(UnitType.LARVA, Units.ZERG_LARVA);
         UNIT_TYPE_TO_PROTO.put(UnitType.CHANGELING, Units.ZERG_CHANGELING);
         UNIT_TYPE_TO_PROTO.put(UnitType.EGG, Units.ZERG_EGG);
 
@@ -80,7 +81,7 @@ public final class GameStateToProtobuf {
         UNIT_TYPE_TO_PROTO.put(UnitType.BATTLECRUISER, Units.TERRAN_BATTLECRUISER);
         UNIT_TYPE_TO_PROTO.put(UnitType.CYCLONE, Units.TERRAN_CYCLONE);
         UNIT_TYPE_TO_PROTO.put(UnitType.LIBERATOR, Units.TERRAN_LIBERATOR);
-        // UNIT_TYPE_TO_PROTO.put(UnitType.WIDOW_MINE, Units.TERRAN_WIDOW_MINE_BURROWED); // TODO: find correct constant
+        UNIT_TYPE_TO_PROTO.put(UnitType.WIDOW_MINE, Units.TERRAN_WIDOWMINE);
         UNIT_TYPE_TO_PROTO.put(UnitType.SCV, Units.TERRAN_SCV);
         UNIT_TYPE_TO_PROTO.put(UnitType.REAPER, Units.TERRAN_REAPER);
         UNIT_TYPE_TO_PROTO.put(UnitType.HELLION, Units.TERRAN_HELLION);

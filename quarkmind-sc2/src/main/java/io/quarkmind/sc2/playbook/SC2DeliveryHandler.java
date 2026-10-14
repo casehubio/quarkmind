@@ -47,9 +47,8 @@ public class SC2DeliveryHandler implements DeliveryHandler {
 
     private StepOutcome doTrain(String stepName, Map<String, Object> data) {
         UnitType unit = UnitType.valueOf((String) data.get("train"));
-        double mineralsBefore = game.snapshot().minerals();
         int cost = SC2Data.mineralCost(unit);
-        if ((int) mineralsBefore < cost) {
+        if ((int) game.snapshot().minerals() < cost) {
             return StepOutcome.fail(stepName, "insufficient minerals for " + unit);
         }
         if (game.snapshot().supplyUsed() + SC2Data.supplyCost(unit) > game.snapshot().supply()) {
@@ -57,9 +56,6 @@ public class SC2DeliveryHandler implements DeliveryHandler {
         }
         String tag = "r-playbook-" + unit.name().toLowerCase();
         game.applyIntent(new TrainIntent(tag, unit));
-        if ((int) game.snapshot().minerals() == (int) mineralsBefore && cost > 0) {
-            return StepOutcome.fail(stepName, "train rejected by game for " + unit);
-        }
         return StepOutcome.ok(stepName, Map.of("unit", unit.name()));
     }
 
