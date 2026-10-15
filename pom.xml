@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.casehub</groupId>
         <artifactId>casehub-parent</artifactId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.3</version>
     </parent>
 
     <groupId>io.quarkmind</groupId>
     <artifactId>quarkmind</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3</version>
     <packaging>pom</packaging>
 
     <modules>
