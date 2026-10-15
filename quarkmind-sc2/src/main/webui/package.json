@@ -13,7 +13,6 @@
     "@casehubio/blocks-ui-channel-activity": "file:.casehub-packages/packages/channel-activity",
     "@casehubio/blocks-ui-core": "file:.casehub-packages/packages/blocks-ui-core",
     "@casehubio/blocks-ui-detail-pane": "file:.casehub-packages/packages/detail-pane",
-    "@casehubio/blocks-ui-split-workbench": "file:.casehub-packages/packages/split-workbench",
     "@casehubio/pages-component": "file:.casehub-packages/packages/pages-component",
     "@casehubio/pages-data": "file:.casehub-packages/packages/pages-data",
     "@casehubio/pages-primitives": "file:.casehub-packages/packages/pages-primitives",
