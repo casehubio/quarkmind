@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: read
+      packages: write
 
     steps:
       - uses: actions/checkout@v4
@@ -28,5 +28,11 @@ jobs:
 
       - name: Build and test
         run: mvn --batch-mode verify
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to GitHub Packages
+        if: github.event_name != 'pull_request'
+        run: mvn --batch-mode deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
