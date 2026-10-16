@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.quarkmind</groupId>
         <artifactId>quarkmind-chat</artifactId>
-        <version>${revision}</version>
+        <version>0.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>quarkmind-chat-protocol</artifactId>
