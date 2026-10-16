@@ -69,11 +69,11 @@
                 <artifactId>mcp</artifactId>
                 <version>2.0.0</version>
             </dependency>
-            <!-- Align Jackson 3.x: mcp-json-jackson3 brings 3.0.4-SNAPSHOT, jsonschema2pojo-core brings 3.0.2 -->
+            <!-- Align Jackson 3.x: mcp-json-jackson3 brings 3.0.3, jsonschema2pojo-core brings 3.0.2 -->
             <dependency>
                 <groupId>tools.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>3.0.4-SNAPSHOT</version>
+                <version>3.0.3</version>
             </dependency>
             <!-- Align jackson-jq: quarkus-flow 0.13.0 brings 1.6.2, platform-expression brings 1.6.0 -->
             <dependency>
