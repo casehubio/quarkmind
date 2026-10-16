@@ -10,7 +10,7 @@
 
     <groupId>io.quarkmind</groupId>
     <artifactId>quarkmind</artifactId>
-    <version>0.4-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <modules>
