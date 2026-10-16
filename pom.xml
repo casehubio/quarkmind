@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.casehub</groupId>
         <artifactId>casehub-parent</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <groupId>io.quarkmind</groupId>
@@ -33,6 +33,7 @@
     </profiles>
 
     <properties>
+    <revision>0.4-SNAPSHOT</revision>
         <jandex-maven-plugin.version>3.3.1</jandex-maven-plugin.version>
         <drools.version>10.1.0</drools.version>
         <skipITs>true</skipITs>
