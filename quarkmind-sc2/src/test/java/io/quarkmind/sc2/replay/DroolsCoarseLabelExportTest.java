@@ -64,13 +64,17 @@ class DroolsCoarseLabelExportTest {
     @Test
     @SuppressWarnings("unchecked")
     void exportCoarseLabels() throws Exception {
-        assertTrue(Files.isDirectory(RECONSTITUTED_DIR),
-                "Reconstituted directory not found — run ReconstitutionExportTest first");
+        var datasetFilter = System.getProperty("recon.dataset", "");
+        boolean skipExisting = Boolean.parseBoolean(System.getProperty("recon.skip-existing", "false"));
 
-        int total = 0, labelled = 0, unknown = 0;
+        Path searchDir = datasetFilter.isEmpty() ? RECONSTITUTED_DIR : RECONSTITUTED_DIR.resolve(datasetFilter);
+        assertTrue(Files.isDirectory(searchDir),
+                "Directory not found: " + searchDir + " — run ReconstitutionExportTest first");
+
+        int total = 0, labelled = 0, unknown = 0, skipped = 0;
 
         List<Path> jsonFiles;
-        try (Stream<Path> walk = Files.walk(RECONSTITUTED_DIR)) {
+        try (Stream<Path> walk = Files.walk(searchDir)) {
             jsonFiles = walk
                     .filter(p -> p.toString().endsWith(".json") && !p.toString().endsWith(".label.json"))
                     .toList();
@@ -79,6 +83,11 @@ class DroolsCoarseLabelExportTest {
         for (var jsonPath : jsonFiles) {
             total++;
             try {
+                var labelPath = Path.of(jsonPath.toString().replace(".json", ".label.json"));
+                if (skipExisting && Files.exists(labelPath)) {
+                    skipped++;
+                    continue;
+                }
                 var gameJson = (Map<String, Object>) MAPPER.readValue(jsonPath.toFile(), Map.class);
                 var trackerEvents = (List<Map<String, Object>>) gameJson.get("trackerEvents");
                 if (trackerEvents == null) continue;
@@ -120,7 +129,6 @@ class DroolsCoarseLabelExportTest {
                     unknown++;
                 }
 
-                var labelPath = Path.of(jsonPath.toString().replace(".json", ".label.json"));
                 MAPPER.writeValue(labelPath.toFile(), sidecar);
             } catch (Exception e) {
                 System.err.printf("FAIL: %s — %s%n", jsonPath.getFileName(), e.getMessage());
@@ -131,7 +139,7 @@ class DroolsCoarseLabelExportTest {
             }
         }
 
-        System.out.printf("%nLabelling complete: %d total, %d labelled, %d unknown%n", total, labelled, unknown);
+        System.out.printf("%nLabelling complete: %d total, %d labelled, %d unknown, %d skipped%n", total, labelled, unknown, skipped);
         assertTrue(total > 0, "No reconstituted files found");
     }
 

@@ -188,6 +188,8 @@ def _process_one_json(args: Tuple[str, int]) -> Tuple[str, list]:
     try:
         with open(json_path_str) as f:
             game_json = _json.load(f)
+        if "ToonPlayerDescMap" not in game_json:
+            return ("skip", [])
     except Exception:
         return ("error", [])
     return _extract_from_game_json(game_json, replay_seed)
@@ -390,6 +392,8 @@ def process_replay_dir(
     """Process a directory of .SC2Replay or .json files into per-tournament output."""
     glob_pattern = "*.json" if fmt == "json" else "*.SC2Replay"
     replay_files = sorted(replay_dir.rglob(glob_pattern))
+    if fmt == "json":
+        replay_files = [f for f in replay_files if not f.name.endswith(".label.json")]
     total_available = len(replay_files)
     replay_files = replay_files[offset:]
     if limit is not None:
@@ -445,6 +449,8 @@ if __name__ == "__main__":
     elif args.batch_size:
         glob_pat = "*.json" if args.format == "json" else "*.SC2Replay"
         replay_files = sorted(src.rglob(glob_pat))
+        if args.format == "json":
+            replay_files = [f for f in replay_files if not f.name.endswith(".label.json")]
         replay_files = replay_files[args.offset:]
         if args.limit:
             replay_files = replay_files[:args.limit]

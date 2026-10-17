@@ -176,6 +176,16 @@ cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m pytest tests/ -v
 cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.run_pipeline --data combined
 ```
 
+**Train binary detectors (classifier — requires data in data/full/):**
+```bash
+cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.train_binary --data full
+```
+
+**Compare binary vs multi-class (classifier — requires trained models in models/ and output/detectors/):**
+```bash
+cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.compare_detectors --data full
+```
+
 **Reconstitute replays (classifier — requires reconstituted data in data/reconstituted/):**
 ```bash
 cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.reconstitution_pipeline
@@ -271,7 +281,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - Chat agent tests: `DiscordIdentityDetectorTest`, `DiscordEventSourceTest`, `DiscordGatewayMessageHistoryTest`, `ChatWorldBridgeTest`, `ChatAgencyLoopTest`, `ChatAgentEndToEndTest`, `ChatMemoryFacadeTest`, `ChatCharacterManagerTest`
 - quarkmind-core chat tests: `AttentionClassifierTest`, `ChatDeltaReportTest`, `ChatObservationRendererTest`, `IdleReflectionTriggerTest`, `PersonalityEvolutionPipelineTest`
 - QuarkVille unit tests: `VilleIntentTest`, `VillePerceptionTest`, `WorldStateTest`, `GameTickTest`, `PerceptionBuilderTest`, `VilleAgencyLoopTest`, `VilleWorldBridgeTest`
-- Classifier Python tests: `test_upgrade_mapping_sync`, `test_feature_vector_dimensions`, `test_labelling_hybrid`, `test_era_stratification`, `test_reconstituted_ingest`, `test_reconstitution_validation`
+- Classifier Python tests: `test_upgrade_mapping_sync`, `test_feature_vector_dimensions`, `test_labelling_hybrid`, `test_era_stratification`, `test_reconstituted_ingest`, `test_reconstitution_validation`, `test_binary_catalog`, `test_train_binary`
 - Package-private static methods on CDI beans are tested from the same package without CDI — make them `static` (not `private`) to enable this.
 
 **Integration tests** (`@QuarkusTest`, full CDI context):
