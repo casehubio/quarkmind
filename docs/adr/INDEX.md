@@ -11,3 +11,4 @@
 | [0007](0007-racemodel-plugin-seam.md) | RaceModel plugin seam for multi-race EmulatedGame | Accepted | 2026-05-30 |
 | [0008](0008-racemodel-canproduce-readonly-and-mule-intent-extraction.md) | RaceModel.canProduce read-only enforcement and MULE calldown intent extraction | Accepted | 2026-06-01 |
 | [0009](0009-eigentrust-skip-single-attestor.md) | EigenTrust omission for single-attestor deployment | Accepted | 2026-06-02 |
+| [0010](0010-bayesian-evidence-fusion-replaces-multi-class-onnx.md) | Bayesian evidence fusion replaces multi-class ONNX | Accepted | 2026-10-18 |
