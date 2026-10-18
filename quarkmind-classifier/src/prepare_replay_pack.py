@@ -237,11 +237,8 @@ def _extract_from_game_json(game_json: dict, replay_seed: int) -> Tuple[str, lis
         arch_to_idx = {a: i for i, a in enumerate(archetypes)}
 
         opp_build = extract_build_order(game_json, opponent_id)
-        label, source = label_replay(opp_build, opp_race, None)
-        if label is None or label not in arch_to_idx:
-            continue
 
-        perspectives.append((matchup, arch_to_idx[label], source, observer_id, opponent_id))
+        perspectives.append((matchup, opp_build, opp_race, arch_to_idx, observer_id, opponent_id))
 
     if not perspectives:
         return ("skip", [])
@@ -255,7 +252,7 @@ def _extract_from_game_json(game_json: dict, replay_seed: int) -> Tuple[str, lis
         return ("skip", [])
 
     results = []
-    for matchup, label_idx, source, observer_id, opponent_id in perspectives:
+    for matchup, opp_build, opp_race, arch_to_idx, observer_id, opponent_id in perspectives:
         own_feat = replay_data.player1_features if observer_id == 1 else replay_data.player2_features
         opp_feat = replay_data.player2_features if observer_id == 1 else replay_data.player1_features
         map_tensor = build_map_tensor(replay_data.map_name)
@@ -266,11 +263,18 @@ def _extract_from_game_json(game_json: dict, replay_seed: int) -> Tuple[str, lis
         for minute in MINUTES:
             if minute * 60 > duration:
                 continue
+            truncated_build = [e for e in opp_build if e["minute"] <= minute]
+            label, source = label_replay(truncated_build, opp_race, None)
+            if label is None or label not in arch_to_idx:
+                continue
+            label_idx = arch_to_idx[label]
             temporal = build_temporal_features(own_feat, opp_feat, mask, minute, hp)
             samples.append((temporal, map_tensor, label_idx))
 
         if samples:
-            results.append((matchup, label_idx, source, samples))
+            first_label = samples[0][2]
+            first_source = "rule"
+            results.append((matchup, first_label, first_source, samples))
 
     return ("ok", results)
 

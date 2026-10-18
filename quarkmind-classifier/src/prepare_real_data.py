@@ -200,7 +200,6 @@ def process_single_zip(
         for game_json, label, observer_id, opponent_id in labelled_games:
             if label not in arch_to_idx:
                 continue
-            label_idx = arch_to_idx[label]
 
             header = game_json.get("header", {})
             total_loops = header.get("elapsedGameLoops", 0)
@@ -217,20 +216,32 @@ def process_single_zip(
                 own_feat = replay.player2_features
                 opp_feat = replay.player1_features
 
+            opp_race = game_json["ToonPlayerDescMap"]
+            opp_race = {desc["playerID"]: desc for desc in opp_race.values()}[opponent_id]["race"]
+            opp_build = extract_build_order(game_json, opponent_id)
+
             map_tensor = build_map_tensor(replay.map_name)
             mask = generate_scouting_mask(duration, rng)
 
             has_any = False
+            first_label_idx = None
             for minute in MINUTES:
                 if minute * 60 > duration:
                     continue
+                truncated_build = [e for e in opp_build if e["minute"] <= minute]
+                minute_label, _ = label_replay(truncated_build, opp_race, None)
+                if minute_label is None or minute_label not in arch_to_idx:
+                    continue
+                label_idx = arch_to_idx[minute_label]
                 temporal = build_temporal_features(own_feat, opp_feat, mask, minute, hp)
                 samples.append((temporal, map_tensor, label_idx))
+                if first_label_idx is None:
+                    first_label_idx = label_idx
                 has_any = True
 
             if has_any:
                 replay_ids.append(replay_id)
-                replay_labels.append(label_idx)
+                replay_labels.append(first_label_idx)
                 replay_id += 1
 
         if not samples:
