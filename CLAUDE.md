@@ -186,6 +186,11 @@ cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.train_binary --
 cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.compare_detectors --data full
 ```
 
+**Coverage gap analysis (classifier — requires reconstituted data in data/reconstituted/):**
+```bash
+cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.coverage_gaps
+```
+
 **Reconstitute replays (classifier — requires reconstituted data in data/reconstituted/):**
 ```bash
 cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.reconstitution_pipeline
