@@ -1,14 +1,16 @@
 package io.quarkmind.plugin.scouting;
 
-import io.casehub.neocortex.inference.inmem.InMemoryInferenceModel;
-import io.casehub.neocortex.inference.tasks.TensorClassifier;
 import io.quarkmind.agency.context.MutableMapCaseContext;
 import io.quarkmind.domain.AssessmentSource;
+import io.quarkmind.domain.GamePhase;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.StrategyArchetype;
+import io.quarkmind.sc2.detector.DetectorCatalogConfig;
+import io.quarkmind.sc2.detector.DetectorOrchestrator;
+import io.quarkmind.sc2.detector.DetectorRegistry;
+import io.quarkmind.sc2.detector.FeatureTier;
 import org.junit.jupiter.api.Test;
 
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -97,36 +99,28 @@ class CascadingPatternClassifierTest {
     }
 
     @Test
-    void onnxResolvesWhenDroolsBelowThreshold() {
-        var model = InMemoryInferenceModel.returning(5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-        var onnx = new TensorClassifier(model, OnnxLabelMapping.labelsForRace(Race.ZERG));
-        var classifiers = new EnumMap<Race, TensorClassifier>(Race.class);
-        classifiers.put(Race.ZERG, onnx);
-
-        var classifier = new CascadingPatternClassifier(0.7, 0.5, classifiers);
-        var evidence   = List.of(new EvidenceMarker(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.4, "some lings"));
-        var features   = new StrategyFeatures(Map.of("temporal", new float[][]{{1.0f, 2.0f, 3.0f}}));
+    void fusionResolvesWhenDroolsBelowThreshold() {
+        var orchestrator = buildTestOrchestrator();
+        var classifier = new CascadingPatternClassifier(0.7, 0.5, orchestrator);
+        var evidence   = List.of(new EvidenceMarker(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.5, "moderate rush signal"));
+        var features   = new StrategyFeatures(Map.of("temporal", new float[][]{{1.0f}}));
 
         var result = classifier.classify(evidence, List.of(), features, Race.ZERG, 100, -1, null);
         assertFalse(result.assessments().isEmpty());
-        assertEquals(AssessmentSource.ONNX, result.assessments().get(0).source());
+        assertEquals(AssessmentSource.FUSION, result.assessments().get(0).source());
         assertFalse(result.llmTriggered());
     }
 
     @Test
-    void onnxBelowThreshold_fallsThroughToLlm() {
-        var model = InMemoryInferenceModel.returning(0.15f, 0.2f, 0.15f, 0.2f, 0.15f, 0.15f);
-        var onnx = new TensorClassifier(model, OnnxLabelMapping.labelsForRace(Race.ZERG));
-        var classifiers = new EnumMap<Race, TensorClassifier>(Race.class);
-        classifiers.put(Race.ZERG, onnx);
-
-        var classifier = new CascadingPatternClassifier(0.7, 0.5, classifiers);
+    void fusionUnavailable_fallsThroughToLlm() {
+        var orchestrator = buildTestOrchestrator();
+        var classifier = new CascadingPatternClassifier(0.7, 0.5, orchestrator);
         classifier.setLlmFallbackConfig(true, 0.5, 100, 50);
         var evidence = List.of(new EvidenceMarker(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.4, "some lings"));
-        var features = new StrategyFeatures(Map.of("temporal", new float[][]{{1.0f, 2.0f, 3.0f}}));
         var ctx      = new MutableMapCaseContext(Map.of());
 
-        var result = classifier.classify(evidence, List.of(), features, Race.ZERG, 200, -1, ctx);
+        // null onnxFeatures → fusion tier skipped, falls through to LLM
+        var result = classifier.classify(evidence, List.of(), null, Race.ZERG, 200, -1, ctx);
         assertTrue(result.llmTriggered());
     }
 
@@ -143,17 +137,12 @@ class CascadingPatternClassifierTest {
     }
 
     @Test
-    void droolsAboveThreshold_onnxNotCalled() {
-        var model = InMemoryInferenceModel.returning(5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-        var onnx = new TensorClassifier(model, OnnxLabelMapping.labelsForRace(Race.ZERG));
-        var classifiers = new EnumMap<Race, TensorClassifier>(Race.class);
-        classifiers.put(Race.ZERG, onnx);
-
-        var classifier = new CascadingPatternClassifier(0.7, 0.5, classifiers);
+    void droolsAboveThreshold_fusionNotCalled() {
+        var orchestrator = buildTestOrchestrator();
+        var classifier = new CascadingPatternClassifier(0.7, 0.5, orchestrator);
         var evidence   = List.of(new EvidenceMarker(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.8, "many lings"));
-        var features   = new StrategyFeatures(Map.of("temporal", new float[][]{{1.0f, 2.0f, 3.0f}}));
 
-        var result = classifier.classify(evidence, List.of(), features, Race.ZERG, 100, -1, null);
+        var result = classifier.classify(evidence, List.of(), null, Race.ZERG, 100, -1, null);
         assertFalse(result.assessments().isEmpty());
         assertEquals(AssessmentSource.DROOLS, result.assessments().get(0).source());
     }
@@ -281,5 +270,27 @@ class CascadingPatternClassifierTest {
                 java.util.List.of(new EvidenceMarker(io.quarkmind.domain.StrategyArchetype.TERRAN_MARINE_RUSH, 0.6, "rush")),
                 java.util.List.of(), null, io.quarkmind.domain.Race.TERRAN, 200, 100, null, 5);
         org.junit.jupiter.api.Assertions.assertNull(result2.transition());
+    }
+
+    private static DetectorOrchestrator buildTestOrchestrator() {
+        var config = new DetectorCatalogConfig(List.of(
+                new DetectorCatalogConfig.DetectorDef(
+                        "rush_det", GamePhase.EARLY, FeatureTier.ECONOMY,
+                        Map.of(Race.ZERG, List.of("RUSH")),
+                        null)
+                                                      ));
+        var registry = new DetectorRegistry(config);
+        var priors   = Map.of("RUSH", 0.3, "MACRO", 0.7);
+        var cpts = Map.of(
+                "rush_det", Map.of("RUSH", 0.85, "MACRO", 0.10)
+                         );
+        var labelMapping = Map.of(
+                "RUSH", StrategyArchetype.ZERG_ZERGLING_RUSH,
+                "MACRO", StrategyArchetype.ZERG_MACRO
+                                 );
+        var orchestrator = new DetectorOrchestrator(
+                registry, priors, cpts, labelMapping, 10);
+        orchestrator.initializeNetwork(List.of("rush_det"));
+        return orchestrator;
     }
 }

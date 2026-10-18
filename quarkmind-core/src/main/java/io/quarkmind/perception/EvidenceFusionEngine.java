@@ -42,7 +42,7 @@ public class EvidenceFusionEngine {
     }
 
     public String[] getOutcomeNames() {
-        return outcomeNames;
+        return outcomeNames.clone();
     }
 
     public void reset() {

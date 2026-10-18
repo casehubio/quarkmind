@@ -23,6 +23,7 @@ public class DetectorOrchestrator {
     private final Map<String, StrategyArchetype> labelToArchetype;
     private final Map<StrategyArchetype, String> archetypeToLabel;
 
+    private String[] outcomeNames;
     private boolean initialized;
 
     public DetectorOrchestrator(DetectorRegistry registry,
@@ -42,6 +43,7 @@ public class DetectorOrchestrator {
     public void initializeNetwork(List<String> activeDetectorNames) {
         BayesNetwork network = SC2NetworkBuilder.build(priors, activeDetectorNames, cpts);
         engine.initialize(network, "Strategy");
+        this.outcomeNames = engine.getOutcomeNames();
         initialized = true;
     }
 
@@ -58,8 +60,7 @@ public class DetectorOrchestrator {
         }
 
         if (!markers.isEmpty()) {
-            String[] outcomes = engine.getOutcomeNames();
-            double[] likelihood = computeMarkerLikelihood(markers, outcomes);
+            double[] likelihood = computeMarkerLikelihood(markers, outcomeNames);
             engine.setEvidence("Strategy", likelihood);
         }
 
@@ -99,15 +100,13 @@ public class DetectorOrchestrator {
     }
 
     private List<PatternAssessment> buildAssessments(double[] posterior, long frame) {
-        String[] outcomes = engine.getOutcomeNames();
         List<PatternAssessment> assessments = new ArrayList<>();
-        for (int i = 0; i < outcomes.length; i++) {
-            StrategyArchetype arch = labelToArchetype.get(outcomes[i]);
+        for (int i = 0; i < outcomeNames.length; i++) {
+            StrategyArchetype arch = labelToArchetype.get(outcomeNames[i]);
             if (arch != null && posterior[i] > 0.01) {
                 assessments.add(new PatternAssessment(
                     arch, posterior[i], frame,
-                    outcomes[i] + " (fusion confidence " +
-                        String.format("%.2f", posterior[i]) + ")",
+                    outcomeNames[i] + " (fusion)",
                     AssessmentSource.FUSION));
             }
         }

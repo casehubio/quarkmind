@@ -80,8 +80,8 @@ class CascadeValidationCalibrationTest {
         List<ReplaySimulatedGame>    aiArenaGames = loadAIArenaGames();
 
         var droolsOnly = new CascadingPatternClassifier(0.0, 1.0);
-        var onnxOnly   = new CascadingPatternClassifier(1.0, 0.0, onnxClassifiers);
-        var cascade    = new CascadingPatternClassifier(0.7, 0.5, onnxClassifiers);
+        var onnxOnly   = new CascadingPatternClassifier(1.0, 0.0);
+        var cascade    = new CascadingPatternClassifier(0.7, 0.5);
 
         StringBuilder report = new StringBuilder();
         report.append("=== Cascade Validation — IEM10 + AI Arena (59 games) ===\n\n");
@@ -215,7 +215,7 @@ class CascadeValidationCalibrationTest {
         int drools      = 0, onnx = 0, llm = 0, fallback = 0, total = 0;
         int targetTicks = targetMinute * TICKS_PER_MINUTE;
 
-        var classifier = new CascadingPatternClassifier(0.7, 0.5, onnxClassifiers);
+        var classifier = new CascadingPatternClassifier(0.7, 0.5);
         for (IEM10JsonSimulatedGame game : iem10Games) {
             AssessmentSource source = classifyToSource(classifier, game, game.matchup(), targetTicks);
             total++;

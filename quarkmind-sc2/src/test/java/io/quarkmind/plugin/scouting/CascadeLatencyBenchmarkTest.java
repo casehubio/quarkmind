@@ -62,7 +62,7 @@ class CascadeLatencyBenchmarkTest {
         for (int i = 0; i < WARMUP; i++) {
             featureExtractor.extract(windowedFeatures, MapCharacteristics.DEFAULT);
             terranClassifier.classify(features.tensors());
-            var classifier = new CascadingPatternClassifier(0.7, 0.5, onnxClassifiers);
+            var classifier = new CascadingPatternClassifier(0.7, 0.5);
             classifier.classify(evidence, revisions, features, Race.TERRAN, 4000, 3978, null);
         }
 
@@ -79,7 +79,7 @@ class CascadeLatencyBenchmarkTest {
         }
 
         for (int i = 0; i < ITERATIONS; i++) {
-            var classifier = new CascadingPatternClassifier(0.7, 0.5, onnxClassifiers);
+            var classifier = new CascadingPatternClassifier(0.7, 0.5);
             long start = System.nanoTime();
             classifier.classify(evidence, revisions, features, Race.TERRAN, 4000, 3978, null);
             cascadeNanos[i] = System.nanoTime() - start;

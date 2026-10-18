@@ -1,11 +1,8 @@
 package io.quarkmind.plugin.scouting;
 
 import io.casehub.api.context.CaseContext;
-import io.casehub.neocortex.inference.InferenceModel;
-import io.casehub.neocortex.inference.quarkus.Inference;
-import io.casehub.neocortex.inference.tasks.ClassificationResult;
-import io.casehub.neocortex.inference.tasks.TensorClassifier;
 import io.micrometer.core.instrument.Counter;
+import io.quarkmind.sc2.detector.DetectorOrchestrator;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.AssessmentSource;
@@ -15,7 +12,6 @@ import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.StrategyTransition;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
@@ -51,7 +47,7 @@ public class CascadingPatternClassifier {
 
     private final double droolsThreshold;
     private final double onnxThreshold;
-    private final EnumMap<Race, TensorClassifier> onnxClassifiers;
+    private final DetectorOrchestrator detectorOrchestrator;
     private final EnumMap<StrategyArchetype, Double> cumulativeConfidence =
             new EnumMap<>(StrategyArchetype.class);
 
@@ -89,43 +85,15 @@ public class CascadingPatternClassifier {
             @ConfigProperty(name = "quarkmind.classifier.drools.confidence-threshold", defaultValue = "0.7")
             double droolsThreshold,
             @ConfigProperty(name = "quarkmind.classifier.onnx.confidence-threshold", defaultValue = "0.5")
-            double onnxThreshold,
-            @Inference("strategy-vs-terran") Instance<InferenceModel> terranModel,
-            @Inference("strategy-vs-zerg") Instance<InferenceModel> zergModel,
-            @Inference("strategy-vs-protoss") Instance<InferenceModel> protossModel) {
-        this.droolsThreshold = droolsThreshold;
-        this.onnxThreshold = onnxThreshold;
-        this.onnxClassifiers = new EnumMap<>(Race.class);
-        resolveModel(terranModel, Race.TERRAN);
-        resolveModel(zergModel, Race.ZERG);
-        resolveModel(protossModel, Race.PROTOSS);
-        if (onnxClassifiers.isEmpty()) {
-            log.info("[CASCADE] ONNX tier unavailable — no per-race models resolved");
-        } else {
-            log.infof("[CASCADE] ONNX tier available — %d per-race model(s) loaded", onnxClassifiers.size());
-        }
-    }
-
-    private void resolveModel(Instance<InferenceModel> modelInstance, Race race) {
-        if (!modelInstance.isResolvable()) return;
-        try {
-            var model = modelInstance.get();
-            var labels = OnnxLabelMapping.labelsForRace(race);
-            onnxClassifiers.put(race, new TensorClassifier(model, labels));
-        } catch (Exception e) {
-            log.warnf("[CASCADE] ONNX model for %s unavailable — %s", race, e.getMessage());
-        }
-    }
-
-    public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold) {
-        this(droolsThreshold, onnxThreshold, new EnumMap<>(Race.class));
+            double onnxThreshold) {
+        this(droolsThreshold, onnxThreshold, (DetectorOrchestrator) null);
     }
 
     public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold,
-                                      EnumMap<Race, TensorClassifier> onnxClassifiers) {
+                                      DetectorOrchestrator orchestrator) {
         this.droolsThreshold = droolsThreshold;
         this.onnxThreshold = onnxThreshold;
-        this.onnxClassifiers = onnxClassifiers;
+        this.detectorOrchestrator = orchestrator;
     }
 
     public void setLlmFallbackConfig(boolean enabled, double confidenceThreshold,
@@ -185,24 +153,17 @@ public class CascadingPatternClassifier {
             return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.DROOLS), false, transition);
         }
 
-        // Tier 2: ONNX — per-race learned classifier
-        TensorClassifier raceClassifier = enemyRace != null ? onnxClassifiers.get(enemyRace) : null;
-        if (raceClassifier != null && onnxFeatures != null) {
+        // Tier 2: Bayesian fusion — binary detectors + Drools markers through BJT
+        if (detectorOrchestrator != null && onnxFeatures != null) {
             inc(onnxInvocations);
-            try {
-                ClassificationResult onnxResult = raceClassifier.classify(onnxFeatures.tensors());
-                StrategyArchetype onnxArchetype = OnnxLabelMapping.resolve(onnxResult.label(), enemyRace);
-                if (onnxArchetype == null) {
-                    log.warnf("[CASCADE] ONNX returned unmapped label: '%s' for race %s",
-                            onnxResult.label(), enemyRace);
+            var fusionAssessments = detectorOrchestrator.classify(
+                Map.of(), List.of(), frame);
+            if (!fusionAssessments.isEmpty() && fusionAssessments.get(0).confidence() >= onnxThreshold) {
+                for (var assessment : fusionAssessments) {
+                    cumulativeConfidence.merge(assessment.archetype(), assessment.confidence(), Math::max);
                 }
-                if (onnxArchetype != null && onnxResult.confidence() >= onnxThreshold) {
-                    cumulativeConfidence.merge(onnxArchetype, (double) onnxResult.confidence(), Math::max);
-                    inc(onnxResolutions);
-                    return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.ONNX), false, transition);
-                }
-            } catch (Exception e) {
-                log.warnf("[CASCADE] ONNX inference failed for race %s: %s", enemyRace, e.getMessage());
+                inc(onnxResolutions);
+                return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.FUSION), false, transition);
             }
         }
 
@@ -248,6 +209,9 @@ public class CascadingPatternClassifier {
         lastLlmFallbackFrame = -1;
         lastProcessedLlmArchetype = null;
         prevDominant = null;
+        if (detectorOrchestrator != null) {
+            detectorOrchestrator.reset();
+        }
     }
 
     Map<String, Double> snapshotConfidences() {
