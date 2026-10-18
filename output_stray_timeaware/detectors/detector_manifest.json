@@ -1,0 +1,637 @@
+[
+  {
+    "key": "early_greedy_vs_terran",
+    "skipped": false,
+    "detector": "early_greedy",
+    "matchup": "vs_terran",
+    "phase": "early",
+    "minutes": [
+      2
+    ],
+    "positive_archetypes": [
+      "MACRO_ECONOMY"
+    ],
+    "accuracy": 0.625,
+    "precision": 0.45918367346938777,
+    "recall": 0.703125,
+    "fpr": 0.4140625,
+    "tp": 90,
+    "fp": 106,
+    "fn": 38,
+    "tn": 150,
+    "train_pos": 461,
+    "train_neg": 922,
+    "temperature": 0.9686459302902222,
+    "latency_p50_ms": 0.10958302300423384,
+    "onnx_path": "output/detectors/strategy_early_greedy_vs_terran.onnx",
+    "onnx_kb": 17.18359375
+  },
+  {
+    "key": "mid_air_tech_vs_terran",
+    "skipped": false,
+    "detector": "mid_air_tech",
+    "matchup": "vs_terran",
+    "phase": "mid",
+    "minutes": [
+      3,
+      4
+    ],
+    "positive_archetypes": [
+      "BANSHEE_HARASS",
+      "AIR_SUPERIORITY"
+    ],
+    "accuracy": 0.786996603012085,
+    "precision": 0.6422018348623854,
+    "recall": 0.8151382823871907,
+    "fpr": 0.22707423580786026,
+    "tp": 560,
+    "fp": 312,
+    "fn": 127,
+    "tn": 1062,
+    "train_pos": 2327,
+    "train_neg": 4654,
+    "temperature": 0.8750854134559631,
+    "latency_p50_ms": 0.09762495756149292,
+    "onnx_path": "output/detectors/strategy_mid_air_tech_vs_terran.onnx",
+    "onnx_kb": 17.18359375
+  },
+  {
+    "key": "early_rush_vs_terran",
+    "skipped": false,
+    "detector": "early_rush",
+    "matchup": "vs_terran",
+    "phase": "early",
+    "minutes": [
+      2
+    ],
+    "positive_archetypes": [
+      "RUSH"
+    ],
+    "accuracy": 0.7791290879249573,
+    "precision": 0.6731224445879062,
+    "recall": 0.6559027049695954,
+    "fpr": 0.15925770601803313,
+    "tp": 3128,
+    "fp": 1519,
+    "fn": 1641,
+    "tn": 8019,
+    "train_pos": 16670,
+    "train_neg": 33340,
+    "temperature": 0.9572635889053345,
+    "latency_p50_ms": 0.09941600728780031,
+    "onnx_path": "output/detectors/strategy_early_rush_vs_terran.onnx",
+    "onnx_kb": 17.1328125
+  },
+  {
+    "key": "mid_hidden_tech_vs_terran",
+    "skipped": false,
+    "detector": "mid_hidden_tech",
+    "matchup": "vs_terran",
+    "phase": "mid",
+    "minutes": [
+      3,
+      4
+    ],
+    "positive_archetypes": [
+      "TECH_RUSH"
+    ],
+    "accuracy": 0.8408371210098267,
+    "precision": 0.7862640325506153,
+    "recall": 0.9107376071773323,
+    "fpr": 0.22178137239940993,
+    "tp": 16039,
+    "fp": 4360,
+    "fn": 1572,
+    "tn": 15299,
+    "train_pos": 61276,
+    "train_neg": 69382,
+    "temperature": 0.9428768754005432,
+    "latency_p50_ms": 0.09325006976723671,
+    "onnx_path": "output/detectors/strategy_mid_hidden_tech_vs_terran.onnx",
+    "onnx_kb": 17.26171875
+  },
+  {
+    "key": "late_air_superiority_vs_terran",
+    "skipped": false,
+    "detector": "late_air_superiority",
+    "matchup": "vs_terran",
+    "phase": "late",
+    "minutes": [
+      5
+    ],
+    "positive_archetypes": [
+      "AIR_SUPERIORITY"
+    ],
+    "accuracy": 0.6666666865348816,
+    "precision": 0.0,
+    "recall": 0.0,
+    "fpr": 0.0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 19,
+    "tn": 38,
+    "train_pos": 43,
+    "train_neg": 86,
+    "temperature": 0.9862121939659119,
+    "latency_p50_ms": 0.09841704741120338,
+    "onnx_path": "output/detectors/strategy_late_air_superiority_vs_terran.onnx",
+    "onnx_kb": 17.388671875
+  },
+  {
+    "key": "mid_ground_heavy_vs_terran",
+    "skipped": false,
+    "detector": "mid_ground_heavy",
+    "matchup": "vs_terran",
+    "phase": "mid",
+    "minutes": [
+      3,
+      4
+    ],
+    "positive_archetypes": [
+      "MECH_PUSH"
+    ],
+    "accuracy": 0.8479608297348022,
+    "precision": 0.7443667443667443,
+    "recall": 0.8283614353653265,
+    "fpr": 0.1422395157803718,
+    "tp": 1916,
+    "fp": 658,
+    "fn": 397,
+    "tn": 3968,
+    "train_pos": 8219,
+    "train_neg": 16438,
+    "temperature": 0.6824479103088379,
+    "latency_p50_ms": 0.11662498582154512,
+    "onnx_path": "output/detectors/strategy_mid_ground_heavy_vs_terran.onnx",
+    "onnx_kb": 17.2880859375
+  },
+  {
+    "key": "late_ground_army_vs_terran",
+    "skipped": false,
+    "detector": "late_ground_army",
+    "matchup": "vs_terran",
+    "phase": "late",
+    "minutes": [
+      5
+    ],
+    "positive_archetypes": [
+      "MECH_PUSH"
+    ],
+    "accuracy": 0.9069992303848267,
+    "precision": 0.8675340035481963,
+    "recall": 0.8509280742459396,
+    "fpr": 0.06496519721577726,
+    "tp": 2934,
+    "fp": 448,
+    "fn": 514,
+    "tn": 6448,
+    "train_pos": 12135,
+    "train_neg": 24270,
+    "temperature": 0.673870861530304,
+    "latency_p50_ms": 0.09491702076047659,
+    "onnx_path": "output/detectors/strategy_late_ground_army_vs_terran.onnx",
+    "onnx_kb": 17.2880859375
+  },
+  {
+    "key": "mid_timing_attack_vs_terran",
+    "skipped": false,
+    "detector": "mid_timing_attack",
+    "matchup": "vs_terran",
+    "phase": "mid",
+    "minutes": [
+      3,
+      4
+    ],
+    "positive_archetypes": [
+      "BIO_TIMING"
+    ],
+    "accuracy": 0.8912977576255798,
+    "precision": 0.8172346058587412,
+    "recall": 0.8680152394775036,
+    "fpr": 0.09706095791001451,
+    "tp": 9569,
+    "fp": 2140,
+    "fn": 1455,
+    "tn": 19908,
+    "train_pos": 38830,
+    "train_neg": 77660,
+    "temperature": 0.6438713073730469,
+    "latency_p50_ms": 0.10687496978789568,
+    "onnx_path": "output/detectors/strategy_mid_timing_attack_vs_terran.onnx",
+    "onnx_kb": 17.3134765625
+  },
+  {
+    "key": "mid_air_tech_vs_zerg",
+    "skipped": false,
+    "detector": "mid_air_tech",
+    "matchup": "vs_zerg",
+    "phase": "mid",
+    "minutes": [
+      3,
+      4
+    ],
+    "positive_archetypes": [
+      "MUTA_HARASS"
+    ],
+    "accuracy": 0.6666666865348816,
+    "precision": 0.0,
+    "recall": 0.0,
+    "fpr": 0.0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 50,
+    "tn": 100,
+    "train_pos": 175,
+    "train_neg": 350,
+    "temperature": 0.9829722046852112,
+    "latency_p50_ms": 0.114083057269454,
+    "onnx_path": "output/detectors/strategy_mid_air_tech_vs_zerg.onnx",
+    "onnx_kb": 17.1328125
+  },
+  {
+    "key": "mid_ground_heavy_vs_zerg",
+    "skipped": false,
+    "detector": "mid_ground_heavy",
+    "matchup": "vs_zerg",
+    "phase": "mid",
+    "minutes": [
+      3,
+      4
+    ],
+    "positive_archetypes": [
+      "HYDRA_PUSH"
+    ],
+    "accuracy": 0.6666666865348816,
+    "precision": 0.0,
+    "recall": 0.0,
+    "fpr": 0.0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 38,
+    "tn": 76,
+    "train_pos": 140,
+    "train_neg": 280,
+    "temperature": 0.981360137462616,
+    "latency_p50_ms": 0.11954107321798801,
+    "onnx_path": "output/detectors/strategy_mid_ground_heavy_vs_zerg.onnx",
+    "onnx_kb": 17.2353515625
+  },
+  {
+    "key": "early_rush_vs_zerg",
+    "skipped": false,
+    "detector": "early_rush",
+    "matchup": "vs_zerg",
+    "phase": "early",
+    "minutes": [
+      2
+    ],
+    "positive_archetypes": [
+      "RUSH",
+      "ROACH_RUSH"
+    ],
+    "accuracy": 0.7219940423965454,
+    "precision": 0.8995642701525054,
+    "recall": 0.7332622979932516,
+    "fpr": 0.32237762237762235,
+    "tp": 4129,
+    "fp": 461,
+    "fn": 1502,
+    "tn": 969,
+    "train_pos": 19665,
+    "train_neg": 5125,
+    "temperature": 0.9582099318504333,
+    "latency_p50_ms": 0.1093749888241291,
+    "onnx_path": "output/detectors/strategy_early_rush_vs_zerg.onnx",
+    "onnx_kb": 17.0830078125
+  },
+  {
+    "key": "early_greedy_vs_zerg",
+    "skipped": false,
+    "detector": "early_greedy",
+    "matchup": "vs_zerg",
+    "phase": "early",
+    "minutes": [
+      2
+    ],
+    "positive_archetypes": [
+      "MACRO_ECONOMY"
+    ],
+    "accuracy": 0.7635087966918945,
+    "precision": 0.6132385120350109,
+    "recall": 0.7866666666666666,
+    "fpr": 0.2480701754385965,
+    "tp": 1121,
+    "fp": 707,
+    "fn": 304,
+    "tn": 2143,
+    "train_pos": 5105,
+    "train_neg": 10210,
+    "temperature": 0.7055146098136902,
+    "latency_p50_ms": 0.10495900642126799,
+    "onnx_path": "output/detectors/strategy_early_greedy_vs_zerg.onnx",
+    "onnx_kb": 17.1328125
+  },
+  {
+    "key": "late_ground_army_vs_zerg",
+    "skipped": false,
+    "detector": "late_ground_army",
+    "matchup": "vs_zerg",
+    "phase": "late",
+    "minutes": [
+      5
+    ],
+    "positive_archetypes": [
+      "HYDRA_PUSH"
+    ],
+    "accuracy": 0.6322580575942993,
+    "precision": 0.45789473684210524,
+    "recall": 0.5612903225806452,
+    "fpr": 0.33225806451612905,
+    "tp": 87,
+    "fp": 103,
+    "fn": 68,
+    "tn": 207,
+    "train_pos": 545,
+    "train_neg": 1090,
+    "temperature": 0.979874849319458,
+    "latency_p50_ms": 0.10233395732939243,
+    "onnx_path": "output/detectors/strategy_late_ground_army_vs_zerg.onnx",
+    "onnx_kb": 17.2353515625
+  },
+  {
+    "key": "mid_timing_attack_vs_zerg",
+    "skipped": false,
+    "detector": "mid_timing_attack",
+    "matchup": "vs_zerg",
+    "phase": "mid",
+    "minutes": [
+      3,
+      4
+    ],
+    "positive_archetypes": [
+      "LING_BANE"
+    ],
+    "accuracy": 0.9002560377120972,
+    "precision": 0.8199158485273492,
+    "recall": 0.8980030721966206,
+    "fpr": 0.09861751152073733,
+    "tp": 2923,
+    "fp": 642,
+    "fn": 332,
+    "tn": 5868,
+    "train_pos": 11586,
+    "train_neg": 23172,
+    "temperature": 0.7400121092796326,
+    "latency_p50_ms": 0.10429194662719965,
+    "onnx_path": "output/detectors/strategy_mid_timing_attack_vs_zerg.onnx",
+    "onnx_kb": 17.26171875
+  },
+  {
+    "key": "early_greedy_vs_protoss",
+    "skipped": false,
+    "detector": "early_greedy",
+    "matchup": "vs_protoss",
+    "phase": "early",
+    "minutes": [
+      2
+    ],
+    "positive_archetypes": [
+      "MACRO_ECONOMY"
+    ],
+    "accuracy": 0.6666666865348816,
+    "precision": 0.0,
+    "recall": 0.0,
+    "fpr": 0.0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 30,
+    "tn": 60,
+    "train_pos": 108,
+    "train_neg": 216,
+    "temperature": 0.7837515473365784,
+    "latency_p50_ms": 0.09491597302258015,
+    "onnx_path": "output/detectors/strategy_early_greedy_vs_protoss.onnx",
+    "onnx_kb": 17.2080078125
+  },
+  {
+    "key": "mid_air_tech_vs_protoss",
+    "skipped": false,
+    "detector": "mid_air_tech",
+    "matchup": "vs_protoss",
+    "phase": "mid",
+    "minutes": [
+      3,
+      4
+    ],
+    "positive_archetypes": [
+      "AIR_SUPERIORITY"
+    ],
+    "accuracy": 0.7267097234725952,
+    "precision": 0.5940928270042194,
+    "recall": 0.568659127625202,
+    "fpr": 0.194264943457189,
+    "tp": 704,
+    "fp": 481,
+    "fn": 534,
+    "tn": 1995,
+    "train_pos": 4075,
+    "train_neg": 8150,
+    "temperature": 0.967332661151886,
+    "latency_p50_ms": 0.10908301919698715,
+    "onnx_path": "output/detectors/strategy_mid_air_tech_vs_protoss.onnx",
+    "onnx_kb": 17.2080078125
+  },
+  {
+    "key": "early_cheese_vs_protoss",
+    "skipped": false,
+    "detector": "early_cheese",
+    "matchup": "vs_protoss",
+    "phase": "early",
+    "minutes": [
+      2
+    ],
+    "positive_archetypes": [
+      "CANNON_RUSH"
+    ],
+    "accuracy": 0.8224222660064697,
+    "precision": 0.7053956834532374,
+    "recall": 0.8023731587561375,
+    "fpr": 0.1675531914893617,
+    "tp": 1961,
+    "fp": 819,
+    "fn": 483,
+    "tn": 4069,
+    "train_pos": 8446,
+    "train_neg": 16892,
+    "temperature": 0.75485759973526,
+    "latency_p50_ms": 0.10808289516717196,
+    "onnx_path": "output/detectors/strategy_early_cheese_vs_protoss.onnx",
+    "onnx_kb": 17.2080078125
+  },
+  {
+    "key": "early_rush_vs_protoss",
+    "skipped": false,
+    "detector": "early_rush",
+    "matchup": "vs_protoss",
+    "phase": "early",
+    "minutes": [
+      2
+    ],
+    "positive_archetypes": [
+      "RUSH",
+      "PROXY"
+    ],
+    "accuracy": 0.7575112581253052,
+    "precision": 0.7985107314936487,
+    "recall": 0.8551659434736719,
+    "fpr": 0.44294655753490614,
+    "tp": 7292,
+    "fp": 1840,
+    "fn": 1235,
+    "tn": 2314,
+    "train_pos": 29872,
+    "train_neg": 14361,
+    "temperature": 0.9612541794776917,
+    "latency_p50_ms": 0.10966695845127106,
+    "onnx_path": "output/detectors/strategy_early_rush_vs_protoss.onnx",
+    "onnx_kb": 17.1572265625
+  },
+  {
+    "key": "mid_ground_heavy_vs_protoss",
+    "skipped": false,
+    "detector": "mid_ground_heavy",
+    "matchup": "vs_protoss",
+    "phase": "mid",
+    "minutes": [
+      3,
+      4
+    ],
+    "positive_archetypes": [
+      "COLOSSUS_PUSH"
+    ],
+    "accuracy": 0.6380952596664429,
+    "precision": 0.46511627906976744,
+    "recall": 0.5714285714285714,
+    "fpr": 0.32857142857142857,
+    "tp": 100,
+    "fp": 115,
+    "fn": 75,
+    "tn": 235,
+    "train_pos": 616,
+    "train_neg": 1232,
+    "temperature": 0.968741774559021,
+    "latency_p50_ms": 0.09824999142438173,
+    "onnx_path": "output/detectors/strategy_mid_ground_heavy_vs_protoss.onnx",
+    "onnx_kb": 17.3134765625
+  },
+  {
+    "key": "mid_hidden_tech_vs_protoss",
+    "skipped": false,
+    "detector": "mid_hidden_tech",
+    "matchup": "vs_protoss",
+    "phase": "mid",
+    "minutes": [
+      3,
+      4
+    ],
+    "positive_archetypes": [
+      "DT_RUSH"
+    ],
+    "accuracy": 0.7467700242996216,
+    "precision": 0.5803108808290155,
+    "recall": 0.8682170542635659,
+    "fpr": 0.313953488372093,
+    "tp": 112,
+    "fp": 81,
+    "fn": 17,
+    "tn": 177,
+    "train_pos": 488,
+    "train_neg": 976,
+    "temperature": 0.6950883269309998,
+    "latency_p50_ms": 0.09266601409763098,
+    "onnx_path": "output/detectors/strategy_mid_hidden_tech_vs_protoss.onnx",
+    "onnx_kb": 17.2880859375
+  },
+  {
+    "key": "late_air_superiority_vs_protoss",
+    "skipped": false,
+    "detector": "late_air_superiority",
+    "matchup": "vs_protoss",
+    "phase": "late",
+    "minutes": [
+      5
+    ],
+    "positive_archetypes": [
+      "AIR_SUPERIORITY"
+    ],
+    "accuracy": 0.7503805160522461,
+    "precision": 0.6950354609929078,
+    "recall": 0.4474885844748858,
+    "fpr": 0.09817351598173515,
+    "tp": 196,
+    "fp": 86,
+    "fn": 242,
+    "tn": 790,
+    "train_pos": 1478,
+    "train_neg": 2956,
+    "temperature": 0.9510036706924438,
+    "latency_p50_ms": 0.11516700033098459,
+    "onnx_path": "output/detectors/strategy_late_air_superiority_vs_protoss.onnx",
+    "onnx_kb": 17.416015625
+  },
+  {
+    "key": "mid_timing_attack_vs_protoss",
+    "skipped": false,
+    "detector": "mid_timing_attack",
+    "matchup": "vs_protoss",
+    "phase": "mid",
+    "minutes": [
+      3,
+      4
+    ],
+    "positive_archetypes": [
+      "BLINK_STALKER"
+    ],
+    "accuracy": 0.6992490291595459,
+    "precision": 0.5350900078267675,
+    "recall": 0.7452761627906976,
+    "fpr": 0.3237645348837209,
+    "tp": 2051,
+    "fp": 1782,
+    "fn": 701,
+    "tn": 3722,
+    "train_pos": 10038,
+    "train_neg": 20076,
+    "temperature": 0.8651526570320129,
+    "latency_p50_ms": 0.10795798152685165,
+    "onnx_path": "output/detectors/strategy_mid_timing_attack_vs_protoss.onnx",
+    "onnx_kb": 17.3388671875
+  },
+  {
+    "key": "late_ground_army_vs_protoss",
+    "skipped": false,
+    "detector": "late_ground_army",
+    "matchup": "vs_protoss",
+    "phase": "late",
+    "minutes": [
+      5
+    ],
+    "positive_archetypes": [
+      "COLOSSUS_PUSH"
+    ],
+    "accuracy": 0.6666666865348816,
+    "precision": 0.0,
+    "recall": 0.0,
+    "fpr": 0.0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 146,
+    "tn": 292,
+    "train_pos": 514,
+    "train_neg": 1028,
+    "temperature": 0.9870616793632507,
+    "latency_p50_ms": 0.10575004853308201,
+    "onnx_path": "output/detectors/strategy_late_ground_army_vs_protoss.onnx",
+    "onnx_kb": 17.3134765625
+  }
+]
