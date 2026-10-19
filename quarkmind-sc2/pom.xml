@@ -190,7 +190,6 @@
         <dependency>
             <groupId>io.casehub</groupId>
             <artifactId>casehub-blocks-ui-npm</artifactId>
-            <version>${version.blocks-ui}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.quinoa</groupId>
@@ -301,7 +300,7 @@
                                 <artifactItem>
                                     <groupId>io.casehub</groupId>
                                     <artifactId>casehub-blocks-ui-npm</artifactId>
-                                    <version>${version.blocks-ui}</version>
+                                    <version>0.3-SNAPSHOT</version>
                                     <outputDirectory>${project.basedir}/src/main/webui/.casehub-packages</outputDirectory>
                                 </artifactItem>
                             </artifactItems>

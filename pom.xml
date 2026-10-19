@@ -68,6 +68,23 @@
                 <artifactId>quarkus-flow</artifactId>
                 <version>0.13.0</version>
             </dependency>
+            <!-- Align blocks-ui-npm: module is at 0.3-SNAPSHOT, casehub.version is 0.4-SNAPSHOT -->
+            <dependency>
+                <groupId>io.casehub</groupId>
+                <artifactId>casehub-blocks-ui-npm</artifactId>
+                <version>0.3-SNAPSHOT</version>
+            </dependency>
+            <!-- Align langchain4j: platform-agent uses 1.19.0, engine/eidos use 1.14.1 -->
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j</artifactId>
+                <version>1.19.0</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-core</artifactId>
+                <version>1.19.0</version>
+            </dependency>
             <!-- Align MCP SDK: casehub-engine-support-core brings 2.0.0 -->
             <dependency>
                 <groupId>io.modelcontextprotocol.sdk</groupId>
