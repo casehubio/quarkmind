@@ -33,6 +33,7 @@
     </profiles>
 
     <properties>
+        <version.blocks-ui>0.3-SNAPSHOT</version.blocks-ui>
         <jandex-maven-plugin.version>3.3.1</jandex-maven-plugin.version>
         <drools.version>10.1.0</drools.version>
         <skipITs>true</skipITs>
@@ -40,6 +41,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.casehub</groupId>
+                <artifactId>casehub-pages-npm</artifactId>
+                <version>${casehub.version}</version>
+            </dependency>
             <dependency>
                 <groupId>io.quarkmind</groupId>
                 <artifactId>quarkmind-core</artifactId>
