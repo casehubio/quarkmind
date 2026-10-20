@@ -52,7 +52,7 @@ def find_chunk_dirs(sc2egset_dir: Path) -> List[Path]:
         return []
     return sorted(
         d for d in sc2egset_dir.iterdir()
-        if d.is_dir() and any(d.rglob("*.npz"))
+        if d.is_dir() and not d.name.endswith("_pre_timeaware") and any(d.rglob("*.npz"))
     )
 
 
@@ -80,11 +80,13 @@ def load_all_detectors_from_chunks(
     archetypes = archetypes_for_matchup(matchup)
 
     det_specs = []
+    det_rngs = {}
     for detector, mu in detectors:
         key = detector.key(mu)
         positive_archetypes = detector.positives[mu]
         positive_indices = {archetypes.index(a) for a in positive_archetypes}
         det_specs.append((key, detector.minutes, positive_indices))
+        det_rngs[key] = np.random.default_rng(rng.integers(2**63))
 
     accum = {}
     for key, _, _ in det_specs:
@@ -122,7 +124,7 @@ def load_all_detectors_from_chunks(
                 if n_pos_chunk > 0:
                     max_neg = n_pos_chunk * NEG_RATIO
                     if len(neg_t_chunk) > max_neg:
-                        idx = rng.choice(len(neg_t_chunk), max_neg, replace=False)
+                        idx = det_rngs[key].choice(len(neg_t_chunk), max_neg, replace=False)
                         neg_t_chunk = neg_t_chunk[idx]
                         neg_m_chunk = neg_m_chunk[idx]
                 a["neg_t"].append(neg_t_chunk)

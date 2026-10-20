@@ -86,7 +86,10 @@ def find_optimal_temperature(logits: torch.Tensor, labels: torch.Tensor) -> floa
         return loss
 
     optimizer.step(closure)
-    return temperature.item()
+    t = temperature.item()
+    if t <= 0:
+        t = 1.0
+    return t
 
 
 def bake_temperature(model: nn.Module, temperature: float):
