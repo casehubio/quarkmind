@@ -33,7 +33,7 @@
     </profiles>
 
     <properties>
-        <version.blocks-ui>0.3-SNAPSHOT</version.blocks-ui>
+        <version.mosaic>0.3-SNAPSHOT</version.mosaic>
         <jandex-maven-plugin.version>3.3.1</jandex-maven-plugin.version>
         <drools.version>10.1.0</drools.version>
         <skipITs>true</skipITs>
@@ -68,10 +68,10 @@
                 <artifactId>quarkus-flow</artifactId>
                 <version>0.13.0</version>
             </dependency>
-            <!-- Align blocks-ui-npm: module is at 0.3-SNAPSHOT, casehub.version is 0.4-SNAPSHOT -->
+            <!-- Align mosaic-npm: module is at 0.3-SNAPSHOT, casehub.version is 0.4-SNAPSHOT -->
             <dependency>
                 <groupId>io.casehub</groupId>
-                <artifactId>casehub-blocks-ui-npm</artifactId>
+                <artifactId>casehub-mosaic-npm</artifactId>
                 <version>0.3-SNAPSHOT</version>
             </dependency>
             <!-- Align langchain4j: platform-agent uses 1.19.0, engine/eidos use 1.14.1 -->
