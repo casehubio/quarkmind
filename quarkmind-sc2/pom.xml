@@ -299,7 +299,7 @@
                                 <artifactItem>
                                     <groupId>io.casehub</groupId>
                                     <artifactId>casehub-mosaic-npm</artifactId>
-                                    <version>0.3-SNAPSHOT</version>
+                                    <version>${casehub.version}</version>
                                     <outputDirectory>${project.basedir}/src/main/webui/.casehub-packages</outputDirectory>
                                 </artifactItem>
                             </artifactItems>

@@ -33,7 +33,7 @@
     </profiles>
 
     <properties>
-        <version.mosaic>0.3-SNAPSHOT</version.mosaic>
+        <version.mosaic>${casehub.version}</version.mosaic>
         <jandex-maven-plugin.version>3.3.1</jandex-maven-plugin.version>
         <drools.version>10.1.0</drools.version>
         <skipITs>true</skipITs>
@@ -68,11 +68,10 @@
                 <artifactId>quarkus-flow</artifactId>
                 <version>0.13.0</version>
             </dependency>
-            <!-- Align mosaic-npm: module is at 0.3-SNAPSHOT, casehub.version is 0.4-SNAPSHOT -->
             <dependency>
                 <groupId>io.casehub</groupId>
                 <artifactId>casehub-mosaic-npm</artifactId>
-                <version>0.3-SNAPSHOT</version>
+                <version>${casehub.version}</version>
             </dependency>
             <!-- Align langchain4j: platform-agent uses 1.19.0, engine/eidos use 1.14.1 -->
             <dependency>
@@ -225,6 +224,11 @@
             <dependency>
                 <groupId>io.casehub</groupId>
                 <artifactId>casehub-neocortex-inference-tasks</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.casehub</groupId>
+                <artifactId>casehub-neocortex-inference-bayes</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

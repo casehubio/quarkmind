@@ -285,7 +285,6 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - Playbook tests: `SC2PlaybookCalibrationTest`, `SC2DeliveryHandlerTest`, `ProtossRaceModelChronoTest`, `TerranRaceModelMuleTest`, `EmulatedGameChronoTest`, `ZergParallelTrainingTest`
 - Chat protocol tests: `ChatIntentTest`, `ChatPerceptionTest`
 - Chat agent tests: `DiscordIdentityDetectorTest`, `DiscordEventSourceTest`, `DiscordGatewayMessageHistoryTest`, `ChatWorldBridgeTest`, `ChatAgencyLoopTest`, `ChatAgentEndToEndTest`, `ChatMemoryFacadeTest`, `ChatCharacterManagerTest`
-- quarkmind-core inference tests: `BayesJunctionTreeTest`, `EvidenceFusionEngineTest`
 - quarkmind-core chat tests: `AttentionClassifierTest`, `ChatDeltaReportTest`, `ChatObservationRendererTest`, `IdleReflectionTriggerTest`, `PersonalityEvolutionPipelineTest`
 - QuarkVille unit tests: `VilleIntentTest`, `VillePerceptionTest`, `WorldStateTest`, `GameTickTest`, `PerceptionBuilderTest`, `VilleAgencyLoopTest`, `VilleWorldBridgeTest`
 - Classifier Python tests: `test_upgrade_mapping_sync`, `test_feature_vector_dimensions`, `test_labelling_hybrid`, `test_era_stratification`, `test_reconstituted_ingest`, `test_reconstitution_validation`, `test_binary_catalog`, `test_train_binary`
@@ -401,8 +400,6 @@ quarkmind/                           <- parent POM
 │     interaction/  InteractionTrigger, InteractionPipeline, TriggerEvent
 │     moment/       MomentDetector, MomentEvent
 │     llm/          LlmRequestQueue, LlmRequest, LlmPriority
-│     inference/bayes/ Standalone Bayesian Junction Tree (BayesNetwork, JunctionTreeBuilder, BayesInstance)
-│     perception/   EvidenceFusionEngine (domain-agnostic BJT wrapper)
 ├── quarkmind-sc2/                   <- StarCraft II (all SC2-specific code)
 │   src/main/java/io/quarkmind/
 │     domain/              Plain Java records — no framework deps
