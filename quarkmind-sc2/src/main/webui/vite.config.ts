@@ -16,9 +16,9 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: '@casehubio/pages-ui-components/split-workbench', replacement: resolve(__dirname, '.casehub-packages/packages/pages-ui-components/src/split-workbench') },
-      { find: '@casehubio/blocks-ui-detail-pane', replacement: resolve(__dirname, '.casehub-packages/packages/detail-pane/src') },
-      { find: '@casehubio/blocks-ui-channel-activity', replacement: resolve(__dirname, '.casehub-packages/packages/channel-activity/src') },
-      { find: '@casehubio/blocks-ui-core', replacement: resolve(__dirname, '.casehub-packages/packages/blocks-ui-core/src') },
+      { find: '@casehubio/mosaic-detail-pane', replacement: resolve(__dirname, '.casehub-packages/packages/detail-pane/src') },
+      { find: '@casehubio/mosaic-channel-activity', replacement: resolve(__dirname, '.casehub-packages/packages/channel-activity/src') },
+      { find: '@casehubio/mosaic-core', replacement: resolve(__dirname, '.casehub-packages/packages/blocks-ui-core/src') },
       { find: '@casehubio/pages-component', replacement: resolve(__dirname, 'shims/pages-component') },
       { find: '@casehubio/pages-primitives', replacement: resolve(__dirname, '.casehub-packages/packages/pages-primitives/src') },
       { find: /^@casehubio\/pages-data\/dist\/(.*)/, replacement: resolve(__dirname, '.casehub-packages/packages/pages-data/src/$1') },

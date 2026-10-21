@@ -1,5 +1,5 @@
 import { PagesSplitWorkbench } from '@casehubio/pages-ui-components/split-workbench';
-import '@casehubio/blocks-ui-detail-pane';
+import '@casehubio/mosaic-detail-pane';
 import './workbench/qm-pattern-page.js';
 import './workbench/qm-coaching-page.js';
 import './workbench/qm-strategy-page.js';
