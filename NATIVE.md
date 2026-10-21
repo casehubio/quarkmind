@@ -16,6 +16,7 @@ Status: JVM mode only (Phase 0)
 | drools-goap-tactics | — | ✅ Native-safe | Pure Java A* planner; no new dependency introduced. Drools tracked via casehub-core. |
 | drools-cep-scouting | — | ✅ Native-safe | Rule unit model with DataStore accumulation; no runtime bytecode gen. Drools Executable Model handles AOT compilation. |
 | commons-compress | 1.27.1 | 🔲 Not verified | Used only in `IEM10JsonSimulatedGame.enumerate()` for BZip2 outer ZIP reading. Confined to `sc2/mock/`. No bundled GraalVM metadata — would need manual reflection config if native build is attempted. |
+| casehub-neocortex-inference-runtime | 0.4-SNAPSHOT | 🔲 Not verified | ONNX Runtime JNI bridge. `BinaryDetectorRunner` loads 23 ONNX models from classpath via `ClassLoader.getResource()`. Native image needs `quarkus.native.resources.includes=models/detectors/**` and ONNX Runtime native libs. |
 
 ## Rules (enforce these always)
 - No dynamic class loading or runtime code generation

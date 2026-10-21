@@ -2,7 +2,6 @@ package io.quarkmind.plugin.scouting;
 
 import io.casehub.api.context.CaseContext;
 import io.micrometer.core.instrument.Counter;
-import io.quarkmind.sc2.detector.DetectorOrchestrator;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.AssessmentSource;
@@ -10,6 +9,7 @@ import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.StrategyTransition;
+import io.quarkmind.sc2.detector.DetectorOrchestrator;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -48,6 +48,8 @@ public class CascadingPatternClassifier {
     private final double droolsThreshold;
     private final double onnxThreshold;
     private final DetectorOrchestrator detectorOrchestrator;
+    private final io.quarkmind.sc2.detector.BinaryDetectorRunner detectorRunner;
+
     private final EnumMap<StrategyArchetype, Double> cumulativeConfidence =
             new EnumMap<>(StrategyArchetype.class);
 
@@ -85,16 +87,30 @@ public class CascadingPatternClassifier {
             @ConfigProperty(name = "quarkmind.classifier.drools.confidence-threshold", defaultValue = "0.7")
             double droolsThreshold,
             @ConfigProperty(name = "quarkmind.classifier.onnx.confidence-threshold", defaultValue = "0.5")
-            double onnxThreshold) {
-        this(droolsThreshold, onnxThreshold, (DetectorOrchestrator) null);
+            double onnxThreshold,
+            io.quarkmind.sc2.detector.BinaryDetectorRunner detectorRunner) {
+        this(droolsThreshold, onnxThreshold, null, detectorRunner);
     }
 
     public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold,
-                                      DetectorOrchestrator orchestrator) {
+                                      DetectorOrchestrator orchestrator,
+                                      io.quarkmind.sc2.detector.BinaryDetectorRunner runner) {
         this.droolsThreshold = droolsThreshold;
-        this.onnxThreshold = onnxThreshold;
-        this.detectorOrchestrator = orchestrator;
+        this.onnxThreshold   = onnxThreshold;
+        this.detectorRunner  = runner;
+        if (orchestrator != null) {
+            this.detectorOrchestrator = orchestrator;
+        } else if (runner != null && runner.registry() != null) {
+            this.detectorOrchestrator = buildDefaultOrchestrator(runner.registry());
+        } else {
+            this.detectorOrchestrator = null;
+        }
     }
+
+    public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold) {
+        this(droolsThreshold, onnxThreshold, null, null);
+    }
+
 
     public void setLlmFallbackConfig(boolean enabled, double confidenceThreshold,
                                      long minGameTimeFrames, long cooldownFrames) {
@@ -156,8 +172,16 @@ public class CascadingPatternClassifier {
         // Tier 2: Bayesian fusion — binary detectors + Drools markers through BJT
         if (detectorOrchestrator != null && onnxFeatures != null) {
             inc(onnxInvocations);
+            Map<String, Float> detectorOutputs = Map.of();
+            if (detectorRunner != null && enemyRace != null) {
+                io.quarkmind.domain.GamePhase phase = resolvePhase(frame);
+                detectorOutputs = detectorRunner.runActiveDetectors(phase, enemyRace, onnxFeatures);
+                if (!detectorOutputs.isEmpty()) {
+                    detectorOrchestrator.initializeNetwork(List.copyOf(detectorOutputs.keySet()));
+                }
+            }
             var fusionAssessments = detectorOrchestrator.classify(
-                Map.of(), List.of(), frame);
+                detectorOutputs, List.of(), frame);
             if (!fusionAssessments.isEmpty() && fusionAssessments.get(0).confidence() >= onnxThreshold) {
                 for (var assessment : fusionAssessments) {
                     cumulativeConfidence.merge(assessment.archetype(), assessment.confidence(), Math::max);
@@ -323,5 +347,45 @@ public class CascadingPatternClassifier {
         }
         return best;
     }
+
+    static io.quarkmind.domain.GamePhase resolvePhase(long frame) {
+        double minutes = frame / (22.4 * 60.0);
+        if (minutes < 3.0) {return io.quarkmind.domain.GamePhase.EARLY;}
+        if (minutes < 5.0) {return io.quarkmind.domain.GamePhase.MID;}
+        return io.quarkmind.domain.GamePhase.LATE;
+    }
+
+    private static DetectorOrchestrator buildDefaultOrchestrator(io.quarkmind.sc2.detector.DetectorRegistry registry) {
+        var config        = registry.config();
+        var allArchetypes = new java.util.LinkedHashSet<String>();
+        for (var def : config.detectors()) {
+            for (var archetypes : def.positiveArchetypes().values()) {
+                allArchetypes.addAll(archetypes);
+            }
+        }
+        Map<String, Double> priors = new java.util.HashMap<>();
+        for (String arch : allArchetypes) {
+            priors.put(arch, 1.0 / allArchetypes.size());
+        }
+        Map<String, Map<String, Double>> cpts = new java.util.HashMap<>();
+        for (var def : config.detectors()) {
+            for (var entry : def.positiveArchetypes().entrySet()) {
+                String              key = def.key(entry.getKey());
+                Map<String, Double> cpt = new java.util.HashMap<>();
+                for (String arch : allArchetypes) {
+                    cpt.put(arch, entry.getValue().contains(arch) ? 0.8 : 0.2);
+                }
+                cpts.put(key, cpt);
+            }
+        }
+        Map<String, io.quarkmind.domain.StrategyArchetype> labelToArchetype = new java.util.HashMap<>();
+        for (String arch : allArchetypes) {
+            try {
+                labelToArchetype.put(arch, io.quarkmind.domain.StrategyArchetype.valueOf(arch));
+            } catch (IllegalArgumentException ignored) {}
+        }
+        return new DetectorOrchestrator(registry, priors, cpts, labelToArchetype, 5);
+    }
+
 
 }
