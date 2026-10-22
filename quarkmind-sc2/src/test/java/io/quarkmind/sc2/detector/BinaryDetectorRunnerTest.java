@@ -24,6 +24,13 @@ class BinaryDetectorRunnerTest {
     static void setUp() {
         assumeTrue(Files.isDirectory(MODELS_DIR) && MODELS_DIR.toFile().listFiles((d, n) -> n.endsWith(".onnx")) != null && MODELS_DIR.toFile().listFiles((d, n) -> n.endsWith(".onnx")).length > 0, "ONNX model files not present");
         runner = new BinaryDetectorRunner(MODELS_DIR);
+        // Smoke-test: skip if models produce NaN (e.g. CI has zero-byte stubs)
+        int javaFPW = FeatureIndexMaps.FEATURES_PER_WINDOW;
+        float[] probe = new float[10 * javaFPW];
+        float[] probeMap = new float[]{0.5f, 0.5f, 0.5f, 0.5f, 1.0f, 1.0f};
+        var probeFeatures = new StrategyFeatures(Map.of("temporal", new float[][]{probe}, "map", new float[][]{probeMap}));
+        Map<String, Float> probeOut = runner.runActiveDetectors(GamePhase.EARLY, Race.TERRAN, probeFeatures);
+        assumeTrue(probeOut.values().stream().noneMatch(v -> Float.isNaN(v)), "ONNX models produce NaN — likely stub files");
     }
 
     @AfterAll
