@@ -22,7 +22,7 @@ class BinaryDetectorRunnerTest {
 
     @BeforeAll
     static void setUp() {
-        assumeTrue(Files.isDirectory(MODELS_DIR), "ONNX model directory not present");
+        assumeTrue(Files.isDirectory(MODELS_DIR) && MODELS_DIR.toFile().listFiles((d, n) -> n.endsWith(".onnx")) != null && MODELS_DIR.toFile().listFiles((d, n) -> n.endsWith(".onnx")).length > 0, "ONNX model files not present");
         runner = new BinaryDetectorRunner(MODELS_DIR);
     }
 
