@@ -8,19 +8,22 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class BinaryDetectorRunnerTest {
 
+    private static final Path MODELS_DIR = Path.of("src/main/resources/models/detectors");
     private static BinaryDetectorRunner runner;
 
     @BeforeAll
     static void setUp() {
-        runner = new BinaryDetectorRunner(
-            Path.of("src/main/resources/models/detectors"));
+        assumeTrue(Files.isDirectory(MODELS_DIR), "ONNX model directory not present");
+        runner = new BinaryDetectorRunner(MODELS_DIR);
     }
 
     @AfterAll
