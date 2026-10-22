@@ -317,9 +317,6 @@
                 <configuration>
                     <argLine>@{argLine}</argLine>
                     <excludedGroups>benchmark,browser,report,diagnostic</excludedGroups>
-                    <excludes>
-                        <exclude>**/BinaryDetectorRunnerTest.java</exclude>
-                    </excludes>
                     <systemPropertyVariables>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
