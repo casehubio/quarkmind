@@ -167,19 +167,9 @@
             <groupId>io.casehub</groupId>
             <artifactId>casehub-agency</artifactId>
         </dependency>
-        <!-- Type-resolution only: AgencyBeans producers reference NarrativePipeline.
-             Exclude all transitives to avoid split-package CDI ambiguities. -->
-        <dependency>
-            <groupId>io.casehub</groupId>
-            <artifactId>casehub-neocortex-cognition</artifactId>
-            <version>${casehub.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!-- casehub-neocortex-cognition removed: AgencyBeans is excluded from CDI,
+             and quarkmind has no direct imports from cognition. The published
+             SNAPSHOT has ClassNotFoundException for NeedTier (branch-only class). -->
         <!-- CaseHub npm packages (unpacked by maven-dependency-plugin) -->
         <dependency>
             <groupId>io.casehub</groupId>
