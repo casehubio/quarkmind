@@ -378,7 +378,7 @@ All quarkmind-local modules that use `import ... from 'lit'` or `import ... from
 
 **Build integration — three-tier consumption model:**
 
-1. `pom.xml` declares Maven dependencies on `casehub-agency-ui-npm` and `casehub-pages-npm` SNAPSHOT artifacts
+1. `pom.xml` declares Maven dependencies on `casehub-blocks-ui-npm` and `casehub-pages-npm` SNAPSHOT artifacts
 2. `maven-dependency-plugin:unpack` extracts npm packages to `src/main/webui/.casehub-packages/`
 3. `package.json` uses `portal:` resolutions pointing to `.casehub-packages/` (no npm registry lookups)
 4. Quinoa runs `yarn install` (resolves from local portals) → `yarn build` (Vite) → serves output from `META-INF/resources/`
@@ -432,7 +432,7 @@ A new Playwright test or manual verification:
 
 ## 8. Migration Plan (incremental)
 
-1. **Add Quinoa + Vite build** — `src/main/webui/`, `package.json`, `vite.config.ts`, Quinoa extension. Maven dependency on `casehub-agency-ui-npm` with unpack to `.casehub-packages/`. Verify `workbench-blocks.js` is produced.
+1. **Add Quinoa + Vite build** — `src/main/webui/`, `package.json`, `vite.config.ts`, Quinoa extension. Maven dependency on `casehub-blocks-ui-npm` with unpack to `.casehub-packages/`. Verify `workbench-blocks.js` is produced.
 2. **Skeleton layout** — Replace `visualizer.html` CSS grid with `<blocks-split-workbench>` + `<blocks-detail-pane>`. Canvas in list slot, empty tabs in detail slot. Verify Three.js still renders.
 3. **Pattern page** — Create `<qm-pattern-page>`, wire to workbench controller. Delete `renderPatternPage()`.
 4. **Coaching page** — Create `<qm-coaching-page>` with accept/dismiss buttons, wire acknowledgment. Delete `renderCoachingPage()` and `sendCoachingResponse()`.
