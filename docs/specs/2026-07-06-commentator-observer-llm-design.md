@@ -14,7 +14,7 @@ The summarisation hierarchy (#182) produces structured event levels: L2 moments 
 
 This issue adds a human-facing LLM commentator that narrates the game in real time. It uses two complementary patterns — reactive commentary (Pattern A: Worker dispatch) for immediate reactions to dramatic moments, and contextual narration (Pattern B: EventAccumulator + Worker dispatch) for periodic strategic summaries. Both feed a single `quarkmind-commentary` Qhorus channel.
 
-The dual-pattern design validates Worker dispatch for LLM-at-game-loop-latency and demonstrates that `EventAccumulator` + `WindowPolicy` compose independently of `SummarisationRunner` — a key signal for blocks#27 extraction to casehub-blocks.
+The dual-pattern design validates Worker dispatch for LLM-at-game-loop-latency and demonstrates that `EventAccumulator` + `WindowPolicy` compose independently of `SummarisationRunner` — a key signal for blocks#27 extraction to casehub-agency.
 
 ---
 

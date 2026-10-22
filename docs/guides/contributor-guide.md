@@ -27,7 +27,7 @@
 - **`IEM10CommandExtractor`** -- extracts `List<TimedIntent>` from SC2EGSet JSON `gameEvents` using IEM10-era abilLink constants
 - **`TerrainGrid`** (HIGH/LOW/RAMP/WALL height model), `AStarPathfinder` (terrain-aware A* with RAMP edge cost 1.5x), `PathfindingMovement` (LOS greedy string-pulling post-processing)
 - **Three.js 3D visualiser:** 65+ unit/building sprites across all 3 races, fog of war, terrain shading, click-to-inspect panel, replay scrub control, Electron wrapper
-- **Hierarchical event summarisation:** `MomentDetectionTask` (Drools rule unit), `GamePhaseSummariser`, `GameArcSummariser`; four-level temporal abstraction: raw ticks -> moments -> phases -> arcs. Pre-positioned for `casehub-blocks` migration.
+- **Hierarchical event summarisation:** `MomentDetectionTask` (Drools rule unit), `GamePhaseSummariser`, `GameArcSummariser`; four-level temporal abstraction: raw ticks -> moments -> phases -> arcs. Pre-positioned for `casehub-agency` migration.
 - **LLM advisory team:** 12 `AgentDescriptor` configurations in `QuarkMindAgentRegistrar`: 6 advisory (crisis/strategic/economic x 2 dispositions), 4 commentary (reactive/narrative x 2 dispositions), 2 coaching (directive/socratic). `DispositionAwareRoutingStrategy`, `AdvisoryWorkerFactory`, multi-dimensional trust scoring via `MilestoneOutcomeRecorder`.
 - **Commentary system:** `CommentaryWorkerFactory` creates reactive + narrative workers; `CommentaryAccumulator` manages output accumulation; `CommentaryTriggerBuilder` generates triggers from game events; `NarrativeContextHolder` maintains cross-tick narrative state
 - **Coaching system:** `CoachingWorkerFactory`, `CoachingTriggerBuilder`, `CoachingComplianceEvaluator` (position-based verification: `ArmyCentroidMovement`, `ExpansionPlacement`, `UnitsNearLocation`, `LocationResolver`), `CoachingSessionSelector`, `CoachingEffectivenessTrustRecorder`
@@ -144,7 +144,7 @@ src/main/java/io/quarkmind/
 | Trust-weighted routing | `casehub-ledger` | Four-phase Bayesian Beta maturity; `MilestoneOutcomeRecorder` writes intra-game trust attestations at configurable milestones |
 | CBR experience learning | `casehub-neocortex` | `SC2StrategyRouterTask` queries `CbrCaseMemoryStore`; `SC2CbrRetentionObserver` records game outcomes with strategy features |
 | Agent personalities | `casehub-eidos` | 12 `AgentDescriptor` configurations with `ConscientiousnessTerm` disposition traits; `DispositionAwareRoutingStrategy` composes trust + disposition |
-| Event summarisation | `casehub-blocks` | `MomentDetectionTask` (Drools) -> `GamePhaseSummariser` -> `GameArcSummariser`; four-level temporal abstraction |
+| Event summarisation | `casehub-agency` | `MomentDetectionTask` (Drools) -> `GamePhaseSummariser` -> `GameArcSummariser`; four-level temporal abstraction |
 
 ### Layer Taxonomy
 
@@ -220,7 +220,7 @@ Four-level temporal abstraction pipeline:
 3. **Phases** -- `GamePhaseSummariser` aggregates moments into phase summaries
 4. **Arcs** -- `GameArcSummariser` detects narrative arcs across phases
 
-Pre-positioned for `casehub-blocks` migration.
+Pre-positioned for `casehub-agency` migration.
 
 ## Emulation Engine
 
@@ -322,7 +322,7 @@ quarkmind
   -> casehub-eidos + casehub-eidos-api + vocab (agent descriptors, disposition traits, ConscientiousnessTerm)
   -> casehub-eidos-memory                     (in-memory agent registry stubs)
   -> casehub-neocortex-memory-cbr-inmem       (in-memory CBR store for strategy learning)
-  -> casehub-blocks                           (reusable summarisation framework)
+  -> casehub-agency                           (reusable summarisation framework)
   -> casehub-platform + casehub-platform-api  (identity, preferences, MockPreferenceProvider)
   -> Drools 10.1.0                            (rule-based reasoning: strategy, tactics, scouting, pattern classification, dominance weights, moment detection)
   -> Quarkus Flow 0.7.1                       (durable economics build order execution)

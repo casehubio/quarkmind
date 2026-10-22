@@ -471,7 +471,7 @@ This satisfies issue #180's acceptance criterion for "low-trust advisor flagged"
 
 ### OutcomeEvaluator SPI
 
-The evaluation logic is designed for future extraction to casehub-blocks:
+The evaluation logic is designed for future extraction to casehub-agency:
 
 ```java
 public record AdvisoryResponse(
@@ -652,6 +652,6 @@ quarkmind#180 (LLM advisory team) ← this issue
 - [ ] Advisory results readable in CaseContext by strategy plugins (in-loop consumption)
 - [ ] Advisory results persisted to `quarkmind-advisory` Qhorus channel (post-game + HIL)
 - [ ] `ConscientiousnessTerm` disposition traits factored into routing via `DispositionAwareRoutingStrategy`
-- [ ] `OutcomeEvaluator` SPI designed for future casehub-blocks extraction with defined `AdvisoryResponse` and `GameEvaluationContext` types
+- [ ] `OutcomeEvaluator` SPI designed for future casehub-agency extraction with defined `AdvisoryResponse` and `GameEvaluationContext` types
 - [ ] `AdvisorExcludedEvent` CDI event fired for observability when advisor enters EXCLUDED phase
 - [ ] Blog entry documenting a game where multiple advisor configurations were evaluated

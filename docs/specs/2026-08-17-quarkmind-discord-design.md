@@ -11,7 +11,7 @@ A harness for building advanced AI chat bots — autonomous characters that live
 
 Built on the casehub-connectors `ChatPlatform` SPI, the harness works with any supported chat platform (Discord, Slack, IRC). Discord is the first target. The platform-specific code is a thin adapter layer; the agency loop, personality, memory, needs, and rate governing are platform-agnostic.
 
-The harness uses quarkmind-core's agency framework over existing CaseHub foundation modules: casehub-eidos (personality), casehub-neocortex (memory), casehub-ledger (trust), casehub-connectors (chat transport), and casehub-blocks (event handling + compression).
+The harness uses quarkmind-core's agency framework over existing CaseHub foundation modules: casehub-eidos (personality), casehub-neocortex (memory), casehub-ledger (trust), casehub-connectors (chat transport), and casehub-agency (event handling + compression).
 
 ## Module Structure
 
@@ -40,7 +40,7 @@ quarkmind-chat/
 
 Platform-specific adapters live in a sub-package (`discord/`, `slack/`, `irc/`). The core agent classes are platform-agnostic — they depend on the `ChatPlatform` SPI, not on any specific connector implementation.
 
-Dependencies flow one way: `quarkmind-chat-protocol` has no runtime dependencies (plain Java records). `quarkmind-chat-agent` depends on protocol, quarkmind-core, casehub-connectors (chat-spi + platform-specific connector via profile), casehub-blocks, casehub-eidos-api, casehub-neocortex-api, casehub-ledger-api.
+Dependencies flow one way: `quarkmind-chat-protocol` has no runtime dependencies (plain Java records). `quarkmind-chat-agent` depends on protocol, quarkmind-core, casehub-connectors (chat-spi + platform-specific connector via profile), casehub-agency, casehub-eidos-api, casehub-neocortex-api, casehub-ledger-api.
 
 ### quarkmind-core additions
 
@@ -285,7 +285,7 @@ Tests run without a live chat platform connection (parallel to SC2's "tests run 
 
 | Repo | What changes |
 |------|-------------|
-| `casehub-blocks` | Nothing — existing primitives used directly |
+| `casehub-agency` | Nothing — existing primitives used directly |
 | `casehub-connectors` | Nothing for v1 — Gateway-accumulating MessageHistory lives in quarkmind-chat |
 | `casehub-neocortex` | Importance scoring at ingest (async LLM rating) |
 | `quarkmind` (quarkmind-core) | Chat perception bridge, conversation delta report, attention priority, need-threshold wake, proactive decision gate, idle-time reflection trigger, output governor, ReflectionDispositionActivator |
@@ -296,7 +296,7 @@ Tests run without a live chat platform connection (parallel to SC2's "tests run 
 - `casehub-connectors` chat-spi — `ChatPlatform.java`, `MessageHistory`, `Threading`, `Messaging`, `Reactions`, `Presence`, `Members`, `ReceivedMessage`
 - `casehub-connectors` chat-discord — `DiscordChatPlatform.java`, `DiscordInboundConnector.java`
 - `casehub-connectors` discord — `DiscordClient.java`, `DiscordGateway.java`, `DiscordGatewayPresenceCache`
-- `casehub-blocks` — `TieredObservationRenderer`, `EventSource`, `ChoreographedDriver`, `PartitionedObservationService`
+- `casehub-agency` — `TieredObservationRenderer`, `EventSource`, `ChoreographedDriver`, `PartitionedObservationService`
 - `casehub-eidos` — `AgentDescriptor`, `AgentDisposition`, `DispositionAxis`, `DispositionSignalStore`, `DispositionHealth`, `DispositionEvolution`, `SystemPromptRenderer`
 - `casehub-neocortex` — `CbrCaseMemoryStore`, `TemporalDecayCbrCaseMemoryStore`, `ReflectionService`, `GraphitiCaseMemoryStore`, `Mem0CaseMemoryStore`, `MoodModulatedRetrieval`, `PersonalityWeightedRetrieval`
 - `casehub-ledger` — Bayesian beta trust scoring

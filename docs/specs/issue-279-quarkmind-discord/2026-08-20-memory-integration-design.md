@@ -331,7 +331,7 @@ The observation is produced by the same LLM call that decides the action — no 
 - `quarkmind-core` — LlmRequestQueue, LlmRequest, LlmPriority, NeedThresholdWake, IdleReflectionTrigger
 - Park et al. 2023 "Generative Agents" — composite retrieval model inspiration (recency × importance × relevance)
 - GE-20260630-815259 — cross-repo SPI extends CDI displacement (CbrCaseMemoryStore standalone pattern)
-- GE-20260811-aa9a26 — casehub-blocks dependency transitively requires neocortex config properties
+- GE-20260811-aa9a26 — casehub-agency dependency transitively requires neocortex config properties
 - GE-20260717-0489d1 — CbrQuery.of() Path scope parameter (API break awareness)
 - Phase 1 spec: D5 (four-layer memory architecture), D8 (direct LLM, no CaseEngine)
 - decisions.md: D13–D20 (memory integration decisions), D21–D24 (review-surfaced implicit decisions)

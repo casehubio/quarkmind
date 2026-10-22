@@ -2,11 +2,11 @@ package io.quarkmind.chat.agent;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.casehub.blocks.agentic.social.InnerLifeOrchestrator;
-import io.casehub.blocks.agentic.social.InnerLifeTick;
-import io.casehub.blocks.agentic.social.drive.DriveOrchestrator;
-import io.casehub.blocks.summarisation.EventLevel;
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.agentic.social.InnerLifeOrchestrator;
+import io.casehub.agency.agentic.social.InnerLifeTick;
+import io.casehub.agency.agentic.social.drive.DriveOrchestrator;
+import io.casehub.agency.summarisation.EventLevel;
+import io.casehub.agency.summarisation.LevelEvent;
 import io.casehub.connectors.chat.model.ChatChannelRef;
 import io.casehub.connectors.chat.model.ChatContent;
 import io.casehub.connectors.chat.model.ChatMessageRef;

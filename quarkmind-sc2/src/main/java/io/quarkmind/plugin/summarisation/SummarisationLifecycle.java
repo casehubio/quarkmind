@@ -1,9 +1,9 @@
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.EventLevel;
-import io.casehub.blocks.summarisation.EventStreamBus;
-import io.casehub.blocks.summarisation.SummarisationRunner;
-import io.casehub.blocks.summarisation.WindowPolicy;
+import io.casehub.agency.summarisation.EventLevel;
+import io.casehub.agency.summarisation.EventStreamBus;
+import io.casehub.agency.summarisation.SummarisationRunner;
+import io.casehub.agency.summarisation.WindowPolicy;
 import io.quarkmind.agent.plugin.SummarisationTickable;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;

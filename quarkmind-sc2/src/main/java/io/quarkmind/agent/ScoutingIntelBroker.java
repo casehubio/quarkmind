@@ -1,6 +1,6 @@
 package io.quarkmind.agent;
 
-import io.casehub.blocks.summarisation.EventStreamBus;
+import io.casehub.agency.summarisation.EventStreamBus;
 import io.casehub.platform.api.preferences.PreferenceProvider;
 import io.casehub.platform.api.preferences.Preferences;
 import io.casehub.platform.api.identity.TenancyConstants;

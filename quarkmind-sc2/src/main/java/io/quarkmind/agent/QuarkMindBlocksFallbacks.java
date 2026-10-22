@@ -7,7 +7,7 @@ import jakarta.enterprise.inject.Produces;
 import java.util.List;
 
 /**
- * Provides CDI beans required by casehub-blocks producers that QuarkMind
+ * Provides CDI beans required by casehub-agency producers that QuarkMind
  * doesn't use directly. Without these, the Quarkus augmentation fails
  * with unsatisfied dependency errors at build time.
  */

@@ -1,7 +1,7 @@
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.LevelEvent;
-import io.casehub.blocks.summarisation.Summariser;
+import io.casehub.agency.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.Summariser;
 
 import java.util.List;
 import java.util.Set;

@@ -22,7 +22,7 @@
 **Message buffer eviction:** `DiscordGatewayMessageHistory` drains consumed messages after each agency tick. Once `ChatPerceptionBridge.buildDelta()` has processed a channel's messages for a given tick, those messages are removed from the buffer. The tick boundary is the natural eviction point — messages have been perceived and potentially stored as observations. This prevents unbounded buffer growth while preserving all messages until they have been consumed by the agency loop.
 
 **Trade-offs:** Depends on both casehub-connectors (chat SPI) and blocks (compression). Agent response time depends on LLM latency, not a fixed tick rate.
-**Sources:** `casehub-connectors` chat-spi MessageHistory, ReceivedMessage, Threading; `casehub-blocks` TieredObservationRenderer, EventSource, ChoreographedDriver, DriverEvent
+**Sources:** `casehub-connectors` chat-spi MessageHistory, ReceivedMessage, Threading; `casehub-agency` TieredObservationRenderer, EventSource, ChoreographedDriver, DriverEvent
 **Exploration:** quick
 **Depends on:** D1
 **Status:** revised (R1-03: named push-wake/pull-context pattern, clarified MessageHistory backed by Gateway accumulation; R1-04: referenced existing EventSource.merge + ticker — no new blocks abstractions needed; R2-01: acknowledged Gateway-accumulating MessageHistory is new implementation work; R1-09: drain-after-consume eviction added to prevent unbounded buffer growth)
@@ -490,7 +490,7 @@ quarkmind:
 
 ## D31: InnerLifeOrchestrator as proactive behavioral layer
 
-**Choice:** `InnerLifeOrchestrator` (`io.casehub.blocks.agentic.social.InnerLifeOrchestrator`, CDI `@ApplicationScoped`) replaces all custom proactive behavioral logic in quarkmind-chat. The chat agent has two paths:
+**Choice:** `InnerLifeOrchestrator` (`io.casehub.agency.agentic.social.InnerLifeOrchestrator`, CDI `@ApplicationScoped`) replaces all custom proactive behavioral logic in quarkmind-chat. The chat agent has two paths:
 
 **Reactive path (message wake):** ChatAgencyLoop handles directly — feed events to `innerLifeOrchestrator.observe()`, get `driveOrchestrator.currentDrives()` for prompt enrichment, call LLM, respond, call `innerLifeOrchestrator.observeResponse()`.
 
@@ -510,7 +510,7 @@ quarkmind:
 
 ## D32: DriveOrchestrator replaces NeedState
 
-**Choice:** `DriveOrchestrator` (`io.casehub.blocks.agentic.social.drive.DriveOrchestrator`, CDI `@ApplicationScoped`) replaces `NeedState` + `ChatNeedDefinitions`. Four drive axes (CURIOSITY, COMPETENCE, AFFILIATION, AUTONOMY) replace three needs (SOCIAL, CURIOSITY, EXPRESSION). Drive state is ticked internally by `InnerLifeOrchestrator`. ChatAgencyLoop reads `driveOrchestrator.currentDrives(agentId, tenantId)` to enrich the reactive LLM prompt with drive context.
+**Choice:** `DriveOrchestrator` (`io.casehub.agency.agentic.social.drive.DriveOrchestrator`, CDI `@ApplicationScoped`) replaces `NeedState` + `ChatNeedDefinitions`. Four drive axes (CURIOSITY, COMPETENCE, AFFILIATION, AUTONOMY) replace three needs (SOCIAL, CURIOSITY, EXPRESSION). Drive state is ticked internally by `InnerLifeOrchestrator`. ChatAgencyLoop reads `driveOrchestrator.currentDrives(agentId, tenantId)` to enrich the reactive LLM prompt with drive context.
 
 **Deleted:** `ChatNeedDefinitions` — no longer needed. `NeedState` stays in quarkmind-core (used by SC2) but quarkmind-chat no longer uses it.
 

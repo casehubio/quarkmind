@@ -1,7 +1,7 @@
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.EventLevel;
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.EventLevel;
+import io.casehub.agency.summarisation.LevelEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -6,7 +6,7 @@ type: phase-update
 entry_type: note
 subtype: diary
 projects: [quarkmind]
-tags: [temporal-abstraction, drools-cep, event-hierarchy, casehub-blocks]
+tags: [temporal-abstraction, drools-cep, event-hierarchy, casehub-agency]
 ---
 
 Until now, QuarkMind's intelligence layer lived entirely at Level 1: Drools CEP fires on raw tick data, producing posture classifications and timing alerts. The strategy plugin reads those signals and decides DEFEND, ATTACK, or MACRO. It works — but it's the equivalent of a chess engine that can see individual pieces without understanding the position.
@@ -25,7 +25,7 @@ Level 2 moments are the interesting part. A `BATTLE_STARTED` isn't just "enemies
 
 ## The seam that matters
 
-I wanted the generic temporal abstraction framework — `EventAccumulator`, `EventStreamBus`, `Summariser`, `SummarisationRunner` — to live in a package that would migrate cleanly to `casehub-blocks` later. So it sits in `io.casehub.blocks.summarisation` inside quarkmind, with zero CDI imports and zero SC2 knowledge. The SC2 application layer (`io.quarkmind.plugin.summarisation`) wires in Drools, the Qhorus channel, and the CDI consumer bridge. When the time comes, IntelliJ moves the package — imports don't change.
+I wanted the generic temporal abstraction framework — `EventAccumulator`, `EventStreamBus`, `Summariser`, `SummarisationRunner` — to live in a package that would migrate cleanly to `casehub-agency` later. So it sits in `io.casehub.agency.summarisation` inside quarkmind, with zero CDI imports and zero SC2 knowledge. The SC2 application layer (`io.quarkmind.plugin.summarisation`) wires in Drools, the Qhorus channel, and the CDI consumer bridge. When the time comes, IntelliJ moves the package — imports don't change.
 
 The design decision that took the most thought was where to draw the `Summariser` interface boundary. Levels 0→2 use Drools CEP — stateful, event-driven, temporal windowing. Levels 2→4 use batch summarisation — "here's a window of moments, classify the phase." These are genuinely different execution models. I tried to unify them under one `LevelTransition` interface and it leaked everywhere. The honest boundary is at Level 2: Drools publishes *into* the generic hierarchy at that point, but doesn't pretend to go through the generic interface.
 
@@ -39,6 +39,6 @@ The fix is to not call `clear()` at all. Only `EventAccumulator` (which actually
 
 ## What comes next
 
-The summarisers are deterministic stubs — rule-based phase classification, template-based narratives. They prove the pipeline shape. When #180 (LLM advisory team) lands, the `Summariser` interface will need to go async. That's an API shape change I'd rather make before extracting to `casehub-blocks`, not after. So the generic layer stays in quarkmind for now, and the migration happens once the async contract is settled.
+The summarisers are deterministic stubs — rule-based phase classification, template-based narratives. They prove the pipeline shape. When #180 (LLM advisory team) lands, the `Summariser` interface will need to go async. That's an API shape change I'd rather make before extracting to `casehub-agency`, not after. So the generic layer stays in quarkmind for now, and the migration happens once the async contract is settled.
 
 Three issues are now unblocked: #180 (LLM advisors can subscribe to Level 2/3 summaries instead of raw ticks), #181 (commentator can trigger on moments), and #183 (enemy strategy classifier can consume the phase abstraction). The infrastructure is the shared foundation — each consumer adds its own `MomentConsumer` implementation and subscribes.
