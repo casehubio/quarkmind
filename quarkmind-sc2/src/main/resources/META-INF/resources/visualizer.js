@@ -422,8 +422,8 @@ window.__test = {
   },
   cameraMode:         () => cameraMode,
   enemyLayerVisible:  () => enemyVisible,
-  workbenchReady:     () => { var dp = document.querySelector('blocks-detail-pane'); return wbWsConnected && dp && typeof dp.tabs !== 'undefined' && dp.tabs.length > 0 && !!dp._activeTabId; },
-  workbenchPage:      () => { var dp = document.querySelector('blocks-detail-pane'); return dp ? (dp._activeTabId || null) : null; },
+  workbenchReady:     () => { var dp = document.querySelector('agency-detail-pane'); return wbWsConnected && dp && typeof dp.tabs !== 'undefined' && dp.tabs.length > 0 && !!dp._activeTabId; },
+  workbenchPage:      () => { var dp = document.querySelector('agency-detail-pane'); return dp ? (dp._activeTabId || null) : null; },
   unitDetailName:     () => document.getElementById('up-name')?.textContent || '',
   workbenchPatternCount: () => { var pp = findPageElement('qm-pattern-page'); return pp && pp.data ? pp.data.assessments.length : 0; },
   selectionRingCount: () => selectionRings.size,
@@ -791,7 +791,7 @@ async function init() {
 }
 
 function setupDetailPane() {
-  var detailPane = document.querySelector('blocks-detail-pane');
+  var detailPane = document.querySelector('agency-detail-pane');
   if (detailPane) {
     detailPane.tabs = [
       { id: 'pattern',    label: 'Pattern',    tagName: 'qm-pattern-page',    order: 0 },
@@ -811,7 +811,7 @@ var workbenchState = { pattern: null, coaching: [], strategy: null, commentary: 
 var commentaryCounter = 0;
 
 function findPageElement(tagName) {
-  var dp = document.querySelector('blocks-detail-pane');
+  var dp = document.querySelector('agency-detail-pane');
   if (!dp) return null;
   if (dp.shadowRoot) { var el = dp.shadowRoot.querySelector(tagName); if (el) return el; }
   return dp._tabElements ? dp._tabElements.get(tagName.replace('qm-', '').replace('-page', '')) : null;

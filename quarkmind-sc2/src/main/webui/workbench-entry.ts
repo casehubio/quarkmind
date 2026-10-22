@@ -7,6 +7,6 @@ import './workbench/qm-commentary-page.js';
 import './workbench/qm-workbench-controller.js';
 
 // Preserve the visualizer's tag when using the component's new package.
-if (!customElements.get('blocks-split-workbench')) {
-  customElements.define('blocks-split-workbench', class extends PagesSplitWorkbench {});
+if (!customElements.get('agency-split-workbench')) {
+  customElements.define('agency-split-workbench', class extends PagesSplitWorkbench {});
 }

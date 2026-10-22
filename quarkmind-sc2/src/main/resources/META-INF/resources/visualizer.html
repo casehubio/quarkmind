@@ -34,7 +34,7 @@
       height: 100vh;
     }
 
-    blocks-split-workbench {
+    agency-split-workbench {
       flex: 1;
       overflow: hidden;
     }
@@ -104,7 +104,7 @@
 </head>
 <body>
 <div id="workbench">
-  <blocks-split-workbench selection-topic="qm-workbench" storage-key="qm-visualizer-divider">
+  <agency-split-workbench selection-topic="qm-workbench" storage-key="qm-visualizer-divider">
     <span slot="header">
       <span id="wb-hud" style="font-size:12px;color:#88bbff;">Connecting...</span>
     </span>
@@ -135,8 +135,8 @@
         <div id="cfg-status"></div>
       </div>
     </div>
-    <blocks-detail-pane slot="detail" selection-topic="qm-workbench" empty-message=""></blocks-detail-pane>
-  </blocks-split-workbench>
+    <agency-detail-pane slot="detail" selection-topic="qm-workbench" empty-message=""></agency-detail-pane>
+  </agency-split-workbench>
   <div id="wb-status">
     <span id="status-frame">Frame: 0</span>
     <span id="status-phase">Phase: —</span>
