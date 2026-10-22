@@ -12,7 +12,7 @@ import java.util.List;
  * with unsatisfied dependency errors at build time.
  */
 @ApplicationScoped
-public class QuarkMindBlocksFallbacks {
+public class QuarkMindAgencyFallbacks {
 
     @Produces @ApplicationScoped
     RoutingPromptAssembler routingPromptAssembler() {
