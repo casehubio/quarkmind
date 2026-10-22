@@ -490,7 +490,7 @@ quarkmind:
 
 ## D31: InnerLifeOrchestrator as proactive behavioral layer
 
-**Choice:** `InnerLifeOrchestrator` (`io.casehub.agency.agentic.social.InnerLifeOrchestrator`, CDI `@ApplicationScoped`) replaces all custom proactive behavioral logic in quarkmind-chat. The chat agent has two paths:
+**Choice:** `InnerLifeOrchestrator` (`io.casehub.agency.core.social.InnerLifeOrchestrator`, CDI `@ApplicationScoped`) replaces all custom proactive behavioral logic in quarkmind-chat. The chat agent has two paths:
 
 **Reactive path (message wake):** ChatAgencyLoop handles directly — feed events to `innerLifeOrchestrator.observe()`, get `driveOrchestrator.currentDrives()` for prompt enrichment, call LLM, respond, call `innerLifeOrchestrator.observeResponse()`.
 
@@ -510,7 +510,7 @@ quarkmind:
 
 ## D32: DriveOrchestrator replaces NeedState
 
-**Choice:** `DriveOrchestrator` (`io.casehub.agency.agentic.social.drive.DriveOrchestrator`, CDI `@ApplicationScoped`) replaces `NeedState` + `ChatNeedDefinitions`. Four drive axes (CURIOSITY, COMPETENCE, AFFILIATION, AUTONOMY) replace three needs (SOCIAL, CURIOSITY, EXPRESSION). Drive state is ticked internally by `InnerLifeOrchestrator`. ChatAgencyLoop reads `driveOrchestrator.currentDrives(agentId, tenantId)` to enrich the reactive LLM prompt with drive context.
+**Choice:** `DriveOrchestrator` (`io.casehub.agency.core.social.drive.DriveOrchestrator`, CDI `@ApplicationScoped`) replaces `NeedState` + `ChatNeedDefinitions`. Four drive axes (CURIOSITY, COMPETENCE, AFFILIATION, AUTONOMY) replace three needs (SOCIAL, CURIOSITY, EXPRESSION). Drive state is ticked internally by `InnerLifeOrchestrator`. ChatAgencyLoop reads `driveOrchestrator.currentDrives(agentId, tenantId)` to enrich the reactive LLM prompt with drive context.
 
 **Deleted:** `ChatNeedDefinitions` — no longer needed. `NeedState` stays in quarkmind-core (used by SC2) but quarkmind-chat no longer uses it.
 

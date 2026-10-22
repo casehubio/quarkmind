@@ -1,7 +1,7 @@
 package io.quarkmind.chat.agent.discord;
 
-import io.casehub.agency.agentic.model.DriverEvent;
-import io.casehub.agency.agentic.model.EventSource;
+import io.casehub.agency.orchestration.execution.DriverEvent;
+import io.casehub.agency.orchestration.execution.EventSource;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

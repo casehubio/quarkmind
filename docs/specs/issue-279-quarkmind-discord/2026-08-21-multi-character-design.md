@@ -248,11 +248,11 @@ Each `agentId` in config must match an `AgentDescriptor.agentId()` in `META-INF/
 - WackyManor `ScenarioOrchestrator` — multi-character orchestration pattern
 - WackyManor `CharacterState` — per-character mutable state
 - WackyManor `ProfileAwareDescriptorRegistrar` — profile-aware multi-descriptor loading
-- blocks `InnerLifeOrchestrator` — proactive behavioral compositor (`io.casehub.agency.agentic.social`)
-- blocks `DriveOrchestrator` — drive architecture (`io.casehub.agency.agentic.social.drive`)
-- blocks `CivilityConstraint` — pacing constraint chain (`io.casehub.agency.agentic.social`)
-- blocks `NarrativeOrchestrator` — narrative identity (`io.casehub.agency.agentic.social.narrative`)
-- blocks `GoalProposalOrchestrator` — autonomous goals (`io.casehub.agency.agentic.social.goal`)
+- blocks `InnerLifeOrchestrator` — proactive behavioral compositor (`io.casehub.agency.core.social`)
+- blocks `DriveOrchestrator` — drive architecture (`io.casehub.agency.core.social.drive`)
+- blocks `CivilityConstraint` — pacing constraint chain (`io.casehub.agency.core.social`)
+- blocks `NarrativeOrchestrator` — narrative identity (`io.casehub.agency.core.social.narrative`)
+- blocks `GoalProposalOrchestrator` — autonomous goals (`io.casehub.agency.core.social.goal`)
 - `ClasspathYamlDescriptorRegistrar` (casehub-eidos) — loads N descriptors from one YAML
 - GE-20260820-c19b68 — CbrQuery lacks producerAgentId filter (memory isolation by agentId)
 - D1–D24 in `decisions.md` — quarkmind-discord design decisions this extends
