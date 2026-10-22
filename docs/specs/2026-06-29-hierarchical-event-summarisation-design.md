@@ -6,7 +6,7 @@
 
 ## Overview
 
-A temporal abstraction layer that promotes raw game-tick data through four levels of increasing semantic richness. The generic hierarchy framework lives in a package pre-positioned for migration to `casehub-blocks`; the SC2 bindings stay in quarkmind.
+A temporal abstraction layer that promotes raw game-tick data through four levels of increasing semantic richness. The generic hierarchy framework lives in a package pre-positioned for migration to `casehub-agency`; the SC2 bindings stay in quarkmind.
 
 ```
 Level 0 — Raw tick stream (22.4/sec)
@@ -21,7 +21,7 @@ Level 4 — Narrative arc (new — periodic batch summarisation)
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
 | Scope | All four levels with pluggable `Summariser` + deterministic stubs | Proves full hierarchy shape without blocking on LLM infra |
-| Package split | `io.casehub.blocks.summarisation` (generic) / `io.quarkmind.plugin.summarisation` (SC2) | Pre-positions generic layer namespace for IntelliJ-assisted migration to blocks |
+| Package split | `io.casehub.agency.summarisation` (generic) / `io.quarkmind.plugin.summarisation` (SC2) | Pre-positions generic layer namespace for IntelliJ-assisted migration to blocks |
 | Transition interface | Single `Summariser<IN, OUT>` for L2→4 only | Drools CEP (L0→2) has a fundamentally different execution model — forcing it behind `Summariser` would be a leaky abstraction |
 | Broker | New `MomentBroker` alongside existing `ScoutingIntelBroker` | Latest-value (L1) vs event-stream (L2+) are different access patterns |
 | Windowing | Dual-trigger `WindowPolicy` — timestamp OR event-count | Catches burst scenarios; both thresholds optional for degenerate cases |
@@ -30,9 +30,9 @@ Level 4 — Narrative arc (new — periodic batch summarisation)
 | Synchronous Summariser | Phase 1 constraint — `summarise()` is synchronous | Deterministic stubs are sub-millisecond. LLM swap (future) will require async interface change — documented as a known migration. |
 | Clock source | `WindowPolicy` uses `long` timestamps, caller supplies current value | Application decides timestamp semantics (game frames in SC2, epoch millis elsewhere) |
 
-## Generic Layer — `io.casehub.blocks.summarisation`
+## Generic Layer — `io.casehub.agency.summarisation`
 
-Migrates to `casehub-blocks`. No CDI, no SC2 imports, plain Java.
+Migrates to `casehub-agency`. No CDI, no SC2 imports, plain Java.
 
 ### Types
 
@@ -198,7 +198,7 @@ Generic layer tests use simple `String`/`Integer` event types — no SC2 depende
 
 ```
 src/main/java/
-  io/casehub/blocks/summarisation/       ← generic (migrates to blocks)
+  io/casehub/agency/summarisation/       ← generic (migrates to blocks)
     EventLevel.java
     LevelEvent.java
     WindowPolicy.java
@@ -229,7 +229,7 @@ src/main/resources/
     MomentDetectionTask.drl              ← Drools rules for L1→2
 
 src/test/java/
-  io/casehub/blocks/summarisation/       ← generic tests (plain JUnit)
+  io/casehub/agency/summarisation/       ← generic tests (plain JUnit)
     EventAccumulatorTest.java
     SummarisationRunnerTest.java
     EventStreamBusTest.java
@@ -244,13 +244,13 @@ src/test/java/
 
 ## Migration Story
 
-When the generic layer moves to `casehub-blocks`:
-1. IntelliJ moves `io.casehub.blocks.summarisation` package (8 files) and tests (3 files)
-2. Quarkmind adds `casehub-blocks` as a compile dependency
-3. SC2 layer imports don't change — already reference `io.casehub.blocks.summarisation`
+When the generic layer moves to `casehub-agency`:
+1. IntelliJ moves `io.casehub.agency.summarisation` package (8 files) and tests (3 files)
+2. Quarkmind adds `casehub-agency` as a compile dependency
+3. SC2 layer imports don't change — already reference `io.casehub.agency.summarisation`
 4. Drools rules, domain types, CDI bridge, seam interface, and integration tests stay in quarkmind untouched
 5. Specs tagged `[generic]` move with the code; `[sc2]` specs stay
-6. Blog entries tagged with `#casehub-blocks` are cross-referenced from both projects
+6. Blog entries tagged with `#casehub-agency` are cross-referenced from both projects
 
 ## Review Issues Addressed
 

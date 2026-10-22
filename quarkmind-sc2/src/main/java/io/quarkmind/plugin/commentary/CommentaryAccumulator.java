@@ -1,9 +1,9 @@
 package io.quarkmind.plugin.commentary;
 
-import io.casehub.blocks.summarisation.EventAccumulator;
-import io.casehub.blocks.summarisation.EventStreamBus;
-import io.casehub.blocks.summarisation.LevelEvent;
-import io.casehub.blocks.summarisation.WindowPolicy;
+import io.casehub.agency.summarisation.EventAccumulator;
+import io.casehub.agency.summarisation.EventStreamBus;
+import io.casehub.agency.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.WindowPolicy;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.MomentBroker;

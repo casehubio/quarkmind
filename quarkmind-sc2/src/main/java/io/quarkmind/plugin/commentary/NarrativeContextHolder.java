@@ -1,6 +1,6 @@
 package io.quarkmind.plugin.commentary;
 
-import io.casehub.blocks.summarisation.EventStreamBus;
+import io.casehub.agency.summarisation.EventStreamBus;
 import io.quarkmind.plugin.summarisation.GameArc;
 import io.quarkmind.plugin.summarisation.SummarisationLifecycle;
 import io.quarkmind.plugin.summarisation.TacticalPosture;

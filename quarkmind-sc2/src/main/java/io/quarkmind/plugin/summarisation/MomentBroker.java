@@ -1,8 +1,8 @@
 package io.quarkmind.plugin.summarisation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.casehub.blocks.summarisation.EventStreamBus;
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.EventStreamBus;
+import io.casehub.agency.summarisation.LevelEvent;
 import io.casehub.platform.api.identity.ActorType;
 import io.casehub.qhorus.api.channel.ChannelCreateRequest;
 import io.casehub.qhorus.api.channel.ChannelSemantic;

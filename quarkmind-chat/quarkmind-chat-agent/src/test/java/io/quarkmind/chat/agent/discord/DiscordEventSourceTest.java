@@ -1,6 +1,6 @@
 package io.quarkmind.chat.agent.discord;
 
-import io.casehub.blocks.agentic.model.DriverEvent;
+import io.casehub.agency.agentic.model.DriverEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicReference;

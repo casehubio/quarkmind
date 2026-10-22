@@ -218,11 +218,11 @@ class WorkbenchPipelineIT {
         // Publish scouting intel to L1 bus before tick — simulates early enemy contact
         var broker = io.quarkus.arc.Arc.container()
                                        .instance(io.quarkmind.agent.ScoutingIntelBroker.class).get();
-        var LEVEL_1 = new io.casehub.blocks.summarisation.EventLevel("intel", 1);
-        broker.level1Bus().publish(new io.casehub.blocks.summarisation.LevelEvent<>(
+        var LEVEL_1 = new io.casehub.agency.summarisation.EventLevel("intel", 1);
+        broker.level1Bus().publish(new io.casehub.agency.summarisation.LevelEvent<>(
                 new io.quarkmind.agent.plugin.ScoutingIntelPayload.ThreatPosition(
                         new io.quarkmind.domain.Point2d(50, 50)), 100, LEVEL_1, "default"));
-        broker.level1Bus().publish(new io.casehub.blocks.summarisation.LevelEvent<>(
+        broker.level1Bus().publish(new io.casehub.agency.summarisation.LevelEvent<>(
                 new io.quarkmind.agent.plugin.ScoutingIntelPayload.ArmySize(8), 100, LEVEL_1, "default"));
 
         orchestrator.gameTick();
@@ -268,11 +268,11 @@ class WorkbenchPipelineIT {
         // Publish scouting intel + run ticks to trigger commentary
         var broker = io.quarkus.arc.Arc.container()
                                        .instance(io.quarkmind.agent.ScoutingIntelBroker.class).get();
-        var LEVEL_1 = new io.casehub.blocks.summarisation.EventLevel("intel", 1);
-        broker.level1Bus().publish(new io.casehub.blocks.summarisation.LevelEvent<>(
+        var LEVEL_1 = new io.casehub.agency.summarisation.EventLevel("intel", 1);
+        broker.level1Bus().publish(new io.casehub.agency.summarisation.LevelEvent<>(
                 new io.quarkmind.agent.plugin.ScoutingIntelPayload.ThreatPosition(
                         new io.quarkmind.domain.Point2d(50, 50)), 100, LEVEL_1, "default"));
-        broker.level1Bus().publish(new io.casehub.blocks.summarisation.LevelEvent<>(
+        broker.level1Bus().publish(new io.casehub.agency.summarisation.LevelEvent<>(
                 new io.quarkmind.agent.plugin.ScoutingIntelPayload.ArmySize(8), 100, LEVEL_1, "default"));
 
         orchestrator.gameTick();
@@ -305,8 +305,8 @@ class WorkbenchPipelineIT {
         // Phase 1: produce commentary
         var broker = io.quarkus.arc.Arc.container()
                                        .instance(io.quarkmind.agent.ScoutingIntelBroker.class).get();
-        var LEVEL_1 = new io.casehub.blocks.summarisation.EventLevel("intel", 1);
-        broker.level1Bus().publish(new io.casehub.blocks.summarisation.LevelEvent<>(
+        var LEVEL_1 = new io.casehub.agency.summarisation.EventLevel("intel", 1);
+        broker.level1Bus().publish(new io.casehub.agency.summarisation.LevelEvent<>(
                 new io.quarkmind.agent.plugin.ScoutingIntelPayload.ThreatPosition(
                         new io.quarkmind.domain.Point2d(50, 50)), 100, LEVEL_1, "default"));
 
@@ -325,7 +325,7 @@ class WorkbenchPipelineIT {
         orchestrator.startGame();
 
         // Phase 3: re-publish intel and tick again
-        broker.level1Bus().publish(new io.casehub.blocks.summarisation.LevelEvent<>(
+        broker.level1Bus().publish(new io.casehub.agency.summarisation.LevelEvent<>(
                 new io.quarkmind.agent.plugin.ScoutingIntelPayload.ThreatPosition(
                         new io.quarkmind.domain.Point2d(50, 50)), 100, LEVEL_1, "default"));
 

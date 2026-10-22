@@ -1,6 +1,6 @@
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.LevelEvent;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkmind.sc2.GameStarted;
 import jakarta.enterprise.event.Event;

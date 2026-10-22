@@ -8,7 +8,7 @@ The answer arrived when I started designing #180 — the LLM advisory team. Thre
 
 ## The wrong first answer
 
-I initially proposed building an `AdvisoryBroker` in `io.casehub.blocks.advisory` — a standalone advisory framework pre-positioned for extraction to casehub-blocks. It would have its own trust-weighted selector, its own invocation SPI, its own outcome evaluator. Clean, isolated, portable.
+I initially proposed building an `AdvisoryBroker` in `io.casehub.agency.advisory` — a standalone advisory framework pre-positioned for extraction to casehub-agency. It would have its own trust-weighted selector, its own invocation SPI, its own outcome evaluator. Clean, isolated, portable.
 
 It was also wrong. PLATFORM.md is explicit: "Do not implement implementation-selection trust routing in application repos." The engine's `AgentRoutingStrategy` already does trust-weighted selection. Building a parallel framework was creating the exact duplication the platform coherence protocol exists to prevent.
 

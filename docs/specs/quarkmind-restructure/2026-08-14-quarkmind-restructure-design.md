@@ -57,7 +57,7 @@ Extracted from current QuarkMind, generalised:
 | Intent buffer | `IntentQueue` + sealed `Intent` | `IntentQueue<I>` — generic buffered intent dispatch |
 | Spatial awareness SPIs | `AStarPathfinder`, `VisibilityGrid` concepts | `NavigationSPI`, `VisibilitySPI`, `SpatialMemory` — contracts only |
 | Interaction pipeline | Advisory/Coaching trigger→worker→channel pattern | `InteractionTrigger`, `InteractionPipeline` — generic trigger→LLM→response |
-| Moment detection | `MomentDetectionTask` pattern (over casehub-blocks) | `MomentDetector` — significant event detection contract |
+| Moment detection | `MomentDetectionTask` pattern (over casehub-agency) | `MomentDetector` — significant event detection contract |
 | Plugin seam | `TaskDefinition` with `activateIf`/`requires`/`produces` | Same pattern, decoupled from SC2 types |
 | LLM request queue | Wacky Manor chat pipeline pattern | `LlmRequestQueue` — rate limiting, prioritisation, token budgeting |
 
@@ -293,5 +293,5 @@ quarkmind-core composes these existing foundation modules:
 | casehub-ledger | Trust scoring (Bayesian beta), outcome recording |
 | casehub-eidos | Disposition vocabulary, personality descriptors |
 | casehub-qhorus | Channel-based messaging, typed delivery |
-| casehub-blocks | Summarisation framework, event accumulation |
+| casehub-agency | Summarisation framework, event accumulation |
 | casehub-worker | Worker execution, LLM pipeline integration |

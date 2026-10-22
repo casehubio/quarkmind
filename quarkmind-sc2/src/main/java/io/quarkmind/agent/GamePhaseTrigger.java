@@ -1,6 +1,6 @@
 package io.quarkmind.agent;
 
-import io.casehub.blocks.summarisation.EventStreamBus;
+import io.casehub.agency.summarisation.EventStreamBus;
 import io.quarkmind.agency.milestone.MilestoneTracker;
 import io.quarkmind.plugin.summarisation.TacticalPosture;
 import io.quarkmind.plugin.summarisation.SummarisationLifecycle;

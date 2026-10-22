@@ -1,8 +1,8 @@
 package io.quarkmind.agent;
 
-import io.casehub.blocks.summarisation.EventStreamBus;
-import io.casehub.blocks.summarisation.LevelEvent;
-import io.casehub.blocks.summarisation.EventLevel;
+import io.casehub.agency.summarisation.EventStreamBus;
+import io.casehub.agency.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.EventLevel;
 import io.quarkmind.agency.milestone.MilestoneSession;
 import io.quarkmind.plugin.summarisation.TacticalPosture;
 import org.junit.jupiter.api.BeforeEach;

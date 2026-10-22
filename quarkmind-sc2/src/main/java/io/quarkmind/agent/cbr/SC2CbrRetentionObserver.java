@@ -2,7 +2,7 @@ package io.quarkmind.agent.cbr;
 
 import io.casehub.api.spi.CaseOutcomeEvent;
 import io.casehub.api.spi.CaseOutcomeObserver;
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.LevelEvent;
 import io.casehub.neocortex.memory.MemoryDomain;
 import io.casehub.neocortex.memory.cbr.CbrRecordStore;
 import io.casehub.neocortex.memory.cbr.CbrOutcome;

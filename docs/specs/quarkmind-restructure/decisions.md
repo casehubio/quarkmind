@@ -54,7 +54,7 @@
 - Interaction pipeline pattern (trigger detection → LLM reasoning → response delivery)
 - Spatial awareness SPIs (navigation, visibility, memory-of-places)
 - Plugin seam with activateIf/requires/produces (more expressive than foundation WorkerFunctionProvider)
-- Moment detection patterns (built on casehub-blocks summarisation framework)
+- Moment detection patterns (built on casehub-agency summarisation framework)
 **Alternatives:**
 - Extract more (include pathfinding algorithms) — too domain-specific, different per world
 - Extract less (just the loop, leave SPIs to each world) — loses the common contract

@@ -2,15 +2,15 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a four-level temporal abstraction hierarchy (raw ticks → intel → moments → phases → arcs) with a generic framework pre-positioned for `casehub-blocks` migration and SC2-specific bindings in quarkmind.
+**Goal:** Build a four-level temporal abstraction hierarchy (raw ticks → intel → moments → phases → arcs) with a generic framework pre-positioned for `casehub-agency` migration and SC2-specific bindings in quarkmind.
 
-**Architecture:** Generic event hierarchy framework in `io.casehub.blocks.summarisation` (plain Java, CDI-free, records + interfaces). SC2 application layer in `io.quarkmind.plugin.summarisation` wires Drools CEP (L1→L2), deterministic summariser stubs (L2→L3→L4), and CDI bridge for consumer discovery. `DroolsScoutingTask` gains L1 transition publishing; `GameTickExecutor` gains a post-`createAndSolve()` summarisation tick.
+**Architecture:** Generic event hierarchy framework in `io.casehub.agency.summarisation` (plain Java, CDI-free, records + interfaces). SC2 application layer in `io.quarkmind.plugin.summarisation` wires Drools CEP (L1→L2), deterministic summariser stubs (L2→L3→L4), and CDI bridge for consumer discovery. `DroolsScoutingTask` gains L1 transition publishing; `GameTickExecutor` gains a post-`createAndSolve()` summarisation tick.
 
 **Tech Stack:** Java 17 records, Drools Rule Units, Quarkus CDI, Qhorus channels, JUnit 5
 
 ## Global Constraints
 
-- Generic layer (`io.casehub.blocks.summarisation`): no CDI, no Quarkus, no SC2 imports. Plain Java only.
+- Generic layer (`io.casehub.agency.summarisation`): no CDI, no Quarkus, no SC2 imports. Plain Java only.
 - SC2 layer (`io.quarkmind.plugin.summarisation`): follows existing plugin patterns — seam interface in `agent/plugin/`, `@CaseType("starcraft-game")`, `requires()`/`produces()`.
 - Protocol PP-20260610-88dbbd: `@Observes` (synchronous) for `GameStarted`/`GameStopped` observers.
 - Protocol PP-20260608-8584ab: `ScoutingIntelConsumer` implementations must call `refreshSubscriptions()` in `@PostConstruct`.
@@ -27,14 +27,14 @@
 ### Task 1: Generic Foundation — Records, EventAccumulator, EventStreamBus
 
 **Files:**
-- Create: `src/main/java/io/casehub/blocks/summarisation/EventLevel.java`
-- Create: `src/main/java/io/casehub/blocks/summarisation/LevelEvent.java`
-- Create: `src/main/java/io/casehub/blocks/summarisation/WindowPolicy.java`
-- Create: `src/main/java/io/casehub/blocks/summarisation/EventAccumulator.java`
-- Create: `src/main/java/io/casehub/blocks/summarisation/EventStreamBus.java`
-- Create: `src/main/java/io/casehub/blocks/summarisation/EventConsumer.java`
-- Create: `src/test/java/io/casehub/blocks/summarisation/EventAccumulatorTest.java`
-- Create: `src/test/java/io/casehub/blocks/summarisation/EventStreamBusTest.java`
+- Create: `src/main/java/io/casehub/agency/summarisation/EventLevel.java`
+- Create: `src/main/java/io/casehub/agency/summarisation/LevelEvent.java`
+- Create: `src/main/java/io/casehub/agency/summarisation/WindowPolicy.java`
+- Create: `src/main/java/io/casehub/agency/summarisation/EventAccumulator.java`
+- Create: `src/main/java/io/casehub/agency/summarisation/EventStreamBus.java`
+- Create: `src/main/java/io/casehub/agency/summarisation/EventConsumer.java`
+- Create: `src/test/java/io/casehub/agency/summarisation/EventAccumulatorTest.java`
+- Create: `src/test/java/io/casehub/agency/summarisation/EventStreamBusTest.java`
 
 **Interfaces:**
 - Consumes: nothing
@@ -49,7 +49,7 @@
 - [ ] **Step 1: Write EventAccumulatorTest — timestamp trigger**
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -119,7 +119,7 @@ class EventAccumulatorTest {
 - [ ] **Step 2: Write EventStreamBusTest**
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
@@ -180,28 +180,28 @@ Expected: FAIL — classes do not exist yet.
 
 `EventLevel.java`:
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 public record EventLevel(String name, int ordinal) {}
 ```
 
 `LevelEvent.java`:
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 public record LevelEvent<E>(E payload, long timestamp, EventLevel level) {}
 ```
 
 `WindowPolicy.java`:
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 public record WindowPolicy(long maxAge, int maxCount) {}
 ```
 
 `EventConsumer.java`:
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 import java.util.function.Predicate;
 
@@ -213,7 +213,7 @@ public interface EventConsumer<E> {
 - [ ] **Step 5: Implement EventAccumulator**
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -260,7 +260,7 @@ public class EventAccumulator<E> {
 - [ ] **Step 6: Implement EventStreamBus**
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -303,8 +303,8 @@ feat(#182): generic event hierarchy foundation — EventAccumulator, EventStream
 
 Records (EventLevel, LevelEvent, WindowPolicy), EventAccumulator with
 dual-trigger windowing, EventStreamBus with predicate-based pub/sub,
-EventConsumer interface. All in io.casehub.blocks.summarisation —
-pre-positioned for casehub-blocks migration. Plain Java, no CDI.
+EventConsumer interface. All in io.casehub.agency.summarisation —
+pre-positioned for casehub-agency migration. Plain Java, no CDI.
 
 Refs #182
 ```
@@ -314,9 +314,9 @@ Refs #182
 ### Task 2: Generic Summariser + SummarisationRunner
 
 **Files:**
-- Create: `src/main/java/io/casehub/blocks/summarisation/Summariser.java`
-- Create: `src/main/java/io/casehub/blocks/summarisation/SummarisationRunner.java`
-- Create: `src/test/java/io/casehub/blocks/summarisation/SummarisationRunnerTest.java`
+- Create: `src/main/java/io/casehub/agency/summarisation/Summariser.java`
+- Create: `src/main/java/io/casehub/agency/summarisation/SummarisationRunner.java`
+- Create: `src/test/java/io/casehub/agency/summarisation/SummarisationRunnerTest.java`
 
 **Interfaces:**
 - Consumes: `EventAccumulator<E>`, `EventStreamBus<E>`, `LevelEvent<E>`, `EventLevel`, `WindowPolicy` (Task 1)
@@ -327,7 +327,7 @@ Refs #182
 - [ ] **Step 1: Write SummarisationRunnerTest**
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
@@ -413,7 +413,7 @@ Expected: FAIL — `Summariser` and `SummarisationRunner` do not exist.
 - [ ] **Step 3: Implement Summariser interface**
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 import java.util.List;
 
@@ -426,7 +426,7 @@ public interface Summariser<IN, OUT> {
 - [ ] **Step 4: Implement SummarisationRunner**
 
 ```java
-package io.casehub.blocks.summarisation;
+package io.casehub.agency.summarisation;
 
 public class SummarisationRunner<IN, OUT> {
 
@@ -565,7 +565,7 @@ This follows the exact pattern of `ScoutingTask`, `StrategyTask`, `EconomicsTask
 ```java
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.EventConsumer;
+import io.casehub.agency.summarisation.EventConsumer;
 
 import java.util.Set;
 import java.util.function.Predicate;
@@ -633,7 +633,7 @@ private final EventStreamBus<ScoutingIntelPayload> level1Bus = new EventStreamBu
 
 Import:
 ```java
-import io.casehub.blocks.summarisation.EventStreamBus;
+import io.casehub.agency.summarisation.EventStreamBus;
 ```
 
 Public accessor:
@@ -649,8 +649,8 @@ In `clearLatest()`, add `level1Bus.clear();` after `latest.clear();`.
 
 In `DroolsScoutingTask.java`, add import:
 ```java
-import io.casehub.blocks.summarisation.EventLevel;
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.EventLevel;
+import io.casehub.agency.summarisation.LevelEvent;
 ```
 
 Add static field:
@@ -729,9 +729,9 @@ Refs #182
 ```java
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.EventLevel;
-import io.casehub.blocks.summarisation.EventStreamBus;
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.EventLevel;
+import io.casehub.agency.summarisation.EventStreamBus;
+import io.casehub.agency.summarisation.LevelEvent;
 import io.quarkmind.agent.plugin.ScoutingIntelPayload;
 import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitProvider;
@@ -835,9 +835,9 @@ package io.quarkmind.plugin.summarisation;
 
 import io.casehub.annotation.CaseType;
 import io.casehub.api.context.CaseContext;
-import io.casehub.blocks.summarisation.EventLevel;
-import io.casehub.blocks.summarisation.EventStreamBus;
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.EventLevel;
+import io.casehub.agency.summarisation.EventStreamBus;
+import io.casehub.agency.summarisation.LevelEvent;
 import io.casehub.core.CaseFile;
 import io.quarkmind.agent.CaseFileContext;
 import io.quarkmind.agent.QuarkMindCaseFile;
@@ -1116,8 +1116,8 @@ Refs #182
 ```java
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.EventLevel;
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.EventLevel;
+import io.casehub.agency.summarisation.LevelEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -1186,8 +1186,8 @@ class GamePhaseSummariserTest {
 ```java
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.EventLevel;
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.EventLevel;
+import io.casehub.agency.summarisation.LevelEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -1236,8 +1236,8 @@ Expected: FAIL — classes do not exist.
 ```java
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.LevelEvent;
-import io.casehub.blocks.summarisation.Summariser;
+import io.casehub.agency.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.Summariser;
 
 import java.util.List;
 import java.util.Set;
@@ -1291,8 +1291,8 @@ public class GamePhaseSummariser implements Summariser<GameMoment, GamePhase> {
 ```java
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.LevelEvent;
-import io.casehub.blocks.summarisation.Summariser;
+import io.casehub.agency.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.Summariser;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -1359,8 +1359,8 @@ Refs #182
 ```java
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.EventStreamBus;
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.EventStreamBus;
+import io.casehub.agency.summarisation.LevelEvent;
 import io.casehub.qhorus.api.channel.ChannelSemantic;
 import io.casehub.qhorus.api.message.MessageDispatch;
 import io.casehub.qhorus.api.message.MessageType;
@@ -1460,11 +1460,11 @@ public class MomentBroker {
 ```java
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.EventAccumulator;
-import io.casehub.blocks.summarisation.EventLevel;
-import io.casehub.blocks.summarisation.EventStreamBus;
-import io.casehub.blocks.summarisation.SummarisationRunner;
-import io.casehub.blocks.summarisation.WindowPolicy;
+import io.casehub.agency.summarisation.EventAccumulator;
+import io.casehub.agency.summarisation.EventLevel;
+import io.casehub.agency.summarisation.EventStreamBus;
+import io.casehub.agency.summarisation.SummarisationRunner;
+import io.casehub.agency.summarisation.WindowPolicy;
 import io.quarkmind.sc2.GameStarted;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -1589,7 +1589,7 @@ class MomentBrokerIT {
 ```java
 package io.quarkmind.plugin.summarisation;
 
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.LevelEvent;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
@@ -1687,7 +1687,7 @@ import io.quarkmind.plugin.summarisation.GamePhase;
 import io.quarkmind.plugin.summarisation.MomentBroker;
 import io.quarkmind.plugin.summarisation.MomentConsumer;
 import io.quarkmind.plugin.summarisation.SummarisationLifecycle;
-import io.casehub.blocks.summarisation.LevelEvent;
+import io.casehub.agency.summarisation.LevelEvent;
 ```
 
 Add fields:
