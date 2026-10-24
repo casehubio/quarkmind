@@ -93,6 +93,12 @@ public class BinaryDetectorRunner implements AutoCloseable {
 
     public Map<String, Float> runActiveDetectors(GamePhase phase, Race enemyRace,
                                                  StrategyFeatures features) {
+        return runActiveDetectors(phase, enemyRace, features, null);
+    }
+
+    public Map<String, Float> runActiveDetectors(GamePhase phase, Race enemyRace,
+                                                 StrategyFeatures features,
+                                                 java.util.Set<String> detectorKeysToRun) {
         List<DetectorCatalogConfig.DetectorDef> active =
                 registry.getActiveDetectors(phase, enemyRace);
         if (active.isEmpty()) {return Map.of();}
@@ -103,7 +109,8 @@ public class BinaryDetectorRunner implements AutoCloseable {
 
         Map<String, Float> results = new HashMap<>();
         for (var def : active) {
-            String           key        = def.key(enemyRace);
+            String key = def.key(enemyRace);
+            if (detectorKeysToRun != null && !detectorKeysToRun.contains(key)) {continue;}
             TensorClassifier classifier = classifiers.get(key);
             if (classifier == null) {continue;}
 
@@ -120,6 +127,7 @@ public class BinaryDetectorRunner implements AutoCloseable {
         }
         return results;
     }
+
 
     static Map<String, float[][]> adaptFeatures(float[] javaFlat, float[] javaMap) {
         int javaFPW = FeatureIndexMaps.FEATURES_PER_WINDOW;

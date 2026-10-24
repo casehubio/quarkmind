@@ -23,23 +23,35 @@ public class DetectorOrchestrator {
     private final Map<String, StrategyArchetype> labelToArchetype;
     private final Map<StrategyArchetype, String> archetypeToLabel;
     private final double                         hardEvidenceThreshold;
+    private final double                         sensitivityThreshold;
+    private       Map<String, Float>             previousDetectorOutputs = new HashMap<>();
 
 
     private String[] outcomeNames;
     private boolean initialized;
+    private List<String> activeDetectorNames = List.of();
+
 
     public DetectorOrchestrator(DetectorRegistry registry,
                                 Map<String, Double> priors,
                                 Map<String, Map<String, Double>> cpts,
                                 Map<String, StrategyArchetype> labelToArchetype,
-                                int windowSize) {this(registry, priors, cpts, labelToArchetype, windowSize, 0.95);}
+                                int windowSize) {this(registry, priors, cpts, labelToArchetype, windowSize, 0.95, 0.01);}
 
     public DetectorOrchestrator(DetectorRegistry registry,
                                 Map<String, Double> priors,
                                 Map<String, Map<String, Double>> cpts,
                                 Map<String, StrategyArchetype> labelToArchetype,
                                 int windowSize,
-                                double hardEvidenceThreshold) {
+                                double hardEvidenceThreshold) {this(registry, priors, cpts, labelToArchetype, windowSize, hardEvidenceThreshold, 0.01);}
+
+    public DetectorOrchestrator(DetectorRegistry registry,
+                                Map<String, Double> priors,
+                                Map<String, Map<String, Double>> cpts,
+                                Map<String, StrategyArchetype> labelToArchetype,
+                                int windowSize,
+                                double hardEvidenceThreshold,
+                                double sensitivityThreshold) {
         this.registry              = registry;
         this.engine                = new EvidenceFusionEngine();
         this.tracker               = new TemporalAssessmentTracker(windowSize);
@@ -48,24 +60,54 @@ public class DetectorOrchestrator {
         this.labelToArchetype      = labelToArchetype;
         this.archetypeToLabel      = buildReverseMapping(labelToArchetype);
         this.hardEvidenceThreshold = hardEvidenceThreshold;
+        this.sensitivityThreshold  = sensitivityThreshold;
     }
 
 
-    public void initializeNetwork(List<String> activeDetectorNames) {
-        BayesNetwork network = SC2NetworkBuilder.build(priors, activeDetectorNames, cpts);
+    public void initializeNetwork(List<String> newDetectorNames) {
+        var currentSorted = this.activeDetectorNames.stream().sorted().toList();
+        var newSorted     = newDetectorNames.stream().sorted().toList();
+        if (initialized && currentSorted.equals(newSorted)) {return;}
+
+        BayesNetwork network = SC2NetworkBuilder.build(priors, newDetectorNames, cpts);
         engine.initialize(network, "Strategy");
-        this.outcomeNames = engine.getOutcomeNames();
+        this.outcomeNames        = engine.getOutcomeNames();
+        this.activeDetectorNames = List.copyOf(newDetectorNames);
+        previousDetectorOutputs.clear();
         initialized = true;
     }
+
+    public java.util.Set<String> getDetectorsToEvaluate(java.util.Set<String> available) {
+        if (!initialized || previousDetectorOutputs.isEmpty()) {
+            return available;
+        }
+        Map<String, Double>   sensitivities = engine.getVariableSensitivities();
+        java.util.Set<String> toEvaluate    = new java.util.HashSet<>();
+        for (String detector : available) {
+            double sensitivity = sensitivities.getOrDefault(detector, Double.MAX_VALUE);
+            if (sensitivity >= sensitivityThreshold) {
+                toEvaluate.add(detector);
+            }
+        }
+        if (toEvaluate.isEmpty()) {
+            return available;
+        }
+        return toEvaluate;
+    }
+
 
     public List<PatternAssessment> classify(Map<String, Float> detectorOutputs,
                                             List<EvidenceMarker> markers,
                                             long frame) {
         if (!initialized) {return List.of();}
 
+        Map<String, Float> combined = new HashMap<>(previousDetectorOutputs);
+        combined.putAll(detectorOutputs);
+        previousDetectorOutputs = new HashMap<>(combined);
+
         Map<String, double[]> evidence = new HashMap<>();
 
-        for (var entry : detectorOutputs.entrySet()) {
+        for (var entry : combined.entrySet()) {
             float p = entry.getValue();
             if (p >= hardEvidenceThreshold) {
                 evidence.put(entry.getKey(), new double[]{1.0, 0.0});
@@ -96,6 +138,7 @@ public class DetectorOrchestrator {
 
     public void reset() {
         tracker.reset();
+        previousDetectorOutputs.clear();
     }
 
     private double[] computeMarkerLikelihood(List<EvidenceMarker> markers, String[] outcomes) {

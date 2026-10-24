@@ -175,9 +175,13 @@ public class CascadingPatternClassifier {
             Map<String, Float> detectorOutputs = Map.of();
             if (detectorRunner != null && enemyRace != null) {
                 io.quarkmind.domain.GamePhase phase = resolvePhase(frame);
-                detectorOutputs = detectorRunner.runActiveDetectors(phase, enemyRace, onnxFeatures);
-                if (!detectorOutputs.isEmpty()) {
-                    detectorOrchestrator.initializeNetwork(List.copyOf(detectorOutputs.keySet()));
+                var allActive = detectorRunner.registry().getActiveDetectors(phase, enemyRace);
+                var allKeys = new java.util.HashSet<String>();
+                for (var def : allActive) { allKeys.add(def.key(enemyRace)); }
+                if (!allKeys.isEmpty()) {
+                    detectorOrchestrator.initializeNetwork(List.copyOf(allKeys));
+                    var toEvaluate = detectorOrchestrator.getDetectorsToEvaluate(allKeys);
+                    detectorOutputs = detectorRunner.runActiveDetectors(phase, enemyRace, onnxFeatures, toEvaluate);
                 }
             }
             var fusionAssessments = detectorOrchestrator.classify(

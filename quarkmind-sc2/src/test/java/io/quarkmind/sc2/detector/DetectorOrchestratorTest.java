@@ -149,6 +149,64 @@ class DetectorOrchestratorTest {
                    "After confidence drops below threshold, soft evidence should allow MACRO assessment");
     }
 
+    @Test
+    void getDetectorsToEvaluateReturnsAllOnFirstTick() {
+        var toEvaluate = orchestrator.getDetectorsToEvaluate(java.util.Set.of("rush_det"));
+        assertEquals(java.util.Set.of("rush_det"), toEvaluate,
+                     "First tick should evaluate all detectors — no sensitivity data yet");
+    }
+
+    @Test
+    void getDetectorsToEvaluateSkipsLowSensitivityAfterFirstTick() {
+        var twoDetOrch = createTwoDetectorOrchestrator(0.001);
+        twoDetOrch.classify(Map.of("rush_det", 0.9f, "eco_det", 0.1f), List.of(), 100);
+
+        var toEvaluate = twoDetOrch.getDetectorsToEvaluate(java.util.Set.of("rush_det", "eco_det"));
+        assertFalse(toEvaluate.isEmpty(), "Should evaluate at least one detector");
+    }
+
+    @Test
+    void classifyMergesStaleEvidenceForSkippedDetectors() {
+        var twoDetOrch = createTwoDetectorOrchestrator(0.001);
+        var full = twoDetOrch.classify(
+                Map.of("rush_det", 0.9f, "eco_det", 0.1f), List.of(), 100);
+
+        var partial = twoDetOrch.classify(
+                Map.of("rush_det", 0.85f), List.of(), 200);
+
+        assertFalse(partial.isEmpty(), "Partial evidence should still produce assessments");
+        assertEquals(full.get(0).archetype(), partial.get(0).archetype(),
+                     "Dominant archetype should remain consistent with stale eco_det evidence");
+    }
+
+    private DetectorOrchestrator createTwoDetectorOrchestrator(double sensitivityThreshold) {
+        var config = new DetectorCatalogConfig(List.of(
+                new DetectorCatalogConfig.DetectorDef(
+                        "rush_det", GamePhase.EARLY, FeatureTier.ECONOMY,
+                        Map.of(Race.PROTOSS, List.of("RUSH")),
+                        null),
+                new DetectorCatalogConfig.DetectorDef(
+                        "eco_det", GamePhase.EARLY, FeatureTier.ECONOMY,
+                        Map.of(Race.PROTOSS, List.of("MACRO")),
+                        null)
+                                                      ));
+        var registry = new DetectorRegistry(config);
+        var priors   = Map.of("RUSH", 0.3, "MACRO", 0.7);
+        var cpts = Map.of(
+                "rush_det", Map.of("RUSH", 0.85, "MACRO", 0.10),
+                "eco_det", Map.of("RUSH", 0.10, "MACRO", 0.90)
+                         );
+        var labelMapping = Map.of(
+                "RUSH", StrategyArchetype.PROTOSS_GATEWAY_RUSH,
+                "MACRO", StrategyArchetype.PROTOSS_MACRO
+                                 );
+        var orch = new DetectorOrchestrator(
+                registry, priors, cpts, labelMapping, 10, 0.95, sensitivityThreshold);
+        orch.initializeNetwork(List.of("rush_det", "eco_det"));
+        return orch;
+    }
+
+
     private DetectorOrchestrator createOrchestrator(double hardEvidenceThreshold) {
         var config = new DetectorCatalogConfig(List.of(
                 new DetectorCatalogConfig.DetectorDef(
