@@ -50,20 +50,20 @@ public class DetectorOrchestrator {
     public List<PatternAssessment> classify(Map<String, Float> detectorOutputs,
                                             List<EvidenceMarker> markers,
                                             long frame) {
-        if (!initialized) return List.of();
+        if (!initialized) {return List.of();}
 
-        engine.reset();
+        Map<String, double[]> evidence = new HashMap<>();
 
         for (var entry : detectorOutputs.entrySet()) {
             float p = entry.getValue();
-            engine.setEvidence(entry.getKey(), new double[]{p, 1.0 - p});
+            evidence.put(entry.getKey(), new double[]{p, 1.0 - p});
         }
 
         if (!markers.isEmpty()) {
-            double[] likelihood = computeMarkerLikelihood(markers, outcomeNames);
-            engine.setEvidence("Strategy", likelihood);
+            evidence.put("Strategy", computeMarkerLikelihood(markers, outcomeNames));
         }
 
+        engine.setAllEvidence(evidence);
         engine.update();
         double[] posterior = engine.marginalize();
 
