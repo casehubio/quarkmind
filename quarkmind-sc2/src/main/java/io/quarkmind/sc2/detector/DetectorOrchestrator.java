@@ -22,6 +22,8 @@ public class DetectorOrchestrator {
     private final Map<String, Map<String, Double>> cpts;
     private final Map<String, StrategyArchetype> labelToArchetype;
     private final Map<StrategyArchetype, String> archetypeToLabel;
+    private final double                         hardEvidenceThreshold;
+
 
     private String[] outcomeNames;
     private boolean initialized;
@@ -30,15 +32,24 @@ public class DetectorOrchestrator {
                                 Map<String, Double> priors,
                                 Map<String, Map<String, Double>> cpts,
                                 Map<String, StrategyArchetype> labelToArchetype,
-                                int windowSize) {
-        this.registry = registry;
-        this.engine = new EvidenceFusionEngine();
-        this.tracker = new TemporalAssessmentTracker(windowSize);
-        this.priors = priors;
-        this.cpts = cpts;
-        this.labelToArchetype = labelToArchetype;
-        this.archetypeToLabel = buildReverseMapping(labelToArchetype);
+                                int windowSize) {this(registry, priors, cpts, labelToArchetype, windowSize, 0.95);}
+
+    public DetectorOrchestrator(DetectorRegistry registry,
+                                Map<String, Double> priors,
+                                Map<String, Map<String, Double>> cpts,
+                                Map<String, StrategyArchetype> labelToArchetype,
+                                int windowSize,
+                                double hardEvidenceThreshold) {
+        this.registry              = registry;
+        this.engine                = new EvidenceFusionEngine();
+        this.tracker               = new TemporalAssessmentTracker(windowSize);
+        this.priors                = priors;
+        this.cpts                  = cpts;
+        this.labelToArchetype      = labelToArchetype;
+        this.archetypeToLabel      = buildReverseMapping(labelToArchetype);
+        this.hardEvidenceThreshold = hardEvidenceThreshold;
     }
+
 
     public void initializeNetwork(List<String> activeDetectorNames) {
         BayesNetwork network = SC2NetworkBuilder.build(priors, activeDetectorNames, cpts);
@@ -56,7 +67,13 @@ public class DetectorOrchestrator {
 
         for (var entry : detectorOutputs.entrySet()) {
             float p = entry.getValue();
-            evidence.put(entry.getKey(), new double[]{p, 1.0 - p});
+            if (p >= hardEvidenceThreshold) {
+                evidence.put(entry.getKey(), new double[]{1.0, 0.0});
+            } else if (p <= 1.0 - hardEvidenceThreshold) {
+                evidence.put(entry.getKey(), new double[]{0.0, 1.0});
+            } else {
+                evidence.put(entry.getKey(), new double[]{p, 1.0 - p});
+            }
         }
 
         if (!markers.isEmpty()) {

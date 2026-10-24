@@ -12,7 +12,10 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DetectorOrchestratorTest {
 
@@ -119,4 +122,51 @@ class DetectorOrchestratorTest {
         assertEquals(StrategyArchetype.PROTOSS_MACRO, result.get(0).archetype(),
             "With no evidence, prior (MACRO=0.7) should dominate");
     }
+
+    @Test
+    void highConfidenceDetectorUsesHardEvidence() {
+        var orchestratorWithThreshold = createOrchestrator(0.90);
+        orchestratorWithThreshold.initializeNetwork(List.of("rush_det"));
+
+        var softResult = orchestrator.classify(Map.of("rush_det", 0.95f), List.of(), 100);
+        var hardResult = orchestratorWithThreshold.classify(Map.of("rush_det", 0.95f), List.of(), 100);
+
+        assertEquals(softResult.get(0).archetype(), hardResult.get(0).archetype());
+        assertTrue(hardResult.get(0).confidence() >= softResult.get(0).confidence(),
+                   "Hard evidence should produce equal or higher confidence for the dominant archetype");
+    }
+
+    @Test
+    void hardEvidenceRetractsWhenConfidenceDrops() {
+        var orch = createOrchestrator(0.90);
+        orch.initializeNetwork(List.of("rush_det"));
+
+        orch.classify(Map.of("rush_det", 0.95f), List.of(), 100);
+        var result = orch.classify(Map.of("rush_det", 0.3f), List.of(), 200);
+
+        assertFalse(result.isEmpty());
+        assertTrue(result.stream().anyMatch(a -> a.archetype() == StrategyArchetype.PROTOSS_MACRO),
+                   "After confidence drops below threshold, soft evidence should allow MACRO assessment");
+    }
+
+    private DetectorOrchestrator createOrchestrator(double hardEvidenceThreshold) {
+        var config = new DetectorCatalogConfig(List.of(
+                new DetectorCatalogConfig.DetectorDef(
+                        "rush_det", GamePhase.EARLY, FeatureTier.ECONOMY,
+                        Map.of(Race.PROTOSS, List.of("RUSH")),
+                        null)
+                                                      ));
+        var registry = new DetectorRegistry(config);
+        var priors   = Map.of("RUSH", 0.3, "MACRO", 0.7);
+        var cpts = Map.of(
+                "rush_det", Map.of("RUSH", 0.85, "MACRO", 0.10)
+                         );
+        var labelMapping = Map.of(
+                "RUSH", StrategyArchetype.PROTOSS_GATEWAY_RUSH,
+                "MACRO", StrategyArchetype.PROTOSS_MACRO
+                                 );
+        return new DetectorOrchestrator(
+                registry, priors, cpts, labelMapping, 10, hardEvidenceThreshold);
+    }
+
 }
