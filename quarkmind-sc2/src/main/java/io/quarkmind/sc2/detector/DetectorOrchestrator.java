@@ -136,6 +136,17 @@ public class DetectorOrchestrator {
         return tracker.detectTransition();
     }
 
+    public Map<String, Double> getSensitivities() {
+        if (!initialized) {return Map.of();}
+        return engine.getVariableSensitivities();
+    }
+
+    public io.quarkmind.inference.bayes.BayesStats getStats() {
+        if (!initialized) {return null;}
+        return engine.getStats();
+    }
+
+
     public void reset() {
         tracker.reset();
         previousDetectorOutputs.clear();

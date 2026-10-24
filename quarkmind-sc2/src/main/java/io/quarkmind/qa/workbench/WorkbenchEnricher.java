@@ -40,6 +40,13 @@ public class WorkbenchEnricher {
         broadcaster.broadcast(new WorkbenchEvent("pattern", new PatternPayload(enriched)));
     }
 
+    void onDetectorStats(@Observes io.quarkmind.agent.plugin.DetectorStatsPublished event) {
+        broadcaster.broadcast(new WorkbenchEvent("detector_stats",
+                                                 new DetectorStatsPayload(event.dirtyVariableCount(), event.propagationNanos(),
+                                                                          event.retractionCount(), event.evidenceVariableCount(), event.sensitivities())));
+    }
+
+
     void onCoachingAdvice(@Observes CoachingAdvicePublished event) {
         broadcaster.broadcast(new WorkbenchEvent("coaching",
             new CoachingPayload(event.advice().advice(), event.advice().domainTag(), event.urgencyTier(), event.gameFrame(), event.correlationId())));

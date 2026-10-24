@@ -248,6 +248,19 @@ public class CascadingPatternClassifier {
         return snapshot;
     }
 
+    io.quarkmind.agent.plugin.DetectorStatsPublished detectorStats() {
+        if (detectorOrchestrator == null) {return null;}
+        var stats = detectorOrchestrator.getStats();
+        if (stats == null) {return null;}
+        return new io.quarkmind.agent.plugin.DetectorStatsPublished(
+                stats.dirtyVariableCount(),
+                stats.lastPropagationNanos(),
+                stats.retractionCount(),
+                stats.evidenceVariableCount(),
+                detectorOrchestrator.getSensitivities());
+    }
+
+
     static boolean shouldFireLlmFallback(EnumMap<StrategyArchetype, Double> cumulativeConfidence,
                                          double threshold, long currentFrame, long minGameTimeFrames,
                                          long lastFallbackFrame, long cooldownFrames) {

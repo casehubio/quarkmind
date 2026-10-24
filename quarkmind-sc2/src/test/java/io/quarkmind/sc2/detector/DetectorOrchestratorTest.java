@@ -15,6 +15,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DetectorOrchestratorTest {
@@ -178,6 +179,32 @@ class DetectorOrchestratorTest {
         assertEquals(full.get(0).archetype(), partial.get(0).archetype(),
                      "Dominant archetype should remain consistent with stale eco_det evidence");
     }
+
+    @Test
+    void getStatsReturnsNullBeforeInitialization() {
+        var config = new DetectorCatalogConfig(List.of());
+        var uninitOrch = new DetectorOrchestrator(
+                new DetectorRegistry(config), Map.of(), Map.of(), Map.of(), 10);
+        assertNull(uninitOrch.getStats());
+    }
+
+    @Test
+    void getStatsReturnsStatsAfterClassify() {
+        orchestrator.classify(Map.of("rush_det", 0.85f), List.of(), 100);
+        var stats = orchestrator.getStats();
+        assertNotNull(stats);
+        assertTrue(stats.lastPropagationNanos() >= 0);
+    }
+
+    @Test
+    void getSensitivitiesReturnsRankingsAfterClassify() {
+        var twoDetOrch = createTwoDetectorOrchestrator(0.001);
+        twoDetOrch.classify(Map.of("rush_det", 0.9f, "eco_det", 0.1f), List.of(), 100);
+        var sensitivities = twoDetOrch.getSensitivities();
+        assertNotNull(sensitivities);
+        assertFalse(sensitivities.isEmpty());
+    }
+
 
     private DetectorOrchestrator createTwoDetectorOrchestrator(double sensitivityThreshold) {
         var config = new DetectorCatalogConfig(List.of(

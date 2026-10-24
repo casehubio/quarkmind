@@ -67,4 +67,18 @@ class WorkbenchEventTest {
         assertTrue(json.contains("\"capability\":\"commentary.reactive\""));
         assertTrue(json.contains("\"latencyMs\":120"));
     }
+
+    @Test
+    void detectorStatsPayload_carriesStats() {
+        var sensitivities = java.util.Map.of("rush_det", 0.42, "eco_det", 0.08);
+        var payload       = new DetectorStatsPayload(3, 1500L, 1, 2, sensitivities);
+        var event         = new WorkbenchEvent("detector_stats", payload);
+        assertEquals("detector_stats", event.type());
+        assertEquals(3, payload.dirtyVariableCount());
+        assertEquals(1500L, payload.propagationNanos());
+        assertEquals(1, payload.retractionCount());
+        assertEquals(2, payload.evidenceVariableCount());
+        assertEquals(2, payload.sensitivities().size());
+        assertEquals(0.42, payload.sensitivities().get("rush_det"));
+    }
 }

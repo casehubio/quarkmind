@@ -2,10 +2,10 @@ package io.quarkmind.plugin.scouting;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.casehub.annotation.CaseType;
-import io.casehub.api.context.CaseContext;
 import io.casehub.agency.summarisation.EventLevel;
 import io.casehub.agency.summarisation.LevelEvent;
+import io.casehub.annotation.CaseType;
+import io.casehub.api.context.CaseContext;
 import io.casehub.ledger.api.model.AttestationVerdict;
 import io.casehub.platform.api.identity.ActorType;
 import io.casehub.platform.api.identity.TenancyConstants;
@@ -32,8 +32,8 @@ import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.MapInfo;
 import io.quarkmind.domain.PatternAssessment;
-import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.PhaseResolver;
+import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.StrategyTransition;
@@ -78,6 +78,9 @@ public class DroolsScoutingTask implements ScoutingTask {
     @Inject
             Event<PatternAssessmentPublished>  patternAssessmentPublished;
     @Inject Event<StrategyTransitionPublished> strategyTransitionPublished;
+    @Inject
+            Event<io.quarkmind.agent.plugin.DetectorStatsPublished> detectorStatsPublished;
+
 
     @Inject GameSession gameSession;
 
@@ -411,6 +414,10 @@ public class DroolsScoutingTask implements ScoutingTask {
         dispatchToAdvisory(payload);
         if (payload instanceof PatternAssessmentPayload pa && patternAssessmentPublished != null) {
             patternAssessmentPublished.fire(new PatternAssessmentPublished(pa.assessments()));
+            var stats = cascadingClassifier.detectorStats();
+            if (stats != null && detectorStatsPublished != null) {
+                detectorStatsPublished.fire(stats);
+            }
         }
         if (payload instanceof ScoutingIntelPayload.TransitionDetected td
                 && strategyTransitionPublished != null) {
