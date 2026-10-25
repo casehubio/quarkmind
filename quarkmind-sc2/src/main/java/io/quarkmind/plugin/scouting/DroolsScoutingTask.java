@@ -332,6 +332,10 @@ public class DroolsScoutingTask implements ScoutingTask {
 
             var assessments = cascadeResult.assessments();
             ctx.set(QuarkMindCaseFile.SCOUTING_FINAL_ASSESSMENT, assessments);
+            var explanation = cascadingClassifier.explanationSummary();
+            if (explanation != null) {
+                ctx.set(QuarkMindCaseFile.SCOUTING_EXPLANATION, explanation);
+            }
             if (!assessments.isEmpty()) {
                 boolean changed = assessmentsChanged(prevAssessments, assessments);
                 if (changed && patternAssessmentDispatchEnabled

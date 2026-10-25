@@ -9,5 +9,6 @@ public record DetectorStatsPayload(
         int evidenceVariableCount,
         Map<String, Double> sensitivities,
         String mapStrategy,
-        Map<String, Object> mapAssignment
+        Map<String, Object> mapAssignment,
+        String explanationSummary
 ) implements WorkbenchPayload {}

@@ -248,6 +248,35 @@ class DetectorOrchestratorTest {
         assertEquals("RUSH", assignment.get("Strategy"));
     }
 
+    @Test
+    void explanationTraceReturnsNullBeforeClassify() {
+        var config = new DetectorCatalogConfig(List.of());
+        var orch = new DetectorOrchestrator(
+                new DetectorRegistry(config), Map.of(), Map.of(), Map.of(), 10);
+        assertNull(orch.getExplanationTrace());
+    }
+
+    @Test
+    void explanationTraceListsInfluentialDetectors() {
+        orchestrator.classify(Map.of("rush_det", 0.85f), List.of(), 100);
+        var trace = orchestrator.getExplanationTrace();
+
+        assertNotNull(trace);
+        assertEquals("Strategy", trace.targetVar());
+        assertFalse(trace.influences().isEmpty());
+        assertEquals("rush_det", trace.influences().get(0).variableName());
+    }
+
+    @Test
+    void explanationSummaryIsHumanReadable() {
+        var twoDetOrch = createTwoDetectorOrchestrator(0.001);
+        twoDetOrch.classify(Map.of("rush_det", 0.9f, "eco_det", 0.1f), List.of(), 100);
+        var summary = twoDetOrch.getExplanationSummary();
+
+        assertNotNull(summary);
+        assertTrue(summary.contains("rush_det"), "Summary should name the detector");
+    }
+
 
     private DetectorOrchestrator createTwoDetectorOrchestrator(double sensitivityThreshold) {
         var config = new DetectorCatalogConfig(List.of(

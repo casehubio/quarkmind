@@ -115,6 +115,34 @@ class CoachingWorkerFactoryTest {
         assertThat(message).contains("0.85");
     }
 
+    @org.junit.jupiter.api.Test
+    void buildUserMessage_includesExplanationTrace_whenPresent() {
+        java.util.Map<String, Object> input = java.util.Map.of(
+                QuarkMindCaseFile.COACHING_TRIGGER, java.util.Map.of(
+                        "gameFrame", 2000L,
+                        "urgencyTier", "STRATEGIC",
+                        "momentTypes", java.util.List.of("TECH_TRANSITION_DETECTED")),
+                QuarkMindCaseFile.SCOUTING_EXPLANATION, "rush_det (increased, influence=0.420); eco_det (decreased, influence=0.080)",
+                QuarkMindCaseFile.MINERALS, 300);
+        var message = CoachingWorkerFactory.buildUserMessage(input, null);
+        assertThat(message).contains("EVIDENCE REASONING:");
+        assertThat(message).contains("rush_det");
+        assertThat(message).contains("eco_det");
+    }
+
+    @org.junit.jupiter.api.Test
+    void buildUserMessage_omitsExplanation_whenAbsent() {
+        java.util.Map<String, Object> input = java.util.Map.of(
+                QuarkMindCaseFile.COACHING_TRIGGER, java.util.Map.of(
+                        "gameFrame", 1000L,
+                        "urgencyTier", "CRISIS",
+                        "momentTypes", java.util.List.of("NEXUS_UNDER_ATTACK")),
+                QuarkMindCaseFile.MINERALS, 500);
+        var message = CoachingWorkerFactory.buildUserMessage(input, null);
+        assertThat(message).doesNotContain("EVIDENCE REASONING:");
+    }
+
+
     @Test
     void buildUserMessage_withTaxonomy_includesCountersAndPhase() {
         var taxonomy = new io.quarkmind.agent.StrategyTaxonomy();

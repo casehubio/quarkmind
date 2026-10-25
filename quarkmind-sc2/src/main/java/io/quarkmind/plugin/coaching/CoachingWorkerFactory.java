@@ -187,6 +187,11 @@ public final class CoachingWorkerFactory {
             }
         }
 
+        Object explanation = input.get(QuarkMindCaseFile.SCOUTING_EXPLANATION);
+        if (explanation != null) {
+            sb.append("EVIDENCE REASONING: ").append(explanation).append("\n");
+        }
+
         Object phase = input.get(QuarkMindCaseFile.GAME_PHASE);
         if (phase != null) {sb.append("GAME PHASE: ").append(phase).append("\n");}
 

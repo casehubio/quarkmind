@@ -261,7 +261,13 @@ public class CascadingPatternClassifier {
                 stats.evidenceVariableCount(),
                 detectorOrchestrator.getSensitivities(),
                 mapStrategy != null ? mapStrategy.name() : null,
-                detectorOrchestrator.getMapAssignment());
+                detectorOrchestrator.getMapAssignment(),
+                detectorOrchestrator.getExplanationSummary());
+    }
+
+    String explanationSummary() {
+        if (detectorOrchestrator == null) {return null;}
+        return detectorOrchestrator.getExplanationSummary();
     }
 
 

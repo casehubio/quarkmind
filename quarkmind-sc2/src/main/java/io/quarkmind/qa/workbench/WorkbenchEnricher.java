@@ -44,7 +44,8 @@ public class WorkbenchEnricher {
         broadcaster.broadcast(new WorkbenchEvent("detector_stats",
                                                  new DetectorStatsPayload(event.dirtyVariableCount(), event.propagationNanos(),
                                                                           event.retractionCount(), event.evidenceVariableCount(), event.sensitivities(),
-                                                                          event.mapStrategy(), event.mapAssignment())));
+                                                                          event.mapStrategy(), event.mapAssignment(),
+                                                                          event.explanationSummary())));
     }
 
 

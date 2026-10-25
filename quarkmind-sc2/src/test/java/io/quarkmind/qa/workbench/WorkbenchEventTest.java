@@ -72,7 +72,7 @@ class WorkbenchEventTest {
     void detectorStatsPayload_carriesStats() {
         var sensitivities = java.util.Map.of("rush_det", 0.42, "eco_det", 0.08);
         var mapAssignment = java.util.Map.<String, Object>of("Strategy", "RUSH", "rush_det", "detected");
-        var payload       = new DetectorStatsPayload(3, 1500L, 1, 2, sensitivities, "RUSH", mapAssignment);
+        var payload       = new DetectorStatsPayload(3, 1500L, 1, 2, sensitivities, "RUSH", mapAssignment, "rush_det (increased, influence=0.420)");
         var event         = new WorkbenchEvent("detector_stats", payload);
         assertEquals("detector_stats", event.type());
         assertEquals(3, payload.dirtyVariableCount());

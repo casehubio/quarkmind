@@ -158,6 +158,30 @@ public class DetectorOrchestrator {
         return engine.mapInference().assignment();
     }
 
+    public io.quarkmind.inference.bayes.ExplanationTrace getExplanationTrace() {
+        if (!initialized) {return null;}
+        try {
+            return engine.explain();
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    public String getExplanationSummary() {
+        var trace = getExplanationTrace();
+        if (trace == null || trace.influences().isEmpty()) {return null;}
+        var sb    = new StringBuilder();
+        int limit = Math.min(trace.influences().size(), 5);
+        for (int i = 0; i < limit; i++) {
+            var inf = trace.influences().get(i);
+            if (i > 0) {sb.append("; ");}
+            sb.append(inf.variableName())
+              .append(" (").append(inf.direction().name().toLowerCase())
+              .append(", influence=").append(String.format("%.3f", inf.influence())).append(")");
+        }
+        return sb.toString();
+    }
+
 
     public void reset() {
         tracker.reset();
