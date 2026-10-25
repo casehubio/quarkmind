@@ -191,7 +191,8 @@ public class CascadingPatternClassifier {
                     cumulativeConfidence.merge(assessment.archetype(), assessment.confidence(), Math::max);
                 }
                 inc(onnxResolutions);
-                return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.FUSION), false, transition);
+                var mapStrategy = detectorOrchestrator.getMapStrategy();
+                return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.FUSION), false, transition, mapStrategy);
             }
         }
 
@@ -252,12 +253,15 @@ public class CascadingPatternClassifier {
         if (detectorOrchestrator == null) {return null;}
         var stats = detectorOrchestrator.getStats();
         if (stats == null) {return null;}
+        var mapStrategy = detectorOrchestrator.getMapStrategy();
         return new io.quarkmind.agent.plugin.DetectorStatsPublished(
                 stats.dirtyVariableCount(),
                 stats.lastPropagationNanos(),
                 stats.retractionCount(),
                 stats.evidenceVariableCount(),
-                detectorOrchestrator.getSensitivities());
+                detectorOrchestrator.getSensitivities(),
+                mapStrategy != null ? mapStrategy.name() : null,
+                detectorOrchestrator.getMapAssignment());
     }
 
 

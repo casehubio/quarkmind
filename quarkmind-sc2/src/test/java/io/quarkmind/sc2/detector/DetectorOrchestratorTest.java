@@ -205,6 +205,49 @@ class DetectorOrchestratorTest {
         assertFalse(sensitivities.isEmpty());
     }
 
+    @Test
+    void mapStrategyMatchesMarginalWhenDecisive() {
+        orchestrator.classify(Map.of("rush_det", 0.9f), List.of(), 100);
+        var mapStrategy = orchestrator.getMapStrategy();
+
+        assertNotNull(mapStrategy);
+        assertEquals(StrategyArchetype.PROTOSS_GATEWAY_RUSH, mapStrategy,
+                     "MAP should agree with marginal winner when one archetype clearly dominates");
+    }
+
+    @Test
+    void mapStrategyReturnsNullBeforeClassify() {
+        var config = new DetectorCatalogConfig(List.of());
+        var orch = new DetectorOrchestrator(
+                new DetectorRegistry(config), Map.of(), Map.of(), Map.of(), 10);
+        assertNull(orch.getMapStrategy());
+    }
+
+    @Test
+    void mapAssignmentContainsStrategyAndDetectors() {
+        orchestrator.classify(Map.of("rush_det", 0.85f), List.of(), 100);
+        var assignment = orchestrator.getMapAssignment();
+
+        assertNotNull(assignment);
+        assertTrue(assignment.containsKey("Strategy"),
+                   "MAP assignment should contain Strategy variable");
+        assertTrue(assignment.containsKey("rush_det"),
+                   "MAP assignment should contain detector variables");
+    }
+
+    @Test
+    void mapStrategyCoherentWithTwoDetectors() {
+        var twoDetOrch = createTwoDetectorOrchestrator(0.001);
+        twoDetOrch.classify(Map.of("rush_det", 0.9f, "eco_det", 0.1f), List.of(), 100);
+
+        var mapStrategy = twoDetOrch.getMapStrategy();
+        assertEquals(StrategyArchetype.PROTOSS_GATEWAY_RUSH, mapStrategy,
+                     "MAP should pick RUSH when rush_det is high and eco_det is low");
+
+        var assignment = twoDetOrch.getMapAssignment();
+        assertEquals("RUSH", assignment.get("Strategy"));
+    }
+
 
     private DetectorOrchestrator createTwoDetectorOrchestrator(double sensitivityThreshold) {
         var config = new DetectorCatalogConfig(List.of(

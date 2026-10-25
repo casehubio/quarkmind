@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CascadingPatternClassifierTest {
@@ -110,6 +111,45 @@ class CascadingPatternClassifierTest {
         assertEquals(AssessmentSource.FUSION, result.assessments().get(0).source());
         assertFalse(result.llmTriggered());
     }
+
+    @Test
+    void fusionResolution_populatesMapStrategy() {
+        var orchestrator = buildTestOrchestrator();
+        var classifier   = new CascadingPatternClassifier(0.7, 0.5, orchestrator, null);
+        var evidence     = List.of(new EvidenceMarker(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.5, "moderate rush signal"));
+        var features     = new StrategyFeatures(Map.of("temporal", new float[][]{{1.0f}}));
+
+        var result = classifier.classify(evidence, List.of(), features, Race.ZERG, 100, -1, null);
+        assertFalse(result.assessments().isEmpty());
+        assertEquals(AssessmentSource.FUSION, result.assessments().get(0).source());
+        assertNotNull(result.mapStrategy(), "Fusion resolution should include MAP strategy");
+    }
+
+    @Test
+    void droolsResolution_mapStrategyIsNull() {
+        var classifier = new CascadingPatternClassifier(0.7, 0.5);
+        var evidence   = List.of(new EvidenceMarker(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.8, "strong rush signal"));
+        var result     = classifier.classify(evidence, List.of(), null, null, 100, -1, null);
+
+        assertEquals(AssessmentSource.DROOLS, result.assessments().get(0).source());
+        org.junit.jupiter.api.Assertions.assertNull(result.mapStrategy(),
+                                                    "Drools resolution should not have MAP strategy — no BJT inference ran");
+    }
+
+    @Test
+    void mapStrategyMatchesFusionWinnerWhenDecisive() {
+        var orchestrator = buildTestOrchestrator();
+        var classifier   = new CascadingPatternClassifier(0.99, 0.3, orchestrator, null);
+        var evidence     = List.of(new EvidenceMarker(StrategyArchetype.ZERG_ZERGLING_RUSH, 0.5, "rush signal"));
+        var features     = new StrategyFeatures(Map.of("temporal", new float[][]{{1.0f}}));
+
+        var result = classifier.classify(evidence, List.of(), features, Race.ZERG, 100, -1, null);
+        if (result.mapStrategy() != null) {
+            assertEquals(result.assessments().get(0).archetype(), result.mapStrategy(),
+                         "MAP strategy should agree with marginal winner when one archetype dominates");
+        }
+    }
+
 
     @Test
     void fusionUnavailable_fallsThroughToLlm() {

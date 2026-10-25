@@ -7,5 +7,7 @@ public record DetectorStatsPublished(
         long propagationNanos,
         int retractionCount,
         int evidenceVariableCount,
-        Map<String, Double> sensitivities
+        Map<String, Double> sensitivities,
+        String mapStrategy,
+        Map<String, Object> mapAssignment
 ) {}

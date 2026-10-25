@@ -146,6 +146,18 @@ public class DetectorOrchestrator {
         return engine.getStats();
     }
 
+    public StrategyArchetype getMapStrategy() {
+        if (!initialized) {return null;}
+        io.quarkmind.inference.bayes.MapAssignment map           = engine.mapInference();
+        Object                                     strategyLabel = map.assignment().get("Strategy");
+        return strategyLabel != null ? labelToArchetype.get(strategyLabel.toString()) : null;
+    }
+
+    public java.util.Map<String, Object> getMapAssignment() {
+        if (!initialized) {return java.util.Map.of();}
+        return engine.mapInference().assignment();
+    }
+
 
     public void reset() {
         tracker.reset();

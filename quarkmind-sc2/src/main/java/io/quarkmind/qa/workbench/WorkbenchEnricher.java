@@ -43,7 +43,8 @@ public class WorkbenchEnricher {
     void onDetectorStats(@Observes io.quarkmind.agent.plugin.DetectorStatsPublished event) {
         broadcaster.broadcast(new WorkbenchEvent("detector_stats",
                                                  new DetectorStatsPayload(event.dirtyVariableCount(), event.propagationNanos(),
-                                                                          event.retractionCount(), event.evidenceVariableCount(), event.sensitivities())));
+                                                                          event.retractionCount(), event.evidenceVariableCount(), event.sensitivities(),
+                                                                          event.mapStrategy(), event.mapAssignment())));
     }
 
 
