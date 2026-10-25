@@ -179,7 +179,7 @@ public class CascadingPatternClassifier {
                 var allKeys = new java.util.HashSet<String>();
                 for (var def : allActive) { allKeys.add(def.key(enemyRace)); }
                 if (!allKeys.isEmpty()) {
-                    detectorOrchestrator.initializeNetwork(List.copyOf(allKeys));
+                    detectorOrchestrator.initializeNetwork(List.copyOf(allKeys), phase, enemyRace);
                     var toEvaluate = detectorOrchestrator.getDetectorsToEvaluate(allKeys);
                     detectorOutputs = detectorRunner.runActiveDetectors(phase, enemyRace, onnxFeatures, toEvaluate);
                 }

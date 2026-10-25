@@ -25,6 +25,8 @@ public class DetectorOrchestrator {
     private final double                         hardEvidenceThreshold;
     private final double                         sensitivityThreshold;
     private       Map<String, Float>             previousDetectorOutputs = new HashMap<>();
+    private       Map<String, BayesNetwork>      learnedNetworks = Map.of();
+    private       int                            detectorOutcomeCount    = 2;
 
 
     private String[] outcomeNames;
@@ -63,6 +65,18 @@ public class DetectorOrchestrator {
         this.sensitivityThreshold  = sensitivityThreshold;
     }
 
+    public DetectorOrchestrator(DetectorRegistry registry,
+                                Map<String, Double> priors,
+                                Map<String, Map<String, Double>> cpts,
+                                Map<String, StrategyArchetype> labelToArchetype,
+                                int windowSize,
+                                double hardEvidenceThreshold,
+                                double sensitivityThreshold,
+                                Map<String, BayesNetwork> learnedNetworks) {
+        this(registry, priors, cpts, labelToArchetype, windowSize, hardEvidenceThreshold, sensitivityThreshold);
+        this.learnedNetworks = learnedNetworks != null ? Map.copyOf(learnedNetworks) : Map.of();
+    }
+
 
     public void initializeNetwork(List<String> newDetectorNames) {
         var currentSorted = this.activeDetectorNames.stream().sorted().toList();
@@ -76,6 +90,72 @@ public class DetectorOrchestrator {
         previousDetectorOutputs.clear();
         initialized = true;
     }
+
+    public void initializeNetwork(List<String> newDetectorNames,
+                                  io.quarkmind.domain.GamePhase phase,
+                                  io.quarkmind.domain.Race enemyRace) {
+        var currentSorted = this.activeDetectorNames.stream().sorted().toList();
+        var newSorted     = newDetectorNames.stream().sorted().toList();
+        if (initialized && currentSorted.equals(newSorted)) {return;}
+
+        String       key     = phase.name() + "_vs_" + enemyRace.name().toLowerCase();
+        BayesNetwork learned = learnedNetworks.get(key);
+        if (learned != null) {
+            engine.initialize(learned, "Strategy");
+            this.outcomeNames         = engine.getOutcomeNames();
+            this.activeDetectorNames  = List.copyOf(newDetectorNames);
+            this.detectorOutcomeCount = outcomeNames.length > 0 ? detectOutcomeCount(learned) : 2;
+            previousDetectorOutputs.clear();
+            initialized = true;
+            return;
+        }
+
+        BayesNetwork network = SC2NetworkBuilder.build(priors, newDetectorNames, cpts);
+        engine.initialize(network, "Strategy");
+        this.outcomeNames         = engine.getOutcomeNames();
+        this.activeDetectorNames  = List.copyOf(newDetectorNames);
+        this.detectorOutcomeCount = 2;
+        previousDetectorOutputs.clear();
+        initialized = true;
+    }
+
+    private static int detectOutcomeCount(BayesNetwork network) {
+        for (var node : network) {
+            var var = node.getContent();
+            if (var.getGiven().length > 0) {
+                return var.getOutcomes().length;
+            }
+        }
+        return 2;
+    }
+
+    static double[] toThreeElementLikelihood(float score) {
+        if (score >= 0.95f) {return new double[]{1.0, 0.0, 0.0};}
+        if (score <= 0.05f) {return new double[]{0.0, 0.0, 1.0};}
+        double high, medium, low;
+        if (score > 0.7f) {
+            double t = (score - 0.7) / 0.25;
+            high   = 0.5 + 0.5 * t;
+            medium = 0.5 - 0.5 * t;
+            low    = 0.0;
+        } else if (score >= 0.5f) {
+            high = 0.0;
+            double t = (score - 0.5) / 0.2;
+            medium = 0.5 + 0.5 * t;
+            low    = 0.5 - 0.5 * t;
+        } else if (score > 0.3f) {
+            high = 0.0;
+            double t = (score - 0.3) / 0.2;
+            medium = 0.5 * t;
+            low    = 1.0 - 0.5 * t;
+        } else {
+            high   = 0.0;
+            medium = 0.0;
+            low    = 1.0;
+        }
+        return new double[]{high, medium, low};
+    }
+
 
     public java.util.Set<String> getDetectorsToEvaluate(java.util.Set<String> available) {
         if (!initialized || previousDetectorOutputs.isEmpty()) {
@@ -109,12 +189,16 @@ public class DetectorOrchestrator {
 
         for (var entry : combined.entrySet()) {
             float p = entry.getValue();
-            if (p >= hardEvidenceThreshold) {
-                evidence.put(entry.getKey(), new double[]{1.0, 0.0});
-            } else if (p <= 1.0 - hardEvidenceThreshold) {
-                evidence.put(entry.getKey(), new double[]{0.0, 1.0});
+            if (detectorOutcomeCount == 3) {
+                evidence.put(entry.getKey(), toThreeElementLikelihood(p));
             } else {
-                evidence.put(entry.getKey(), new double[]{p, 1.0 - p});
+                if (p >= hardEvidenceThreshold) {
+                    evidence.put(entry.getKey(), new double[]{1.0, 0.0});
+                } else if (p <= 1.0 - hardEvidenceThreshold) {
+                    evidence.put(entry.getKey(), new double[]{0.0, 1.0});
+                } else {
+                    evidence.put(entry.getKey(), new double[]{p, 1.0 - p});
+                }
             }
         }
 

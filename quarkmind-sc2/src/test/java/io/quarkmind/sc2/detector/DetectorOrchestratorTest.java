@@ -277,6 +277,77 @@ class DetectorOrchestratorTest {
         assertTrue(summary.contains("rush_det"), "Summary should name the detector");
     }
 
+    @Test
+    void threeOutcomeLearnedNetworkProducesAssessments() {
+        var builder = io.quarkmind.inference.bayes.BayesNetworkBuilder.create();
+        builder.variable("Strategy", "RUSH", "MACRO").prior(0.3, 0.7);
+        builder.variable("rush_det", "HIGH", "MEDIUM", "LOW")
+               .given("Strategy").cpt(0.8, 0.15, 0.05, 0.1, 0.2, 0.7);
+        var learnedNetwork = builder.build();
+
+        var learnedNetworks = Map.of("EARLY_vs_protoss", learnedNetwork);
+        var config = new DetectorCatalogConfig(List.of(
+                new DetectorCatalogConfig.DetectorDef("rush_det", GamePhase.EARLY,
+                                                      FeatureTier.ECONOMY, Map.of(Race.PROTOSS, List.of("RUSH")), null)));
+        var registry = new DetectorRegistry(config);
+        var priors   = Map.of("RUSH", 0.3, "MACRO", 0.7);
+        var cpts     = Map.<String, Map<String, Double>>of();
+        var labelMapping = Map.of(
+                "RUSH", StrategyArchetype.PROTOSS_GATEWAY_RUSH,
+                "MACRO", StrategyArchetype.PROTOSS_MACRO);
+
+        var orch = new DetectorOrchestrator(registry, priors, cpts,
+                                            labelMapping, 10, 0.95, 0.01, learnedNetworks);
+        orch.initializeNetwork(List.of("rush_det"), GamePhase.EARLY, Race.PROTOSS);
+
+        var result = orch.classify(Map.of("rush_det", 0.9f), List.of(), 100);
+        assertFalse(result.isEmpty());
+        assertEquals(StrategyArchetype.PROTOSS_GATEWAY_RUSH, result.get(0).archetype());
+    }
+
+    @Test
+    void fallbackToHandTunedWhenNoLearnedNetwork() {
+        var learnedNetworks = Map.<String, io.quarkmind.inference.bayes.BayesNetwork>of();
+        var config = new DetectorCatalogConfig(List.of(
+                new DetectorCatalogConfig.DetectorDef("rush_det", GamePhase.EARLY,
+                                                      FeatureTier.ECONOMY, Map.of(Race.PROTOSS, List.of("RUSH")), null)));
+        var registry = new DetectorRegistry(config);
+        var priors   = Map.of("RUSH", 0.3, "MACRO", 0.7);
+        var cpts     = Map.of("rush_det", Map.of("RUSH", 0.85, "MACRO", 0.10));
+        var labelMapping = Map.of(
+                "RUSH", StrategyArchetype.PROTOSS_GATEWAY_RUSH,
+                "MACRO", StrategyArchetype.PROTOSS_MACRO);
+
+        var orch = new DetectorOrchestrator(registry, priors, cpts,
+                                            labelMapping, 10, 0.95, 0.01, learnedNetworks);
+        orch.initializeNetwork(List.of("rush_det"), GamePhase.MID, Race.PROTOSS);
+
+        var result = orch.classify(Map.of("rush_det", 0.85f), List.of(), 100);
+        assertFalse(result.isEmpty());
+        assertEquals(StrategyArchetype.PROTOSS_GATEWAY_RUSH, result.get(0).archetype());
+    }
+
+    @Test
+    void toThreeElementLikelihoodBoundaryValues() {
+        var high = DetectorOrchestrator.toThreeElementLikelihood(0.95f);
+        assertEquals(1.0, high[0], 0.001);
+        assertEquals(0.0, high[1], 0.001);
+        assertEquals(0.0, high[2], 0.001);
+
+        var low = DetectorOrchestrator.toThreeElementLikelihood(0.05f);
+        assertEquals(0.0, low[0], 0.001);
+        assertEquals(0.0, low[1], 0.001);
+        assertEquals(1.0, low[2], 0.001);
+
+        var midpoint = DetectorOrchestrator.toThreeElementLikelihood(0.55f);
+        assertEquals(0.0, midpoint[0], 0.001);
+        assertTrue(midpoint[1] > 0.5, "MEDIUM should dominate at score 0.55");
+        assertTrue(midpoint[2] < 0.5);
+
+        var sum = midpoint[0] + midpoint[1] + midpoint[2];
+        assertEquals(1.0, sum, 0.001);
+    }
+
 
     private DetectorOrchestrator createTwoDetectorOrchestrator(double sensitivityThreshold) {
         var config = new DetectorCatalogConfig(List.of(
