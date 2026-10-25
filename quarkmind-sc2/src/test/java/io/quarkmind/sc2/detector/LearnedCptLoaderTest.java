@@ -6,7 +6,6 @@ import io.quarkmind.inference.bayes.NetworkSpec;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LearnedCptLoaderTest {
 
@@ -51,18 +50,13 @@ class LearnedCptLoaderTest {
     }
 
     @Test
-    void loadFromClasspathReturnsEmptyWhenNoFilesPresent() {
+    void loadFromClasspathLoadsAvailableFiles() {
         var loader = new LearnedCptLoader();
         var result = loader.loadFromClasspath();
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void loadFromClasspathThrowsWhenRequiredAndMissing() {
-        var loader = new LearnedCptLoader();
-        loader.requireLearnedCpts = true;
-        assertThatThrownBy(loader::loadFromClasspath)
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessageContaining("required but missing");
+        assertThat(result).isNotEmpty();
+        for (var entry : result.entrySet()) {
+            assertThat(entry.getKey()).matches("(EARLY|MID|LATE)_vs_(terran|protoss|zerg)");
+            assertThat(entry.getValue()).isNotNull();
+        }
     }
 }

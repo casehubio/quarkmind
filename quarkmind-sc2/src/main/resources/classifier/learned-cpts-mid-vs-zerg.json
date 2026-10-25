@@ -1,0 +1,67 @@
+{
+  "matchup" : "vs_zerg",
+  "phase" : "MID",
+  "learnedFrom" : {
+    "replayCount" : 44796,
+    "observationCount" : 44796,
+    "extractorVersion" : "f4b911f3",
+    "generatedAt" : "2026-10-25T20:28:01.890354Z"
+  },
+  "network" : {
+    "name" : "learned-cpts-mid-vs_zerg",
+    "variables" : [ {
+      "name" : "Strategy",
+      "outcomes" : [ "HYDRA_PUSH", "LING_BANE", "MACRO_ECONOMY", "MUTA_HARASS", "ROACH_RUSH", "RUSH" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 1.1160216061782956E-4, 0.09555376992098567, 0.313758314360966, 4.4640864247131826E-5, 0.1111111111111111, 0.47942056158207225 ] ]
+      }
+    }, {
+      "name" : "mid_air_tech_vs_zerg",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.14285714285714285, 0.14285714285714285, 0.7142857142857143 ], [ 2.3348120476301658E-4, 0.0046696240952603316, 0.9950968946999766 ], [ 4.979016999786613E-4, 0.003840955971263959, 0.9956611423287574 ], [ 0.5, 0.25, 0.25 ], [ 8.032128514056225E-4, 0.004216867469879518, 0.9949799196787149 ], [ 0.002048321772729389, 0.014384805176667752, 0.9835668730506029 ] ]
+      }
+    }, {
+      "name" : "mid_ground_heavy_vs_zerg",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.14285714285714285, 0.42857142857142855, 0.42857142857142855 ], [ 2.3348120476301658E-4, 0.005370067709549381, 0.9943964510856876 ], [ 7.112881428266591E-5, 0.006543850914005263, 0.993385020271712 ], [ 0.25, 0.5, 0.25 ], [ 2.0080321285140563E-4, 0.012449799196787148, 0.9873493975903614 ], [ 4.6552767562031564E-5, 0.009357106279968344, 0.9905963409524696 ] ]
+      }
+    }, {
+      "name" : "mid_timing_attack_vs_zerg",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.14285714285714285, 0.14285714285714285, 0.7142857142857143 ], [ 0.9738501050665421, 0.022414195657249593, 0.0037356992762082653 ], [ 7.112881428266591E-5, 6.401593285439932E-4, 0.9992887118571734 ], [ 0.25, 0.25, 0.5 ], [ 0.006626506024096385, 6.024096385542169E-4, 0.9927710843373494 ], [ 0.011172664214887575, 0.030911037661188957, 0.9579162981239234 ] ]
+      }
+    } ],
+    "edges" : [ {
+      "from" : "Strategy",
+      "to" : "mid_air_tech_vs_zerg",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    }, {
+      "from" : "Strategy",
+      "to" : "mid_ground_heavy_vs_zerg",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    }, {
+      "from" : "Strategy",
+      "to" : "mid_timing_attack_vs_zerg",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    } ],
+    "domainDescription" : "Learned from 44796 replays, 44796 observations"
+  }
+}

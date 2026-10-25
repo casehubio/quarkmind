@@ -1,0 +1,53 @@
+{
+  "matchup" : "vs_terran",
+  "phase" : "LATE",
+  "learnedFrom" : {
+    "replayCount" : 69461,
+    "observationCount" : 69461,
+    "extractorVersion" : "f4b911f3",
+    "generatedAt" : "2026-10-25T20:28:01.739538Z"
+  },
+  "network" : {
+    "name" : "learned-cpts-late-vs_terran",
+    "variables" : [ {
+      "name" : "Strategy",
+      "outcomes" : [ "AIR_SUPERIORITY", "BANSHEE_HARASS", "BIO_TIMING", "MACRO_ECONOMY", "MECH_PUSH", "RUSH", "TECH_RUSH" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 5.47014452697645E-4, 0.06831922611850061, 0.5242557724419877, 0.0024759601543156563, 0.20716013128346863, 0.08639949329187539, 0.11084240225715437 ] ]
+      }
+    }, {
+      "name" : "late_air_superiority_vs_terran",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.025, 0.95, 0.025 ], [ 2.1061499578770007E-4, 0.9995787700084247, 2.1061499578770007E-4 ], [ 2.7456687076137395E-5, 0.9995332363197057, 4.393069932181983E-4 ], [ 0.005747126436781609, 0.9885057471264368, 0.005747126436781609 ], [ 6.947821857847565E-5, 0.9997915653442646, 1.389564371569513E-4 ], [ 1.6655562958027982E-4, 0.9995003331112592, 3.3311125916055963E-4 ], [ 1.2983640612827837E-4, 0.9994806543754868, 3.8950921838483513E-4 ] ]
+      }
+    }, {
+      "name" : "late_ground_army_vs_terran",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.8, 0.15, 0.05 ], [ 0.10235888795282225, 0.11373209772535804, 0.7839090143218197 ], [ 0.030943686334806843, 0.07207380357486065, 0.8969825100903325 ], [ 0.08620689655172414, 0.29310344827586204, 0.6206896551724138 ], [ 0.9130132703397484, 0.07684290974779406, 0.010143819912457445 ], [ 6.662225183211193E-4, 0.006828780812791473, 0.9925049966688874 ], [ 0.08049857179953258, 0.20449233965203842, 0.7150090885484289 ] ]
+      }
+    } ],
+    "edges" : [ {
+      "from" : "Strategy",
+      "to" : "late_air_superiority_vs_terran",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    }, {
+      "from" : "Strategy",
+      "to" : "late_ground_army_vs_terran",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    } ],
+    "domainDescription" : "Learned from 69461 replays, 69461 observations"
+  }
+}

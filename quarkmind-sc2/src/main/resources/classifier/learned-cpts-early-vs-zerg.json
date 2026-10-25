@@ -1,0 +1,53 @@
+{
+  "matchup" : "vs_zerg",
+  "phase" : "EARLY",
+  "learnedFrom" : {
+    "replayCount" : 28389,
+    "observationCount" : 28389,
+    "extractorVersion" : "f4b911f3",
+    "generatedAt" : "2026-10-25T20:28:01.668553Z"
+  },
+  "network" : {
+    "name" : "learned-cpts-early-vs_zerg",
+    "variables" : [ {
+      "name" : "Strategy",
+      "outcomes" : [ "LING_BANE", "MACRO_ECONOMY", "ROACH_RUSH", "RUSH" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 7.043989715775015E-4, 0.20469834114042193, 0.005705631669777762, 0.7888916282182228 ] ]
+      }
+    }, {
+      "name" : "early_greedy_vs_zerg",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.18181818181818182, 0.2727272727272727, 0.5454545454545454 ], [ 0.608359133126935, 0.3630890952872377, 0.028551771585827314 ], [ 0.12195121951219512, 0.3780487804878049, 0.5 ], [ 0.027498772376233205, 0.3632873532431588, 0.609213874380608 ] ]
+      }
+    }, {
+      "name" : "early_rush_vs_zerg",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.4090909090909091, 0.5, 0.09090909090909091 ], [ 0.03560371517027864, 0.6396628826969384, 0.32473340213278296 ], [ 0.45121951219512196, 0.5, 0.04878048780487805 ], [ 0.577027811258426, 0.42158832194991297, 0.0013838667916610866 ] ]
+      }
+    } ],
+    "edges" : [ {
+      "from" : "Strategy",
+      "to" : "early_greedy_vs_zerg",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    }, {
+      "from" : "Strategy",
+      "to" : "early_rush_vs_zerg",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    } ],
+    "domainDescription" : "Learned from 28389 replays, 28389 observations"
+  }
+}

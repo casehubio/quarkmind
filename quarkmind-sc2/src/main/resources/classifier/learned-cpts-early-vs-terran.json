@@ -1,0 +1,53 @@
+{
+  "matchup" : "vs_terran",
+  "phase" : "EARLY",
+  "learnedFrom" : {
+    "replayCount" : 76922,
+    "observationCount" : 76922,
+    "extractorVersion" : "f4b911f3",
+    "generatedAt" : "2026-10-25T20:28:01.637343Z"
+  },
+  "network" : {
+    "name" : "learned-cpts-early-vs_terran",
+    "variables" : [ {
+      "name" : "Strategy",
+      "outcomes" : [ "BIO_TIMING", "MACRO_ECONOMY", "MECH_PUSH", "RUSH", "TECH_RUSH" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.4748397831710583, 0.007019641998258089, 0.004822754039543983, 0.2411637006512668, 0.2721541201398729 ] ]
+      }
+    }, {
+      "name" : "early_greedy_vs_terran",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.015576238707911305, 0.7548316452231043, 0.2295921160689844 ], [ 0.12915129151291513, 0.8653136531365314, 0.005535055350553505 ], [ 0.005361930294906166, 0.6621983914209115, 0.3324396782841823 ], [ 0.008138406812547159, 0.6338794869030937, 0.35798210628435917 ], [ 0.006208806953863788, 0.6680676282357436, 0.3257235648103926 ] ]
+      }
+    }, {
+      "name" : "early_rush_vs_terran",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 2.737476047084588E-5, 0.9980837667670408, 0.0018888584724883657 ], [ 0.0018450184501845018, 0.974169741697417, 0.023985239852398525 ], [ 0.002680965147453083, 0.9919571045576407, 0.005361930294906166 ], [ 5.389673385792821E-5, 0.5776651934892746, 0.4222809097768675 ], [ 4.776005349125991E-5, 0.9960359155602254, 0.003916324386283312 ] ]
+      }
+    } ],
+    "edges" : [ {
+      "from" : "Strategy",
+      "to" : "early_greedy_vs_terran",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    }, {
+      "from" : "Strategy",
+      "to" : "early_rush_vs_terran",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    } ],
+    "domainDescription" : "Learned from 76922 replays, 76922 observations"
+  }
+}

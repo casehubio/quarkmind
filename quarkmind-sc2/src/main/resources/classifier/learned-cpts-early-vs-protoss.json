@@ -1,0 +1,67 @@
+{
+  "matchup" : "vs_protoss",
+  "phase" : "EARLY",
+  "learnedFrom" : {
+    "replayCount" : 53804,
+    "observationCount" : 53804,
+    "extractorVersion" : "f4b911f3",
+    "generatedAt" : "2026-10-25T20:28:01.538400Z"
+  },
+  "network" : {
+    "name" : "learned-cpts-early-vs_protoss",
+    "variables" : [ {
+      "name" : "Strategy",
+      "outcomes" : [ "BLINK_STALKER", "CANNON_RUSH", "MACRO_ECONOMY", "PROXY", "RUSH" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.13148358081361855, 0.1835380698396179, 0.002787637755765764, 0.6240405880057239, 0.05815012358527384 ] ]
+      }
+    }, {
+      "name" : "early_cheese_vs_protoss",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.02628232301822806, 0.3406810795534831, 0.6330365974282888 ], [ 0.5839238712289937, 0.3592832557197813, 0.05679287305122494 ], [ 0.039473684210526314, 0.375, 0.5855263157894737 ], [ 0.018849944909323724, 0.2691998451505315, 0.7119502099401447 ], [ 0.038645800063877356, 0.29766847652507183, 0.6636857234110508 ] ]
+      }
+    }, {
+      "name" : "early_greedy_vs_protoss",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.011869436201780416, 0.6266779708916207, 0.36145259290659887 ], [ 0.016096375784571775, 0.6295808868191942, 0.35432273739623404 ], [ 0.2236842105263158, 0.75, 0.02631578947368421 ], [ 0.008159375837527173, 0.6994729162323933, 0.2923677079300795 ], [ 0.0063877355477483235, 0.5851165761737465, 0.40849568827850524 ] ]
+      }
+    }, {
+      "name" : "early_rush_vs_protoss",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.15345485375158965, 0.8300127172530734, 0.016532428995337006 ], [ 0.0037456975096173315, 0.48177768779105085, 0.5144766146993318 ], [ 0.25, 0.6710526315789473, 0.07894736842105263 ], [ 0.4114826836604032, 0.5864923617521813, 0.0020249545874155028 ], [ 0.1600127754710955, 0.832002555094219, 0.007984669434685404 ] ]
+      }
+    } ],
+    "edges" : [ {
+      "from" : "Strategy",
+      "to" : "early_cheese_vs_protoss",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    }, {
+      "from" : "Strategy",
+      "to" : "early_greedy_vs_protoss",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    }, {
+      "from" : "Strategy",
+      "to" : "early_rush_vs_protoss",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    } ],
+    "domainDescription" : "Learned from 53804 replays, 53804 observations"
+  }
+}

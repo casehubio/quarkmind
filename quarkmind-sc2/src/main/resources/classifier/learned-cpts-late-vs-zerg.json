@@ -1,0 +1,39 @@
+{
+  "matchup" : "vs_zerg",
+  "phase" : "LATE",
+  "learnedFrom" : {
+    "replayCount" : 51971,
+    "observationCount" : 51971,
+    "extractorVersion" : "f4b911f3",
+    "generatedAt" : "2026-10-25T20:28:01.758590Z"
+  },
+  "network" : {
+    "name" : "learned-cpts-late-vs_zerg",
+    "variables" : [ {
+      "name" : "Strategy",
+      "outcomes" : [ "HYDRA_PUSH", "LING_BANE", "MACRO_ECONOMY", "MUTA_HARASS", "ROACH_RUSH", "RUSH" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.0121784635511861, 0.17451949900917713, 0.08190161032764492, 0.01591088366008042, 0.3675087057737076, 0.3479808376782038 ] ]
+      }
+    }, {
+      "name" : "late_ground_army_vs_zerg",
+      "outcomes" : [ "HIGH", "MEDIUM", "LOW" ],
+      "description" : "",
+      "status" : "ACCEPTED",
+      "cptSpec" : {
+        "type" : "direct",
+        "values" : [ [ 0.9354330708661417, 0.05826771653543307, 0.006299212598425197 ], [ 0.01686322054447261, 0.01785517469414747, 0.9652816047613799 ], [ 0.1303122798779056, 0.14275651561399388, 0.7269312045081004 ], [ 0.10735826296743065, 0.10735826296743065, 0.7852834740651388 ], [ 0.015180067001675042, 0.016698073701842547, 0.9681218592964824 ], [ 0.05793576206534358, 0.03455138481950357, 0.9075128531151528 ] ]
+      }
+    } ],
+    "edges" : [ {
+      "from" : "Strategy",
+      "to" : "late_ground_army_vs_zerg",
+      "rationale" : "",
+      "status" : "ACCEPTED"
+    } ],
+    "domainDescription" : "Learned from 51971 replays, 51971 observations"
+  }
+}
