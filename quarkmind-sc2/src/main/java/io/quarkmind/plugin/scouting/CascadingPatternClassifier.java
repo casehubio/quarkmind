@@ -88,27 +88,36 @@ public class CascadingPatternClassifier {
             double droolsThreshold,
             @ConfigProperty(name = "quarkmind.classifier.onnx.confidence-threshold", defaultValue = "0.5")
             double onnxThreshold,
-            io.quarkmind.sc2.detector.BinaryDetectorRunner detectorRunner) {
-        this(droolsThreshold, onnxThreshold, null, detectorRunner);
+            io.quarkmind.sc2.detector.BinaryDetectorRunner detectorRunner,
+            io.quarkmind.sc2.detector.LearnedCptLoader learnedCptLoader) {
+        this(droolsThreshold, onnxThreshold, null, detectorRunner,
+             learnedCptLoader != null ? learnedCptLoader.loadFromClasspath() : Map.of());
     }
 
     public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold,
                                       DetectorOrchestrator orchestrator,
                                       io.quarkmind.sc2.detector.BinaryDetectorRunner runner) {
+        this(droolsThreshold, onnxThreshold, orchestrator, runner, Map.of());
+    }
+
+    public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold,
+                                      DetectorOrchestrator orchestrator,
+                                      io.quarkmind.sc2.detector.BinaryDetectorRunner runner,
+                                      Map<String, io.quarkmind.inference.bayes.BayesNetwork> learnedNetworks) {
         this.droolsThreshold = droolsThreshold;
         this.onnxThreshold   = onnxThreshold;
         this.detectorRunner  = runner;
         if (orchestrator != null) {
             this.detectorOrchestrator = orchestrator;
         } else if (runner != null && runner.registry() != null) {
-            this.detectorOrchestrator = buildDefaultOrchestrator(runner.registry());
+            this.detectorOrchestrator = buildDefaultOrchestrator(runner.registry(), learnedNetworks);
         } else {
             this.detectorOrchestrator = null;
         }
     }
 
     public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold) {
-        this(droolsThreshold, onnxThreshold, null, null);
+        this(droolsThreshold, onnxThreshold, (DetectorOrchestrator) null, null);
     }
 
 
@@ -382,7 +391,9 @@ public class CascadingPatternClassifier {
         return io.quarkmind.domain.GamePhase.LATE;
     }
 
-    private static DetectorOrchestrator buildDefaultOrchestrator(io.quarkmind.sc2.detector.DetectorRegistry registry) {
+    private static DetectorOrchestrator buildDefaultOrchestrator(
+            io.quarkmind.sc2.detector.DetectorRegistry registry,
+            Map<String, io.quarkmind.inference.bayes.BayesNetwork> learnedNetworks) {
         var config        = registry.config();
         var allArchetypes = new java.util.LinkedHashSet<String>();
         for (var def : config.detectors()) {
@@ -411,7 +422,7 @@ public class CascadingPatternClassifier {
                 labelToArchetype.put(arch, io.quarkmind.domain.StrategyArchetype.valueOf(arch));
             } catch (IllegalArgumentException ignored) {}
         }
-        return new DetectorOrchestrator(registry, priors, cpts, labelToArchetype, 5);
+        return new DetectorOrchestrator(registry, priors, cpts, labelToArchetype, 5, 0.95, 0.01, learnedNetworks);
     }
 
 
