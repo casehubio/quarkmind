@@ -1,15 +1,25 @@
 package io.quarkmind.sc2.replay;
 
+import hu.scelight.sc2.rep.factory.RepContent;
+import hu.scelight.sc2.rep.factory.RepParserEngine;
+import hu.scelight.sc2.rep.model.Replay;
+import hu.scelight.sc2.rep.s2prot.Event;
+import hu.scelightapi.sc2.rep.model.trackerevents.IBaseUnitEvent;
+import hu.scelightapi.sc2.rep.model.trackerevents.ITrackerEvents;
 import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
+import io.quarkmind.sc2.mock.Sc2ReplayShared;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -113,6 +123,89 @@ class TrackerIntentExtractorIntentTest {
 
         assertTrue(trackerTrainCount >= cmdTrainCount,
                    "Tracker path should produce at least as many TrainIntents as CmdEvent path");
+    }
+
+    @Test
+    @EnabledIf("oracleExists")
+    void trainIntentsUseBuildingTagsFromGameEvents() throws Exception {
+        Path replay = Files.list(ORACLE_DIR)
+                           .filter(p -> p.toString().endsWith(".SC2Replay"))
+                           .sorted().findFirst().orElseThrow();
+
+        Replay parsed = RepParserEngine.parseReplay(replay,
+                                                    EnumSet.of(RepContent.TRACKER_EVENTS, RepContent.DETAILS, RepContent.GAME_EVENTS));
+
+        Set<String> buildingTags = new HashSet<>();
+        for (Event raw : parsed.trackerEvents.getEvents()) {
+            if (raw.getId() == ITrackerEvents.ID_UNIT_INIT && raw instanceof IBaseUnitEvent ue) {
+                Integer pid = ue.getControlPlayerId();
+                if (pid != null && pid == 1) {
+                    String typeName = String.valueOf(ue.getUnitTypeName()).trim();
+                    if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) {
+                        buildingTags.add("r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle());
+                    }
+                }
+            }
+        }
+
+        List<TimedIntent> intents = TrackerIntentExtractor.extractFromReplay(parsed, 1);
+
+        long matchingBuildingTag = intents.stream()
+                                          .filter(ti -> ti.intent() instanceof TrainIntent)
+                                          .map(ti -> ((TrainIntent) ti.intent()).buildingTag())
+                                          .filter(buildingTags::contains)
+                                          .count();
+
+        long totalTrain = intents.stream()
+                                 .filter(ti -> ti.intent() instanceof TrainIntent).count();
+
+        System.out.printf("TrainIntents with building tags: %d / %d (%.1f%%)%n",
+                          matchingBuildingTag, totalTrain,
+                          totalTrain > 0 ? matchingBuildingTag * 100.0 / totalTrain : 0);
+
+        // Some intents should have building tags matching actual buildings.
+        // Not all will match — when the nearest CmdEvent had army units selected,
+        // the tag won't match a building and EmulatedGame will auto-resolve.
+        assertTrue(matchingBuildingTag > 0,
+                   "With game events, some TrainIntents should have building tags matching actual buildings");
+    }
+
+    @Test
+    @EnabledIf("oracleExists")
+    void buildingIndexPopulatedFromGameEvents() throws Exception {
+        Path replay = Files.list(ORACLE_DIR)
+                           .filter(p -> p.toString().endsWith(".SC2Replay"))
+                           .sorted().findFirst().orElseThrow();
+
+        Replay parsed = RepParserEngine.parseReplay(replay,
+                                                    EnumSet.of(RepContent.TRACKER_EVENTS, RepContent.DETAILS, RepContent.GAME_EVENTS));
+
+        List<TimedIntent> withGameEvents = TrackerIntentExtractor.extractFromReplay(parsed, 1);
+
+        // Strip game events and extract again — intents should differ
+        Replay noGameEvents = RepParserEngine.parseReplay(replay,
+                                                          EnumSet.of(RepContent.TRACKER_EVENTS, RepContent.DETAILS));
+
+        List<TimedIntent> withoutGameEvents = TrackerIntentExtractor.extractFromReplay(noGameEvents, 1);
+
+        assertEquals(withGameEvents.size(), withoutGameEvents.size(),
+                     "Same number of intents regardless of game events");
+
+        long diffCount = 0;
+        for (int i = 0; i < withGameEvents.size(); i++) {
+            if (withGameEvents.get(i).intent() instanceof TrainIntent a
+                && withoutGameEvents.get(i).intent() instanceof TrainIntent b) {
+                if (!a.buildingTag().equals(b.buildingTag())) {
+                    diffCount++;
+                }
+            }
+        }
+
+        System.out.printf("TrainIntents with different building tags (game events vs none): %d / %d%n",
+                          diffCount, withGameEvents.stream().filter(ti -> ti.intent() instanceof TrainIntent).count());
+
+        assertTrue(diffCount > 0,
+                   "With game events, some TrainIntents should have building tags from selection state (different from tracker-unit tags)");
     }
 
 

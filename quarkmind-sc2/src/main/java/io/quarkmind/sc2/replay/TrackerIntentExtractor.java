@@ -4,20 +4,20 @@ import hu.scelight.sc2.rep.factory.RepContent;
 import hu.scelight.sc2.rep.factory.RepParserEngine;
 import hu.scelight.sc2.rep.model.Replay;
 import hu.scelight.sc2.rep.model.gameevents.cmd.CmdEvent;
+import hu.scelight.sc2.rep.model.gameevents.selectiondelta.SelectionDeltaEvent;
 import hu.scelight.sc2.rep.s2prot.Event;
 import hu.scelightapi.sc2.rep.model.trackerevents.IBaseUnitEvent;
 import hu.scelightapi.sc2.rep.model.trackerevents.ITrackerEvents;
 import hu.scelightapi.sc2.rep.model.trackerevents.IUpgradeEvent;
-
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.UpgradeType;
-
 import io.quarkmind.sc2.intent.AbilityIntent;
-import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
+import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
+import io.quarkmind.sc2.SelectionState;
 import io.quarkmind.sc2.mock.Sc2ReplayShared;
 
 import java.nio.file.Path;
@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public final class TrackerIntentExtractor {
 
@@ -51,6 +53,12 @@ public final class TrackerIntentExtractor {
     static List<TimedIntent> extractFromReplay(Replay replay, int playerId) {
         List<TimedIntent> intents = new ArrayList<>();
 
+        int userId = playerId - 1;
+        TreeMap<Integer, String> buildingIndex =
+            replay.gameEvents != null
+                ? buildBuildingIndex(replay.gameEvents.getEvents(), userId)
+                : new TreeMap<>();
+
         for (Event raw : replay.trackerEvents.getEvents()) {
             int id = raw.getId();
             switch (id) {
@@ -70,7 +78,9 @@ public final class TrackerIntentExtractor {
                     int trainTime = SC2Data.trainTimeInLoops(unitType);
                     int commandLoop = Math.max(0, completionLoop - trainTime);
 
-                    String tag = "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
+                    String resolved = lookupBuildingTag(buildingIndex, commandLoop);
+                    String tag = resolved != null ? resolved
+                        : "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
                     intents.add(new TimedIntent(commandLoop,
                         new TrainIntent(tag, unitType)));
                 }
@@ -89,15 +99,16 @@ public final class TrackerIntentExtractor {
                     int upgradeTime = SC2Data.upgradeTimeInLoops(ut);
                     int commandLoop = Math.max(0, completionLoop - upgradeTime);
 
+                    String resolvedBuilding = lookupBuildingTag(buildingIndex, commandLoop);
                     intents.add(new TimedIntent(commandLoop,
-                        new ResearchIntent("r-tracker", ut, commandLoop)));
+                        new ResearchIntent(resolvedBuilding != null ? resolvedBuilding : "r-tracker",
+                            ut, commandLoop)));
                 }
                 default -> {}
             }
         }
 
         if (replay.gameEvents != null) {
-            int userId = playerId - 1;
             for (Event ge : replay.gameEvents.getEvents()) {
                 if (!(ge instanceof CmdEvent cmd)) continue;
                 Integer cmdUser = cmd.getUserId();
@@ -107,8 +118,10 @@ public final class TrackerIntentExtractor {
                 var tu = cmd.getTargetUnit();
                 if (tu == null || tu.getTag() == null) continue;
                 String targetTag = GameEventStream.decodeTag(tu.getTag());
+                String resolvedCaster = lookupBuildingTag(buildingIndex, cmd.getLoop());
                 intents.add(new TimedIntent(cmd.getLoop(),
-                    new AbilityIntent("r-NEXUS", "CHRONO_BOOST", targetTag)));
+                    new AbilityIntent(resolvedCaster != null ? resolvedCaster : "r-NEXUS",
+                        "CHRONO_BOOST", targetTag)));
             }
         }
 
@@ -127,4 +140,78 @@ public final class TrackerIntentExtractor {
         }
         return Race.PROTOSS;
     }
+
+    private static TreeMap<Integer, String> buildBuildingIndex(Event[] gameEvents, int userId) {
+        TreeMap<Integer, String> index     = new TreeMap<>();
+        SelectionState           selection = new SelectionState();
+
+        for (Event raw : gameEvents) {
+            if (raw instanceof SelectionDeltaEvent sel) {
+                Integer selUser = sel.getUserId();
+                if (selUser == null || selUser != userId) {continue;}
+                var delta = sel.getDelta();
+                if (delta == null) {
+                    selection.clear();
+                    continue;
+                }
+
+                var    removeMask = delta.getRemoveMask();
+                String variant    = removeMask != null ? removeMask.value1 : null;
+
+                if (variant == null || "None".equals(variant)) {
+                    // carry forward
+                } else if ("ZeroIndices".equals(variant)) {
+                    if (removeMask.value2 instanceof Integer[] indices) {
+                        int[] prims = new int[indices.length];
+                        for (int i = 0; i < indices.length; i++) {prims[i] = indices[i];}
+                        selection.retainOnly(prims);
+                    } else {
+                        selection.clear();
+                    }
+                } else if ("Mask".equals(variant)) {
+                    if (removeMask.value2 instanceof hu.belicza.andras.util.type.BitArray bitArray) {
+                        selection.removeIf(i -> i < bitArray.getCount() && bitArray.getBit(i));
+                    } else {
+                        selection.clear();
+                    }
+                } else if ("OneIndices".equals(variant)) {
+                    if (removeMask.value2 instanceof Integer[] indices) {
+                        for (int i = indices.length - 1; i >= 0; i--) {
+                            selection.removeAt(indices[i]);
+                        }
+                    } else {
+                        selection.clear();
+                    }
+                } else {
+                    selection.clear();
+                }
+
+                var addTags = delta.getAddUnitTags();
+                if (addTags != null) {
+                    for (Integer rawTag : addTags) {
+                        if (rawTag != null) {
+                            selection.addTag(GameEventStream.decodeTag(rawTag));
+                        }
+                    }
+                }
+            } else if (raw instanceof CmdEvent cmd) {
+                Integer cmdUser = cmd.getUserId();
+                if (cmdUser == null || cmdUser != userId) {continue;}
+                if (!selection.isEmpty()) {
+                    index.put(cmd.getLoop(), selection.first());
+                }
+            }
+        }
+
+        return index;
+    }
+
+    private static String lookupBuildingTag(TreeMap<Integer, String> index, int commandLoop) {
+        Map.Entry<Integer, String> entry = index.floorEntry(commandLoop + 5);
+        if (entry != null && commandLoop - entry.getKey() <= 5) {
+            return entry.getValue();
+        }
+        return null;
+    }
+
 }
