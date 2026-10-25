@@ -46,7 +46,8 @@ class CptLearningExportTest {
 
         List<Path> obsFiles;
         try (Stream<Path> walk = Files.list(OBSERVATIONS_DIR)) {
-            obsFiles = walk.filter(p -> p.toString().endsWith(".json")).sorted().toList();
+            obsFiles = walk.filter(p -> p.toString().endsWith(".json")
+                    && !p.getFileName().toString().contains("_test")).sorted().toList();
         }
 
         assertThat(obsFiles).as("observation files").isNotEmpty();

@@ -15,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 
-from src.binary_catalog import DETECTOR_CATALOG, infer_minute
+from src.binary_catalog import DETECTOR_CATALOG
 from src.config import MATCHUPS, archetypes_for_matchup
 
 DATA_DIR = Path("data/sc2egset/blizzard_ladder_4.9.1_chunk_0")
@@ -38,11 +38,11 @@ def softmax(x, axis=-1):
     return e / e.sum(axis=axis, keepdims=True)
 
 
-def load_train_val_data(matchup: str):
-    """Load train + val splits (hold out test for validation)."""
+def load_data(matchup: str, splits=("train", "val")):
+    """Load specified splits. Default: train+val (hold out test)."""
     matchup_dir = DATA_DIR / matchup
     arrays = {"temporal": [], "map_features": [], "labels": []}
-    for split in ["train", "val"]:
+    for split in splits:
         path = matchup_dir / f"{split}.npz"
         if not path.exists():
             continue
@@ -93,7 +93,7 @@ def load_manifest():
     return {e["key"]: e for e in entries if not e.get("skipped", False)}
 
 
-def export_observations():
+def export_observations(splits=("train", "val"), output_suffix=""):
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     manifest = load_manifest()
     if not manifest:
@@ -108,7 +108,7 @@ def export_observations():
         print(f"  {matchup.upper()}")
         print(f"{'=' * 50}")
 
-        temporal, map_features, labels = load_train_val_data(matchup)
+        temporal, map_features, labels = load_data(matchup, splits)
         if temporal is None:
             print("  No training data found — skipping")
             continue
@@ -174,7 +174,8 @@ def export_observations():
                 observations.append(obs)
 
             race = matchup.replace("vs_", "")
-            out_path = OUTPUT_DIR / f"{phase.lower()}_vs_{race}.json"
+            fname = f"{phase.lower()}_vs_{race}{output_suffix}.json"
+            out_path = OUTPUT_DIR / fname
             output = {
                 "matchup": matchup,
                 "phase": phase,
@@ -197,4 +198,8 @@ def export_observations():
 
 
 if __name__ == "__main__":
-    export_observations()
+    if "--test" in sys.argv:
+        print("Exporting TEST split observations (for validation)")
+        export_observations(splits=("test",), output_suffix="_test")
+    else:
+        export_observations()
