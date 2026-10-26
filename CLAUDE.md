@@ -191,6 +191,11 @@ cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.compare_detecto
 cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.coverage_gaps
 ```
 
+**Cross-version validation (classifier — requires tournament data and ONNX models):**
+```bash
+cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.cross_version_validation --write-report
+```
+
 **Reconstitute replays (classifier — requires reconstituted data in data/reconstituted/):**
 ```bash
 cd quarkmind-classifier && PYTHONPATH=. .venv/bin/python3 -m src.reconstitution_pipeline
@@ -287,7 +292,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - Chat agent tests: `DiscordIdentityDetectorTest`, `DiscordEventSourceTest`, `DiscordGatewayMessageHistoryTest`, `ChatWorldBridgeTest`, `ChatAgencyLoopTest`, `ChatAgentEndToEndTest`, `ChatMemoryFacadeTest`, `ChatCharacterManagerTest`
 - quarkmind-core chat tests: `AttentionClassifierTest`, `ChatDeltaReportTest`, `ChatObservationRendererTest`, `IdleReflectionTriggerTest`, `PersonalityEvolutionPipelineTest`
 - QuarkVille unit tests: `VilleIntentTest`, `VillePerceptionTest`, `WorldStateTest`, `GameTickTest`, `PerceptionBuilderTest`, `VilleAgencyLoopTest`, `VilleWorldBridgeTest`
-- Classifier Python tests: `test_upgrade_mapping_sync`, `test_feature_vector_dimensions`, `test_labelling_hybrid`, `test_era_stratification`, `test_reconstituted_ingest`, `test_reconstitution_validation`, `test_binary_catalog`, `test_train_binary`
+- Classifier Python tests: `test_upgrade_mapping_sync`, `test_feature_vector_dimensions`, `test_labelling_hybrid`, `test_era_stratification`, `test_reconstituted_ingest`, `test_reconstitution_validation`, `test_binary_catalog`, `test_train_binary`, `test_cross_version_validation`
 - Package-private static methods on CDI beans are tested from the same package without CDI — make them `static` (not `private`) to enable this.
 
 **Integration tests** (`@QuarkusTest`, full CDI context):
