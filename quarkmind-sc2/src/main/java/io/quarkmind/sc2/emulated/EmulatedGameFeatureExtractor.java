@@ -17,7 +17,8 @@ public class EmulatedGameFeatureExtractor {
             Map.entry("WARP_PRISM_PHASING", "WarpPrism"),
             Map.entry("ADEPT_PHASE_SHIFT", "Adept"),
             Map.entry("LIBERATOR_AG", "Liberator"),
-            Map.entry("VIKING_ASSAULT", "VikingAssault")
+            Map.entry("VIKING_ASSAULT", "VikingAssault"),
+            Map.entry("TEMPLAR_ARCHIVES", "TemplarArchive")
     );
 
     private final List<Map<String, Object>> events = new ArrayList<>();

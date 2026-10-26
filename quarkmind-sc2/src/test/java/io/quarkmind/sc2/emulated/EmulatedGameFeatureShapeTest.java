@@ -84,6 +84,7 @@ class EmulatedGameFeatureShapeTest {
         assertThat(EmulatedGameFeatureExtractor.toSc2Name("VIKING")).isEqualTo("VikingFighter");
         assertThat(EmulatedGameFeatureExtractor.toSc2Name("GATEWAY")).isEqualTo("Gateway");
         assertThat(EmulatedGameFeatureExtractor.toSc2Name("CYBERNETICS_CORE")).isEqualTo("CyberneticsCore");
+        assertThat(EmulatedGameFeatureExtractor.toSc2Name("TEMPLAR_ARCHIVES")).isEqualTo("TemplarArchive");
     }
 
     @Test
