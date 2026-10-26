@@ -6,10 +6,12 @@ import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.mock.IEM10JsonSimulatedGame;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +84,44 @@ class FeatureAlignmentTest {
             }
         }
     }
+
+    @Test
+    @Tag("report")
+    void regenerateFixture() throws Exception {
+        String replayName   = "095724b86cbca0e6da2fb8baad0d7baf.SC2Replay.json";
+        int    targetSecond = 150;
+
+        IEM10JsonSimulatedGame game = findGame(replayName);
+        assertThat(game).as("Game '%s' not found in IEM10 ZIP", replayName).isNotNull();
+
+        GameState state = tickToSecond(game, targetSecond);
+        assertThat(state.mapInfo()).isNotNull();
+
+        WindowSnapshot snapshot         = DroolsScoutingTask.buildSnapshot(state);
+        float[]        playerFeatures   = snapshot.playerFeatures();
+        float[]        opponentFeatures = snapshot.opponentFeatures();
+
+        var mapper = new ObjectMapper();
+        var root   = mapper.createObjectNode();
+        root.put("replay_name", replayName);
+        root.put("second", targetSecond);
+        root.putArray("player_start")
+            .add(state.mapInfo().playerStart().x())
+            .add(state.mapInfo().playerStart().y());
+        root.putArray("enemy_start")
+            .add(state.mapInfo().enemyStart().x())
+            .add(state.mapInfo().enemyStart().y());
+        var playerArr = root.putArray("player_features");
+        for (float f : playerFeatures) {playerArr.add(f);}
+        var opponentArr = root.putArray("opponent_features");
+        for (float f : opponentFeatures) {opponentArr.add(f);}
+
+        Path out = Path.of("src/test/resources/classifier/alignment_fixture.json");
+        Files.createDirectories(out.getParent());
+        mapper.writerWithDefaultPrettyPrinter().writeValue(out.toFile(), root);
+        System.out.printf("Fixture written: %d features per player to %s%n", playerFeatures.length, out);
+    }
+
 
     private static int compareFeatures(StringBuilder report, String label,
                                         float[] java, float[] python) {
