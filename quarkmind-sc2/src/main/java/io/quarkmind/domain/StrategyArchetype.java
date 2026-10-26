@@ -11,6 +11,7 @@ public enum StrategyArchetype {
     ZERG_ZERGLING_RUSH(Race.ZERG, GamePhase.EARLY, ArchetypeCategory.RUSH),
     ZERG_ROACH_RUSH(Race.ZERG, GamePhase.EARLY, ArchetypeCategory.RUSH),
     ZERG_MACRO(Race.ZERG, GamePhase.EARLY, ArchetypeCategory.MACRO),
+    ZERG_TECH_RUSH(Race.ZERG, GamePhase.EARLY, ArchetypeCategory.TECH),
     ZERG_BANELING_BUST(Race.ZERG, GamePhase.EARLY, ArchetypeCategory.RUSH),
     ZERG_RAVAGER_PUSH(Race.ZERG, GamePhase.EARLY, ArchetypeCategory.TIMING),
     PROTOSS_GATEWAY_RUSH(Race.PROTOSS, GamePhase.EARLY, ArchetypeCategory.RUSH),

@@ -19,7 +19,7 @@ class StrategyFeatureExtractorTest {
             MapCharacteristics.DEFAULT);
         assertThat(result.tensors()).containsKeys("temporal", "map");
         assertThat(result.tensors().get("temporal")).hasNumberOfRows(1);
-        assertThat(result.tensors().get("temporal")[0]).hasSize(FeatureIndexMaps.FEATURES_PER_WINDOW * TemporalWindowAccumulator.MAX_WINDOWS);
+        assertThat(result.tensors().get("temporal")[0]).hasSize(FeatureIndexMaps.ONNX_FEATURES_PER_WINDOW * TemporalWindowAccumulator.MAX_WINDOWS);
         assertThat(result.tensors().get("map")).hasNumberOfRows(1);
         assertThat(result.tensors().get("map")[0]).hasSize(6);
     }
@@ -52,7 +52,7 @@ class StrategyFeatureExtractorTest {
         var result = extractor.extract(
             accumulator.getWindowedFeatures(),
             MapCharacteristics.DEFAULT);
-        assertThat(result.tensors().get("temporal")[0][FeatureIndexMaps.HAS_VISION_INDEX]).isEqualTo(1.0f);
+        assertThat(result.tensors().get("temporal")[0][2 * FeatureIndexMaps.N_ONNX_CORE_PER_PLAYER]).isEqualTo(1.0f);
     }
 
     @Test
@@ -69,7 +69,7 @@ class StrategyFeatureExtractorTest {
             accumulator.getWindowedFeatures(),
             MapCharacteristics.DEFAULT);
         float[] temporal = result.tensors().get("temporal")[0];
-        int fpw = FeatureIndexMaps.FEATURES_PER_WINDOW;
+        int fpw = FeatureIndexMaps.ONNX_FEATURES_PER_WINDOW;
         boolean anyNonZero = false;
         for (int f = fpw; f < 2 * fpw; f++) {
             if (temporal[f] != 0.0f) { anyNonZero = true; break; }

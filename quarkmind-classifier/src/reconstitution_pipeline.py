@@ -46,6 +46,25 @@ def iter_reconstituted(recon_dir: Path):
         }
 
 
+def _extract_perspectives(sidecar):
+    if sidecar is None:
+        return []
+    perspectives = sidecar.get("perspectives", {})
+    if not perspectives:
+        if sidecar.get("coarseLabel"):
+            return [(1, sidecar)]
+        return []
+    result = []
+    for pid_str, persp in perspectives.items():
+        try:
+            pid = int(pid_str)
+        except ValueError:
+            continue
+        if persp.get("coarseLabel") and persp.get("coarseLabel") != "UNKNOWN":
+            result.append((pid, persp))
+    return result
+
+
 def run_pipeline(
     recon_dir: Path,
     output_dir: Path,
@@ -75,45 +94,50 @@ def run_pipeline(
             skipped += 1
             continue
 
-        matchup = replay_data.matchup
-        if matchup not in per_matchup:
+        perspectives = _extract_perspectives(entry["sidecar"])
+        if not perspectives:
             skipped += 1
             continue
 
-        label_result = labeller.label_from_sidecar(
-            sidecar=entry["sidecar"],
-            onnx_confidence=0.0,
-            onnx_prediction=None,
-        )
-
-        if label_result.label is None:
-            skipped += 1
-            continue
-
-        archetypes = archetypes_for_matchup(matchup)
-        if label_result.label not in archetypes:
-            skipped += 1
-            continue
-
-        label_idx = archetypes.index(label_result.label)
         hp = HyperParams()
-        rng = np.random.default_rng(42 + processed)
         map_tensor = build_map_tensor(replay_data.map_name)
-        mask = generate_scouting_mask(replay_data.duration_seconds, rng)
 
-        for minute in MINUTES:
-            if minute * 60 > replay_data.duration_seconds:
+        for pid, persp in perspectives:
+            p_features = replay_data.player1_features if pid == 1 else replay_data.player2_features
+            o_features = replay_data.player2_features if pid == 1 else replay_data.player1_features
+
+            matchup = persp.get("matchup", "")
+            if matchup not in per_matchup:
                 continue
-            temporal = build_temporal_features(
-                replay_data.player1_features, replay_data.player2_features,
-                mask, minute, hp,
+
+            label_result = labeller.label_from_sidecar(
+                sidecar=persp,
+                onnx_confidence=0.0,
+                onnx_prediction=None,
             )
-            per_matchup[matchup].append({
-                "temporal": temporal,
-                "map_feat": map_tensor,
-                "label": label_idx,
-                "era": entry["era"],
-            })
+            if label_result.label is None:
+                continue
+
+            archetypes = archetypes_for_matchup(matchup)
+            if label_result.label not in archetypes:
+                continue
+
+            label_idx = archetypes.index(label_result.label)
+            rng = np.random.default_rng(42 + processed * 10 + pid)
+            mask = generate_scouting_mask(replay_data.duration_seconds, rng)
+
+            for minute in MINUTES:
+                if minute * 60 > replay_data.duration_seconds:
+                    continue
+                temporal = build_temporal_features(
+                    p_features, o_features, mask, minute, hp,
+                )
+                per_matchup[matchup].append({
+                    "temporal": temporal,
+                    "map_feat": map_tensor,
+                    "label": label_idx,
+                    "era": entry["era"],
+                })
 
         if processed % 5000 == 0:
             print(f"  Processed {processed} replays...")

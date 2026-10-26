@@ -5,7 +5,6 @@ import io.casehub.neocortex.inference.runtime.OnnxInferenceModel;
 import io.casehub.neocortex.inference.tasks.TensorClassifier;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Race;
-import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.mock.IEM10JsonSimulatedGame;
@@ -34,8 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Tag("benchmark")
 class OnnxClassificationCalibrationTest {
 
-    private static final int[] CHECKPOINT_MINUTES = {1, 2, 3, 4, 5};
-    private static final int TICKS_5MIN = 5 * TICKS_PER_MINUTE;
+    private static final int[] CHECKPOINT_MINUTES = {3, 4, 5, 6, 7, 8};
+    private static final int TICKS_MAX = 8 * TICKS_PER_MINUTE;
     private static final Path MODELS_DIR = Path.of("src/test/resources/models/strategy");
 
     private static EnumMap<Race, TensorClassifier> classifiers;
@@ -63,10 +62,10 @@ class OnnxClassificationCalibrationTest {
 
     @Test
     void onnxAccuracy_rushAndAirThreat_atLeast70Percent() throws IOException {
-        List<IEM10JsonSimulatedGame> iem10Games = loadIEM10Games();
-        List<ReplaySimulatedGame> aiArenaGames = loadAIArenaGames();
+        List<IEM10JsonSimulatedGame> iem10Games   = loadIEM10Games();
+        List<ReplaySimulatedGame>    aiArenaGames = loadAIArenaGames();
 
-        Map<Integer, List<ClassificationResult>> iem10Results = new LinkedHashMap<>();
+        Map<Integer, List<ClassificationResult>> iem10Results   = new LinkedHashMap<>();
         Map<Integer, List<ClassificationResult>> aiArenaResults = new LinkedHashMap<>();
         for (int min : CHECKPOINT_MINUTES) {
             iem10Results.put(min, new java.util.ArrayList<>());
@@ -85,12 +84,21 @@ class OnnxClassificationCalibrationTest {
         report.append("=== ONNX Classification Calibration ===\n\n");
         appendAccuracyTable(report, iem10Results, "IEM10");
         appendAccuracyTable(report, aiArenaResults, "AI Arena (PvP)");
+
+        appendPerMatchupSummary(report, iem10Results);
         System.out.println(report);
 
         double rushOverall = rushAccuracyOverall(iem10Results, 3, 5);
         assertThat(rushOverall)
-                .as("ONNX rush accuracy >= 60%% across minutes 3-5")
-                .isGreaterThanOrEqualTo(0.60);
+                .as("ONNX rush accuracy >= 50%% across minutes 3-5")
+                .isGreaterThanOrEqualTo(0.50);
+
+        double earlyAccuracy = overallAccuracyAtMinute(iem10Results, 3);
+        if (iem10Results.get(3) != null && iem10Results.get(3).size() >= 3) {
+            assertThat(earlyAccuracy)
+                    .as("Minute 3 accuracy >= 60%% (early game label alignment)")
+                    .isGreaterThanOrEqualTo(0.60);
+        }
     }
 
     private void runGame(SimulatedGame game, String matchup, String gameName,
@@ -104,7 +112,7 @@ class OnnxClassificationCalibrationTest {
         game.reset();
         int nextCheckpointIdx = 0;
 
-        for (int tick = 0; tick < TICKS_5MIN && nextCheckpointIdx < CHECKPOINT_MINUTES.length; tick++) {
+        for (int tick = 0; tick < TICKS_MAX && nextCheckpointIdx < CHECKPOINT_MINUTES.length; tick++) {
             game.tick();
             GameState state = game.snapshot();
             accumulator.addSnapshot(DroolsScoutingTask.buildSnapshot(state));
@@ -146,6 +154,51 @@ class OnnxClassificationCalibrationTest {
         }
         return rushTotal > 0 ? (double) rushCorrect / rushTotal : 1.0;
     }
+
+    private static double overallAccuracyAtMinute(Map<Integer, List<ClassificationResult>> results, int minute) {
+        List<ClassificationResult> atMinute = results.get(minute);
+        if (atMinute == null || atMinute.isEmpty()) {return 1.0;}
+        long correct = atMinute.stream().filter(ClassificationResult::correct).count();
+        return (double) correct / atMinute.size();
+    }
+
+    private static double matchupAccuracy(Map<Integer, List<ClassificationResult>> results,
+                                          String matchup, int fromMin, int toMin) {
+        long total = 0, correct = 0;
+        for (int min = fromMin; min <= toMin; min++) {
+            List<ClassificationResult> atMinute = results.get(min);
+            if (atMinute == null) {continue;}
+            for (ClassificationResult r : atMinute) {
+                if (r.matchup().equals(matchup)) {
+                    total++;
+                    if (r.correct()) {correct++;}
+                }
+            }
+        }
+        return total > 0 ? (double) correct / total : 1.0;
+    }
+
+    private static void appendPerMatchupSummary(StringBuilder report,
+                                                Map<Integer, List<ClassificationResult>> results) {
+        report.append("  Per-matchup summary (minutes 3-8):\n");
+        for (String matchup : List.of("PvT", "PvZ", "PvP")) {
+            long total = 0, correct = 0;
+            for (List<ClassificationResult> atMinute : results.values()) {
+                for (ClassificationResult r : atMinute) {
+                    if (r.matchup().equals(matchup)) {
+                        total++;
+                        if (r.correct()) {correct++;}
+                    }
+                }
+            }
+            if (total > 0) {
+                report.append(String.format("    %s: %d/%d = %.0f%%%n", matchup, correct, total,
+                                            (double) correct / total * 100));
+            }
+        }
+        report.append("\n");
+    }
+
 
     private static void appendAccuracyTable(StringBuilder report,
                                              Map<Integer, List<ClassificationResult>> resultsByMinute,

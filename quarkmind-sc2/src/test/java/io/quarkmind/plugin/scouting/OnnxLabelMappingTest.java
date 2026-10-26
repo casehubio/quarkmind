@@ -4,7 +4,7 @@ import io.quarkmind.domain.Race;
 import io.quarkmind.domain.StrategyArchetype;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class OnnxLabelMappingTest {
 
@@ -41,14 +41,27 @@ class OnnxLabelMappingTest {
     }
 
     @Test
+    void resolve_newLabels_mapCorrectly() {
+        assertThat(OnnxLabelMapping.resolve("PROXY", Race.TERRAN))
+                .isEqualTo(StrategyArchetype.TERRAN_PROXY_BARRACKS);
+        assertThat(OnnxLabelMapping.resolve("MACRO_ECONOMY", Race.TERRAN))
+                .isEqualTo(StrategyArchetype.TERRAN_FAST_EXPAND);
+        assertThat(OnnxLabelMapping.resolve("TECH_RUSH", Race.ZERG))
+                .isEqualTo(StrategyArchetype.ZERG_TECH_RUSH);
+        assertThat(OnnxLabelMapping.resolve("MACRO_ECONOMY", Race.PROTOSS))
+                .isEqualTo(StrategyArchetype.PROTOSS_MACRO);
+    }
+
+
+    @Test
     void resolve_unknownLabel_returnsNull() {
         assertThat(OnnxLabelMapping.resolve("NONEXISTENT", Race.TERRAN)).isNull();
     }
 
     @Test
     void labelsForRace_matchesLabelCount() {
-        assertThat(OnnxLabelMapping.labelsForRace(Race.TERRAN)).hasSize(6);
-        assertThat(OnnxLabelMapping.labelsForRace(Race.ZERG)).hasSize(6);
-        assertThat(OnnxLabelMapping.labelsForRace(Race.PROTOSS)).hasSize(8);
+        assertThat(OnnxLabelMapping.labelsForRace(Race.TERRAN)).hasSize(8);
+        assertThat(OnnxLabelMapping.labelsForRace(Race.ZERG)).hasSize(7);
+        assertThat(OnnxLabelMapping.labelsForRace(Race.PROTOSS)).hasSize(9);
     }
 }

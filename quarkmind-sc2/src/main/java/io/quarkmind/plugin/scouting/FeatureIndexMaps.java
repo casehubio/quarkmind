@@ -28,6 +28,9 @@ public final class FeatureIndexMaps {
     public static final int FEATURES_PER_WINDOW = 2 * N_FEATURES_PER_PLAYER + 2;
     static final int ARMY_GAP_INDEX = 2 * N_FEATURES_PER_PLAYER;
     public static final int HAS_VISION_INDEX = ARMY_GAP_INDEX + 1;
+    static final        int N_ONNX_CORE_PER_PLAYER = N_BUILDINGS + N_UNITS + N_STATS + N_UPGRADES;
+    static final        int ONNX_FEATURES_PER_WINDOW = 2 * N_ONNX_CORE_PER_PLAYER + 1;
+
 
     static final Map<BuildingType, Integer> BUILDING_INDEX = buildBuildingIndex();
     static final Map<UnitType, Integer> UNIT_INDEX = buildUnitIndex();

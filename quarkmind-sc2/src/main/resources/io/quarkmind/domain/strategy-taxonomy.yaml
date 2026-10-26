@@ -454,6 +454,42 @@ archetypes:
     detectionSignals:
       - "Expansion with fewer than 4 units before 5 minutes"
 
+  ZERG_TECH_RUSH:
+    displayName: "Zerg Tech Rush"
+    race: ZERG
+    phase: EARLY
+    category: TECH
+    phaseWindow: [0.0, 6.0]
+    handAuthored: false
+    signature:
+      units:
+        - type: ROACH
+          minCount: 1
+    counters:
+      PROTOSS:
+        strong:
+          - units: [STALKER, IMMORTAL]
+            action: "Stalker-Immortal composition handles early Zerg tech"
+        weak:
+          - units: [ZEALOT]
+            action: "Zealots alone cannot handle ranged tech units"
+      TERRAN:
+        strong:
+          - units: [MARINE, SIEGE_TANK]
+            action: "Marine-Tank holds early Zerg tech pushes"
+        weak:
+          - units: [SCV]
+            action: "Workers cannot defend against tech units"
+      ZERG:
+        strong:
+          - units: [ROACH, RAVAGER]
+            action: "Mirror Roach-Ravager with better positioning"
+        weak:
+          - units: [DRONE]
+            action: "Workers cannot defend against early tech"
+    detectionSignals:
+      - "Fast Lair or unusual tech buildings before 6 minutes"
+
   ZERG_BANELING_BUST:
     displayName: "Baneling Bust"
     race: ZERG

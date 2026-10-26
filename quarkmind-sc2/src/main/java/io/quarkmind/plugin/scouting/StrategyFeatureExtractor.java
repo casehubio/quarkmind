@@ -10,10 +10,7 @@ import java.util.Map;
 
 public final class StrategyFeatureExtractor {
 
-    private static final int FEATURES_PER_WINDOW = TemporalWindowAccumulator.FEATURES_PER_WINDOW;
     private static final int MAX_WINDOWS = TemporalWindowAccumulator.MAX_WINDOWS;
-    private static final int FLATTENED_SIZE = MAX_WINDOWS * FEATURES_PER_WINDOW;
-    private static final int HAS_VISION_OFFSET = FEATURES_PER_WINDOW - 1;
 
     private final float[] normMean;
     private final float[] normStd;
@@ -33,20 +30,26 @@ public final class StrategyFeatureExtractor {
     }
 
     public StrategyFeatures extract(List<float[]> windowedFeatures, MapCharacteristics map) {
-        float[] temporal = new float[FLATTENED_SIZE];
+        int     onnxFPW  = FeatureIndexMaps.ONNX_FEATURES_PER_WINDOW;
+        int     corePP   = FeatureIndexMaps.N_ONNX_CORE_PER_PLAYER;
+        int     fullNP   = FeatureIndexMaps.N_FEATURES_PER_PLAYER;
+        float[] temporal = new float[MAX_WINDOWS * onnxFPW];
+
         for (int w = 0; w < MAX_WINDOWS; w++) {
-            System.arraycopy(windowedFeatures.get(w), 0,
-                temporal, w * FEATURES_PER_WINDOW, FEATURES_PER_WINDOW);
+            float[] full     = windowedFeatures.get(w);
+            int     destBase = w * onnxFPW;
+            System.arraycopy(full, 0, temporal, destBase, corePP);
+            System.arraycopy(full, fullNP, temporal, destBase + corePP, corePP);
+            temporal[destBase + 2 * corePP] = full[FeatureIndexMaps.HAS_VISION_INDEX];
         }
 
-        boolean hasPlayer = hasNonZeroBlock(temporal, 0, FeatureIndexMaps.N_FEATURES_PER_PLAYER);
-        boolean hasOpponent = hasNonZeroBlock(temporal,
-            FeatureIndexMaps.N_FEATURES_PER_PLAYER, 2 * FeatureIndexMaps.N_FEATURES_PER_PLAYER);
+        boolean hasPlayer   = hasNonZeroBlock(temporal, 0, corePP, onnxFPW);
+        boolean hasOpponent = hasNonZeroBlock(temporal, corePP, 2 * corePP, onnxFPW);
 
         for (int w = 0; w < MAX_WINDOWS; w++) {
-            int base = w * FEATURES_PER_WINDOW;
-            for (int f = 0; f < FEATURES_PER_WINDOW; f++) {
-                if (f == HAS_VISION_OFFSET) continue;
+            int base = w * onnxFPW;
+            for (int f = 0; f < onnxFPW; f++) {
+                if (f == 2 * corePP) {continue;}
                 if (normStd[f] > 0) {
                     temporal[base + f] = (temporal[base + f] - normMean[f]) / normStd[f];
                 }
@@ -56,15 +59,15 @@ public final class StrategyFeatureExtractor {
         float[] mapFeatures = map.toArray(hasPlayer, hasOpponent);
 
         return new StrategyFeatures(Map.of(
-            "temporal", new float[][] { temporal },
-            "map", new float[][] { mapFeatures }
-        ));
+                "temporal", new float[][]{temporal},
+                "map", new float[][]{mapFeatures}
+                                          ));
     }
 
-    private boolean hasNonZeroBlock(float[] data, int start, int end) {
+    private boolean hasNonZeroBlock(float[] data, int start, int end, int stride) {
         for (int w = 0; w < MAX_WINDOWS; w++) {
             for (int f = start; f < end; f++) {
-                if (data[w * FEATURES_PER_WINDOW + f] != 0.0f) return true;
+                if (data[w * stride + f] != 0.0f) {return true;}
             }
         }
         return false;
