@@ -330,7 +330,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - `DivergenceRegressionTest` — asserts per-matchup unit and building deltas at 5-min checkpoint stay within baseline + 10% margin (oracle dataset); per-category accuracy thresholds for all 4 categories (units ≥13%, buildings ≥95%, upgrades ≥0%, economy MAPE ≤200%); cross-patch regression against tournament datasets (AI Arena, IEM, ASUS ROG) with per-dataset baselines
 - `ReconstitutionExportTest` — runs ReplayFeatureExtractor (auto-detects tracker events for ground truth, falls back to CmdEvent reconstruction) across all replay datasets; writes reconstituted JSON with metadata to quarkmind-classifier/data/reconstituted/
 - `DroolsCoarseLabelExportTest` — classifies reconstituted replays via heuristic archetype rules at 3min/5min; writes .label.json sidecars
-- `UpgradeMappingGeneratorTest` — generates quarkmind-classifier/src/upgrade_mapping.py from Java UpgradeType enum (82 entries)
+- `UpgradeMappingGeneratorTest` — verifies quarkmind-classifier/src/upgrade_mapping.py matches Java UpgradeType enum (generated at build time by UpgradeMappingGenerator)
 - `TrackerExtractorConsistencyTest` — verifies TrackerEventFeatureExtractor output is tautologically identical to raw Scelight tracker events across 118 oracle replays; asserts zero mismatches
 - `ReconstitutionDeltaReportTest` — compares old reconstituted JSON (StrippedReplayFeatureExtractor) against fresh TrackerEventFeatureExtractor output for 118 oracle replays; reports per-category training data delta
 - `RestorationFidelityTest` — compares Docker-restored replay tracker events against original full replays (AI Arena); guarded: only runs when `aiarena_protoss_restored/` exists
