@@ -10,7 +10,7 @@ import pytest
 import numpy as np
 from pathlib import Path
 
-from src.config import MATCHUPS, archetypes_for_matchup, HyperParams
+from src.config import MATCHUPS, archetypes_for_matchup, HyperParams, fine_to_coarse_label
 from src.sc2egset_extractor import extract_replay
 from src.feature_engineering import build_temporal_features, build_map_tensor
 from src.fog_of_war import generate_scouting_mask
@@ -118,11 +118,15 @@ def _evaluate_all_tournament():
                 )[0]
                 pred_idx = int(np.argmax(logits[0]))
 
+                pred_label = archetypes[pred_idx]
+                true_coarse = fine_to_coarse_label(matchup, label)
+                pred_coarse = fine_to_coarse_label(matchup, pred_label)
                 results_by_matchup[matchup].append({
                     "minute": minute,
                     "correct": pred_idx == true_idx,
                     "true_label": label,
-                    "pred_label": archetypes[pred_idx],
+                    "pred_label": pred_label,
+                    "coarse_correct": true_coarse == pred_coarse,
                 })
 
     return results_by_matchup
@@ -194,4 +198,62 @@ def test_oracle_tournament_gap_bounded():
     assert tournament_acc >= 0.50, (
         f"Tournament minute 5 accuracy {tournament_acc:.1%} suggests severe "
         f"cross-version degradation"
+    )
+
+
+@skip_no_data
+@skip_no_models
+@pytest.mark.parametrize("matchup", MATCHUPS)
+def test_coarse_accuracy_at_minute_3(matchup):
+    """Coarse accuracy at minute 3 should be >= 70% — strategic intent is readable early."""
+    results = _get_results()
+    minute_3 = [r for r in results[matchup] if r["minute"] == 3]
+    if len(minute_3) < 10:
+        pytest.skip(f"Too few samples for {matchup} at minute 3: {len(minute_3)}")
+
+    correct = sum(1 for r in minute_3 if r.get("coarse_correct", False))
+    accuracy = correct / len(minute_3)
+    assert accuracy >= 0.65, (
+        f"{matchup} minute 3 coarse accuracy {accuracy:.1%} < 65% threshold "
+        f"({correct}/{len(minute_3)})"
+    )
+
+
+@skip_no_data
+@skip_no_models
+@pytest.mark.parametrize("matchup", MATCHUPS)
+def test_coarse_accuracy_at_minute_5(matchup):
+    """Coarse accuracy at minute 5 should be >= 85%."""
+    results = _get_results()
+    minute_5 = [r for r in results[matchup] if r["minute"] == 5]
+    if len(minute_5) < 10:
+        pytest.skip(f"Too few samples for {matchup} at minute 5: {len(minute_5)}")
+
+    correct = sum(1 for r in minute_5 if r.get("coarse_correct", False))
+    accuracy = correct / len(minute_5)
+    assert accuracy >= 0.85, (
+        f"{matchup} minute 5 coarse accuracy {accuracy:.1%} < 85% threshold "
+        f"({correct}/{len(minute_5)})"
+    )
+
+
+@skip_no_data
+@skip_no_models
+def test_vs_zerg_coarse_lifts_above_fine_at_minute_3():
+    """vs_zerg coarse accuracy should be meaningfully higher than fine at minute 3.
+
+    The dominant ROACH_RUSH->RUSH confusion is within-coarse (AGGRESSIVE),
+    so coarse should show substantial lift.
+    """
+    results = _get_results()
+    minute_3 = [r for r in results["vs_zerg"] if r["minute"] == 3]
+    if len(minute_3) < 10:
+        pytest.skip(f"Too few vs_zerg samples at minute 3: {len(minute_3)}")
+
+    fine_acc = sum(1 for r in minute_3 if r["correct"]) / len(minute_3)
+    coarse_acc = sum(1 for r in minute_3 if r.get("coarse_correct", False)) / len(minute_3)
+    lift = coarse_acc - fine_acc
+    assert lift >= 0.10, (
+        f"vs_zerg minute 3 coarse lift only {lift:.1%} (fine={fine_acc:.1%}, "
+        f"coarse={coarse_acc:.1%}) — expected >= 10pp from within-category confusions"
     )

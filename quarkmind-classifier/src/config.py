@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 MATCHUPS = ["vs_terran", "vs_zerg", "vs_protoss"]
 
@@ -59,6 +59,16 @@ COARSE_HIERARCHY: Dict[str, Dict[str, List[str]]] = {
         "TECH": ["TECH_RUSH"],
     },
 }
+
+
+def fine_to_coarse_label(matchup: str, fine_label: str) -> Optional[str]:
+    hierarchy = COARSE_HIERARCHY.get(matchup)
+    if hierarchy is None:
+        return None
+    for coarse_name, fine_labels in hierarchy.items():
+        if fine_label in fine_labels:
+            return coarse_name
+    return None
 
 
 def coarse_label_map(matchup: str, fine_classes: List[str]) -> List[int]:

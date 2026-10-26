@@ -17,7 +17,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from src.config import MATCHUPS, archetypes_for_matchup, HyperParams
+from src.config import MATCHUPS, archetypes_for_matchup, HyperParams, fine_to_coarse_label, COARSE_HIERARCHY
 from src.sc2egset_extractor import extract_replay, N_FEATURES_PER_PLAYER
 from src.feature_engineering import build_temporal_features, build_map_tensor
 from src.fog_of_war import generate_scouting_mask
@@ -111,12 +111,20 @@ def evaluate_replay(
             probs = np.exp(shifted) / np.exp(shifted).sum()
             confidence = float(probs.max())
 
+            true_label = archetypes[label_idx]
+            pred_label = archetypes[pred_idx]
+            true_coarse = fine_to_coarse_label(matchup, true_label)
+            pred_coarse = fine_to_coarse_label(matchup, pred_label)
+
             results.append({
                 "minute": minute,
                 "matchup": matchup,
-                "true_label": archetypes[label_idx],
-                "pred_label": archetypes[pred_idx],
+                "true_label": true_label,
+                "pred_label": pred_label,
                 "correct": pred_idx == label_idx,
+                "true_coarse": true_coarse,
+                "pred_coarse": pred_coarse,
+                "coarse_correct": true_coarse == pred_coarse,
                 "confidence": confidence,
                 "true_idx": label_idx,
                 "pred_idx": pred_idx,
@@ -238,6 +246,24 @@ def compute_accuracy(results: List[Dict]) -> Dict:
     }
 
 
+def compute_coarse_accuracy(results: List[Dict]) -> Dict:
+    if not results:
+        return {"accuracy": None, "count": 0}
+    correct = sum(1 for r in results if r.get("coarse_correct", False))
+    total = len(results)
+    return {
+        "accuracy": correct / total,
+        "count": total,
+    }
+
+
+PHASE_AWARE_THRESHOLDS = {
+    3: {"fine": 0.45, "coarse": 0.65, "rationale": "Early game — limited scouting, many strategies indistinguishable"},
+    4: {"fine": 0.55, "coarse": 0.80, "rationale": "Tech choices becoming visible, aggressive vs macro separating"},
+    5: {"fine": 0.60, "coarse": 0.85, "rationale": "Army composition clear, fine-grained subtypes visible"},
+}
+
+
 def print_report(validation: Dict):
     print("\n" + "=" * 70)
     print("  CROSS-VERSION GENERALISATION REPORT")
@@ -307,6 +333,56 @@ def print_report(validation: Dict):
                 if acc["accuracy"] is not None:
                     print(f"  {era:12s} {matchup:12s} min {minute}: "
                           f"{acc['accuracy']:.1%} ({acc['count']} samples)")
+
+    print("\n" + "-" * 70)
+    print("  COARSE ACCURACY (strategic intent)")
+    print("-" * 70)
+    for era in ["oracle", "tournament"]:
+        if era not in validation["by_era"]:
+            continue
+        by_minute = validation["by_era"][era]
+        for minute in sorted(by_minute.keys()):
+            fine = compute_accuracy(by_minute[minute])
+            coarse = compute_coarse_accuracy(by_minute[minute])
+            if fine["accuracy"] is not None and coarse["accuracy"] is not None:
+                delta = coarse["accuracy"] - fine["accuracy"]
+                print(f"  {era:12s} min {minute}: fine={fine['accuracy']:.1%}  "
+                      f"coarse={coarse['accuracy']:.1%}  (+{delta:.1%})")
+
+    print("\n  By matchup:")
+    for matchup in MATCHUPS:
+        if matchup not in validation["by_matchup"]:
+            continue
+        by_minute = validation["by_matchup"][matchup]
+        for minute in sorted(by_minute.keys()):
+            fine = compute_accuracy(by_minute[minute])
+            coarse = compute_coarse_accuracy(by_minute[minute])
+            if fine["accuracy"] is not None and coarse["accuracy"] is not None:
+                delta = coarse["accuracy"] - fine["accuracy"]
+                print(f"  {matchup:12s} min {minute}: fine={fine['accuracy']:.1%}  "
+                      f"coarse={coarse['accuracy']:.1%}  (+{delta:.1%})")
+
+    print("\n  By matchup x era:")
+    for era in ["oracle", "tournament"]:
+        for matchup in MATCHUPS:
+            key = (era, matchup)
+            if key not in matchup_era:
+                continue
+            by_minute = matchup_era[key]
+            for minute in sorted(by_minute.keys()):
+                fine = compute_accuracy(by_minute[minute])
+                coarse = compute_coarse_accuracy(by_minute[minute])
+                if fine["accuracy"] is not None and coarse["accuracy"] is not None:
+                    delta = coarse["accuracy"] - fine["accuracy"]
+                    print(f"  {era:12s} {matchup:12s} min {minute}: fine={fine['accuracy']:.1%}  "
+                          f"coarse={coarse['accuracy']:.1%}  (+{delta:.1%})")
+
+    print("\n" + "-" * 70)
+    print("  PHASE-AWARE ACCURACY THRESHOLDS")
+    print("-" * 70)
+    for minute in sorted(PHASE_AWARE_THRESHOLDS.keys()):
+        t = PHASE_AWARE_THRESHOLDS[minute]
+        print(f"  Min {minute}: fine >= {t['fine']:.0%}, coarse >= {t['coarse']:.0%} — {t['rationale']}")
 
     print("\n" + "-" * 70)
     print("  FAILURE MODE ANALYSIS")
@@ -421,6 +497,57 @@ def write_benchmark_report(validation: Dict, output_path: Path):
                     cells.append("-")
             lines.append("| " + " | ".join(cells) + " |")
 
+    lines.extend(["", "## Coarse Accuracy (Strategic Intent)", ""])
+    lines.append("| Era | Minute | Fine | Coarse | Lift |")
+    lines.append("|-----|--------|------|--------|------|")
+    for era in ["oracle", "tournament"]:
+        if era not in validation["by_era"]:
+            continue
+        by_minute = validation["by_era"][era]
+        for minute in sorted(by_minute.keys()):
+            fine = compute_accuracy(by_minute[minute])
+            coarse = compute_coarse_accuracy(by_minute[minute])
+            if fine["accuracy"] is not None and coarse["accuracy"] is not None:
+                delta = coarse["accuracy"] - fine["accuracy"]
+                lines.append(
+                    f"| {era} | {minute} | {fine['accuracy']:.1%} | "
+                    f"{coarse['accuracy']:.1%} | +{delta:.1%} |"
+                )
+
+    lines.extend(["", "### Coarse Accuracy by Matchup", ""])
+    lines.append("| Matchup | Min 3 Fine | Min 3 Coarse | Min 5 Fine | Min 5 Coarse |")
+    lines.append("|---------|-----------|-------------|-----------|-------------|")
+    for matchup in MATCHUPS:
+        if matchup not in validation["by_matchup"]:
+            continue
+        cells = [matchup]
+        for minute in [3, 5]:
+            by_minute = validation["by_matchup"][matchup]
+            if minute in by_minute:
+                fine = compute_accuracy(by_minute[minute])
+                coarse = compute_coarse_accuracy(by_minute[minute])
+                cells.append(f"{fine['accuracy']:.1%}" if fine["accuracy"] is not None else "-")
+                cells.append(f"{coarse['accuracy']:.1%}" if coarse["accuracy"] is not None else "-")
+            else:
+                cells.extend(["-", "-"])
+        lines.append("| " + " | ".join(cells) + " |")
+
+    lines.extend([
+        "",
+        "## Phase-Aware Accuracy Thresholds",
+        "",
+        "Early-game classification is inherently noisier due to limited scouting information.",
+        "These thresholds reflect what is realistically distinguishable at each checkpoint.",
+        "",
+        "| Minute | Fine Threshold | Coarse Threshold | Rationale |",
+        "|--------|---------------|-----------------|-----------|",
+    ])
+    for minute in sorted(PHASE_AWARE_THRESHOLDS.keys()):
+        t = PHASE_AWARE_THRESHOLDS[minute]
+        lines.append(
+            f"| {minute} | {t['fine']:.0%} | {t['coarse']:.0%} | {t['rationale']} |"
+        )
+
     all_tournament = []
     for ds_name, by_minute in validation["by_dataset"].items():
         meta = DATASET_META.get(ds_name, {})
@@ -436,10 +563,17 @@ def write_benchmark_report(validation: Dict, output_path: Path):
                 confusion[(r["true_label"], r["pred_label"])] += 1
         if confusion:
             lines.extend(["", "## Top Misclassifications (Tournament Era)", ""])
-            lines.append("| True Label | Predicted | Count |")
-            lines.append("|------------|-----------|-------|")
+            lines.append("| True Label | Predicted | Same Coarse? | Count |")
+            lines.append("|------------|-----------|-------------|-------|")
             for (true, pred), count in sorted(confusion.items(), key=lambda x: -x[1])[:10]:
-                lines.append(f"| {true} | {pred} | {count} |")
+                same = "n/a"
+                for mu in MATCHUPS:
+                    tc = fine_to_coarse_label(mu, true)
+                    pc = fine_to_coarse_label(mu, pred)
+                    if tc is not None and pc is not None:
+                        same = "Yes" if tc == pc else "No"
+                        break
+                lines.append(f"| {true} | {pred} | {same} | {count} |")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text("\n".join(lines) + "\n")
