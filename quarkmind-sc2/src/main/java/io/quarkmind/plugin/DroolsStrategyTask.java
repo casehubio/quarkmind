@@ -264,6 +264,17 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
               .map(PatternAssessmentPayload::assessments)
               .ifPresent(list -> list.forEach(data.getPatternStore()::add));
 
+        broker.current(ScoutingIntelType.RESPONSE_RECOMMENDATION,
+                       ScoutingIntelPayload.ResponseRecommendationPayload.class)
+              .ifPresent(rp -> {
+                  if (!rp.recommendations().isEmpty()) {
+                      var best = rp.recommendations().getFirst();
+                      data.getResponseStore().add(
+                          new io.quarkmind.plugin.drools.ResponseRecommendationFact(
+                              best.archetype(), best.confidence()));
+                  }
+              });
+
         feedAdvisoryFacts(ctx, currentFrame, data);
 
         return data;}

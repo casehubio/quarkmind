@@ -13,7 +13,8 @@ public sealed interface ScoutingIntelPayload
                 ScoutingIntelPayload.ArmySize,
                 ScoutingIntelPayload.BuildOrder,
                 PatternAssessmentPayload,
-                ScoutingIntelPayload.TransitionDetected {
+                ScoutingIntelPayload.TransitionDetected,
+                ScoutingIntelPayload.ResponseRecommendationPayload {
 
     ScoutingIntelType type();
 
@@ -44,5 +45,14 @@ public sealed interface ScoutingIntelPayload
     record TransitionDetected(io.quarkmind.domain.StrategyTransition transition) implements ScoutingIntelPayload {
         public ScoutingIntelType type() {return ScoutingIntelType.STRATEGY_TRANSITION;}
     }
+
+    record ResponseRecommendationPayload(
+            List<PatternAssessment> recommendations,
+            double opponentLeaderConfidence,
+            String opponentLeaderArchetype
+    ) implements ScoutingIntelPayload {
+        public ScoutingIntelType type() {return ScoutingIntelType.RESPONSE_RECOMMENDATION;}
+    }
+
 
 }

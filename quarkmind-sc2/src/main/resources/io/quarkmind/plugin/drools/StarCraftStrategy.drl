@@ -4,7 +4,9 @@ unit StrategyRuleUnit;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.AssessmentSource;
+import io.quarkmind.domain.ArchetypeCategory;
 import io.quarkmind.domain.PatternAssessment;
+import io.quarkmind.plugin.drools.ResponseRecommendationFact;
 import io.quarkmind.plugin.summarisation.GameMoment;
 import io.quarkmind.plugin.summarisation.GameMomentType;
 import io.quarkmind.plugin.summarisation.TacticalPosture;
@@ -96,6 +98,25 @@ when
     /enemyPostureStore[ this.equals("ALL_IN") ]
 then
     strategyDecisions.add("DEFEND");
+end
+
+rule "Strategy: Response — Aggressive Counter"
+    salience 195
+when
+    /responseStore[ archetype.category() == ArchetypeCategory.RUSH
+                    || archetype.category() == ArchetypeCategory.TIMING,
+                    confidence >= 0.7 ]
+then
+    strategyDecisions.add("ATTACK");
+end
+
+rule "Strategy: Response — Macro Counter"
+    salience 190
+when
+    /responseStore[ archetype.category() == ArchetypeCategory.MACRO,
+                    confidence >= 0.7 ]
+then
+    strategyDecisions.add("MACRO");
 end
 
 rule "Strategy: Accelerate — Economic Dominance in Skirmish"

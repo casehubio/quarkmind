@@ -13,7 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HypothesisTrackerFusionTest {
 
@@ -118,4 +122,71 @@ class HypothesisTrackerFusionTest {
         assertEquals(before, after,
             "Per-tick evidence must not change persistent weights");
     }
+
+    @Test
+    void selectResponse_returnsRecommendationsWhenOpponentConfident() {
+        Map<String, Double> priors  = Map.of("MARINE_RUSH", 0.8, "FAST_EXPAND", 0.2);
+        var                 obsCpts = HypothesisPriorLoader.loadObservationCpts(GamePhase.EARLY, Race.TERRAN);
+        Map<String, Map<String, Double>> responsePriors = Map.of(
+                "MARINE_RUSH", Map.of("GATEWAY_RUSH", 0.7, "MACRO", 0.3),
+                "FAST_EXPAND", Map.of("GATEWAY_RUSH", 0.2, "MACRO", 0.8)
+                                                                );
+
+        var responseFusion = new HypothesisTrackerFusion(
+                null, priors, Map.of(), obsCpts, Map.of(), null,
+                responsePriors, List.of());
+        responseFusion.initialize(List.of(), GamePhase.EARLY, Race.TERRAN);
+
+        responseFusion.observeScouting(new ScoutingObservation("first_building", "barracks", 100));
+
+        Map<String, String> context = Map.of(
+                "our_economy_state", "even",
+                "our_army_state", "even",
+                "our_tech_state", "even"
+                                            );
+        List<PatternAssessment> response = responseFusion.selectResponse(Race.PROTOSS, context);
+
+        assertNotNull(response);
+        assertFalse(response.isEmpty(), "Should produce response recommendations with strong prior");
+    }
+
+    @Test
+    void selectResponse_emptyWhenOpponentBelowGate() {
+        Map<String, Double> priors  = Map.of("MARINE_RUSH", 0.8, "FAST_EXPAND", 0.2);
+        var                 obsCpts = HypothesisPriorLoader.loadObservationCpts(GamePhase.EARLY, Race.TERRAN);
+        Map<String, Map<String, Double>> responsePriors = Map.of(
+                "MARINE_RUSH", Map.of("GATEWAY_RUSH", 0.7, "MACRO", 0.3),
+                "FAST_EXPAND", Map.of("GATEWAY_RUSH", 0.2, "MACRO", 0.8)
+                                                                );
+
+        var responseFusion = new HypothesisTrackerFusion(
+                null, priors, Map.of(), obsCpts, Map.of(), null,
+                responsePriors, List.of());
+        responseFusion.initialize(List.of(), GamePhase.EARLY, Race.TERRAN);
+        responseFusion.setResponseConfidenceGate(0.99);
+
+        Map<String, String> context = Map.of(
+                "our_economy_state", "even",
+                "our_army_state", "even",
+                "our_tech_state", "even"
+                                            );
+        List<PatternAssessment> response = responseFusion.selectResponse(Race.PROTOSS, context);
+
+        assertTrue(response.isEmpty(),
+                   "Should not produce recommendations when gate is set above leader weight");
+    }
+
+    @Test
+    void selectResponse_emptyWithoutResponsePriors() {
+        Map<String, String> context = Map.of(
+                "our_economy_state", "even",
+                "our_army_state", "even",
+                "our_tech_state", "even"
+                                            );
+        List<PatternAssessment> response = fusion.selectResponse(Race.PROTOSS, context);
+
+        assertTrue(response.isEmpty(),
+                   "Should not produce recommendations without response priors");
+    }
+
 }

@@ -173,6 +173,11 @@ public class CascadingPatternClassifier {
         }
     }
 
+    public HypothesisTrackerFusion hypothesisTrackerFusion() {
+        return hypothesisTrackerFusion;
+    }
+
+
     public void setLlmFallbackConfig(boolean enabled, double confidenceThreshold,
                                      long minGameTimeFrames, long cooldownFrames) {
         this.llmFallbackEnabled = enabled;

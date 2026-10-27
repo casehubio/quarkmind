@@ -6,7 +6,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HypothesisPriorLoaderTest {
 
@@ -47,4 +50,63 @@ class HypothesisPriorLoaderTest {
             }
         }
     }
+
+    @Test
+    void applyExpertOverrides_multiplierWithFloor() {
+        Map<String, Double> priors = new java.util.LinkedHashMap<>(Map.of(
+                "GATEWAY_RUSH", 0.001,
+                "MACRO", 0.50,
+                "BLINK_STALKER", 0.30,
+                "CANNON_RUSH", 0.189
+                                                                         ));
+        var overrides = java.util.List.of(
+                new HypothesisPriorLoader.ExpertOverride("MARINE_RUSH", "GATEWAY_RUSH", 3.0, 0.05)
+                                         );
+
+        Map<String, Double> result = HypothesisPriorLoader.applyExpertOverrides(priors, overrides);
+
+        assertTrue(result.get("GATEWAY_RUSH") >= 0.04,
+                   "Floor guarantee should push GATEWAY_RUSH above 0.04");
+        assertEquals(1.0, result.values().stream().mapToDouble(d -> d).sum(), 0.001,
+                     "Distribution must sum to 1.0");
+    }
+
+    @Test
+    void applyExpertOverrides_noFloorNeeded() {
+        Map<String, Double> priors = new java.util.LinkedHashMap<>(Map.of(
+                "MACRO", 0.50,
+                "BLINK_STALKER", 0.30,
+                "CANNON_RUSH", 0.20
+                                                                         ));
+        var overrides = java.util.List.of(
+                new HypothesisPriorLoader.ExpertOverride("FAST_EXPAND", "MACRO", 2.0, 0.05)
+                                         );
+
+        Map<String, Double> result = HypothesisPriorLoader.applyExpertOverrides(priors, overrides);
+
+        assertTrue(result.get("MACRO") > 0.50, "MACRO should increase with 2x multiplier");
+        assertEquals(1.0, result.values().stream().mapToDouble(d -> d).sum(), 0.001);
+    }
+
+    @Test
+    void loadExpertOverrides_parsesYaml() {
+        var overrides = HypothesisPriorLoader.loadExpertOverrides(Race.TERRAN);
+        assertFalse(overrides.isEmpty(), "Should have overrides for vs_terran");
+        assertEquals("PROXY_BARRACKS", overrides.getFirst().whenOpponent());
+        assertTrue(overrides.getFirst().priorMultiplier() > 0);
+    }
+
+    @Test
+    void applyExpertOverrides_emptyOverrides_noChange() {
+        Map<String, Double> priors = new java.util.LinkedHashMap<>(Map.of(
+                "MACRO", 0.60,
+                "GATEWAY_RUSH", 0.40
+                                                                         ));
+
+        Map<String, Double> result = HypothesisPriorLoader.applyExpertOverrides(priors, java.util.List.of());
+
+        assertEquals(0.60, result.get("MACRO"), 0.001);
+        assertEquals(0.40, result.get("GATEWAY_RUSH"), 0.001);
+    }
+
 }

@@ -37,6 +37,14 @@ public class HypothesisTrackerFusion {
     private GamePhase currentPhase;
     private Race currentEnemyRace;
     private List<String> currentDetectorNames;
+    private Map<String, Map<String, Double>> responsePriors;
+    private List<HypothesisPriorLoader.ExpertOverride> expertOverrides;
+    private String[] ourStrategies;
+    private Map<String, StrategyArchetype> ourLabelToArchetype;
+    private double responseConfidenceGate = 0.6;
+    private boolean hasResponseSlot;
+    private Race ourRace;
+
 
     public HypothesisTrackerFusion(
             DetectorRegistry registry,
@@ -53,11 +61,26 @@ public class HypothesisTrackerFusion {
         this.phaseResolver = phaseResolver;
     }
 
+    public HypothesisTrackerFusion(
+            DetectorRegistry registry,
+            Map<String, Double> learnedPriors,
+            Map<String, Map<String, Double>> detectorCpts,
+            HypothesisPriorLoader.ObservationCpts observationCpts,
+            Map<String, BayesNetwork> learnedNetworks,
+            PhaseResolver phaseResolver,
+            Map<String, Map<String, Double>> responsePriors,
+            List<HypothesisPriorLoader.ExpertOverride> expertOverrides) {
+        this(registry, learnedPriors, detectorCpts, observationCpts, learnedNetworks, phaseResolver);
+        this.responsePriors  = responsePriors != null ? responsePriors : Map.of();
+        this.expertOverrides = expertOverrides != null ? expertOverrides : List.of();
+    }
+
+
     public void initialize(List<String> detectorNames, GamePhase phase, Race enemyRace) {
         List<String> sorted = detectorNames.stream().sorted().toList();
         if (initialized && currentPhase == phase
-                && currentEnemyRace == enemyRace
-                && sorted.equals(currentDetectorNames)) {
+            && currentEnemyRace == enemyRace
+            && sorted.equals(currentDetectorNames)) {
             return;
         }
 
@@ -66,13 +89,13 @@ public class HypothesisTrackerFusion {
             terminal = opponentTracker.snapshot();
         }
 
-        Map<String, Double> priors;
+        Map<String, Double>                   priors;
         HypothesisPriorLoader.ObservationCpts obsCpts;
         try {
-            priors = HypothesisPriorLoader.loadOpponentPriors(phase, enemyRace);
+            priors  = HypothesisPriorLoader.loadOpponentPriors(phase, enemyRace);
             obsCpts = HypothesisPriorLoader.loadObservationCpts(phase, enemyRace);
         } catch (IllegalArgumentException e) {
-            priors = this.learnedPriors;
+            priors  = this.learnedPriors;
             obsCpts = this.observationCpts;
         }
 
@@ -80,17 +103,37 @@ public class HypothesisTrackerFusion {
             priors = seedPriors(priors, terminal);
         }
 
-        opponentTracker = SC2HypothesisNetworkBuilder.buildOpponentTracker(
-            enemyRace, phase, priors, sorted, detectorCpts, obsCpts);
+        Map<String, Map<String, Double>> rp = responsePriors;
+        if (rp == null || rp.isEmpty()) {
+            rp = HypothesisPriorLoader.loadResponsePriors(enemyRace);
+        }
+        List<HypothesisPriorLoader.ExpertOverride> eo = expertOverrides;
+        if (eo == null || eo.isEmpty()) {
+            eo = HypothesisPriorLoader.loadExpertOverrides(enemyRace);
+        }
 
-        archetypes = SC2HypothesisNetworkBuilder.filteredArchetypes(
-            enemyRace, phase, priors);
+        if (rp != null && !rp.isEmpty()) {
+            opponentTracker     = SC2HypothesisNetworkBuilder.buildTracker(
+                    enemyRace, phase, ourRace != null ? ourRace : Race.PROTOSS,
+                    priors, sorted, detectorCpts, obsCpts, rp, eo);
+            ourStrategies       = SC2HypothesisNetworkBuilder.filteredOurArchetypes(rp);
+            ourLabelToArchetype = buildLabelMapping(ourStrategies,
+                                                    ourRace != null ? ourRace : Race.PROTOSS);
+            hasResponseSlot     = true;
+        } else {
+            opponentTracker = SC2HypothesisNetworkBuilder.buildOpponentTracker(
+                    enemyRace, phase, priors, sorted, detectorCpts, obsCpts);
+            hasResponseSlot = false;
+        }
+
+        archetypes       = SC2HypothesisNetworkBuilder.filteredArchetypes(
+                enemyRace, phase, priors);
         labelToArchetype = buildLabelMapping(archetypes, enemyRace);
 
-        currentPhase = phase;
-        currentEnemyRace = enemyRace;
+        currentPhase         = phase;
+        currentEnemyRace     = enemyRace;
         currentDetectorNames = sorted;
-        initialized = true;
+        initialized          = true;
     }
 
     public void observeScouting(ScoutingObservation observation) {
@@ -145,6 +188,57 @@ public class HypothesisTrackerFusion {
 
         return buildAssessments(adjustedWeights, frame);
     }
+
+    public List<PatternAssessment> selectResponse(Race ourRace, Map<String, String> gameStateContext) {
+        if (!initialized || !hasResponseSlot || opponentTracker == null) {return List.of();}
+
+        String leader = opponentTracker.leader();
+        if (leader == null) {return List.of();}
+
+        double leaderWeight = opponentTracker.weights().getOrDefault(leader, 0.0);
+        if (leaderWeight < responseConfidenceGate) {return List.of();}
+
+        for (String key : List.of("our_economy_state", "our_army_state", "our_tech_state")) {
+            String state = gameStateContext.getOrDefault(key, "even");
+            opponentTracker.setPerTickEvidence("response", key, contextDistribution(key, state));
+        }
+
+        Map<String, Double> responseDist = new LinkedHashMap<>();
+        for (String hypothesis : opponentTracker.viable()) {
+            double[] marginal = opponentTracker.marginalize(hypothesis, "response", "our_strategy");
+            double   weight   = opponentTracker.weights().get(hypothesis);
+            for (int i = 0; i < ourStrategies.length; i++) {
+                responseDist.merge(ourStrategies[i], weight * marginal[i], Double::sum);
+            }
+        }
+        normalize(responseDist);
+
+        List<PatternAssessment> result = new ArrayList<>();
+        for (var entry : responseDist.entrySet()) {
+            if (entry.getValue() < 0.01) {continue;}
+            StrategyArchetype archetype = ourLabelToArchetype.get(entry.getKey());
+            if (archetype == null) {continue;}
+            result.add(new PatternAssessment(archetype, entry.getValue(), 0,
+                                             "response:" + leader, AssessmentSource.FUSION));
+        }
+        result.sort((a, b) -> Double.compare(b.confidence(), a.confidence()));
+        return result;
+    }
+
+    private static double[] contextDistribution(String variable, String state) {
+        String[] states = switch (variable) {
+            case "our_economy_state" -> new String[]{"behind", "even", "ahead"};
+            case "our_army_state" -> new String[]{"smaller", "even", "larger"};
+            case "our_tech_state" -> new String[]{"behind", "even", "ahead"};
+            default -> throw new IllegalArgumentException("Unknown context variable: " + variable);
+        };
+        double[] dist = new double[states.length];
+        for (int i = 0; i < states.length; i++) {
+            dist[i] = states[i].equals(state) ? 1.0 : 0.0;
+        }
+        return dist;
+    }
+
 
     public StrategyArchetype getMapStrategy() {
         if (opponentTracker == null) return null;
@@ -212,6 +306,15 @@ public class HypothesisTrackerFusion {
     public boolean isOpponentResolved() {
         return opponentTracker != null && opponentTracker.isResolved();
     }
+
+    void setResponseConfidenceGate(double gate) {
+        this.responseConfidenceGate = gate;
+    }
+
+    public boolean hasResponseSlot() {
+        return hasResponseSlot;
+    }
+
 
     public void reset() {
         if (opponentTracker != null) opponentTracker.reset();

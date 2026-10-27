@@ -1,0 +1,23 @@
+vs_protoss:
+  - when_opponent: CANNON_RUSH
+    preferred_response: MACRO
+    prior_multiplier: 3.0
+    floor: 0.05
+  - when_opponent: DT_RUSH
+    preferred_response: MACRO
+    prior_multiplier: 4.0
+    floor: 0.05
+vs_terran:
+  - when_opponent: PROXY_BARRACKS
+    preferred_response: GATEWAY_RUSH
+    prior_multiplier: 2.5
+    floor: 0.05
+  - when_opponent: MARINE_RUSH
+    preferred_response: GATEWAY_RUSH
+    prior_multiplier: 2.0
+    floor: 0.05
+vs_zerg:
+  - when_opponent: ZERGLING_RUSH
+    preferred_response: GATEWAY_RUSH
+    prior_multiplier: 2.5
+    floor: 0.05

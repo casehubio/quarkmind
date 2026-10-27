@@ -35,6 +35,7 @@ import io.quarkmind.domain.PatternAssessment;
 import io.quarkmind.domain.PhaseResolver;
 import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.ScoutingObservation;
 import io.quarkmind.domain.StrategyTransition;
@@ -52,7 +53,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -364,6 +367,18 @@ public class DroolsScoutingTask implements ScoutingTask {
                 ctx.set(QuarkMindCaseFile.STRATEGY_TRANSITION, enriched);
                 publishIntel(new ScoutingIntelPayload.TransitionDetected(enriched));
             }
+
+            var htf = cascadingClassifier.hypothesisTrackerFusion();
+            if (htf != null && htf.hasResponseSlot()) {
+                var gameCtx = deriveGameStateContext(gameState);
+                var responseRecs = htf.selectResponse(Race.PROTOSS, gameCtx);
+                if (!responseRecs.isEmpty()) {
+                    String leader = htf.opponentLeader();
+                    double leaderConf = htf.opponentWeights().getOrDefault(leader, 0.0);
+                    publishIntel(new ScoutingIntelPayload.ResponseRecommendationPayload(
+                        responseRecs, leaderConf, leader));
+                }
+            }
         }
 
         if (enemies.isEmpty()) {
@@ -474,6 +489,22 @@ public class DroolsScoutingTask implements ScoutingTask {
     }
 
     private static final double[] THRESHOLDS = {0.3, 0.5, 0.7, 0.9};
+    private static final Set<BuildingType> TECH_BUILDINGS = Set.of(
+            BuildingType.CYBERNETICS_CORE, BuildingType.TWILIGHT_COUNCIL,
+            BuildingType.ROBOTICS_FACILITY, BuildingType.STARGATE,
+            BuildingType.DARK_SHRINE, BuildingType.TEMPLAR_ARCHIVES,
+            BuildingType.FLEET_BEACON, BuildingType.ROBOTICS_BAY,
+            BuildingType.FORGE,
+            BuildingType.ENGINEERING_BAY, BuildingType.ARMORY,
+            BuildingType.GHOST_ACADEMY, BuildingType.FACTORY,
+            BuildingType.STARPORT, BuildingType.FUSION_CORE,
+            BuildingType.SPAWNING_POOL, BuildingType.EVOLUTION_CHAMBER,
+            BuildingType.ROACH_WARREN, BuildingType.BANELING_NEST,
+            BuildingType.HYDRALISK_DEN, BuildingType.LURKER_DEN,
+            BuildingType.INFESTATION_PIT, BuildingType.SPIRE,
+            BuildingType.GREATER_SPIRE, BuildingType.ULTRALISK_CAVERN
+                                                                  );
+
 
     static boolean assessmentsChanged(List<PatternAssessment> prev,
                                       List<PatternAssessment> curr) {
@@ -645,4 +676,34 @@ public class DroolsScoutingTask implements ScoutingTask {
             return null;
         }
     }
+
+    static Map<String, String> deriveGameStateContext(GameState gs) {
+        Map<String, String> context = new LinkedHashMap<>();
+
+        double ourIncome = gs.playerEconomy().mineralsCollectionRate()
+                           + gs.playerEconomy().vespeneCollectionRate();
+        double enemyIncome = gs.enemyEconomy() != null
+                             ? gs.enemyEconomy().mineralsCollectionRate()
+                               + gs.enemyEconomy().vespeneCollectionRate()
+                             : ourIncome;
+        double incomeRatio = enemyIncome > 0 ? ourIncome / enemyIncome : 1.0;
+        context.put("our_economy_state",
+                    incomeRatio < 0.8 ? "behind" : incomeRatio > 1.2 ? "ahead" : "even");
+
+        int    ourArmy   = gs.myUnits().size();
+        int    theirArmy = gs.enemyUnits().size();
+        double armyRatio = theirArmy > 0 ? (double) ourArmy / theirArmy : 1.0;
+        context.put("our_army_state",
+                    armyRatio < 0.7 ? "smaller" : armyRatio > 1.3 ? "larger" : "even");
+
+        long ourTech = gs.myBuildings().stream()
+                         .filter(b -> TECH_BUILDINGS.contains(b.type())).count();
+        long theirTech = gs.enemyBuildings().stream()
+                           .filter(b -> TECH_BUILDINGS.contains(b.type())).count();
+        context.put("our_tech_state",
+                    ourTech < theirTech ? "behind" : ourTech > theirTech ? "ahead" : "even");
+
+        return context;
+    }
+
 }

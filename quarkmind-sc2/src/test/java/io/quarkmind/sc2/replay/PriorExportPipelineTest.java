@@ -2,14 +2,20 @@ package io.quarkmind.sc2.replay;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Race;
+import io.quarkmind.domain.ScoutingObservation;
+import io.quarkmind.domain.ScoutingObservationSequence;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PriorExportPipelineTest {
 
@@ -138,4 +144,67 @@ class PriorExportPipelineTest {
         assertEquals(List.of("barracks", "factory"), stateIndex.get("first_building"));
         assertEquals(List.of("early", "normal"), stateIndex.get("gas_timing"));
     }
+
+    @Test
+    void learnResponsePriors_conditionalFrequencyWithSmoothing() {
+        var outcomes = List.of(
+                new PriorExportPipeline.ResponseOutcome("GATEWAY_RUSH", "MARINE_RUSH", "vs_terran", true),
+                new PriorExportPipeline.ResponseOutcome("GATEWAY_RUSH", "MARINE_RUSH", "vs_terran", true),
+                new PriorExportPipeline.ResponseOutcome("MACRO", "MARINE_RUSH", "vs_terran", true),
+                new PriorExportPipeline.ResponseOutcome("BLINK_STALKER", "FAST_EXPAND", "vs_terran", true),
+                new PriorExportPipeline.ResponseOutcome("MACRO", "FAST_EXPAND", "vs_terran", true),
+                new PriorExportPipeline.ResponseOutcome("MACRO", "FAST_EXPAND", "vs_terran", true)
+                              );
+        var allOurArchetypes = Set.of("GATEWAY_RUSH", "MACRO", "BLINK_STALKER", "CANNON_RUSH");
+
+        Map<String, Map<String, Double>> result =
+                PriorExportPipeline.learnResponsePriors(outcomes, allOurArchetypes);
+
+        assertTrue(result.containsKey("MARINE_RUSH"));
+        assertTrue(result.containsKey("FAST_EXPAND"));
+
+        Map<String, Double> vsMR = result.get("MARINE_RUSH");
+        assertTrue(vsMR.get("GATEWAY_RUSH") > vsMR.get("MACRO"),
+                   "GATEWAY_RUSH should be more likely than MACRO vs MARINE_RUSH");
+        assertTrue(vsMR.get("MACRO") > vsMR.get("CANNON_RUSH"),
+                   "MACRO should be more likely than CANNON_RUSH (smoothing only)");
+        assertEquals(1.0, vsMR.values().stream().mapToDouble(d -> d).sum(), 0.001);
+
+        Map<String, Double> vsFE = result.get("FAST_EXPAND");
+        assertTrue(vsFE.get("MACRO") > vsFE.get("BLINK_STALKER"),
+                   "MACRO should be more likely than BLINK_STALKER vs FAST_EXPAND");
+        assertEquals(1.0, vsFE.values().stream().mapToDouble(d -> d).sum(), 0.001);
+    }
+
+    @Test
+    void learnResponsePriors_lossesExcluded() {
+        var outcomes = List.of(
+                new PriorExportPipeline.ResponseOutcome("GATEWAY_RUSH", "MARINE_RUSH", "vs_terran", true),
+                new PriorExportPipeline.ResponseOutcome("CANNON_RUSH", "MARINE_RUSH", "vs_terran", false)
+                              );
+        var allOurArchetypes = Set.of("GATEWAY_RUSH", "CANNON_RUSH");
+
+        Map<String, Map<String, Double>> result =
+                PriorExportPipeline.learnResponsePriors(outcomes, allOurArchetypes);
+
+        Map<String, Double> vsMR = result.get("MARINE_RUSH");
+        assertTrue(vsMR.get("GATEWAY_RUSH") > vsMR.get("CANNON_RUSH"),
+                   "Winning strategy should have higher prior than losing one");
+    }
+
+    @Test
+    void exportResponsePriorsToJson_writesFile(@TempDir Path tempDir) throws Exception {
+        Map<String, Map<String, Double>> priors = Map.of(
+                "MARINE_RUSH", Map.of("GATEWAY_RUSH", 0.4, "MACRO", 0.6),
+                "FAST_EXPAND", Map.of("BLINK_STALKER", 0.3, "MACRO", 0.7)
+                                                        );
+        PriorExportPipeline.exportResponsePriorsToJson(tempDir, "vs_terran", priors);
+
+        Path file = tempDir.resolve("response-priors-vs_terran.json");
+        assertTrue(java.nio.file.Files.exists(file));
+        var loaded = MAPPER.readValue(file.toFile(),
+                                      new TypeReference<Map<String, Map<String, Double>>>() {});
+        assertEquals(0.4, loaded.get("MARINE_RUSH").get("GATEWAY_RUSH"), 0.001);
+    }
+
 }

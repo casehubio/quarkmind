@@ -7,7 +7,14 @@ import io.quarkmind.inference.bayes.HypothesisPriorLearner;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PriorExportPipeline {
 
@@ -19,6 +26,47 @@ public class PriorExportPipeline {
     public static Map<String, Double> learnPriors(List<String> labels, Set<String> allArchetypes) {
         return HypothesisPriorLearner.fromOutcomes(labels, allArchetypes, SMOOTHING);
     }
+
+    public record ResponseOutcome(
+            String ourStrategy,
+            String opponentStrategy,
+            String matchup,
+            boolean won
+    ) {}
+
+    public static Map<String, Map<String, Double>> learnResponsePriors(
+            List<ResponseOutcome> outcomes, Set<String> allOurArchetypes) {
+        var wins = outcomes.stream().filter(ResponseOutcome::won).toList();
+        Map<String, List<ResponseOutcome>> byOpponent = wins.stream()
+                                                            .collect(Collectors.groupingBy(ResponseOutcome::opponentStrategy));
+
+        Map<String, Map<String, Double>> result = new LinkedHashMap<>();
+        for (var entry : byOpponent.entrySet()) {
+            Map<String, Double> counts = new LinkedHashMap<>();
+            for (String arch : allOurArchetypes) {
+                counts.put(arch, SMOOTHING);
+            }
+            for (var outcome : entry.getValue()) {
+                counts.merge(outcome.ourStrategy(), 1.0, Double::sum);
+            }
+            double              total      = counts.values().stream().mapToDouble(d -> d).sum();
+            Map<String, Double> normalized = new LinkedHashMap<>();
+            for (var e : counts.entrySet()) {
+                normalized.put(e.getKey(), e.getValue() / total);
+            }
+            result.put(entry.getKey(), normalized);
+        }
+        return result;
+    }
+
+    public static void exportResponsePriorsToJson(Path outputDir, String matchup,
+                                                  Map<String, Map<String, Double>> responsePriors) throws IOException {
+        Files.createDirectories(outputDir);
+        MAPPER.writerWithDefaultPrettyPrinter().writeValue(
+                outputDir.resolve("response-priors-" + matchup + ".json").toFile(),
+                responsePriors);
+    }
+
 
     public static Map<String, Map<String, double[]>> learnObservationCpts(
             List<ScoutingObservationSequence> sequences, Set<String> allArchetypes) {

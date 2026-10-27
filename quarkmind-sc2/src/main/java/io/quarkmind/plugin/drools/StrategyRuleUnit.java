@@ -83,6 +83,7 @@ public class StrategyRuleUnit implements RuleUnitData {
      */
     private final DataStore<AdvisoryFact> advisoryStore = DataSource.createStore();
     private final DataStore<io.quarkmind.domain.PatternAssessment> patternStore = DataSource.createStore();
+    private final DataStore<ResponseRecommendationFact>            responseStore = DataSource.createStore();
 
 
     /**
@@ -109,6 +110,9 @@ public class StrategyRuleUnit implements RuleUnitData {
     public DataStore<AdvisoryFact> getAdvisoryStore() { return advisoryStore; }
 
     public DataStore<io.quarkmind.domain.PatternAssessment> getPatternStore() {return patternStore;}
+
+    public DataStore<ResponseRecommendationFact> getResponseStore()           {return responseStore;}
+
 
     public List<String>          getBuildDecisions()   { return buildDecisions; }
     public List<String>          getStrategyDecisions(){ return strategyDecisions; }
