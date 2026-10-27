@@ -1,0 +1,90 @@
+{
+  "stateIndex" : {
+    "first_building" : [ "barracks", "spawningpool", "gateway", "forge", "engineeringbay", "evolutionchamber" ],
+    "gas_timing" : [ "early", "none", "normal", "late" ],
+    "expansion_timing" : [ "none", "fast", "late", "normal" ],
+    "army_composition" : [ "none", "light", "armored", "mixed", "air" ],
+    "worker_saturation" : [ "under", "saturated", "over" ],
+    "aggression_timing" : [ "no_aggression", "timing_attack", "early_pressure", "macro_play" ],
+    "tech_path" : [ "factory", "spawningpool", "roboticsfacility", "ghostacademy", "stargate", "twilightcouncil" ]
+  },
+  "cpts" : {
+    "first_building" : {
+      "ROACH_HYDRA" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ],
+      "MUTALISK_HARASS" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ],
+      "HYDRA_PUSH" : [ 0.25, 0.125, 0.25, 0.25, 0.125 ],
+      "LING_BANE" : [ 0.3529411764705882, 0.43137254901960775, 0.11764705882352938, 0.05882352941176469, 0.039215686274509796 ],
+      "ROACH_RAVAGER" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ],
+      "LURKER_CONTAIN" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ],
+      "HYDRA_LURKER" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ],
+      "SWARM_HOST" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ],
+      "LING_BANE_MUTA" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ]
+    },
+    "tech_path" : {
+      "ROACH_HYDRA" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ],
+      "MUTALISK_HARASS" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ],
+      "HYDRA_PUSH" : [ 0.28571428571428575, 0.14285714285714288, 0.28571428571428575, 0.14285714285714288, 0.14285714285714288 ],
+      "LING_BANE" : [ 0.5, 0.3333333333333333, 0.05555555555555555, 0.05555555555555555, 0.05555555555555555 ],
+      "ROACH_RAVAGER" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ],
+      "LURKER_CONTAIN" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ],
+      "HYDRA_LURKER" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ],
+      "SWARM_HOST" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ],
+      "LING_BANE_MUTA" : [ 0.2, 0.2, 0.2, 0.2, 0.2 ]
+    },
+    "aggression_timing" : {
+      "ROACH_HYDRA" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "MUTALISK_HARASS" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "HYDRA_PUSH" : [ 0.28571428571428575, 0.14285714285714288, 0.28571428571428575, 0.28571428571428575 ],
+      "LING_BANE" : [ 0.803921568627451, 0.0784313725490196, 0.058823529411764705, 0.058823529411764705 ],
+      "ROACH_RAVAGER" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "LURKER_CONTAIN" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "HYDRA_LURKER" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "SWARM_HOST" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "LING_BANE_MUTA" : [ 0.25, 0.25, 0.25, 0.25 ]
+    },
+    "gas_timing" : {
+      "ROACH_HYDRA" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "MUTALISK_HARASS" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "HYDRA_PUSH" : [ 0.28571428571428575, 0.28571428571428575, 0.14285714285714288, 0.28571428571428575 ],
+      "LING_BANE" : [ 0.4117647058823529, 0.3137254901960784, 0.11764705882352941, 0.1568627450980392 ],
+      "ROACH_RAVAGER" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "LURKER_CONTAIN" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "HYDRA_LURKER" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "SWARM_HOST" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "LING_BANE_MUTA" : [ 0.25, 0.25, 0.25, 0.25 ]
+    },
+    "expansion_timing" : {
+      "ROACH_HYDRA" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "MUTALISK_HARASS" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "HYDRA_PUSH" : [ 0.2857142857142857, 0.2857142857142857, 0.2857142857142857, 0.14285714285714285 ],
+      "LING_BANE" : [ 0.47058823529411764, 0.13725490196078433, 0.13725490196078433, 0.2549019607843137 ],
+      "ROACH_RAVAGER" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "LURKER_CONTAIN" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "HYDRA_LURKER" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "SWARM_HOST" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "LING_BANE_MUTA" : [ 0.25, 0.25, 0.25, 0.25 ]
+    },
+    "army_composition" : {
+      "ROACH_HYDRA" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "MUTALISK_HARASS" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "HYDRA_PUSH" : [ 0.2857142857142857, 0.2857142857142857, 0.2857142857142857, 0.14285714285714285 ],
+      "LING_BANE" : [ 0.8235294117647058, 0.11764705882352941, 0.0196078431372549, 0.0392156862745098 ],
+      "ROACH_RAVAGER" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "LURKER_CONTAIN" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "HYDRA_LURKER" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "SWARM_HOST" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "LING_BANE_MUTA" : [ 0.25, 0.25, 0.25, 0.25 ]
+    },
+    "worker_saturation" : {
+      "ROACH_HYDRA" : [ 0.5, 0.5 ],
+      "MUTALISK_HARASS" : [ 0.5, 0.5 ],
+      "HYDRA_PUSH" : [ 0.8, 0.2 ],
+      "LING_BANE" : [ 0.9591836734693877, 0.04081632653061224 ],
+      "ROACH_RAVAGER" : [ 0.5, 0.5 ],
+      "LURKER_CONTAIN" : [ 0.5, 0.5 ],
+      "HYDRA_LURKER" : [ 0.5, 0.5 ],
+      "SWARM_HOST" : [ 0.5, 0.5 ],
+      "LING_BANE_MUTA" : [ 0.5, 0.5 ]
+    }
+  }
+}

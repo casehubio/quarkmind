@@ -1,0 +1,62 @@
+{
+  "stateIndex" : {
+    "gas_timing" : [ "none", "normal", "early", "late" ],
+    "expansion_timing" : [ "none", "fast", "normal", "late" ],
+    "army_composition" : [ "none", "armored", "light", "mixed", "air" ],
+    "worker_saturation" : [ "under", "saturated", "over" ],
+    "aggression_timing" : [ "no_aggression", "timing_attack", "early_pressure", "macro_play" ],
+    "first_building" : [ "gateway", "forge", "barracks", "spawningpool", "engineeringbay", "evolutionchamber" ],
+    "tech_path" : [ "roboticsfacility", "spawningpool", "factory", "stargate", "twilightcouncil", "ghostacademy" ]
+  },
+  "cpts" : {
+    "first_building" : {
+      "CARRIER" : [ 0.3333333333333333, 0.3333333333333333, 0.3333333333333333 ],
+      "TEMPEST_SIEGE" : [ 0.3333333333333333, 0.3333333333333333, 0.3333333333333333 ],
+      "SKYTOSS" : [ 0.3333333333333333, 0.3333333333333333, 0.3333333333333333 ],
+      "ARCHON_STORM" : [ 0.3333333333333333, 0.3333333333333333, 0.3333333333333333 ],
+      "MOTHERSHIP_FLEET" : [ 0.5333333333333333, 0.3333333333333333, 0.13333333333333333 ]
+    },
+    "gas_timing" : {
+      "CARRIER" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "TEMPEST_SIEGE" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "SKYTOSS" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "ARCHON_STORM" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "MOTHERSHIP_FLEET" : [ 0.5625, 0.125, 0.1875, 0.125 ]
+    },
+    "expansion_timing" : {
+      "CARRIER" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "TEMPEST_SIEGE" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "SKYTOSS" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "ARCHON_STORM" : [ 0.25, 0.25, 0.25, 0.25 ],
+      "MOTHERSHIP_FLEET" : [ 0.1875, 0.1875, 0.3125, 0.3125 ]
+    },
+    "aggression_timing" : {
+      "CARRIER" : [ 0.3333333333333333, 0.3333333333333333, 0.3333333333333333 ],
+      "TEMPEST_SIEGE" : [ 0.3333333333333333, 0.3333333333333333, 0.3333333333333333 ],
+      "SKYTOSS" : [ 0.3333333333333333, 0.3333333333333333, 0.3333333333333333 ],
+      "ARCHON_STORM" : [ 0.3333333333333333, 0.3333333333333333, 0.3333333333333333 ],
+      "MOTHERSHIP_FLEET" : [ 0.4, 0.2, 0.4 ]
+    },
+    "tech_path" : {
+      "CARRIER" : [ 1.0 ],
+      "TEMPEST_SIEGE" : [ 1.0 ],
+      "SKYTOSS" : [ 1.0 ],
+      "ARCHON_STORM" : [ 1.0 ],
+      "MOTHERSHIP_FLEET" : [ 1.0 ]
+    },
+    "army_composition" : {
+      "CARRIER" : [ 0.5, 0.5 ],
+      "TEMPEST_SIEGE" : [ 0.5, 0.5 ],
+      "SKYTOSS" : [ 0.5, 0.5 ],
+      "ARCHON_STORM" : [ 0.5, 0.5 ],
+      "MOTHERSHIP_FLEET" : [ 0.5714285714285714, 0.42857142857142855 ]
+    },
+    "worker_saturation" : {
+      "CARRIER" : [ 1.0 ],
+      "TEMPEST_SIEGE" : [ 1.0 ],
+      "SKYTOSS" : [ 1.0 ],
+      "ARCHON_STORM" : [ 1.0 ],
+      "MOTHERSHIP_FLEET" : [ 1.0 ]
+    }
+  }
+}

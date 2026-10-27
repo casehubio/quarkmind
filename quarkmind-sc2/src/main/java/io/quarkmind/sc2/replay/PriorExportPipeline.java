@@ -1,0 +1,109 @@
+package io.quarkmind.sc2.replay;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkmind.domain.ScoutingObservationSequence;
+import io.quarkmind.inference.bayes.HypothesisPriorLearner;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+
+public class PriorExportPipeline {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final double SMOOTHING = 1.0;
+    private static final double CPT_FLOOR = 0.01;
+    private static final double CPT_CEILING = 0.99;
+
+    public static Map<String, Double> learnPriors(List<String> labels, Set<String> allArchetypes) {
+        return HypothesisPriorLearner.fromOutcomes(labels, allArchetypes, SMOOTHING);
+    }
+
+    public static Map<String, Map<String, double[]>> learnObservationCpts(
+            List<ScoutingObservationSequence> sequences, Set<String> allArchetypes) {
+
+        var variableStates = new LinkedHashMap<String, LinkedHashSet<String>>();
+        for (var seq : sequences) {
+            for (var obs : seq.observations()) {
+                variableStates.computeIfAbsent(obs.variable(), k -> new LinkedHashSet<>())
+                    .add(obs.state());
+            }
+        }
+
+        var counts = new HashMap<String, Map<String, Map<String, Double>>>();
+        for (var seq : sequences) {
+            String label = seq.groundTruthStrategy();
+            if (!allArchetypes.contains(label)) continue;
+            for (var obs : seq.observations()) {
+                counts.computeIfAbsent(obs.variable(), k -> new HashMap<>())
+                    .computeIfAbsent(label, k -> new HashMap<>())
+                    .merge(obs.state(), 1.0, Double::sum);
+            }
+        }
+
+        var result = new LinkedHashMap<String, Map<String, double[]>>();
+        for (var varEntry : variableStates.entrySet()) {
+            String variable = varEntry.getKey();
+            var states = new ArrayList<>(varEntry.getValue());
+            var archCpts = new LinkedHashMap<String, double[]>();
+
+            for (String archetype : allArchetypes) {
+                double[] dist = new double[states.size()];
+                var archCounts = counts.getOrDefault(variable, Map.of())
+                    .getOrDefault(archetype, Map.of());
+
+                double total = 0;
+                for (int i = 0; i < states.size(); i++) {
+                    dist[i] = archCounts.getOrDefault(states.get(i), 0.0) + SMOOTHING;
+                    total += dist[i];
+                }
+                for (int i = 0; i < dist.length; i++) {
+                    dist[i] = Math.max(CPT_FLOOR, Math.min(CPT_CEILING, dist[i] / total));
+                }
+                double sum = 0;
+                for (double d : dist) sum += d;
+                for (int i = 0; i < dist.length; i++) dist[i] /= sum;
+
+                archCpts.put(archetype, dist);
+            }
+            result.put(variable, archCpts);
+        }
+
+        return result;
+    }
+
+    public static Map<String, List<String>> collectStateIndex(
+            List<ScoutingObservationSequence> sequences) {
+        var seen = new LinkedHashMap<String, LinkedHashSet<String>>();
+        for (var seq : sequences) {
+            for (var obs : seq.observations()) {
+                seen.computeIfAbsent(obs.variable(), k -> new LinkedHashSet<>())
+                    .add(obs.state());
+            }
+        }
+        var stateIndex = new LinkedHashMap<String, List<String>>();
+        for (var entry : seen.entrySet()) {
+            stateIndex.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+        return stateIndex;
+    }
+
+    public static void exportToJson(Path outputDir, String phase, String matchup,
+            Map<String, Double> priors,
+            Map<String, Map<String, double[]>> cpts,
+            Map<String, List<String>> stateIndex) throws IOException {
+
+        Files.createDirectories(outputDir);
+        String suffix = phase + "-" + matchup + ".json";
+
+        MAPPER.writerWithDefaultPrettyPrinter().writeValue(
+            outputDir.resolve("opponent-priors-" + suffix).toFile(), priors);
+
+        var cptExport = new LinkedHashMap<String, Object>();
+        cptExport.put("stateIndex", stateIndex);
+        cptExport.put("cpts", cpts);
+        MAPPER.writerWithDefaultPrettyPrinter().writeValue(
+            outputDir.resolve("observation-cpts-" + suffix).toFile(), cptExport);
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "stateIndex" : {
+    "first_building" : [ "barracks", "spawningpool", "gateway", "forge", "engineeringbay", "evolutionchamber" ],
+    "gas_timing" : [ "early", "none", "normal", "late" ],
+    "expansion_timing" : [ "none", "fast", "late", "normal" ],
+    "army_composition" : [ "none", "light", "armored", "mixed", "air" ],
+    "worker_saturation" : [ "under", "saturated", "over" ],
+    "aggression_timing" : [ "no_aggression", "timing_attack", "early_pressure", "macro_play" ],
+    "tech_path" : [ "factory", "spawningpool", "roboticsfacility", "ghostacademy", "stargate", "twilightcouncil" ]
+  },
+  "cpts" : { }
+}
