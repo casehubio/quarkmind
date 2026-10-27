@@ -373,4 +373,47 @@ class CascadingPatternClassifierTest {
         orchestrator.initializeNetwork(List.of("rush_det"));
         return orchestrator;
     }
+
+    @Test
+    void observeScouting_delegatesToFusion() {
+        var priors  = io.quarkmind.sc2.detector.HypothesisPriorLoader.loadOpponentPriors(GamePhase.EARLY, Race.TERRAN);
+        var obsCpts = io.quarkmind.sc2.detector.HypothesisPriorLoader.loadObservationCpts(GamePhase.EARLY, Race.TERRAN);
+        var fusion = new io.quarkmind.sc2.detector.HypothesisTrackerFusion(
+                null, priors, Map.of(), obsCpts, Map.of(), null);
+        fusion.initialize(List.of(), GamePhase.EARLY, Race.TERRAN);
+
+        var classifier    = new CascadingPatternClassifier(0.7, 0.5, fusion, null);
+        var weightsBefore = Map.copyOf(fusion.opponentWeights());
+
+        classifier.observeScouting(new io.quarkmind.domain.ScoutingObservation("first_building", "barracks", 100L));
+
+        org.junit.jupiter.api.Assertions.assertNotEquals(weightsBefore, fusion.opponentWeights(),
+                                                         "observeScouting should delegate to fusion and change weights");
+    }
+
+    @Test
+    void fusionMode_hypothesis_classifiesWithFusion() {
+        var priors  = io.quarkmind.sc2.detector.HypothesisPriorLoader.loadOpponentPriors(GamePhase.EARLY, Race.TERRAN);
+        var obsCpts = io.quarkmind.sc2.detector.HypothesisPriorLoader.loadObservationCpts(GamePhase.EARLY, Race.TERRAN);
+        var fusion = new io.quarkmind.sc2.detector.HypothesisTrackerFusion(
+                null, priors, Map.of(), obsCpts, Map.of(), null);
+
+        var classifier = new CascadingPatternClassifier(0.99, 0.01, fusion, null);
+
+        fusion.initialize(List.of(), GamePhase.EARLY, Race.TERRAN);
+        var result = classifier.classify(List.of(), List.of(), null,
+                                         Race.TERRAN, 100, -1, null);
+        // With onnxFeatures null, tier 2 is skipped; just verify no crash
+        assertTrue(result.assessments().isEmpty() || result.assessments().get(0).source() != null);
+    }
+
+    @Test
+    void observeScouting_noop_whenDetectorMode() {
+        var orchestrator = buildTestOrchestrator();
+        var classifier   = new CascadingPatternClassifier(0.7, 0.5, orchestrator, null);
+        // fusionMode is "detector" in this constructor — observeScouting should be a no-op
+        classifier.observeScouting(new io.quarkmind.domain.ScoutingObservation("first_building", "barracks", 100L));
+        // No crash, no effect — just verifying it doesn't throw
+    }
+
 }

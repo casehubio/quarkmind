@@ -36,6 +36,7 @@ import io.quarkmind.domain.PhaseResolver;
 import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.ScoutingObservation;
 import io.quarkmind.domain.StrategyTransition;
 import io.quarkmind.domain.TransitionPath;
 import io.quarkmind.domain.Unit;
@@ -93,6 +94,7 @@ public class DroolsScoutingTask implements ScoutingTask {
     @Inject PhaseResolver phaseResolver;
     private final StrategyFeatureExtractor featureExtractor = new StrategyFeatureExtractor();
     private final TemporalWindowAccumulator windowAccumulator = new TemporalWindowAccumulator();
+    private final LiveScoutingObservationExtractor liveObservationExtractor = new LiveScoutingObservationExtractor();
 
 
     @Inject
@@ -147,6 +149,7 @@ public class DroolsScoutingTask implements ScoutingTask {
         scoutFirstDispatchFrame = -1;
         cascadingClassifier.reset();
         windowAccumulator.reset();
+        liveObservationExtractor.reset();
         prevAssessments           = List.of();
         cachedPosture             = "UNKNOWN";
     }
@@ -218,6 +221,7 @@ public class DroolsScoutingTask implements ScoutingTask {
             cachedPosture    = "UNKNOWN";
             cascadingClassifier.reset();
             windowAccumulator.reset();
+            liveObservationExtractor.reset();
             prevAssessments  = List.of();
         }
         long prevFrame = lastFrame;
@@ -323,6 +327,10 @@ public class DroolsScoutingTask implements ScoutingTask {
             }
 
             windowAccumulator.addSnapshot(buildSnapshot(gameState));
+            var liveObservations = liveObservationExtractor.extract(gameState);
+            for (ScoutingObservation obs : liveObservations) {
+                cascadingClassifier.observeScouting(obs);
+            }
             var features = featureExtractor.extract(
                     windowAccumulator.getWindowedFeatures(), MapCharacteristics.DEFAULT);
             io.quarkmind.domain.Race enemyRace = resolveEnemyRace(ctx);

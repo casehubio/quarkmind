@@ -5,11 +5,19 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.quarkmind.agent.QuarkMindCaseFile;
 import io.quarkmind.domain.AssessmentSource;
+import io.quarkmind.domain.GamePhase;
+import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.PatternAssessment;
+import io.quarkmind.domain.PhaseResolver;
 import io.quarkmind.domain.Race;
+import io.quarkmind.domain.ScoutingObservation;
 import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.domain.StrategyTransition;
+import io.quarkmind.sc2.detector.BinaryDetectorRunner;
 import io.quarkmind.sc2.detector.DetectorOrchestrator;
+import io.quarkmind.sc2.detector.DetectorRegistry;
+import io.quarkmind.sc2.detector.HypothesisPriorLoader;
+import io.quarkmind.sc2.detector.HypothesisTrackerFusion;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -18,6 +26,8 @@ import org.jboss.logging.Logger;
 
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,8 +57,11 @@ public class CascadingPatternClassifier {
 
     private final double droolsThreshold;
     private final double onnxThreshold;
+    private final String fusionMode;
     private final DetectorOrchestrator detectorOrchestrator;
-    private final io.quarkmind.sc2.detector.BinaryDetectorRunner detectorRunner;
+    private final HypothesisTrackerFusion hypothesisTrackerFusion;
+    private final BinaryDetectorRunner detectorRunner;
+    private final PhaseResolver phaseResolver;
 
     private final EnumMap<StrategyArchetype, Double> cumulativeConfidence =
             new EnumMap<>(StrategyArchetype.class);
@@ -88,25 +101,46 @@ public class CascadingPatternClassifier {
             double droolsThreshold,
             @ConfigProperty(name = "quarkmind.classifier.onnx.confidence-threshold", defaultValue = "0.5")
             double onnxThreshold,
-            io.quarkmind.sc2.detector.BinaryDetectorRunner detectorRunner,
-            io.quarkmind.sc2.detector.LearnedCptLoader learnedCptLoader) {
-        this(droolsThreshold, onnxThreshold, null, detectorRunner,
-             learnedCptLoader != null ? learnedCptLoader.loadFromClasspath() : Map.of());
+            @ConfigProperty(name = "quarkmind.classifier.fusion.mode", defaultValue = "hypothesis")
+            String fusionMode,
+            BinaryDetectorRunner detectorRunner,
+            io.quarkmind.sc2.detector.LearnedCptLoader learnedCptLoader,
+            PhaseResolver phaseResolver) {
+        this.droolsThreshold = droolsThreshold;
+        this.onnxThreshold   = onnxThreshold;
+        this.fusionMode      = fusionMode;
+        this.detectorRunner  = detectorRunner;
+        this.phaseResolver   = phaseResolver;
+
+        if (detectorRunner != null && detectorRunner.registry() != null) {
+            Map<String, io.quarkmind.inference.bayes.BayesNetwork> learnedNetworks =
+                learnedCptLoader != null ? learnedCptLoader.loadFromClasspath() : Map.of();
+            this.detectorOrchestrator = buildDefaultOrchestrator(
+                detectorRunner.registry(), learnedNetworks);
+            this.hypothesisTrackerFusion = buildDefaultFusion(
+                detectorRunner.registry(), phaseResolver);
+        } else {
+            this.detectorOrchestrator = null;
+            this.hypothesisTrackerFusion = null;
+        }
     }
 
     public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold,
                                       DetectorOrchestrator orchestrator,
-                                      io.quarkmind.sc2.detector.BinaryDetectorRunner runner) {
+                                      BinaryDetectorRunner runner) {
         this(droolsThreshold, onnxThreshold, orchestrator, runner, Map.of());
     }
 
     public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold,
                                       DetectorOrchestrator orchestrator,
-                                      io.quarkmind.sc2.detector.BinaryDetectorRunner runner,
+                                      BinaryDetectorRunner runner,
                                       Map<String, io.quarkmind.inference.bayes.BayesNetwork> learnedNetworks) {
         this.droolsThreshold = droolsThreshold;
         this.onnxThreshold   = onnxThreshold;
         this.detectorRunner  = runner;
+        this.fusionMode      = "detector";
+        this.phaseResolver   = null;
+        this.hypothesisTrackerFusion = null;
         if (orchestrator != null) {
             this.detectorOrchestrator = orchestrator;
         } else if (runner != null && runner.registry() != null) {
@@ -116,10 +150,28 @@ public class CascadingPatternClassifier {
         }
     }
 
+    public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold,
+                                      HypothesisTrackerFusion fusion,
+                                      BinaryDetectorRunner runner) {
+        this.droolsThreshold = droolsThreshold;
+        this.onnxThreshold   = onnxThreshold;
+        this.hypothesisTrackerFusion = fusion;
+        this.detectorOrchestrator = null;
+        this.detectorRunner  = runner;
+        this.fusionMode      = "hypothesis";
+        this.phaseResolver   = null;
+    }
+
     public CascadingPatternClassifier(double droolsThreshold, double onnxThreshold) {
         this(droolsThreshold, onnxThreshold, (DetectorOrchestrator) null, null);
     }
 
+
+    public void observeScouting(ScoutingObservation observation) {
+        if (hypothesisTrackerFusion != null && "hypothesis".equals(fusionMode)) {
+            hypothesisTrackerFusion.observeScouting(observation);
+        }
+    }
 
     public void setLlmFallbackConfig(boolean enabled, double confidenceThreshold,
                                      long minGameTimeFrames, long cooldownFrames) {
@@ -178,30 +230,18 @@ public class CascadingPatternClassifier {
             return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.DROOLS), false, transition);
         }
 
-        // Tier 2: Bayesian fusion — binary detectors + Drools markers through BJT
-        if (detectorOrchestrator != null && onnxFeatures != null) {
-            inc(onnxInvocations);
-            Map<String, Float> detectorOutputs = Map.of();
-            if (detectorRunner != null && enemyRace != null) {
-                io.quarkmind.domain.GamePhase phase = resolvePhase(frame);
-                var allActive = detectorRunner.registry().getActiveDetectors(phase, enemyRace);
-                var allKeys = new java.util.HashSet<String>();
-                for (var def : allActive) { allKeys.add(def.key(enemyRace)); }
-                if (!allKeys.isEmpty()) {
-                    detectorOrchestrator.initializeNetwork(List.copyOf(allKeys), phase, enemyRace);
-                    var toEvaluate = detectorOrchestrator.getDetectorsToEvaluate(allKeys);
-                    detectorOutputs = detectorRunner.runActiveDetectors(phase, enemyRace, onnxFeatures, toEvaluate);
-                }
-            }
-            var fusionAssessments = detectorOrchestrator.classify(
-                detectorOutputs, List.of(), frame);
-            if (!fusionAssessments.isEmpty() && fusionAssessments.get(0).confidence() >= onnxThreshold) {
-                for (var assessment : fusionAssessments) {
-                    cumulativeConfidence.merge(assessment.archetype(), assessment.confidence(), Math::max);
-                }
-                inc(onnxResolutions);
-                var mapStrategy = detectorOrchestrator.getMapStrategy();
-                return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.FUSION), false, transition, mapStrategy);
+        // Tier 2: Bayesian fusion
+        if (onnxFeatures != null) {
+            GamePhase phase = resolvePhaseFromContext(ctx, frame);
+
+            if ("hypothesis".equals(fusionMode) && hypothesisTrackerFusion != null) {
+                CascadeResult fusionResult = classifyWithHypothesisTracker(
+                    onnxFeatures, enemyRace, phase, frame, transition);
+                if (fusionResult != null) return fusionResult;
+            } else if (detectorOrchestrator != null) {
+                CascadeResult detectorResult = classifyWithDetectorOrchestrator(
+                    onnxFeatures, enemyRace, phase, frame, transition);
+                if (detectorResult != null) return detectorResult;
             }
         }
 
@@ -242,11 +282,83 @@ public class CascadingPatternClassifier {
     }
 
 
+    private CascadeResult classifyWithHypothesisTracker(
+            StrategyFeatures onnxFeatures, Race enemyRace,
+            GamePhase phase, long frame, StrategyTransition transition) {
+        inc(onnxInvocations);
+        if (detectorRunner != null && enemyRace != null) {
+            var allActive = detectorRunner.registry().getActiveDetectors(phase, enemyRace);
+            var allKeys = new HashSet<String>();
+            for (var def : allActive) { allKeys.add(def.key(enemyRace)); }
+            if (!allKeys.isEmpty()) {
+                hypothesisTrackerFusion.initialize(List.copyOf(allKeys), phase, enemyRace);
+                var toEvaluate = hypothesisTrackerFusion.getDetectorsToEvaluate(allKeys);
+                var detectorOutputs = detectorRunner.runActiveDetectors(
+                    phase, enemyRace, onnxFeatures, toEvaluate);
+                var fusionAssessments = hypothesisTrackerFusion.classify(
+                    detectorOutputs, List.of(), frame);
+                if (!fusionAssessments.isEmpty()
+                        && fusionAssessments.get(0).confidence() >= onnxThreshold) {
+                    for (var a : fusionAssessments) {
+                        cumulativeConfidence.merge(a.archetype(), a.confidence(), Math::max);
+                    }
+                    inc(onnxResolutions);
+                    var mapStrategy = hypothesisTrackerFusion.getMapStrategy();
+                    return new CascadeResult(
+                        allAssessments(cumulativeConfidence, frame, AssessmentSource.FUSION),
+                        false, transition, mapStrategy);
+                }
+            }
+        }
+        return null;
+    }
+
+    private CascadeResult classifyWithDetectorOrchestrator(
+            StrategyFeatures onnxFeatures, Race enemyRace,
+            GamePhase phase, long frame, StrategyTransition transition) {
+        inc(onnxInvocations);
+        Map<String, Float> detectorOutputs = Map.of();
+        if (detectorRunner != null && enemyRace != null) {
+            var allActive = detectorRunner.registry().getActiveDetectors(phase, enemyRace);
+            var allKeys = new HashSet<String>();
+            for (var def : allActive) { allKeys.add(def.key(enemyRace)); }
+            if (!allKeys.isEmpty()) {
+                detectorOrchestrator.initializeNetwork(List.copyOf(allKeys), phase, enemyRace);
+                var toEvaluate = detectorOrchestrator.getDetectorsToEvaluate(allKeys);
+                detectorOutputs = detectorRunner.runActiveDetectors(phase, enemyRace, onnxFeatures, toEvaluate);
+            }
+        }
+        var fusionAssessments = detectorOrchestrator.classify(
+            detectorOutputs, List.of(), frame);
+        if (!fusionAssessments.isEmpty() && fusionAssessments.get(0).confidence() >= onnxThreshold) {
+            for (var assessment : fusionAssessments) {
+                cumulativeConfidence.merge(assessment.archetype(), assessment.confidence(), Math::max);
+            }
+            inc(onnxResolutions);
+            var mapStrategy = detectorOrchestrator.getMapStrategy();
+            return new CascadeResult(allAssessments(cumulativeConfidence, frame, AssessmentSource.FUSION), false, transition, mapStrategy);
+        }
+        return null;
+    }
+
+    private GamePhase resolvePhaseFromContext(CaseContext ctx, long frame) {
+        if (phaseResolver != null && ctx != null) {
+            GameState gs = ctx.getAs(QuarkMindCaseFile.GAME_STATE, GameState.class);
+            if (gs != null) {
+                return phaseResolver.resolve(gs);
+            }
+        }
+        return resolvePhase(frame);
+    }
+
     public void reset() {
         cumulativeConfidence.clear();
         lastLlmFallbackFrame = -1;
         lastProcessedLlmArchetype = null;
         prevDominant = null;
+        if (hypothesisTrackerFusion != null) {
+            hypothesisTrackerFusion.reset();
+        }
         if (detectorOrchestrator != null) {
             detectorOrchestrator.reset();
         }
@@ -259,6 +371,15 @@ public class CascadingPatternClassifier {
     }
 
     io.quarkmind.agent.plugin.DetectorStatsPublished detectorStats() {
+        if ("hypothesis".equals(fusionMode) && hypothesisTrackerFusion != null) {
+            var mapStrategy = hypothesisTrackerFusion.getMapStrategy();
+            return new io.quarkmind.agent.plugin.DetectorStatsPublished(
+                    0, 0, 0, 0,
+                    hypothesisTrackerFusion.getSensitivities(),
+                    mapStrategy != null ? mapStrategy.name() : null,
+                    hypothesisTrackerFusion.getMapAssignment(),
+                    hypothesisTrackerFusion.getExplanationSummary());
+        }
         if (detectorOrchestrator == null) {return null;}
         var stats = detectorOrchestrator.getStats();
         if (stats == null) {return null;}
@@ -275,6 +396,9 @@ public class CascadingPatternClassifier {
     }
 
     String explanationSummary() {
+        if ("hypothesis".equals(fusionMode) && hypothesisTrackerFusion != null) {
+            return hypothesisTrackerFusion.getExplanationSummary();
+        }
         if (detectorOrchestrator == null) {return null;}
         return detectorOrchestrator.getExplanationSummary();
     }
@@ -384,46 +508,77 @@ public class CascadingPatternClassifier {
         return best;
     }
 
-    static io.quarkmind.domain.GamePhase resolvePhase(long frame) {
+    static GamePhase resolvePhase(long frame) {
         double minutes = frame / (22.4 * 60.0);
-        if (minutes < 3.0) {return io.quarkmind.domain.GamePhase.EARLY;}
-        if (minutes < 5.0) {return io.quarkmind.domain.GamePhase.MID;}
-        return io.quarkmind.domain.GamePhase.LATE;
+        if (minutes < 3.0) {return GamePhase.EARLY;}
+        if (minutes < 5.0) {return GamePhase.MID;}
+        return GamePhase.LATE;
     }
 
     private static DetectorOrchestrator buildDefaultOrchestrator(
-            io.quarkmind.sc2.detector.DetectorRegistry registry,
+            DetectorRegistry registry,
             Map<String, io.quarkmind.inference.bayes.BayesNetwork> learnedNetworks) {
         var config        = registry.config();
-        var allArchetypes = new java.util.LinkedHashSet<String>();
+        var allArchetypes = new LinkedHashSet<String>();
         for (var def : config.detectors()) {
             for (var archetypes : def.positiveArchetypes().values()) {
                 allArchetypes.addAll(archetypes);
             }
         }
-        Map<String, Double> priors = new java.util.HashMap<>();
+        Map<String, Double> priors = new HashMap<>();
         for (String arch : allArchetypes) {
             priors.put(arch, 1.0 / allArchetypes.size());
         }
-        Map<String, Map<String, Double>> cpts = new java.util.HashMap<>();
+        Map<String, Map<String, Double>> cpts = new HashMap<>();
         for (var def : config.detectors()) {
             for (var entry : def.positiveArchetypes().entrySet()) {
                 String              key = def.key(entry.getKey());
-                Map<String, Double> cpt = new java.util.HashMap<>();
+                Map<String, Double> cpt = new HashMap<>();
                 for (String arch : allArchetypes) {
                     cpt.put(arch, entry.getValue().contains(arch) ? 0.8 : 0.2);
                 }
                 cpts.put(key, cpt);
             }
         }
-        Map<String, io.quarkmind.domain.StrategyArchetype> labelToArchetype = new java.util.HashMap<>();
+        Map<String, StrategyArchetype> labelToArchetype = new HashMap<>();
         for (String arch : allArchetypes) {
             try {
-                labelToArchetype.put(arch, io.quarkmind.domain.StrategyArchetype.valueOf(arch));
+                labelToArchetype.put(arch, StrategyArchetype.valueOf(arch));
             } catch (IllegalArgumentException ignored) {}
         }
         return new DetectorOrchestrator(registry, priors, cpts, labelToArchetype, 5, 0.95, 0.01, learnedNetworks);
     }
 
-
+    private static HypothesisTrackerFusion buildDefaultFusion(
+            DetectorRegistry registry, PhaseResolver phaseResolver) {
+        var config = registry.config();
+        var allArchetypes = new LinkedHashSet<String>();
+        for (var def : config.detectors()) {
+            for (var archetypes : def.positiveArchetypes().values()) {
+                allArchetypes.addAll(archetypes);
+            }
+        }
+        Map<String, Map<String, Double>> cpts = new HashMap<>();
+        for (var def : config.detectors()) {
+            for (var entry : def.positiveArchetypes().entrySet()) {
+                String key = def.key(entry.getKey());
+                Map<String, Double> cpt = new HashMap<>();
+                for (String arch : allArchetypes) {
+                    cpt.put(arch, entry.getValue().contains(arch) ? 0.8 : 0.2);
+                }
+                cpts.put(key, cpt);
+            }
+        }
+        Map<String, Double> defaultPriors = Map.of();
+        HypothesisPriorLoader.ObservationCpts defaultObsCpts =
+            new HypothesisPriorLoader.ObservationCpts(Map.of(), Map.of());
+        try {
+            defaultPriors = HypothesisPriorLoader.loadOpponentPriors(
+                GamePhase.EARLY, Race.TERRAN);
+            defaultObsCpts = HypothesisPriorLoader.loadObservationCpts(
+                GamePhase.EARLY, Race.TERRAN);
+        } catch (IllegalArgumentException ignored) {}
+        return new HypothesisTrackerFusion(
+            registry, defaultPriors, cpts, defaultObsCpts, Map.of(), phaseResolver);
+    }
 }
