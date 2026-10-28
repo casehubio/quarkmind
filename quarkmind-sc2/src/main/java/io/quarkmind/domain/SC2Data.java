@@ -11,6 +11,8 @@ import static io.quarkmind.domain.UnitAttribute.BIOLOGICAL;
 import static io.quarkmind.domain.UnitAttribute.LIGHT;
 import static io.quarkmind.domain.UnitAttribute.MASSIVE;
 import static io.quarkmind.domain.UnitAttribute.MECHANICAL;
+import static io.quarkmind.domain.UnitAttribute.PSIONIC;
+import static io.quarkmind.domain.UnitAttribute.STRUCTURE;
 
 public final class SC2Data {
 
@@ -763,76 +765,76 @@ public final class SC2Data {
 
     static {
         var map = new EnumMap<UnitType, Set<UnitAttribute>>(UnitType.class);
-        // Protoss
+        // Protoss — patch 5.0.16 ground truth (starcraft2.ai)
         map.put(UnitType.PROBE, Set.of(LIGHT, MECHANICAL));
         map.put(UnitType.ZEALOT, Set.of(LIGHT, BIOLOGICAL));
         map.put(UnitType.STALKER, Set.of(ARMORED, MECHANICAL));
-        map.put(UnitType.IMMORTAL, Set.of(ARMORED, MECHANICAL, MASSIVE));
-        map.put(UnitType.COLOSSUS, Set.of());
-        map.put(UnitType.CARRIER, Set.of());
-        map.put(UnitType.DARK_TEMPLAR, Set.of());
-        map.put(UnitType.HIGH_TEMPLAR, Set.of());
-        map.put(UnitType.ARCHON, Set.of());
-        map.put(UnitType.OBSERVER, Set.of(ARMORED, MECHANICAL));
-        map.put(UnitType.VOID_RAY, Set.of());
-        map.put(UnitType.ADEPT, Set.of());
-        map.put(UnitType.DISRUPTOR, Set.of());
-        map.put(UnitType.SENTRY, Set.of());
-        map.put(UnitType.PHOENIX, Set.of());
-        map.put(UnitType.ORACLE, Set.of());
-        map.put(UnitType.TEMPEST, Set.of());
-        map.put(UnitType.MOTHERSHIP, Set.of());
-        map.put(UnitType.WARP_PRISM, Set.of());
-        map.put(UnitType.WARP_PRISM_PHASING, Set.of());
-        map.put(UnitType.INTERCEPTOR, Set.of());
-        map.put(UnitType.ADEPT_PHASE_SHIFT, Set.of());
-        // Zerg
-        map.put(UnitType.ZERGLING, Set.of());
+        map.put(UnitType.SENTRY, Set.of(MECHANICAL, PSIONIC));
+        map.put(UnitType.ADEPT, Set.of(LIGHT, BIOLOGICAL));
+        map.put(UnitType.HIGH_TEMPLAR, Set.of(LIGHT, BIOLOGICAL, PSIONIC));
+        map.put(UnitType.DARK_TEMPLAR, Set.of(LIGHT, BIOLOGICAL, PSIONIC));
+        map.put(UnitType.ARCHON, Set.of(PSIONIC, MASSIVE));
+        map.put(UnitType.IMMORTAL, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.COLOSSUS, Set.of(ARMORED, MECHANICAL, MASSIVE));
+        map.put(UnitType.DISRUPTOR, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.OBSERVER, Set.of(LIGHT, MECHANICAL));
+        map.put(UnitType.WARP_PRISM, Set.of(ARMORED, MECHANICAL, PSIONIC));
+        map.put(UnitType.WARP_PRISM_PHASING, Set.of(ARMORED, MECHANICAL, PSIONIC));
+        map.put(UnitType.PHOENIX, Set.of(LIGHT, MECHANICAL));
+        map.put(UnitType.VOID_RAY, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.ORACLE, Set.of(ARMORED, MECHANICAL, PSIONIC));
+        map.put(UnitType.TEMPEST, Set.of(ARMORED, MECHANICAL, MASSIVE));
+        map.put(UnitType.CARRIER, Set.of(ARMORED, MECHANICAL, MASSIVE));
+        map.put(UnitType.INTERCEPTOR, Set.of(LIGHT, MECHANICAL));
+        map.put(UnitType.MOTHERSHIP, Set.of(ARMORED, MECHANICAL, MASSIVE, PSIONIC));
+        map.put(UnitType.ADEPT_PHASE_SHIFT, Set.of(LIGHT));
+        // Zerg — patch 5.0.16 ground truth (starcraft2.ai)
+        map.put(UnitType.ZERGLING, Set.of(LIGHT, BIOLOGICAL));
         map.put(UnitType.ROACH, Set.of(ARMORED, BIOLOGICAL));
         map.put(UnitType.HYDRALISK, Set.of(LIGHT, BIOLOGICAL));
-        map.put(UnitType.MUTALISK, Set.of());
-        map.put(UnitType.ULTRALISK, Set.of());
-        map.put(UnitType.BROOD_LORD, Set.of());
-        map.put(UnitType.CORRUPTOR, Set.of());
-        map.put(UnitType.INFESTOR, Set.of());
-        map.put(UnitType.SWARM_HOST, Set.of());
-        map.put(UnitType.VIPER, Set.of());
-        map.put(UnitType.QUEEN, Set.of());
-        map.put(UnitType.RAVAGER, Set.of());
-        map.put(UnitType.LURKER, Set.of());
-        map.put(UnitType.DRONE, Set.of());
-        map.put(UnitType.OVERLORD, Set.of());
-        map.put(UnitType.OVERSEER, Set.of());
-        map.put(UnitType.BANELING, Set.of());
-        map.put(UnitType.LOCUST, Set.of());
-        map.put(UnitType.BROODLING, Set.of());
-        map.put(UnitType.INFESTED_TERRAN, Set.of());
-        map.put(UnitType.CHANGELING, Set.of());
-        map.put(UnitType.EGG, Set.of());
+        map.put(UnitType.MUTALISK, Set.of(LIGHT, BIOLOGICAL));
+        map.put(UnitType.ULTRALISK, Set.of(ARMORED, BIOLOGICAL, MASSIVE));
+        map.put(UnitType.BROOD_LORD, Set.of(ARMORED, BIOLOGICAL, MASSIVE));
+        map.put(UnitType.CORRUPTOR, Set.of(ARMORED, BIOLOGICAL));
+        map.put(UnitType.INFESTOR, Set.of(ARMORED, BIOLOGICAL, PSIONIC));
+        map.put(UnitType.SWARM_HOST, Set.of(ARMORED, BIOLOGICAL));
+        map.put(UnitType.VIPER, Set.of(ARMORED, BIOLOGICAL, PSIONIC));
+        map.put(UnitType.QUEEN, Set.of(BIOLOGICAL, PSIONIC));
+        map.put(UnitType.RAVAGER, Set.of(BIOLOGICAL));
+        map.put(UnitType.LURKER, Set.of(ARMORED, BIOLOGICAL));
+        map.put(UnitType.DRONE, Set.of(LIGHT, BIOLOGICAL));
+        map.put(UnitType.OVERLORD, Set.of(ARMORED, BIOLOGICAL));
+        map.put(UnitType.OVERSEER, Set.of(ARMORED, BIOLOGICAL));
+        map.put(UnitType.BANELING, Set.of(BIOLOGICAL));
+        map.put(UnitType.LOCUST, Set.of(LIGHT, BIOLOGICAL));
+        map.put(UnitType.BROODLING, Set.of(LIGHT, BIOLOGICAL));
+        map.put(UnitType.INFESTED_TERRAN, Set.of(LIGHT, BIOLOGICAL));
+        map.put(UnitType.CHANGELING, Set.of(LIGHT, BIOLOGICAL));
+        map.put(UnitType.EGG, Set.of(BIOLOGICAL));
         map.put(UnitType.LARVA, Set.of(LIGHT, BIOLOGICAL));
-        // Terran
+        // Terran — patch 5.0.16 ground truth (starcraft2.ai)
         map.put(UnitType.MARINE, Set.of(LIGHT, BIOLOGICAL));
-        map.put(UnitType.MARAUDER, Set.of(BIOLOGICAL, ARMORED));
-        map.put(UnitType.MEDIVAC, Set.of());
-        map.put(UnitType.SIEGE_TANK, Set.of());
-        map.put(UnitType.SIEGE_TANK_SIEGED, Set.of());
-        map.put(UnitType.THOR, Set.of());
-        map.put(UnitType.VIKING, Set.of());
-        map.put(UnitType.GHOST, Set.of());
-        map.put(UnitType.RAVEN, Set.of());
-        map.put(UnitType.BANSHEE, Set.of());
-        map.put(UnitType.BATTLECRUISER, Set.of());
-        map.put(UnitType.CYCLONE, Set.of());
-        map.put(UnitType.LIBERATOR, Set.of());
-        map.put(UnitType.WIDOW_MINE, Set.of());
-        map.put(UnitType.SCV, Set.of());
-        map.put(UnitType.REAPER, Set.of());
-        map.put(UnitType.HELLION, Set.of());
-        map.put(UnitType.HELLBAT, Set.of());
-        map.put(UnitType.MULE, Set.of());
-        map.put(UnitType.VIKING_ASSAULT, Set.of());
-        map.put(UnitType.LIBERATOR_AG, Set.of());
-        map.put(UnitType.AUTO_TURRET, Set.of());
+        map.put(UnitType.MARAUDER, Set.of(ARMORED, BIOLOGICAL));
+        map.put(UnitType.REAPER, Set.of(LIGHT, BIOLOGICAL));
+        map.put(UnitType.GHOST, Set.of(LIGHT, BIOLOGICAL, PSIONIC));
+        map.put(UnitType.HELLION, Set.of(LIGHT, MECHANICAL));
+        map.put(UnitType.HELLBAT, Set.of(LIGHT, BIOLOGICAL, MECHANICAL));
+        map.put(UnitType.WIDOW_MINE, Set.of(LIGHT, MECHANICAL));
+        map.put(UnitType.SIEGE_TANK, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.SIEGE_TANK_SIEGED, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.CYCLONE, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.THOR, Set.of(ARMORED, MECHANICAL, MASSIVE));
+        map.put(UnitType.VIKING, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.VIKING_ASSAULT, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.MEDIVAC, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.LIBERATOR, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.LIBERATOR_AG, Set.of(ARMORED, MECHANICAL));
+        map.put(UnitType.RAVEN, Set.of(LIGHT, MECHANICAL));
+        map.put(UnitType.BANSHEE, Set.of(LIGHT, MECHANICAL));
+        map.put(UnitType.BATTLECRUISER, Set.of(ARMORED, MECHANICAL, MASSIVE));
+        map.put(UnitType.SCV, Set.of(LIGHT, BIOLOGICAL, MECHANICAL));
+        map.put(UnitType.MULE, Set.of(LIGHT, MECHANICAL));
+        map.put(UnitType.AUTO_TURRET, Set.of(ARMORED, MECHANICAL, STRUCTURE));
         // Fallback
         map.put(UnitType.UNKNOWN, Set.of());
         for (UnitType t : UnitType.values()) {

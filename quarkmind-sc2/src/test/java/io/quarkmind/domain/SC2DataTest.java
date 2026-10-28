@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import static io.quarkmind.domain.UnitAttribute.ARMORED;
 import static io.quarkmind.domain.UnitAttribute.BIOLOGICAL;
 import static io.quarkmind.domain.UnitAttribute.LIGHT;
-import static io.quarkmind.domain.UnitAttribute.MASSIVE;
 import static io.quarkmind.domain.UnitAttribute.MECHANICAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,8 +17,10 @@ class SC2DataTest {
     @Test void stalkerAttributes() {
         assertThat(SC2Data.unitAttributes(UnitType.STALKER)).containsExactlyInAnyOrder(ARMORED, MECHANICAL);
     }
-    @Test void immortalAttributes() {
-        assertThat(SC2Data.unitAttributes(UnitType.IMMORTAL)).containsExactlyInAnyOrder(ARMORED, MECHANICAL, MASSIVE);
+
+    @Test
+    void immortalAttributes() {
+        assertThat(SC2Data.unitAttributes(UnitType.IMMORTAL)).containsExactlyInAnyOrder(ARMORED, MECHANICAL);
     }
     @Test void marineAttributes() {
         assertThat(SC2Data.unitAttributes(UnitType.MARINE)).containsExactlyInAnyOrder(LIGHT, BIOLOGICAL);
