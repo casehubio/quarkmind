@@ -15,8 +15,8 @@ created: 2026-10-27
 `SC2Data.unitAttributes()` is hand-maintained and incomplete. Zerglings are missing LIGHT (discovered in #459). Other unit types likely have similar gaps.
 
 When any code path relies on `SC2Data.unitAttributes()` for classification:
-1. Cross-check against replay training data — the replay extractor's vocabulary is ground truth
+1. Run `mvn test -pl quarkmind-sc2 -Preport -Dtest=SC2DataAttributeCalibrationTest` — the calibration test validates against patch 5.0.16 ground truth
 2. If a mismatch exists, fix `SC2Data` — do not silently work around with hardcoded sets
-3. File an issue for the attribute gap (see #467)
+3. File an issue for any attribute gap
 
-The same principle as `sc2data-train-times-require-calibration.md` applies: calibrate from data, not from manual specification.
+The same principle as `sc2data-train-times-require-calibration.md` applies: calibrate from data, not from manual specification. All 69 unit types are now calibrated (#467).

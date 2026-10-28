@@ -71,6 +71,7 @@ Read these **before designing**, not after. The concern column tells you when ea
 | Designing a new entity, record, or SC2 domain concept | `quarkmind.md` — does QuarkMind already own it? `PLATFORM.md` capability ownership table — does the foundation own it? |
 | Adding a new `Intent` subtype (sealed `Intent permits ...`) | Update `Intent.java` permits clause AND every switch expression over `Intent` in the same commit — GE-20260418-9b272f; sealed-type exhaustiveness breaks across the codebase the moment the permits clause changes |
 | SC2 physics constants (train times, costs, armour, income) | Calibrate from replay data, not from formula — protocol `docs/protocols/sc2data-train-times-require-calibration.md`; run `SC2TrainTimeCalibrationTest` |
+| SC2 unit attributes (LIGHT/ARMORED/BIOLOGICAL/etc.) | Calibrate from game data — protocol `docs/protocols/sc2data-unit-attributes-require-calibration.md`; run `SC2DataAttributeCalibrationTest` (report profile) |
 | Plugin seam placement (`agent/plugin/` vs `plugin/`) | Seam *interfaces* in `agent/plugin/`; active *implementations* in `plugin/`. Never add game logic to the seam interfaces. |
 
 ### Foundation integration
@@ -325,6 +326,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - `GameStateWebSocketTest` — connects via `java.net.http.WebSocket`, calls `engine.observe()` directly
 
 **Replay divergence report** (`@Tag("report")`, excluded from default surefire run):
+- `SC2DataAttributeCalibrationTest` — validates SC2Data.unitAttributes() against patch 5.0.16 ground truth (starcraft2.ai) for all 69 unit types; prints delta report with corrected entries on mismatch
 - `ReplayValidationReportTest` — runs `ReplayValidationHarness` against the default AI Arena binary replay; prints full economic divergence report to stdout
 - `IEM10MultiGameValidationTest` — runs `ReplayValidationHarness` across all 30 IEM10 JSON games; prints per-matchup aggregate divergence stats (PvT/PvZ/PvP)
 - `StrippedReplayValidationTest` — compares Java StrippedReplayFeatureExtractor output against 118 Docker-restored oracle replays; prints per-type UnitBorn/UnitInit/Upgrade divergence
