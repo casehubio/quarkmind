@@ -327,6 +327,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 
 **Replay divergence report** (`@Tag("report")`, excluded from default surefire run):
 - `SC2DataAttributeCalibrationTest` — validates SC2Data.unitAttributes() against patch 5.0.16 ground truth (starcraft2.ai) for all 69 unit types; prints delta report with corrected entries on mismatch
+- `CrossSourceConsistencyTest` — cross-validates SC2 data across independent sources: observation extractor LIGHT/ARMORED sets vs SC2Data, supply costs JSON vs SC2Data, CPT variable names vs detector catalog
 - `ReplayValidationReportTest` — runs `ReplayValidationHarness` against the default AI Arena binary replay; prints full economic divergence report to stdout
 - `IEM10MultiGameValidationTest` — runs `ReplayValidationHarness` across all 30 IEM10 JSON games; prints per-matchup aggregate divergence stats (PvT/PvZ/PvP)
 - `StrippedReplayValidationTest` — compares Java StrippedReplayFeatureExtractor output against 118 Docker-restored oracle replays; prints per-type UnitBorn/UnitInit/Upgrade divergence

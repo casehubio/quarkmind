@@ -6,6 +6,7 @@ import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.ScoutingObservation;
 import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitAttribute;
 import io.quarkmind.domain.UnitType;
 
 import java.util.ArrayList;
@@ -20,12 +21,6 @@ public class LiveScoutingObservationExtractor {
     private static final Set<BuildingType> GAS_BUILDINGS = EnumSet.of(
         BuildingType.ASSIMILATOR, BuildingType.ASSIMILATOR_RICH,
         BuildingType.EXTRACTOR, BuildingType.REFINERY);
-    private static final Set<UnitType> LIGHT_UNITS = EnumSet.of(
-        UnitType.MARINE, UnitType.ZERGLING, UnitType.ZEALOT,
-        UnitType.ADEPT, UnitType.HELLION);
-    private static final Set<UnitType> ARMORED_UNITS = EnumSet.of(
-        UnitType.ROACH, UnitType.SIEGE_TANK, UnitType.STALKER,
-        UnitType.IMMORTAL, UnitType.MARAUDER);
     private static final Set<UnitType> AIR_UNITS = EnumSet.of(
         UnitType.MUTALISK, UnitType.BANSHEE, UnitType.PHOENIX,
         UnitType.VOID_RAY, UnitType.ORACLE, UnitType.LIBERATOR,
@@ -136,16 +131,19 @@ public class LiveScoutingObservationExtractor {
     static String classifyArmyComposition(List<Unit> enemyUnits) {
         int light = 0, armored = 0, air = 0;
         for (Unit u : enemyUnits) {
-            if (SC2Data.isWorker(u.type())) continue;
-            if (AIR_UNITS.contains(u.type())) air++;
-            else if (LIGHT_UNITS.contains(u.type())) light++;
-            else if (ARMORED_UNITS.contains(u.type())) armored++;
+            if (SC2Data.isWorker(u.type())) {continue;}
+            if (AIR_UNITS.contains(u.type())) {air++;} else {
+                var attrs = SC2Data.unitAttributes(u.type());
+                if (attrs.contains(UnitAttribute.LIGHT)) {light++;} else if (attrs.contains(UnitAttribute.ARMORED)) {
+                    armored++;
+                }
+            }
         }
         int total = light + armored + air;
-        if (total == 0) return "none";
-        if ((double) air / total > 0.5) return "air";
-        if ((double) light / total > 0.6) return "light";
-        if ((double) armored / total > 0.6) return "armored";
+        if (total == 0) {return "none";}
+        if ((double) air / total > 0.5) {return "air";}
+        if ((double) light / total > 0.6) {return "light";}
+        if ((double) armored / total > 0.6) {return "armored";}
         return "mixed";
     }
 
