@@ -46,6 +46,20 @@ public class SC2HypothesisNetworkBuilder {
             HypothesisPriorLoader.ObservationCpts observationCpts,
             Map<String, Map<String, Double>> responsePriors,
             List<HypothesisPriorLoader.ExpertOverride> expertOverrides) {
+        return buildTracker(enemyRace, phase, ourRace, learnedPriors,
+                            activeDetectorNames, detectorCpts, observationCpts,
+                            responsePriors, expertOverrides, null);
+    }
+
+    public static HypothesisTracker buildTracker(
+            Race enemyRace, GamePhase phase, Race ourRace,
+            Map<String, Double> learnedPriors,
+            List<String> activeDetectorNames,
+            Map<String, Map<String, Double>> detectorCpts,
+            HypothesisPriorLoader.ObservationCpts observationCpts,
+            Map<String, Map<String, Double>> responsePriors,
+            List<HypothesisPriorLoader.ExpertOverride> expertOverrides,
+            Map<String, Map<String, Map<String, Double>>> contextResponsePriors) {
 
         String[] archetypes = filteredArchetypes(enemyRace, phase, learnedPriors);
         JunctionTree intelTree = buildIntelTree(archetypes, learnedPriors,
@@ -57,8 +71,15 @@ public class SC2HypothesisNetworkBuilder {
         if (responsePriors != null && !responsePriors.isEmpty()) {
             String[] ourStrategies = filteredOurArchetypes(responsePriors);
             double[] enemyPriors   = normalizedPriors(archetypes, learnedPriors);
-            double[] tiledCpt = buildTiledResponseCpt(archetypes, ourStrategies,
-                                                      responsePriors, expertOverrides);
+
+            double[] responseCpt;
+            if (contextResponsePriors != null && !contextResponsePriors.isEmpty()) {
+                responseCpt = buildContextResponseCpt(archetypes, ourStrategies,
+                                                      contextResponsePriors, responsePriors, expertOverrides);
+            } else {
+                responseCpt = buildTiledResponseCpt(archetypes, ourStrategies,
+                                                    responsePriors, expertOverrides);
+            }
 
             var responseBuilder = BayesNetworkBuilder.create("response");
             responseBuilder.variable("enemy_strategy", archetypes).prior(enemyPriors);
@@ -71,7 +92,7 @@ public class SC2HypothesisNetworkBuilder {
             responseBuilder.variable("our_strategy", ourStrategies)
                            .given("enemy_strategy", "our_economy_state",
                                   "our_army_state", "our_tech_state")
-                           .cpt(tiledCpt);
+                           .cpt(responseCpt);
             JunctionTree responseTree = responseBuilder.buildJunctionTree();
 
             compBuilder.slot("response", responseTree);
@@ -81,6 +102,7 @@ public class SC2HypothesisNetworkBuilder {
         NetworkComposition composition = compBuilder.build();
         return buildHypothesisTracker(composition, archetypes, learnedPriors);
     }
+
 
     static String[] filteredOurArchetypes(Map<String, Map<String, Double>> responsePriors) {
         return responsePriors.values().stream()
@@ -233,5 +255,68 @@ public class SC2HypothesisNetworkBuilder {
         }
         return cpt;
     }
+
+    static double[] buildContextResponseCpt(
+            String[] enemyArchetypes, String[] ourStrategies,
+            Map<String, Map<String, Map<String, Double>>> contextPriors,
+            Map<String, Map<String, Double>> fallbackPriors,
+            List<HypothesisPriorLoader.ExpertOverride> expertOverrides) {
+
+        String[] economyStates       = {"behind", "even", "ahead"};
+        String[] armyStates          = {"smaller", "even", "larger"};
+        String[] techStates          = {"behind", "even", "ahead"};
+        int      contextCombinations = 27;
+        double[] cpt                 = new double[enemyArchetypes.length * contextCombinations * ourStrategies.length];
+
+        for (int e = 0; e < enemyArchetypes.length; e++) {
+            String enemy = enemyArchetypes[e];
+            Map<String, Map<String, Double>> enemyContextMap =
+                    contextPriors != null ? contextPriors.getOrDefault(enemy, Map.of()) : Map.of();
+            Map<String, Double> fallback = fallbackPriors.getOrDefault(enemy, Map.of());
+
+            List<HypothesisPriorLoader.ExpertOverride> matching = expertOverrides == null
+                                                                  ? List.of()
+                                                                  : expertOverrides.stream()
+                                                                                   .filter(ov -> ov.whenOpponent().equals(enemy)).toList();
+
+            for (int ei = 0; ei < 3; ei++) {
+                for (int ai = 0; ai < 3; ai++) {
+                    for (int ti = 0; ti < 3; ti++) {
+                        int ctxIdx = ei * 9 + ai * 3 + ti;
+                        String ctxKey = io.quarkmind.sc2.replay.PriorExportPipeline.contextKey(
+                                economyStates[ei], armyStates[ai], techStates[ti]);
+
+                        Map<String, Double> source = enemyContextMap.getOrDefault(ctxKey, fallback);
+                        if (source.isEmpty()) {source = fallback;}
+
+                        Map<String, Double> priorDist = new LinkedHashMap<>();
+                        for (String our : ourStrategies) {
+                            priorDist.put(our, source.getOrDefault(our, 1.0 / ourStrategies.length));
+                        }
+                        double sum = priorDist.values().stream().mapToDouble(d -> d).sum();
+                        priorDist.replaceAll((k, v) -> v / sum);
+
+                        if (!matching.isEmpty()) {
+                            priorDist = HypothesisPriorLoader.applyExpertOverrides(priorDist, matching);
+                        }
+
+                        double[] row = new double[ourStrategies.length];
+                        for (int s = 0; s < ourStrategies.length; s++) {
+                            row[s] = Math.max(0.01, Math.min(0.99,
+                                                             priorDist.getOrDefault(ourStrategies[s], 1.0 / ourStrategies.length)));
+                        }
+                        double rowSum = 0;
+                        for (double v : row) {rowSum += v;}
+                        for (int s = 0; s < row.length; s++) {row[s] /= rowSum;}
+
+                        int offset = (e * contextCombinations + ctxIdx) * ourStrategies.length;
+                        System.arraycopy(row, 0, cpt, offset, row.length);
+                    }
+                }
+            }
+        }
+        return cpt;
+    }
+
 
 }

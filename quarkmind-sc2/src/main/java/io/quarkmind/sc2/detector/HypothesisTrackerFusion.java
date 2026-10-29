@@ -113,9 +113,10 @@ public class HypothesisTrackerFusion {
         }
 
         if (rp != null && !rp.isEmpty()) {
+            var contextRp = HypothesisPriorLoader.loadContextResponsePriors(enemyRace);
             opponentTracker     = SC2HypothesisNetworkBuilder.buildTracker(
                     enemyRace, phase, ourRace != null ? ourRace : Race.PROTOSS,
-                    priors, sorted, detectorCpts, obsCpts, rp, eo);
+                    priors, sorted, detectorCpts, obsCpts, rp, eo, contextRp);
             ourStrategies       = SC2HypothesisNetworkBuilder.filteredOurArchetypes(rp);
             ourLabelToArchetype = buildLabelMapping(ourStrategies,
                                                     ourRace != null ? ourRace : Race.PROTOSS);

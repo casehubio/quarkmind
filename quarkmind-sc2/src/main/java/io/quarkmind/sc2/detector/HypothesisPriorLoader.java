@@ -85,6 +85,20 @@ public class HypothesisPriorLoader {
     }
 
     @SuppressWarnings("unchecked")
+    public static Map<String, Map<String, Map<String, Double>>> loadContextResponsePriors(Race enemyRace) {
+        String matchup = "vs_" + enemyRace.name().toLowerCase();
+        String path    = "priors/response-cpts-context-" + matchup + ".json";
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path)) {
+            if (is == null) {return null;}
+            Map<String, Object> root = MAPPER.readValue(is, new TypeReference<>() {});
+            return MAPPER.convertValue(root.get("priors"), new TypeReference<>() {});
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+
+    @SuppressWarnings("unchecked")
     public static List<ExpertOverride> loadExpertOverrides(Race enemyRace) {
         String matchup = "vs_" + enemyRace.name().toLowerCase();
         try (InputStream is = Thread.currentThread().getContextClassLoader()

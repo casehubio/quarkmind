@@ -126,8 +126,13 @@ class ResponseSelectionCalibrationTest {
         var allActive = registry.getActiveDetectors(phase, enemyRace);
         var allKeys   = new HashSet<String>();
         for (var def : allActive) {allKeys.add(def.key(enemyRace));}
-        var detCpts        = buildDetectorCpts(allKeys, enemyRace);
-        var responsePriors = syntheticResponsePriors(priors);
+        var detCpts = buildDetectorCpts(allKeys, enemyRace);
+
+        var responsePriors = HypothesisPriorLoader.loadResponsePriors(enemyRace);
+        if (responsePriors.isEmpty()) {
+            responsePriors = syntheticResponsePriors(priors);
+        }
+        var contextPriors = HypothesisPriorLoader.loadContextResponsePriors(enemyRace);
 
         var fusion = new HypothesisTrackerFusion(
                 registry, priors, detCpts, obsCpts, Map.of(), null,
@@ -146,12 +151,24 @@ class ResponseSelectionCalibrationTest {
         var responseBehind = fusion.selectResponse(Race.PROTOSS, behind);
         var responseAhead  = fusion.selectResponse(Race.PROTOSS, ahead);
 
-        System.out.println("=== Context Variable Sensitivity (Phase 4 — uniform tiling) ===");
+        System.out.println("=== Context Variable Sensitivity ===");
         System.out.println("Behind context: " +
                            (responseBehind.isEmpty() ? "—" : responseBehind.getFirst().archetype()));
         System.out.println("Ahead context:  " +
                            (responseAhead.isEmpty() ? "—" : responseAhead.getFirst().archetype()));
-        System.out.println("Note: Phase 4 CPTs are tiled — context variables have no effect yet.");
+        System.out.println("Context CPTs loaded: " + (contextPriors != null));
+
+        if (contextPriors != null && !responseBehind.isEmpty() && !responseAhead.isEmpty()) {
+            boolean anyDifferent = false;
+            for (int i = 0; i < Math.min(responseBehind.size(), responseAhead.size()); i++) {
+                if (Math.abs(responseBehind.get(i).confidence() - responseAhead.get(i).confidence()) > 0.001) {
+                    anyDifferent = true;
+                    break;
+                }
+            }
+            assertTrue(anyDifferent,
+                       "Context-dependent CPTs should produce different distributions for behind vs ahead");
+        }
     }
 
     private Map<String, Map<String, Double>> buildDetectorCpts(

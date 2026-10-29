@@ -9,11 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -207,4 +209,144 @@ class PriorExportPipelineTest {
         assertEquals(0.4, loaded.get("MARINE_RUSH").get("GATEWAY_RUSH"), 0.001);
     }
 
+
+    @Test
+    void discretizeContext_economyBehind() {
+        var ctx = PriorExportPipeline.discretizeContext(700, 1000, 10, 10, 2, 2);
+        assertEquals("behind", ctx.get("economyState"));
+        assertEquals("even", ctx.get("armyState"));
+        assertEquals("even", ctx.get("techState"));
+    }
+
+    @Test
+    void discretizeContext_economyAhead() {
+        var ctx = PriorExportPipeline.discretizeContext(1300, 1000, 10, 10, 2, 2);
+        assertEquals("ahead", ctx.get("economyState"));
+    }
+
+    @Test
+    void discretizeContext_economyEven() {
+        var ctx = PriorExportPipeline.discretizeContext(1000, 1000, 10, 10, 2, 2);
+        assertEquals("even", ctx.get("economyState"));
+    }
+
+    @Test
+    void discretizeContext_armySmaller() {
+        var ctx = PriorExportPipeline.discretizeContext(1000, 1000, 5, 10, 2, 2);
+        assertEquals("smaller", ctx.get("armyState"));
+    }
+
+    @Test
+    void discretizeContext_armyLarger() {
+        var ctx = PriorExportPipeline.discretizeContext(1000, 1000, 15, 10, 2, 2);
+        assertEquals("larger", ctx.get("armyState"));
+    }
+
+    @Test
+    void discretizeContext_techBehind() {
+        var ctx = PriorExportPipeline.discretizeContext(1000, 1000, 10, 10, 1, 3);
+        assertEquals("behind", ctx.get("techState"));
+    }
+
+    @Test
+    void discretizeContext_techAhead() {
+        var ctx = PriorExportPipeline.discretizeContext(1000, 1000, 10, 10, 4, 2);
+        assertEquals("ahead", ctx.get("techState"));
+    }
+
+    @Test
+    void discretizeContext_zeroEnemyIncome_defaultsEven() {
+        var ctx = PriorExportPipeline.discretizeContext(1000, 0, 10, 10, 2, 2);
+        assertEquals("even", ctx.get("economyState"));
+    }
+
+    @Test
+    void discretizeContext_zeroEnemyArmy_defaultsEven() {
+        var ctx = PriorExportPipeline.discretizeContext(1000, 1000, 10, 0, 2, 2);
+        assertEquals("even", ctx.get("armyState"));
+    }
+
+    @Test
+    void contextKey_formatsCorrectly() {
+        assertEquals("behind:even:ahead",
+                     PriorExportPipeline.contextKey("behind", "even", "ahead"));
+    }
+
+    @Test
+    void learnContextResponsePriors_dataRichCell_divergesFromMarginal() {
+        var outcomes = new ArrayList<PriorExportPipeline.ContextResponseOutcome>();
+        for (int i = 0; i < 100; i++) {
+            outcomes.add(new PriorExportPipeline.ContextResponseOutcome(
+                    "GATEWAY_RUSH", "MARINE_RUSH", "vs_terran", true,
+                    "behind", "even", "even"));
+        }
+        for (int i = 0; i < 10; i++) {
+            outcomes.add(new PriorExportPipeline.ContextResponseOutcome(
+                    "MACRO", "MARINE_RUSH", "vs_terran", true,
+                    "behind", "even", "even"));
+        }
+        var allOur = Set.of("GATEWAY_RUSH", "MACRO", "CANNON_RUSH");
+        var marginal = Map.of("MARINE_RUSH",
+                              Map.of("GATEWAY_RUSH", 0.33, "MACRO", 0.34, "CANNON_RUSH", 0.33));
+
+        var result = PriorExportPipeline.learnContextResponsePriors(outcomes, allOur, marginal, 10.0);
+
+        var cell = result.get("MARINE_RUSH").get("behind:even:even");
+        assertTrue(cell.get("GATEWAY_RUSH") > cell.get("MACRO"),
+                   "GATEWAY_RUSH should dominate in data-rich cell");
+        assertTrue(cell.get("GATEWAY_RUSH") > marginal.get("MARINE_RUSH").get("GATEWAY_RUSH"),
+                   "Data-rich cell should diverge from marginal");
+        assertEquals(1.0, cell.values().stream().mapToDouble(d -> d).sum(), 0.01);
+    }
+
+    @Test
+    void learnContextResponsePriors_sparseCell_regressesTowardMarginal() {
+        var outcomes = List.of(
+                new PriorExportPipeline.ContextResponseOutcome(
+                        "CANNON_RUSH", "MARINE_RUSH", "vs_terran", true,
+                        "ahead", "larger", "ahead"));
+        var allOur = Set.of("GATEWAY_RUSH", "MACRO", "CANNON_RUSH");
+        var marginal = Map.of("MARINE_RUSH",
+                              Map.of("GATEWAY_RUSH", 0.5, "MACRO", 0.4, "CANNON_RUSH", 0.1));
+
+        var result = PriorExportPipeline.learnContextResponsePriors(outcomes, allOur, marginal, 10.0);
+
+        var cell = result.get("MARINE_RUSH").get("ahead:larger:ahead");
+        assertTrue(cell.get("GATEWAY_RUSH") > 0.3,
+                   "Sparse cell should regress toward marginal where GATEWAY_RUSH=0.5");
+    }
+
+    @Test
+    void learnContextResponsePriors_emptyCell_notPresent() {
+        var outcomes = List.of(
+                new PriorExportPipeline.ContextResponseOutcome(
+                        "GATEWAY_RUSH", "MARINE_RUSH", "vs_terran", true,
+                        "even", "even", "even"));
+        var allOur = Set.of("GATEWAY_RUSH", "MACRO");
+        var marginal = Map.of("MARINE_RUSH",
+                              Map.of("GATEWAY_RUSH", 0.6, "MACRO", 0.4));
+
+        var result = PriorExportPipeline.learnContextResponsePriors(outcomes, allOur, marginal, 10.0);
+
+        assertFalse(result.get("MARINE_RUSH").containsKey("behind:smaller:behind"));
+    }
+
+    @Test
+    void learnContextResponsePriors_lossesExcluded() {
+        var outcomes = List.of(
+                new PriorExportPipeline.ContextResponseOutcome(
+                        "GATEWAY_RUSH", "MARINE_RUSH", "vs_terran", true,
+                        "even", "even", "even"),
+                new PriorExportPipeline.ContextResponseOutcome(
+                        "CANNON_RUSH", "MARINE_RUSH", "vs_terran", false,
+                        "even", "even", "even"));
+        var allOur = Set.of("GATEWAY_RUSH", "CANNON_RUSH");
+        var marginal = Map.of("MARINE_RUSH",
+                              Map.of("GATEWAY_RUSH", 0.5, "CANNON_RUSH", 0.5));
+
+        var result = PriorExportPipeline.learnContextResponsePriors(outcomes, allOur, marginal, 10.0);
+
+        var cell = result.get("MARINE_RUSH").get("even:even:even");
+        assertTrue(cell.get("GATEWAY_RUSH") > cell.get("CANNON_RUSH"));
+    }
 }

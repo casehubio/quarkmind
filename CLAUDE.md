@@ -345,6 +345,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - `CrossPatchExtractionTest` — validates TrackerEventFeatureExtractor across tournament replays from different baseBuild versions (4.1→5.0); asserts ≥2 distinct patch versions
 - `RestorationCoverageAuditTest` — scans all replay datasets (152K+ replays), reports per-dataset tracker vs stripped fallback coverage; writes docs/benchmarks/restoration-coverage.md
 - `TrackerDrivenAccuracyBaselineTest` — tracker-event-driven EmulatedGame accuracy (units, buildings, upgrades, economy) against 118 oracle replays at 1/3/5/7 min checkpoints; asserts >99.7% unit accuracy at 5-min; writes docs/benchmarks/tracker-driven-accuracy-baseline.md
+- `ContextResponsePriorExportTest` — processes reconstituted replays at 3-min and 5-min checkpoints; extracts game state context (economy/army/tech); learns context-dependent response CPTs with hierarchical smoothing (α=10.0); writes response-cpts-context-vs_*.json
 - Run with: `mvn test -pl quarkmind-sc2 -Preport`
 
 **Diagnostic tests** (`@Tag("diagnostic")`, excluded from default surefire run):
