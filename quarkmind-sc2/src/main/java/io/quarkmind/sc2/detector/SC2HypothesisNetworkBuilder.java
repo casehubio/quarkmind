@@ -38,6 +38,22 @@ public class SC2HypothesisNetworkBuilder {
         return buildHypothesisTracker(composition, archetypes, learnedPriors);
     }
 
+    public static HypothesisTracker buildUnifiedOpponentTracker(
+            Race enemyRace,
+            Map<String, Double> unifiedPriors,
+            List<String> activeDetectorNames,
+            Map<String, Map<String, Double>> detectorCpts,
+            HypothesisPriorLoader.ObservationCpts observationCpts) {
+        String[] archetypes = unifiedPriors.keySet().stream().sorted().toArray(String[]::new);
+        JunctionTree intelTree = buildIntelTree(archetypes, unifiedPriors,
+                                                activeDetectorNames, detectorCpts, observationCpts);
+        NetworkComposition composition = CompositionBuilder.create("sc2-unified")
+                                                           .slot("intel", intelTree)
+                                                           .build();
+        return buildHypothesisTracker(composition, archetypes, unifiedPriors);
+    }
+
+
     public static HypothesisTracker buildTracker(
             Race enemyRace, GamePhase phase, Race ourRace,
             Map<String, Double> learnedPriors,

@@ -1,5 +1,6 @@
 package io.quarkmind.sc2.detector;
 
+import io.quarkmind.agent.StrategyTaxonomy;
 import io.quarkmind.domain.AssessmentSource;
 import io.quarkmind.domain.GamePhase;
 import io.quarkmind.domain.PatternAssessment;
@@ -44,6 +45,11 @@ public class HypothesisTrackerFusion {
     private double responseConfidenceGate = 0.6;
     private boolean hasResponseSlot;
     private Race ourRace;
+
+    private StrategyTaxonomy taxonomy;
+    private Map<String, Map<String, Double>> transitionMatrix;
+    private Map<String, Double> previousPosterior;
+    private double temporalDecay = 0.3;
 
 
     public HypothesisTrackerFusion(
@@ -136,6 +142,103 @@ public class HypothesisTrackerFusion {
         currentDetectorNames = sorted;
         initialized          = true;
     }
+
+    public void initializeUnified(List<String> detectorNames, Race enemyRace, StrategyTaxonomy taxonomy) {
+        if (initialized) {return;}
+
+        this.taxonomy         = taxonomy;
+        this.transitionMatrix = HypothesisPriorLoader.loadTransitionCpts(enemyRace);
+        this.currentEnemyRace = enemyRace;
+
+        Map<String, Double> unifiedPriors = HypothesisPriorLoader.loadUnifiedPriors(enemyRace);
+        List<String>        sorted        = detectorNames.stream().sorted().toList();
+
+        opponentTracker = SC2HypothesisNetworkBuilder.buildUnifiedOpponentTracker(
+                enemyRace, unifiedPriors, sorted, detectorCpts, observationCpts);
+
+        archetypes           = unifiedPriors.keySet().stream().sorted().toArray(String[]::new);
+        labelToArchetype     = buildLabelMapping(archetypes, enemyRace);
+        currentDetectorNames = sorted;
+        initialized          = true;
+    }
+
+    public List<PatternAssessment> classifyUnified(
+            Map<String, Float> detectorOutputs,
+            List<EvidenceMarker> markers,
+            long frame,
+            double gameTimeMinutes) {
+        if (opponentTracker == null) {return List.of();}
+
+        Map<String, Double> phaseWeights = taxonomy != null
+                                           ? PhaseWindowDecay.computePhaseWeights(archetypes, taxonomy, gameTimeMinutes)
+                                           : Map.of();
+
+        for (var entry : detectorOutputs.entrySet()) {
+            double p = Math.max(0.01, Math.min(0.99, entry.getValue()));
+            opponentTracker.setPerTickEvidence("intel", entry.getKey(),
+                                               new double[]{p, 1.0 - p});
+        }
+
+        if (!markers.isEmpty()) {
+            double[] likelihood = new double[archetypes.length];
+            Arrays.fill(likelihood, 0.1);
+            for (EvidenceMarker marker : markers) {
+                String label = marker.archetype().name();
+                int    idx   = archetypeIndex(label);
+                if (idx >= 0) {
+                    likelihood[idx] = Math.max(likelihood[idx], marker.weight());
+                }
+            }
+            opponentTracker.setPerTickEvidence("intel", "drools_evidence", likelihood);
+        } else {
+            opponentTracker.clearPerTickEvidence("intel", "drools_evidence");
+        }
+
+        Map<String, Double> rawWeights = new LinkedHashMap<>(opponentTracker.weights());
+
+        if (!phaseWeights.isEmpty()) {
+            for (var entry : rawWeights.entrySet()) {
+                double pw = phaseWeights.getOrDefault(entry.getKey(), PhaseWindowDecay.FLOOR);
+                entry.setValue(entry.getValue() * pw);
+            }
+            normalize(rawWeights);
+        }
+
+        Map<String, Double> smoothed;
+        if (previousPosterior != null && transitionMatrix != null && !transitionMatrix.isEmpty() && temporalDecay > 0.0) {
+            smoothed = applyTransitionPrior(rawWeights, previousPosterior, transitionMatrix, temporalDecay);
+        } else {
+            smoothed = rawWeights;
+        }
+        previousPosterior = smoothed;
+
+        return buildAssessments(smoothed, frame);
+    }
+
+    private static Map<String, Double> applyTransitionPrior(
+            Map<String, Double> current,
+            Map<String, Double> previous,
+            Map<String, Map<String, Double>> transitions,
+            double decay) {
+        int                 size    = current.size();
+        Map<String, Double> blended = new LinkedHashMap<>();
+        for (var entry : current.entrySet()) {
+            String archJ         = entry.getKey();
+            double rawJ          = entry.getValue();
+            double transitionSum = 0.0;
+            for (var prevEntry : previous.entrySet()) {
+                String              archI    = prevEntry.getKey();
+                double              prevI    = prevEntry.getValue();
+                Map<String, Double> row      = transitions.getOrDefault(archI, Map.of());
+                double              pJgivenI = row.getOrDefault(archJ, 1.0 / size);
+                transitionSum += prevI * pJgivenI;
+            }
+            blended.put(archJ, (1.0 - decay) * rawJ + decay * transitionSum);
+        }
+        normalize(blended);
+        return blended;
+    }
+
 
     public void observeScouting(ScoutingObservation observation) {
         if (opponentTracker == null) return;
@@ -311,6 +414,11 @@ public class HypothesisTrackerFusion {
     void setResponseConfidenceGate(double gate) {
         this.responseConfidenceGate = gate;
     }
+
+    public void setTemporalDecay(double decay) {
+        this.temporalDecay = decay;
+    }
+
 
     public boolean hasResponseSlot() {
         return hasResponseSlot;

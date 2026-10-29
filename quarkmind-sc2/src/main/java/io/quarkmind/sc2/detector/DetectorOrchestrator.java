@@ -17,7 +17,7 @@ public class DetectorOrchestrator {
 
     private final DetectorRegistry registry;
     private final EvidenceFusionEngine engine;
-    private final TemporalAssessmentTracker tracker;
+    private final double temporalDecay;
     private final Map<String, Double> priors;
     private final Map<String, Map<String, Double>> cpts;
     private final Map<String, StrategyArchetype> labelToArchetype;
@@ -27,6 +27,8 @@ public class DetectorOrchestrator {
     private       Map<String, Float>             previousDetectorOutputs = new HashMap<>();
     private       Map<String, BayesNetwork>      learnedNetworks = Map.of();
     private       int                            detectorOutcomeCount    = 2;
+    private       double[]                       previousPosterior;
+    private       int                            previousDominant = -1;
 
 
     private String[] outcomeNames;
@@ -38,25 +40,25 @@ public class DetectorOrchestrator {
                                 Map<String, Double> priors,
                                 Map<String, Map<String, Double>> cpts,
                                 Map<String, StrategyArchetype> labelToArchetype,
-                                int windowSize) {this(registry, priors, cpts, labelToArchetype, windowSize, 0.95, 0.01);}
+                                double temporalDecay) {this(registry, priors, cpts, labelToArchetype, temporalDecay, 0.95, 0.01);}
 
     public DetectorOrchestrator(DetectorRegistry registry,
                                 Map<String, Double> priors,
                                 Map<String, Map<String, Double>> cpts,
                                 Map<String, StrategyArchetype> labelToArchetype,
-                                int windowSize,
-                                double hardEvidenceThreshold) {this(registry, priors, cpts, labelToArchetype, windowSize, hardEvidenceThreshold, 0.01);}
+                                double temporalDecay,
+                                double hardEvidenceThreshold) {this(registry, priors, cpts, labelToArchetype, temporalDecay, hardEvidenceThreshold, 0.01);}
 
     public DetectorOrchestrator(DetectorRegistry registry,
                                 Map<String, Double> priors,
                                 Map<String, Map<String, Double>> cpts,
                                 Map<String, StrategyArchetype> labelToArchetype,
-                                int windowSize,
+                                double temporalDecay,
                                 double hardEvidenceThreshold,
                                 double sensitivityThreshold) {
         this.registry              = registry;
         this.engine                = new EvidenceFusionEngine();
-        this.tracker               = new TemporalAssessmentTracker(windowSize);
+        this.temporalDecay         = temporalDecay;
         this.priors                = priors;
         this.cpts                  = cpts;
         this.labelToArchetype      = labelToArchetype;
@@ -69,11 +71,11 @@ public class DetectorOrchestrator {
                                 Map<String, Double> priors,
                                 Map<String, Map<String, Double>> cpts,
                                 Map<String, StrategyArchetype> labelToArchetype,
-                                int windowSize,
+                                double temporalDecay,
                                 double hardEvidenceThreshold,
                                 double sensitivityThreshold,
                                 Map<String, BayesNetwork> learnedNetworks) {
-        this(registry, priors, cpts, labelToArchetype, windowSize, hardEvidenceThreshold, sensitivityThreshold);
+        this(registry, priors, cpts, labelToArchetype, temporalDecay, hardEvidenceThreshold, sensitivityThreshold);
         this.learnedNetworks = learnedNetworks != null ? Map.copyOf(learnedNetworks) : Map.of();
     }
 
@@ -210,14 +212,27 @@ public class DetectorOrchestrator {
         engine.update();
         double[] posterior = engine.marginalize();
 
-        tracker.recordPosterior(posterior);
-        double[] smoothed = tracker.getSmoothedPosterior();
+        if (previousPosterior != null && temporalDecay > 0.0) {
+            for (int i = 0; i < posterior.length; i++) {
+                posterior[i] = (1.0 - temporalDecay) * posterior[i] + temporalDecay * previousPosterior[i];
+            }
+        }
+        previousPosterior = posterior.clone();
 
-        return buildAssessments(smoothed, frame);
+        return buildAssessments(posterior, frame);
     }
 
     public boolean detectTransition() {
-        return tracker.detectTransition();
+        if (previousPosterior == null) return false;
+        int currentDominant = 0;
+        for (int i = 1; i < previousPosterior.length; i++) {
+            if (previousPosterior[i] > previousPosterior[currentDominant]) {
+                currentDominant = i;
+            }
+        }
+        boolean transitioned = previousDominant >= 0 && currentDominant != previousDominant;
+        previousDominant = currentDominant;
+        return transitioned;
     }
 
     public Map<String, Double> getSensitivities() {
@@ -268,8 +283,10 @@ public class DetectorOrchestrator {
 
 
     public void reset() {
-        tracker.reset();
+        engine.reset();
         previousDetectorOutputs.clear();
+        previousPosterior = null;
+        previousDominant = -1;
     }
 
     private double[] computeMarkerLikelihood(List<EvidenceMarker> markers, String[] outcomes) {

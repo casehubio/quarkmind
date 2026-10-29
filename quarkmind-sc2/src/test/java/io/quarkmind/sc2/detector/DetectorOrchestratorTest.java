@@ -41,7 +41,7 @@ class DetectorOrchestratorTest {
         );
 
         orchestrator = new DetectorOrchestrator(
-            registry, priors, cpts, labelMapping, 10);
+            registry, priors, cpts, labelMapping, 0.3);
         orchestrator.initializeNetwork(List.of("rush_det"));
     }
 
@@ -184,7 +184,7 @@ class DetectorOrchestratorTest {
     void getStatsReturnsNullBeforeInitialization() {
         var config = new DetectorCatalogConfig(List.of());
         var uninitOrch = new DetectorOrchestrator(
-                new DetectorRegistry(config), Map.of(), Map.of(), Map.of(), 10);
+                new DetectorRegistry(config), Map.of(), Map.of(), Map.of(), 0.3);
         assertNull(uninitOrch.getStats());
     }
 
@@ -219,7 +219,7 @@ class DetectorOrchestratorTest {
     void mapStrategyReturnsNullBeforeClassify() {
         var config = new DetectorCatalogConfig(List.of());
         var orch = new DetectorOrchestrator(
-                new DetectorRegistry(config), Map.of(), Map.of(), Map.of(), 10);
+                new DetectorRegistry(config), Map.of(), Map.of(), Map.of(), 0.3);
         assertNull(orch.getMapStrategy());
     }
 
@@ -252,7 +252,7 @@ class DetectorOrchestratorTest {
     void explanationTraceReturnsNullBeforeClassify() {
         var config = new DetectorCatalogConfig(List.of());
         var orch = new DetectorOrchestrator(
-                new DetectorRegistry(config), Map.of(), Map.of(), Map.of(), 10);
+                new DetectorRegistry(config), Map.of(), Map.of(), Map.of(), 0.3);
         assertNull(orch.getExplanationTrace());
     }
 
@@ -297,7 +297,7 @@ class DetectorOrchestratorTest {
                 "MACRO", StrategyArchetype.PROTOSS_MACRO);
 
         var orch = new DetectorOrchestrator(registry, priors, cpts,
-                                            labelMapping, 10, 0.95, 0.01, learnedNetworks);
+                                            labelMapping, 0.3, 0.95, 0.01, learnedNetworks);
         orch.initializeNetwork(List.of("rush_det"), GamePhase.EARLY, Race.PROTOSS);
 
         var result = orch.classify(Map.of("rush_det", 0.9f), List.of(), 100);
@@ -319,7 +319,7 @@ class DetectorOrchestratorTest {
                 "MACRO", StrategyArchetype.PROTOSS_MACRO);
 
         var orch = new DetectorOrchestrator(registry, priors, cpts,
-                                            labelMapping, 10, 0.95, 0.01, learnedNetworks);
+                                            labelMapping, 0.3, 0.95, 0.01, learnedNetworks);
         orch.initializeNetwork(List.of("rush_det"), GamePhase.MID, Race.PROTOSS);
 
         var result = orch.classify(Map.of("rush_det", 0.85f), List.of(), 100);
@@ -371,7 +371,7 @@ class DetectorOrchestratorTest {
                 "MACRO", StrategyArchetype.PROTOSS_MACRO
                                  );
         var orch = new DetectorOrchestrator(
-                registry, priors, cpts, labelMapping, 10, 0.95, sensitivityThreshold);
+                registry, priors, cpts, labelMapping, 0.3, 0.95, sensitivityThreshold);
         orch.initializeNetwork(List.of("rush_det", "eco_det"));
         return orch;
     }
@@ -394,7 +394,7 @@ class DetectorOrchestratorTest {
                 "MACRO", StrategyArchetype.PROTOSS_MACRO
                                  );
         return new DetectorOrchestrator(
-                registry, priors, cpts, labelMapping, 10, hardEvidenceThreshold);
+                registry, priors, cpts, labelMapping, 0.3, hardEvidenceThreshold);
     }
 
 }

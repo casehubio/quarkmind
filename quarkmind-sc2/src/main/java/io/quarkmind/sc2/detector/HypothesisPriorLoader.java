@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.quarkmind.domain.GamePhase;
 import io.quarkmind.domain.Race;
+import io.quarkmind.domain.StrategyArchetype;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -129,5 +130,28 @@ public class HypothesisPriorLoader {
         adjusted.replaceAll((k, v) -> v / total);
         return adjusted;
     }
+
+    public static Map<String, Map<String, Double>> loadTransitionCpts(Race enemyRace) {
+        String path = "transitions/transition-cpts-vs_" + enemyRace.name().toLowerCase() + ".json";
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path)) {
+            if (is == null) {return Map.of();}
+            return MAPPER.readValue(is, new TypeReference<>() {});
+        } catch (IOException e) {
+            return Map.of();
+        }
+    }
+
+    public static Map<String, Double> loadUnifiedPriors(Race enemyRace) {
+        Map<String, Double> unified = new LinkedHashMap<>();
+        for (StrategyArchetype arch : StrategyArchetype.values()) {
+            if (arch.race() == enemyRace) {
+                unified.put(arch.name(), 1.0);
+            }
+        }
+        double count = unified.size();
+        unified.replaceAll((k, v) -> v / count);
+        return unified;
+    }
+
 
 }

@@ -29,3 +29,11 @@ Replace the multi-class ONNX tier with Bayesian evidence fusion through a standa
 - The BJT extraction is standalone and reusable beyond SC2 classification
 - Multi-class ONNX infrastructure removed from the production path (TensorClassifier, OnnxLabelMapping, @Inference annotations)
 - OnnxLabelMapping retained for legacy calibration tests until those are retired
+
+## Superseded (partial)
+
+The `TemporalAssessmentTracker` windowing approach has been superseded by
+decay-based temporal blending (#471). Windowing was correct at the time
+but transition-aware priors and phase-window decay make decay blending
+more appropriate for strategy evolution where recent evidence should
+dominate.
