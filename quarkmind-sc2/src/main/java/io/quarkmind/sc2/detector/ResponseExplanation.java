@@ -36,7 +36,11 @@ public record ResponseExplanation(
             for (int i = 0; i < opponent.keyEvidence.size(); i++) {
                 if (i > 0) {sb.append(", ");}
                 var ev = opponent.keyEvidence.get(i);
-                sb.append(String.format("%s (%+.2f)", ev.variable(), ev.influence()));
+                if (ev.observedState() != null) {
+                    sb.append(String.format("%s=%s (%+.2f)", ev.variable(), ev.observedState(), ev.influence()));
+                } else {
+                    sb.append(String.format("%s (%+.2f)", ev.variable(), ev.influence()));
+                }
             }
             sb.append('\n');
         }

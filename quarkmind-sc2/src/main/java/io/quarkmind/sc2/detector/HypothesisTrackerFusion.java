@@ -50,6 +50,8 @@ public class HypothesisTrackerFusion {
     private Map<String, Map<String, Double>> transitionMatrix;
     private Map<String, Double> previousPosterior;
     private double temporalDecay = 0.3;
+    private final List<ScoutingObservation> scoutingHistory = new ArrayList<>();
+    private       HypothesisPriorLoader.ObservationCpts activeObservationCpts;
 
 
     public HypothesisTrackerFusion(
@@ -137,6 +139,7 @@ public class HypothesisTrackerFusion {
                 enemyRace, phase, priors);
         labelToArchetype = buildLabelMapping(archetypes, enemyRace);
 
+        activeObservationCpts = obsCpts;
         currentPhase         = phase;
         currentEnemyRace     = enemyRace;
         currentDetectorNames = sorted;
@@ -243,6 +246,7 @@ public class HypothesisTrackerFusion {
     public void observeScouting(ScoutingObservation observation) {
         if (opponentTracker == null) return;
         opponentTracker.observeHard("intel", observation.variable(), observation.state());
+        scoutingHistory.add(observation);
     }
 
     public List<PatternAssessment> classify(
@@ -428,6 +432,42 @@ public class HypothesisTrackerFusion {
 
             evidence.add(new EvidenceContribution(detector, influence));
         }
+
+        HypothesisPriorLoader.ObservationCpts activeCpts =
+                activeObservationCpts != null ? activeObservationCpts : observationCpts;
+        if (activeCpts != null && activeCpts.cpts() != null) {
+            for (ScoutingObservation obs : scoutingHistory) {
+                Map<String, double[]> varCpts = activeCpts.cpts().get(obs.variable());
+                String[] states = activeCpts.stateIndex() != null
+                                  ? activeCpts.stateIndex().get(obs.variable()) : null;
+                if (varCpts == null || states == null) {continue;}
+
+                int stateIdx = -1;
+                for (int i = 0; i < states.length; i++) {
+                    if (states[i].equals(obs.state())) {
+                        stateIdx = i;
+                        break;
+                    }
+                }
+                if (stateIdx < 0) {continue;}
+
+                double[] leaderDist = varCpts.get(leader);
+                double leaderP = leaderDist != null && stateIdx < leaderDist.length
+                                 ? leaderDist[stateIdx] : 1.0 / states.length;
+                double avgP = 0.0;
+                int    count = 0;
+                for (double[] dist : varCpts.values()) {
+                    if (stateIdx < dist.length) {
+                        avgP += dist[stateIdx];
+                        count++;
+                    }
+                }
+                avgP = count > 0 ? avgP / count : 1.0 / states.length;
+
+                evidence.add(new EvidenceContribution(obs.variable(), leaderP - avgP, obs.state()));
+            }
+        }
+
         evidence.sort((a, b) -> Double.compare(Math.abs(b.influence()), Math.abs(a.influence())));
         return evidence.size() > 5 ? new ArrayList<>(evidence.subList(0, 5)) : evidence;
     }
@@ -530,7 +570,8 @@ public class HypothesisTrackerFusion {
 
 
     public void reset() {
-        if (opponentTracker != null) opponentTracker.reset();
+        if (opponentTracker != null) {opponentTracker.reset();}
+        scoutingHistory.clear();
         initialized = false;
     }
 

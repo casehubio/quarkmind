@@ -235,6 +235,70 @@ class ResponseExplanationTest {
     }
 
     @Test
+    void scoutingObservation_appearsInKeyEvidence_withObservedState() {
+        fusion.classify(Map.of("rush_det", 0.9f, "gas_det", 0.2f), List.of(), 100);
+        fusion.observeScouting(new io.quarkmind.domain.ScoutingObservation(
+                "first_building", "barracks", 500));
+
+        var payload = fusion.selectResponseWithExplanation(
+                Race.PROTOSS, Map.of(
+                        "our_economy_state", "even",
+                        "our_army_state", "even",
+                        "our_tech_state", "even"
+                                    ));
+
+        var evidence = payload.explanation().opponent().keyEvidence();
+        var scoutingEvidence = evidence.stream()
+                                       .filter(e -> e.observedState() != null)
+                                       .toList();
+
+        assertFalse(scoutingEvidence.isEmpty(),
+                    "Scouting observations should appear in key evidence");
+        var firstScouting = scoutingEvidence.getFirst();
+        assertEquals("first_building", firstScouting.variable());
+        assertEquals("barracks", firstScouting.observedState());
+    }
+
+    @Test
+    void detectorEvidence_hasNullObservedState() {
+        fusion.classify(Map.of("rush_det", 0.9f), List.of(), 100);
+
+        var payload = fusion.selectResponseWithExplanation(
+                Race.PROTOSS, Map.of(
+                        "our_economy_state", "even",
+                        "our_army_state", "even",
+                        "our_tech_state", "even"
+                                    ));
+
+        var detectorEvidence = payload.explanation().opponent().keyEvidence().stream()
+                                      .filter(e -> e.observedState() == null)
+                                      .toList();
+
+        assertFalse(detectorEvidence.isEmpty(),
+                    "Detector evidence should have null observedState");
+    }
+
+    @Test
+    void format_rendersObservedStateAsKeyValue() {
+        var explanation = new ResponseExplanation(
+                new ResponseExplanation.OpponentRationale("MARINE_RUSH", 0.82,
+                                                          List.of(new EvidenceContribution("first_building", 0.31, "barracks"),
+                                                                  new EvidenceContribution("rush_det", 0.25))),
+                new ResponseExplanation.ResponseRationale("GATEWAY_RUSH", 0.48, 0.70),
+                null,
+                new ResponseExplanation.ContextEffect(
+                        Map.of("our_economy_state", "even"), false)
+        );
+
+        String formatted = explanation.format();
+        assertTrue(formatted.contains("first_building=barracks (+0.31)"),
+                   "Scouting observation should render as variable=state: " + formatted);
+        assertTrue(formatted.contains("rush_det (+0.25)"),
+                   "Detector should render without state: " + formatted);
+    }
+
+
+    @Test
     void format_producesReadableOutput() {
         var explanation = new ResponseExplanation(
                 new ResponseExplanation.OpponentRationale("MARINE_RUSH", 0.82,
