@@ -329,6 +329,110 @@ public class HypothesisTrackerFusion {
         return result;
     }
 
+    public ResponseRecommendationPayload selectResponseWithExplanation(
+            Race ourRace, Map<String, String> gameStateContext) {
+        if (!initialized || !hasResponseSlot || opponentTracker == null) {
+            return new ResponseRecommendationPayload(List.of(), null);
+        }
+
+        String leader = opponentTracker.leader();
+        if (leader == null) {
+            return new ResponseRecommendationPayload(List.of(), null);
+        }
+
+        double leaderWeight = opponentTracker.weights().getOrDefault(leader, 0.0);
+        if (leaderWeight < responseConfidenceGate) {
+            return new ResponseRecommendationPayload(List.of(), null);
+        }
+
+        for (String key : List.of("our_economy_state", "our_army_state", "our_tech_state")) {
+            String state = gameStateContext.getOrDefault(key, "even");
+            opponentTracker.setPerTickEvidence("response", key, contextDistribution(key, state));
+        }
+
+        Map<String, Double> responseDist = new LinkedHashMap<>();
+        for (String hypothesis : opponentTracker.viable()) {
+            double[] marginal = opponentTracker.marginalize(hypothesis, "response", "our_strategy");
+            double   weight   = opponentTracker.weights().get(hypothesis);
+            for (int i = 0; i < ourStrategies.length; i++) {
+                responseDist.merge(ourStrategies[i], weight * marginal[i], Double::sum);
+            }
+        }
+        normalize(responseDist);
+
+        List<PatternAssessment> responses = new ArrayList<>();
+        for (var entry : responseDist.entrySet()) {
+            if (entry.getValue() < 0.01) {continue;}
+            StrategyArchetype archetype = ourLabelToArchetype.get(entry.getKey());
+            if (archetype == null) {continue;}
+            responses.add(new PatternAssessment(archetype, entry.getValue(), 0,
+                                                "response:" + leader, AssessmentSource.FUSION));
+        }
+        responses.sort((a, b) -> Double.compare(b.confidence(), a.confidence()));
+
+        String responseLeader     = responses.isEmpty() ? null : responses.getFirst().archetype().name();
+        double responseConfidence = responses.isEmpty() ? 0.0 : responses.getFirst().confidence();
+
+        List<EvidenceContribution> keyEvidence = computeKeyEvidence(leader);
+
+        double cptValue = 0.0;
+        if (responseLeader != null) {
+            double[] leaderMarginal = opponentTracker.marginalize(leader, "response", "our_strategy");
+            int      idx            = Arrays.asList(ourStrategies).indexOf(responseLeader);
+            if (idx < 0) {
+                for (int i = 0; i < ourStrategies.length; i++) {
+                    if (responseLeader.endsWith(ourStrategies[i]) || ourStrategies[i].endsWith(responseLeader)) {
+                        idx = i;
+                        break;
+                    }
+                }
+            }
+            if (idx >= 0 && idx < leaderMarginal.length) {
+                cptValue = leaderMarginal[idx];
+            }
+        }
+
+        String activeExpertOverride = null;
+        if (expertOverrides != null) {
+            for (var ov : expertOverrides) {
+                if (leader.equals(ov.whenOpponent())) {
+                    activeExpertOverride = ov.preferredResponse();
+                    break;
+                }
+            }
+        }
+
+        boolean contextShifted = !gameStateContext.values().stream().allMatch("even"::equals);
+
+        var explanation = new ResponseExplanation(
+                new ResponseExplanation.OpponentRationale(leader, leaderWeight, keyEvidence),
+                new ResponseExplanation.ResponseRationale(
+                        responseLeader != null ? responseLeader : "none", responseConfidence, cptValue),
+                activeExpertOverride,
+                new ResponseExplanation.ContextEffect(Map.copyOf(gameStateContext), contextShifted)
+        );
+
+        return new ResponseRecommendationPayload(responses, explanation);
+    }
+
+    private List<EvidenceContribution> computeKeyEvidence(String leader) {
+        List<EvidenceContribution> evidence = new ArrayList<>();
+        for (String detector : currentDetectorNames) {
+            Map<String, Double> detCpt = detectorCpts.get(detector);
+            if (detCpt == null) {continue;}
+
+            double leaderCpt = detCpt.getOrDefault(leader, 0.5);
+            double avgCpt = detCpt.values().stream()
+                                  .mapToDouble(Double::doubleValue).average().orElse(0.5);
+            double influence = leaderCpt - avgCpt;
+
+            evidence.add(new EvidenceContribution(detector, influence));
+        }
+        evidence.sort((a, b) -> Double.compare(Math.abs(b.influence()), Math.abs(a.influence())));
+        return evidence.size() > 5 ? new ArrayList<>(evidence.subList(0, 5)) : evidence;
+    }
+
+
     private static double[] contextDistribution(String variable, String state) {
         String[] states = switch (variable) {
             case "our_economy_state" -> new String[]{"behind", "even", "ahead"};
