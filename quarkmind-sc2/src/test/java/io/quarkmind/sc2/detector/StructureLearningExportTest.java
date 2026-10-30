@@ -4,15 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkmind.domain.GamePhase;
 import io.quarkmind.domain.Race;
-import io.quarkmind.domain.StrategyArchetype;
 import io.quarkmind.inference.bayes.CptSpec;
 import io.quarkmind.inference.bayes.EdgeSpec;
+import io.quarkmind.inference.bayes.ModelSelector;
 import io.quarkmind.inference.bayes.NetworkSpec;
 import io.quarkmind.inference.bayes.ParameterLearner;
 import io.quarkmind.inference.bayes.SpecStatus;
 import io.quarkmind.inference.bayes.StructuralConstraints;
 import io.quarkmind.inference.bayes.StructureLearner;
-import io.quarkmind.inference.bayes.ModelSelector;
 import io.quarkmind.inference.bayes.VariableSpec;
 import io.quarkmind.sc2.replay.ClassifierLabelMapper;
 import io.quarkmind.sc2.replay.ScoutingObservationExtractor;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,7 +67,9 @@ class StructureLearningExportTest {
                 System.out.printf("%n=== %s %s: %d rows ===%n", matchup, phase, rows.size());
 
                 var results = compareVariants(rows, matchup, phase);
-                exportWinner(results, matchup, phase);
+                int replayCount = (int) mapped.stream()
+                    .map(m -> m.source().replayHash()).distinct().count();
+                exportWinner(results, matchup, phase, replayCount, rows.size());
             }
         }
     }
@@ -326,7 +326,8 @@ class StructureLearningExportTest {
 
     // --- export ---
 
-    private void exportWinner(ComparisonResult result, String matchup, GamePhase phase)
+    private void exportWinner(ComparisonResult result, String matchup, GamePhase phase,
+                              int replayCount, int observationCount)
             throws Exception {
         NetworkSpec winnerSpec;
         if (result.switchToLearned()) {
@@ -337,19 +338,35 @@ class StructureLearningExportTest {
 
         winnerSpec = augmentWithDroolsEvidence(winnerSpec);
 
-        var resource = new LinkedHashMap<String, Object>();
-        resource.put("matchup", matchup);
-        resource.put("phase", phase.name());
-        resource.put("topology", result.best().name());
-        resource.put("improvement", result.improvement());
-        resource.put("switchToLearned", result.switchToLearned());
-        resource.put("allVariants", result.allVariants().stream()
-            .map(v -> Map.of("name", v.name(),
-                             "logLikelihood", v.logLikelihood(),
-                             "bicScore", v.bicScore(),
-                             "edges", v.spec().edges().size()))
-            .toList());
-        resource.put("network", winnerSpec);
+        var starVariant = result.allVariants().stream()
+            .filter(v -> v.name().equals("star")).findFirst().orElse(null);
+
+        var variantSummaries = result.allVariants().stream()
+            .map(v -> new LearnedTopologyResource.VariantSummary(
+                v.name(), v.logLikelihood(), v.bicScore(), v.spec().edges().size()))
+            .toList();
+
+        var provenance = new LearnedTopologyResource.TopologyProvenance(
+            replayCount,
+            observationCount,
+            getGitSha(),
+            java.time.Instant.now().toString(),
+            result.best().name(),
+            result.best().bicScore(),
+            result.best().logLikelihood(),
+            starVariant != null ? starVariant.bicScore() : Double.NaN,
+            result.improvement(),
+            result.switchToLearned(),
+            PC_ALPHA,
+            HC_RESTARTS,
+            HC_SEED,
+            IMPROVEMENT_THRESHOLD
+        );
+
+        var resource = new LearnedTopologyResource(
+            matchup, phase.name(), result.best().name(),
+            result.improvement(), result.switchToLearned(),
+            variantSummaries, provenance, winnerSpec);
 
         Files.createDirectories(OUTPUT_DIR);
         Path outputPath = OUTPUT_DIR.resolve(
@@ -382,4 +399,15 @@ class StructureLearningExportTest {
 
         return spec.withVariable(droolsVar).withEdge(droolsEdge);
     }
+
+    private static String getGitSha() {
+        try {
+            var proc = new ProcessBuilder("git", "rev-parse", "--short", "HEAD")
+                               .redirectErrorStream(true).start();
+            return new String(proc.getInputStream().readAllBytes()).trim();
+        } catch (Exception e) {
+            return "unknown";
+        }
+    }
+
 }

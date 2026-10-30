@@ -13,6 +13,31 @@ public record LearnedTopologyResource(
     String topology,
     double improvement,
     boolean switchToLearned,
-    List<Map<String, Object>> allVariants,
+    List<VariantSummary> allVariants,
+    TopologyProvenance learnedFrom,
     NetworkSpec network
-) {}
+) {
+    public record VariantSummary(
+        String name,
+        double logLikelihood,
+        double bicScore,
+        int edges
+    ) {}
+
+    public record TopologyProvenance(
+        int replayCount,
+        int observationCount,
+        String extractorVersion,
+        String generatedAt,
+        String winningVariant,
+        double winningBic,
+        double winningLogLikelihood,
+        double starBic,
+        double improvementMargin,
+        boolean thresholdMet,
+        double pcAlpha,
+        int hcRestarts,
+        long hcSeed,
+        double improvementThreshold
+    ) {}
+}

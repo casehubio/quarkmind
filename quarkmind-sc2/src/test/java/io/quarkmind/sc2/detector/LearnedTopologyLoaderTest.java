@@ -1,14 +1,13 @@
 package io.quarkmind.sc2.detector;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.quarkmind.inference.bayes.NetworkSpec;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LearnedTopologyLoaderTest {
 
@@ -23,11 +22,15 @@ class LearnedTopologyLoaderTest {
             return;
         }
 
-        @SuppressWarnings("unchecked")
-        var resource = MAPPER.readValue(is, Map.class);
-        assertNotNull(resource.get("network"));
-        assertNotNull(resource.get("matchup"));
-        assertNotNull(resource.get("phase"));
+        var resource = MAPPER.readValue(is, LearnedTopologyResource.class);
+        assertNotNull(resource.network());
+        assertNotNull(resource.matchup());
+        assertNotNull(resource.phase());
+        assertNotNull(resource.topology());
+        if (resource.learnedFrom() != null) {
+            assertTrue(resource.learnedFrom().replayCount() > 0);
+            assertNotNull(resource.learnedFrom().winningVariant());
+        }
     }
 
     @Test

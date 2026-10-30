@@ -40,8 +40,10 @@ public class LearnedTopologyLoader {
                     }
                     var resource = MAPPER.readValue(is, LearnedTopologyResource.class);
                     result.put(key, resource.network());
-                    log.infof("Loaded learned topology: %s (variant=%s, improvement=%.4f)",
-                        key, resource.topology(), resource.improvement());
+                    var prov = resource.learnedFrom();
+                    log.infof("Loaded learned topology: %s (variant=%s, improvement=%.4f, replays=%d)",
+                        key, resource.topology(), resource.improvement(),
+                        prov != null ? prov.replayCount() : -1);
                 } catch (Exception e) {
                     log.warnf("Failed to load %s: %s", resourcePath, e.getMessage());
                 }
