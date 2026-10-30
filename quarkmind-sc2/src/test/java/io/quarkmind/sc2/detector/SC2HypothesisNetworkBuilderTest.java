@@ -3,6 +3,8 @@ package io.quarkmind.sc2.detector;
 import io.quarkmind.domain.GamePhase;
 import io.quarkmind.domain.Race;
 import io.quarkmind.inference.bayes.HypothesisTracker;
+import io.quarkmind.inference.bayes.JunctionTree;
+import io.quarkmind.inference.bayes.NetworkSpec;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -263,4 +265,66 @@ class SC2HypothesisNetworkBuilderTest {
         assertNotEquals(behindMarginal[0], aheadMarginal[0], 0.01,
                         "Behind vs ahead should produce different response marginals");
     }
+
+
+    @Test
+    void handSpecifiedStar_asNetworkSpec_producesValidJunctionTree() {
+        String[]            archetypes = {"MACRO", "RUSH", "TECH_RUSH"};
+        Map<String, Double> priors     = Map.of("RUSH", 0.3, "MACRO", 0.5, "TECH_RUSH", 0.2);
+
+        var obsCpts = new HypothesisPriorLoader.ObservationCpts(
+                Map.of("gas_timing", new String[]{"none", "normal", "early", "late"}),
+                Map.of("gas_timing", Map.of(
+                        "RUSH", new double[]{0.1, 0.2, 0.6, 0.1},
+                        "MACRO", new double[]{0.3, 0.4, 0.1, 0.2},
+                        "TECH_RUSH", new double[]{0.05, 0.15, 0.7, 0.1}
+                                           ))
+        );
+
+        List<String> detectorNames = List.of("early_rush");
+        Map<String, Map<String, Double>> detectorCpts = Map.of(
+                "early_rush", Map.of("RUSH", 0.9, "MACRO", 0.1, "TECH_RUSH", 0.3)
+                                                              );
+
+        NetworkSpec starSpec = SC2HypothesisNetworkBuilder.handSpecifiedStarSpec(archetypes, obsCpts);
+        assertNotNull(starSpec);
+        assertTrue(starSpec.variables().size() >= 3);
+
+        JunctionTree newTree = SC2HypothesisNetworkBuilder.buildIntelTree(
+                starSpec, archetypes, priors, detectorNames, detectorCpts);
+        assertNotNull(newTree);
+    }
+
+    @Test
+    void handSpecifiedStarSpec_containsAllObservationVariablesAndDroolsEvidence() {
+        String[] archetypes = {"MACRO", "RUSH"};
+
+        var obsCpts = new HypothesisPriorLoader.ObservationCpts(
+                Map.of(
+                        "gas_timing", new String[]{"none", "normal", "early", "late"},
+                        "first_building", new String[]{"gateway", "forge", "barracks"}
+                      ),
+                Map.of(
+                        "gas_timing", Map.of(
+                                "RUSH", new double[]{0.1, 0.2, 0.6, 0.1},
+                                "MACRO", new double[]{0.3, 0.4, 0.1, 0.2}
+                                            ),
+                        "first_building", Map.of(
+                                "RUSH", new double[]{0.8, 0.1, 0.1},
+                                "MACRO", new double[]{0.3, 0.5, 0.2}
+                                                )
+                      )
+        );
+
+        NetworkSpec spec = SC2HypothesisNetworkBuilder.handSpecifiedStarSpec(archetypes, obsCpts);
+
+        var varNames = spec.variables().stream().map(v -> v.name()).toList();
+        assertTrue(varNames.contains("enemy_strategy"));
+        assertTrue(varNames.contains("gas_timing"));
+        assertTrue(varNames.contains("first_building"));
+        assertTrue(varNames.contains("drools_evidence"));
+        assertEquals(4, varNames.size());
+        assertEquals(3, spec.edges().size());
+    }
+
 }

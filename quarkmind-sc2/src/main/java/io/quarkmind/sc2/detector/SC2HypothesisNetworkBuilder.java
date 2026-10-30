@@ -7,6 +7,11 @@ import io.quarkmind.inference.bayes.CompositionBuilder;
 import io.quarkmind.inference.bayes.HypothesisTracker;
 import io.quarkmind.inference.bayes.JunctionTree;
 import io.quarkmind.inference.bayes.NetworkComposition;
+import io.quarkmind.inference.bayes.NetworkSpec;
+import io.quarkmind.inference.bayes.VariableSpec;
+import io.quarkmind.inference.bayes.EdgeSpec;
+import io.quarkmind.inference.bayes.CptSpec;
+import io.quarkmind.inference.bayes.SpecStatus;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -124,6 +129,114 @@ public class SC2HypothesisNetworkBuilder {
         return responsePriors.values().stream()
                              .flatMap(m -> m.keySet().stream())
                              .distinct().sorted().toArray(String[]::new);
+    }
+
+
+    public static NetworkSpec handSpecifiedStarSpec(
+            String[] archetypes,
+            HypothesisPriorLoader.ObservationCpts observationCpts) {
+        int N         = archetypes.length;
+        var variables = new java.util.ArrayList<VariableSpec>();
+        var edges     = new java.util.ArrayList<EdgeSpec>();
+
+        variables.add(new VariableSpec(
+                "enemy_strategy", java.util.List.of(archetypes), "", SpecStatus.LOCKED, null));
+
+        for (var obsEntry : observationCpts.cpts().entrySet()) {
+            String   varName = obsEntry.getKey();
+            String[] states  = observationCpts.stateIndex().get(varName);
+            if (states == null) {continue;}
+
+            double[][] cptRows = new double[N][];
+            for (int a = 0; a < N; a++) {
+                double[] row     = obsEntry.getValue().get(archetypes[a]);
+                double   uniform = 1.0 / states.length;
+                cptRows[a] = new double[states.length];
+                for (int s = 0; s < states.length; s++) {
+                    double val = (row != null && s < row.length) ? row[s] : uniform;
+                    cptRows[a][s] = Math.max(0.01, Math.min(0.99, val));
+                }
+                double sum = 0;
+                for (double d : cptRows[a]) {sum += d;}
+                for (int s = 0; s < cptRows[a].length; s++) {cptRows[a][s] /= sum;}
+            }
+
+            variables.add(new VariableSpec(
+                    varName, java.util.List.of(states), "", SpecStatus.ACCEPTED,
+                    new CptSpec.DirectCpt(cptRows)));
+            edges.add(new EdgeSpec(
+                    "enemy_strategy", varName, "", SpecStatus.ACCEPTED));
+        }
+
+        double[][] markerRows = new double[N][N];
+        for (int a = 0; a < N; a++) {
+            for (int s = 0; s < N; s++) {
+                markerRows[a][s] = (a == s) ? 0.8 : (0.2 / (N - 1));
+            }
+        }
+        variables.add(new VariableSpec(
+                "drools_evidence", java.util.List.of(archetypes), "", SpecStatus.ACCEPTED,
+                new CptSpec.DirectCpt(markerRows)));
+        edges.add(new EdgeSpec(
+                "enemy_strategy", "drools_evidence", "", SpecStatus.ACCEPTED));
+
+        return new NetworkSpec("hand-specified-star", variables, edges,
+                               "Hand-specified naïve Bayes star topology");
+    }
+
+    public static JunctionTree buildIntelTree(
+            NetworkSpec observationTopology,
+            String[] archetypes,
+            Map<String, Double> learnedPriors,
+            List<String> activeDetectorNames,
+            Map<String, Map<String, Double>> detectorCpts) {
+        int      N          = archetypes.length;
+        double[] priorArray = normalizedPriors(archetypes, learnedPriors);
+
+        var intelBuilder = BayesNetworkBuilder.create(
+                observationTopology.name() != null ? observationTopology.name() : "intel");
+        intelBuilder.variable("enemy_strategy", archetypes).prior(priorArray);
+
+        for (var v : observationTopology.variables()) {
+            if (v.name().equals("enemy_strategy")) {continue;}
+            String[] outcomes = v.outcomes().toArray(new String[0]);
+            if (v.cptSpec() instanceof CptSpec.DirectCpt direct) {
+                double[] flat = new double[N * outcomes.length];
+                for (int a = 0; a < N; a++) {
+                    double[] row = (a < direct.values().length) ? direct.values()[a] : null;
+                    for (int s = 0; s < outcomes.length; s++) {
+                        flat[a * outcomes.length + s] =
+                                (row != null && s < row.length) ? row[s] : 1.0 / outcomes.length;
+                    }
+                }
+                intelBuilder.variable(v.name(), outcomes)
+                            .given("enemy_strategy").cpt(flat);
+            } else {
+                double   uniform = 1.0 / outcomes.length;
+                double[] flat    = new double[N * outcomes.length];
+                Arrays.fill(flat, uniform);
+                intelBuilder.variable(v.name(), outcomes)
+                            .given("enemy_strategy").cpt(flat);
+            }
+        }
+
+        for (String detName : activeDetectorNames) {
+            Map<String, Double> detCpt  = detectorCpts.get(detName);
+            double[]            flatCpt = new double[N * 2];
+            for (int a = 0; a < N; a++) {
+                double pHigh = 0.5;
+                if (detCpt != null) {
+                    pHigh = detCpt.getOrDefault(archetypes[a], 0.5);
+                }
+                pHigh              = Math.max(0.01, Math.min(0.99, pHigh));
+                flatCpt[a * 2]     = pHigh;
+                flatCpt[a * 2 + 1] = 1.0 - pHigh;
+            }
+            intelBuilder.variable(detName, "HIGH", "LOW")
+                        .given("enemy_strategy").cpt(flatCpt);
+        }
+
+        return intelBuilder.buildJunctionTree();
     }
 
     private static JunctionTree buildIntelTree(
