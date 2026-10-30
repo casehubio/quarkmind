@@ -13,6 +13,7 @@ import io.quarkmind.inference.bayes.EdgeSpec;
 import io.quarkmind.inference.bayes.CptSpec;
 import io.quarkmind.inference.bayes.SpecStatus;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -136,11 +137,11 @@ public class SC2HypothesisNetworkBuilder {
             String[] archetypes,
             HypothesisPriorLoader.ObservationCpts observationCpts) {
         int N         = archetypes.length;
-        var variables = new java.util.ArrayList<VariableSpec>();
-        var edges     = new java.util.ArrayList<EdgeSpec>();
+        var variables = new ArrayList<VariableSpec>();
+        var edges     = new ArrayList<EdgeSpec>();
 
         variables.add(new VariableSpec(
-                "enemy_strategy", java.util.List.of(archetypes), "", SpecStatus.LOCKED, null));
+                "enemy_strategy", List.of(archetypes), "", SpecStatus.LOCKED, null));
 
         for (var obsEntry : observationCpts.cpts().entrySet()) {
             String   varName = obsEntry.getKey();
@@ -162,7 +163,7 @@ public class SC2HypothesisNetworkBuilder {
             }
 
             variables.add(new VariableSpec(
-                    varName, java.util.List.of(states), "", SpecStatus.ACCEPTED,
+                    varName, List.of(states), "", SpecStatus.ACCEPTED,
                     new CptSpec.DirectCpt(cptRows)));
             edges.add(new EdgeSpec(
                     "enemy_strategy", varName, "", SpecStatus.ACCEPTED));
@@ -175,7 +176,7 @@ public class SC2HypothesisNetworkBuilder {
             }
         }
         variables.add(new VariableSpec(
-                "drools_evidence", java.util.List.of(archetypes), "", SpecStatus.ACCEPTED,
+                "drools_evidence", List.of(archetypes), "", SpecStatus.ACCEPTED,
                 new CptSpec.DirectCpt(markerRows)));
         edges.add(new EdgeSpec(
                 "enemy_strategy", "drools_evidence", "", SpecStatus.ACCEPTED));
