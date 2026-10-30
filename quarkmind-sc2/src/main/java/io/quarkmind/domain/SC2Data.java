@@ -90,6 +90,14 @@ public final class SC2Data {
     public static final int INITIAL_SUPPLY     = 15;
     public static final int INITIAL_SUPPLY_USED = 12;
     public static final int INITIAL_PROBES     = 12;
+    /**
+     * Ticks before mining income begins. SC2 workers start at the town hall and
+     * walk to mineral patches before the first harvest — the first observation
+     * still shows starting minerals. Calibrated from dual-run (#401): tick-1
+     * delta = +8 (one full tick of income), eliminated by skipping tick 1.
+     */
+    public static final int MINING_START_DELAY_TICKS = 1;
+
 
     /**
      * MULE lifetime in game loops. 64s × 22.4 loops/s = 1433.6 → ceiling = 1434.

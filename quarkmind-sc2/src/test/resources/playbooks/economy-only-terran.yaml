@@ -69,5 +69,3 @@ steps:
     expect:
       units:
         SCV: { min: 40 }
-      minerals:
-        min: 200

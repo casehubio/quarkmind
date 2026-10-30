@@ -165,6 +165,7 @@ class TerranEmulatedGameTest {
 
     @Test
     void muleExpires_afterLifetime_unitGoneAndNoMoreMuleIncome() {
+        game.tick(); // consume mining start delay
         final Building oc = game.spawnBuildingForTesting(BuildingType.ORBITAL_COMMAND, new Point2d(12, 8));
         game.applyIntent(new MuleCalldownIntent(oc.tag()));
 

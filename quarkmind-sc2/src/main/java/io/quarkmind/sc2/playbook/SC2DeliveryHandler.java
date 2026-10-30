@@ -54,7 +54,7 @@ public class SC2DeliveryHandler implements DeliveryHandler {
         if (game.snapshot().supplyUsed() + SC2Data.supplyCost(unit) > game.snapshot().supply()) {
             return StepOutcome.fail(stepName, "supply blocked for " + unit);
         }
-        String tag = "r-playbook-" + unit.name().toLowerCase();
+        String tag = "pb-" + unit.name().toLowerCase();
         game.applyIntent(new TrainIntent(tag, unit));
         return StepOutcome.ok(stepName, Map.of("unit", unit.name()));
     }
@@ -66,7 +66,7 @@ public class SC2DeliveryHandler implements DeliveryHandler {
         if (mineralsBefore < cost) {
             return StepOutcome.fail(stepName, "insufficient minerals for " + bt);
         }
-        game.applyIntent(new BuildIntent("r-playbook", bt, new Point2d(30, 30)));
+        game.applyIntent(new BuildIntent("pb-playbook", bt, new Point2d(30, 30)));
         return StepOutcome.ok(stepName, Map.of("building", bt.name()));
     }
 

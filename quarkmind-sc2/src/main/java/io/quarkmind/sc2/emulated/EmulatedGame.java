@@ -151,25 +151,26 @@ public class EmulatedGame {
             }
         }
 
-        // Mineral income (uses reduced per-base counts)
+        // Mineral and gas income — delayed on game start to model worker travel time
         double tickMineralIncome = 0;
-        for (final int workersAtBase : miningProbesPerBase) {
-            double income = SC2Data.mineralIncomePerTick(workersAtBase);
-            friendly.addMinerals(income);
-            tickMineralIncome += income;
-        }
-
-        // Gas income
         double tickGasIncome = 0;
-        int gasWorkersRemaining = gasWorkerBudget;
-        for (final Building b : friendly.buildings()) {
-            if (gasWorkersRemaining <= 0) {break;}
-            if (!SC2Data.isGasBuilding(b.type()) || !b.isComplete()) {continue;}
-            final int workersOnThisGeyser = Math.min(SC2Data.GAS_WORKERS_PER_BUILDING, gasWorkersRemaining);
-            double gasIncome = SC2Data.gasIncomePerTick(workersOnThisGeyser);
-            friendly.addVespene(gasIncome);
-            tickGasIncome += gasIncome;
-            gasWorkersRemaining -= workersOnThisGeyser;
+        if (gameFrame > SC2Data.MINING_START_DELAY_TICKS) {
+            for (final int workersAtBase : miningProbesPerBase) {
+                double income = SC2Data.mineralIncomePerTick(workersAtBase);
+                friendly.addMinerals(income);
+                tickMineralIncome += income;
+            }
+
+            int gasWorkersRemaining = gasWorkerBudget;
+            for (final Building b : friendly.buildings()) {
+                if (gasWorkersRemaining <= 0) {break;}
+                if (!SC2Data.isGasBuilding(b.type()) || !b.isComplete()) {continue;}
+                final int workersOnThisGeyser = Math.min(SC2Data.GAS_WORKERS_PER_BUILDING, gasWorkersRemaining);
+                double gasIncome = SC2Data.gasIncomePerTick(workersOnThisGeyser);
+                friendly.addVespene(gasIncome);
+                tickGasIncome += gasIncome;
+                gasWorkersRemaining -= workersOnThisGeyser;
+            }
         }
         economyTracker.recordIncome(tickMineralIncome, tickGasIncome);
 
@@ -367,10 +368,12 @@ public class EmulatedGame {
                                  .findFirst().orElse(null);
 
         boolean autoResolved = false;
+        boolean trackerDriven = false;
         if (building == null) {
             final RaceModel model = (state == friendly) ? playerRaceModel : null;
-            if (model != null && buildingTag != null && buildingTag.startsWith("r-")) {
+            if (model != null && buildingTag != null && (buildingTag.startsWith("r-") || buildingTag.startsWith("pb-"))) {
                 autoResolved = true;
+                trackerDriven = buildingTag.startsWith("r-");
                 final BuildingType required = SC2Data.trainedBy(t.unitType());
                 if (required != BuildingType.UNKNOWN) {
                     building = shortestQueue(state.buildings().stream()
@@ -405,7 +408,8 @@ public class EmulatedGame {
         // For tracker-driven (r- prefix) intents: skip economy gate checks.
         // These intents represent units the real player DID produce — resource/production
         // checks measure economy accuracy, not physics accuracy.
-        if (!autoResolved) {
+        // Playbook (pb- prefix) intents are auto-resolved but still go through economy checks.
+        if (!trackerDriven) {
             if (model != null) {
                 final PlayerStateView view = state;
                 if (model.canProduce(view, resolvedTag, t.unitType()) == ProductionDecision.BLOCKED) {

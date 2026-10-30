@@ -70,7 +70,8 @@ class EmulatedGameTest {
     void mineralAccumulatesWithMiningProbes() {
         int ticks = 100;
         for (int i = 0; i < ticks; i++) game.tick();
-        double expected = SC2Data.INITIAL_MINERALS + SC2Data.mineralIncomePerTick(SC2Data.INITIAL_PROBES) * ticks;
+        int miningTicks = ticks - SC2Data.MINING_START_DELAY_TICKS;
+        double expected = SC2Data.INITIAL_MINERALS + SC2Data.mineralIncomePerTick(SC2Data.INITIAL_PROBES) * miningTicks;
         assertThat(game.snapshot().minerals()).isCloseTo((int) expected, within(1));
     }
 
@@ -88,6 +89,7 @@ class EmulatedGameTest {
         // 12 probes on each of 2 bases should earn more than 24 probes on 1 base
         // because 24 probes on 1 base hits the diminishing tier3 (probes 17–24),
         // while 12 probes per base each stay in the higher tier1+tier2 range.
+        game.tick(); // consume mining start delay
         game.setMineralsForTesting(0);
         game.setMiningProbesPerBase(12, 12);
         game.tick();
@@ -1943,6 +1945,7 @@ class EmulatedGameTest {
 
     @Test
     void tick_autoComputeProbeDistribution_singleBase_matchesManualSet() {
+        game.tick(); // consume mining start delay
         game.setMineralsForTesting(0);
         // Do NOT call setMiningProbesPerBase — let auto-compute handle it
         game.tick();

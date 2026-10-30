@@ -126,6 +126,20 @@ class DualRunCalibrationTest {
         for (int tick = 0; tick < tickLimit; tick++) {
             game.tick();
 
+            // Snapshot BEFORE playbook actions — matches SC2 adapter's observe-then-act pattern
+            CalibrationSnapshot expected = baseline.snapshots().get(tick);
+            CalibrationSnapshot actual = CalibrationSnapshot.from(tick, game.snapshot());
+
+            CalibrationResult divergence = compare(expected, actual);
+            if (divergence != null) return divergence;
+
+            if (expected.minerals() != actual.minerals() || expected.vespene() != actual.vespene()) {
+                System.out.printf("  [econ] tick %d: minerals %d vs %d, vespene %d vs %d%n",
+                    tick, expected.minerals(), actual.minerals(),
+                    expected.vespene(), actual.vespene());
+            }
+
+            // Fire playbook actions AFTER snapshot — effects visible next tick
             int supplyUsed = game.snapshot().supplyUsed();
             for (int i = 0; i < steps.size(); i++) {
                 SC2PlaybookRunner.PlaybookStep step = steps.get(i);
@@ -141,18 +155,6 @@ class DualRunCalibrationTest {
                         fired[i] = true;
                     }
                 }
-            }
-
-            CalibrationSnapshot expected = baseline.snapshots().get(tick);
-            CalibrationSnapshot actual = CalibrationSnapshot.from(tick, game.snapshot());
-
-            CalibrationResult divergence = compare(expected, actual);
-            if (divergence != null) return divergence;
-
-            if (expected.minerals() != actual.minerals() || expected.vespene() != actual.vespene()) {
-                System.out.printf("  [econ] tick %d: minerals %d vs %d, vespene %d vs %d%n",
-                    tick, expected.minerals(), actual.minerals(),
-                    expected.vespene(), actual.vespene());
             }
         }
 
