@@ -38,7 +38,7 @@ class StructureLearningExportTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Path DATA_ROOT = Path.of("../quarkmind-classifier/data/reconstituted");
-    private static final Path OUTPUT_DIR = Path.of("src/main/resources/priors");
+    private static final Path OUTPUT_DIR = Path.of("src/main/resources/classifier");
     private static final String[] MATCHUPS = {"vs_terran", "vs_zerg", "vs_protoss"};
     private static final double PC_ALPHA = 0.05;
     private static final int HC_RESTARTS = 5;
@@ -341,7 +341,7 @@ class StructureLearningExportTest {
         resource.put("matchup", matchup);
         resource.put("phase", phase.name());
         resource.put("topology", result.best().name());
-        resource.put("improvement", String.format("%.4f", result.improvement()));
+        resource.put("improvement", result.improvement());
         resource.put("switchToLearned", result.switchToLearned());
         resource.put("allVariants", result.allVariants().stream()
             .map(v -> Map.of("name", v.name(),
@@ -353,7 +353,7 @@ class StructureLearningExportTest {
 
         Files.createDirectories(OUTPUT_DIR);
         Path outputPath = OUTPUT_DIR.resolve(
-            "learned-topology-" + phase.name() + "-" + matchup + ".json");
+            "learned-topology-" + phase.name().toLowerCase() + "-" + matchup.replace('_', '-') + ".json");
         MAPPER.writerWithDefaultPrettyPrinter().writeValue(outputPath.toFile(), resource);
         System.out.printf("  Exported: %s%n", outputPath);
     }

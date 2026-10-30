@@ -16,7 +16,7 @@ class LearnedTopologyLoaderTest {
 
     @Test
     void loadLearnedTopology_whenResourceExists_deserializesCorrectly() throws Exception {
-        String resourcePath = "priors/learned-topology-EARLY-vs_protoss.json";
+        String resourcePath = "classifier/learned-topology-early-vs-protoss.json";
         InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath);
         if (is == null) {
             System.out.println("SKIP: no learned topology resource at " + resourcePath);
