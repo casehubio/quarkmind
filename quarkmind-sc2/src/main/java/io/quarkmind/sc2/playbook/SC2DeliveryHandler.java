@@ -90,7 +90,7 @@ public class SC2DeliveryHandler implements DeliveryHandler {
 
     private StepOutcome doResearch(String stepName, Map<String, Object> data) {
         UpgradeType ut = UpgradeType.valueOf((String) data.get("research"));
-        game.applyIntent(new ResearchIntent("r-playbook", ut));
+        game.applyIntent(new ResearchIntent("pb-playbook", ut));
         return StepOutcome.ok(stepName, Map.of("upgrade", ut.name()));
     }
 
@@ -128,8 +128,8 @@ public class SC2DeliveryHandler implements DeliveryHandler {
     private StepOutcome doAbility(String stepName, Map<String, Object> data) {
         String        ability    = (String) data.get("ability");
         String        targetType = (String) data.get("target");
-        String        targetTag  = (targetType != null) ? "r-" + targetType.toLowerCase() : null;
-        String        casterTag  = (targetTag != null) ? targetTag : "r-ability";
+        String        targetTag  = (targetType != null) ? "pb-" + targetType.toLowerCase() : null;
+        String        casterTag  = (targetTag != null) ? targetTag : "pb-ability";
         AbilityIntent intent     = new AbilityIntent(casterTag, ability, targetTag);
         boolean       accepted   = game.applyAbility(intent);
         if (!accepted) {
@@ -140,7 +140,7 @@ public class SC2DeliveryHandler implements DeliveryHandler {
 
     private StepOutcome doCalldown(String stepName, Map<String, Object> data) {
         String        calldownType = (String) data.get("calldown");
-        AbilityIntent intent       = new AbilityIntent("r-orbital_command", "MULE_CALLDOWN", null);
+        AbilityIntent intent       = new AbilityIntent("pb-orbital_command", "MULE_CALLDOWN", null);
         boolean       accepted     = game.applyAbility(intent);
         if (!accepted) {
             return StepOutcome.fail(stepName, "calldown rejected: " + calldownType);

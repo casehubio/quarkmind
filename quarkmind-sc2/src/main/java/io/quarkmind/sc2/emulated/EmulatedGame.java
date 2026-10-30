@@ -811,13 +811,13 @@ public class EmulatedGame {
         String casterTag = a.casterTag();
         String targetTag = a.targetTag();
 
-        if (targetTag != null && targetTag.startsWith("r-")) {
+        if (isAutoResolvable(targetTag)) {
             targetTag = resolveBuilding(targetTag, state);
             if (targetTag == null) {return false;}
         }
 
         boolean handled;
-        if (casterTag != null && casterTag.startsWith("r-")) {
+        if (isAutoResolvable(casterTag)) {
             List<String> candidates = resolveBuildingAll(casterTag, state);
             handled = false;
             for (String candidate : candidates) {
@@ -846,11 +846,20 @@ public class EmulatedGame {
         return true;
     }
 
+    private static boolean isAutoResolvable(String tag) {
+        return tag != null && (tag.startsWith("r-") || tag.startsWith("pb-"));
+    }
+
+    private static String stripAutoResolvePrefix(String tag) {
+        if (tag.startsWith("pb-")) return tag.substring(3);
+        return tag.substring(2); // r- prefix
+    }
+
     private String resolveBuilding(String rTag, PlayerState state) {
         if (state.buildings().stream().anyMatch(b -> b.tag().equals(rTag) && b.isComplete())) {
             return rTag;
         }
-        String       typeName = rTag.substring(2).toUpperCase();
+        String       typeName = stripAutoResolvePrefix(rTag).toUpperCase();
         BuildingType type;
         try {type = BuildingType.valueOf(typeName);} catch (IllegalArgumentException e) {return null;}
         return state.buildings().stream()
@@ -860,7 +869,7 @@ public class EmulatedGame {
     }
 
     private List<String> resolveBuildingAll(String rTag, PlayerState state) {
-        String       typeName = rTag.substring(2).toUpperCase();
+        String       typeName = stripAutoResolvePrefix(rTag).toUpperCase();
         BuildingType type;
         try {type = BuildingType.valueOf(typeName);} catch (IllegalArgumentException e) {return List.of();}
         return state.buildings().stream()
@@ -876,7 +885,7 @@ public class EmulatedGame {
             log.debugf("[EMULATED] Research rejected — %s already completed", r.upgradeType());
             return;
         }
-        final boolean autoResolved = r.buildingTag() != null && r.buildingTag().startsWith("r-");
+        final boolean autoResolved = isAutoResolvable(r.buildingTag());
         if (!autoResolved && physics.buildingResearching.containsKey(r.buildingTag())) {
             log.debugf("[EMULATED] Research rejected — building %s already researching %s",
                        r.buildingTag(), physics.buildingResearching.get(r.buildingTag()));
@@ -961,7 +970,7 @@ public class EmulatedGame {
         BuildingType targetBt = MORPH_BUILDING_TARGETS.get(m.targetName());
         if (targetBt != null) {
             String buildingTag = m.unitTag();
-            if (buildingTag != null && buildingTag.startsWith("r-")) {
+            if (isAutoResolvable(buildingTag)) {
                 try {
                     BuildingType sourceType = BuildingType.valueOf(m.sourceName());
                     Building resolved = state.buildings().stream()
@@ -1013,7 +1022,7 @@ public class EmulatedGame {
         Unit source = state.units().stream()
                            .filter(u -> u.tag().equals(m.unitTag()))
                            .findFirst().orElse(null);
-        if (source == null && m.unitTag() != null && m.unitTag().startsWith("r-")) {
+        if (source == null && isAutoResolvable(m.unitTag())) {
             UnitType sourceType = MORPH_SOURCE_TYPES.get(m.sourceName());
             if (sourceType != null) {
                 source = state.units().stream()
