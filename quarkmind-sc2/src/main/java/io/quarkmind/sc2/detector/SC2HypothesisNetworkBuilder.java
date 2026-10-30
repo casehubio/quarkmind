@@ -44,6 +44,7 @@ public class SC2HypothesisNetworkBuilder {
         return buildHypothesisTracker(composition, archetypes, learnedPriors);
     }
 
+    @Deprecated(forRemoval = true)
     public static HypothesisTracker buildUnifiedOpponentTracker(
             Race enemyRace,
             Map<String, Double> unifiedPriors,

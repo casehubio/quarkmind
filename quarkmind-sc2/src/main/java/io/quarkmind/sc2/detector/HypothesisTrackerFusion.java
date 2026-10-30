@@ -146,6 +146,8 @@ public class HypothesisTrackerFusion {
         initialized          = true;
     }
 
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     public void initializeUnified(List<String> detectorNames, Race enemyRace, StrategyTaxonomy taxonomy) {
         if (initialized) {return;}
 
@@ -165,6 +167,7 @@ public class HypothesisTrackerFusion {
         initialized          = true;
     }
 
+    @Deprecated(forRemoval = true)
     public List<PatternAssessment> classifyUnified(
             Map<String, Float> detectorOutputs,
             List<EvidenceMarker> markers,
