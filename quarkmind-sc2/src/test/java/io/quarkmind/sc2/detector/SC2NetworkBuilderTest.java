@@ -10,7 +10,11 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SC2NetworkBuilderTest {
 
@@ -88,4 +92,46 @@ class SC2NetworkBuilderTest {
         String[] archetypes = SC2NetworkBuilder.sortedArchetypes(priors);
         assertArrayEquals(new String[]{"MACRO", "RUSH", "TECH"}, archetypes);
     }
+
+    @Test
+    void buildIntelTree_skipsDetectorVariablesInTopology() {
+        var archetypes = new String[]{"MACRO", "RUSH"};
+        var priors     = Map.of("MACRO", 0.6, "RUSH", 0.4);
+        var detectorCpts = Map.of(
+                "early_rush", Map.of("MACRO", 0.1, "RUSH", 0.9)
+                                 );
+
+        var obsVar = new io.quarkmind.inference.bayes.VariableSpec(
+                "gas_timing", List.of("early", "late"), "",
+                io.quarkmind.inference.bayes.SpecStatus.ACCEPTED,
+                new io.quarkmind.inference.bayes.CptSpec.DirectCpt(
+                        new double[][]{{0.3, 0.7}, {0.8, 0.2}}));
+        var detVar = new io.quarkmind.inference.bayes.VariableSpec(
+                "early_rush", List.of("HIGH", "LOW"), "",
+                io.quarkmind.inference.bayes.SpecStatus.ACCEPTED,
+                new io.quarkmind.inference.bayes.CptSpec.DirectCpt(
+                        new double[][]{{0.5, 0.5}, {0.5, 0.5}}));
+        var stratVar = new io.quarkmind.inference.bayes.VariableSpec(
+                "enemy_strategy", List.of(archetypes), "",
+                io.quarkmind.inference.bayes.SpecStatus.LOCKED, null);
+
+        var topology = new io.quarkmind.inference.bayes.NetworkSpec(
+                "test-combined", List.of(stratVar, obsVar, detVar),
+                List.of(
+                        new io.quarkmind.inference.bayes.EdgeSpec("enemy_strategy", "gas_timing", "", io.quarkmind.inference.bayes.SpecStatus.ACCEPTED),
+                        new io.quarkmind.inference.bayes.EdgeSpec("enemy_strategy", "early_rush", "", io.quarkmind.inference.bayes.SpecStatus.ACCEPTED)),
+                "Test topology with detector variable");
+
+        JunctionTree jt = SC2HypothesisNetworkBuilder.buildIntelTree(
+                topology, archetypes, priors, List.of("early_rush"), detectorCpts);
+
+        assertNotNull(jt);
+        var instance = new io.quarkmind.inference.bayes.BayesInstance<>(jt);
+        instance.setLikelyhood("early_rush", new double[]{0.9, 0.1});
+        instance.globalUpdate();
+        var result = instance.marginalize("enemy_strategy");
+        assertTrue(result.getDistribution()[1] > result.getDistribution()[0],
+                   "RUSH should dominate with high early_rush evidence");
+    }
+
 }

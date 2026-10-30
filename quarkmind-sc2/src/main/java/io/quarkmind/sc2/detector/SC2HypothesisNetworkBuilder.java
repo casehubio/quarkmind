@@ -199,8 +199,10 @@ public class SC2HypothesisNetworkBuilder {
                 observationTopology.name() != null ? observationTopology.name() : "intel");
         intelBuilder.variable("enemy_strategy", archetypes).prior(priorArray);
 
+        var detectorNameSet = new java.util.HashSet<>(activeDetectorNames);
         for (var v : observationTopology.variables()) {
             if (v.name().equals("enemy_strategy")) {continue;}
+            if (detectorNameSet.contains(v.name())) {continue;}
             String[] outcomes = v.outcomes().toArray(new String[0]);
             if (v.cptSpec() instanceof CptSpec.DirectCpt direct) {
                 double[] flat = new double[N * outcomes.length];

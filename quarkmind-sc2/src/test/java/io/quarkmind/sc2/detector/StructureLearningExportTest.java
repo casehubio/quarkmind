@@ -36,6 +36,7 @@ class StructureLearningExportTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Path DATA_ROOT = Path.of("../quarkmind-classifier/data/reconstituted");
+    private static final Path CPT_OBS_DIR = Path.of("../quarkmind-classifier/output/cpt_observations");
     private static final Path OUTPUT_DIR = Path.of("src/main/resources/classifier");
     private static final String[] MATCHUPS = {"vs_terran", "vs_zerg", "vs_protoss"};
     private static final double PC_ALPHA = 0.05;
@@ -66,10 +67,21 @@ class StructureLearningExportTest {
                 var rows = mapped.stream().map(MappedRow::row).toList();
                 System.out.printf("%n=== %s %s: %d rows ===%n", matchup, phase, rows.size());
 
-                var results = compareVariants(rows, matchup, phase);
+                var detectorRows = loadDetectorObservations(matchup, phase);
+                List<Map<String, String>> combinedRows;
+                if (!detectorRows.isEmpty()) {
+                    combinedRows = combineObservationAndDetectorRows(rows, detectorRows);
+                    System.out.printf("  Combined: %d observation + %d detector → %d rows%n",
+                        rows.size(), detectorRows.size(), combinedRows.size());
+                } else {
+                    combinedRows = rows;
+                    System.out.println("  No detector observations — observation-only");
+                }
+
+                var results = compareVariants(combinedRows, matchup, phase);
                 int replayCount = (int) mapped.stream()
                     .map(m -> m.source().replayHash()).distinct().count();
-                exportWinner(results, matchup, phase, replayCount, rows.size());
+                exportWinner(results, matchup, phase, replayCount, combinedRows.size());
             }
         }
     }
@@ -325,6 +337,82 @@ class StructureLearningExportTest {
 
 
     // --- export ---
+
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, String>> loadDetectorObservations(String matchup, GamePhase phase) {
+        String race     = matchup.replace("vs_", "");
+        String filename = phase.name().toLowerCase() + "_vs_" + race + ".json";
+        Path   obsPath  = CPT_OBS_DIR.resolve(filename);
+        if (!Files.exists(obsPath)) {
+            return List.of();
+        }
+        try {
+            var json   = (Map<String, Object>) MAPPER.readValue(obsPath.toFile(), Map.class);
+            var rawObs = (List<Map<String, String>>) json.get("observations");
+            if (rawObs == null) {return List.of();}
+
+            List<Map<String, String>> result = new ArrayList<>();
+            for (var obs : rawObs) {
+                var row = new LinkedHashMap<String, String>();
+                for (var entry : obs.entrySet()) {
+                    String key   = entry.getKey();
+                    String value = entry.getValue();
+                    if ("Strategy".equals(key)) {
+                        row.put("enemy_strategy", value);
+                    } else {
+                        row.put(key, collapseDetectorState(value));
+                    }
+                }
+                result.add(row);
+            }
+            return result;
+        } catch (Exception e) {
+            System.out.printf("  WARN: failed to load detector observations from %s: %s%n", obsPath, e.getMessage());
+            return List.of();
+        }
+    }
+
+    private static String collapseDetectorState(String state) {
+        return "HIGH".equals(state) ? "HIGH" : "LOW";
+    }
+
+    private static List<Map<String, String>> combineObservationAndDetectorRows(
+            List<Map<String, String>> obsRows,
+            List<Map<String, String>> detRows) {
+        Set<String> detectorKeys = new java.util.TreeSet<>();
+        for (var row : detRows) {
+            for (String key : row.keySet()) {
+                if (!"enemy_strategy".equals(key)) {detectorKeys.add(key);}
+            }
+        }
+
+        Map<String, List<Map<String, String>>> detByStrategy = new LinkedHashMap<>();
+        for (var row : detRows) {
+            detByStrategy.computeIfAbsent(row.get("enemy_strategy"), k -> new ArrayList<>()).add(row);
+        }
+
+        var combined = new ArrayList<Map<String, String>>();
+        var random   = new java.util.Random(42L);
+        for (var obsRow : obsRows) {
+            String                    strategy   = obsRow.get("enemy_strategy");
+            List<Map<String, String>> candidates = detByStrategy.getOrDefault(strategy, List.of());
+
+            var row = new LinkedHashMap<>(obsRow);
+            if (!candidates.isEmpty()) {
+                var detRow = candidates.get(random.nextInt(candidates.size()));
+                for (String key : detectorKeys) {
+                    row.put(key, detRow.getOrDefault(key, "LOW"));
+                }
+            } else {
+                for (String key : detectorKeys) {
+                    row.put(key, "LOW");
+                }
+            }
+            combined.add(row);
+        }
+        return combined;
+    }
 
     private void exportWinner(ComparisonResult result, String matchup, GamePhase phase,
                               int replayCount, int observationCount)
