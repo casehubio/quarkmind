@@ -1,0 +1,14 @@
+{
+  "playbook": "economy-only-protoss",
+  "race": "PROTOSS",
+  "sc2Build": "fixture",
+  "recordedAt": "2026-10-30T00:00:00Z",
+  "tickCount": 5,
+  "snapshots": [
+    {"tick": 0, "minerals": 50, "vespene": 0, "supply": 15, "supplyUsed": 12, "units": {"PROBE": 12}, "buildings": {"NEXUS": 1}, "upgrades": []},
+    {"tick": 1, "minerals": 62, "vespene": 0, "supply": 15, "supplyUsed": 12, "units": {"PROBE": 12}, "buildings": {"NEXUS": 1}, "upgrades": []},
+    {"tick": 2, "minerals": 74, "vespene": 0, "supply": 15, "supplyUsed": 12, "units": {"PROBE": 12}, "buildings": {"NEXUS": 1}, "upgrades": []},
+    {"tick": 3, "minerals": 86, "vespene": 0, "supply": 15, "supplyUsed": 12, "units": {"PROBE": 12}, "buildings": {"NEXUS": 1}, "upgrades": []},
+    {"tick": 4, "minerals": 98, "vespene": 0, "supply": 15, "supplyUsed": 13, "units": {"PROBE": 12}, "buildings": {"NEXUS": 1}, "upgrades": []}
+  ]
+}

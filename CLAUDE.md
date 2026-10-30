@@ -288,7 +288,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - Tests: (continued) `CoachingAdviceTest`, `CoachingDispositionTermTest`, `CoachingTriggerBuilderTest`, `CoachingSessionSelectorTest`, `CoachingWorkerFactoryTest`, `CoachingChannelBrokerTest`, `CoachingComplianceEvaluatorTest`, `CoachingStyleTest`, `CoachingAcknowledgmentHandlerTest`, `InlineCommentaryDispatcherTest`, `FewShotRetrieverTest`, `Point2dCentroidTest`, `UnitTypeWorkerTest`, `ExpansionLocationTest`, `TerrainGridRampTest`, `LocationResolverTest`, `CountDeltaTest`, `ArmyCentroidMovementTest`, `ExpansionPlacementTest`, `UnitsNearLocationTest`, `LlmPatternClassifierWorkerFactoryTest`, `ComplianceVerdictTest`, `ComplianceWorkerDispatcherTest`, `LlmComplianceWorkerFactoryTest`, `CbrLearningCurveEndpointTest`
 - Detector tests: `DetectorOrchestratorTest`, `DetectorRegistryTest`, `SC2NetworkBuilderTest`, `DetectorCatalogTest`, `BinaryDetectorRunnerTest`, `PhaseWindowDecayTest`, `StrategyTransitionCptTest`, `UnifiedHypothesisTrackerFusionTest`, `ResponseExplanationTest`, `LearnedTopologyLoaderTest`
 - Tests: (continued) `UpgradeTypeTest`, `AbilityDiscoveryCalibrationTest`, `StrippedReplayParseTest`, `StrippedReplayFeatureExtractorTest`, `StrippedReplayMorphTest`, `StrippedReplayEconomyTest`, `SelectionUnitLinkTrackerTest`, `LarvaTrainDiscoveryTest`, `TerranTrainDiscoveryTest`, `ProtossTrainDiscoveryTest`, `TrackerIntentExtractorIntentTest`
-- Playbook tests: `SC2PlaybookCalibrationTest`, `SC2DeliveryHandlerTest`, `ProtossRaceModelChronoTest`, `TerranRaceModelMuleTest`, `EmulatedGameChronoTest`, `ZergParallelTrainingTest`
+- Playbook tests: `SC2PlaybookCalibrationTest`, `SC2DeliveryHandlerTest`, `ProtossRaceModelChronoTest`, `TerranRaceModelMuleTest`, `EmulatedGameChronoTest`, `ZergParallelTrainingTest`, `CalibrationBaselineTest`, `DualRunCalibrationTest`
 - Chat protocol tests: `ChatIntentTest`, `ChatPerceptionTest`
 - Chat agent tests: `DiscordIdentityDetectorTest`, `DiscordEventSourceTest`, `DiscordGatewayMessageHistoryTest`, `ChatWorldBridgeTest`, `ChatAgencyLoopTest`, `ChatAgentEndToEndTest`, `ChatMemoryFacadeTest`, `ChatCharacterManagerTest`
 - quarkmind-core chat tests: `AttentionClassifierTest`, `ChatDeltaReportTest`, `ChatObservationRendererTest`, `IdleReflectionTriggerTest`, `PersonalityEvolutionPipelineTest`
@@ -321,6 +321,13 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - `SC2DeliveryHandlerTest` — unit tests for all 7 playbook actions (train/build/research/morph/ability/calldown/assert)
 - `ProtossRaceModelChronoTest`, `TerranRaceModelMuleTest`, `EmulatedGameChronoTest`, `ZergParallelTrainingTest` — race-specific ability and physics tests
 - Run with: `mvn test -pl quarkmind-sc2 -Dtest=SC2PlaybookCalibrationTest`
+
+**Dual-run calibration tests** (plain JUnit, tick-by-tick comparison with early exit):
+- `CalibrationBaselineTest` — CalibrationSnapshot, CalibrationBaseline, CalibrationResult records with JSON serialisation round-trip
+- `DualRunCalibrationTest` — loads recorded SC2 baseline JSON, runs same playbook against EmulatedGame, compares per-tick unit/building/upgrade counts with early exit on first divergence
+- `PlaybookSC2RecorderTest` — `@Tag("sc2")`, excluded from default suite; drives real SC2 with a calibration playbook via `PlaybookSC2Adapter`, writes baseline JSON to `src/test/resources/calibration/`
+- Run offline calibration: `mvn test -pl quarkmind-sc2 -Dtest=DualRunCalibrationTest`
+- Record SC2 baseline (requires SC2): `mvn test -pl quarkmind-sc2 -Dtest=PlaybookSC2RecorderTest -Dquarkus.profile=sc2`
 
 **WebSocket integration tests** (`@QuarkusTest`, run in normal suite):
 - `GameStateWebSocketTest` — connects via `java.net.http.WebSocket`, calls `engine.observe()` directly

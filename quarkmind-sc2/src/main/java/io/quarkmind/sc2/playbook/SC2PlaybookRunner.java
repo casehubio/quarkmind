@@ -65,16 +65,16 @@ public class SC2PlaybookRunner {
         }
     }
 
-    record PlaybookStep(String action, Map<String, Object> params,
+    public record PlaybookStep(String action, Map<String, Object> params,
                         int fireTick, int supplyTrigger, boolean loop) {
-        boolean shouldFire(int tick, int supplyUsed) {
+        public boolean shouldFire(int tick, int supplyUsed) {
             if (supplyTrigger > 0) return supplyUsed >= supplyTrigger;
             return loop ? tick >= fireTick : tick == fireTick;
         }
     }
 
     @SuppressWarnings("unchecked")
-    private List<PlaybookStep> parseSteps(JsonNode root) {
+    public static List<PlaybookStep> parseSteps(JsonNode root) {
         List<PlaybookStep> steps = new ArrayList<>();
         JsonNode stepsNode = root.get("steps");
         if (stepsNode == null || !stepsNode.isArray()) return steps;
@@ -128,7 +128,7 @@ public class SC2PlaybookRunner {
         return Integer.parseInt(timeStr);
     }
 
-    private Race resolveRace(JsonNode root) {
+    public static Race resolveRace(JsonNode root) {
         JsonNode meta = root.get("meta");
         if (meta != null && meta.has("race")) {
             try { return Race.valueOf(meta.get("race").asText().toUpperCase()); }
@@ -145,7 +145,7 @@ public class SC2PlaybookRunner {
         return Race.PROTOSS;
     }
 
-    private int resolveDuration(JsonNode root, List<PlaybookStep> steps) {
+    public static int resolveDuration(JsonNode root, List<PlaybookStep> steps) {
         JsonNode meta = root.get("meta");
         if (meta != null && meta.has("duration")) {
             String dur = meta.get("duration").asText();
@@ -156,8 +156,8 @@ public class SC2PlaybookRunner {
         return maxTick > 0 ? maxTick + TICKS_PER_MINUTE : 5 * TICKS_PER_MINUTE;
     }
 
-    private String loadResource(String path) {
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
+    public static String loadResource(String path) {
+        try (InputStream is = SC2PlaybookRunner.class.getClassLoader().getResourceAsStream(path)) {
             if (is == null) throw new IllegalArgumentException("Playbook not found: " + path);
             return new String(is.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
