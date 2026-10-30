@@ -7,6 +7,7 @@ import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.sc2.intent.MorphIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -408,6 +409,73 @@ class ZergEmulatedGameTest {
         assertThat(enemyZerglings).isEqualTo(2);
     }
 
+
+// --- Morph cost deduction ---
+
+    @Test
+    void morphZerglingToBaneling_deductsMineralsAndGas() {
+        game.setMineralsForTesting(100);
+        game.setVespeneForTesting(100);
+        String tag = game.spawnFriendlyForTesting(UnitType.ZERGLING, new Point2d(20, 20));
+
+        game.applyIntent(new MorphIntent(tag, "Zergling", "Baneling"));
+
+        assertThat((int) game.snapshot().minerals()).isEqualTo(100 - SC2Data.mineralCost(UnitType.BANELING));
+        assertThat(game.snapshot().vespene()).isEqualTo(100 - SC2Data.gasCost(UnitType.BANELING));
+    }
+
+    @Test
+    void morphZerglingToBaneling_rejectedWhenInsufficientMinerals() {
+        game.setMineralsForTesting(10); // Baneling costs 25
+        game.setVespeneForTesting(100);
+        String tag = game.spawnFriendlyForTesting(UnitType.ZERGLING, new Point2d(20, 20));
+
+        game.applyIntent(new MorphIntent(tag, "Zergling", "Baneling"));
+
+        // Zergling should still exist — morph was rejected
+        assertThat(game.snapshot().myUnits().stream()
+                       .anyMatch(u -> u.type() == UnitType.ZERGLING && u.tag().equals(tag))).isTrue();
+        assertThat(game.snapshot().myUnits().stream()
+                       .noneMatch(u -> u.type() == UnitType.BANELING)).isTrue();
+    }
+
+    @Test
+    void morphZerglingToBaneling_rejectedWhenInsufficientGas() {
+        game.setMineralsForTesting(100);
+        game.setVespeneForTesting(10); // Baneling costs 25 gas
+        String tag = game.spawnFriendlyForTesting(UnitType.ZERGLING, new Point2d(20, 20));
+
+        game.applyIntent(new MorphIntent(tag, "Zergling", "Baneling"));
+
+        assertThat(game.snapshot().myUnits().stream()
+                       .anyMatch(u -> u.type() == UnitType.ZERGLING && u.tag().equals(tag))).isTrue();
+        assertThat((int) game.snapshot().minerals()).isEqualTo(100); // not deducted
+    }
+
+    @Test
+    void morphZerglingToBaneling_trackerDriven_skipsEconomyGate() {
+        game.setMineralsForTesting(0);
+        game.setVespeneForTesting(0);
+        game.spawnFriendlyForTesting(UnitType.ZERGLING, new Point2d(20, 20));
+
+        // r- prefix = tracker-driven, resolves by source type
+        game.applyIntent(new MorphIntent("r-Zergling", "Zergling", "Baneling"));
+
+        assertThat(game.snapshot().myUnits().stream()
+                       .anyMatch(u -> u.type() == UnitType.BANELING)).isTrue();
+    }
+
+    @Test
+    void morphHatcheryToLair_deductsMineralsAndGas() {
+        game.setMineralsForTesting(200);
+        game.setVespeneForTesting(200);
+        final String hatchTag = hatcheryTag();
+
+        game.applyIntent(new MorphIntent(hatchTag, "HATCHERY", "Lair"));
+
+        assertThat((int) game.snapshot().minerals()).isEqualTo(200 - SC2Data.mineralCost(BuildingType.LAIR));
+        assertThat(game.snapshot().vespene()).isEqualTo(200 - SC2Data.gasCost(BuildingType.LAIR));
+    }
 
     private String hatcheryTag() {
         return game.snapshot().myBuildings().stream()

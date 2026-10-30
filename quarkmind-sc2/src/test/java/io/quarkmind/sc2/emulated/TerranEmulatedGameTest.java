@@ -249,6 +249,78 @@ class TerranEmulatedGameTest {
             .isEqualTo(ProductionDecision.PROCEED);
     }
 
+
+    @Test
+    void morphToOC_deductsMineralCost() {
+        game.setMineralsForTesting(200);
+        final Building cc = game.snapshot().myBuildings().stream()
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
+
+        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
+
+        assertThat((int) game.snapshot().minerals()).isEqualTo(200 - SC2Data.mineralCost(BuildingType.ORBITAL_COMMAND));
+    }
+
+    @Test
+    void morphToOC_rejectedWhenInsufficientMinerals() {
+        game.setMineralsForTesting(100); // OC costs 150
+        final Building cc = game.snapshot().myBuildings().stream()
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
+
+        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
+
+        // Should still be CC — morph was rejected
+        assertThat(game.snapshot().myBuildings().stream()
+                       .anyMatch(b -> b.type() == BuildingType.COMMAND_CENTER)).isTrue();
+        assertThat(game.snapshot().myBuildings().stream()
+                       .noneMatch(b -> b.type() == BuildingType.ORBITAL_COMMAND)).isTrue();
+    }
+
+    @Test
+    void morphToPF_deductsMineralsAndGas() {
+        game.setMineralsForTesting(200);
+        game.setVespeneForTesting(200);
+        final Building cc = game.snapshot().myBuildings().stream()
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
+
+        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "PlanetaryFortress"));
+
+        assertThat((int) game.snapshot().minerals()).isEqualTo(200 - SC2Data.mineralCost(BuildingType.PLANETARY_FORTRESS));
+        assertThat(game.snapshot().vespene()).isEqualTo(200 - SC2Data.gasCost(BuildingType.PLANETARY_FORTRESS));
+    }
+
+    @Test
+    void morphToPF_rejectedWhenInsufficientGas() {
+        game.setMineralsForTesting(200);
+        game.setVespeneForTesting(100); // PF costs 150 gas
+        final Building cc = game.snapshot().myBuildings().stream()
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
+
+        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "PlanetaryFortress"));
+
+        assertThat(game.snapshot().myBuildings().stream()
+                       .anyMatch(b -> b.type() == BuildingType.COMMAND_CENTER)).isTrue();
+        assertThat((int) game.snapshot().minerals()).isEqualTo(200); // not deducted
+    }
+
+    @Test
+    void morphToOC_trackerDriven_skipsEconomyGate() {
+        game.setMineralsForTesting(0); // zero minerals
+        final Building cc = game.snapshot().myBuildings().stream()
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
+
+        // r- prefix = tracker-driven, should skip economy gate
+        game.applyIntent(new MorphIntent("r-COMMAND_CENTER", "COMMAND_CENTER", "OrbitalCommand"));
+
+        assertThat(game.snapshot().myBuildings().stream()
+                       .anyMatch(b -> b.type() == BuildingType.ORBITAL_COMMAND)).isTrue();
+    }
+
     @Test
     void morphToOC_queuedSCVs_pauseDuringMorph() {
         game.setMineralsForTesting(500);

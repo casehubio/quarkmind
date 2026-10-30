@@ -116,4 +116,29 @@ class SC2DeliveryHandlerTest {
     }
 
 
+    @Test
+    void morphAction_failsWhenInsufficientMinerals() {
+        game.setPlayerRaceModel(io.quarkmind.sc2.emulated.RaceModelFactory.forRace(io.quarkmind.domain.Race.TERRAN));
+        game.reset();
+        handler = new SC2DeliveryHandler(game);
+        // Terran starts with 50 minerals, OC costs 150 — should fail
+        var data = Map.<String, Object>of("action", "morph",
+                                          "morph", "OrbitalCommand", "source", "COMMAND_CENTER");
+        var outcome = handler.execute("morph-0", data, null);
+        assertThat(outcome.success()).isFalse();
+    }
+
+    @Test
+    void morphAction_succeedsWithSufficientResources() {
+        game.setPlayerRaceModel(io.quarkmind.sc2.emulated.RaceModelFactory.forRace(io.quarkmind.domain.Race.TERRAN));
+        game.reset();
+        handler = new SC2DeliveryHandler(game);
+        // Accumulate minerals: 12 SCVs mining — need 150 for OC
+        for (int i = 0; i < 40; i++) game.tick();
+        var data = Map.<String, Object>of("action", "morph",
+                                          "morph", "OrbitalCommand", "source", "COMMAND_CENTER");
+        var outcome = handler.execute("morph-0", data, null);
+        assertThat(outcome.success()).isTrue();
+        assertThat(outcome.result()).containsEntry("morph", "OrbitalCommand");
+    }
 }

@@ -48,6 +48,21 @@ class EconomyTracker {
         vespeneUsedTechnology += gasCost;
     }
 
+    void recordMorphSpending(BuildingType type, int mineralCost, int gasCost) {
+        if (isTechBuilding(type)) {
+            mineralsUsedTechnology += mineralCost;
+            vespeneUsedTechnology += gasCost;
+        } else {
+            mineralsUsedEconomy += mineralCost;
+            vespeneUsedEconomy += gasCost;
+        }
+    }
+
+    void recordMorphSpending(UnitType type, int mineralCost, int gasCost) {
+        mineralsUsedArmy += mineralCost;
+        vespeneUsedArmy += gasCost;
+    }
+
 
     void recordIncome(double mineralIncome, double vespeneIncome) {
         grossMinerals += mineralIncome;

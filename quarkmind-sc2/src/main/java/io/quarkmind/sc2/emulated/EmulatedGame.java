@@ -978,6 +978,21 @@ public class EmulatedGame {
                 log.debugf("[EMULATED] Building morph rejected — building %s not found or incomplete", resolvedTag);
                 return;
             }
+            boolean trackerDriven = m.unitTag() != null && m.unitTag().startsWith("r-");
+            if (!trackerDriven) {
+                int mCost = SC2Data.mineralCost(targetBt);
+                int gCost = SC2Data.gasCost(targetBt);
+                if ((int) state.minerals() < mCost || state.vespene() < gCost) {
+                    log.debugf("[EMULATED] Building morph rejected — insufficient resources for %s (need %d/%d, have %d/%d)",
+                               targetBt, mCost, gCost, (int) state.minerals(), state.vespene());
+                    return;
+                }
+                state.deductMinerals(mCost);
+                state.deductVespene(gCost);
+                if (state == friendly) {
+                    economyTracker.recordMorphSpending(targetBt, mCost, gCost);
+                }
+            }
             state.replaceAllBuildings(b -> b.tag().equals(resolvedTag)
                                            ? new Building(b.tag(), targetBt, b.position(), b.health(), b.maxHealth(), false)
                                            : b);
@@ -1009,6 +1024,21 @@ public class EmulatedGame {
         if (source == null) {
             log.debugf("[EMULATED] Unit morph rejected — unit %s not found", m.unitTag());
             return;
+        }
+        boolean trackerDrivenUnit = m.unitTag() != null && m.unitTag().startsWith("r-");
+        if (!trackerDrivenUnit) {
+            int mCost = SC2Data.mineralCost(targetUnit);
+            int gCost = SC2Data.gasCost(targetUnit);
+            if ((int) state.minerals() < mCost || state.vespene() < gCost) {
+                log.debugf("[EMULATED] Unit morph rejected — insufficient resources for %s (need %d/%d, have %d/%d)",
+                           targetUnit, mCost, gCost, (int) state.minerals(), state.vespene());
+                return;
+            }
+            state.deductMinerals(mCost);
+            state.deductVespene(gCost);
+            if (state == friendly) {
+                economyTracker.recordMorphSpending(targetUnit, mCost, gCost);
+            }
         }
         state.removeUnit(source.tag());
         String tag = nextTagString();
@@ -1201,6 +1231,9 @@ public class EmulatedGame {
 
     /** Direct mineral override for tests — avoids tick-based accumulation. */
     void setMineralsForTesting(int amount) { friendly.setMinerals(amount); }
+
+    void setVespeneForTesting(int amount) {friendly.setVespene(amount);}
+
 
     /** Positions an enemy near the base for combat tests. */
     void spawnEnemyForTesting(UnitType type, Point2d position) {

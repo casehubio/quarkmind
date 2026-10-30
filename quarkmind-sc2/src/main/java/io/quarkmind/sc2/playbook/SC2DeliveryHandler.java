@@ -21,6 +21,24 @@ import java.util.Map;
 
 public class SC2DeliveryHandler implements DeliveryHandler {
 
+
+    private static final Map<String, BuildingType> MORPH_BUILDING_TARGETS = Map.of(
+            "Lair", BuildingType.LAIR,
+            "Hive", BuildingType.HIVE,
+            "GreaterSpire", BuildingType.GREATER_SPIRE,
+            "OrbitalCommand", BuildingType.ORBITAL_COMMAND,
+            "PlanetaryFortress", BuildingType.PLANETARY_FORTRESS
+                                                                                  );
+
+    private static final Map<String, UnitType> MORPH_UNIT_TARGETS = Map.ofEntries(
+            Map.entry("Baneling", UnitType.BANELING),
+            Map.entry("Ravager", UnitType.RAVAGER),
+            Map.entry("BroodLord", UnitType.BROOD_LORD),
+            Map.entry("Lurker", UnitType.LURKER),
+            Map.entry("Overseer", UnitType.OVERSEER),
+            Map.entry("Archon", UnitType.ARCHON),
+            Map.entry("Hellbat", UnitType.HELLBAT)
+                                                                                 );
     private final EmulatedGame game;
 
     public SC2DeliveryHandler(EmulatedGame game) {
@@ -79,7 +97,30 @@ public class SC2DeliveryHandler implements DeliveryHandler {
     private StepOutcome doMorph(String stepName, Map<String, Object> data) {
         String target = (String) data.get("morph");
         String source = (String) data.get("source");
-        game.applyIntent(new MorphIntent("r-playbook", source, target));
+        BuildingType bt = MORPH_BUILDING_TARGETS.get(target);
+        if (bt != null) {
+            int mCost = SC2Data.mineralCost(bt);
+            int gCost = SC2Data.gasCost(bt);
+            if ((int) game.snapshot().minerals() < mCost) {
+                return StepOutcome.fail(stepName, "insufficient minerals for morph " + target);
+            }
+            if (game.snapshot().vespene() < gCost) {
+                return StepOutcome.fail(stepName, "insufficient gas for morph " + target);
+            }
+        } else {
+            UnitType ut = MORPH_UNIT_TARGETS.get(target);
+            if (ut != null) {
+                int mCost = SC2Data.mineralCost(ut);
+                int gCost = SC2Data.gasCost(ut);
+                if ((int) game.snapshot().minerals() < mCost) {
+                    return StepOutcome.fail(stepName, "insufficient minerals for morph " + target);
+                }
+                if (game.snapshot().vespene() < gCost) {
+                    return StepOutcome.fail(stepName, "insufficient gas for morph " + target);
+                }
+            }
+        }
+        game.applyIntent(new MorphIntent("pb-" + source.toLowerCase(), source, target));
         return StepOutcome.ok(stepName, Map.of("morph", target));
     }
 

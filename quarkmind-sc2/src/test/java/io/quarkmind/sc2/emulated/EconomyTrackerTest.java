@@ -79,6 +79,28 @@ class EconomyTrackerTest {
         assertThat(stats.vespeneCollectionRate()).isGreaterThanOrEqualTo(5);
     }
 
+
+    @Test
+    void tracksBuildingMorphSpendingByCategory() {
+        var tracker = new EconomyTracker();
+        tracker.recordMorphSpending(BuildingType.GREATER_SPIRE, 100, 150);
+
+        var stats = tracker.currentStats(200, 100, 23, 14, 12);
+        assertThat(stats.mineralsUsedCurrentTechnology()).isEqualTo(100);
+        assertThat(stats.vespeneUsedCurrentTechnology()).isEqualTo(150);
+        assertThat(stats.mineralsUsedCurrentEconomy()).isEqualTo(0);
+    }
+
+    @Test
+    void tracksUnitMorphSpendingAsArmy() {
+        var tracker = new EconomyTracker();
+        tracker.recordMorphSpending(UnitType.BANELING, 25, 25);
+
+        var stats = tracker.currentStats(200, 100, 23, 14, 12);
+        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(25);
+        assertThat(stats.vespeneUsedCurrentArmy()).isEqualTo(25);
+    }
+
     @Test
     void resetClearsAllTracking() {
         var tracker = new EconomyTracker();

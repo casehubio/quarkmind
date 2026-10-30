@@ -998,6 +998,46 @@ public final class SC2Data {
 
     public static int gasCost(UnitType type) { return UNIT_COSTS.get(type).gas(); }
 
+    public static int gasCost(BuildingType type) {
+        return switch (type) {
+            // Protoss — no gas for morphs (Protoss has no building morphs)
+            case NEXUS, PYLON, GATEWAY, CYBERNETICS_CORE, ASSIMILATOR,
+                 ROBOTICS_FACILITY, STARGATE, FORGE, TWILIGHT_COUNCIL,
+                 PHOTON_CANNON, SHIELD_BATTERY, FLEET_BEACON, ROBOTICS_BAY,
+                 ASSIMILATOR_RICH -> 0;
+            case DARK_SHRINE, TEMPLAR_ARCHIVES -> 100;
+            // Terran
+            case COMMAND_CENTER, SUPPLY_DEPOT, BARRACKS, ENGINEERING_BAY,
+                 MISSILE_TURRET, BUNKER, SENSOR_TOWER, REFINERY -> 0;
+            case ORBITAL_COMMAND -> 0;
+            case PLANETARY_FORTRESS -> 150;
+            case ARMORY -> 100;
+            case GHOST_ACADEMY -> 50;
+            case FACTORY -> 100;
+            case STARPORT -> 100;
+            case FUSION_CORE -> 150;
+            // Zerg
+            case HATCHERY, SPAWNING_POOL, SPINE_CRAWLER, EXTRACTOR -> 0;
+            case EVOLUTION_CHAMBER -> 0;
+            case ROACH_WARREN -> 0;
+            case BANELING_NEST -> 50;
+            case LAIR -> 100;
+            case HIVE -> 150;
+            case HYDRALISK_DEN -> 100;
+            case LURKER_DEN -> 150;
+            case INFESTATION_PIT -> 100;
+            case SPIRE -> 200;
+            case GREATER_SPIRE -> 150;
+            case NYDUS_NETWORK -> 200;
+            case NYDUS_CANAL -> 75;
+            case ULTRALISK_CAVERN -> 200;
+            case SPORE_CRAWLER -> 0;
+            case CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP -> 0;
+            case UNKNOWN -> 0;
+        };
+    }
+
+
     public static BuildingType trainedBy(UnitType type) {
         return switch (type) {
             case PROBE                                  -> BuildingType.NEXUS;
