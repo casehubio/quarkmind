@@ -6,12 +6,19 @@ import org.junit.jupiter.api.Tag;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -33,10 +40,14 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ReplayVisualizerIT {
 
-    private static final int    PORT     = 8082;  // avoid clash with Electron on 8080
-    private static final String BASE_URL = "http://localhost:" + PORT;
+    private static final Pattern LISTENING_PATTERN =
+        Pattern.compile("Listening on: https?://[^:]+:(\\d+)");
+
+    private static volatile int    port;
+    private static volatile String baseUrl;
 
     private static Process    serverProcess;
+    private static Thread     stdoutReader;
     private static Playwright playwright;
     private static Browser    browser;
 
@@ -50,14 +61,43 @@ class ReplayVisualizerIT {
         assumeTrue(jar.toFile().exists(),
             "Replay jar not found — run: mvn package -DskipTests -Dquarkus.profile=replay");
 
+        var portLatch = new CountDownLatch(1);
+        var detectedPort = new AtomicInteger(-1);
+
         serverProcess = new ProcessBuilder(
             "java",
-            "-Dquarkus.http.port=" + PORT,
+            "-Dquarkus.http.port=0",
             "-jar", jar.toString()
         )
             .directory(Path.of(".").toFile())
             .redirectErrorStream(true)
             .start();
+
+        stdoutReader = new Thread(() -> {
+            try (var reader = new BufferedReader(
+                    new InputStreamReader(serverProcess.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    Matcher m = LISTENING_PATTERN.matcher(line);
+                    if (m.find()) {
+                        detectedPort.set(Integer.parseInt(m.group(1)));
+                        portLatch.countDown();
+                    }
+                }
+            } catch (Exception ignored) {}
+        }, "replay-stdout-reader");
+        stdoutReader.setDaemon(true);
+        stdoutReader.start();
+
+        boolean detected = portLatch.await(30, TimeUnit.SECONDS);
+        if (!detected || detectedPort.get() < 0) {
+            serverProcess.destroyForcibly();
+            throw new AssertionError(
+                "Replay server did not print listening port within 30s");
+        }
+
+        port = detectedPort.get();
+        baseUrl = "http://localhost:" + port;
 
         waitForServer(30);
 
@@ -101,7 +141,7 @@ class ReplayVisualizerIT {
                  new Browser.NewContextOptions().setViewportSize(1280, 720));
              var page = ctx.newPage()) {
 
-            page.navigate(BASE_URL + "/visualizer.html");
+            page.navigate(baseUrl + "/visualizer.html");
             page.waitForFunction("() => window.__test?.wsConnected?.() === true",
                 null, new Page.WaitForFunctionOptions().setTimeout(15_000));
 
@@ -152,7 +192,7 @@ class ReplayVisualizerIT {
                  new Browser.NewContextOptions().setViewportSize(1280, 720));
              var page = ctx.newPage()) {
 
-            page.navigate(BASE_URL + "/visualizer.html");
+            page.navigate(baseUrl + "/visualizer.html");
             page.waitForFunction("() => window.__test?.wsConnected?.() === true",
                 null, new Page.WaitForFunctionOptions().setTimeout(15_000));
 
@@ -195,7 +235,7 @@ class ReplayVisualizerIT {
                  new Browser.NewContextOptions().setViewportSize(1280, 720));
              var page = ctx.newPage()) {
 
-            page.navigate(BASE_URL + "/visualizer.html");
+            page.navigate(baseUrl + "/visualizer.html");
             page.waitForFunction("() => window.__test?.wsConnected?.() === true",
                 null, new Page.WaitForFunctionOptions().setTimeout(15_000));
 
@@ -243,7 +283,7 @@ class ReplayVisualizerIT {
                  new Browser.NewContextOptions().setViewportSize(1280, 720));
              var page = ctx.newPage()) {
 
-            page.navigate(BASE_URL + "/visualizer.html");
+            page.navigate(baseUrl + "/visualizer.html");
             page.waitForFunction("() => window.__test?.wsConnected?.() === true",
                 null, new Page.WaitForFunctionOptions().setTimeout(15_000));
 
@@ -279,7 +319,7 @@ class ReplayVisualizerIT {
                  new Browser.NewContextOptions().setViewportSize(1280, 720));
              var page = ctx.newPage()) {
 
-            page.navigate(BASE_URL + "/visualizer.html");
+            page.navigate(baseUrl + "/visualizer.html");
             page.waitForFunction("() => window.__test?.wsConnected?.() === true",
                 null, new Page.WaitForFunctionOptions().setTimeout(15_000));
 
@@ -308,7 +348,7 @@ class ReplayVisualizerIT {
                  new Browser.NewContextOptions().setViewportSize(1280, 720));
              var page = ctx.newPage()) {
 
-            page.navigate(BASE_URL + "/visualizer.html");
+            page.navigate(baseUrl + "/visualizer.html");
             page.waitForFunction("() => window.__test?.wsConnected?.() === true",
                 null, new Page.WaitForFunctionOptions().setTimeout(15_000));
 
@@ -321,7 +361,7 @@ class ReplayVisualizerIT {
             // Seek to near game-end — minerals should have been mined
             var http = HttpClient.newHttpClient();
             var seekReq = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/qa/replay/seek?loop=11000"))
+                .uri(URI.create(baseUrl + "/qa/replay/seek?loop=11000"))
                 .POST(HttpRequest.BodyPublishers.noBody()).build();
             http.send(seekReq, HttpResponse.BodyHandlers.discarding());
 
@@ -344,13 +384,12 @@ class ReplayVisualizerIT {
 
     private static void waitForServer(int timeoutSeconds) throws Exception {
         var http = HttpClient.newHttpClient();
-        var req  = HttpRequest.newBuilder()
-            .uri(URI.create(BASE_URL + "/q/health/ready"))
-            .GET().build();
-
         long deadline = System.currentTimeMillis() + timeoutSeconds * 1000L;
         while (System.currentTimeMillis() < deadline) {
             try {
+                var req = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/q/health/ready"))
+                    .GET().build();
                 int status = http.send(req, HttpResponse.BodyHandlers.discarding()).statusCode();
                 if (status == 200) return;
             } catch (Exception ignored) {}
