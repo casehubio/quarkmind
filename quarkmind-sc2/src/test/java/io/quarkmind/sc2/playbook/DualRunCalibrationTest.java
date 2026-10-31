@@ -160,6 +160,7 @@ class DualRunCalibrationTest {
 
         for (int tick = 0; tick < durationTicks; tick++) {
             game.tick();
+            game.processDeferredResearchIntents();
             snapshots.add(CalibrationSnapshot.from(tick, game.snapshot()));
 
             int supplyUsed = game.snapshot().supplyUsed();
@@ -188,12 +189,13 @@ class DualRunCalibrationTest {
     }
 
     static CalibrationResult calibrate(String playbookResource, CalibrationBaseline baseline) {
-        String yaml = SC2PlaybookRunner.loadResource(playbookResource);
+        String   yaml = SC2PlaybookRunner.loadResource(playbookResource);
         JsonNode root;
-        try { root = YAML.readTree(yaml); }
-        catch (Exception e) { throw new RuntimeException("Failed to parse playbook", e); }
+        try {root = YAML.readTree(yaml);} catch (Exception e) {
+            throw new RuntimeException("Failed to parse playbook", e);
+        }
 
-        Race race = SC2PlaybookRunner.resolveRace(root);
+        Race                                 race  = SC2PlaybookRunner.resolveRace(root);
         List<SC2PlaybookRunner.PlaybookStep> steps = SC2PlaybookRunner.parseSteps(root);
 
         EmulatedGame game = new EmulatedGame();
@@ -201,37 +203,36 @@ class DualRunCalibrationTest {
         game.reset();
         SC2DeliveryHandler handler = new SC2DeliveryHandler(game);
 
-        boolean[] fired = new boolean[steps.size()];
-        int tickLimit = Math.min(baseline.tickCount(), baseline.snapshots().size());
+        boolean[] fired     = new boolean[steps.size()];
+        int       tickLimit = Math.min(baseline.tickCount(), baseline.snapshots().size());
 
         for (int tick = 0; tick < tickLimit; tick++) {
             game.tick();
+            game.processDeferredResearchIntents();
 
-            // Snapshot BEFORE playbook actions — matches SC2 adapter's observe-then-act pattern
             CalibrationSnapshot expected = baseline.snapshots().get(tick);
-            CalibrationSnapshot actual = CalibrationSnapshot.from(tick, game.snapshot());
+            CalibrationSnapshot actual   = CalibrationSnapshot.from(tick, game.snapshot());
 
             CalibrationResult divergence = compare(expected, actual);
-            if (divergence != null) return divergence;
+            if (divergence != null) {return divergence;}
 
             if (expected.minerals() != actual.minerals() || expected.vespene() != actual.vespene()) {
                 System.out.printf("  [econ] tick %d: minerals %d vs %d, vespene %d vs %d%n",
-                    tick, expected.minerals(), actual.minerals(),
-                    expected.vespene(), actual.vespene());
+                                  tick, expected.minerals(), actual.minerals(),
+                                  expected.vespene(), actual.vespene());
             }
 
-            // Fire playbook actions AFTER snapshot — effects visible next tick
             int supplyUsed = game.snapshot().supplyUsed();
             for (int i = 0; i < steps.size(); i++) {
                 SC2PlaybookRunner.PlaybookStep step = steps.get(i);
                 boolean canFire = step.shouldFire(tick, supplyUsed)
-                    && (!fired[i] || step.loop());
+                                  && (!fired[i] || step.loop());
                 if (canFire) {
                     Map<String, Object> data = new HashMap<>(step.params());
                     data.put("action", step.action());
                     var outcome = handler.execute(step.action() + "-" + tick, data, null);
                     if (step.supplyTrigger() > 0) {
-                        if (outcome.success()) fired[i] = true;
+                        if (outcome.success()) {fired[i] = true;}
                     } else {
                         fired[i] = true;
                     }

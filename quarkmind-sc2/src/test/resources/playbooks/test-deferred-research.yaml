@@ -1,0 +1,39 @@
+playbook: test-deferred-research
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 310 ticks
+
+steps:
+  - train: PROBE
+    loop: continuous
+
+  - build: PYLON
+    at: 14 supply
+
+  - build: ASSIMILATOR
+    at: 15 supply
+
+  - build: FORGE
+    at: 17 supply
+
+  - build: PYLON
+    at: 22 supply
+
+  - research: PROTOSS_GROUND_WEAPONS_1
+    at: 122 ticks
+
+  - build: PYLON
+    at: 30 supply
+
+  - build: PYLON
+    at: 38 supply
+
+  - build: PYLON
+    at: 46 supply
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      upgrades:
+        ProtossGroundWeaponsLevel1: true

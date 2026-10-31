@@ -56,6 +56,12 @@ class SC2PlaybookCalibrationTest {
     }
 
     @Test
+    void deferredResearchCompletesWithoutLoop() {
+        runner.execute("playbooks/test-deferred-research.yaml");
+    }
+
+
+    @Test
     void twoBaseProduction() {
         runner.execute("playbooks/two-base-production.yaml");
     }

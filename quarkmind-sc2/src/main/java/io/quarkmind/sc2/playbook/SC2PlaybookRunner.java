@@ -31,32 +31,34 @@ public class SC2PlaybookRunner {
     }
 
     public void execute(String resourcePath) {
-        String yaml = loadResource(resourcePath);
+        String   yaml = loadResource(resourcePath);
         JsonNode root;
-        try { root = YAML.readTree(yaml); }
-        catch (Exception e) { throw new RuntimeException("Failed to parse playbook YAML", e); }
+        try {root = YAML.readTree(yaml);} catch (Exception e) {
+            throw new RuntimeException("Failed to parse playbook YAML", e);
+        }
 
         Race race = resolveRace(root);
         game.setPlayerRaceModel(RaceModelFactory.forRace(race));
         game.reset();
 
-        List<PlaybookStep> steps = parseSteps(root);
-        int durationTicks = resolveDuration(root, steps);
-        boolean[] fired = new boolean[steps.size()];
+        List<PlaybookStep> steps         = parseSteps(root);
+        int                durationTicks = resolveDuration(root, steps);
+        boolean[]          fired         = new boolean[steps.size()];
 
         for (int tick = 0; tick < durationTicks; tick++) {
             game.tick();
+            game.processDeferredResearchIntents();
 
             int supplyUsed = (int) game.snapshot().supplyUsed();
             for (int i = 0; i < steps.size(); i++) {
-                PlaybookStep step = steps.get(i);
-                boolean canFire = step.shouldFire(tick, supplyUsed) && (!fired[i] || step.loop());
+                PlaybookStep step    = steps.get(i);
+                boolean      canFire = step.shouldFire(tick, supplyUsed) && (!fired[i] || step.loop());
                 if (canFire) {
                     Map<String, Object> data = new HashMap<>(step.params());
                     data.put("action", step.action());
                     var outcome = handler.execute(step.action() + "-" + tick, data, null);
                     if (step.supplyTrigger() > 0) {
-                        if (outcome.success()) fired[i] = true;
+                        if (outcome.success()) {fired[i] = true;}
                     } else {
                         fired[i] = true;
                     }

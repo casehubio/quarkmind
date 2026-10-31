@@ -22,7 +22,6 @@ steps:
 
   - research: PROTOSS_GROUND_WEAPONS_1
     at: 122 ticks
-    loop: continuous
 
   - build: PYLON
     at: 30 supply
