@@ -18,11 +18,14 @@ steps:
   - build: GATEWAY
     at: 16 supply
 
+  - build: NEXUS
+    at: 20 supply
+
   - build: PYLON
     at: 22 supply
 
   - build: GATEWAY
-    at: 24 supply
+    at: 26 supply
 
   - train: ZEALOT
     loop: continuous
@@ -42,22 +45,20 @@ steps:
   - build: PYLON
     at: 62 supply
 
-  - build: PYLON
-    at: 70 supply
-
   - assert: tick-183
     at: 183 ticks
     expect:
       units:
         PROBE: { min: 25 }
       buildings:
-        GATEWAY: { min: 2 }
+        GATEWAY: { min: 1 }
 
   - assert: tick-244
     at: 244 ticks
     expect:
-      units:
-        ZEALOT: { min: 1 }
+      buildings:
+        NEXUS: { min: 2 }
+        GATEWAY: { min: 2 }
 
   - assert: tick-305
     at: 305 ticks

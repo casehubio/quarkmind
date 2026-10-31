@@ -3,6 +3,7 @@ package io.quarkmind.sc2.playbook;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.sc2.emulated.EmulatedGame;
@@ -24,6 +25,8 @@ public class SC2PlaybookRunner {
 
     static final int TICKS_PER_MINUTE =
         (int) (60 * SC2Data.GAME_LOOPS_PER_SECOND / SC2Data.LOOPS_PER_TICK);
+    static final int RESERVATION_THRESHOLD = 350;
+
 
     public SC2PlaybookRunner(SC2DeliveryHandler handler, EmulatedGame game) {
         this.handler = handler;
@@ -50,9 +53,38 @@ public class SC2PlaybookRunner {
             game.processDeferredResearchIntents();
 
             int supplyUsed = (int) game.snapshot().supplyUsed();
+
+            int reservedMinerals  = 0;
+            int reservedStepIndex = -1;
+            for (int i = 0; i < steps.size(); i++) {
+                PlaybookStep step = steps.get(i);
+                if ("build".equals(step.action())
+                    && step.supplyTrigger() > 0
+                    && supplyUsed >= step.supplyTrigger()
+                    && !fired[i]) {
+                    BuildingType bt   = BuildingType.valueOf((String) step.params().get("build"));
+                    int          cost = SC2Data.mineralCost(bt);
+                    if (cost >= RESERVATION_THRESHOLD) {
+                        reservedMinerals  = cost;
+                        reservedStepIndex = i;
+                        break;
+                    }
+                }
+            }
+
             for (int i = 0; i < steps.size(); i++) {
                 PlaybookStep step    = steps.get(i);
                 boolean      canFire = step.shouldFire(tick, supplyUsed) && (!fired[i] || step.loop());
+                if (canFire && reservedMinerals > 0
+                    && game.snapshot().minerals() < reservedMinerals
+                    && i != reservedStepIndex) {
+                    if (step.loop() && "train".equals(step.action())) {
+                        continue;
+                    }
+                    if ("build".equals(step.action()) && step.supplyTrigger() > 0 && !fired[i]) {
+                        continue;
+                    }
+                }
                 if (canFire) {
                     Map<String, Object> data = new HashMap<>(step.params());
                     data.put("action", step.action());

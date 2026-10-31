@@ -3,7 +3,9 @@ package io.quarkmind.sc2.playbook;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.Race;
+import io.quarkmind.domain.SC2Data;
 import io.quarkmind.sc2.emulated.EmulatedGame;
 import io.quarkmind.sc2.emulated.RaceModelFactory;
 import org.junit.jupiter.api.Test;
@@ -164,9 +166,32 @@ class DualRunCalibrationTest {
             snapshots.add(CalibrationSnapshot.from(tick, game.snapshot()));
 
             int supplyUsed = game.snapshot().supplyUsed();
+
+            int reservedMinerals  = 0;
+            int reservedStepIndex = -1;
+            for (int i = 0; i < steps.size(); i++) {
+                SC2PlaybookRunner.PlaybookStep step = steps.get(i);
+                if ("build".equals(step.action()) && step.supplyTrigger() > 0
+                    && supplyUsed >= step.supplyTrigger() && !fired[i]) {
+                    BuildingType bt   = BuildingType.valueOf((String) step.params().get("build"));
+                    int          cost = SC2Data.mineralCost(bt);
+                    if (cost >= SC2PlaybookRunner.RESERVATION_THRESHOLD) {
+                        reservedMinerals  = cost;
+                        reservedStepIndex = i;
+                        break;
+                    }
+                }
+            }
+
             for (int i = 0; i < steps.size(); i++) {
                 SC2PlaybookRunner.PlaybookStep step    = steps.get(i);
                 boolean                        canFire = step.shouldFire(tick, supplyUsed) && (!fired[i] || step.loop());
+                if (canFire && reservedMinerals > 0
+                    && game.snapshot().minerals() < reservedMinerals
+                    && i != reservedStepIndex) {
+                    if (step.loop() && "train".equals(step.action())) {continue;}
+                    if ("build".equals(step.action()) && step.supplyTrigger() > 0 && !fired[i]) {continue;}
+                }
                 if (canFire) {
                     Map<String, Object> data = new HashMap<>(step.params());
                     data.put("action", step.action());
@@ -223,10 +248,33 @@ class DualRunCalibrationTest {
             }
 
             int supplyUsed = game.snapshot().supplyUsed();
+
+            int reservedMinerals  = 0;
+            int reservedStepIndex = -1;
+            for (int i = 0; i < steps.size(); i++) {
+                SC2PlaybookRunner.PlaybookStep step = steps.get(i);
+                if ("build".equals(step.action()) && step.supplyTrigger() > 0
+                    && supplyUsed >= step.supplyTrigger() && !fired[i]) {
+                    BuildingType bt   = BuildingType.valueOf((String) step.params().get("build"));
+                    int          cost = SC2Data.mineralCost(bt);
+                    if (cost >= SC2PlaybookRunner.RESERVATION_THRESHOLD) {
+                        reservedMinerals  = cost;
+                        reservedStepIndex = i;
+                        break;
+                    }
+                }
+            }
+
             for (int i = 0; i < steps.size(); i++) {
                 SC2PlaybookRunner.PlaybookStep step = steps.get(i);
                 boolean canFire = step.shouldFire(tick, supplyUsed)
                                   && (!fired[i] || step.loop());
+                if (canFire && reservedMinerals > 0
+                    && game.snapshot().minerals() < reservedMinerals
+                    && i != reservedStepIndex) {
+                    if (step.loop() && "train".equals(step.action())) {continue;}
+                    if ("build".equals(step.action()) && step.supplyTrigger() > 0 && !fired[i]) {continue;}
+                }
                 if (canFire) {
                     Map<String, Object> data = new HashMap<>(step.params());
                     data.put("action", step.action());

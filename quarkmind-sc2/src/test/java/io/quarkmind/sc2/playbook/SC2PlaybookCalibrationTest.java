@@ -60,6 +60,16 @@ class SC2PlaybookCalibrationTest {
         runner.execute("playbooks/test-deferred-research.yaml");
     }
 
+    @Test
+    void expansionWithContinuousTraining() {
+        runner.execute("playbooks/test-expansion-reservation.yaml");
+    }
+
+    @Test
+    void expansionWithoutChronoAndGateway() {
+        runner.execute("playbooks/test-expansion-no-chrono.yaml");
+    }
+
 
     @Test
     void twoBaseProduction() {
