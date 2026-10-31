@@ -1,0 +1,45 @@
+playbook: inject-larva
+schema: sc2
+meta:
+  race: ZERG
+  duration: 183 ticks
+
+steps:
+  - train: DRONE
+    loop: continuous
+
+  - train: OVERLORD
+    at: 13 supply
+
+  - train: QUEEN
+    at: 14 supply
+
+  - train: OVERLORD
+    at: 21 supply
+
+  - train: OVERLORD
+    at: 29 supply
+
+  - train: OVERLORD
+    at: 37 supply
+
+  - train: OVERLORD
+    at: 45 supply
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        DRONE: { min: 14 }
+
+  - assert: tick-122
+    at: 122 ticks
+    expect:
+      units:
+        DRONE: { min: 20 }
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      units:
+        DRONE: { min: 24 }

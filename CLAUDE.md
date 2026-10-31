@@ -317,14 +317,14 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - **Run after any change to `visualizer.js`, `GameState`, or the domain model**
 
 **Playbook calibration tests** (plain JUnit, economy validation):
-- `SC2PlaybookCalibrationTest` — runs economy-only playbooks for all 3 races against EmulatedGame; asserts Probe/SCV/Drone counts at tick checkpoints
+- `SC2PlaybookCalibrationTest` — runs economy-only and mechanic-specific playbooks (9 total) against EmulatedGame; asserts unit/building/upgrade counts at tick checkpoints
 - `SC2DeliveryHandlerTest` — unit tests for all 7 playbook actions (train/build/research/morph/ability/calldown/assert)
 - `ProtossRaceModelChronoTest`, `TerranRaceModelMuleTest`, `EmulatedGameChronoTest`, `ZergParallelTrainingTest` — race-specific ability and physics tests
 - Run with: `mvn test -pl quarkmind-sc2 -Dtest=SC2PlaybookCalibrationTest`
 
 **Dual-run calibration tests** (plain JUnit, tick-by-tick comparison with early exit):
 - `CalibrationBaselineTest` — CalibrationSnapshot, CalibrationBaseline, CalibrationResult records with JSON serialisation round-trip
-- `DualRunCalibrationTest` — loads recorded SC2 baseline JSON, runs same playbook against EmulatedGame, compares per-tick unit/building/upgrade counts with early exit on first divergence
+- `DualRunCalibrationTest` — loads recorded SC2 baseline JSON, runs same playbook against EmulatedGame, compares per-tick unit/building/upgrade counts with early exit on first divergence; includes self-baseline tests for all 9 playbooks
 - `PlaybookSC2RecorderTest` — `@Tag("sc2")`, excluded from default suite; drives real SC2 with a calibration playbook via `PlaybookSC2Adapter`, writes baseline JSON to `src/test/resources/calibration/`
 - Run offline calibration: `mvn test -pl quarkmind-sc2 -Dtest=DualRunCalibrationTest`
 - Record SC2 baseline (requires SC2): `mvn test -pl quarkmind-sc2 -Dtest=PlaybookSC2RecorderTest -Dquarkus.profile=sc2`

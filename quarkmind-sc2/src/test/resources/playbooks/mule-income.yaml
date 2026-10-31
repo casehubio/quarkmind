@@ -1,0 +1,44 @@
+playbook: mule-income
+schema: sc2
+meta:
+  race: TERRAN
+  duration: 183 ticks
+
+steps:
+  - train: SCV
+    loop: continuous
+
+  - build: SUPPLY_DEPOT
+    at: 14 supply
+
+  - build: SUPPLY_DEPOT
+    at: 21 supply
+
+  - morph: OrbitalCommand
+    source: COMMAND_CENTER
+    at: 22 supply
+
+  - calldown: MULE
+    loop: continuous
+
+  - build: SUPPLY_DEPOT
+    at: 27 supply
+
+  - build: SUPPLY_DEPOT
+    at: 33 supply
+
+  - assert: tick-122
+    at: 122 ticks
+    expect:
+      units:
+        SCV: { min: 20 }
+      buildings:
+        ORBITAL_COMMAND: { min: 1 }
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      units:
+        SCV: { min: 24 }
+      minerals:
+        min: 20

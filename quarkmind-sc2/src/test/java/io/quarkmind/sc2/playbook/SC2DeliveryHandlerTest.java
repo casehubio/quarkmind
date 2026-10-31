@@ -67,6 +67,36 @@ class SC2DeliveryHandlerTest {
     }
 
     @Test
+    void assertAction_buildingsMin_throwsWhenConditionFails() {
+        var expect = Map.<String, Object>of("buildings",
+                                            Map.of("GATEWAY", Map.of("min", 1)));
+        var data = Map.<String, Object>of("action", "assert", "expect", expect);
+        assertThatThrownBy(() -> handler.execute("assert-bld-0", data, null))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("GATEWAY");
+    }
+
+    @Test
+    void assertAction_buildingsMin_passesWhenConditionMet() {
+        var expect = Map.<String, Object>of("buildings",
+                                            Map.of("NEXUS", Map.of("min", 1)));
+        var data    = Map.<String, Object>of("action", "assert", "expect", expect);
+        var outcome = handler.execute("assert-bld-1", data, null);
+        assertThat(outcome.success()).isTrue();
+    }
+
+    @Test
+    void assertAction_upgrades_throwsWhenUpgradeMissing() {
+        var expect = Map.<String, Object>of("upgrades",
+                                            Map.of("WarpGateResearch", true));
+        var data = Map.<String, Object>of("action", "assert", "expect", expect);
+        assertThatThrownBy(() -> handler.execute("assert-upg-0", data, null))
+                .isInstanceOf(AssertionError.class)
+                .hasMessageContaining("WarpGateResearch");
+    }
+
+
+    @Test
     void unknownAction_fails() {
         var data = Map.<String, Object>of("action", "dance");
         var outcome = handler.execute("dance-0", data, null);

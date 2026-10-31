@@ -178,6 +178,32 @@ public class SC2DeliveryHandler implements DeliveryHandler {
             }
         }
 
+        if (expect.containsKey("buildings")) {
+            var buildingExpect = (Map<String, Map<String, Integer>>) expect.get("buildings");
+            for (var entry : buildingExpect.entrySet()) {
+                BuildingType bt = BuildingType.valueOf(entry.getKey());
+                int actual = (int) state.myBuildings().stream()
+                                        .filter(b -> b.type() == bt).count();
+                var bounds = entry.getValue();
+                if (bounds.containsKey("min") && actual < bounds.get("min")) {
+                    errors.add(bt + " expected >=" + bounds.get("min") + " but was " + actual);
+                }
+                if (bounds.containsKey("max") && actual > bounds.get("max")) {
+                    errors.add(bt + " expected <=" + bounds.get("max") + " but was " + actual);
+                }
+            }
+        }
+
+        if (expect.containsKey("upgrades")) {
+            var upgradeExpect = (Map<String, Object>) expect.get("upgrades");
+            for (var entry : upgradeExpect.entrySet()) {
+                boolean present = state.playerUpgrades().contains(entry.getKey());
+                if (!present) {
+                    errors.add("upgrade " + entry.getKey() + " expected but not researched");
+                }
+            }
+        }
+
         if (expect.containsKey("minerals")) {
             var mineralBounds = (Map<String, Integer>) expect.get("minerals");
             int actual        = (int) state.minerals();

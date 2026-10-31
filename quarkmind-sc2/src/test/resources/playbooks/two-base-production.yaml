@@ -1,0 +1,67 @@
+playbook: two-base-production
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 310 ticks
+
+steps:
+  - train: PROBE
+    loop: continuous
+
+  - ability: CHRONO_BOOST
+    target: NEXUS
+    loop: continuous
+
+  - build: PYLON
+    at: 14 supply
+
+  - build: GATEWAY
+    at: 16 supply
+
+  - build: PYLON
+    at: 22 supply
+
+  - build: GATEWAY
+    at: 24 supply
+
+  - train: ZEALOT
+    loop: continuous
+
+  - build: PYLON
+    at: 30 supply
+
+  - build: PYLON
+    at: 38 supply
+
+  - build: PYLON
+    at: 46 supply
+
+  - build: PYLON
+    at: 54 supply
+
+  - build: PYLON
+    at: 62 supply
+
+  - build: PYLON
+    at: 70 supply
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      units:
+        PROBE: { min: 25 }
+      buildings:
+        GATEWAY: { min: 2 }
+
+  - assert: tick-244
+    at: 244 ticks
+    expect:
+      units:
+        ZEALOT: { min: 1 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        PROBE: { min: 35 }
+        ZEALOT: { min: 2 }

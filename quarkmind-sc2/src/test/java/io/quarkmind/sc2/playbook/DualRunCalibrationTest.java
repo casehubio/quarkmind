@@ -15,7 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DualRunCalibrationTest {
 
@@ -103,6 +106,84 @@ class DualRunCalibrationTest {
 
         CalibrationResult result = calibrate("playbooks/economy-only-protoss.yaml", baseline);
 
+        assertTrue(result.passed(), "Self-baseline should always pass: " + result.report());
+    }
+
+    @Test
+    void selfBaselineChronoBoostEconomy() {
+        assertSelfBaseline("playbooks/chrono-boost-economy.yaml", Race.PROTOSS);
+    }
+
+    @Test
+    void selfBaselineMuleIncome() {
+        assertSelfBaseline("playbooks/mule-income.yaml", Race.TERRAN);
+    }
+
+    @Test
+    void selfBaselineInjectLarva() {
+        assertSelfBaseline("playbooks/inject-larva.yaml", Race.ZERG);
+    }
+
+    @Test
+    void selfBaselineGasSaturation() {
+        assertSelfBaseline("playbooks/gas-saturation.yaml", Race.PROTOSS);
+    }
+
+    @Test
+    void selfBaselineUpgradeResearch() {
+        assertSelfBaseline("playbooks/upgrade-research.yaml", Race.PROTOSS);
+    }
+
+    @Test
+    void selfBaselineTwoBaseProduction() {
+        assertSelfBaseline("playbooks/two-base-production.yaml", Race.PROTOSS);
+    }
+
+
+    private static void assertSelfBaseline(String playbookResource, Race race) {
+        String   yaml = SC2PlaybookRunner.loadResource(playbookResource);
+        JsonNode root;
+        try {root = YAML.readTree(yaml);} catch (Exception e) {
+            throw new RuntimeException("Failed to parse playbook", e);
+        }
+
+        List<SC2PlaybookRunner.PlaybookStep> steps         = SC2PlaybookRunner.parseSteps(root);
+        int                                  durationTicks = SC2PlaybookRunner.resolveDuration(root, steps);
+
+        EmulatedGame game = new EmulatedGame();
+        game.setPlayerRaceModel(RaceModelFactory.forRace(race));
+        game.reset();
+        SC2DeliveryHandler handler = new SC2DeliveryHandler(game);
+
+        List<CalibrationSnapshot> snapshots = new java.util.ArrayList<>();
+        boolean[]                 fired     = new boolean[steps.size()];
+
+        for (int tick = 0; tick < durationTicks; tick++) {
+            game.tick();
+            snapshots.add(CalibrationSnapshot.from(tick, game.snapshot()));
+
+            int supplyUsed = game.snapshot().supplyUsed();
+            for (int i = 0; i < steps.size(); i++) {
+                SC2PlaybookRunner.PlaybookStep step    = steps.get(i);
+                boolean                        canFire = step.shouldFire(tick, supplyUsed) && (!fired[i] || step.loop());
+                if (canFire) {
+                    Map<String, Object> data = new HashMap<>(step.params());
+                    data.put("action", step.action());
+                    var outcome = handler.execute(step.action() + "-" + tick, data, null);
+                    if (step.supplyTrigger() > 0) {
+                        if (outcome.success()) {fired[i] = true;}
+                    } else {
+                        fired[i] = true;
+                    }
+                }
+            }
+        }
+
+        CalibrationBaseline baseline = new CalibrationBaseline(
+                playbookResource, race.name(), "emulated-self", java.time.Instant.now().toString(),
+                durationTicks, snapshots);
+
+        CalibrationResult result = calibrate(playbookResource, baseline);
         assertTrue(result.passed(), "Self-baseline should always pass: " + result.report());
     }
 

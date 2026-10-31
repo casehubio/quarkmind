@@ -1,0 +1,48 @@
+playbook: gas-saturation
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 183 ticks
+
+steps:
+  - train: PROBE
+    loop: continuous
+
+  - build: PYLON
+    at: 14 supply
+
+  - build: ASSIMILATOR
+    at: 16 supply
+
+  - build: PYLON
+    at: 22 supply
+
+  - build: ASSIMILATOR
+    at: 22 supply
+
+  - build: PYLON
+    at: 30 supply
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        PROBE: { min: 15 }
+      buildings:
+        ASSIMILATOR: { min: 1 }
+
+  - assert: tick-122
+    at: 122 ticks
+    expect:
+      units:
+        PROBE: { min: 18 }
+      buildings:
+        ASSIMILATOR: { min: 2 }
+      vespene:
+        min: 80
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      vespene:
+        min: 150

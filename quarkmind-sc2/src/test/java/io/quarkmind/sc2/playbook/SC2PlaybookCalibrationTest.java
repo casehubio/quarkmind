@@ -29,4 +29,36 @@ class SC2PlaybookCalibrationTest {
     void economyOnlyZerg() {
         runner.execute("playbooks/economy-only-zerg.yaml");
     }
+
+    @Test
+    void chronoBoostEconomy() {
+        runner.execute("playbooks/chrono-boost-economy.yaml");
+    }
+
+    @Test
+    void muleIncome() {
+        runner.execute("playbooks/mule-income.yaml");
+    }
+
+    @Test
+    void injectLarva() {
+        runner.execute("playbooks/inject-larva.yaml");
+    }
+
+    @Test
+    void gasSaturation() {
+        runner.execute("playbooks/gas-saturation.yaml");
+    }
+
+    @Test
+    void upgradeResearch() {
+        runner.execute("playbooks/upgrade-research.yaml");
+    }
+
+    @Test
+    void twoBaseProduction() {
+        runner.execute("playbooks/two-base-production.yaml");
+    }
+
+
 }
