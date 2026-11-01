@@ -8,12 +8,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @Tag("sc2")
 class PlaybookSC2RecorderTest {
 
     @Test
     void recordProtossProbeEconomy() throws Exception {
+        assumeTrue(QuarkusSC2Transport.isSC2Available(),
+                "StarCraft II not installed — skipping live SC2 test");
         QuarkusSC2Transport transport = new QuarkusSC2Transport();
         transport.sc2Port = 8168;
         transport.mapName = "TorchesAIE_v4";
