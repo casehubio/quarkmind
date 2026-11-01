@@ -10,7 +10,10 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IntentExecutionListenerTest {
 
@@ -71,4 +74,5 @@ class IntentExecutionListenerTest {
             .findFirst().map(Building::tag).orElseThrow();
         assertDoesNotThrow(() -> game.applyIntent(new TrainIntent(nexusTag, UnitType.PROBE)));
     }
+
 }
