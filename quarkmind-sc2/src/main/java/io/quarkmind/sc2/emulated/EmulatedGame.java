@@ -396,16 +396,33 @@ public class EmulatedGame {
             }
         }
 
-        final String resolvedTag = building.tag();
+        String resolvedTag = building.tag();
         if (!autoResolved) {
             final BuildingType required = SC2Data.trainedBy(t.unitType());
             if (required != BuildingType.UNKNOWN && !SC2Data.canTrainFrom(building.type(), required)) {
-                log.debugf("[EMULATED] Train rejected — %s cannot train %s (needs %s)",
-                           building.type(), t.unitType(), required);
-                if (intentExecutionListener != null) {
-                    intentExecutionListener.onTrainOutcome((int) gameFrame, t, resolvedTag, false, "wrong_building_type");
+                if (buildingTag != null && buildingTag.startsWith("r-")) {
+                    Building correct = shortestQueue(state.buildings().stream()
+                            .filter(b -> b.isComplete() && SC2Data.canTrainFrom(b.type(), required))
+                            .toList(), physics);
+                    if (correct != null) {
+                        building = correct;
+                        resolvedTag = correct.tag();
+                        autoResolved = true;
+                        trackerDriven = true;
+                    } else {
+                        if (intentExecutionListener != null) {
+                            intentExecutionListener.onTrainOutcome((int) gameFrame, t, resolvedTag, false, "wrong_building_type");
+                        }
+                        return;
+                    }
+                } else {
+                    log.debugf("[EMULATED] Train rejected — %s cannot train %s (needs %s)",
+                            building.type(), t.unitType(), required);
+                    if (intentExecutionListener != null) {
+                        intentExecutionListener.onTrainOutcome((int) gameFrame, t, resolvedTag, false, "wrong_building_type");
+                    }
+                    return;
                 }
-                return;
             }
         }
 

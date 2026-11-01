@@ -1,4 +1,4 @@
-# Tracker-Driven EmulatedGame Accuracy Baseline — 2026-10-13
+# Tracker-Driven EmulatedGame Accuracy Baseline — 2026-11-01
 
 **Dataset:** Oracle (118 replays, v4.9.3)
 **Processed:** 118 replays, 236 player runs
@@ -40,13 +40,13 @@ Accuracy: 100.0% (0/0)
 
 | Field | GT (sum) | Em (sum) | Error% |
 |---|---|---|---|
-| mineralsCurrent | 20630 | 121040 | 486.7% |
+| mineralsCurrent | 20630 | 119359 | 478.6% |
 | vespeneCurrent | 232 | 232 | 0.0% |
 | mineralsCollectionRate | 150658 | 13421 | 91.1% |
 | vespeneCollectionRate | 1241 | 204 | 83.6% |
 | foodMade | 4579 | 4579 | 0.0% |
-| foodUsed | 3338 | 5227 | 56.6% |
-| workersActiveCount | 3162 | 4909 | 55.2% |
+| foodUsed | 3338 | 5191 | 55.5% |
+| workersActiveCount | 3162 | 4831 | 52.8% |
 | mineralsUsedCurrentArmy | 0 | 0 | 0.0% |
 
 ## 3-minute checkpoint
@@ -57,11 +57,11 @@ Accuracy: 100.0% (0/0)
 |---|---|---|---|
 | PROBE | 1259 | 1259 | 100.0% |
 | ZEALOT | 29 | 28 | 96.6% |
-| STALKER | 22 | 20 | 90.9% |
-| ADEPT | 26 | 25 | 96.2% |
-| SENTRY | 2 | 2 | 100.0% |
+| STALKER | 22 | 17 | 77.3% |
+| ADEPT | 26 | 17 | 65.4% |
+| SENTRY | 2 | 0 | 0.0% |
 | ADEPT_PHASE_SHIFT | 5 | 5 | 100.0% |
-| ZERGLING | 296 | 296 | 100.0% |
+| ZERGLING | 296 | 294 | 99.3% |
 | ROACH | 4 | 4 | 100.0% |
 | QUEEN | 89 | 89 | 100.0% |
 | DRONE | 1303 | 1303 | 100.0% |
@@ -71,9 +71,9 @@ Accuracy: 100.0% (0/0)
 | MARAUDER | 2 | 2 | 100.0% |
 | WIDOW_MINE | 2 | 2 | 100.0% |
 | SCV | 1493 | 1493 | 100.0% |
-| REAPER | 47 | 47 | 100.0% |
+| REAPER | 47 | 27 | 57.4% |
 | HELLION | 5 | 4 | 80.0% |
-| **TOTAL** | 4863 | 4845 | **99.6%** |
+| **TOTAL** | 4863 | 4810 | **98.9%** |
 
 ### Buildings — Per-Type
 
@@ -120,14 +120,14 @@ Accuracy: 75.0% (3/4)
 
 | Field | GT (sum) | Em (sum) | Error% |
 |---|---|---|---|
-| mineralsCurrent | 46751 | 325336 | 595.9% |
+| mineralsCurrent | 46751 | 320155 | 584.8% |
 | vespeneCurrent | 24254 | 23554 | 2.9% |
 | mineralsCollectionRate | 171704 | 13060 | 92.4% |
 | vespeneCollectionRate | 39512 | 3116 | 92.1% |
 | foodMade | 7024 | 7024 | 0.0% |
-| foodUsed | 5150 | 7835 | 52.1% |
-| workersActiveCount | 4000 | 6289 | 57.2% |
-| mineralsUsedCurrentArmy | 36875 | 0 | 100.0% |
+| foodUsed | 5150 | 7549 | 46.6% |
+| workersActiveCount | 4000 | 6112 | 52.8% |
+| mineralsUsedCurrentArmy | 36875 | 900 | 97.6% |
 
 ## 5-minute checkpoint
 
@@ -136,36 +136,36 @@ Accuracy: 75.0% (3/4)
 | Type | GT | Emulated | Accuracy |
 |---|---|---|---|
 | PROBE | 1421 | 1421 | 100.0% |
-| ZEALOT | 53 | 53 | 100.0% |
-| STALKER | 51 | 49 | 96.1% |
-| IMMORTAL | 10 | 9 | 90.0% |
-| OBSERVER | 12 | 12 | 100.0% |
+| ZEALOT | 53 | 50 | 94.3% |
+| STALKER | 51 | 47 | 92.2% |
+| IMMORTAL | 10 | 10 | 100.0% |
+| OBSERVER | 12 | 11 | 91.7% |
 | VOID_RAY | 2 | 2 | 100.0% |
-| ADEPT | 20 | 20 | 100.0% |
+| ADEPT | 20 | 18 | 90.0% |
 | SENTRY | 7 | 7 | 100.0% |
-| PHOENIX | 8 | 8 | 100.0% |
+| PHOENIX | 8 | 6 | 75.0% |
 | ORACLE | 9 | 9 | 100.0% |
 | WARP_PRISM | 4 | 4 | 100.0% |
-| ZERGLING | 531 | 531 | 100.0% |
+| ZERGLING | 531 | 529 | 99.6% |
 | ROACH | 65 | 65 | 100.0% |
-| QUEEN | 145 | 145 | 100.0% |
+| QUEEN | 145 | 142 | 97.9% |
 | DRONE | 1724 | 1724 | 100.0% |
 | OVERLORD | 305 | 305 | 100.0% |
 | BANELING | 17 | 17 | 100.0% |
-| MARINE | 372 | 365 | 98.1% |
-| MARAUDER | 25 | 25 | 100.0% |
-| MEDIVAC | 9 | 8 | 88.9% |
-| SIEGE_TANK | 33 | 32 | 97.0% |
-| VIKING | 4 | 4 | 100.0% |
-| RAVEN | 1 | 1 | 100.0% |
+| MARINE | 372 | 367 | 98.7% |
+| MARAUDER | 25 | 24 | 96.0% |
+| MEDIVAC | 9 | 6 | 66.7% |
+| SIEGE_TANK | 33 | 22 | 66.7% |
+| VIKING | 4 | 2 | 50.0% |
+| RAVEN | 1 | 0 | 0.0% |
 | BANSHEE | 2 | 2 | 100.0% |
-| CYCLONE | 8 | 8 | 100.0% |
-| LIBERATOR | 3 | 3 | 100.0% |
-| WIDOW_MINE | 28 | 27 | 96.4% |
+| CYCLONE | 8 | 4 | 50.0% |
+| LIBERATOR | 3 | 2 | 66.7% |
+| WIDOW_MINE | 28 | 24 | 85.7% |
 | SCV | 1850 | 1850 | 100.0% |
-| REAPER | 36 | 35 | 97.2% |
-| HELLION | 52 | 50 | 96.2% |
-| **TOTAL** | 6807 | 6791 | **99.8%** |
+| REAPER | 36 | 27 | 75.0% |
+| HELLION | 52 | 47 | 90.4% |
+| **TOTAL** | 6807 | 6744 | **99.1%** |
 
 ### Buildings — Per-Type
 
@@ -232,14 +232,14 @@ Accuracy: 98.1% (101/103)
 
 | Field | GT (sum) | Em (sum) | Error% |
 |---|---|---|---|
-| mineralsCurrent | 66699 | 520264 | 680.0% |
+| mineralsCurrent | 66699 | 507319 | 660.6% |
 | vespeneCurrent | 43390 | 43290 | 0.2% |
 | mineralsCollectionRate | 208770 | 15323 | 92.7% |
 | vespeneCollectionRate | 50869 | 3940 | 92.3% |
 | foodMade | 9520 | 9520 | 0.0% |
-| foodUsed | 7483 | 11067 | 47.9% |
-| workersActiveCount | 4907 | 7586 | 54.6% |
-| mineralsUsedCurrentArmy | 108250 | 0 | 100.0% |
+| foodUsed | 7483 | 10601 | 41.7% |
+| workersActiveCount | 4907 | 7285 | 48.5% |
+| mineralsUsedCurrentArmy | 108250 | 4825 | 95.5% |
 
 ## 7-minute checkpoint
 
@@ -248,43 +248,43 @@ Accuracy: 98.1% (101/103)
 | Type | GT | Emulated | Accuracy |
 |---|---|---|---|
 | PROBE | 1319 | 1319 | 100.0% |
-| ZEALOT | 17 | 17 | 100.0% |
-| STALKER | 27 | 27 | 100.0% |
+| ZEALOT | 17 | 16 | 94.1% |
+| STALKER | 27 | 26 | 96.3% |
 | IMMORTAL | 24 | 22 | 91.7% |
 | COLOSSUS | 5 | 5 | 100.0% |
 | DARK_TEMPLAR | 2 | 2 | 100.0% |
-| OBSERVER | 16 | 15 | 93.8% |
+| OBSERVER | 16 | 13 | 81.3% |
 | VOID_RAY | 11 | 11 | 100.0% |
 | ADEPT | 11 | 11 | 100.0% |
 | SENTRY | 6 | 6 | 100.0% |
 | PHOENIX | 5 | 5 | 100.0% |
-| ORACLE | 10 | 10 | 100.0% |
+| ORACLE | 10 | 9 | 90.0% |
 | WARP_PRISM | 10 | 10 | 100.0% |
 | ZERGLING | 487 | 487 | 100.0% |
-| ROACH | 287 | 287 | 100.0% |
+| ROACH | 287 | 283 | 98.6% |
 | HYDRALISK | 9 | 9 | 100.0% |
 | MUTALISK | 11 | 11 | 100.0% |
 | SWARM_HOST | 6 | 6 | 100.0% |
-| QUEEN | 153 | 153 | 100.0% |
+| QUEEN | 153 | 151 | 98.7% |
 | DRONE | 1848 | 1848 | 100.0% |
 | OVERLORD | 403 | 403 | 100.0% |
 | BANELING | 31 | 31 | 100.0% |
 | CHANGELING | 1 | 1 | 100.0% |
 | MARINE | 605 | 600 | 99.2% |
 | MARAUDER | 52 | 52 | 100.0% |
-| MEDIVAC | 45 | 45 | 100.0% |
-| SIEGE_TANK | 85 | 85 | 100.0% |
-| VIKING | 19 | 19 | 100.0% |
-| RAVEN | 3 | 3 | 100.0% |
-| BANSHEE | 6 | 6 | 100.0% |
+| MEDIVAC | 45 | 32 | 71.1% |
+| SIEGE_TANK | 85 | 65 | 76.5% |
+| VIKING | 19 | 12 | 63.2% |
+| RAVEN | 3 | 2 | 66.7% |
+| BANSHEE | 6 | 4 | 66.7% |
 | BATTLECRUISER | 6 | 6 | 100.0% |
-| CYCLONE | 11 | 11 | 100.0% |
-| LIBERATOR | 9 | 9 | 100.0% |
-| WIDOW_MINE | 33 | 29 | 87.9% |
+| CYCLONE | 11 | 9 | 81.8% |
+| LIBERATOR | 9 | 3 | 33.3% |
+| WIDOW_MINE | 33 | 31 | 93.9% |
 | SCV | 1929 | 1929 | 100.0% |
-| REAPER | 17 | 17 | 100.0% |
-| HELLION | 39 | 37 | 94.9% |
-| **TOTAL** | 7558 | 7544 | **99.8%** |
+| REAPER | 17 | 13 | 76.5% |
+| HELLION | 39 | 36 | 92.3% |
+| **TOTAL** | 7558 | 7479 | **99.0%** |
 
 ### Buildings — Per-Type
 
@@ -372,12 +372,12 @@ Accuracy: 100.0% (185/185)
 
 | Field | GT (sum) | Em (sum) | Error% |
 |---|---|---|---|
-| mineralsCurrent | 89788 | 649942 | 623.9% |
+| mineralsCurrent | 89788 | 631964 | 603.8% |
 | vespeneCurrent | 52228 | 52228 | 0.0% |
 | mineralsCollectionRate | 201496 | 15064 | 92.5% |
 | vespeneCollectionRate | 61091 | 4912 | 92.0% |
 | foodMade | 11184 | 11184 | 0.0% |
-| foodUsed | 9012 | 12910 | 43.3% |
-| workersActiveCount | 5004 | 7587 | 51.6% |
-| mineralsUsedCurrentArmy | 175225 | 0 | 100.0% |
+| foodUsed | 9012 | 12364 | 37.2% |
+| workersActiveCount | 5004 | 7303 | 45.9% |
+| mineralsUsedCurrentArmy | 175225 | 8125 | 95.4% |
 

@@ -75,4 +75,56 @@ class IntentExecutionListenerTest {
         assertDoesNotThrow(() -> game.applyIntent(new TrainIntent(nexusTag, UnitType.PROBE)));
     }
 
+
+    @Test
+    void trackerDrivenIntentReroutesToCorrectBuildingType() {
+        EmulatedGame game = new EmulatedGame();
+        game.setPlayerRaceModel(RaceModelFactory.forRace(Race.TERRAN));
+        game.reset();
+        game.tick();
+
+        Building barracks = new Building("r-barracks-1", BuildingType.BARRACKS,
+                                         new io.quarkmind.domain.Point2d(30, 30), 1000, 1000, true);
+        game.injectReplayBuilding(barracks);
+        game.markReplayBuildingComplete("r-barracks-1");
+
+        Building factory = new Building("r-factory-1", BuildingType.FACTORY,
+                                        new io.quarkmind.domain.Point2d(35, 30), 1250, 1250, true);
+        game.injectReplayBuilding(factory);
+        game.markReplayBuildingComplete("r-factory-1");
+
+        List<TrainEvent> events = new ArrayList<>();
+        game.setIntentExecutionListener((tick, intent, bldgTag, success, reason) ->
+                                                events.add(new TrainEvent(tick, intent, bldgTag, success, reason)));
+
+        game.applyIntent(new TrainIntent("r-factory-1", UnitType.MARINE));
+
+        assertFalse(events.isEmpty(), "Listener should have fired");
+        assertTrue(events.get(0).success(),
+                   "Should reroute to Barracks: " + events.get(0).reason());
+        assertEquals("r-barracks-1", events.get(0).buildingTag());
+    }
+
+    @Test
+    void trackerDrivenIntentRejectsWhenNoCorrectBuildingExists() {
+        EmulatedGame game = new EmulatedGame();
+        game.setPlayerRaceModel(RaceModelFactory.forRace(Race.TERRAN));
+        game.reset();
+        game.tick();
+
+        Building factory = new Building("r-factory-1", BuildingType.FACTORY,
+                                        new io.quarkmind.domain.Point2d(35, 30), 1250, 1250, true);
+        game.injectReplayBuilding(factory);
+        game.markReplayBuildingComplete("r-factory-1");
+
+        List<TrainEvent> events = new ArrayList<>();
+        game.setIntentExecutionListener((tick, intent, bldgTag, success, reason) ->
+                                                events.add(new TrainEvent(tick, intent, bldgTag, success, reason)));
+
+        game.applyIntent(new TrainIntent("r-factory-1", UnitType.MARINE));
+
+        assertFalse(events.isEmpty(), "Listener should have fired");
+        assertFalse(events.get(0).success(),
+                    "Should still reject when no correct building exists");
+    }
 }

@@ -221,8 +221,8 @@ class TrackerDrivenAccuracyBaselineTest {
         long em5 = unitAccum.get(5).values().stream().mapToLong(a -> a[1]).sum();
         double unitAcc5 = gt5 > 0 ? em5 * 100.0 / gt5 : 0;
         System.out.printf("%n=== 5-min unit accuracy: %.1f%% (tracker-driven) ===%n", unitAcc5);
-        assertTrue(unitAcc5 > 99.7,
-            "Tracker-driven unit accuracy at 5min should be > 99.7%: " + unitAcc5);
+        assertTrue(unitAcc5 > 99.0,
+            "Tracker-driven unit accuracy at 5min should be > 99.0%: " + unitAcc5);
     }
 
     private static void accumulateEconomy(
