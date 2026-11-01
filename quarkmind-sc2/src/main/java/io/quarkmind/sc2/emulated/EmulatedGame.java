@@ -388,6 +388,9 @@ public class EmulatedGame {
             }
             if (building == null) {
                 recordTrainDiagnostic(t, 2); // building_not_found
+                if (intentExecutionListener != null) {
+                    intentExecutionListener.onTrainOutcome((int) gameFrame, t, null, false, "building_not_found");
+                }
                 deferIntent(t, state, physics);
                 return;
             }
@@ -399,6 +402,9 @@ public class EmulatedGame {
             if (required != BuildingType.UNKNOWN && !SC2Data.canTrainFrom(building.type(), required)) {
                 log.debugf("[EMULATED] Train rejected — %s cannot train %s (needs %s)",
                            building.type(), t.unitType(), required);
+                if (intentExecutionListener != null) {
+                    intentExecutionListener.onTrainOutcome((int) gameFrame, t, resolvedTag, false, "wrong_building_type");
+                }
                 return;
             }
         }
@@ -414,6 +420,9 @@ public class EmulatedGame {
                 final PlayerStateView view = state;
                 if (model.canProduce(view, resolvedTag, t.unitType()) == ProductionDecision.BLOCKED) {
                     recordTrainDiagnostic(t, 3);
+                    if (intentExecutionListener != null) {
+                        intentExecutionListener.onTrainOutcome((int) gameFrame, t, resolvedTag, false, "production_blocked");
+                    }
                     return;
                 }
             }
@@ -427,6 +436,9 @@ public class EmulatedGame {
             if ((int) state.minerals() < mCost || state.vespene() < gCost
                 || state.supplyUsed() + queuedSupply + sCost > state.supply()) {
                 recordTrainDiagnostic(t, 4);
+                if (intentExecutionListener != null) {
+                    intentExecutionListener.onTrainOutcome((int) gameFrame, t, resolvedTag, false, "insufficient_resources");
+                }
                 return;
             }
 
@@ -445,6 +457,9 @@ public class EmulatedGame {
         final int queueLimit = autoResolved ? 20 : 5;
         if (!parallel && total >= queueLimit) {
             recordTrainDiagnostic(t, 5); // queue_full
+            if (intentExecutionListener != null) {
+                intentExecutionListener.onTrainOutcome((int) gameFrame, t, resolvedTag, false, "queue_full");
+            }
             if (autoResolved) {deferIntent(t, state, physics);}
             return;
         }
@@ -454,6 +469,9 @@ public class EmulatedGame {
         }
 
         recordTrainDiagnostic(t, 1); // trained
+        if (intentExecutionListener != null) {
+            intentExecutionListener.onTrainOutcome((int) gameFrame, t, resolvedTag, true, null);
+        }
         int maxConcurrent = reactored ? 2 : 1;
         if (autoResolved && !reactored && activeSlots == 1) {
             long prevStartLoop = physics.buildingCompletionAtLoop.getOrDefault(resolvedTag, 0L)
@@ -487,6 +505,12 @@ public class EmulatedGame {
 
     public Map<UnitType, int[]> trackerTrainDiagnostics() {
         return Collections.unmodifiableMap(trackerTrainDiagnostics);
+    }
+
+    private IntentExecutionListener intentExecutionListener;
+
+    public void setIntentExecutionListener(IntentExecutionListener listener) {
+        this.intentExecutionListener = listener;
     }
 
 
