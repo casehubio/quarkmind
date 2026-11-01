@@ -139,13 +139,31 @@ The JSON files in each dataset contain the full event stream. Key fields:
 
 ---
 
-## TODO — Additional Datasets to Download
+## Dataset 8: SC2EGSet Full Collection (2016–2024)
 
-| Dataset | Source | Priority | Why |
-|---|---|---|---|
-| SC2EGSet 2022 DH Masters Atlanta | Zenodo (662 MB) | Medium | More recent LotV meta, larger variety |
-| SC2EGSet 2019 WCS Summer | Zenodo (265 MB) | Low | More variety but older meta |
-| Any local SC2 replays | `~/Documents/StarCraft II/...` | — | None found on this machine yet |
+**Source:** [SC2EGSet v2.0.0 on Zenodo](https://zenodo.org/records/14963484) (CC BY 4.0)
+**Downloaded:** Complete — all 71 tournament ZIPs present
+**Local path:** `../quarkmind-classifier/data/sc2egset/`
+**Format:** Nested ZIP → `*_data.zip` → `<hash>.SC2Replay.json`
+**Total tournaments:** 71 (2016 IEM 10 Taipei through 2024 StaraZagora BellumGens Elite)
+**Total replays:** ~17,930
+**Total size:** 18 GB (ZIPs + extracted directories)
+**Processed:** 234 NPZ training files via `sc2egset_extractor.py`
+**Coverage:** 9 years × 71 tournaments × all matchups — the most comprehensive SC2 tournament dataset available
+
+### Year breakdown
+
+| Year | Tournaments |
+|------|-------------|
+| 2016 | 3 (IEM 10, IEM 11, WCS Winter) |
+| 2017 | 10 (HSC XV-XVI, IEM Shanghai/Katowice, WCS Austin/Global/Jonkoping/Montreal, WESG Barcelona/Haikou) |
+| 2018 | 11 (HSC XVII-XVIII, IEM Katowice/PyeongChang, WCS Austin/Global/Leipzig/Montreal/Valencia, Cheeseadelphia 8, WESG Grand Finals) |
+| 2019 | 9 (HSC XIX-XX, IEM Katowice, WCS Fall/Grand/Spring/Summer/Winter, Assembly Summer) |
+| 2020 | 10 (DH Fall/Summer/Winter/Last Chance, IEM Katowice, ASUS ROG, SAHSC 1-2, TSL 5-6) |
+| 2021 | 10 (DH Fall/Summer/Winter, IEM Katowice, ASUS ROG Fall, SAHSC 3-4, TSL 7-8, Cheeseadelphia Winter) |
+| 2022 | 7 (DH Atlanta/Valencia/Last Chance, HSC XXI-XXII, IEM Katowice, TSL 9) |
+| 2023 | 5 (ESL Summer/Winter, IEM Katowice, HSC XXIV, Gamers8) |
+| 2024 | 6 (IEM Katowice, ESL Spring, EWC, HSC XXV-XXVI, StaraZagora BellumGens) |
 
 ## Notes
 
