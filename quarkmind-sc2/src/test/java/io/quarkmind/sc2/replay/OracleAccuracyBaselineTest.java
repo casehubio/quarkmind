@@ -3,11 +3,11 @@ package io.quarkmind.sc2.replay;
 import hu.scelight.sc2.rep.factory.RepContent;
 import hu.scelight.sc2.rep.factory.RepParserEngine;
 import hu.scelight.sc2.rep.model.Replay;
+import hu.scelight.sc2.rep.s2prot.Event;
 import hu.scelightapi.sc2.rep.model.trackerevents.IBaseUnitEvent;
 import hu.scelightapi.sc2.rep.model.trackerevents.IPlayerStatsEvent;
 import hu.scelightapi.sc2.rep.model.trackerevents.ITrackerEvents;
 import hu.scelightapi.sc2.rep.model.trackerevents.IUpgradeEvent;
-import hu.scelight.sc2.rep.s2prot.Event;
 import io.quarkmind.domain.BuildingType;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -120,6 +120,37 @@ class OracleAccuracyBaselineTest {
         printReport(stats);
         writeMarkdownReport(stats);
     }
+
+    @Test
+    @EnabledIf("oracleAndOriginalsExist")
+    void oracleAccuracyCalibratedBaseline() throws Exception {
+        java.nio.file.Path factorPath = java.nio.file.Path.of("src/main/resources/calibration/multiplication-factors.json");
+        org.junit.jupiter.api.Assumptions.assumeTrue(Files.exists(factorPath),
+                                                     "No calibration factors file found");
+
+        var factors   = StrippedReplayFeatureExtractor.loadFactorsFromJson(factorPath);
+        var extractor = new StrippedReplayFeatureExtractor();
+        extractor.setCalibrationFactors(factors);
+        var stats = new BaselineStats();
+
+        List<Path> oracleReplays;
+        try (var stream = Files.list(ORACLE_DIR)) {
+            oracleReplays = stream
+                                    .filter(p -> p.toString().endsWith(".SC2Replay"))
+                                    .sorted()
+                                    .toList();
+        }
+
+        for (Path oracleReplay : oracleReplays) {
+            Path stripped = STRIPPED_DIR.resolve(oracleReplay.getFileName());
+            if (!Files.exists(stripped)) {continue;}
+            processReplay(extractor, oracleReplay, stripped, stats);
+        }
+
+        System.out.println("\n=== CALIBRATED BASELINE ===");
+        printReport(stats);
+    }
+
 
     private void processReplay(StrippedReplayFeatureExtractor extractor,
                                Path oracleReplay, Path strippedReplay,

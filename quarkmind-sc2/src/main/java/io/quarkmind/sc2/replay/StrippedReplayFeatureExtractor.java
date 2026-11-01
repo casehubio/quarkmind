@@ -13,6 +13,7 @@ import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.UpgradeType;
+import io.quarkmind.sc2.intent.MuleCalldownIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
 
@@ -141,6 +142,43 @@ public class StrippedReplayFeatureExtractor {
     );
 
     private static final int MAX_MULTIPLICATION = 4;
+    private              Map<UnitType, Double> calibrationFactors;
+
+    public void setCalibrationFactors(Map<UnitType, Double> factors) {
+        this.calibrationFactors = factors;
+    }
+
+    public Map<UnitType, Double> getCalibrationFactors() {
+        return calibrationFactors;
+    }
+
+    private static final Map<String, UnitType> PYTHON_NAME_TO_UNIT_TYPE;
+
+    static {
+        var map = new HashMap<String, UnitType>();
+        for (var entry : UNIT_PYTHON_NAMES.entrySet()) {
+            map.put(entry.getValue(), entry.getKey());
+        }
+        PYTHON_NAME_TO_UNIT_TYPE = Map.copyOf(map);
+    }
+
+    public static Map<UnitType, Double> loadFactorsFromJson(java.nio.file.Path jsonPath) throws java.io.IOException {
+        var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        @SuppressWarnings("unchecked")
+        var json = mapper.readValue(jsonPath.toFile(), Map.class);
+        @SuppressWarnings("unchecked")
+        var rawFactors = (Map<String, Number>) json.get("factors");
+        if (rawFactors == null) {return Map.of();}
+
+        var factors = new EnumMap<UnitType, Double>(UnitType.class);
+        for (var entry : rawFactors.entrySet()) {
+            UnitType ut = PYTHON_NAME_TO_UNIT_TYPE.get(entry.getKey());
+            if (ut != null) {
+                factors.put(ut, entry.getValue().doubleValue());
+            }
+        }
+        return factors;
+    }
 
 
     private static final Map<String, Integer> BUILDING_TO_ABIL_LINK = Map.ofEntries(
@@ -200,7 +238,16 @@ public class StrippedReplayFeatureExtractor {
                         switch (rc) {
                             case ReplayCommand.IntentCommand ic -> {
                                 TimedIntent ti = ic.intent();
-                                if (ti.intent() instanceof TrainIntent train) {
+                                if (ti.intent() instanceof MuleCalldownIntent) {
+                                    int tag = tagCounter++;
+                                    syntheticEvents.add(new SyntheticEvent(ti.loop(), EventOrdinal.UNIT_BORN, playerId,
+                                            Map.of("evtTypeName", "UnitBorn",
+                                                   "loop", ti.loop(),
+                                                   "controlPlayerId", playerId,
+                                                   "unitTypeName", "MULE",
+                                                   "unitTagIndex", tag,
+                                                   "unitTagRecycle", 0)));
+                                } else if (ti.intent() instanceof TrainIntent train) {
                                     Integer abilLink = cmd.getAbilLink();
                                     boolean isWarpIn = abilLink != null && abilLink == ABIL_WARPGATE_WARPIN
                                         && GATEWAY_UNITS.contains(train.unitType());
@@ -725,7 +772,17 @@ public class StrippedReplayFeatureExtractor {
         List<SyntheticEvent> events = new ArrayList<>();
         var                  state  = new PlayerState();
         state.warpGateCompletionLoop = warpGateCompletionLoop;
-        handleTrain(train, commandLoop, playerId, state, events, startTag);
+        int repeatCount = 1;
+        if (!TECHLAB_UNITS.contains(train.unitType())
+            && calibrationFactors != null
+            && calibrationFactors.containsKey(train.unitType())) {
+            double target = repeatCount * calibrationFactors.get(train.unitType());
+            repeatCount = Math.max(1, (int) target);
+        }
+        int tagCounter = startTag;
+        for (int r = 0; r < repeatCount; r++) {
+            tagCounter = handleTrain(train, commandLoop, playerId, state, events, tagCounter);
+        }
         return events.stream().map(SyntheticEvent::data).toList();
     }
 
@@ -1183,6 +1240,8 @@ public class StrippedReplayFeatureExtractor {
         final List<TrackedBuilding> trackedBuildings = new ArrayList<>();
         final Map<Integer, Integer> productionBuildingCounts = new HashMap<>();
         final Map<Integer, List<Long>> productionBuildingPool = new HashMap<>();
+        final Map<UnitType, Double>    calibrationRemainder   = new EnumMap<>(UnitType.class);
+
 
         long warpGateCompletionLoop = -1;
         final List<Long> larvaConsumptionLoops = new ArrayList<>();

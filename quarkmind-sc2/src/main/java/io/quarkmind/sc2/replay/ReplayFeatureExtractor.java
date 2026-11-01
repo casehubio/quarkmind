@@ -1,5 +1,6 @@
 package io.quarkmind.sc2.replay;
 
+import io.quarkmind.domain.UnitType;
 import hu.scelight.sc2.rep.factory.RepContent;
 import hu.scelight.sc2.rep.factory.RepParserEngine;
 import hu.scelight.sc2.rep.model.Replay;
@@ -26,4 +27,9 @@ public class ReplayFeatureExtractor {
 
         return strippedExtractor.extract(replayPath);
     }
+
+    public void setCalibrationFactors(Map<UnitType, Double> factors) {
+        strippedExtractor.setCalibrationFactors(factors);
+    }
+
 }
