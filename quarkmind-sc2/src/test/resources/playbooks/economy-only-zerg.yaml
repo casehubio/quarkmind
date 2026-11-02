@@ -21,19 +21,19 @@ steps:
     at: 26 supply
 
   - train: OVERLORD
-    at: 29 supply
+    at: 27 supply
 
   - train: OVERLORD
-    at: 37 supply
+    at: 35 supply
 
   - train: OVERLORD
-    at: 45 supply
+    at: 43 supply
 
   - train: OVERLORD
-    at: 53 supply
+    at: 51 supply
 
   - train: OVERLORD
-    at: 61 supply
+    at: 59 supply
 
   - train: DRONE
     loop: continuous

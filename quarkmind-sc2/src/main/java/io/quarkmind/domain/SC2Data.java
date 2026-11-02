@@ -33,12 +33,13 @@ public final class SC2Data {
     /**
      * Per-probe mineral income per outer tick for each saturation tier.
      * Index = tier (0-based). Length = max effective workers per patch.
-     * Swap or extend to adapt to a different RTS economy.
+     * Calibrated from 118 oracle replays at 5-min checkpoint (×1.554 vs uncalibrated).
+     * Observation count: 168 player runs.
      */
     public static final double[] MINERAL_TIER_RATES_PER_TICK = {
-        50.0 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // first worker per patch  (~0.818 min/tick)
-        25.0 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // second worker per patch (~0.409 min/tick)
-         5.0 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // third worker per patch  (~0.082 min/tick)
+            77.7 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // first worker per patch  (~1.272 min/tick)
+            38.8 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // second worker per patch (~0.635 min/tick)
+            7.8 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // third worker per patch  (~0.128 min/tick)
     };
 
     /**
@@ -66,10 +67,15 @@ public final class SC2Data {
 
     public static final int GAS_WORKERS_PER_BUILDING = 3;
 
+    /**
+     * Per-worker gas income per outer tick for each worker slot.
+     * Calibrated from 118 oracle replays at 5-min checkpoint (×1.441 vs uncalibrated).
+     * Observation count: 168 player runs.
+     */
     public static final double[] GAS_TIER_RATES_PER_TICK = {
-            38.0 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // worker 1  (~0.622 gas/tick)
-            38.0 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // worker 2  (~0.622 gas/tick)
-            20.0 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // worker 3  (~0.327 gas/tick)
+            54.8 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // worker 1  (~0.897 gas/tick)
+            54.8 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // worker 2  (~0.897 gas/tick)
+            28.8 / 60.0 * LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND,  // worker 3  (~0.472 gas/tick)
     };
 
     public static double gasIncomePerTick(final int workerCount) {
