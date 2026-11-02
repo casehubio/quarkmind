@@ -46,7 +46,7 @@ Accuracy: 100.0% (0/0)
 | vespeneCollectionRate | 1241 | 204 | 83.6% |
 | foodMade | 4579 | 4579 | 0.0% |
 | foodUsed | 3338 | 5951 | 78.3% |
-| workersActiveCount | 3162 | 5712 | 80.6% |
+| workersActiveCount | 3162 | 5761 | 82.2% |
 | mineralsUsedCurrentArmy | 0 | 0 | 0.0% |
 
 ## 3-minute checkpoint
@@ -56,10 +56,10 @@ Accuracy: 100.0% (0/0)
 | Type | GT | Emulated | Accuracy |
 |---|---|---|---|
 | PROBE | 1259 | 1259 | 100.0% |
-| ZEALOT | 29 | 27 | 93.1% |
-| STALKER | 22 | 21 | 95.5% |
-| ADEPT | 26 | 25 | 96.2% |
-| SENTRY | 2 | 1 | 50.0% |
+| ZEALOT | 29 | 29 | 100.0% |
+| STALKER | 22 | 22 | 100.0% |
+| ADEPT | 26 | 26 | 100.0% |
+| SENTRY | 2 | 2 | 100.0% |
 | ADEPT_PHASE_SHIFT | 5 | 5 | 100.0% |
 | ZERGLING | 296 | 296 | 100.0% |
 | ROACH | 4 | 4 | 100.0% |
@@ -67,13 +67,13 @@ Accuracy: 100.0% (0/0)
 | DRONE | 1303 | 1303 | 100.0% |
 | OVERLORD | 180 | 180 | 100.0% |
 | BANELING | 1 | 1 | 100.0% |
-| MARINE | 98 | 92 | 93.9% |
+| MARINE | 98 | 98 | 100.0% |
 | MARAUDER | 2 | 2 | 100.0% |
 | WIDOW_MINE | 2 | 2 | 100.0% |
 | SCV | 1493 | 1493 | 100.0% |
 | REAPER | 47 | 47 | 100.0% |
-| HELLION | 5 | 4 | 80.0% |
-| **TOTAL** | 4863 | 4851 | **99.8%** |
+| HELLION | 5 | 5 | 100.0% |
+| **TOTAL** | 4863 | 4863 | **100.0%** |
 
 ### Buildings — Per-Type
 
@@ -125,8 +125,8 @@ Accuracy: 100.0% (4/4)
 | mineralsCollectionRate | 171704 | 13060 | 92.4% |
 | vespeneCollectionRate | 39512 | 3116 | 92.1% |
 | foodMade | 7024 | 7024 | 0.0% |
-| foodUsed | 5150 | 8047 | 56.3% |
-| workersActiveCount | 4000 | 6567 | 64.2% |
+| foodUsed | 5150 | 8069 | 56.7% |
+| workersActiveCount | 4000 | 6579 | 64.5% |
 | mineralsUsedCurrentArmy | 36875 | 0 | 100.0% |
 
 ## 5-minute checkpoint
@@ -143,7 +143,7 @@ Accuracy: 100.0% (4/4)
 | VOID_RAY | 2 | 2 | 100.0% |
 | ADEPT | 20 | 20 | 100.0% |
 | SENTRY | 7 | 7 | 100.0% |
-| PHOENIX | 8 | 7 | 87.5% |
+| PHOENIX | 8 | 8 | 100.0% |
 | ORACLE | 9 | 9 | 100.0% |
 | WARP_PRISM | 4 | 4 | 100.0% |
 | ZERGLING | 531 | 531 | 100.0% |
@@ -154,7 +154,7 @@ Accuracy: 100.0% (4/4)
 | BANELING | 17 | 17 | 100.0% |
 | MARINE | 372 | 372 | 100.0% |
 | MARAUDER | 25 | 25 | 100.0% |
-| MEDIVAC | 9 | 8 | 88.9% |
+| MEDIVAC | 9 | 9 | 100.0% |
 | SIEGE_TANK | 33 | 33 | 100.0% |
 | VIKING | 4 | 4 | 100.0% |
 | RAVEN | 1 | 1 | 100.0% |
@@ -163,9 +163,9 @@ Accuracy: 100.0% (4/4)
 | LIBERATOR | 3 | 3 | 100.0% |
 | WIDOW_MINE | 28 | 28 | 100.0% |
 | SCV | 1850 | 1850 | 100.0% |
-| REAPER | 36 | 35 | 97.2% |
-| HELLION | 52 | 51 | 98.1% |
-| **TOTAL** | 6807 | 6803 | **99.9%** |
+| REAPER | 36 | 36 | 100.0% |
+| HELLION | 52 | 52 | 100.0% |
+| **TOTAL** | 6807 | 6807 | **100.0%** |
 
 ### Buildings — Per-Type
 
@@ -237,8 +237,8 @@ Accuracy: 100.0% (103/103)
 | mineralsCollectionRate | 208770 | 15323 | 92.7% |
 | vespeneCollectionRate | 50869 | 3940 | 92.3% |
 | foodMade | 9520 | 9520 | 0.0% |
-| foodUsed | 7483 | 11385 | 52.1% |
-| workersActiveCount | 4907 | 7606 | 55.0% |
+| foodUsed | 7483 | 11401 | 52.4% |
+| workersActiveCount | 4907 | 7616 | 55.2% |
 | mineralsUsedCurrentArmy | 108250 | 0 | 100.0% |
 
 ## 7-minute checkpoint
@@ -250,7 +250,7 @@ Accuracy: 100.0% (103/103)
 | PROBE | 1319 | 1319 | 100.0% |
 | ZEALOT | 17 | 17 | 100.0% |
 | STALKER | 27 | 27 | 100.0% |
-| IMMORTAL | 24 | 23 | 95.8% |
+| IMMORTAL | 24 | 24 | 100.0% |
 | COLOSSUS | 5 | 5 | 100.0% |
 | DARK_TEMPLAR | 2 | 2 | 100.0% |
 | OBSERVER | 16 | 16 | 100.0% |
@@ -270,9 +270,9 @@ Accuracy: 100.0% (103/103)
 | OVERLORD | 403 | 403 | 100.0% |
 | BANELING | 31 | 31 | 100.0% |
 | CHANGELING | 1 | 1 | 100.0% |
-| MARINE | 605 | 604 | 99.8% |
+| MARINE | 605 | 605 | 100.0% |
 | MARAUDER | 52 | 52 | 100.0% |
-| MEDIVAC | 45 | 42 | 93.3% |
+| MEDIVAC | 45 | 45 | 100.0% |
 | SIEGE_TANK | 85 | 85 | 100.0% |
 | VIKING | 19 | 19 | 100.0% |
 | RAVEN | 3 | 3 | 100.0% |
@@ -284,7 +284,7 @@ Accuracy: 100.0% (103/103)
 | SCV | 1929 | 1929 | 100.0% |
 | REAPER | 17 | 17 | 100.0% |
 | HELLION | 39 | 39 | 100.0% |
-| **TOTAL** | 7558 | 7553 | **99.9%** |
+| **TOTAL** | 7558 | 7558 | **100.0%** |
 
 ### Buildings — Per-Type
 
@@ -377,7 +377,7 @@ Accuracy: 100.0% (185/185)
 | mineralsCollectionRate | 201496 | 15064 | 92.5% |
 | vespeneCollectionRate | 61091 | 4912 | 92.0% |
 | foodMade | 11184 | 11184 | 0.0% |
-| foodUsed | 9012 | 13498 | 49.8% |
-| workersActiveCount | 5004 | 7589 | 51.7% |
+| foodUsed | 9012 | 13526 | 50.1% |
+| workersActiveCount | 5004 | 7599 | 51.9% |
 | mineralsUsedCurrentArmy | 175225 | 0 | 100.0% |
 

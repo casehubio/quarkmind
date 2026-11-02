@@ -501,7 +501,9 @@ public class EmulatedGame {
             }
         }
         if (trackerDriven) {trackerDrivenBuildings.add(resolvedTag);}
-        if (parallel || activeSlots < maxConcurrent) {
+        if (trackerDriven && t.completionLoop() >= 0) {
+            startTraining(resolvedTag, t.unitType(), state, physics, absLoop, t.warpedIn(), t.completionLoop());
+        } else if (parallel || activeSlots < maxConcurrent) {
             startTraining(resolvedTag, t.unitType(), state, physics, absLoop, t.warpedIn());
         } else {
             physics.buildingQueues.computeIfAbsent(resolvedTag, k -> new ArrayDeque<>())
@@ -583,6 +585,13 @@ public class EmulatedGame {
     private void startTraining(final String buildingTag, final UnitType unitType,
                                final PlayerState state, final PhysicsState physics,
                                final long absLoop, final boolean warpedIn) {
+        startTraining(buildingTag, unitType, state, physics, absLoop, warpedIn, -1);
+    }
+
+    private void startTraining(final String buildingTag, final UnitType unitType,
+                               final PlayerState state, final PhysicsState physics,
+                               final long absLoop, final boolean warpedIn,
+                               final long pinnedCompletionLoop) {
         state.addSupplyUsed(SC2Data.supplyCost(unitType));
         final boolean   isEnemy = (state == enemy);
         final RaceModel model   = (state == friendly) ? playerRaceModel : null;
@@ -591,8 +600,9 @@ public class EmulatedGame {
         final int baseTrainLoops = warpedIn ? SC2Data.GATEWAY_WARP_IN_LOOPS : SC2Data.trainTimeInLoops(unitType);
         final int effectiveTrainLoops = (int) (baseTrainLoops * speedMult);
         final int loopOffset          = (int) (absLoop % SC2Data.LOOPS_PER_TICK);
-        final long completesAt = gameFrame
-                                 + (loopOffset + effectiveTrainLoops) / SC2Data.LOOPS_PER_TICK;
+        final long completesAt = (pinnedCompletionLoop >= 0)
+                                 ? pinnedCompletionLoop / SC2Data.LOOPS_PER_TICK
+                                 : gameFrame + (loopOffset + effectiveTrainLoops) / SC2Data.LOOPS_PER_TICK;
 
         final boolean useSlot2 = physics.buildingTrainingUntil.containsKey(buildingTag);
         if (useSlot2) {

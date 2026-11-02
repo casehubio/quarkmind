@@ -90,7 +90,7 @@ public final class TrackerIntentExtractor {
                     String tag = resolved != null ? resolved
                                                   : "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
                     intents.add(new TimedIntent(commandLoop,
-                                                new TrainIntent(tag, unitType, true)));
+                                                new TrainIntent(tag, unitType, true, false, completionLoop)));
                 }
                 case ITrackerEvents.ID_UNIT_INIT -> {
                     if (!(raw instanceof IBaseUnitEvent ue)) {continue;}
