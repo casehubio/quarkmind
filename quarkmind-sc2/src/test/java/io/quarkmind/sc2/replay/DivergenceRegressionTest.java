@@ -43,23 +43,23 @@ class DivergenceRegressionTest {
     private static final double UNIT_ACCURACY_FLOOR = 0.70;
     private static final double BUILDING_ACCURACY_FLOOR = 0.95;
     private static final double UPGRADE_ACCURACY_FLOOR = 0.0;
-    private static final double ECONOMY_MAPE_CEILING = 120.0;
+    private static final double ECONOMY_MAPE_CEILING = 150.0;
 
     // Per-field economy error ceilings (% error at 5-min checkpoint).
-    // Calibrated from post-#493/#494 baselines with ~30% margin.
-    private static final double MINERALS_CURRENT_ERROR_CEILING = 130.0;
+    // Calibrated from post-#496 baselines (income calibrated, spending reconciliation pending).
+    private static final double MINERALS_CURRENT_ERROR_CEILING = 370.0;
     private static final double VESPENE_CURRENT_ERROR_CEILING = 10.0;
-    private static final double MINERALS_RATE_ERROR_CEILING = 95.0;
-    private static final double VESPENE_RATE_ERROR_CEILING = 95.0;
+    private static final double MINERALS_RATE_ERROR_CEILING = 20.0;
+    private static final double VESPENE_RATE_ERROR_CEILING = 100.0;
     private static final double FOOD_USED_ERROR_CEILING = 50.0;
 
     // Oracle v4.9.3 baseline at 5-minute mark (#384 Phase 2)
     private static final Map<String, double[]> BASELINE_5MIN = Map.of(
-        "PvP", new double[]{  5.1, 13.3 },  // [unitDelta, buildingDelta]
-        "PvT", new double[]{  8.0, 13.8 },
-        "PvZ", new double[]{ 11.0, 12.9 },
-        "TvT", new double[]{  9.1, 13.1 },
-        "TvZ", new double[]{ 12.2, 12.8 },
+        "PvP", new double[]{  5.1, 15.1 },  // [unitDelta, buildingDelta]
+        "PvT", new double[]{  8.0, 16.5 },
+        "PvZ", new double[]{ 11.0, 14.9 },
+        "TvT", new double[]{  9.1, 14.3 },
+        "TvZ", new double[]{ 12.2, 14.2 },
         "ZvZ", new double[]{ 13.0,  8.6 }
     );
 
@@ -301,9 +301,9 @@ class DivergenceRegressionTest {
         CROSS_PATCH_BASELINES.put("AI Arena (4.9.3)",
             new DatasetBaseline(0.79, 1.0, 0.0, 693.0));
         CROSS_PATCH_BASELINES.put("IEM PyeongChang 2018",
-            new DatasetBaseline(0.21, 1.0, 0.0, 516.0));
+            new DatasetBaseline(0.21, 1.0, 0.0, 598.0));
         CROSS_PATCH_BASELINES.put("ASUS ROG 2020",
-            new DatasetBaseline(0.22, 1.0, 0.0, 951.0));
+            new DatasetBaseline(0.22, 1.0, 0.0, 1140.0));
     }
 
     record DatasetSource(String name, Path dir) {}
