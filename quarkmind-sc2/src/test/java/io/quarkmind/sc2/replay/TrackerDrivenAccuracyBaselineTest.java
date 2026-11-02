@@ -1,8 +1,8 @@
 package io.quarkmind.sc2.replay;
 
-import hu.scelight.sc2.rep.model.Replay;
-import hu.scelight.sc2.rep.factory.RepParserEngine;
 import hu.scelight.sc2.rep.factory.RepContent;
+import hu.scelight.sc2.rep.factory.RepParserEngine;
+import hu.scelight.sc2.rep.model.Replay;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
@@ -224,6 +224,115 @@ class TrackerDrivenAccuracyBaselineTest {
         assertTrue(unitAcc5 > 99.0,
             "Tracker-driven unit accuracy at 5min should be > 99.0%: " + unitAcc5);
     }
+
+    @Test
+    @Tag("diagnostic")
+    @EnabledIf("oracleExists")
+    void tickQuantizationFloorAnalysis() throws IOException {
+        List<Path> replays;
+        try (var stream = Files.list(ORACLE_DIR)) {
+            replays = stream.filter(p -> p.toString().endsWith(".SC2Replay"))
+                            .sorted().toList();
+        }
+
+        int tickAt5min        = 5 * TICKS_PER_MINUTE - 1;
+        int tickAt5minPlus2   = tickAt5min + 2;
+        int extendedTickLimit = TICKS_PER_MINUTE * 8;
+
+        Map<UnitType, long[]> unitsAt5min         = new java.util.EnumMap<>(UnitType.class);
+        Map<UnitType, long[]> unitsAt5minPlus2    = new java.util.EnumMap<>(UnitType.class);
+        int                   totalPlayerRuns     = 0;
+        int                   replaysWithRecovery = 0;
+
+        for (Path replayPath : replays) {
+            hu.scelight.sc2.rep.model.Replay replay;
+            try {
+                replay = hu.scelight.sc2.rep.factory.RepParserEngine.parseReplay(
+                        replayPath, EnumSet.of(hu.scelight.sc2.rep.factory.RepContent.DETAILS));
+            } catch (Exception e) {continue;}
+            if (replay == null || replay.details == null) {continue;}
+            if (replay.details.getPlayerList().length < 2) {continue;}
+
+            for (int playerId = 1; playerId <= 2; playerId++) {
+                try {
+                    io.quarkmind.sc2.mock.ReplaySimulatedGame groundTruth =
+                            new io.quarkmind.sc2.mock.ReplaySimulatedGame(replayPath, playerId);
+                    List<TimedIntent>        intents = TrackerIntentExtractor.extract(replayPath, playerId);
+                    io.quarkmind.domain.Race race    = TrackerIntentExtractor.resolvePlayerRace(replay, playerId);
+
+                    DivergenceReport report = ReplayValidationHarness.run(
+                            groundTruth, intents, extendedTickLimit, race);
+
+                    if (tickAt5min >= report.ticks().size()) {continue;}
+                    var snap5 = report.ticks().get(tickAt5min);
+                    var snap5plus2 = (tickAt5minPlus2 < report.ticks().size())
+                                     ? report.ticks().get(tickAt5minPlus2) : null;
+
+                    boolean anyRecovered = false;
+                    for (var entry : snap5.groundTruthUnitsByType().entrySet()) {
+                        if (EXCLUDED_TYPES.contains(entry.getKey())) {continue;}
+                        UnitType ut    = entry.getKey();
+                        int      gtVal = entry.getValue();
+
+                        int    emAt5      = snap5.emulatedUnitsByType().getOrDefault(ut, 0);
+                        int    matchedAt5 = Math.min(emAt5, gtVal);
+                        long[] acc5       = unitsAt5min.computeIfAbsent(ut, k -> new long[]{0, 0});
+                        acc5[0] += gtVal;
+                        acc5[1] += matchedAt5;
+
+                        if (snap5plus2 != null) {
+                            int    emAt5p2      = snap5plus2.emulatedUnitsByType().getOrDefault(ut, 0);
+                            int    matchedAt5p2 = Math.min(emAt5p2, gtVal);
+                            long[] acc5p2       = unitsAt5minPlus2.computeIfAbsent(ut, k -> new long[]{0, 0});
+                            acc5p2[0] += gtVal;
+                            acc5p2[1] += matchedAt5p2;
+
+                            if (matchedAt5p2 > matchedAt5) {anyRecovered = true;}
+                        }
+                    }
+                    if (anyRecovered) {replaysWithRecovery++;}
+                    totalPlayerRuns++;
+                } catch (Exception e) { /* skip */ }
+            }
+        }
+
+        System.out.printf("%n=== Tick Quantization Floor Analysis ===%n");
+        System.out.printf("Player runs: %d, Replays with recovery at +2 ticks: %d%n%n",
+                          totalPlayerRuns, replaysWithRecovery);
+
+        long totalGt5 = 0, totalEm5 = 0, totalEm5p2 = 0;
+        System.out.printf("%-16s  %6s  %6s  %6s  %8s  %8s  %s%n",
+                          "UnitType", "GT", "Em@5m", "Em@5m+2", "Acc@5m", "Acc@5m+2", "Recovered");
+        for (UnitType ut : UnitType.values()) {
+            long[] at5   = unitsAt5min.get(ut);
+            long[] at5p2 = unitsAt5minPlus2.get(ut);
+            if (at5 == null) {continue;}
+            long gt    = at5[0];
+            long em5   = at5[1];
+            long em5p2 = (at5p2 != null) ? at5p2[1] : em5;
+            totalGt5 += gt;
+            totalEm5 += em5;
+            totalEm5p2 += em5p2;
+            if (em5 < gt || em5p2 != em5) {
+                System.out.printf("%-16s  %6d  %6d  %6d  %7.1f%%  %7.1f%%  %+d%n",
+                                  ut, gt, em5, em5p2,
+                                  gt > 0 ? em5 * 100.0 / gt : 100.0,
+                                  gt > 0 ? em5p2 * 100.0 / gt : 100.0,
+                                  (int) (em5p2 - em5));
+            }
+        }
+        double acc5   = totalGt5 > 0 ? totalEm5 * 100.0 / totalGt5 : 100.0;
+        double acc5p2 = totalGt5 > 0 ? totalEm5p2 * 100.0 / totalGt5 : 100.0;
+        System.out.printf("%n%-16s  %6d  %6d  %6d  %7.1f%%  %7.1f%%  %+d%n",
+                          "TOTAL", totalGt5, totalEm5, totalEm5p2, acc5, acc5p2,
+                          (int) (totalEm5p2 - totalEm5));
+        System.out.printf("%nConclusion: %s%n",
+                          totalEm5p2 >= totalGt5
+                          ? "100%% achievable — all missing units recover within 2 ticks (tick quantization floor)"
+                          : String.format("%.1f%% is the floor — %d units still missing after +2 ticks",
+                                          acc5p2, totalGt5 - totalEm5p2));
+    }
+
 
     private static void accumulateEconomy(
             io.quarkmind.domain.PlayerEconomyStats gt,
