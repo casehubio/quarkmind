@@ -200,21 +200,21 @@ public final class SC2Data {
     static {
         var map = new EnumMap<UnitType, Integer>(UnitType.class);
         // Protoss — empirical (SC2TrainTimeCalibrationTest, AI Arena replays)
-        map.put(UnitType.PROBE, 272);  // empirical (499 obs)
-        map.put(UnitType.ZEALOT, 618);  // empirical (7 obs)
-        map.put(UnitType.STALKER, 698);  // empirical (2 obs — low confidence)
-        map.put(UnitType.IMMORTAL, 896);  // uncalibrated — 40s × 22.4 = 896.0
+        map.put(UnitType.PROBE, 272);  // calibrated: oracle 756 obs
+        map.put(UnitType.ZEALOT, 608);  // calibrated: oracle 42 obs
+        map.put(UnitType.STALKER, 676);  // calibrated: oracle 5 obs (low confidence)
+        map.put(UnitType.IMMORTAL, 880);  // calibrated: oracle 26 obs
         map.put(UnitType.COLOSSUS, 672);  // uncalibrated
         map.put(UnitType.CARRIER, 672);  // uncalibrated
         map.put(UnitType.DARK_TEMPLAR, 672);  // uncalibrated
         map.put(UnitType.HIGH_TEMPLAR, 672);  // uncalibrated
         map.put(UnitType.ARCHON, 672);  // uncalibrated
-        map.put(UnitType.OBSERVER, 493);  // uncalibrated — ceil(22s × 22.4)
+        map.put(UnitType.OBSERVER, 480);  // calibrated: oracle 19 obs
         map.put(UnitType.VOID_RAY, 672);  // uncalibrated
         map.put(UnitType.ADEPT, 672);  // uncalibrated
         map.put(UnitType.DISRUPTOR, 672);  // uncalibrated
         map.put(UnitType.SENTRY, 672);  // uncalibrated
-        map.put(UnitType.PHOENIX, 560);  // 25s × 22.4
+        map.put(UnitType.PHOENIX, 560);  // calibrated: oracle 12 obs
         map.put(UnitType.ORACLE, 672);  // uncalibrated
         map.put(UnitType.TEMPEST, 672);  // uncalibrated
         map.put(UnitType.MOTHERSHIP, 672);  // uncalibrated
@@ -247,24 +247,24 @@ public final class SC2Data {
         map.put(UnitType.EGG, 672);  // uncalibrated
         map.put(UnitType.LARVA, 0);  // auto-spawned by timer, not trained
         // Terran — calibrated from LotV 4.9.3 balance data (game_seconds × 22.4)
-        map.put(UnitType.MARINE, 563);  // calibrated: ceil(25.13s × 22.4)
-        map.put(UnitType.MARAUDER, 757);  // calibrated: ceil(33.8s × 22.4)
-        map.put(UnitType.MEDIVAC, 672);  // 30s × 22.4
-        map.put(UnitType.SIEGE_TANK, 717);  // 32s × 22.4
-        map.put(UnitType.SIEGE_TANK_SIEGED, 717);  // same as SIEGE_TANK
-        map.put(UnitType.THOR, 963);  // 43s × 22.4
-        map.put(UnitType.VIKING, 672);  // 30s × 22.4
+        map.put(UnitType.MARINE, 554);  // calibrated: oracle 180 obs
+        map.put(UnitType.MARAUDER, 781);  // calibrated: oracle 13 obs
+        map.put(UnitType.MEDIVAC, 672);  // calibrated: oracle 96 obs
+        map.put(UnitType.SIEGE_TANK, 720);  // calibrated: oracle 188 obs
+        map.put(UnitType.SIEGE_TANK_SIEGED, 720);  // same as SIEGE_TANK
+        map.put(UnitType.THOR, 960);  // calibrated: oracle 18 obs
+        map.put(UnitType.VIKING, 672);  // calibrated: oracle 97 obs
         map.put(UnitType.GHOST, 650);  // 29s × 22.4
-        map.put(UnitType.RAVEN, 963);  // 43s × 22.4
-        map.put(UnitType.BANSHEE, 963);  // 43s × 22.4
-        map.put(UnitType.BATTLECRUISER, 1434);  // 64s × 22.4
-        map.put(UnitType.CYCLONE, 717);  // 32s × 22.4
-        map.put(UnitType.LIBERATOR, 963);  // 43s × 22.4
-        map.put(UnitType.WIDOW_MINE, 470);  // 21s × 22.4
-        map.put(UnitType.SCV, 275);  // calibrated: ceil(12.25s × 22.4)
-        map.put(UnitType.REAPER, 717);  // 32s × 22.4
-        map.put(UnitType.HELLION, 470);  // 21s × 22.4
-        map.put(UnitType.HELLBAT, 470);  // 21s × 22.4 (same as Hellion)
+        map.put(UnitType.RAVEN, 960);  // calibrated: oracle 24 obs
+        map.put(UnitType.BANSHEE, 960);  // calibrated: oracle 21 obs
+        map.put(UnitType.BATTLECRUISER, 1440);  // calibrated: oracle 75 obs
+        map.put(UnitType.CYCLONE, 720);  // calibrated: oracle 23 obs
+        map.put(UnitType.LIBERATOR, 960);  // calibrated: oracle 43 obs
+        map.put(UnitType.WIDOW_MINE, 480);  // calibrated: oracle 56 obs
+        map.put(UnitType.SCV, 272);  // calibrated: oracle 1443 obs
+        map.put(UnitType.REAPER, 720);  // calibrated: oracle 53 obs
+        map.put(UnitType.HELLION, 480);  // calibrated: oracle 106 obs
+        map.put(UnitType.HELLBAT, 480);  // same as Hellion
         map.put(UnitType.MULE, 0);  // instant calldown
         map.put(UnitType.VIKING_ASSAULT, 672);  // uncalibrated
         map.put(UnitType.LIBERATOR_AG, 672);  // uncalibrated
