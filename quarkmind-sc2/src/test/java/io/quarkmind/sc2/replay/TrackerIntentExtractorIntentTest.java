@@ -10,6 +10,7 @@ import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
+import io.quarkmind.sc2.intent.UnitDiedIntent;
 import io.quarkmind.sc2.mock.Sc2ReplayShared;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -23,6 +24,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TrackerIntentExtractorIntentTest {
@@ -77,6 +79,31 @@ class TrackerIntentExtractorIntentTest {
         assertEquals(0, buildCount,
                      "Tracker path should NOT produce BuildIntents — buildings are synced from ground truth by the harness");
     }
+
+    @Test
+    @EnabledIf("oracleExists")
+    void extractsUnitDiedIntentsFromTrackerEvents() throws Exception {
+        Path replay = Files.list(ORACLE_DIR)
+                           .filter(p -> p.toString().endsWith(".SC2Replay"))
+                           .sorted().findFirst().orElseThrow();
+
+        List<TimedIntent> intents = TrackerIntentExtractor.extract(replay, 1);
+
+        long deathCount = intents.stream()
+                                 .filter(ti -> ti.intent() instanceof UnitDiedIntent).count();
+        assertTrue(deathCount > 0,
+                   "Should have UnitDiedIntents from tracker UnitDied events");
+
+        intents.stream()
+               .filter(ti -> ti.intent() instanceof UnitDiedIntent)
+               .forEach(ti -> {
+                   UnitDiedIntent d = (UnitDiedIntent) ti.intent();
+                   assertTrue(ti.loop() >= 0, "Death loop must be non-negative: " + ti);
+                   assertNotNull(d.unitTag(), "Unit tag must not be null");
+                   assertNotNull(d.unitType(), "Unit type must not be null");
+               });
+    }
+
 
     @Test
     @EnabledIf("oracleExists")

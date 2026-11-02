@@ -19,6 +19,7 @@ import io.quarkmind.sc2.intent.AbilityIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
+import io.quarkmind.sc2.intent.UnitDiedIntent;
 import io.quarkmind.sc2.mock.Sc2ReplayShared;
 
 import java.nio.file.Path;
@@ -66,6 +67,8 @@ public final class TrackerIntentExtractor {
 
         int warpGateResearchLoop = findWarpGateResearchLoop(replay.trackerEvents.getEvents(), playerId);
 
+        Map<Long, UnitType> unitTagToType = new HashMap<>();
+
         for (Event raw : replay.trackerEvents.getEvents()) {
             int id = raw.getId();
             switch (id) {
@@ -77,6 +80,10 @@ public final class TrackerIntentExtractor {
                     if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) {continue;}
 
                     UnitType unitType = Sc2ReplayShared.toUnitType(typeName);
+                    if (unitType != UnitType.UNKNOWN) {
+                        long compositeTag = ((long) ue.getUnitTagIndex() << 32) | (ue.getUnitTagRecycle() & 0xFFFFFFFFL);
+                        unitTagToType.put(compositeTag, unitType);
+                    }
                     if (unitType == UnitType.UNKNOWN) {continue;}
                     if (unitType == UnitType.LARVA) {continue;}
                     if (unitType == UnitType.MULE) {continue;}
@@ -87,10 +94,11 @@ public final class TrackerIntentExtractor {
 
                     String resolved = lookupBuildingTag(
                             buildingIndex, buildingTypeMap, commandLoop, unitType);
-                    String tag = resolved != null ? resolved
-                                                  : "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
+                    String bldgTag = resolved != null ? resolved
+                                                      : "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
+                    String unitTag = "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
                     intents.add(new TimedIntent(commandLoop,
-                                                new TrainIntent(tag, unitType, true, false, completionLoop)));
+                                                new TrainIntent(bldgTag, unitType, true, false, completionLoop, unitTag)));
                 }
                 case ITrackerEvents.ID_UNIT_INIT -> {
                     if (!(raw instanceof IBaseUnitEvent ue)) {continue;}
@@ -100,6 +108,10 @@ public final class TrackerIntentExtractor {
                     if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) {continue;}
 
                     UnitType unitType = Sc2ReplayShared.toUnitType(typeName);
+                    if (unitType != UnitType.UNKNOWN) {
+                        long compositeTag = ((long) ue.getUnitTagIndex() << 32) | (ue.getUnitTagRecycle() & 0xFFFFFFFFL);
+                        unitTagToType.put(compositeTag, unitType);
+                    }
                     if (unitType == UnitType.UNKNOWN) {continue;}
                     if (!SC2Data.isGatewayUnit(unitType)) {continue;}
                     if (warpGateResearchLoop < 0 || ue.getLoop() < warpGateResearchLoop) {continue;}
@@ -107,10 +119,11 @@ public final class TrackerIntentExtractor {
                     int commandLoop = ue.getLoop();
                     String resolved = lookupBuildingTag(
                             buildingIndex, buildingTypeMap, commandLoop, unitType);
-                    String tag = resolved != null ? resolved
-                                                  : "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
+                    String bldgTag = resolved != null ? resolved
+                                                      : "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
+                    String unitTag = "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
                     intents.add(new TimedIntent(commandLoop,
-                                                new TrainIntent(tag, unitType, true, true)));
+                                                new TrainIntent(bldgTag, unitType, true, true, -1, unitTag)));
                 }
                 case ITrackerEvents.ID_UNIT_DONE -> {}
                 case ITrackerEvents.ID_UPGRADE -> {
@@ -129,6 +142,17 @@ public final class TrackerIntentExtractor {
                     intents.add(new TimedIntent(commandLoop,
                                                 new ResearchIntent(resolvedBuilding != null ? resolvedBuilding : "r-tracker",
                                                                    ut, commandLoop, true)));
+                }
+                case ITrackerEvents.ID_UNIT_DIED -> {
+                    Integer tagIndex   = raw.get("unitTagIndex");
+                    Integer tagRecycle = raw.get("unitTagRecycle");
+                    if (tagIndex == null || tagRecycle == null) {continue;}
+                    long compositeTag = ((long) tagIndex << 32) | (tagRecycle & 0xFFFFFFFFL);
+                    UnitType deadType = unitTagToType.remove(compositeTag);
+                    if (deadType == null) {continue;}
+                    String tag = "r-" + tagIndex + "-" + tagRecycle;
+                    intents.add(new TimedIntent(raw.getLoop(),
+                                                new UnitDiedIntent(tag, deadType)));
                 }
                 default -> {}
             }

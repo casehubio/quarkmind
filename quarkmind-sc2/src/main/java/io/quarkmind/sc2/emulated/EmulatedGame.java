@@ -25,6 +25,7 @@ import io.quarkmind.sc2.intent.MuleCalldownIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
+import io.quarkmind.sc2.intent.UnitDiedIntent;
 import org.jboss.logging.Logger;
 
 import java.util.ArrayDeque;
@@ -330,6 +331,7 @@ public class EmulatedGame {
             case ResearchIntent r -> () -> handleResearch(r, friendly, friendlyPhysics, ti.loop());
             case MorphIntent m -> () -> handleMorph(m, friendly, friendlyPhysics, ti.loop());
             case AbilityIntent a -> () -> handleAbilityInternal(a, friendly, friendlyPhysics, ti.loop());
+            case UnitDiedIntent d -> () -> handleUnitDied(d, friendly, friendlyPhysics);
         };
         action.run();
     }
@@ -345,6 +347,7 @@ public class EmulatedGame {
             case ResearchIntent r -> () -> handleResearch(r, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
             case MorphIntent m -> () -> handleMorph(m, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
             case AbilityIntent a -> () -> handleAbilityInternal(a, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
+            case UnitDiedIntent d -> () -> handleUnitDied(d, state, physics);
         };
         action.run();
     }
@@ -502,7 +505,7 @@ public class EmulatedGame {
         }
         if (trackerDriven) {trackerDrivenBuildings.add(resolvedTag);}
         if (trackerDriven && t.completionLoop() >= 0) {
-            startTraining(resolvedTag, t.unitType(), state, physics, absLoop, t.warpedIn(), t.completionLoop());
+            startTraining(resolvedTag, t.unitType(), state, physics, absLoop, t.warpedIn(), t.completionLoop(), t.replayUnitTag());
         } else if (parallel || activeSlots < maxConcurrent) {
             startTraining(resolvedTag, t.unitType(), state, physics, absLoop, t.warpedIn());
         } else {
@@ -585,13 +588,13 @@ public class EmulatedGame {
     private void startTraining(final String buildingTag, final UnitType unitType,
                                final PlayerState state, final PhysicsState physics,
                                final long absLoop, final boolean warpedIn) {
-        startTraining(buildingTag, unitType, state, physics, absLoop, warpedIn, -1);
+        startTraining(buildingTag, unitType, state, physics, absLoop, warpedIn, -1, null);
     }
 
     private void startTraining(final String buildingTag, final UnitType unitType,
                                final PlayerState state, final PhysicsState physics,
                                final long absLoop, final boolean warpedIn,
-                               final long pinnedCompletionLoop) {
+                               final long pinnedCompletionLoop, final String replayUnitTag) {
         state.addSupplyUsed(SC2Data.supplyCost(unitType));
         final boolean   isEnemy = (state == enemy);
         final RaceModel model   = (state == friendly) ? playerRaceModel : null;
@@ -624,7 +627,7 @@ public class EmulatedGame {
                 physics.buildingCompletionAtLoop.remove(buildingTag);
             }
             for (int i = 0; i < spawnCount; i++) {
-                final String tag = nextTagString();
+                final String tag = (replayUnitTag != null && i == 0) ? replayUnitTag : nextTagString();
                 final int    hp  = SC2Data.maxHealth(unitType);
                 state.addUnit(new Unit(tag, unitType,
                                        new Point2d(9 + i * 0.5f, 9), hp, hp,
@@ -853,6 +856,15 @@ public class EmulatedGame {
             return;
         }
         model.onCalldown(state, calldownTag, absLoop);
+    }
+
+    private void handleUnitDied(UnitDiedIntent d, PlayerState state, PhysicsState physics) {
+        state.removeUnit(d.unitTag());
+        state.addSupplyUsed(-SC2Data.supplyCost(d.unitType()));
+        physics.unitTargets.remove(d.unitTag());
+        physics.unitCooldowns.remove(d.unitTag());
+        physics.blinkCooldowns.remove(d.unitTag());
+        movementStrategy.clearUnit(d.unitTag());
     }
 
     private void handleAbilityInternal(final AbilityIntent a, final PlayerState state,

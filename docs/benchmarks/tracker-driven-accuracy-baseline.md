@@ -45,8 +45,8 @@ Accuracy: 100.0% (0/0)
 | mineralsCollectionRate | 150658 | 13421 | 91.1% |
 | vespeneCollectionRate | 1241 | 204 | 83.6% |
 | foodMade | 4579 | 4579 | 0.0% |
-| foodUsed | 3338 | 5951 | 78.3% |
-| workersActiveCount | 3162 | 5761 | 82.2% |
+| foodUsed | 3338 | 5945 | 78.1% |
+| workersActiveCount | 3162 | 5755 | 82.0% |
 | mineralsUsedCurrentArmy | 0 | 0 | 0.0% |
 
 ## 3-minute checkpoint
@@ -125,8 +125,8 @@ Accuracy: 100.0% (4/4)
 | mineralsCollectionRate | 171704 | 13060 | 92.4% |
 | vespeneCollectionRate | 39512 | 3116 | 92.1% |
 | foodMade | 7024 | 7024 | 0.0% |
-| foodUsed | 5150 | 8069 | 56.7% |
-| workersActiveCount | 4000 | 6579 | 64.5% |
+| foodUsed | 5150 | 7707 | 49.7% |
+| workersActiveCount | 4000 | 6321 | 58.0% |
 | mineralsUsedCurrentArmy | 36875 | 0 | 100.0% |
 
 ## 5-minute checkpoint
@@ -237,8 +237,8 @@ Accuracy: 100.0% (103/103)
 | mineralsCollectionRate | 208770 | 15323 | 92.7% |
 | vespeneCollectionRate | 50869 | 3940 | 92.3% |
 | foodMade | 9520 | 9520 | 0.0% |
-| foodUsed | 7483 | 11401 | 52.4% |
-| workersActiveCount | 4907 | 7616 | 55.2% |
+| foodUsed | 7483 | 10107 | 35.1% |
+| workersActiveCount | 4907 | 7018 | 43.0% |
 | mineralsUsedCurrentArmy | 108250 | 0 | 100.0% |
 
 ## 7-minute checkpoint
@@ -377,7 +377,7 @@ Accuracy: 100.0% (185/185)
 | mineralsCollectionRate | 201496 | 15064 | 92.5% |
 | vespeneCollectionRate | 61091 | 4912 | 92.0% |
 | foodMade | 11184 | 11184 | 0.0% |
-| foodUsed | 9012 | 13526 | 50.1% |
-| workersActiveCount | 5004 | 7599 | 51.9% |
+| foodUsed | 9012 | 10991 | 22.0% |
+| workersActiveCount | 5004 | 6707 | 34.0% |
 | mineralsUsedCurrentArmy | 175225 | 0 | 100.0% |
 

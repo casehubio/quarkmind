@@ -14,6 +14,7 @@ import io.quarkmind.sc2.intent.MoveIntent;
 import io.quarkmind.sc2.intent.MuleCalldownIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
+import io.quarkmind.sc2.intent.UnitDiedIntent;
 import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public final class ActionTranslator {
                     case ResearchIntent    r -> research(r);
                     case MorphIntent        m -> null;
                     case AbilityIntent      a -> null;
+                    case UnitDiedIntent     d -> null;
                 };
                 if (cmd != null) commands.add(cmd);
             } catch (Exception e) {

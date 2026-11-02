@@ -21,6 +21,7 @@ import io.quarkmind.sc2.intent.MoveIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
+import io.quarkmind.sc2.intent.UnitDiedIntent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -226,6 +227,34 @@ class EmulatedGameTest {
         game.applyIntent(new TrainIntent(gw.tag(), UnitType.ZEALOT));
         assertThat(game.snapshot().minerals()).isEqualTo(50); // unchanged
     }
+
+    @Test
+    void unitDiedIntentRemovesUnitAndDeductsSupply() {
+        game.setMineralsForTesting(500);
+        game.setSupplyForTesting(200, 0);
+        Building gw = game.spawnBuildingForTesting(BuildingType.GATEWAY, new Point2d(20, 20));
+        game.applyIntent(new TrainIntent(gw.tag(), UnitType.ZEALOT));
+        for (int i = 0; i < 28; i++) {game.tick();}
+
+        GameState before = game.snapshot();
+        long zealotsBefore = before.myUnits().stream()
+                                   .filter(u -> u.type() == UnitType.ZEALOT).count();
+        assertThat(zealotsBefore).isGreaterThan(0);
+        int supplyBefore = before.supplyUsed();
+
+        String zealotTag = before.myUnits().stream()
+                                 .filter(u -> u.type() == UnitType.ZEALOT)
+                                 .findFirst().orElseThrow().tag();
+        game.applyIntent(new TimedIntent(100, new UnitDiedIntent(zealotTag, UnitType.ZEALOT)));
+
+        GameState after = game.snapshot();
+        long zealotsAfter = after.myUnits().stream()
+                                 .filter(u -> u.type() == UnitType.ZEALOT).count();
+
+        assertThat(zealotsAfter).isEqualTo(zealotsBefore - 1);
+        assertThat(after.supplyUsed()).isEqualTo(supplyBefore - SC2Data.supplyCost(UnitType.ZEALOT));
+    }
+
 
     @Test
     void setVespeneForHarness_enablesGasUnitTraining() {
