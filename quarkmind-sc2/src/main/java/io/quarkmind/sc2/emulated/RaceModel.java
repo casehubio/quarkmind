@@ -36,8 +36,9 @@ public interface RaceModel {
      * regen and auto-inject. Called by EmulatedGame.tick() after worker income is accumulated.
      *
      * @param gameLoop current absolute game loop (gameFrame × LOOPS_PER_TICK)
+     * @return mineral income from passive sources (e.g. MULEs) to include in collection rate tracking
      */
-    void tickPassive(PlayerState state, long gameLoop);
+    double tickPassive(PlayerState state, long gameLoop);
 
     /**
      * Query whether production can proceed for the given unit from the given building.

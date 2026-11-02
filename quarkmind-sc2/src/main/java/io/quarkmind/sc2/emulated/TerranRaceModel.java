@@ -48,7 +48,7 @@ class TerranRaceModel implements RaceModel {
     }
 
     @Override
-    public void tickPassive(final PlayerState state, final long gameLoop) {
+    public double tickPassive(final PlayerState state, final long gameLoop) {
         final List<String> expired = new ArrayList<>();
         muleExpiresAtLoop.forEach((tag, expiresAt) -> {
             if (gameLoop >= expiresAt) {expired.add(tag);}
@@ -58,8 +58,10 @@ class TerranRaceModel implements RaceModel {
             state.removeUnit(tag);
         });
 
+        double muleIncome = 0;
         if (!muleExpiresAtLoop.isEmpty()) {
-            state.addMinerals(muleExpiresAtLoop.size() * SC2Data.muleIncomePerTick());
+            muleIncome = muleExpiresAtLoop.size() * SC2Data.muleIncomePerTick();
+            state.addMinerals(muleIncome);
         }
 
         for (final Building b : state.buildings()) {
@@ -68,6 +70,7 @@ class TerranRaceModel implements RaceModel {
             ocEnergyMap.put(b.tag(), Math.min(SC2Data.MAX_CASTER_ENERGY,
                                               energy + SC2Data.CASTER_ENERGY_REGEN_PER_LOOP * SC2Data.LOOPS_PER_TICK));
         }
+        return muleIncome;
     }
 
     @Override

@@ -66,12 +66,12 @@ class ZergRaceModel implements RaceModel {
     }
 
     @Override
-    public void tickPassive(final PlayerState state, final long gameLoop) {
+    public double tickPassive(final PlayerState state, final long gameLoop) {
         for (final Building b : state.buildings()) {
-            if (!townHallTypes().contains(b.type()) || !b.isComplete()) continue;
-            final String tag = b.tag();
-            final int count = hatcheryLarvaCount.getOrDefault(tag, 0);
-            if (count >= MAX_LARVA) continue;
+            if (!townHallTypes().contains(b.type()) || !b.isComplete()) {continue;}
+            final String tag   = b.tag();
+            final int    count = hatcheryLarvaCount.getOrDefault(tag, 0);
+            if (count >= MAX_LARVA) {continue;}
             final long nextLoop = hatcheryNextLarvaLoop.getOrDefault(tag, 0L);
             if (gameLoop >= nextLoop) {
                 hatcheryLarvaCount.put(tag, count + 1);
@@ -80,23 +80,24 @@ class ZergRaceModel implements RaceModel {
         }
 
         for (final Unit u : state.units()) {
-            if (u.type() != UnitType.QUEEN) continue;
+            if (u.type() != UnitType.QUEEN) {continue;}
             final double energy = queenEnergyMap.getOrDefault(u.tag(), INJECT_COST_ENERGY);
             queenEnergyMap.put(u.tag(), Math.min(200.0,
-                energy + SC2Data.CASTER_ENERGY_REGEN_PER_LOOP * SC2Data.LOOPS_PER_TICK));
+                                                 energy + SC2Data.CASTER_ENERGY_REGEN_PER_LOOP * SC2Data.LOOPS_PER_TICK));
         }
 
         for (final Unit queen : state.units()) {
-            if (queen.type() != UnitType.QUEEN) continue;
+            if (queen.type() != UnitType.QUEEN) {continue;}
             final double energy = queenEnergyMap.getOrDefault(queen.tag(), 0.0);
-            if (energy < INJECT_COST_ENERGY) continue;
+            if (energy < INJECT_COST_ENERGY) {continue;}
             final Building nearest = nearestTownHall(queen.position(), state.buildings());
-            if (nearest == null) continue;
-            final String tag = nearest.tag();
-            final int current = hatcheryLarvaCount.getOrDefault(tag, 0);
+            if (nearest == null) {continue;}
+            final String tag     = nearest.tag();
+            final int    current = hatcheryLarvaCount.getOrDefault(tag, 0);
             hatcheryLarvaCount.put(tag, Math.min(MAX_INJECT_LARVA, current + INJECT_LARVA_COUNT));
             queenEnergyMap.put(queen.tag(), energy - INJECT_COST_ENERGY);
         }
+        return 0;
     }
 
     private Building nearestTownHall(final Point2d pos, final List<Building> buildings) {
