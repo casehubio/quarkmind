@@ -43,7 +43,15 @@ class DivergenceRegressionTest {
     private static final double UNIT_ACCURACY_FLOOR = 0.70;
     private static final double BUILDING_ACCURACY_FLOOR = 0.95;
     private static final double UPGRADE_ACCURACY_FLOOR = 0.0;
-    private static final double ECONOMY_MAPE_CEILING = 420.0;
+    private static final double ECONOMY_MAPE_CEILING = 120.0;
+
+    // Per-field economy error ceilings (% error at 5-min checkpoint).
+    // Calibrated from post-#493/#494 baselines with ~30% margin.
+    private static final double MINERALS_CURRENT_ERROR_CEILING = 130.0;
+    private static final double VESPENE_CURRENT_ERROR_CEILING = 10.0;
+    private static final double MINERALS_RATE_ERROR_CEILING = 95.0;
+    private static final double VESPENE_RATE_ERROR_CEILING = 95.0;
+    private static final double FOOD_USED_ERROR_CEILING = 50.0;
 
     // Oracle v4.9.3 baseline at 5-minute mark (#384 Phase 2)
     private static final Map<String, double[]> BASELINE_5MIN = Map.of(
@@ -156,6 +164,11 @@ class DivergenceRegressionTest {
         int  totalGtUpgrades = 0, matchedUpgrades = 0;
         double economyMapeSum = 0;
         int    economyMapeCount = 0;
+        long sumGtMinerals = 0, sumEmMinerals = 0;
+        long sumGtVespene = 0, sumEmVespene = 0;
+        long sumGtMineralRate = 0, sumEmMineralRate = 0;
+        long sumGtVespeneRate = 0, sumEmVespeneRate = 0;
+        long sumGtFoodUsed = 0, sumEmFoodUsed = 0;
         int  processed       = 0;
 
         for (Path replayPath : replays) {
@@ -197,6 +210,16 @@ class DivergenceRegressionTest {
                     if (gtEcon != null && emEcon != null) {
                         economyMapeSum += economyMape(gtEcon, emEcon);
                         economyMapeCount++;
+                        sumGtMinerals += gtEcon.mineralsCurrent();
+                        sumEmMinerals += emEcon.mineralsCurrent();
+                        sumGtVespene += gtEcon.vespeneCurrent();
+                        sumEmVespene += emEcon.vespeneCurrent();
+                        sumGtMineralRate += gtEcon.mineralsCollectionRate();
+                        sumEmMineralRate += emEcon.mineralsCollectionRate();
+                        sumGtVespeneRate += gtEcon.vespeneCollectionRate();
+                        sumEmVespeneRate += emEcon.vespeneCollectionRate();
+                        sumGtFoodUsed += gtEcon.foodUsed();
+                        sumEmFoodUsed += emEcon.foodUsed();
                     }
                 } catch (Exception e) { /* skip */ }
             }
@@ -231,6 +254,40 @@ class DivergenceRegressionTest {
                 .as("Upgrade accuracy at 5-min").isGreaterThanOrEqualTo(UPGRADE_ACCURACY_FLOOR);
         assertThat(econMape)
                 .as("Economy MAPE at 5-min").isLessThanOrEqualTo(ECONOMY_MAPE_CEILING);
+
+        double mineralsError = sumGtMinerals != 0
+            ? Math.abs((double)(sumEmMinerals - sumGtMinerals) / sumGtMinerals) * 100 : 0;
+        double vespeneError = sumGtVespene != 0
+            ? Math.abs((double)(sumEmVespene - sumGtVespene) / sumGtVespene) * 100 : 0;
+        double mineralRateError = sumGtMineralRate != 0
+            ? Math.abs((double)(sumEmMineralRate - sumGtMineralRate) / sumGtMineralRate) * 100 : 0;
+        double vespeneRateError = sumGtVespeneRate != 0
+            ? Math.abs((double)(sumEmVespeneRate - sumGtVespeneRate) / sumGtVespeneRate) * 100 : 0;
+        double foodUsedError = sumGtFoodUsed != 0
+            ? Math.abs((double)(sumEmFoodUsed - sumGtFoodUsed) / sumGtFoodUsed) * 100 : 0;
+
+        System.out.printf("%n  Per-field economy error:%n");
+        System.out.printf("    mineralsCurrent:        %5.1f%% (threshold: %.0f%%)%n",
+                          mineralsError, MINERALS_CURRENT_ERROR_CEILING);
+        System.out.printf("    vespeneCurrent:         %5.1f%% (threshold: %.0f%%)%n",
+                          vespeneError, VESPENE_CURRENT_ERROR_CEILING);
+        System.out.printf("    mineralsCollectionRate: %5.1f%% (threshold: %.0f%%)%n",
+                          mineralRateError, MINERALS_RATE_ERROR_CEILING);
+        System.out.printf("    vespeneCollectionRate:  %5.1f%% (threshold: %.0f%%)%n",
+                          vespeneRateError, VESPENE_RATE_ERROR_CEILING);
+        System.out.printf("    foodUsed:               %5.1f%% (threshold: %.0f%%)%n",
+                          foodUsedError, FOOD_USED_ERROR_CEILING);
+
+        assertThat(mineralsError)
+                .as("mineralsCurrent error at 5-min").isLessThanOrEqualTo(MINERALS_CURRENT_ERROR_CEILING);
+        assertThat(vespeneError)
+                .as("vespeneCurrent error at 5-min").isLessThanOrEqualTo(VESPENE_CURRENT_ERROR_CEILING);
+        assertThat(mineralRateError)
+                .as("mineralsCollectionRate error at 5-min").isLessThanOrEqualTo(MINERALS_RATE_ERROR_CEILING);
+        assertThat(vespeneRateError)
+                .as("vespeneCollectionRate error at 5-min").isLessThanOrEqualTo(VESPENE_RATE_ERROR_CEILING);
+        assertThat(foodUsedError)
+                .as("foodUsed error at 5-min").isLessThanOrEqualTo(FOOD_USED_ERROR_CEILING);
     }
 
 
