@@ -147,12 +147,11 @@ public final class SC2Data {
 
     /**
      * Mineral income per active MULE per tick.
-     * MULE mines at ~3.45× SCV rate. SCV earns ≈50 minerals/min → MULE ≈172.5/min.
-     * Per tick (22 loops at 22.4 loops/sec = 0.982s): 172.5/60 × 0.982 ≈ 2.82.
-     * Uncalibrated — pending Terran replay data from #140.
+     * Calibrated from 83 Terran player runs across 118 oracle replays (115 observations).
+     * 277.8 minerals/min ≈ 3.57× calibrated SCV tier-1 rate (77.7 min/min).
      */
     public static double muleIncomePerTick() {
-        final double muleMinPerMin = 172.5;
+        final double muleMinPerMin = 277.8;
         final double secsPerTick   = LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND;
         return muleMinPerMin / 60.0 * secsPerTick;
     }
