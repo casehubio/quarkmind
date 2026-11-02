@@ -9,15 +9,16 @@ import hu.scelight.sc2.rep.s2prot.Event;
 import hu.scelightapi.sc2.rep.model.trackerevents.IBaseUnitEvent;
 import hu.scelightapi.sc2.rep.model.trackerevents.ITrackerEvents;
 import hu.scelightapi.sc2.rep.model.trackerevents.IUpgradeEvent;
+import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.UpgradeType;
+import io.quarkmind.sc2.SelectionState;
 import io.quarkmind.sc2.intent.AbilityIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
-import io.quarkmind.sc2.SelectionState;
 import io.quarkmind.sc2.mock.Sc2ReplayShared;
 
 import java.nio.file.Path;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -54,8 +56,11 @@ public final class TrackerIntentExtractor {
         List<TimedIntent> intents = new ArrayList<>();
 
         int userId = playerId - 1;
-        TreeMap<Integer, String> buildingIndex =
-            replay.gameEvents != null
+        Map<String, BuildingType> buildingTypeMap = buildBuildingTypeMap(
+                replay.trackerEvents.getEvents(), playerId);
+
+        TreeMap<Integer, List<String>> buildingIndex =
+                replay.gameEvents != null
                 ? buildBuildingIndex(replay.gameEvents.getEvents(), userId)
                 : new TreeMap<>();
 
@@ -63,46 +68,45 @@ public final class TrackerIntentExtractor {
             int id = raw.getId();
             switch (id) {
                 case ITrackerEvents.ID_UNIT_BORN -> {
-                    if (!(raw instanceof IBaseUnitEvent ue)) continue;
+                    if (!(raw instanceof IBaseUnitEvent ue)) {continue;}
                     Integer pid = ue.getControlPlayerId();
-                    if (pid == null || pid != playerId) continue;
+                    if (pid == null || pid != playerId) {continue;}
                     String typeName = String.valueOf(ue.getUnitTypeName()).trim();
-                    if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) continue;
+                    if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) {continue;}
 
                     UnitType unitType = Sc2ReplayShared.toUnitType(typeName);
-                    if (unitType == UnitType.UNKNOWN) continue;
-                    if (unitType == UnitType.LARVA) continue;
-                    if (unitType == UnitType.MULE) continue;
+                    if (unitType == UnitType.UNKNOWN) {continue;}
+                    if (unitType == UnitType.LARVA) {continue;}
+                    if (unitType == UnitType.MULE) {continue;}
 
                     int completionLoop = ue.getLoop();
-                    int trainTime = SC2Data.trainTimeInLoops(unitType);
-                    int commandLoop = Math.max(0, completionLoop - trainTime);
+                    int trainTime      = SC2Data.trainTimeInLoops(unitType);
+                    int commandLoop    = Math.max(0, completionLoop - trainTime);
 
-                    String resolved = lookupBuildingTag(buildingIndex, commandLoop);
+                    String resolved = lookupBuildingTag(
+                            buildingIndex, buildingTypeMap, commandLoop, unitType);
                     String tag = resolved != null ? resolved
-                        : "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
+                                                  : "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
                     intents.add(new TimedIntent(commandLoop,
-                        new TrainIntent(tag, unitType)));
+                                                new TrainIntent(tag, unitType, true)));
                 }
-                // Buildings are NOT converted to BuildIntents — the harness syncs them
-                // from ground truth via syncBuildings(). Tracker events lack positions,
-                // and generating BuildIntents would duplicate what the harness already injects.
                 case ITrackerEvents.ID_UNIT_INIT, ITrackerEvents.ID_UNIT_DONE -> {}
                 case ITrackerEvents.ID_UPGRADE -> {
-                    if (!(raw instanceof IUpgradeEvent up)) continue;
-                    if (up.getPlayerId() == null || up.getPlayerId() != playerId) continue;
-                    String upgradeName = String.valueOf(up.getUpgradeTypeName()).trim();
-                    UpgradeType ut = UpgradeType.fromTrackerName(upgradeName);
-                    if (ut == null) continue;
+                    if (!(raw instanceof IUpgradeEvent up)) {continue;}
+                    if (up.getPlayerId() == null || up.getPlayerId() != playerId) {continue;}
+                    String      upgradeName = String.valueOf(up.getUpgradeTypeName()).trim();
+                    UpgradeType ut          = UpgradeType.fromTrackerName(upgradeName);
+                    if (ut == null) {continue;}
 
                     int completionLoop = up.getLoop();
-                    int upgradeTime = SC2Data.upgradeTimeInLoops(ut);
-                    int commandLoop = Math.max(0, completionLoop - upgradeTime);
+                    int upgradeTime    = SC2Data.upgradeTimeInLoops(ut);
+                    int commandLoop    = Math.max(0, completionLoop - upgradeTime);
 
-                    String resolvedBuilding = lookupBuildingTag(buildingIndex, commandLoop);
+                    String resolvedBuilding = lookupBuildingTagSimple(
+                            buildingIndex, commandLoop);
                     intents.add(new TimedIntent(commandLoop,
-                        new ResearchIntent(resolvedBuilding != null ? resolvedBuilding : "r-tracker",
-                            ut, commandLoop)));
+                                                new ResearchIntent(resolvedBuilding != null ? resolvedBuilding : "r-tracker",
+                                                                   ut, commandLoop)));
                 }
                 default -> {}
             }
@@ -110,18 +114,19 @@ public final class TrackerIntentExtractor {
 
         if (replay.gameEvents != null) {
             for (Event ge : replay.gameEvents.getEvents()) {
-                if (!(ge instanceof CmdEvent cmd)) continue;
+                if (!(ge instanceof CmdEvent cmd)) {continue;}
                 Integer cmdUser = cmd.getUserId();
-                if (cmdUser == null || cmdUser != userId) continue;
+                if (cmdUser == null || cmdUser != userId) {continue;}
                 Integer abl = cmd.getAbilLink();
-                if (abl == null || abl != ABIL_CHRONO_BOOST) continue;
+                if (abl == null || abl != ABIL_CHRONO_BOOST) {continue;}
                 var tu = cmd.getTargetUnit();
-                if (tu == null || tu.getTag() == null) continue;
+                if (tu == null || tu.getTag() == null) {continue;}
                 String targetTag = GameEventStream.decodeTag(tu.getTag());
-                String resolvedCaster = lookupBuildingTag(buildingIndex, cmd.getLoop());
+                String resolvedCaster = lookupBuildingTagSimple(
+                        buildingIndex, cmd.getLoop());
                 intents.add(new TimedIntent(cmd.getLoop(),
-                    new AbilityIntent(resolvedCaster != null ? resolvedCaster : "r-NEXUS",
-                        "CHRONO_BOOST", targetTag)));
+                                            new AbilityIntent(resolvedCaster != null ? resolvedCaster : "r-NEXUS",
+                                                              "CHRONO_BOOST", targetTag)));
             }
         }
 
@@ -141,9 +146,29 @@ public final class TrackerIntentExtractor {
         return Race.PROTOSS;
     }
 
-    private static TreeMap<Integer, String> buildBuildingIndex(Event[] gameEvents, int userId) {
-        TreeMap<Integer, String> index     = new TreeMap<>();
-        SelectionState           selection = new SelectionState();
+
+    private static Map<String, BuildingType> buildBuildingTypeMap(Event[] trackerEvents, int playerId) {
+        Map<String, BuildingType> map = new HashMap<>();
+        for (Event raw : trackerEvents) {
+            int eid = raw.getId();
+            if ((eid == ITrackerEvents.ID_UNIT_INIT || eid == ITrackerEvents.ID_UNIT_BORN)
+                && raw instanceof IBaseUnitEvent ue) {
+                Integer pid = ue.getControlPlayerId();
+                if (pid != null && pid == playerId) {
+                    String typeName = String.valueOf(ue.getUnitTypeName()).trim();
+                    if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) {
+                        String tag = "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
+                        map.put(tag, Sc2ReplayShared.toBuildingType(typeName));
+                    }
+                }
+            }
+        }
+        return map;
+    }
+
+    private static TreeMap<Integer, List<String>> buildBuildingIndex(Event[] gameEvents, int userId) {
+        TreeMap<Integer, List<String>> index     = new TreeMap<>();
+        SelectionState                 selection = new SelectionState();
 
         for (Event raw : gameEvents) {
             if (raw instanceof SelectionDeltaEvent sel) {
@@ -198,7 +223,7 @@ public final class TrackerIntentExtractor {
                 Integer cmdUser = cmd.getUserId();
                 if (cmdUser == null || cmdUser != userId) {continue;}
                 if (!selection.isEmpty()) {
-                    index.put(cmd.getLoop(), selection.first());
+                    index.put(cmd.getLoop(), selection.snapshot());
                 }
             }
         }
@@ -206,12 +231,33 @@ public final class TrackerIntentExtractor {
         return index;
     }
 
-    private static String lookupBuildingTag(TreeMap<Integer, String> index, int commandLoop) {
-        Map.Entry<Integer, String> entry = index.floorEntry(commandLoop + 5);
+    static String lookupBuildingTag(TreeMap<Integer, List<String>> index,
+                                    Map<String, BuildingType> tagToType,
+                                    int commandLoop, UnitType unitType) {
+        BuildingType                     required = SC2Data.trainedBy(unitType);
+        Map.Entry<Integer, List<String>> entry    = index.floorEntry(commandLoop + 5);
         if (entry != null && commandLoop - entry.getKey() <= 5) {
-            return entry.getValue();
+            if (required == BuildingType.UNKNOWN) {
+                return entry.getValue().get(0);
+            }
+            for (String tag : entry.getValue()) {
+                BuildingType bt = tagToType.get(tag);
+                if (bt != null && SC2Data.canTrainFrom(bt, required)) {
+                    return tag;
+                }
+            }
+            return null;
         }
         return null;
     }
+
+    private static String lookupBuildingTagSimple(TreeMap<Integer, List<String>> index, int commandLoop) {
+        Map.Entry<Integer, List<String>> entry = index.floorEntry(commandLoop + 5);
+        if (entry != null && commandLoop - entry.getKey() <= 5) {
+            return entry.getValue().get(0);
+        }
+        return null;
+    }
+
 
 }

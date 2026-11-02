@@ -50,9 +50,13 @@ Rejection reasons: `building_not_found`, `wrong_building_type`, `production_bloc
 
 ## Known Patterns
 
-### wrong_building_type (354 rejections across 236 player runs)
+### wrong_building_type — RESOLVED (#485)
 
-TrackerIntentExtractor's `lookupBuildingTag()` sometimes resolves intents to the wrong building. The `wrong_building_type` check rejects these — the intent is dropped, causing underproduction. Naive rerouting (auto-resolving to the correct building type) causes cascading regressions because it floods production queues with previously-filtered intents. The root fix is improving `lookupBuildingTag()` in TrackerIntentExtractor.
+TrackerIntentExtractor's `lookupBuildingTag()` used to resolve intents to the wrong building type. Fixed in #485 via type-aware lookup (filters selection tags by building type map from tracker events) and `trackerDriven` flag on TrainIntent (skips economy gates for tracker-proven production). Wrong_building_type rejections now defer instead of dropping.
+
+### insufficient_resources on tracker-driven intents — RESOLVED (#485)
+
+Tracker-driven intents that correctly matched a building via `lookupBuildingTag()` were not marked as tracker-driven, causing them to hit economy gates. Fixed by adding `trackerDriven` field to `TrainIntent` record — set by TrackerIntentExtractor, read by EmulatedGame to skip economy checks.
 
 ### Overproduction from combat deaths
 

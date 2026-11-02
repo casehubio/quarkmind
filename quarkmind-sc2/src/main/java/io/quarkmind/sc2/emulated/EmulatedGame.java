@@ -101,6 +101,7 @@ public class EmulatedGame {
         deferredTrains.clear();
         deferredResearch.clear();
         trackerTrainDiagnostics.clear();
+        trackerDrivenBuildings.clear();
         // pendingWaves intentionally NOT cleared — configured before reset() via configureWave()
         // terrainGrid and random intentionally NOT cleared — set by EmulatedEngine before reset()
 
@@ -368,7 +369,7 @@ public class EmulatedGame {
                                  .findFirst().orElse(null);
 
         boolean autoResolved = false;
-        boolean trackerDriven = false;
+        boolean trackerDriven = t.trackerDriven();
         if (building == null) {
             final RaceModel model = (state == friendly) ? playerRaceModel : null;
             if (model != null && buildingTag != null && (buildingTag.startsWith("r-") || buildingTag.startsWith("pb-"))) {
@@ -413,6 +414,7 @@ public class EmulatedGame {
                         if (intentExecutionListener != null) {
                             intentExecutionListener.onTrainOutcome((int) gameFrame, t, resolvedTag, false, "wrong_building_type");
                         }
+                        deferIntent(t, state, physics);
                         return;
                     }
                 } else {
@@ -471,13 +473,13 @@ public class EmulatedGame {
         final int             activeSlots   = physics.activeTrainingCount(resolvedTag);
         final Deque<UnitType> existingQueue = physics.buildingQueues.get(resolvedTag);
         final int             total         = activeSlots + (existingQueue != null ? existingQueue.size() : 0);
-        final int queueLimit = autoResolved ? 20 : 5;
+        final int queueLimit = (autoResolved || trackerDriven) ? 20 : 5;
         if (!parallel && total >= queueLimit) {
             recordTrainDiagnostic(t, 5); // queue_full
             if (intentExecutionListener != null) {
                 intentExecutionListener.onTrainOutcome((int) gameFrame, t, resolvedTag, false, "queue_full");
             }
-            if (autoResolved) {deferIntent(t, state, physics);}
+            if (autoResolved || trackerDriven) {deferIntent(t, state, physics);}
             return;
         }
 
@@ -498,6 +500,7 @@ public class EmulatedGame {
                 reactoredBuildings.add(resolvedTag);
             }
         }
+        if (trackerDriven) {trackerDrivenBuildings.add(resolvedTag);}
         if (parallel || activeSlots < maxConcurrent) {
             startTraining(resolvedTag, t.unitType(), state, physics, absLoop);
         } else {
@@ -634,7 +637,7 @@ public class EmulatedGame {
             for (int s = 0; s < slotsToFill && !queue.isEmpty(); s++) {
                 UnitType next  = queue.peek();
                 int      sCost = SC2Data.supplyCost(next);
-                if (state.supplyUsed() + sCost > state.supply()) {break;}
+                if (!trackerDrivenBuildings.contains(buildingTag) && state.supplyUsed() + sCost > state.supply()) {break;}
                 queue.poll();
                 if (queue.isEmpty()) {physics.buildingQueues.remove(buildingTag);}
                 long completionLoop = physics.buildingCompletionAtLoop.getOrDefault(buildingTag, 0L);
@@ -1418,6 +1421,7 @@ public class EmulatedGame {
     }
 
     private final Set<String> reactoredBuildings = new HashSet<>();
+    private final Set<String> trackerDrivenBuildings = new HashSet<>();
 
     public void markBuildingReactored(String buildingTag) {reactoredBuildings.add(buildingTag);}
 
