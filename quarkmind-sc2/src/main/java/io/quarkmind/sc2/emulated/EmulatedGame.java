@@ -502,7 +502,7 @@ public class EmulatedGame {
         }
         if (trackerDriven) {trackerDrivenBuildings.add(resolvedTag);}
         if (parallel || activeSlots < maxConcurrent) {
-            startTraining(resolvedTag, t.unitType(), state, physics, absLoop);
+            startTraining(resolvedTag, t.unitType(), state, physics, absLoop, t.warpedIn());
         } else {
             physics.buildingQueues.computeIfAbsent(resolvedTag, k -> new ArrayDeque<>())
                                   .add(t.unitType());
@@ -577,12 +577,19 @@ public class EmulatedGame {
     private void startTraining(final String buildingTag, final UnitType unitType,
                                final PlayerState state, final PhysicsState physics,
                                final long absLoop) {
+        startTraining(buildingTag, unitType, state, physics, absLoop, false);
+    }
+
+    private void startTraining(final String buildingTag, final UnitType unitType,
+                               final PlayerState state, final PhysicsState physics,
+                               final long absLoop, final boolean warpedIn) {
         state.addSupplyUsed(SC2Data.supplyCost(unitType));
         final boolean   isEnemy = (state == enemy);
         final RaceModel model   = (state == friendly) ? playerRaceModel : null;
         final double speedMult = (model != null)
                                  ? model.trainingSpeedMultiplier(buildingTag, absLoop) : 1.0;
-        final int effectiveTrainLoops = (int) (SC2Data.trainTimeInLoops(unitType) * speedMult);
+        final int baseTrainLoops = warpedIn ? SC2Data.GATEWAY_WARP_IN_LOOPS : SC2Data.trainTimeInLoops(unitType);
+        final int effectiveTrainLoops = (int) (baseTrainLoops * speedMult);
         final int loopOffset          = (int) (absLoop % SC2Data.LOOPS_PER_TICK);
         final long completesAt = gameFrame
                                  + (loopOffset + effectiveTrainLoops) / SC2Data.LOOPS_PER_TICK;

@@ -24,6 +24,9 @@ public final class SC2Data {
     /** Game loops per real-time second at SC2 Faster speed (16 loops/sec × 1.4 multiplier). */
     public static final double GAME_LOOPS_PER_SECOND = 22.4;
 
+    /** Warp-in duration in game loops — all Gateway units share the same warp-in time (3.6 game seconds). */
+    public static final int GATEWAY_WARP_IN_LOOPS = 80;
+
     /** Mineral patches in a standard base. Determines the width of each saturation tier. */
     public static final int MINERAL_PATCHES_PER_BASE = 8;
 
@@ -294,6 +297,11 @@ public final class SC2Data {
     public static int trainTimeInTicks(UnitType type) {
         return trainTimeInLoops(type) / LOOPS_PER_TICK;
     }
+
+    public static boolean isGatewayUnit(UnitType type) {
+        return trainedBy(type) == BuildingType.GATEWAY;
+    }
+
 
     /**
      * Exact game-loop build time per building type.

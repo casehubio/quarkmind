@@ -64,6 +64,8 @@ public final class TrackerIntentExtractor {
                 ? buildBuildingIndex(replay.gameEvents.getEvents(), userId)
                 : new TreeMap<>();
 
+        int warpGateResearchLoop = findWarpGateResearchLoop(replay.trackerEvents.getEvents(), playerId);
+
         for (Event raw : replay.trackerEvents.getEvents()) {
             int id = raw.getId();
             switch (id) {
@@ -90,7 +92,27 @@ public final class TrackerIntentExtractor {
                     intents.add(new TimedIntent(commandLoop,
                                                 new TrainIntent(tag, unitType, true)));
                 }
-                case ITrackerEvents.ID_UNIT_INIT, ITrackerEvents.ID_UNIT_DONE -> {}
+                case ITrackerEvents.ID_UNIT_INIT -> {
+                    if (!(raw instanceof IBaseUnitEvent ue)) {continue;}
+                    Integer pid = ue.getControlPlayerId();
+                    if (pid == null || pid != playerId) {continue;}
+                    String typeName = String.valueOf(ue.getUnitTypeName()).trim();
+                    if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) {continue;}
+
+                    UnitType unitType = Sc2ReplayShared.toUnitType(typeName);
+                    if (unitType == UnitType.UNKNOWN) {continue;}
+                    if (!SC2Data.isGatewayUnit(unitType)) {continue;}
+                    if (warpGateResearchLoop < 0 || ue.getLoop() < warpGateResearchLoop) {continue;}
+
+                    int commandLoop = ue.getLoop();
+                    String resolved = lookupBuildingTag(
+                            buildingIndex, buildingTypeMap, commandLoop, unitType);
+                    String tag = resolved != null ? resolved
+                                                  : "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
+                    intents.add(new TimedIntent(commandLoop,
+                                                new TrainIntent(tag, unitType, true, true)));
+                }
+                case ITrackerEvents.ID_UNIT_DONE -> {}
                 case ITrackerEvents.ID_UPGRADE -> {
                     if (!(raw instanceof IUpgradeEvent up)) {continue;}
                     if (up.getPlayerId() == null || up.getPlayerId() != playerId) {continue;}
@@ -144,6 +166,19 @@ public final class TrackerIntentExtractor {
             }
         }
         return Race.PROTOSS;
+    }
+
+    static int findWarpGateResearchLoop(Event[] trackerEvents, int playerId) {
+        for (Event raw : trackerEvents) {
+            if (raw.getId() != ITrackerEvents.ID_UPGRADE) {continue;}
+            if (!(raw instanceof IUpgradeEvent up)) {continue;}
+            if (up.getPlayerId() == null || up.getPlayerId() != playerId) {continue;}
+            String name = String.valueOf(up.getUpgradeTypeName()).trim();
+            if ("WarpGateResearch".equals(name)) {
+                return up.getLoop();
+            }
+        }
+        return -1;
     }
 
 
