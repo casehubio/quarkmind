@@ -62,6 +62,24 @@ Tracker-driven intents that correctly matched a building via `lookupBuildingTag(
 
 EmulatedGame doesn't model unit deaths. Players lose units to combat, so GT count drops while Em count stays high. This is expected behaviour, not a physics bug. The `min(em, gt)` accuracy metric handles this by capping at GT.
 
+### insufficient_resources on tracker-driven research — RESOLVED (#490)
+
+Same pattern as #485 but for `ResearchIntent`. Tracker-derived upgrades hit economy gates in `handleResearch()`. Fixed by adding `trackerDriven` field to `ResearchIntent` — skips resource checks for tracker-proven research. Upgrade accuracy improved from 75% to 100% at 3min.
+
+### Uncalibrated train times — RESOLVED (#487)
+
+22 formula-derived train times (N×22.4) replaced with empirical values from 118 oracle replays (v4.9.3). Oracle calibration uses abilLink-based modal approach across all races. AI Arena calibration test remains as cross-source comparison but no longer asserts SC2Data values — oracle is authoritative. Marauder accuracy improved to 100% at 5min (+1 unit).
+
+## Accuracy Floor — 99.9%
+
+Established in #489. The tracker-driven pipeline achieves 99.9% unit accuracy at the 5-min checkpoint (4 missing out of 6807 across 118 oracle replays). This is a **structural floor**, not a tick-quantization artifact:
+
+- Running 2 extra ticks past the 5-min checkpoint recovers **zero** additional units
+- The 4 missing units (Phoenix ×1, Medivac ×1, Reaper ×1, Hellion ×1) are each from different replays
+- Root cause: building queue ordering — EmulatedGame's `shortestQueue` strategy distributes production differently than real SC2, causing some units to complete later
+
+Closing the gap would require per-building intent routing matching real SC2's exact queue assignment, which is beyond the scope of the tracker-driven pipeline. 99.9% is the practical ceiling.
+
 ## Protocol
 
 Per `calibration-milestones-are-waypoints`: accuracy targets are waypoints, not destinations. When a target is reached (or diminishing returns are hit), assess what the data revealed and replan — don't declare victory.
