@@ -70,15 +70,15 @@ Same pattern as #485 but for `ResearchIntent`. Tracker-derived upgrades hit econ
 
 22 formula-derived train times (N×22.4) replaced with empirical values from 118 oracle replays (v4.9.3). Oracle calibration uses abilLink-based modal approach across all races. AI Arena calibration test remains as cross-source comparison but no longer asserts SC2Data values — oracle is authoritative. Marauder accuracy improved to 100% at 5min (+1 unit).
 
-## Accuracy Floor — 99.9%
+## Accuracy: 100% — and the false floor lesson
 
-Established in #489. The tracker-driven pipeline achieves 99.9% unit accuracy at the 5-min checkpoint (4 missing out of 6807 across 118 oracle replays). This is a **structural floor**, not a tick-quantization artifact:
+Tracker-driven unit accuracy reached 100% (6807/6807 at 5min) in #492. The path there included a wrong turn worth documenting.
 
-- Running 2 extra ticks past the 5-min checkpoint recovers **zero** additional units
-- The 4 missing units (Phoenix ×1, Medivac ×1, Reaper ×1, Hellion ×1) are each from different replays
-- Root cause: building queue ordering — EmulatedGame's `shortestQueue` strategy distributes production differently than real SC2, causing some units to complete later
+At 99.9%, a tick quantization diagnostic (#489) showed zero recovery at +2 ticks. The root cause appeared to be building queue ordering — the emulator's `shortestQueue` assignment put 4 units on different buildings than the real player used, causing them to complete late. This was documented as a "structural floor."
 
-Closing the gap would require per-building intent routing matching real SC2's exact queue assignment, which is beyond the scope of the tracker-driven pipeline. 99.9% is the practical ceiling.
+The conclusion was wrong. The emulator was re-deriving completion times from queue position when the tracker event already contained the exact completion loop. The fix: pass the original `completionLoop` through `TrainIntent` and pin the completion tick to the tracker value instead of computing it from queue position. Fourteen lines of change, 4 units recovered.
+
+**The lesson:** when you have ground truth (tracker events), use it. Let approximations (queue ordering) fill gaps where ground truth doesn't exist. Don't let them overwrite ground truth where it does. A thorough diagnostic that reasons about the approximation layer can produce a confident, well-evidenced, wrong answer.
 
 ## Protocol
 
