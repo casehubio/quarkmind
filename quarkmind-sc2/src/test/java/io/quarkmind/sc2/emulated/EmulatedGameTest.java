@@ -229,6 +229,28 @@ class EmulatedGameTest {
     }
 
     @Test
+    void trackerDrivenTrainIntentDeductsMinerals() {
+        game.setMineralsForTesting(500);
+        game.setSupplyForTesting(200, 0);
+        Building gw = game.spawnBuildingForTesting(BuildingType.GATEWAY, new Point2d(20, 20));
+        game.applyIntent(new TimedIntent(0, new TrainIntent(gw.tag(), UnitType.ZEALOT, true, false, 500)));
+        assertThat(game.snapshot().minerals()).isEqualTo(400);
+    }
+
+    @Test
+    void trackerDrivenTrainIntentNotGatedByInsufficientResources() {
+        game.setMineralsForTesting(10);
+        game.setSupplyForTesting(200, 0);
+        Building gw = game.spawnBuildingForTesting(BuildingType.GATEWAY, new Point2d(20, 20));
+        game.applyIntent(new TimedIntent(0, new TrainIntent(gw.tag(), UnitType.ZEALOT, true, false, 500)));
+        for (int i = 0; i < 28; i++) {game.tick();}
+        long zealots = game.snapshot().myUnits().stream()
+                           .filter(u -> u.type() == UnitType.ZEALOT).count();
+        assertThat(zealots).as("Tracker-driven intent must not be gated by resources").isGreaterThan(0);
+    }
+
+
+    @Test
     void unitDiedIntentRemovesUnitAndDeductsSupply() {
         game.setMineralsForTesting(500);
         game.setSupplyForTesting(200, 0);

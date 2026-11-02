@@ -469,6 +469,15 @@ public class EmulatedGame {
             if (state == friendly) {
                 economyTracker.recordTrainSpending(t.unitType(), mCost, gCost);
             }
+        } else {
+            final int count = SC2Data.trainCount(t.unitType());
+            final int mCost = SC2Data.mineralCost(t.unitType()) * count;
+            final int gCost = SC2Data.gasCost(t.unitType()) * count;
+            state.deductMinerals(mCost);
+            state.deductVespene(gCost);
+            if (state == friendly) {
+                economyTracker.recordTrainSpending(t.unitType(), mCost, gCost);
+            }
         }
 
         final boolean         parallel      = model != null && model.parallelProduction();
@@ -991,6 +1000,14 @@ public class EmulatedGame {
                 log.debugf("[EMULATED] Research deferred/rejected — insufficient resources for %s", r.upgradeType());
                 return;
             }
+            state.deductMinerals(mCost);
+            state.deductVespene(gCost);
+            if (state == friendly) {
+                economyTracker.recordResearchSpending(mCost, gCost);
+            }
+        } else {
+            int mCost = SC2Data.upgradeMineralCost(r.upgradeType());
+            int gCost = SC2Data.upgradeVespeneCost(r.upgradeType());
             state.deductMinerals(mCost);
             state.deductVespene(gCost);
             if (state == friendly) {
