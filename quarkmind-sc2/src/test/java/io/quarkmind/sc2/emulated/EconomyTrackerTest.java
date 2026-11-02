@@ -54,6 +54,22 @@ class EconomyTrackerTest {
     }
 
     @Test
+    void collectionRateIsConvertedToPerMinute() {
+        var tracker = new EconomyTracker();
+        // Record exactly 10.0 minerals/tick and 2.0 gas/tick for one rate interval (7 ticks)
+        for (int i = 0; i < 7; i++) {
+            tracker.recordIncome(10.0, 2.0);
+            tracker.tickUpdate(0, 0, 15, 6, 12);
+        }
+        var stats = tracker.currentStats(0, 0, 15, 6, 12);
+        // Expected: 10.0 minerals/tick × (60 × 22.4 / 22) ticks/min ≈ 610 minerals/min
+        double ticksPerMin = 60.0 * 22.4 / 22.0;
+        assertThat(stats.mineralsCollectionRate()).isEqualTo((int) (10.0 * ticksPerMin));
+        assertThat(stats.vespeneCollectionRate()).isEqualTo((int) (2.0 * ticksPerMin));
+    }
+
+
+    @Test
     void reportsSupplyAndWorkers() {
         var tracker = new EconomyTracker();
         var stats = tracker.currentStats(200, 100, 31, 18, 16);

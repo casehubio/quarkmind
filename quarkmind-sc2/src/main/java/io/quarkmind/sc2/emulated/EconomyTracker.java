@@ -24,6 +24,8 @@ class EconomyTracker {
 
 
     private static final int RATE_INTERVAL_TICKS = 7;
+    private static final double TICKS_PER_MINUTE = 60.0 * SC2Data.GAME_LOOPS_PER_SECOND / SC2Data.LOOPS_PER_TICK;
+
 
     void recordTrainSpending(UnitType type, int mineralCost, int gasCost) {
         if (SC2Data.isWorker(type)) {
@@ -73,8 +75,10 @@ class EconomyTracker {
                     int supply, int supplyUsed, int workerCount) {
         ticksSinceRateUpdate++;
         if (ticksSinceRateUpdate >= RATE_INTERVAL_TICKS) {
-            mineralRate          = (int) Math.max(0, grossMinerals - prevGrossMinerals);
-            vespeneRate          = (int) Math.max(0, grossVespene - prevGrossVespene);
+            double perTickMineral = (grossMinerals - prevGrossMinerals) / RATE_INTERVAL_TICKS;
+            double perTickVespene = (grossVespene - prevGrossVespene) / RATE_INTERVAL_TICKS;
+            mineralRate          = (int) Math.max(0, perTickMineral * TICKS_PER_MINUTE);
+            vespeneRate          = (int) Math.max(0, perTickVespene * TICKS_PER_MINUTE);
             prevGrossMinerals    = grossMinerals;
             prevGrossVespene     = grossVespene;
             ticksSinceRateUpdate = 0;
