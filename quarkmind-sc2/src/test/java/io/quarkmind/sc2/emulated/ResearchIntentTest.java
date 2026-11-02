@@ -151,6 +151,58 @@ class ResearchIntentTest {
         assertThat(state.playerUpgrades()).contains("ProtossGroundWeaponsLevel1", "ProtossGroundArmorsLevel1");
     }
 
+
+    @Test
+    void trackerDrivenResearchBypassesEconomyGate() {
+        injectBuilding(BuildingType.FORGE, "r-forge-1");
+        game.setMineralsForTesting(0);
+        game.setVespeneForHarness(0);
+
+        game.applyIntent(new TimedIntent(0,
+                                         new ResearchIntent("r-forge-1", UpgradeType.PROTOSS_GROUND_WEAPONS_1, 0, true)));
+
+        int durationTicks = SC2Data.upgradeTimeInLoops(UpgradeType.PROTOSS_GROUND_WEAPONS_1) / SC2Data.LOOPS_PER_TICK;
+        for (int i = 0; i < durationTicks + 1; i++) {
+            game.tick();
+        }
+
+        assertThat(game.snapshot().playerUpgrades()).contains("ProtossGroundWeaponsLevel1");
+    }
+
+    @Test
+    void nonTrackerDrivenResearchBlockedByEconomyGate() {
+        injectBuilding(BuildingType.FORGE, "forge-1");
+        game.setMineralsForTesting(0);
+        game.setVespeneForHarness(0);
+
+        game.applyIntent(new TimedIntent(0,
+                                         new ResearchIntent("forge-1", UpgradeType.PROTOSS_GROUND_WEAPONS_1, 0, false)));
+
+        int durationTicks = SC2Data.upgradeTimeInLoops(UpgradeType.PROTOSS_GROUND_WEAPONS_1) / SC2Data.LOOPS_PER_TICK;
+        for (int i = 0; i < durationTicks + 1; i++) {
+            game.tick();
+        }
+
+        assertThat(game.snapshot().playerUpgrades()).doesNotContain("ProtossGroundWeaponsLevel1");
+    }
+
+    @Test
+    void trackerDrivenResearchAutoResolvesBuilding() {
+        injectBuilding(BuildingType.FORGE, "forge-1");
+        game.setMineralsForTesting(0);
+        game.setVespeneForHarness(0);
+
+        game.applyIntent(new TimedIntent(0,
+                                         new ResearchIntent("r-tracker", UpgradeType.PROTOSS_GROUND_WEAPONS_1, 0, true)));
+
+        int durationTicks = SC2Data.upgradeTimeInLoops(UpgradeType.PROTOSS_GROUND_WEAPONS_1) / SC2Data.LOOPS_PER_TICK;
+        for (int i = 0; i < durationTicks + 1; i++) {
+            game.tick();
+        }
+
+        assertThat(game.snapshot().playerUpgrades()).contains("ProtossGroundWeaponsLevel1");
+    }
+
     @Test
     void upgradeStateResetOnGameReset() {
         injectBuilding(BuildingType.FORGE, "forge-1");

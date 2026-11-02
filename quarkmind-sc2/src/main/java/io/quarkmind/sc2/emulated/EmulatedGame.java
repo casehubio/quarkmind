@@ -929,8 +929,9 @@ public class EmulatedGame {
             log.debugf("[EMULATED] Research rejected — %s already completed", r.upgradeType());
             return;
         }
-        final boolean autoResolved = isAutoResolvable(r.buildingTag());
-        if (!autoResolved && physics.buildingResearching.containsKey(r.buildingTag())) {
+        final boolean autoResolved  = isAutoResolvable(r.buildingTag());
+        final boolean trackerDriven = r.trackerDriven();
+        if (!autoResolved && !trackerDriven && physics.buildingResearching.containsKey(r.buildingTag())) {
             log.debugf("[EMULATED] Research rejected — building %s already researching %s",
                        r.buildingTag(), physics.buildingResearching.get(r.buildingTag()));
             return;
@@ -938,7 +939,7 @@ public class EmulatedGame {
         Building building = state.buildings().stream()
                                  .filter(b -> b.tag().equals(r.buildingTag()) && b.isComplete())
                                  .findFirst().orElse(null);
-        if (building == null && autoResolved) {
+        if (building == null && (autoResolved || trackerDriven)) {
             final BuildingType required = SC2Data.researchedAt(r.upgradeType());
             building = state.buildings().stream()
                             .filter(b -> b.isComplete()
@@ -947,23 +948,25 @@ public class EmulatedGame {
                             .findFirst().orElse(null);
         }
         if (building == null) {
-            if (autoResolved) {deferResearchIntent(r);}
+            if (autoResolved || trackerDriven) {deferResearchIntent(r);}
             log.debugf("[EMULATED] Research deferred/rejected — no %s building for %s",
                        SC2Data.researchedAt(r.upgradeType()), r.upgradeType());
             return;
         }
         final String resolvedTag = building.tag();
-        int          mCost       = SC2Data.upgradeMineralCost(r.upgradeType());
-        int          gCost       = SC2Data.upgradeVespeneCost(r.upgradeType());
-        if ((int) state.minerals() < mCost || state.vespene() < gCost) {
-            if (autoResolved) {deferResearchIntent(r);}
-            log.debugf("[EMULATED] Research deferred/rejected — insufficient resources for %s", r.upgradeType());
-            return;
-        }
-        state.deductMinerals(mCost);
-        state.deductVespene(gCost);
-        if (state == friendly) {
-            economyTracker.recordResearchSpending(mCost, gCost);
+        if (!trackerDriven) {
+            int mCost = SC2Data.upgradeMineralCost(r.upgradeType());
+            int gCost = SC2Data.upgradeVespeneCost(r.upgradeType());
+            if ((int) state.minerals() < mCost || state.vespene() < gCost) {
+                if (autoResolved) {deferResearchIntent(r);}
+                log.debugf("[EMULATED] Research deferred/rejected — insufficient resources for %s", r.upgradeType());
+                return;
+            }
+            state.deductMinerals(mCost);
+            state.deductVespene(gCost);
+            if (state == friendly) {
+                economyTracker.recordResearchSpending(mCost, gCost);
+            }
         }
         int  durationLoops  = SC2Data.upgradeTimeInLoops(r.upgradeType());
         long effectiveStart = (r.commandLoop() >= 0) ? r.commandLoop() : absLoop;

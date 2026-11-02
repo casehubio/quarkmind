@@ -106,7 +106,7 @@ public final class TrackerIntentExtractor {
                             buildingIndex, commandLoop);
                     intents.add(new TimedIntent(commandLoop,
                                                 new ResearchIntent(resolvedBuilding != null ? resolvedBuilding : "r-tracker",
-                                                                   ut, commandLoop)));
+                                                                   ut, commandLoop, true)));
                 }
                 default -> {}
             }

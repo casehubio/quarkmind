@@ -1,4 +1,4 @@
-# Tracker-Driven EmulatedGame Accuracy Baseline — 2026-11-01
+# Tracker-Driven EmulatedGame Accuracy Baseline — 2026-11-02
 
 **Dataset:** Oracle (118 replays, v4.9.3)
 **Processed:** 118 replays, 236 player runs
@@ -109,19 +109,19 @@ Accuracy: 100.0% (0/0)
 
 ### Upgrades
 
-Accuracy: 75.0% (3/4)
+Accuracy: 100.0% (4/4)
 
 | Upgrade | GT | Matched | Accuracy |
 |---|---|---|---|
 | PunisherGrenades | 1 | 1 | 100.0% |
-| zerglingmovementspeed | 3 | 2 | 66.7% |
+| zerglingmovementspeed | 3 | 3 | 100.0% |
 
 ### Economy — Aggregate Error
 
 | Field | GT (sum) | Em (sum) | Error% |
 |---|---|---|---|
-| mineralsCurrent | 46751 | 323805 | 592.6% |
-| vespeneCurrent | 24254 | 23554 | 2.9% |
+| mineralsCurrent | 46751 | 328405 | 602.5% |
+| vespeneCurrent | 24254 | 24254 | 0.0% |
 | mineralsCollectionRate | 171704 | 13060 | 92.4% |
 | vespeneCollectionRate | 39512 | 3116 | 92.1% |
 | foodMade | 7024 | 7024 | 0.0% |
@@ -210,7 +210,7 @@ Accuracy: 75.0% (3/4)
 
 ### Upgrades
 
-Accuracy: 98.1% (101/103)
+Accuracy: 100.0% (103/103)
 
 | Upgrade | GT | Matched | Accuracy |
 |---|---|---|---|
@@ -226,14 +226,14 @@ Accuracy: 98.1% (101/103)
 | WarpGateResearch | 39 | 39 | 100.0% |
 | ZergMeleeWeaponsLevel1 | 1 | 1 | 100.0% |
 | overlordspeed | 3 | 3 | 100.0% |
-| zerglingmovementspeed | 40 | 38 | 95.0% |
+| zerglingmovementspeed | 40 | 40 | 100.0% |
 
 ### Economy — Aggregate Error
 
 | Field | GT (sum) | Em (sum) | Error% |
 |---|---|---|---|
-| mineralsCurrent | 66699 | 518894 | 678.0% |
-| vespeneCurrent | 43390 | 43290 | 0.2% |
+| mineralsCurrent | 66699 | 535319 | 702.6% |
+| vespeneCurrent | 43390 | 43390 | 0.0% |
 | mineralsCollectionRate | 208770 | 15323 | 92.7% |
 | vespeneCollectionRate | 50869 | 3940 | 92.3% |
 | foodMade | 9520 | 9520 | 0.0% |
@@ -372,7 +372,7 @@ Accuracy: 100.0% (185/185)
 
 | Field | GT (sum) | Em (sum) | Error% |
 |---|---|---|---|
-| mineralsCurrent | 89788 | 648839 | 622.6% |
+| mineralsCurrent | 89788 | 677264 | 654.3% |
 | vespeneCurrent | 52228 | 52228 | 0.0% |
 | mineralsCollectionRate | 201496 | 15064 | 92.5% |
 | vespeneCollectionRate | 61091 | 4912 | 92.0% |
