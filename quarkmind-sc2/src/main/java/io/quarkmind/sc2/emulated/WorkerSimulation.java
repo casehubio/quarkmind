@@ -41,7 +41,7 @@ class WorkerSimulation {
         List<MineralPatch> patches = new ArrayList<>();
         int                baseIdx = bases.size();
         for (Resource r : mineralResources) {
-            patches.add(new MineralPatch(r.position(), baseIdx, r.remaining()));
+            patches.add(new MineralPatch(r.position(), baseIdx, r.remaining(), r.rich()));
         }
         bases.add(new BaseEntry(tag, position, patches));
     }
@@ -134,7 +134,8 @@ class WorkerSimulation {
             }
             w.cycleTicksRemaining--;
             if (w.cycleTicksRemaining <= 0) {
-                w.cargo = w.assignedPatch.harvest(SimulatedWorker.MINERAL_CARGO);
+                double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
+                w.cargo = w.assignedPatch.harvest(cargo);
                 w.assignedPatch.occupant = null;
                 w.task = WorkerTask.RETURNING_MINERALS;
                 w.targetPosition = bases.get(w.baseIndex).position();

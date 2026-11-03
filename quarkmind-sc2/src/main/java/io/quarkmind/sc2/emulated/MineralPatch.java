@@ -13,12 +13,20 @@ class MineralPatch {
     final   int     baseIndex;
     private double  remainingMinerals;
     SimulatedWorker occupant;
+    final boolean rich;
 
-    MineralPatch(Point2d position, int baseIndex, double initialMinerals) {
+
+    MineralPatch(Point2d position, int baseIndex, double initialMinerals, boolean rich) {
         this.position          = position;
         this.baseIndex         = baseIndex;
         this.remainingMinerals = initialMinerals;
+        this.rich              = rich;
     }
+
+    MineralPatch(Point2d position, int baseIndex, double initialMinerals) {
+        this(position, baseIndex, initialMinerals, false);
+    }
+
 
     boolean isDepleted() {
         return remainingMinerals <= 0;

@@ -249,6 +249,62 @@ class WorkerSimulationTest {
                      "Total should equal sum of explicit amounts: 1000 + 500 + 500 + 500");
     }
 
+
+    @Test
+    void richPatch_yields7MineralsPerTrip() {
+        WorkerSimulation richSim = new WorkerSimulation();
+        List<Resource> patches = List.of(
+                new Resource("m-1", new Point2d(44, 50), 1500, true),
+                new Resource("m-2", new Point2d(56, 50), 1500, false)
+                                        );
+        richSim.onTownHallCompleted(BASE_TAG, BASE_POS, patches);
+        richSim.onInitialWorkers(List.of("w-rich"), BASE_POS, BASE_TAG);
+
+        WorkerSimulation normalSim = new WorkerSimulation();
+        List<Resource> normalPatches = List.of(
+                new Resource("m-1", new Point2d(44, 50), 1500, false),
+                new Resource("m-2", new Point2d(56, 50), 1500, false)
+                                              );
+        normalSim.onTownHallCompleted(BASE_TAG, BASE_POS, normalPatches);
+        normalSim.onInitialWorkers(List.of("w-normal"), BASE_POS, BASE_TAG);
+
+        double richIncome   = 0;
+        double normalIncome = 0;
+        for (int t = 0; t < 200; t++) {
+            richIncome += richSim.tick().mineralIncome();
+            normalIncome += normalSim.tick().mineralIncome();
+        }
+
+        assertTrue(richIncome > normalIncome,
+                   "Rich patch worker (" + richIncome + ") should earn more than normal (" + normalIncome + ")");
+        double ratio = richIncome / normalIncome;
+        assertTrue(ratio > 1.3 && ratio < 1.5,
+                   "Rich/normal ratio should be ~1.4 (7/5), got " + ratio);
+    }
+
+    @Test
+    void richPatch_totalMineralsDepleted_sameAsNormal() {
+        WorkerSimulation richSim = new WorkerSimulation();
+        List<Resource> patches = List.of(
+                new Resource("m-1", new Point2d(44, 50), 100, true)
+                                        );
+        richSim.onTownHallCompleted(BASE_TAG, BASE_POS, patches);
+        richSim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
+        double totalRich = 0;
+        for (int t = 0; t < 100_000; t++) {
+            totalRich += richSim.tick().mineralIncome();
+        }
+        assertEquals(100.0, totalRich, 0.001,
+                     "Rich patch still has same total minerals — just harvested faster");
+    }
+
+    @Test
+    void resourceRecord_richDefaultsFalse() {
+        Resource r = new Resource("m-1", new Point2d(10, 10), 1500);
+        assertEquals(false, r.rich(), "3-arg constructor should default rich to false");
+    }
+
+
     @Test
     void mixedPatches_totalMinerals_lessThankUniform() {
         sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);

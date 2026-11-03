@@ -5,7 +5,16 @@ import com.github.ocraft.s2client.protocol.observation.Observation;
 import com.github.ocraft.s2client.protocol.observation.PlayerCommon;
 import com.github.ocraft.s2client.protocol.observation.raw.ObservationRaw;
 import com.github.ocraft.s2client.protocol.unit.Alliance;
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Building;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.GameState;
+import io.quarkmind.domain.NeutralFeature;
+import io.quarkmind.domain.NeutralFeatureType;
+import io.quarkmind.domain.PlayerEconomyStats;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Resource;
+import io.quarkmind.domain.Unit;
+import io.quarkmind.domain.UnitType;
 
 import java.util.List;
 import java.util.Set;
@@ -78,6 +87,10 @@ public final class ObservationTranslator {
             Units.NEUTRAL_BATTLE_STATION_MINERAL_FIELD,
             Units.NEUTRAL_BATTLE_STATION_MINERAL_FIELD750
                                                                 );
+    private static final Set<Units> RICH_MINERAL_PATCHES = Set.of(
+            Units.NEUTRAL_RICH_MINERAL_FIELD,
+            Units.NEUTRAL_RICH_MINERAL_FIELD750
+                                                                 );
 
 
     private ObservationTranslator() {}
@@ -125,12 +138,12 @@ public final class ObservationTranslator {
 
         List<Resource> geysers = neutralUnits.stream()
                                              .filter(u -> isGeyser(toUnitsEnum(u)))
-                                             .map(u -> toResource(u, defaultGeyserAmount(toUnitsEnum(u))))
+                                             .map(u -> toResource(u, defaultGeyserAmount(toUnitsEnum(u)), false))
                                              .toList();
 
         List<Resource> mineralPatches = neutralUnits.stream()
                                                     .filter(u -> isMineralPatch(toUnitsEnum(u)))
-                                                    .map(u -> toResource(u, defaultMineralAmount(toUnitsEnum(u))))
+                                                    .map(u -> toResource(u, defaultMineralAmount(toUnitsEnum(u)), RICH_MINERAL_PATCHES.contains(toUnitsEnum(u))))
                                                     .toList();
 
         PlayerCommon common = obs.getPlayerCommon();
@@ -307,12 +320,13 @@ public final class ObservationTranslator {
         );
     }
 
-    private static Resource toResource(com.github.ocraft.s2client.protocol.unit.Unit u, int amount) {
+    private static Resource toResource(com.github.ocraft.s2client.protocol.unit.Unit u, int amount, boolean rich) {
         var pos = u.getPosition();
         return new Resource(
                 String.valueOf(u.getTag().getValue()),
                 new Point2d(pos.getX(), pos.getY()),
-                amount
+                amount,
+                rich
         );
     }
 

@@ -194,7 +194,7 @@ public class IEM10JsonSimulatedGame extends SimulatedGame {
             if (Sc2ReplayShared.isGeyser(unitName)) {
                 addGeyser(new Resource(tag, pos, Sc2ReplayShared.defaultGeyserAmount(unitName)));
             } else if (Sc2ReplayShared.isMineralPatch(unitName)) {
-                addMineralPatch(new Resource(tag, pos, Sc2ReplayShared.defaultMineralAmount(unitName)));
+                addMineralPatch(new Resource(tag, pos, Sc2ReplayShared.defaultMineralAmount(unitName), Sc2ReplayShared.isRichMineral(unitName)));
             }
         } else if (Sc2ReplayShared.BUILDING_NAMES.contains(unitName)) {
             BuildingType bt = toBuildingType(unitName);

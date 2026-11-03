@@ -2,10 +2,11 @@ package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.SC2Data;
-import io.quarkmind.domain.UnitType;
 
 class SimulatedWorker {
     static final double MINERAL_CARGO = 5.0;
+    static final double RICH_MINERAL_CARGO = 7.0;
+
     static final int MINING_DURATION_LOOPS = 46;
     static final int MINING_DURATION_TICKS =
             (int) Math.ceil((double) MINING_DURATION_LOOPS / SC2Data.LOOPS_PER_TICK);

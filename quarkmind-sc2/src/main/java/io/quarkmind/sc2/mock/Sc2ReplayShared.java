@@ -1,6 +1,9 @@
 package io.quarkmind.sc2.mock;
 
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.UnitType;
+
 import java.util.Set;
 
 /** Shared constants and lookup tables for replay-based SimulatedGame implementations. */
@@ -19,6 +22,11 @@ public final class Sc2ReplayShared {
             || unitName.startsWith("LabMineralField") || unitName.startsWith("PurifierMineralField")
             || unitName.startsWith("BattleStationMineralField");
     }
+
+    static boolean isRichMineral(String unitName) {
+        return unitName.startsWith("RichMineralField") || unitName.startsWith("PurifierRichMineralField");
+    }
+
 
     static int defaultGeyserAmount(String unitName) {
         return unitName.contains("Rich") ? 2500 : 2250;
