@@ -1492,6 +1492,13 @@ public class EmulatedGame {
      */
     public void injectReplayBuilding(Building building) {
         friendly.addBuilding(building);
+        if (building.isComplete() && playerRaceModel != null) {
+            if (playerRaceModel.townHallTypes().contains(building.type())) {
+                workerAssignment.onTownHallCompleted(building.tag(), building.position());
+            } else if (SC2Data.isGasBuilding(building.type())) {
+                workerAssignment.onGasBuildingCompleted(building.tag(), building.position());
+            }
+        }
     }
 
     /**
@@ -1505,6 +1512,13 @@ public class EmulatedGame {
     public void injectReplayBuildingWithCost(Building building) {
         friendly.deductMinerals(SC2Data.mineralCost(building.type()));
         friendly.addBuilding(building);
+        if (building.isComplete() && playerRaceModel != null) {
+            if (playerRaceModel.townHallTypes().contains(building.type())) {
+                workerAssignment.onTownHallCompleted(building.tag(), building.position());
+            } else if (SC2Data.isGasBuilding(building.type())) {
+                workerAssignment.onGasBuildingCompleted(building.tag(), building.position());
+            }
+        }
     }
 
     /**
@@ -1533,12 +1547,25 @@ public class EmulatedGame {
     }
 
     public void syncReplayBuilding(Building gtBuilding) {
+        boolean wasIncomplete = friendly.buildings().stream()
+            .anyMatch(b -> b.tag().equals(gtBuilding.tag()) && !b.isComplete());
         friendly.replaceAllBuildings(b -> b.tag().equals(gtBuilding.tag())
                                           ? new Building(b.tag(), gtBuilding.type(), b.position(),
                                                          b.health(), b.maxHealth(), gtBuilding.isComplete())
                                           : b);
         if (gtBuilding.isComplete() && playerRaceModel != null) {
             playerRaceModel.onBuildingComplete(friendly, gtBuilding.type(), gtBuilding.tag());
+            if (wasIncomplete) {
+                Building synced = friendly.buildings().stream()
+                    .filter(b -> b.tag().equals(gtBuilding.tag())).findFirst().orElse(null);
+                if (synced != null) {
+                    if (playerRaceModel.townHallTypes().contains(gtBuilding.type())) {
+                        workerAssignment.onTownHallCompleted(gtBuilding.tag(), synced.position());
+                    } else if (SC2Data.isGasBuilding(gtBuilding.type())) {
+                        workerAssignment.onGasBuildingCompleted(gtBuilding.tag(), synced.position());
+                    }
+                }
+            }
         }
     }
 

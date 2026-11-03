@@ -47,6 +47,7 @@ class WorkerAssignment {
     void onGasBuildingCompleted(String buildingTag, Point2d position) {
         BaseEntry nearest = findNearestBase(position);
         if (nearest == null) return;
+        if (hasGasBuildingNear(position)) return;
         Set<String> gasWorkers = new LinkedHashSet<>();
         nearest.gasWorkerTagsByBuilding.put(buildingTag, gasWorkers);
         Iterator<String> it = nearest.mineralWorkerTags.iterator();
@@ -57,6 +58,18 @@ class WorkerAssignment {
             gasWorkers.add(workerTag);
             transferred++;
         }
+    }
+
+    private final List<Point2d> assignedGasPositions = new ArrayList<>();
+
+    private boolean hasGasBuildingNear(Point2d position) {
+        for (Point2d existing : assignedGasPositions) {
+            double dx = position.x() - existing.x();
+            double dy = position.y() - existing.y();
+            if (dx * dx + dy * dy < 4.0) return true;
+        }
+        assignedGasPositions.add(position);
+        return false;
     }
 
     void onWorkerDied(String workerTag) {
@@ -93,6 +106,7 @@ class WorkerAssignment {
         bases.clear();
         workerToBase.clear();
         unassignedWorkers.clear();
+        assignedGasPositions.clear();
     }
 
     private void redistributeOnExpansion(BaseEntry newBase) {
