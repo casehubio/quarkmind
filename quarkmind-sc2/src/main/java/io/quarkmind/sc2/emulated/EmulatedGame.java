@@ -56,9 +56,17 @@ public class EmulatedGame {
     // --- Per-player state ---
     final PlayerState friendly = new PlayerState();
     public final PlayerState enemy    = new PlayerState();
-    private final WorkerAssignment workerAssignment = new WorkerAssignment();
+    private final WorkerSimulation workerSimulation = new WorkerSimulation();
 
-    WorkerAssignment workerAssignment() {return workerAssignment;}
+    WorkerSimulation workerSimulation() {return workerSimulation;}
+
+    public void syncMineralWorkersFromGt(int[] mineralWorkersPerBase) {
+        workerSimulation.syncMineralWorkersFromGt(mineralWorkersPerBase);
+    }
+
+    public void syncGasWorkersFromGt(java.util.Map<String, Integer> gasWorkersPerBuilding) {
+        workerSimulation.syncGasWorkersFromGt(gasWorkersPerBuilding);
+    }
 
 
     // --- Physics state (movement targets, cooldowns, production queues) ---
@@ -74,8 +82,6 @@ public class EmulatedGame {
 
     // --- Shared / game-level state ---
     private long gameFrame;
-    private int[] miningProbesPerBase;
-    private boolean miningProbesOverridden;
     private int  nextTag = 200;
     private double unitSpeed = 0.5;
     private final List<Resource> geysers = new ArrayList<>();
@@ -97,10 +103,9 @@ public class EmulatedGame {
         enemy.clear();
         enemyPhysics.clear();
         economyTracker.reset();
-        workerAssignment.reset();
+        workerSimulation.reset();
         nextTag     = 200;
         gameFrame   = 0;
-        miningProbesOverridden = false;
         movementStrategy.reset();
         visibility.reset();
         geysers.clear();
@@ -115,7 +120,7 @@ public class EmulatedGame {
         playerRaceModel.seedInitialState(friendly, geysers);
         for (Building b : friendly.buildings()) {
             if (playerRaceModel.townHallTypes().contains(b.type()) && b.isComplete()) {
-                workerAssignment.onTownHallCompleted(b.tag(), b.position());
+                workerSimulation.onTownHallCompleted(b.tag(), b.position());
             }
         }
         List<String> initialWorkerTags = friendly.units().stream()
@@ -125,9 +130,8 @@ public class EmulatedGame {
             .filter(b -> playerRaceModel.townHallTypes().contains(b.type()) && b.isComplete())
             .findFirst().orElse(null);
         if (mainBase != null && !initialWorkerTags.isEmpty()) {
-            workerAssignment.onInitialWorkers(initialWorkerTags, mainBase.position(), mainBase.tag());
+            workerSimulation.onInitialWorkers(initialWorkerTags, mainBase.position(), mainBase.tag());
         }
-        miningProbesPerBase = workerAssignment.mineralWorkersPerBase();
 
         // Seed enemy player with effectively unlimited supply and gas so TrainIntents are never
         // rejected by resource checks. Minerals are earned each tick via EnemyBehavior.accumulateMinerals().
@@ -139,32 +143,13 @@ public class EmulatedGame {
     }
 
     public void tick() {
-        if (miningProbesOverridden) {
-            miningProbesOverridden = false;
-        } else {
-            miningProbesPerBase = workerAssignment.mineralWorkersPerBase();
-        }
         gameFrame++;
 
-        // Mineral and gas income — delayed on game start to model worker travel time
-        double tickMineralIncome = 0;
-        double tickGasIncome = 0;
-        if (gameFrame > SC2Data.MINING_START_DELAY_TICKS) {
-            for (final int workersAtBase : miningProbesPerBase) {
-                double income = SC2Data.mineralIncomePerTick(workersAtBase);
-                friendly.addMinerals(income);
-                tickMineralIncome += income;
-            }
-
-            for (final Building b : friendly.buildings()) {
-                if (!SC2Data.isGasBuilding(b.type()) || !b.isComplete()) continue;
-                final int workersOnThisGeyser = workerAssignment.gasWorkersForBuilding(b.tag());
-                if (workersOnThisGeyser <= 0) continue;
-                double gasIncome = SC2Data.gasIncomePerTick(workersOnThisGeyser);
-                friendly.addVespene(gasIncome);
-                tickGasIncome += gasIncome;
-            }
-        }
+        TickIncome workerIncome = workerSimulation.tick();
+        double tickMineralIncome = workerIncome.mineralIncome();
+        double tickGasIncome = workerIncome.vespeneIncome();
+        friendly.addMinerals(tickMineralIncome);
+        friendly.addVespene(tickGasIncome);
         double passiveMineralIncome = playerRaceModel.tickPassive(friendly, gameFrame * (long) SC2Data.LOOPS_PER_TICK);
         tickMineralIncome += passiveMineralIncome;
         economyTracker.recordIncome(tickMineralIncome, tickGasIncome);
@@ -638,7 +623,7 @@ public class EmulatedGame {
                     Building bldg = state.buildings().stream()
                         .filter(bl -> bl.tag().equals(buildingTag)).findFirst().orElse(null);
                     Point2d spawnPos = (bldg != null) ? bldg.position() : new Point2d(9, 9);
-                    workerAssignment.onWorkerProduced(tag, spawnPos);
+                    workerSimulation.onWorkerProduced(tag, spawnPos);
                 }
                 if (isEnemy && enemyBehavior != null) {enemyBehavior.notifyUnitTrained();}
             }
@@ -697,9 +682,9 @@ public class EmulatedGame {
             if (model != null) model.onBuildingComplete(state, bt, tag);
             if (state == friendly && model != null) {
                 if (playerRaceModel.townHallTypes().contains(bt)) {
-                    workerAssignment.onTownHallCompleted(tag, b.location());
+                    workerSimulation.onTownHallCompleted(tag, b.location());
                 } else if (SC2Data.isGasBuilding(bt)) {
-                    workerAssignment.onGasBuildingCompleted(tag, b.location());
+                    workerSimulation.onGasBuildingCompleted(tag, b.location());
                 }
             }
             log.debugf("[EMULATED] Completed %s (tag=%s)", bt, tag);
@@ -875,7 +860,7 @@ public class EmulatedGame {
         state.removeUnit(d.unitTag());
         state.addSupplyUsed(-SC2Data.supplyCost(d.unitType()));
         if (state == friendly && SC2Data.isWorker(d.unitType())) {
-            workerAssignment.onWorkerDied(d.unitTag());
+            workerSimulation.onWorkerDied(d.unitTag());
         }
         physics.unitTargets.remove(d.unitTag());
         physics.unitCooldowns.remove(d.unitTag());
@@ -1263,11 +1248,6 @@ public class EmulatedGame {
     // --- Package-private: used by EmulatedGameTest ---
 
     /** Sets mining probe counts per base — one-shot override consumed by the next tick. */
-    public void setMiningProbesPerBase(int... probesPerBase) {
-        this.miningProbesPerBase = probesPerBase.clone();
-        this.miningProbesOverridden = true;
-    }
-
     // Cached models for countWorkersPerBase(Race, ...) — avoids per-call allocation
     private static final RaceModel PROTOSS_WORKER_MODEL = new ProtossRaceModel();
     private static final RaceModel TERRAN_WORKER_MODEL  = new TerranRaceModel();
@@ -1308,6 +1288,36 @@ public class EmulatedGame {
                 if (dSq < minDistSq) { minDistSq = dSq; nearest = i; }
             }
             counts[nearest]++;
+        }
+        return counts;
+    }
+
+    public static java.util.Map<String, Integer> countGasWorkersPerBuilding(
+            final Race race, final GameState state) {
+        final RaceModel model = switch (race) {
+            case PROTOSS -> PROTOSS_WORKER_MODEL;
+            case TERRAN  -> TERRAN_WORKER_MODEL;
+            case ZERG    -> ZERG_WORKER_MODEL;
+        };
+        final UnitType workerType = model.workerType();
+        final List<Building> gasBuildings = state.myBuildings().stream()
+            .filter(b -> SC2Data.isGasBuilding(b.type()) && b.isComplete())
+            .toList();
+        final java.util.Map<String, Integer> counts = new java.util.HashMap<>();
+        for (final Unit u : state.myUnits()) {
+            if (u.type() != workerType) continue;
+            Building nearest = null;
+            double nearestDist = Double.MAX_VALUE;
+            for (final Building b : gasBuildings) {
+                double d = u.position().distanceTo(b.position());
+                if (d < 2.0 && d < nearestDist) {
+                    nearestDist = d;
+                    nearest = b;
+                }
+            }
+            if (nearest != null) {
+                counts.merge(nearest.tag(), 1, Integer::sum);
+            }
         }
         return counts;
     }
@@ -1494,9 +1504,9 @@ public class EmulatedGame {
         friendly.addBuilding(building);
         if (building.isComplete() && playerRaceModel != null) {
             if (playerRaceModel.townHallTypes().contains(building.type())) {
-                workerAssignment.onTownHallCompleted(building.tag(), building.position());
+                workerSimulation.onTownHallCompleted(building.tag(), building.position());
             } else if (SC2Data.isGasBuilding(building.type())) {
-                workerAssignment.onGasBuildingCompleted(building.tag(), building.position());
+                workerSimulation.onGasBuildingCompleted(building.tag(), building.position());
             }
         }
     }
@@ -1514,9 +1524,9 @@ public class EmulatedGame {
         friendly.addBuilding(building);
         if (building.isComplete() && playerRaceModel != null) {
             if (playerRaceModel.townHallTypes().contains(building.type())) {
-                workerAssignment.onTownHallCompleted(building.tag(), building.position());
+                workerSimulation.onTownHallCompleted(building.tag(), building.position());
             } else if (SC2Data.isGasBuilding(building.type())) {
-                workerAssignment.onGasBuildingCompleted(building.tag(), building.position());
+                workerSimulation.onGasBuildingCompleted(building.tag(), building.position());
             }
         }
     }
@@ -1538,9 +1548,9 @@ public class EmulatedGame {
                 .filter(b -> b.tag().equals(tag)).findFirst().orElse(null);
             if (completed != null) {
                 if (playerRaceModel.townHallTypes().contains(completedType)) {
-                    workerAssignment.onTownHallCompleted(tag, completed.position());
+                    workerSimulation.onTownHallCompleted(tag, completed.position());
                 } else if (SC2Data.isGasBuilding(completedType)) {
-                    workerAssignment.onGasBuildingCompleted(tag, completed.position());
+                    workerSimulation.onGasBuildingCompleted(tag, completed.position());
                 }
             }
         }
@@ -1560,9 +1570,9 @@ public class EmulatedGame {
                     .filter(b -> b.tag().equals(gtBuilding.tag())).findFirst().orElse(null);
                 if (synced != null) {
                     if (playerRaceModel.townHallTypes().contains(gtBuilding.type())) {
-                        workerAssignment.onTownHallCompleted(gtBuilding.tag(), synced.position());
+                        workerSimulation.onTownHallCompleted(gtBuilding.tag(), synced.position());
                     } else if (SC2Data.isGasBuilding(gtBuilding.type())) {
-                        workerAssignment.onGasBuildingCompleted(gtBuilding.tag(), synced.position());
+                        workerSimulation.onGasBuildingCompleted(gtBuilding.tag(), synced.position());
                     }
                 }
             }
@@ -1579,7 +1589,7 @@ public class EmulatedGame {
         state.addUnit(new Unit(tag, type, position, hp, hp, shields, shields, 0, 0));
         physics.unitTargets.put(tag, position);
         if (owner == 1 && playerRaceModel != null && type == playerRaceModel.workerType()) {
-            workerAssignment.onWorkerProduced(tag, position);
+            workerSimulation.onWorkerProduced(tag, position);
         }
     }
 

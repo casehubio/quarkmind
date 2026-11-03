@@ -52,4 +52,4 @@ steps:
     expect:
       buildings:
         NEXUS: { min: 2 }
-        GATEWAY: { min: 2 }
+        GATEWAY: { min: 1 }

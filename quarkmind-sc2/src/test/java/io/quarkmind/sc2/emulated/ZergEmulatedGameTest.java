@@ -76,11 +76,11 @@ class ZergEmulatedGameTest {
         protossGame.setPlayerRaceModel(new ProtossRaceModel());
         protossGame.reset();
 
-        game.setMiningProbesPerBase(12);
-        protossGame.setMiningProbesPerBase(12);
-
-        game.tick();
-        protossGame.tick();
+        // Tick both — simulation-driven income is race-invariant
+        for (int t = 0; t < 20; t++) {
+            game.tick();
+            protossGame.tick();
+        }
 
         assertThat(game.snapshot().minerals()).isEqualTo(protossGame.snapshot().minerals());
     }
@@ -280,7 +280,7 @@ class ZergEmulatedGameTest {
     // --- Town hall worker assignment ---
 
     @Test
-    void hatchery_countsForWorkerAssignment() {
+    void hatchery_countsForWorkerSimulation() {
         final int[] counts = EmulatedGame.countWorkersPerBase(Race.ZERG,
             game.snapshot().myBuildings(), game.snapshot().myUnits());
         // 12 Drones all near Hatchery at (8,8)

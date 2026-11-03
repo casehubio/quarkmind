@@ -90,7 +90,8 @@ public final class ReplayValidationHarness {
             long windowEnd = (long) (tick + 1) * SC2Data.LOOPS_PER_TICK;
 
             GameState gtBefore = groundTruth.snapshot();
-            emulated.setMiningProbesPerBase(countWorkersPerBase(race, gtBefore));
+            emulated.syncMineralWorkersFromGt(countWorkersPerBase(race, gtBefore));
+            emulated.syncGasWorkersFromGt(countGasWorkersPerBuilding(race, gtBefore));
 
             emulated.tick();
             groundTruth.tick();
@@ -190,6 +191,10 @@ public final class ReplayValidationHarness {
     static int[] countWorkersPerBase(Race race, GameState state) {
         return EmulatedGame.countWorkersPerBase(race,
             state.myBuildings(), state.myUnits());
+    }
+
+    static Map<String, Integer> countGasWorkersPerBuilding(Race race, GameState state) {
+        return EmulatedGame.countGasWorkersPerBuilding(race, state);
     }
 
     /**

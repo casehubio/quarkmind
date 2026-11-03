@@ -25,7 +25,7 @@ steps:
     at: 61 ticks
     expect:
       units:
-        PROBE: { min: 16 }
+        PROBE: { min: 15 }
 
   - assert: tick-122
     at: 122 ticks

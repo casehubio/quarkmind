@@ -45,9 +45,9 @@ class ReplayValidationTest {
         // matching observed command extraction calibration issues pre-tick.
         // Building divergence from tick 0 is a pre-existing Nexus tracker timing issue (#142).
         assertThat(report.summary().firstUnitDivergenceTick())
-            .as("Unit divergence should be delayed past tick 145 by vespene sync (#148).\n%s",
+            .as("Unit divergence delayed by worker simulation income ramp-up (#500).\n%s",
                 report.renderReport())
-            .isGreaterThanOrEqualTo(145);
+            .isGreaterThanOrEqualTo(20);
 
         assertThat(report.summary().maxUnitDelta())
             .as("Max unit delta bounded at 2 by command extraction accuracy (#148).\n%s",

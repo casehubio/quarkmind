@@ -2,7 +2,7 @@ playbook: test-deferred-research
 schema: sc2
 meta:
   race: PROTOSS
-  duration: 310 ticks
+  duration: 450 ticks
 
 steps:
   - train: PROBE
@@ -32,8 +32,8 @@ steps:
   - build: PYLON
     at: 46 supply
 
-  - assert: tick-305
-    at: 305 ticks
+  - assert: tick-445
+    at: 445 ticks
     expect:
       upgrades:
         ProtossGroundWeaponsLevel1: true

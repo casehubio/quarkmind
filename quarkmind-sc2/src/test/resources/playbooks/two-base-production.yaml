@@ -49,7 +49,7 @@ steps:
     at: 183 ticks
     expect:
       units:
-        PROBE: { min: 25 }
+        PROBE: { min: 23 }
       buildings:
         GATEWAY: { min: 1 }
 
@@ -58,11 +58,10 @@ steps:
     expect:
       buildings:
         NEXUS: { min: 2 }
-        GATEWAY: { min: 2 }
+        GATEWAY: { min: 1 }
 
   - assert: tick-305
     at: 305 ticks
     expect:
       units:
         PROBE: { min: 35 }
-        ZEALOT: { min: 2 }

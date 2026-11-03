@@ -69,7 +69,7 @@ class ReactorTagTraceDiagnosticTest {
             long windowEnd = (long) (tick + 1) * SC2Data.LOOPS_PER_TICK;
 
             GameState gtBefore = groundTruth.snapshot();
-            emulated.setMiningProbesPerBase(ReplayValidationHarness.countWorkersPerBase(race, gtBefore));
+            emulated.syncMineralWorkersFromGt(ReplayValidationHarness.countWorkersPerBase(race, gtBefore));
 
             int reactoredBefore = reactoredTags.size();
 

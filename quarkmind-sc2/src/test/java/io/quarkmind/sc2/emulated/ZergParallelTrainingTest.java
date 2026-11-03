@@ -23,7 +23,7 @@ class ZergParallelTrainingTest {
 
     @Test
     void zerg_canTrainMultipleDronesSimultaneously() {
-        for (int i = 0; i < 20; i++) {game.tick();}
+        for (int i = 0; i < 40; i++) {game.tick();}
 
         game.applyIntent(new TrainIntent("hatchery-0", UnitType.DRONE));
         game.applyIntent(new TrainIntent("hatchery-0", UnitType.DRONE));
@@ -35,7 +35,7 @@ class ZergParallelTrainingTest {
 
     @Test
     void zerg_parallelDronesCompleteAtSameTime() {
-        for (int i = 0; i < 20; i++) {game.tick();}
+        for (int i = 0; i < 40; i++) {game.tick();}
 
         long dronesBefore = game.snapshot().myUnits().stream()
                                 .filter(u -> u.type() == UnitType.DRONE).count();

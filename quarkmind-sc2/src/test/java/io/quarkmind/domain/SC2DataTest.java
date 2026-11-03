@@ -210,13 +210,12 @@ class SC2DataTest {
 
     @Test
     void trainTimeInLoopsDefinedForProtossUnits() {
-        // Empirically calibrated from 29 AI Arena replays (SC2TrainTimeCalibrationTest).
-        // PROBE/ZEALOT/STALKER are replay-verified; IMMORTAL/OBSERVER are integer estimates.
-        assertThat(SC2Data.trainTimeInLoops(UnitType.PROBE))    .isEqualTo(272);  // 499 obs
-        assertThat(SC2Data.trainTimeInLoops(UnitType.ZEALOT))   .isEqualTo(618);  // 7 obs
-        assertThat(SC2Data.trainTimeInLoops(UnitType.STALKER))  .isEqualTo(698);  // 2 obs
-        assertThat(SC2Data.trainTimeInLoops(UnitType.IMMORTAL)) .isEqualTo(896);  // uncalibrated
-        assertThat(SC2Data.trainTimeInLoops(UnitType.OBSERVER)) .isEqualTo(493);  // uncalibrated
+        // Empirically calibrated from oracle replays (SC2TrainTimeCalibrationTest).
+        assertThat(SC2Data.trainTimeInLoops(UnitType.PROBE))    .isEqualTo(272);  // 756 obs
+        assertThat(SC2Data.trainTimeInLoops(UnitType.ZEALOT))   .isEqualTo(608);  // 42 obs
+        assertThat(SC2Data.trainTimeInLoops(UnitType.STALKER))  .isEqualTo(676);  // 5 obs
+        assertThat(SC2Data.trainTimeInLoops(UnitType.IMMORTAL)) .isEqualTo(880);  // 26 obs
+        assertThat(SC2Data.trainTimeInLoops(UnitType.OBSERVER)) .isEqualTo(480);  // 19 obs
         assertThat(SC2Data.trainTimeInLoops(UnitType.UNKNOWN)).isEqualTo(672);  // default: 30s × 22.4 = 672.0 (exact)
     }
 
@@ -236,10 +235,10 @@ class SC2DataTest {
     @Test
     void trainTimeInTicksDefinedForProtossUnits() {
         assertThat(SC2Data.trainTimeInTicks(UnitType.PROBE))    .isEqualTo(12);
-        assertThat(SC2Data.trainTimeInTicks(UnitType.ZEALOT))   .isEqualTo(28);
-        assertThat(SC2Data.trainTimeInTicks(UnitType.STALKER))  .isEqualTo(31);
+        assertThat(SC2Data.trainTimeInTicks(UnitType.ZEALOT))   .isEqualTo(27);
+        assertThat(SC2Data.trainTimeInTicks(UnitType.STALKER))  .isEqualTo(30);
         assertThat(SC2Data.trainTimeInTicks(UnitType.IMMORTAL)) .isEqualTo(40);
-        assertThat(SC2Data.trainTimeInTicks(UnitType.OBSERVER)) .isEqualTo(22);
+        assertThat(SC2Data.trainTimeInTicks(UnitType.OBSERVER)) .isEqualTo(21);
         assertThat(SC2Data.trainTimeInTicks(UnitType.UNKNOWN)).isEqualTo(30);   // 672 / 22 = 30 (integer division)
     }
 

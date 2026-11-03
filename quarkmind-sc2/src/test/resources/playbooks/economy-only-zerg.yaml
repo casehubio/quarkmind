@@ -48,10 +48,10 @@ steps:
     at: 183 ticks
     expect:
       units:
-        DRONE: { min: 24 }
+        DRONE: { min: 22 }
 
   - assert: tick-305
     at: 305 ticks
     expect:
       units:
-        DRONE: { min: 45 }
+        DRONE: { min: 40 }

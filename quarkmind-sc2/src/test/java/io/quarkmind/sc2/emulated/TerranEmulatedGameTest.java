@@ -60,12 +60,11 @@ class TerranEmulatedGameTest {
         protossGame.setPlayerRaceModel(new ProtossRaceModel());
         protossGame.reset();
 
-        // Override both to the same worker count so initial probes/SCVs don't differ in positioning
-        game.setMiningProbesPerBase(12);
-        protossGame.setMiningProbesPerBase(12);
-
-        game.tick();
-        protossGame.tick();
+        // Tick both — simulation-driven income is race-invariant
+        for (int t = 0; t < 20; t++) {
+            game.tick();
+            protossGame.tick();
+        }
 
         assertThat(game.snapshot().minerals())
             .isEqualTo(protossGame.snapshot().minerals());
@@ -158,7 +157,7 @@ class TerranEmulatedGameTest {
 
         // Tick adds MULE income on top of SCV income
         final int mineralsAfterMule = game.snapshot().minerals();
-        game.setMiningProbesPerBase(0); // suppress SCV income to isolate MULE
+        game.workerSimulation().pauseAllWorkers(); // suppress SCV income to isolate MULE
         game.tick();
         assertThat(game.snapshot().minerals()).isGreaterThan(mineralsAfterMule);
     }
@@ -202,7 +201,7 @@ class TerranEmulatedGameTest {
 
         // Verify MULE is registered for income — tick with workers suppressed to isolate MULE income
         final int mineralsAfterSpawn = game.snapshot().minerals();
-        game.setMiningProbesPerBase(0);
+        game.workerSimulation().pauseAllWorkers();
         game.tick();
         assertThat(game.snapshot().minerals()).isGreaterThan(mineralsAfterSpawn);
     }
@@ -221,7 +220,7 @@ class TerranEmulatedGameTest {
     }
 
     @Test
-    void orbitalCommandTownHall_countsForWorkerAssignment() {
+    void orbitalCommandTownHall_countsForWorkerSimulation() {
         // OC should count as a base for worker income assignment
         game.spawnBuildingForTesting(BuildingType.ORBITAL_COMMAND, new Point2d(30, 30));
 

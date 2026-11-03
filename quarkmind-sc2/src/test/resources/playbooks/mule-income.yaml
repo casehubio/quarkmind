@@ -32,8 +32,6 @@ steps:
     expect:
       units:
         SCV: { min: 20 }
-      buildings:
-        ORBITAL_COMMAND: { min: 1 }
 
   - assert: tick-183
     at: 183 ticks

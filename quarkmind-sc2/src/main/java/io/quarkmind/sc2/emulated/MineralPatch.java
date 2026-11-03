@@ -1,0 +1,45 @@
+package io.quarkmind.sc2.emulated;
+
+import io.quarkmind.domain.Point2d;
+
+class MineralPatch {
+    static final double INITIAL_MINERALS = 1500.0;
+    static final float PATCH_DISTANCE = 6.0f;
+    static final int PATCHES_PER_BASE = 8;
+
+    final Point2d position;
+    final int baseIndex;
+    private double remainingMinerals;
+    SimulatedWorker occupant;
+
+    MineralPatch(Point2d position, int baseIndex) {
+        this.position = position;
+        this.baseIndex = baseIndex;
+        this.remainingMinerals = INITIAL_MINERALS;
+    }
+
+    boolean isDepleted() {
+        return remainingMinerals <= 0;
+    }
+
+    double harvest(double amount) {
+        double harvested = Math.min(amount, remainingMinerals);
+        remainingMinerals -= harvested;
+        return harvested;
+    }
+
+    double remainingMinerals() {
+        return remainingMinerals;
+    }
+
+    static Point2d[] patchPositions(Point2d townHallPos) {
+        Point2d[] positions = new Point2d[PATCHES_PER_BASE];
+        for (int i = 0; i < PATCHES_PER_BASE; i++) {
+            double angle = Math.PI * (0.2 + 0.6 * i / (PATCHES_PER_BASE - 1));
+            float px = townHallPos.x() + (float) (PATCH_DISTANCE * Math.cos(angle));
+            float py = townHallPos.y() + (float) (PATCH_DISTANCE * Math.sin(angle));
+            positions[i] = new Point2d(px, py);
+        }
+        return positions;
+    }
+}

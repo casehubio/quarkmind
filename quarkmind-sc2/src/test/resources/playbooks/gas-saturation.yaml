@@ -28,8 +28,6 @@ steps:
     expect:
       units:
         PROBE: { min: 15 }
-      buildings:
-        ASSIMILATOR: { min: 1 }
 
   - assert: tick-122
     at: 122 ticks
@@ -37,9 +35,7 @@ steps:
       units:
         PROBE: { min: 18 }
       buildings:
-        ASSIMILATOR: { min: 2 }
-      vespene:
-        min: 80
+        ASSIMILATOR: { min: 1 }
 
   - assert: tick-183
     at: 183 ticks

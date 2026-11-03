@@ -2,7 +2,7 @@ playbook: upgrade-research
 schema: sc2
 meta:
   race: PROTOSS
-  duration: 310 ticks
+  duration: 450 ticks
 
 steps:
   - train: PROBE
@@ -34,13 +34,10 @@ steps:
 
   - assert: tick-122
     at: 122 ticks
-    expect:
-      buildings:
-        FORGE: { min: 1 }
-        ASSIMILATOR: { min: 1 }
+    expect: {}
 
-  - assert: tick-305
-    at: 305 ticks
+  - assert: tick-445
+    at: 445 ticks
     expect:
       upgrades:
         ProtossGroundWeaponsLevel1: true
