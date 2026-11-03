@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 380" font-family="system-ui, -apple-system, sans-serif">
+  <style>
+    text { fill: #1a1a2e; }
+    .label { font-size: 11px; font-weight: 500; }
+    .amount { font-size: 10px; font-weight: 600; }
+    .title { font-size: 14px; font-weight: 700; }
+    .subtitle { font-size: 11px; fill: #555; }
+    .close-patch { fill: #3b82f6; }
+    .far-patch { fill: #93c5fd; }
+    .townhall { fill: #6366f1; }
+    .worker-path { stroke: #94a3b8; stroke-width: 1; stroke-dasharray: 4,3; fill: none; }
+    .worker { fill: #f59e0b; }
+    .legend-box { fill: none; stroke: #cbd5e1; stroke-width: 1; rx: 4; }
+    .divider { stroke: #e2e8f0; stroke-width: 1; }
+  </style>
+
+  <!-- Title -->
+  <text x="260" y="28" text-anchor="middle" class="title">SC2 Base Mineral Layout</text>
+  <text x="260" y="46" text-anchor="middle" class="subtitle">Standard map: 4 close patches (1500) + 4 far patches (750)</text>
+
+  <!-- Left panel: Uniform (old) -->
+  <text x="130" y="76" text-anchor="middle" class="label" font-size="12" font-weight="700">Before: Uniform 8×1500</text>
+  <text x="130" y="92" text-anchor="middle" class="subtitle">Total: 12,000 minerals</text>
+
+  <!-- Town hall (left) -->
+  <rect x="110" y="220" width="40" height="40" rx="4" class="townhall" opacity="0.8"/>
+  <text x="130" y="244" text-anchor="middle" fill="white" font-size="9" font-weight="600">Nexus</text>
+
+  <!-- 8 uniform patches in semicircle (left) -->
+  <g>
+    <circle cx="68" cy="140" r="12" class="close-patch"/>
+    <text x="68" y="144" text-anchor="middle" fill="white" class="amount">1500</text>
+
+    <circle cx="82" cy="118" r="12" class="close-patch"/>
+    <text x="82" y="122" text-anchor="middle" fill="white" class="amount">1500</text>
+
+    <circle cx="105" cy="104" r="12" class="close-patch"/>
+    <text x="105" y="108" text-anchor="middle" fill="white" class="amount">1500</text>
+
+    <circle cx="130" cy="98" r="12" class="close-patch"/>
+    <text x="130" y="102" text-anchor="middle" fill="white" class="amount">1500</text>
+
+    <circle cx="155" cy="104" r="12" class="close-patch"/>
+    <text x="155" y="108" text-anchor="middle" fill="white" class="amount">1500</text>
+
+    <circle cx="178" cy="118" r="12" class="close-patch"/>
+    <text x="178" y="122" text-anchor="middle" fill="white" class="amount">1500</text>
+
+    <circle cx="192" cy="140" r="12" class="close-patch"/>
+    <text x="192" y="144" text-anchor="middle" fill="white" class="amount">1500</text>
+
+    <circle cx="197" cy="166" r="12" class="close-patch"/>
+    <text x="197" y="170" text-anchor="middle" fill="white" class="amount">1500</text>
+  </g>
+
+  <!-- Divider -->
+  <line x1="260" y1="70" x2="260" y2="310" class="divider"/>
+
+  <!-- Right panel: Mixed (new) -->
+  <text x="390" y="76" text-anchor="middle" class="label" font-size="12" font-weight="700">After: Mixed 4×1500 + 4×750</text>
+  <text x="390" y="92" text-anchor="middle" class="subtitle">Total: 9,000 minerals</text>
+
+  <!-- Town hall (right) -->
+  <rect x="370" y="220" width="40" height="40" rx="4" class="townhall" opacity="0.8"/>
+  <text x="390" y="244" text-anchor="middle" fill="white" font-size="9" font-weight="600">Nexus</text>
+
+  <!-- 4 close patches (inner ring, right) -->
+  <circle cx="342" cy="138" r="12" class="close-patch"/>
+  <text x="342" y="142" text-anchor="middle" fill="white" class="amount">1500</text>
+
+  <circle cx="365" cy="118" r="12" class="close-patch"/>
+  <text x="365" y="122" text-anchor="middle" fill="white" class="amount">1500</text>
+
+  <circle cx="415" cy="118" r="12" class="close-patch"/>
+  <text x="415" y="122" text-anchor="middle" fill="white" class="amount">1500</text>
+
+  <circle cx="438" cy="138" r="12" class="close-patch"/>
+  <text x="438" y="142" text-anchor="middle" fill="white" class="amount">1500</text>
+
+  <!-- 4 far patches (outer ring, right) -->
+  <circle cx="328" cy="165" r="11" class="far-patch"/>
+  <text x="328" y="169" text-anchor="middle" fill="#1e3a5f" class="amount">750</text>
+
+  <circle cx="355" cy="100" r="11" class="far-patch"/>
+  <text x="355" y="104" text-anchor="middle" fill="#1e3a5f" class="amount">750</text>
+
+  <circle cx="425" cy="100" r="11" class="far-patch"/>
+  <text x="425" y="104" text-anchor="middle" fill="#1e3a5f" class="amount">750</text>
+
+  <circle cx="452" cy="165" r="11" class="far-patch"/>
+  <text x="452" y="169" text-anchor="middle" fill="#1e3a5f" class="amount">750</text>
+
+  <!-- Worker paths (right side) -->
+  <path d="M385,220 Q370,180 342,150" class="worker-path"/>
+  <path d="M395,220 Q420,180 438,150" class="worker-path"/>
+  <circle cx="362" cy="185" r="4" class="worker"/>
+  <circle cx="418" cy="185" r="4" class="worker"/>
+
+  <!-- Legend -->
+  <rect x="140" y="320" width="240" height="44" class="legend-box"/>
+  <circle cx="168" cy="334" r="7" class="close-patch"/>
+  <text x="180" y="338" class="label">Close patch (1500)</text>
+  <circle cx="168" cy="354" r="7" class="far-patch"/>
+  <text x="180" y="358" class="label">Far patch (750)</text>
+  <circle cx="310" cy="334" r="5" class="worker"/>
+  <text x="320" y="338" class="label">Worker</text>
+  <rect x="305" y="347" width="14" height="14" rx="2" class="townhall" opacity="0.8"/>
+  <text x="324" y="358" class="label">Town hall</text>
+</svg>

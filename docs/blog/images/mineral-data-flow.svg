@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 220" font-family="system-ui, -apple-system, sans-serif">
+  <style>
+    text { fill: #1a1a2e; }
+    .box { rx: 6; stroke-width: 1.5; }
+    .box-label { font-size: 11px; font-weight: 600; }
+    .box-detail { font-size: 9px; fill: #555; }
+    .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+    .arrow-label { font-size: 9px; fill: #64748b; font-style: italic; }
+    .title { font-size: 13px; font-weight: 700; }
+    .replay-box { fill: #dbeafe; stroke: #3b82f6; }
+    .game-box { fill: #ede9fe; stroke: #6366f1; }
+    .sim-box { fill: #fef3c7; stroke: #f59e0b; }
+    .out-box { fill: #dcfce7; stroke: #22c55e; }
+    .fallback-box { fill: #f1f5f9; stroke: #94a3b8; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="300" y="24" text-anchor="middle" class="title">Mineral Patch Data Flow — Replay to Simulation</text>
+
+  <!-- Row 1: Replay path -->
+  <rect x="20" y="50" width="130" height="52" class="box replay-box"/>
+  <text x="85" y="70" text-anchor="middle" class="box-label">SC2 Replay</text>
+  <text x="85" y="84" text-anchor="middle" class="box-detail">UnitBorn events at loop 0</text>
+  <text x="85" y="94" text-anchor="middle" class="box-detail">MineralField / MineralField750</text>
+
+  <line x1="150" y1="76" x2="188" y2="76" class="arrow"/>
+  <text x="169" y="70" text-anchor="middle" class="arrow-label">parse</text>
+
+  <rect x="190" y="50" width="120" height="52" class="box game-box"/>
+  <text x="250" y="70" text-anchor="middle" class="box-label">ReplaySimulatedGame</text>
+  <text x="250" y="84" text-anchor="middle" class="box-detail">Resource(pos, 1500)</text>
+  <text x="250" y="94" text-anchor="middle" class="box-detail">Resource(pos, 750)</text>
+
+  <line x1="310" y1="76" x2="348" y2="76" class="arrow"/>
+  <text x="329" y="70" text-anchor="middle" class="arrow-label">sync</text>
+
+  <rect x="350" y="50" width="120" height="52" class="box sim-box"/>
+  <text x="410" y="70" text-anchor="middle" class="box-label">WorkerSimulation</text>
+  <text x="410" y="84" text-anchor="middle" class="box-detail">MineralPatch(pos, amt)</text>
+  <text x="410" y="94" text-anchor="middle" class="box-detail">per-worker trip sim</text>
+
+  <line x1="470" y1="76" x2="508" y2="76" class="arrow"/>
+  <text x="489" y="70" text-anchor="middle" class="arrow-label">tick</text>
+
+  <rect x="510" y="50" width="70" height="52" class="box out-box"/>
+  <text x="545" y="72" text-anchor="middle" class="box-label">Economy</text>
+  <text x="545" y="86" text-anchor="middle" class="box-detail">4.9% error</text>
+  <text x="545" y="96" text-anchor="middle" class="box-detail">at 5 min</text>
+
+  <!-- Row 2: Default path -->
+  <rect x="190" y="140" width="120" height="52" class="box fallback-box"/>
+  <text x="250" y="158" text-anchor="middle" class="box-label">No replay data</text>
+  <text x="250" y="172" text-anchor="middle" class="box-detail">Default: 4×1500 + 4×750</text>
+  <text x="250" y="182" text-anchor="middle" class="box-detail">synthetic positions</text>
+
+  <line x1="310" y1="166" x2="348" y2="120" class="arrow"/>
+  <text x="336" y="136" text-anchor="middle" class="arrow-label">fallback</text>
+
+  <!-- Connection label -->
+  <text x="250" y="128" text-anchor="middle" class="arrow-label">EmulatedGame checks for nearby Resource data</text>
+</svg>

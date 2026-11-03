@@ -68,6 +68,27 @@ public class EmulatedGame {
         workerSimulation.syncGasWorkersFromGt(gasWorkersPerBuilding);
     }
 
+    public void setMineralPatchResources(List<Resource> patches) {
+        this.mineralPatchResources = List.copyOf(patches);
+    }
+
+    private static final double MINERAL_PATCH_SEARCH_RADIUS = 12.0;
+
+    List<Resource> findNearbyMineralPatches(Point2d townHallPos) {
+        return mineralPatchResources.stream()
+                                    .filter(r -> r.position().distanceTo(townHallPos) <= MINERAL_PATCH_SEARCH_RADIUS)
+                                    .toList();
+    }
+
+    private void registerTownHallWithPatches(String tag, Point2d position) {
+        List<Resource> nearby = findNearbyMineralPatches(position);
+        if (nearby.isEmpty()) {
+            workerSimulation.onTownHallCompleted(tag, position);
+        } else {
+            workerSimulation.onTownHallCompleted(tag, position, nearby);
+        }
+    }
+
 
     // --- Physics state (movement targets, cooldowns, production queues) ---
     final PhysicsState friendlyPhysics = new PhysicsState();
@@ -96,6 +117,8 @@ public class EmulatedGame {
     private Random random = new Random(42L);
     // E9: fog of war — persists across ticks, reset on game restart
     private final VisibilityGrid visibility = new VisibilityGrid();
+    private       List<Resource> mineralPatchResources = List.of();
+
 
     public void reset() {
         friendly.clear();
@@ -120,7 +143,7 @@ public class EmulatedGame {
         playerRaceModel.seedInitialState(friendly, geysers);
         for (Building b : friendly.buildings()) {
             if (playerRaceModel.townHallTypes().contains(b.type()) && b.isComplete()) {
-                workerSimulation.onTownHallCompleted(b.tag(), b.position());
+                registerTownHallWithPatches(b.tag(), b.position());
             }
         }
         List<String> initialWorkerTags = friendly.units().stream()
@@ -682,7 +705,7 @@ public class EmulatedGame {
             if (model != null) model.onBuildingComplete(state, bt, tag);
             if (state == friendly && model != null) {
                 if (playerRaceModel.townHallTypes().contains(bt)) {
-                    workerSimulation.onTownHallCompleted(tag, b.location());
+                    registerTownHallWithPatches(tag, b.location());
                 } else if (SC2Data.isGasBuilding(bt)) {
                     workerSimulation.onGasBuildingCompleted(tag, b.location());
                 }
@@ -1504,7 +1527,7 @@ public class EmulatedGame {
         friendly.addBuilding(building);
         if (building.isComplete() && playerRaceModel != null) {
             if (playerRaceModel.townHallTypes().contains(building.type())) {
-                workerSimulation.onTownHallCompleted(building.tag(), building.position());
+                registerTownHallWithPatches(building.tag(), building.position());
             } else if (SC2Data.isGasBuilding(building.type())) {
                 workerSimulation.onGasBuildingCompleted(building.tag(), building.position());
             }
@@ -1524,7 +1547,7 @@ public class EmulatedGame {
         friendly.addBuilding(building);
         if (building.isComplete() && playerRaceModel != null) {
             if (playerRaceModel.townHallTypes().contains(building.type())) {
-                workerSimulation.onTownHallCompleted(building.tag(), building.position());
+                registerTownHallWithPatches(building.tag(), building.position());
             } else if (SC2Data.isGasBuilding(building.type())) {
                 workerSimulation.onGasBuildingCompleted(building.tag(), building.position());
             }
@@ -1548,7 +1571,7 @@ public class EmulatedGame {
                 .filter(b -> b.tag().equals(tag)).findFirst().orElse(null);
             if (completed != null) {
                 if (playerRaceModel.townHallTypes().contains(completedType)) {
-                    workerSimulation.onTownHallCompleted(tag, completed.position());
+                    registerTownHallWithPatches(tag, completed.position());
                 } else if (SC2Data.isGasBuilding(completedType)) {
                     workerSimulation.onGasBuildingCompleted(tag, completed.position());
                 }
@@ -1570,7 +1593,7 @@ public class EmulatedGame {
                     .filter(b -> b.tag().equals(gtBuilding.tag())).findFirst().orElse(null);
                 if (synced != null) {
                     if (playerRaceModel.townHallTypes().contains(gtBuilding.type())) {
-                        workerSimulation.onTownHallCompleted(gtBuilding.tag(), synced.position());
+                        registerTownHallWithPatches(gtBuilding.tag(), synced.position());
                     } else if (SC2Data.isGasBuilding(gtBuilding.type())) {
                         workerSimulation.onGasBuildingCompleted(gtBuilding.tag(), synced.position());
                     }

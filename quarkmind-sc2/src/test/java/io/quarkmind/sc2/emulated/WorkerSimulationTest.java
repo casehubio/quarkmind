@@ -1,9 +1,11 @@
 package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -213,4 +215,66 @@ class WorkerSimulationTest {
         assertTrue(comparison.mineralDivergence() < 0.5,
                 "Mineral divergence too high: " + comparison);
     }
+// --- Map-specific mineral patch tests ---
+
+    @Test
+    void defaultBase_hasMixedCloseAndFarPatches() {
+        sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
+        double totalIncome = 0;
+        for (int t = 0; t < 200_000; t++) {
+            totalIncome += sim.tick().mineralIncome();
+        }
+        double expectedTotal = MineralPatch.CLOSE_PATCHES_PER_BASE * MineralPatch.CLOSE_PATCH_MINERALS
+                               + (MineralPatch.PATCHES_PER_BASE - MineralPatch.CLOSE_PATCHES_PER_BASE) * MineralPatch.FAR_PATCH_MINERALS;
+        assertEquals(expectedTotal, totalIncome, 0.001,
+                     "Total minerals harvested should equal 4×1500 + 4×750 = 9000");
+    }
+
+    @Test
+    void explicitPatchAmounts_usedWhenProvided() {
+        WorkerSimulation explicitSim = new WorkerSimulation();
+        List<Resource> patches = List.of(
+                new Resource("m-1", new Point2d(44, 50), 1000),
+                new Resource("m-2", new Point2d(46, 50), 500),
+                new Resource("m-3", new Point2d(48, 50), 500),
+                new Resource("m-4", new Point2d(52, 50), 500)
+                                        );
+        explicitSim.onTownHallCompleted(BASE_TAG, BASE_POS, patches);
+        explicitSim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
+        double totalIncome = 0;
+        for (int t = 0; t < 200_000; t++) {
+            totalIncome += explicitSim.tick().mineralIncome();
+        }
+        assertEquals(2500.0, totalIncome, 0.001,
+                     "Total should equal sum of explicit amounts: 1000 + 500 + 500 + 500");
+    }
+
+    @Test
+    void mixedPatches_totalMinerals_lessThankUniform() {
+        sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
+        double mixedTotal = 0;
+        for (int t = 0; t < 200_000; t++) {
+            mixedTotal += sim.tick().mineralIncome();
+        }
+
+        WorkerSimulation uniformSim     = new WorkerSimulation();
+        List<Resource>   uniformPatches = new ArrayList<>();
+        for (Point2d pos : MineralPatch.patchPositions(BASE_POS)) {
+            uniformPatches.add(new Resource("u-" + uniformPatches.size(), pos, 1500));
+        }
+        uniformSim.onTownHallCompleted(BASE_TAG, BASE_POS, uniformPatches);
+        uniformSim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
+        double uniformTotal = 0;
+        for (int t = 0; t < 200_000; t++) {
+            uniformTotal += uniformSim.tick().mineralIncome();
+        }
+
+        double expectedMixed   = 4 * 1500.0 + 4 * 750.0;
+        double expectedUniform = 8 * 1500.0;
+        assertEquals(expectedMixed, mixedTotal, 0.001);
+        assertEquals(expectedUniform, uniformTotal, 0.001);
+        assertTrue(mixedTotal < uniformTotal,
+                   "Mixed base (9000) should yield less total minerals than uniform (12000)");
+    }
+
 }

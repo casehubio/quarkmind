@@ -75,12 +75,13 @@ public final class ReplayValidationHarness {
 
     private static DivergenceReport runInternal(SimulatedGame groundTruth, List<TimedIntent> intents, int tickLimit, EmulatedGame emulated, Race race) {
         groundTruth.reset();
+        emulated.setMineralPatchResources(groundTruth.getMineralPatches());
         emulated.reset();
 
         assertInitialStateMatch(groundTruth.snapshot(), emulated.snapshot(), groundTruth.getClass().getSimpleName());
 
         Set<String> reactoredTags = (groundTruth instanceof ReplaySimulatedGame rsg)
-            ? rsg.reactoredBuildingTags() : Set.of();
+                                    ? rsg.reactoredBuildingTags() : Set.of();
 
         int                                 cursor       = 0;
         Set<String>                         injectedTags = new HashSet<>();

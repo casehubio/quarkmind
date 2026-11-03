@@ -1,6 +1,7 @@
 package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Resource;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 
@@ -24,13 +25,27 @@ class WorkerSimulation {
     }
 
     void onTownHallCompleted(String tag, Point2d position) {
-        List<MineralPatch> patches = new ArrayList<>();
-        int baseIdx = bases.size();
-        for (Point2d pos : MineralPatch.patchPositions(position)) {
-            patches.add(new MineralPatch(pos, baseIdx));
+        List<MineralPatch> patches   = new ArrayList<>();
+        int                baseIdx   = bases.size();
+        Point2d[]          positions = MineralPatch.patchPositions(position);
+        for (int i = 0; i < MineralPatch.PATCHES_PER_BASE; i++) {
+            double amount = (i < MineralPatch.CLOSE_PATCHES_PER_BASE)
+                            ? MineralPatch.CLOSE_PATCH_MINERALS
+                            : MineralPatch.FAR_PATCH_MINERALS;
+            patches.add(new MineralPatch(positions[i], baseIdx, amount));
         }
         bases.add(new BaseEntry(tag, position, patches));
     }
+
+    void onTownHallCompleted(String tag, Point2d position, List<Resource> mineralResources) {
+        List<MineralPatch> patches = new ArrayList<>();
+        int                baseIdx = bases.size();
+        for (Resource r : mineralResources) {
+            patches.add(new MineralPatch(r.position(), baseIdx, r.remaining()));
+        }
+        bases.add(new BaseEntry(tag, position, patches));
+    }
+
 
     void onInitialWorkers(List<String> tags, Point2d basePosition, String baseTag) {
         int baseIdx = findBaseIndex(baseTag);
