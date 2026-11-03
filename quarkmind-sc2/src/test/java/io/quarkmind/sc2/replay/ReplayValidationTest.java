@@ -17,16 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>Supply is synced from GT: the real player builds Pylons we cannot reconstruct from
  * game events, so without supply sync training would halt at the initial 15-supply cap.
  *
- * <p>Resources (minerals, vespene) are NOT synced — some divergence is expected. Mining probe
- * count IS synced so the saturation model (#141) produces realistic per-outer-tick income.
- * With the saturation model, mineral delta is bounded at ≤ 1100 over 3 minutes (down from
- * ≤ 11,564 with the old flat model). The remaining mineral delta comes from two sources:
- * (1) income model approximation error (saturation model vs real per-loop SC2 accumulation),
- * and (2) building costs not deducted (buildings are injected free via injectReplayBuilding).
+ * <p>Minerals ARE synced from post-tick ground truth after intents fire (#502), so
+ * mineralsCurrent has zero divergence. Vespene is synced pre-intent for affordability (#148).
+ * Mining probe count IS synced so the saturation model (#141) produces realistic income.
  *
- * <p>Unit count divergence: bounded at ≤ 2 within the 3-minute window. Vespene is synced from
+ * <p>Unit count divergence: bounded at ≤ 3 within the 3-minute window. Vespene is synced from
  * pre-tick ground truth (#148), so gas-unit train commands are never rejected. The residual
- * delta comes from ±1 tick sub-tick imprecision in gas-unit training completion timing.
+ * delta comes from tick-boundary training completion timing differences.
  *
  * Refs #137, #141, #142, #148, #149
  */
@@ -50,22 +47,19 @@ class ReplayValidationTest {
             .isGreaterThanOrEqualTo(20);
 
         assertThat(report.summary().maxUnitDelta())
-            .as("Max unit delta bounded at 2 by command extraction accuracy (#148).\n%s",
+            .as("Max unit delta bounded at 3 by tick-boundary timing (#502).\n%s",
                 report.renderReport())
-            .isLessThanOrEqualTo(2);
+            .isLessThanOrEqualTo(3);
     }
 
     @Test
     void mineralDeltaWithinToleranceForThreeMinutes() {
         DivergenceReport report = ReplayValidationHarness.run(REPLAY, 1, THREE_MINUTES_TICKS);
 
-        // Mineral delta has two sources: income model approximation (saturation model vs real
-        // per-loop SC2 accumulation) and building costs not deducted (injected free).
-        // The saturation model (#141) reduced the delta from ~11,564 to ~850 at 3 minutes.
-        // Exact parity is not achievable without fixing both sources — see #146, #148.
+        // Minerals synced from GT after intents (#502) — zero divergence expected.
         assertThat(report.summary().maxMineralDelta())
-            .as("Mineral delta must stay ≤ 1100 (saturation model bound). Max was %d.\n%s",
+            .as("Mineral delta must be 0 (synced from GT, #502). Max was %d.\n%s",
                 report.summary().maxMineralDelta(), report.renderReport())
-            .isLessThanOrEqualTo(1100);
+            .isLessThanOrEqualTo(0);
     }
 }

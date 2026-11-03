@@ -46,8 +46,8 @@ class DivergenceRegressionTest {
     private static final double ECONOMY_MAPE_CEILING = 150.0;
 
     // Per-field economy error ceilings (% error at 5-min checkpoint).
-    // Calibrated from post-#496 baselines (income calibrated, spending reconciliation pending).
-    private static final double MINERALS_CURRENT_ERROR_CEILING = 370.0;
+    // Calibrated from post-#502 baselines (minerals synced from GT after intents).
+    private static final double MINERALS_CURRENT_ERROR_CEILING = 10.0;
     private static final double VESPENE_CURRENT_ERROR_CEILING = 10.0;
     private static final double MINERALS_RATE_ERROR_CEILING = 20.0;
     private static final double VESPENE_RATE_ERROR_CEILING = 50.0;

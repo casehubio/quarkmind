@@ -34,8 +34,9 @@ import java.util.stream.Collectors;
  *   <li>Buildings are injected from replay tracker events (ground truth) into EmulatedGame
  *       at each tick, using the same replay tags. This allows TrainIntents (which carry
  *       replay building tags) to be applied directly without tag remapping.</li>
- *   <li>Minerals are NOT synced — divergence is expected given EmulatedGame's flat mining
- *       rate vs SC2's saturation-based model.</li>
+ *   <li>Minerals ARE synced from post-tick ground truth AFTER intents fire. Unlike
+ *       vespene (synced before intents for affordability), minerals sync after intents
+ *       to avoid rejecting intents the real player could afford. See #502.</li>
  *   <li>Vespene IS synced from pre-tick ground truth so gas-unit TrainIntents can succeed
  *       with the same resource availability as the real player. See #148.</li>
  *   <li>Mining probe count IS synced so the resource model uses realistic input.</li>
@@ -112,6 +113,8 @@ public final class ReplayValidationHarness {
                 emulated.applyIntent(intents.get(cursor));
                 cursor++;
             }
+
+            emulated.setMineralsForHarness(gt.minerals());
 
             GameState em = emulated.snapshot();
 
