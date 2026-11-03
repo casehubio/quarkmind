@@ -11,9 +11,18 @@ class SimulatedWorker {
     static final int MINING_DURATION_TICKS =
             (int) Math.ceil((double) MINING_DURATION_LOOPS / SC2Data.LOOPS_PER_TICK);
     static final double GAS_CARGO = 4.0;
-    static final int GAS_HARVEST_DURATION_LOOPS = 29;
-    static final int GAS_HARVEST_DURATION_TICKS =
-            (int) Math.ceil((double) GAS_HARVEST_DURATION_LOOPS / SC2Data.LOOPS_PER_TICK);
+    static final int GAS_HARVEST_DURATION_LOOPS_DEFAULT = 29;
+    static int GAS_HARVEST_DURATION_TICKS =
+            (int) Math.ceil((double) GAS_HARVEST_DURATION_LOOPS_DEFAULT / SC2Data.LOOPS_PER_TICK);
+
+    static void setGasHarvestDurationLoops(int loops) {
+        GAS_HARVEST_DURATION_TICKS = (int) Math.ceil((double) loops / SC2Data.LOOPS_PER_TICK);
+    }
+
+    static void resetGasHarvestDuration() {
+        GAS_HARVEST_DURATION_TICKS =
+                (int) Math.ceil((double) GAS_HARVEST_DURATION_LOOPS_DEFAULT / SC2Data.LOOPS_PER_TICK);
+    }
     static final double ARRIVAL_THRESHOLD = 0.5;
 
     final String tag;
