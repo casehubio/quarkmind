@@ -49,7 +49,7 @@ class DivergenceRegressionTest {
     // Calibrated from post-#502 baselines (minerals synced from GT after intents).
     private static final double MINERALS_CURRENT_ERROR_CEILING = 0.0;
     private static final double VESPENE_CURRENT_ERROR_CEILING = 10.0;
-    private static final double MINERALS_RATE_ERROR_CEILING = 16.0;
+    private static final double MINERALS_RATE_ERROR_CEILING = 5.0;
     private static final double VESPENE_RATE_ERROR_CEILING = 7.0;
     private static final double FOOD_USED_ERROR_CEILING = 5.0;
 
