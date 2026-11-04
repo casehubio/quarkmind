@@ -1530,6 +1530,10 @@ public class EmulatedGame {
         economyTracker.overrideMineralRate(gtMineralRate);
     }
 
+    public void syncVespeneRateFromGt(int gtVespeneRate) {
+        economyTracker.overrideVespeneRate(gtVespeneRate);
+    }
+
     private int workerCountOverride = -1;
 
     public void setWorkerCountForHarness(int workerCount) {

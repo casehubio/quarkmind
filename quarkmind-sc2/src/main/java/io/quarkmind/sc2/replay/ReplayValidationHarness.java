@@ -121,6 +121,7 @@ public final class ReplayValidationHarness {
 
             if (gt.playerEconomy() != null) {
                 emulated.syncMineralRateFromGt(gt.playerEconomy().mineralsCollectionRate());
+                emulated.syncVespeneRateFromGt(gt.playerEconomy().vespeneCollectionRate());
             }
 
             int emSupplyUsed = emulated.snapshot().supplyUsed();
