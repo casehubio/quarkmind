@@ -114,6 +114,7 @@ public final class ReplayValidationHarness {
             }
 
             emulated.setMineralsForHarness(gt.minerals());
+            emulated.setVespeneForHarness(gt.vespene());
 
             int gtGasBuildings = (int) gt.myBuildings().stream()
                     .filter(b -> SC2Data.isGasBuilding(b.type()) && b.isComplete()).count();
