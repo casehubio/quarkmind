@@ -130,6 +130,19 @@ public final class TrackerIntentExtractor {
                                                 new TrainIntent(bldgTag, unitType, true, true, -1, unitTag)));
                 }
                 case ITrackerEvents.ID_UNIT_DONE -> {}
+                case ITrackerEvents.ID_UNIT_TYPE_CHANGE -> {
+                    Integer tagIndex   = raw.get("unitTagIndex");
+                    Integer tagRecycle = raw.get("unitTagRecycle");
+                    if (tagIndex == null || tagRecycle == null) {continue;}
+                    long compositeTag = ((long) tagIndex << 32) | (tagRecycle & 0xFFFFFFFFL);
+                    if (!unitTagToType.containsKey(compositeTag)) {continue;}
+                    Object newTypeObj = raw.get("unitTypeName");
+                    if (newTypeObj == null) {continue;}
+                    UnitType newType = Sc2ReplayShared.toUnitType(String.valueOf(newTypeObj).trim());
+                    if (newType != UnitType.UNKNOWN) {
+                        unitTagToType.put(compositeTag, newType);
+                    }
+                }
                 case ITrackerEvents.ID_UPGRADE -> {
                     if (!(raw instanceof IUpgradeEvent up)) {continue;}
                     if (up.getPlayerId() == null || up.getPlayerId() != playerId) {continue;}

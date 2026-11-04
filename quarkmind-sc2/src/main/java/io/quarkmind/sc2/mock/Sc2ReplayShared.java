@@ -72,7 +72,7 @@ public final class Sc2ReplayShared {
             case "DarkTemplar"                          -> UnitType.DARK_TEMPLAR;
             case "HighTemplar"                          -> UnitType.HIGH_TEMPLAR;
             case "Archon"                               -> UnitType.ARCHON;
-            case "Observer"                             -> UnitType.OBSERVER;
+            case "Observer", "ObserverSiegeMode"        -> UnitType.OBSERVER;
             case "VoidRay"                              -> UnitType.VOID_RAY;
             case "Adept"                                -> UnitType.ADEPT;
             case "Disruptor"                            -> UnitType.DISRUPTOR;
@@ -105,12 +105,12 @@ public final class Sc2ReplayShared {
             case "SCV"                                  -> UnitType.SCV;
             case "Reaper"                               -> UnitType.REAPER;
             case "Hellion"                              -> UnitType.HELLION;
-            case "Hellbat"                              -> UnitType.HELLBAT;
+            case "Hellbat", "HellionTank"                -> UnitType.HELLBAT;
             case "MULE"                                 -> UnitType.MULE;
             case "AutoTurret"                           -> UnitType.AUTO_TURRET;
             // Zerg
             case "Zergling"                             -> UnitType.ZERGLING;
-            case "Roach"                                -> UnitType.ROACH;
+            case "Roach", "RoachBurrowed"                -> UnitType.ROACH;
             case "Hydralisk"                            -> UnitType.HYDRALISK;
             case "Mutalisk"                             -> UnitType.MUTALISK;
             case "Ultralisk"                            -> UnitType.ULTRALISK;
@@ -123,15 +123,18 @@ public final class Sc2ReplayShared {
             case "Ravager"                              -> UnitType.RAVAGER;
             case "Lurker", "LurkerMP"                   -> UnitType.LURKER;
             case "Drone"                                -> UnitType.DRONE;
-            case "Overlord"                             -> UnitType.OVERLORD;
+            case "Overlord", "OverlordTransport"        -> UnitType.OVERLORD;
             case "Overseer"                             -> UnitType.OVERSEER;
-            case "Baneling"                             -> UnitType.BANELING;
-            case "LocustMP", "LocustMPFlying"           -> UnitType.LOCUST;
-            case "Broodling"                            -> UnitType.BROODLING;
-            case "InfestedTerranEgg", "InfestedTerran"  -> UnitType.INFESTED_TERRAN;
+            case "Baneling", "BanelingBurrowed"          -> UnitType.BANELING;
+            case "LocustMP", "LocustMPFlying",
+                 "LocustMPPrecursor"                    -> UnitType.LOCUST;
+            case "Broodling", "BroodlingEscort"         -> UnitType.BROODLING;
+            case "InfestedTerranEgg", "InfestedTerran",
+                 "InfestorTerran"                       -> UnitType.INFESTED_TERRAN;
             case "Changeling", "ChangelingZealot",
                  "ChangelingZealotShield", "ChangelingMarine",
                  "ChangelingMarineShield", "ChangelingZergling",
+                 "ChangelingZerglingWings",
                  "ChangelingZerg"                       -> UnitType.CHANGELING;
             default                                     -> UnitType.UNKNOWN;
         };

@@ -109,6 +109,37 @@ class TrackerIntentExtractorIntentTest {
 
     @Test
     @EnabledIf("oracleExists")
+    void unitTypeChangeUpdatesMorphedUnitDeathType() throws Exception {
+        List<Path> allReplays;
+        try (var stream = Files.list(ORACLE_DIR)) {
+            allReplays = stream.filter(p -> p.toString().endsWith(".SC2Replay")).sorted().toList();
+        }
+
+        long morphedDeathsWithCorrectType = 0;
+        Set<UnitType> morphTargetTypes = EnumSet.of(
+            UnitType.HELLBAT, UnitType.SIEGE_TANK_SIEGED, UnitType.VIKING_ASSAULT,
+            UnitType.LIBERATOR_AG, UnitType.RAVAGER, UnitType.BROOD_LORD,
+            UnitType.BANELING, UnitType.LURKER);
+
+        for (Path replayPath : allReplays) {
+            for (int pid = 1; pid <= 2; pid++) {
+                try {
+                    List<TimedIntent> intents = TrackerIntentExtractor.extract(replayPath, pid);
+                    morphedDeathsWithCorrectType += intents.stream()
+                        .filter(ti -> ti.intent() instanceof UnitDiedIntent d
+                            && morphTargetTypes.contains(d.unitType()))
+                        .count();
+                } catch (Exception e) { /* skip */ }
+            }
+        }
+
+        assertTrue(morphedDeathsWithCorrectType > 0,
+            "UnitTypeChange should update unitTagToType so morphed unit deaths " +
+            "use the correct post-morph type (e.g., SIEGE_TANK_SIEGED not SIEGE_TANK)");
+    }
+
+    @Test
+    @EnabledIf("oracleExists")
     void extractsResearchIntentsFromUpgradeEvents() throws Exception {
         List<Path> replays;
         try (var stream = Files.list(ORACLE_DIR)) {
