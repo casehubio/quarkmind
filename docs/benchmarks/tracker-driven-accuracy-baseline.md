@@ -42,11 +42,11 @@ Accuracy: 100.0% (0/0)
 |---|---|---|---|
 | mineralsCurrent | 20630 | 20630 | 0.0% |
 | vespeneCurrent | 232 | 232 | 0.0% |
-| mineralsCollectionRate | 150658 | 213316 | 41.6% |
+| mineralsCollectionRate | 150658 | 212760 | 41.2% |
 | vespeneCollectionRate | 1241 | 4278 | 244.7% |
 | foodMade | 4579 | 4579 | 0.0% |
-| foodUsed | 3338 | 5945 | 78.1% |
-| workersActiveCount | 3162 | 5755 | 82.0% |
+| foodUsed | 3338 | 3338 | 0.0% |
+| workersActiveCount | 3162 | 5665 | 79.2% |
 | mineralsUsedCurrentArmy | 0 | 14200 | 0.0% |
 
 ## 3-minute checkpoint
@@ -125,9 +125,9 @@ Accuracy: 100.0% (4/4)
 | mineralsCollectionRate | 171704 | 199596 | 16.2% |
 | vespeneCollectionRate | 39512 | 40574 | 2.7% |
 | foodMade | 7024 | 7024 | 0.0% |
-| foodUsed | 5150 | 7707 | 49.7% |
-| workersActiveCount | 4000 | 6321 | 58.0% |
-| mineralsUsedCurrentArmy | 36875 | 94675 | 156.7% |
+| foodUsed | 5150 | 5150 | 0.0% |
+| workersActiveCount | 4000 | 6103 | 52.6% |
+| mineralsUsedCurrentArmy | 36875 | 82625 | 124.1% |
 
 ## 5-minute checkpoint
 
@@ -149,7 +149,7 @@ Accuracy: 100.0% (4/4)
 | ZERGLING | 531 | 531 | 100.0% |
 | ROACH | 65 | 65 | 100.0% |
 | QUEEN | 145 | 145 | 100.0% |
-| DRONE | 1724 | 1724 | 100.0% |
+| DRONE | 1724 | 1720 | 99.8% |
 | OVERLORD | 305 | 305 | 100.0% |
 | BANELING | 17 | 17 | 100.0% |
 | MARINE | 372 | 372 | 100.0% |
@@ -165,7 +165,7 @@ Accuracy: 100.0% (4/4)
 | SCV | 1850 | 1850 | 100.0% |
 | REAPER | 36 | 36 | 100.0% |
 | HELLION | 52 | 52 | 100.0% |
-| **TOTAL** | 6807 | 6807 | **100.0%** |
+| **TOTAL** | 6807 | 6803 | **99.9%** |
 
 ### Buildings — Per-Type
 
@@ -234,12 +234,12 @@ Accuracy: 100.0% (103/103)
 |---|---|---|---|
 | mineralsCurrent | 66699 | 66699 | 0.0% |
 | vespeneCurrent | 43390 | 42415 | 2.2% |
-| mineralsCollectionRate | 208770 | 231870 | 11.1% |
+| mineralsCollectionRate | 208770 | 230690 | 10.5% |
 | vespeneCollectionRate | 50869 | 51656 | 1.5% |
 | foodMade | 9520 | 9520 | 0.0% |
-| foodUsed | 7483 | 10107 | 35.1% |
-| workersActiveCount | 4907 | 7018 | 43.0% |
-| mineralsUsedCurrentArmy | 108250 | 228800 | 111.4% |
+| foodUsed | 7483 | 7483 | 0.0% |
+| workersActiveCount | 4907 | 6701 | 36.6% |
+| mineralsUsedCurrentArmy | 108250 | 202450 | 87.0% |
 
 ## 7-minute checkpoint
 
@@ -266,7 +266,7 @@ Accuracy: 100.0% (103/103)
 | MUTALISK | 11 | 11 | 100.0% |
 | SWARM_HOST | 6 | 6 | 100.0% |
 | QUEEN | 153 | 153 | 100.0% |
-| DRONE | 1848 | 1848 | 100.0% |
+| DRONE | 1848 | 1833 | 99.2% |
 | OVERLORD | 403 | 403 | 100.0% |
 | BANELING | 31 | 31 | 100.0% |
 | CHANGELING | 1 | 1 | 100.0% |
@@ -284,7 +284,7 @@ Accuracy: 100.0% (103/103)
 | SCV | 1929 | 1929 | 100.0% |
 | REAPER | 17 | 17 | 100.0% |
 | HELLION | 39 | 39 | 100.0% |
-| **TOTAL** | 7558 | 7558 | **100.0%** |
+| **TOTAL** | 7558 | 7543 | **99.8%** |
 
 ### Buildings — Per-Type
 
@@ -374,10 +374,10 @@ Accuracy: 100.0% (185/185)
 |---|---|---|---|
 | mineralsCurrent | 89788 | 89788 | 0.0% |
 | vespeneCurrent | 52228 | 52178 | 0.1% |
-| mineralsCollectionRate | 201496 | 225695 | 12.0% |
+| mineralsCollectionRate | 201496 | 221417 | 9.9% |
 | vespeneCollectionRate | 61091 | 63171 | 3.4% |
 | foodMade | 11184 | 11184 | 0.0% |
-| foodUsed | 9012 | 10991 | 22.0% |
-| workersActiveCount | 5004 | 6707 | 34.0% |
-| mineralsUsedCurrentArmy | 175225 | 348685 | 99.0% |
+| foodUsed | 9012 | 9012 | 0.0% |
+| workersActiveCount | 5004 | 6323 | 26.4% |
+| mineralsUsedCurrentArmy | 175225 | 315135 | 79.8% |
 

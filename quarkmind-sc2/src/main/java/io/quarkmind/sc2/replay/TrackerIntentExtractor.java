@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 public final class TrackerIntentExtractor {
@@ -105,7 +106,10 @@ public final class TrackerIntentExtractor {
                     Integer pid = ue.getControlPlayerId();
                     if (pid == null || pid != playerId) {continue;}
                     String typeName = String.valueOf(ue.getUnitTypeName()).trim();
-                    if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) {continue;}
+                    if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) {
+                        consumeDroneForBuilding(unitTagToType, intents, ue.getLoop(), typeName);
+                        continue;
+                    }
 
                     UnitType unitType = Sc2ReplayShared.toUnitType(typeName);
                     if (unitType != UnitType.UNKNOWN) {
@@ -318,5 +322,26 @@ public final class TrackerIntentExtractor {
         return null;
     }
 
+    private static final Set<String> NON_DRONE_BUILDINGS = Set.of(
+        "Lair", "Hive", "GreaterSpire", "NydusCanal",
+        "SpineCrawlerUprooted", "SporeCrawlerUprooted"
+    );
 
+    private static void consumeDroneForBuilding(Map<Long, UnitType> unitTagToType,
+                                                 List<TimedIntent> intents, int loop,
+                                                 String buildingTypeName) {
+        if (NON_DRONE_BUILDINGS.contains(buildingTypeName)) return;
+        Long droneTag = null;
+        for (Map.Entry<Long, UnitType> entry : unitTagToType.entrySet()) {
+            if (entry.getValue() == UnitType.DRONE) {
+                droneTag = entry.getKey();
+                break;
+            }
+        }
+        if (droneTag == null) return;
+        unitTagToType.remove(droneTag);
+        int tagIndex = (int) (droneTag >>> 32);
+        int tagRecycle = (int) (droneTag & 0xFFFFFFFFL);
+        intents.add(new TimedIntent(loop, new UnitDiedIntent("r-" + tagIndex + "-" + tagRecycle, UnitType.DRONE)));
+    }
 }
