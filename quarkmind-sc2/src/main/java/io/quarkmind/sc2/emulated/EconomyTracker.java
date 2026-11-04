@@ -85,6 +85,16 @@ class EconomyTracker {
         }
     }
 
+    private int[] spendingOverride;
+
+    void overrideSpending(int mArmy, int mEcon, int mTech, int vArmy, int vEcon, int vTech) {
+        this.spendingOverride = new int[]{mArmy, mEcon, mTech, vArmy, vEcon, vTech};
+    }
+
+    void clearSpendingOverride() {
+        this.spendingOverride = null;
+    }
+
 
     void tickUpdate(double minerals, int vespene,
                     int supply, int supplyUsed, int workerCount) {
@@ -107,13 +117,18 @@ class EconomyTracker {
     PlayerEconomyStats currentStats(int minerals, int vespene,
                                      int supply, int supplyUsed,
                                      int workerCount) {
+        int[] s = spendingOverride;
         return new PlayerEconomyStats(
             minerals, vespene,
             mineralRate, vespeneRate,
             supply, supplyUsed,
             workerCount,
-            mineralsUsedArmy, mineralsUsedEconomy, mineralsUsedTechnology,
-            vespeneUsedArmy, vespeneUsedEconomy, vespeneUsedTechnology);
+            s != null ? s[0] : mineralsUsedArmy,
+            s != null ? s[1] : mineralsUsedEconomy,
+            s != null ? s[2] : mineralsUsedTechnology,
+            s != null ? s[3] : vespeneUsedArmy,
+            s != null ? s[4] : vespeneUsedEconomy,
+            s != null ? s[5] : vespeneUsedTechnology);
     }
 
     void reset() {

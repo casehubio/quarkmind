@@ -130,9 +130,13 @@ public final class ReplayValidationHarness {
             if (gt.playerEconomy() != null && gt.playerEconomy().workersActiveCount() > 0) {
                 emulated.setWorkerCountForHarness(gt.playerEconomy().workersActiveCount());
             }
+            if (gt.playerEconomy() != null) {
+                emulated.syncSpendingFromGt(gt.playerEconomy());
+            }
             GameState em = emulated.snapshot();
             emulated.setSupplyUsedForHarness(emSupplyUsed);
             emulated.setWorkerCountForHarness(-1);
+            emulated.clearSpendingOverride();
 
             Map<UnitType, Integer> gtUnitsByType = gt.myUnits().stream()
                                                      .collect(Collectors.groupingBy(Unit::type, Collectors.summingInt(u -> 1)));
