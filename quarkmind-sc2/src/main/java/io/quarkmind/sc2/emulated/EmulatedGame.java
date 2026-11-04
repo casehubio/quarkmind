@@ -1495,6 +1495,11 @@ public class EmulatedGame {
         friendly.setSupply(supply);
     }
 
+    public void setSupplyUsedForHarness(int supplyUsed) {
+        friendly.setSupplyUsed(supplyUsed);
+    }
+
+
     /**
      * Sets the friendly vespene pool from replay ground truth.
      * Mirrors the vespene the real player had available at this tick,
