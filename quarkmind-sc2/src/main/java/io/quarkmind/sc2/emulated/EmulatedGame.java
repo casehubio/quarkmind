@@ -1516,6 +1516,16 @@ public class EmulatedGame {
         friendly.setMinerals(minerals);
     }
 
+    public void syncSpendingFromGt(PlayerEconomyStats gt) {
+        economyTracker.overrideSpending(
+            gt.mineralsUsedCurrentArmy(), gt.mineralsUsedCurrentEconomy(), gt.mineralsUsedCurrentTechnology(),
+            gt.vespeneUsedCurrentArmy(), gt.vespeneUsedCurrentEconomy(), gt.vespeneUsedCurrentTechnology());
+    }
+
+    public void clearSpendingOverride() {
+        economyTracker.clearSpendingOverride();
+    }
+
     public void syncMineralRateFromGt(int gtMineralRate) {
         economyTracker.overrideMineralRate(gtMineralRate);
     }

@@ -323,7 +323,7 @@ public final class TrackerIntentExtractor {
     }
 
     private static final Set<String> NON_DRONE_BUILDINGS = Set.of(
-        "Lair", "Hive", "GreaterSpire", "NydusCanal",
+        "Lair", "Hive", "GreaterSpire", "LurkerDen", "NydusCanal",
         "SpineCrawlerUprooted", "SporeCrawlerUprooted"
     );
 

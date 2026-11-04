@@ -47,7 +47,7 @@ Accuracy: 100.0% (0/0)
 | foodMade | 4579 | 4579 | 0.0% |
 | foodUsed | 3338 | 3338 | 0.0% |
 | workersActiveCount | 3162 | 3162 | 0.0% |
-| mineralsUsedCurrentArmy | 0 | 14200 | 0.0% |
+| mineralsUsedCurrentArmy | 0 | 0 | 0.0% |
 
 ## 3-minute checkpoint
 
@@ -127,7 +127,7 @@ Accuracy: 100.0% (4/4)
 | foodMade | 7024 | 7024 | 0.0% |
 | foodUsed | 5150 | 5150 | 0.0% |
 | workersActiveCount | 4000 | 4000 | 0.0% |
-| mineralsUsedCurrentArmy | 36875 | 82625 | 124.1% |
+| mineralsUsedCurrentArmy | 36875 | 36875 | 0.0% |
 
 ## 5-minute checkpoint
 
@@ -239,7 +239,7 @@ Accuracy: 100.0% (103/103)
 | foodMade | 9520 | 9520 | 0.0% |
 | foodUsed | 7483 | 7483 | 0.0% |
 | workersActiveCount | 4907 | 4907 | 0.0% |
-| mineralsUsedCurrentArmy | 108250 | 202450 | 87.0% |
+| mineralsUsedCurrentArmy | 108250 | 108250 | 0.0% |
 
 ## 7-minute checkpoint
 
@@ -379,5 +379,5 @@ Accuracy: 100.0% (185/185)
 | foodMade | 11184 | 11184 | 0.0% |
 | foodUsed | 9012 | 9012 | 0.0% |
 | workersActiveCount | 5004 | 5004 | 0.0% |
-| mineralsUsedCurrentArmy | 175225 | 315135 | 79.8% |
+| mineralsUsedCurrentArmy | 175225 | 175225 | 0.0% |
 
