@@ -642,6 +642,7 @@ public class EmulatedGame {
                                        new Point2d(9 + i * 0.5f, 9), hp, hp,
                                        SC2Data.maxShields(unitType), SC2Data.maxShields(unitType), 0, 0));
                 log.debugf("[EMULATED] Trained %s (tag=%s)", unitType, tag);
+                state.addSupply(SC2Data.unitSupplyProvided(unitType));
                 if (model != null) {model.onUnitSpawned(state, unitType, tag, buildingTag);}
                 if (!isEnemy && model != null && unitType == playerRaceModel.workerType()) {
                     Building bldg = state.buildings().stream()
@@ -883,6 +884,7 @@ public class EmulatedGame {
     private void handleUnitDied(UnitDiedIntent d, PlayerState state, PhysicsState physics) {
         state.removeUnit(d.unitTag());
         state.addSupplyUsed(-SC2Data.supplyCost(d.unitType()));
+        state.addSupply(-SC2Data.unitSupplyProvided(d.unitType()));
         if (state == friendly && SC2Data.isWorker(d.unitType())) {
             workerSimulation.onWorkerDied(d.unitTag());
         }
@@ -1574,11 +1576,14 @@ public class EmulatedGame {
      */
     public void injectReplayBuilding(Building building) {
         friendly.addBuilding(building);
-        if (building.isComplete() && playerRaceModel != null) {
-            if (playerRaceModel.townHallTypes().contains(building.type())) {
-                registerTownHallWithPatches(building.tag(), building.position());
-            } else if (SC2Data.isGasBuilding(building.type())) {
-                workerSimulation.onGasBuildingCompleted(building.tag(), building.position());
+        if (building.isComplete()) {
+            friendly.addSupply(SC2Data.supplyBonus(building.type()));
+            if (playerRaceModel != null) {
+                if (playerRaceModel.townHallTypes().contains(building.type())) {
+                    registerTownHallWithPatches(building.tag(), building.position());
+                } else if (SC2Data.isGasBuilding(building.type())) {
+                    workerSimulation.onGasBuildingCompleted(building.tag(), building.position());
+                }
             }
         }
     }
@@ -1594,11 +1599,14 @@ public class EmulatedGame {
     public void injectReplayBuildingWithCost(Building building) {
         friendly.deductMinerals(SC2Data.mineralCost(building.type()));
         friendly.addBuilding(building);
-        if (building.isComplete() && playerRaceModel != null) {
-            if (playerRaceModel.townHallTypes().contains(building.type())) {
-                registerTownHallWithPatches(building.tag(), building.position());
-            } else if (SC2Data.isGasBuilding(building.type())) {
-                workerSimulation.onGasBuildingCompleted(building.tag(), building.position());
+        if (building.isComplete()) {
+            friendly.addSupply(SC2Data.supplyBonus(building.type()));
+            if (playerRaceModel != null) {
+                if (playerRaceModel.townHallTypes().contains(building.type())) {
+                    registerTownHallWithPatches(building.tag(), building.position());
+                } else if (SC2Data.isGasBuilding(building.type())) {
+                    workerSimulation.onGasBuildingCompleted(building.tag(), building.position());
+                }
             }
         }
     }
@@ -1614,6 +1622,9 @@ public class EmulatedGame {
         friendly.replaceAllBuildings(b -> b.tag().equals(tag)
             ? new Building(b.tag(), b.type(), b.position(), b.health(), b.maxHealth(), true)
             : b);
+        if (completedType != null) {
+            friendly.addSupply(SC2Data.supplyBonus(completedType));
+        }
         if (playerRaceModel != null && completedType != null) {
             playerRaceModel.onBuildingComplete(friendly, completedType, tag);
             Building completed = friendly.buildings().stream()
@@ -1635,16 +1646,21 @@ public class EmulatedGame {
                                           ? new Building(b.tag(), gtBuilding.type(), b.position(),
                                                          b.health(), b.maxHealth(), gtBuilding.isComplete())
                                           : b);
-        if (gtBuilding.isComplete() && playerRaceModel != null) {
-            playerRaceModel.onBuildingComplete(friendly, gtBuilding.type(), gtBuilding.tag());
+        if (gtBuilding.isComplete()) {
             if (wasIncomplete) {
-                Building synced = friendly.buildings().stream()
-                    .filter(b -> b.tag().equals(gtBuilding.tag())).findFirst().orElse(null);
-                if (synced != null) {
-                    if (playerRaceModel.townHallTypes().contains(gtBuilding.type())) {
-                        registerTownHallWithPatches(gtBuilding.tag(), synced.position());
-                    } else if (SC2Data.isGasBuilding(gtBuilding.type())) {
-                        workerSimulation.onGasBuildingCompleted(gtBuilding.tag(), synced.position());
+                friendly.addSupply(SC2Data.supplyBonus(gtBuilding.type()));
+            }
+            if (playerRaceModel != null) {
+                playerRaceModel.onBuildingComplete(friendly, gtBuilding.type(), gtBuilding.tag());
+                if (wasIncomplete) {
+                    Building synced = friendly.buildings().stream()
+                        .filter(b -> b.tag().equals(gtBuilding.tag())).findFirst().orElse(null);
+                    if (synced != null) {
+                        if (playerRaceModel.townHallTypes().contains(gtBuilding.type())) {
+                            registerTownHallWithPatches(gtBuilding.tag(), synced.position());
+                        } else if (SC2Data.isGasBuilding(gtBuilding.type())) {
+                            workerSimulation.onGasBuildingCompleted(gtBuilding.tag(), synced.position());
+                        }
                     }
                 }
             }

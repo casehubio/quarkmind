@@ -146,7 +146,7 @@ class ZergRaceModel implements RaceModel {
             if (eggTag != null) state.removeUnit(eggTag);
             if (eggs.isEmpty()) eggTagByBuilding.remove(buildingTag);
         }
-        if (type == UnitType.OVERLORD) state.addSupply(8);
+        // Overlord supply tracking moved to EmulatedGame.startTraining via SC2Data.unitSupplyProvided
         if (type == UnitType.QUEEN)    queenEnergyMap.put(unitTag, INJECT_COST_ENERGY);
     }
 

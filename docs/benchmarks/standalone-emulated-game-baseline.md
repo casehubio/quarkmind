@@ -47,8 +47,8 @@ Accuracy: 100.0% (0/0)
 | vespeneCurrent | 232 | 368 | 168 | 72.4% |
 | mineralsCollectionRate | 150658 | 232310 | 81652 | 54.2% |
 | vespeneCollectionRate | 1241 | 2205 | 1072 | 86.4% |
-| foodMade | 4579 | 4091 | 1672 | 36.5% |
-| foodUsed | 3338 | 5948 | 2610 | 78.2% |
+| foodMade | 4579 | 4619 | 40 | 0.9% |
+| foodUsed | 3338 | 3476 | 140 | 4.2% |
 | workersActiveCount | 3162 | 5758 | 2596 | 82.1% |
 | mineralsUsedCurrentArmy | 0 | 14200 | 14200 | 0.0% |
 | mineralsUsedCurrentEconomy | 266325 | 173950 | 92375 | 34.7% |
@@ -132,8 +132,8 @@ Accuracy: 100.0% (4/4)
 | vespeneCurrent | 24254 | 13471 | 15747 | 64.9% |
 | mineralsCollectionRate | 171704 | 201532 | 35998 | 21.0% |
 | vespeneCollectionRate | 39512 | 24027 | 18425 | 46.6% |
-| foodMade | 7024 | 4254 | 3194 | 45.5% |
-| foodUsed | 5150 | 7745 | 2595 | 50.4% |
+| foodMade | 7024 | 7116 | 108 | 1.5% |
+| foodUsed | 5150 | 5489 | 355 | 6.9% |
 | workersActiveCount | 4000 | 6359 | 2359 | 59.0% |
 | mineralsUsedCurrentArmy | 36875 | 82625 | 45750 | 124.1% |
 | mineralsUsedCurrentEconomy | 385100 | 223950 | 161150 | 41.8% |
@@ -249,8 +249,8 @@ Accuracy: 100.0% (103/103)
 | vespeneCurrent | 43390 | 7328 | 42022 | 96.8% |
 | mineralsCollectionRate | 208770 | 201006 | 46302 | 22.2% |
 | vespeneCollectionRate | 50869 | 26945 | 25414 | 50.0% |
-| foodMade | 9520 | 5114 | 5086 | 53.4% |
-| foodUsed | 7483 | 10189 | 2706 | 36.2% |
+| foodMade | 9520 | 9826 | 402 | 4.2% |
+| foodUsed | 7483 | 8173 | 812 | 10.9% |
 | workersActiveCount | 4907 | 7100 | 2193 | 44.7% |
 | mineralsUsedCurrentArmy | 108250 | 202450 | 94200 | 87.0% |
 | mineralsUsedCurrentEconomy | 478750 | 287050 | 191750 | 40.1% |
@@ -394,8 +394,8 @@ Accuracy: 100.0% (185/185)
 | vespeneCurrent | 52228 | -21188 | 76942 | 147.3% |
 | mineralsCollectionRate | 201496 | 170714 | 59376 | 29.5% |
 | vespeneCollectionRate | 61091 | 27682 | 33959 | 55.6% |
-| foodMade | 11184 | 5477 | 6323 | 56.5% |
-| foodUsed | 9012 | 11133 | 2133 | 23.7% |
+| foodMade | 11184 | 11489 | 497 | 4.4% |
+| foodUsed | 9012 | 9525 | 715 | 7.9% |
 | workersActiveCount | 5004 | 6849 | 1845 | 36.9% |
 | mineralsUsedCurrentArmy | 175225 | 315135 | 139910 | 79.8% |
 | mineralsUsedCurrentEconomy | 506875 | 304600 | 203875 | 40.2% |

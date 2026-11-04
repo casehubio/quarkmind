@@ -676,11 +676,11 @@ public final class SC2Data {
 
     public static int supplyBonus(BuildingType type) {
         return switch (type) {
+            case NEXUS, COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS -> 15;
             case PYLON         -> 8;
             case SUPPLY_DEPOT  -> 8;
             case HATCHERY, LAIR, HIVE -> 6;
-            case NEXUS, COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS,
-                 GATEWAY, CYBERNETICS_CORE, ASSIMILATOR, ASSIMILATOR_RICH,
+            case GATEWAY, CYBERNETICS_CORE, ASSIMILATOR, ASSIMILATOR_RICH,
                  ROBOTICS_FACILITY, STARGATE, FORGE, TWILIGHT_COUNCIL,
                  PHOTON_CANNON, SHIELD_BATTERY, DARK_SHRINE, TEMPLAR_ARCHIVES,
                  FLEET_BEACON, ROBOTICS_BAY,
@@ -691,6 +691,13 @@ public final class SC2Data {
                  INFESTATION_PIT, SPIRE, GREATER_SPIRE, NYDUS_NETWORK, NYDUS_CANAL,
                  ULTRALISK_CAVERN, EXTRACTOR,
                  CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP, UNKNOWN -> 0;
+        };
+    }
+
+    public static int unitSupplyProvided(UnitType type) {
+        return switch (type) {
+            case OVERLORD, OVERSEER -> 8;
+            default -> 0;
         };
     }
 
