@@ -8,7 +8,9 @@ import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.intent.MorphIntent;
+import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
+import io.quarkmind.sc2.intent.UnitDiedIntent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -475,6 +477,82 @@ class ZergEmulatedGameTest {
 
         assertThat((int) game.snapshot().minerals()).isEqualTo(200 - SC2Data.mineralCost(BuildingType.LAIR));
         assertThat(game.snapshot().vespene()).isEqualTo(200 - SC2Data.gasCost(BuildingType.LAIR));
+    }
+
+    // --- Tracker-driven Zergling production (#508) ---
+
+    @Test
+    void trackerDrivenZerglingPairProducesExactlyTwoUnits() {
+        game.setMineralsForTesting(500);
+        game.setSupplyForTesting(30, 12);
+        game.spawnBuildingForTesting(BuildingType.SPAWNING_POOL, new Point2d(20, 20));
+        String hatch = hatcheryTag();
+
+        int trainTime = SC2Data.trainTimeInLoops(UnitType.ZERGLING);
+        long completionLoop1 = trainTime;
+        long completionLoop2 = trainTime;
+
+        game.applyIntent(new TimedIntent(0, new TrainIntent(hatch, UnitType.ZERGLING, true, false, completionLoop1, "r-10-1")));
+        game.applyIntent(new TimedIntent(0, new TrainIntent(hatch, UnitType.ZERGLING, true, false, completionLoop2, "r-11-1")));
+
+        int ticksToComplete = (int) (completionLoop1 / SC2Data.LOOPS_PER_TICK) + 2;
+        for (int i = 0; i < ticksToComplete; i++) { game.tick(); }
+
+        long zerglings = game.snapshot().myUnits().stream()
+            .filter(u -> u.type() == UnitType.ZERGLING).count();
+        assertThat(zerglings).as("Two tracker UnitBorn events should produce exactly 2 Zerglings, not 4").isEqualTo(2);
+    }
+
+    @Test
+    void trackerDrivenZerglingPairDeductsPerIndividualCost() {
+        game.setMineralsForTesting(500);
+        game.setSupplyForTesting(30, 12);
+        game.spawnBuildingForTesting(BuildingType.SPAWNING_POOL, new Point2d(20, 20));
+        String hatch = hatcheryTag();
+
+        game.applyIntent(new TimedIntent(0, new TrainIntent(hatch, UnitType.ZERGLING, true, false, 100, "r-10-1")));
+        game.applyIntent(new TimedIntent(0, new TrainIntent(hatch, UnitType.ZERGLING, true, false, 100, "r-11-1")));
+
+        assertThat((int) game.snapshot().minerals())
+            .as("Two individual Zergling TrainIntents should deduct 25 minerals each (50 total), not 50 each (100)")
+            .isEqualTo(450);
+    }
+
+    @Test
+    void trackerDrivenDroneTrainAddsCorrectSupply() {
+        game.setMineralsForTesting(500);
+        game.setSupplyForTesting(30, 12);
+        String hatch = hatcheryTag();
+
+        int supplyBefore = game.snapshot().supplyUsed();
+
+        game.applyIntent(new TimedIntent(0, new TrainIntent(hatch, UnitType.DRONE, true, false, 100, "r-10-1")));
+
+        int supplyAfter = game.snapshot().supplyUsed();
+        assertThat(supplyAfter - supplyBefore).as("One tracker-driven Drone should add exactly 1 supply").isEqualTo(1);
+    }
+
+    @Test
+    void trackerDrivenWorkerDeathDecrementsWorkersActiveCount() {
+        game.setMineralsForTesting(500);
+        game.setSupplyForTesting(30, 12);
+
+        GameState before = game.snapshot();
+        long workersBefore = before.myUnits().stream()
+            .filter(u -> SC2Data.isWorker(u.type())).count();
+        assertThat(workersBefore).isEqualTo(12);
+
+        String droneTag = before.myUnits().stream()
+            .filter(u -> u.type() == UnitType.DRONE).findFirst().orElseThrow().tag();
+
+        game.applyIntent(new TimedIntent(0, new UnitDiedIntent(droneTag, UnitType.DRONE)));
+        game.tick();
+
+        GameState after = game.snapshot();
+        long workersAfter = after.myUnits().stream()
+            .filter(u -> SC2Data.isWorker(u.type())).count();
+        assertThat(workersAfter).as("Worker death should decrement workers count").isEqualTo(11);
+        assertThat(after.supplyUsed()).as("Worker death should decrement supply").isEqualTo(before.supplyUsed() - 1);
     }
 
     private String hatcheryTag() {

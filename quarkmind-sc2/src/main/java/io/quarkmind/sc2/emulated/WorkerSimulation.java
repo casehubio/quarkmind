@@ -65,6 +65,7 @@ class WorkerSimulation {
     }
 
     void onGasBuildingCompleted(String tag, Point2d position) {
+        if (gasSlots.stream().anyMatch(s -> s.position.distanceTo(position) < 5.0)) return;
         int baseIdx = findNearestBaseIndex(position);
         if (baseIdx < 0) return;
         GasSlot slot = new GasSlot(tag, position, baseIdx);
@@ -166,32 +167,22 @@ class WorkerSimulation {
 
     private double tickGasWorker(SimulatedWorker w) {
         GasSlot slot = w.assignedGasSlot;
-        if (slot == null) return 0;
+        if (slot == null) {return 0;}
 
         if (w.task == WorkerTask.HARVESTING_GAS) {
-            if (slot.insideWorker == w) {
+            if (slot.insideWorkers.contains(w)) {
                 w.cycleTicksRemaining--;
                 if (w.cycleTicksRemaining <= 0) {
                     w.cargo = SimulatedWorker.GAS_CARGO;
-                    slot.insideWorker = null;
-                    w.task = WorkerTask.RETURNING_GAS;
+                    slot.exitBuilding(w);
+                    w.task           = WorkerTask.RETURNING_GAS;
                     w.targetPosition = bases.get(w.baseIndex).position();
-                    if (!slot.waitQueue.isEmpty()) {
-                        SimulatedWorker next = slot.waitQueue.poll();
-                        slot.insideWorker = next;
-                        next.cycleTicksRemaining = SimulatedWorker.GAS_HARVEST_DURATION_TICKS;
-                    }
                 }
                 return 0;
             }
             w.moveToward(workerDistancePerTick);
-            if (w.isAtTarget()) {
-                if (slot.insideWorker == null) {
-                    slot.insideWorker = w;
-                    w.cycleTicksRemaining = SimulatedWorker.GAS_HARVEST_DURATION_TICKS;
-                } else if (!slot.waitQueue.contains(w)) {
-                    slot.waitQueue.add(w);
-                }
+            if (w.isAtTarget() && slot.canEnter()) {
+                slot.enterBuilding(w);
             }
             return 0;
         }
@@ -200,8 +191,8 @@ class WorkerSimulation {
             w.moveToward(workerDistancePerTick);
             if (w.isAtTarget()) {
                 double deposited = w.cargo;
-                w.cargo = 0;
-                w.task = WorkerTask.HARVESTING_GAS;
+                w.cargo          = 0;
+                w.task           = WorkerTask.HARVESTING_GAS;
                 w.targetPosition = slot.position;
                 return deposited;
             }
@@ -284,6 +275,28 @@ class WorkerSimulation {
                 simulated.mineralIncome(), formulaMineral,
                 simulated.vespeneIncome(), formulaGas);
     }
+
+    TickIncome formulaIncome() {
+        double formulaMineral = 0;
+        int[]  mineralCounts  = mineralWorkersPerBase();
+        for (int count : mineralCounts) {
+            formulaMineral += SC2Data.mineralIncomePerTick(count);
+        }
+        double formulaGas = 0;
+        for (GasSlot slot : gasSlots) {
+            formulaGas += SC2Data.gasIncomePerTick(slot.assignedWorkers.size());
+        }
+        return new TickIncome(formulaMineral, formulaGas);
+    }
+
+    int gasSlotCount() {
+        return gasSlots.size();
+    }
+
+    int totalGasWorkers() {
+        return gasSlots.stream().mapToInt(s -> s.assignedWorkers.size()).sum();
+    }
+
 
     int[] mineralWorkersPerBase() {
         int[] counts = new int[bases.size()];

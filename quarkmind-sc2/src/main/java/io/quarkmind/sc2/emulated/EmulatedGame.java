@@ -174,8 +174,8 @@ public class EmulatedGame {
         friendly.addMinerals(tickMineralIncome);
         friendly.addVespene(tickGasIncome);
         double passiveMineralIncome = playerRaceModel.tickPassive(friendly, gameFrame * (long) SC2Data.LOOPS_PER_TICK);
-        tickMineralIncome += passiveMineralIncome;
-        economyTracker.recordIncome(tickMineralIncome, tickGasIncome);
+        TickIncome formulaIncome = workerSimulation.formulaIncome();
+        economyTracker.recordIncome(formulaIncome.mineralIncome() + passiveMineralIncome, formulaIncome.vespeneIncome());
         moveFriendlyUnits();
         // Recompute after movement, before combat: a unit that dies this tick still
         // provided vision for this frame — correct SC2 behaviour.
@@ -469,9 +469,8 @@ public class EmulatedGame {
                 economyTracker.recordTrainSpending(t.unitType(), mCost, gCost);
             }
         } else {
-            final int count = SC2Data.trainCount(t.unitType());
-            final int mCost = SC2Data.mineralCost(t.unitType()) * count;
-            final int gCost = SC2Data.gasCost(t.unitType()) * count;
+            final int mCost = SC2Data.mineralCost(t.unitType());
+            final int gCost = SC2Data.gasCost(t.unitType());
             state.deductMinerals(mCost);
             state.deductVespene(gCost);
             if (state == friendly) {
@@ -622,7 +621,9 @@ public class EmulatedGame {
             physics.buildingTrainingUntil.put(buildingTag, completesAt);
         }
         physics.buildingCompletionAtLoop.put(buildingTag, absLoop + effectiveTrainLoops);
-        final int spawnCount = (model != null) ? model.trainCount(unitType) : SC2Data.trainCount(unitType);
+        final boolean trackerDriven = pinnedCompletionLoop >= 0;
+        final int spawnCount = trackerDriven ? 1
+                             : (model != null) ? model.trainCount(unitType) : SC2Data.trainCount(unitType);
         physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
             if (useSlot2) {
                 physics.buildingTrainingUntil2.remove(buildingTag);
@@ -1495,6 +1496,11 @@ public class EmulatedGame {
         friendly.setSupply(supply);
     }
 
+    public void setSupplyUsedForHarness(int supplyUsed) {
+        friendly.setSupplyUsed(supplyUsed);
+    }
+
+
     /**
      * Sets the friendly vespene pool from replay ground truth.
      * Mirrors the vespene the real player had available at this tick,
@@ -1508,6 +1514,24 @@ public class EmulatedGame {
     public void setMineralsForHarness(double minerals) {
         friendly.setMinerals(minerals);
     }
+
+    public void syncGasRateFromGt(int gtGasBuildingCount) {
+        double gasIncome = 0;
+        for (int i = 0; i < gtGasBuildingCount; i++) {
+            gasIncome += SC2Data.gasIncomePerTick(SC2Data.GAS_WORKERS_PER_BUILDING);
+        }
+        economyTracker.overrideGasIncome(gasIncome);
+    }
+
+
+    public int gasSlotCount() {
+        return workerSimulation.gasSlotCount();
+    }
+
+    public int totalGasWorkers() {
+        return workerSimulation.totalGasWorkers();
+    }
+
 
     private final Set<String> reactoredBuildings = new HashSet<>();
     private final Set<String> trackerDrivenBuildings = new HashSet<>();

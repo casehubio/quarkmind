@@ -150,7 +150,7 @@ class WorkerSimulationTest {
     }
 
     @Test
-    void threeGasWorkers_lowerPerWorkerThroughputThanTwo() {
+    void threeGasWorkers_totalThroughputExceedsTwoWorkers() {
         List<String> tags3 = IntStream.rangeClosed(1, 12)
                 .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags3, BASE_POS, BASE_TAG);
@@ -159,7 +159,6 @@ class WorkerSimulationTest {
         for (int t = 0; t < 200; t++) {
             totalGas3 += sim.tick().vespeneIncome();
         }
-        double perWorkerRate3 = totalGas3 / 3.0;
 
         sim.reset();
         sim.onTownHallCompleted(BASE_TAG, BASE_POS);
@@ -167,20 +166,18 @@ class WorkerSimulationTest {
                 .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags2, BASE_POS, BASE_TAG);
         sim.onGasBuildingCompleted("gas-2w", new Point2d(45, 50));
-        // kill 1 gas worker to get 2 gas workers
         sim.onWorkerDied("w-1");
         double totalGas2 = 0;
         for (int t = 0; t < 200; t++) {
             totalGas2 += sim.tick().vespeneIncome();
         }
-        double perWorkerRate2 = totalGas2 / 2.0;
 
-        assertTrue(perWorkerRate2 >= perWorkerRate3,
-                "Per-worker gas rate with 2 workers (" + perWorkerRate2
-                        + ") should be >= 3 workers (" + perWorkerRate3 + ")");
         assertTrue(totalGas3 > totalGas2,
                 "Total gas from 3 workers (" + totalGas3
                         + ") should exceed 2 workers (" + totalGas2 + ")");
+        double ratio = totalGas3 / totalGas2;
+        assertTrue(ratio > 1.2 && ratio < 1.7,
+                "3-worker/2-worker gas ratio should be ~1.5 (concurrent), got " + ratio);
     }
 
     @Test

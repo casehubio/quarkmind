@@ -2,10 +2,10 @@ package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.Point2d;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 class GasSlot {
     static final int MAX_WORKERS = 3;
@@ -14,8 +14,7 @@ class GasSlot {
     final Point2d position;
     final int baseIndex;
     final List<SimulatedWorker> assignedWorkers = new ArrayList<>(MAX_WORKERS);
-    SimulatedWorker insideWorker;
-    final Deque<SimulatedWorker> waitQueue = new ArrayDeque<>();
+    final Set<SimulatedWorker> insideWorkers = new HashSet<>(MAX_WORKERS);
 
     GasSlot(String buildingTag, Point2d position, int baseIndex) {
         this.buildingTag = buildingTag;
@@ -23,9 +22,21 @@ class GasSlot {
         this.baseIndex = baseIndex;
     }
 
+    boolean canEnter() {
+        return insideWorkers.size() < MAX_WORKERS;
+    }
+
+    void enterBuilding(SimulatedWorker w) {
+        insideWorkers.add(w);
+        w.cycleTicksRemaining = SimulatedWorker.GAS_HARVEST_DURATION_TICKS;
+    }
+
+    void exitBuilding(SimulatedWorker w) {
+        insideWorkers.remove(w);
+    }
+
     void removeWorker(SimulatedWorker w) {
         assignedWorkers.remove(w);
-        waitQueue.remove(w);
-        if (insideWorker == w) insideWorker = null;
+        insideWorkers.remove(w);
     }
 }

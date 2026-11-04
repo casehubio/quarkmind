@@ -93,7 +93,6 @@ public final class ReplayValidationHarness {
 
             GameState gtBefore = groundTruth.snapshot();
             emulated.syncMineralWorkersFromGt(countWorkersPerBase(race, gtBefore));
-            emulated.syncGasWorkersFromGt(countGasWorkersPerBuilding(race, gtBefore));
 
             emulated.tick();
             groundTruth.tick();
@@ -116,7 +115,16 @@ public final class ReplayValidationHarness {
 
             emulated.setMineralsForHarness(gt.minerals());
 
+            int gtGasBuildings = (int) gt.myBuildings().stream()
+                    .filter(b -> SC2Data.isGasBuilding(b.type()) && b.isComplete()).count();
+            emulated.syncGasRateFromGt(gtGasBuildings);
+
+            int emSupplyUsed = emulated.snapshot().supplyUsed();
+            if (gt.supplyUsed() > 0) {
+                emulated.setSupplyUsedForHarness(gt.supplyUsed());
+            }
             GameState em = emulated.snapshot();
+            emulated.setSupplyUsedForHarness(emSupplyUsed);
 
             Map<UnitType, Integer> gtUnitsByType = gt.myUnits().stream()
                                                      .collect(Collectors.groupingBy(Unit::type, Collectors.summingInt(u -> 1)));

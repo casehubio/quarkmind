@@ -11,6 +11,8 @@ import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
 import io.quarkmind.sc2.intent.UnitDiedIntent;
+import io.quarkmind.domain.Race;
+import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.mock.Sc2ReplayShared;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -235,5 +237,95 @@ class TrackerIntentExtractorIntentTest {
                    "With game events, some TrainIntents should have building tags from selection state (different from tracker-unit tags)");
     }
 
+    @Test
+    @EnabledIf("oracleExists")
+    void droneBuildingMorphEmitsUnitDiedIntent() throws Exception {
+        List<Path> allReplays;
+        try (var stream = Files.list(ORACLE_DIR)) {
+            allReplays = stream.filter(p -> p.toString().endsWith(".SC2Replay")).sorted().toList();
+        }
 
+        int zergPlayers = 0;
+        long totalBuildingInits = 0;
+        long totalRawDroneDied = 0;
+        long totalExtractorDroneDied = 0;
+
+        for (Path replayPath : allReplays) {
+            Replay parsed;
+            try {
+                parsed = RepParserEngine.parseReplay(replayPath,
+                    EnumSet.of(RepContent.TRACKER_EVENTS, RepContent.DETAILS, RepContent.GAME_EVENTS));
+            } catch (Exception e) { continue; }
+            if (parsed == null || parsed.trackerEvents == null || parsed.details == null) continue;
+
+            for (int playerId = 1; playerId <= 2; playerId++) {
+                Race race = TrackerIntentExtractor.resolvePlayerRace(parsed, playerId);
+                if (race != Race.ZERG) continue;
+                zergPlayers++;
+
+                java.util.Map<Long, String> unitTagToType = new java.util.HashMap<>();
+                int buildingInits = 0;
+                int rawDroneDied = 0;
+
+                for (Event raw : parsed.trackerEvents.getEvents()) {
+                    if (raw.getId() == ITrackerEvents.ID_UNIT_BORN && raw instanceof IBaseUnitEvent ue) {
+                        Integer pid = ue.getControlPlayerId();
+                        if (pid != null && pid == playerId) {
+                            String typeName = String.valueOf(ue.getUnitTypeName()).trim();
+                            long tag = ((long) ue.getUnitTagIndex() << 32) | (ue.getUnitTagRecycle() & 0xFFFFFFFFL);
+                            unitTagToType.put(tag, typeName);
+                        }
+                    }
+                    if (raw.getId() == ITrackerEvents.ID_UNIT_INIT && raw instanceof IBaseUnitEvent ue) {
+                        Integer pid = ue.getControlPlayerId();
+                        if (pid != null && pid == playerId) {
+                            String typeName = String.valueOf(ue.getUnitTypeName()).trim();
+                            Set<String> MORPHED = Set.of("Lair", "Hive", "GreaterSpire", "NydusCanal",
+                                "SpineCrawlerUprooted", "SporeCrawlerUprooted", "LurkerDen");
+                            if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName) && !MORPHED.contains(typeName)) {
+                                buildingInits++;
+                            }
+                        }
+                    }
+                    if (raw.getId() == ITrackerEvents.ID_UNIT_DIED) {
+                        Integer tagIndex = raw.get("unitTagIndex");
+                        Integer tagRecycle = raw.get("unitTagRecycle");
+                        if (tagIndex != null && tagRecycle != null) {
+                            long tag = ((long) tagIndex << 32) | (tagRecycle & 0xFFFFFFFFL);
+                            String type = unitTagToType.get(tag);
+                            if ("Drone".equals(type)) rawDroneDied++;
+                        }
+                    }
+                }
+                totalBuildingInits += buildingInits;
+                totalRawDroneDied += rawDroneDied;
+
+                List<TimedIntent> intents = TrackerIntentExtractor.extractFromReplay(parsed, playerId);
+                long extractorDroneDied = intents.stream()
+                    .filter(ti -> ti.intent() instanceof UnitDiedIntent d && d.unitType() == UnitType.DRONE).count();
+                totalExtractorDroneDied += extractorDroneDied;
+            }
+        }
+
+        System.out.printf("Zerg players: %d, building inits: %d%n", zergPlayers, totalBuildingInits);
+        System.out.printf("Raw Drone UnitDied: %d, Extractor Drone UnitDied: %d%n",
+            totalRawDroneDied, totalExtractorDroneDied);
+        System.out.printf("Expected extractor deaths >= raw deaths + building inits: %d >= %d + %d = %d%n",
+            totalExtractorDroneDied, totalRawDroneDied, totalBuildingInits, totalRawDroneDied + totalBuildingInits);
+
+        assertTrue(zergPlayers > 10, "Should have enough Zerg players");
+        assertTrue(totalBuildingInits > 100, "Should have many Zerg building constructions");
+
+        long consumedByBuildings = totalExtractorDroneDied - totalRawDroneDied;
+        double captureRate = (double) consumedByBuildings / totalBuildingInits;
+        System.out.printf("Building consumption capture rate: %d / %d = %.1f%%%n",
+            consumedByBuildings, totalBuildingInits, captureRate * 100);
+
+        assertTrue(consumedByBuildings > 0,
+            "Should emit UnitDied for at least some building-consumed Drones");
+        assertTrue(captureRate >= 0.5,
+            "Should capture >= 50% of building-consumed Drones. " +
+            "Captured: " + consumedByBuildings + " / " + totalBuildingInits +
+            " = " + String.format("%.1f%%", captureRate * 100));
+    }
 }
