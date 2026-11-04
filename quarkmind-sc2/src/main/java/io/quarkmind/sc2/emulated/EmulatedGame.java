@@ -1509,6 +1509,24 @@ public class EmulatedGame {
         friendly.setMinerals(minerals);
     }
 
+    public void syncGasRateFromGt(int gtGasBuildingCount) {
+        double gasIncome = 0;
+        for (int i = 0; i < gtGasBuildingCount; i++) {
+            gasIncome += SC2Data.gasIncomePerTick(SC2Data.GAS_WORKERS_PER_BUILDING);
+        }
+        economyTracker.overrideGasIncome(gasIncome);
+    }
+
+
+    public int gasSlotCount() {
+        return workerSimulation.gasSlotCount();
+    }
+
+    public int totalGasWorkers() {
+        return workerSimulation.totalGasWorkers();
+    }
+
+
     private final Set<String> reactoredBuildings = new HashSet<>();
     private final Set<String> trackerDrivenBuildings = new HashSet<>();
 

@@ -115,6 +115,10 @@ public final class ReplayValidationHarness {
 
             emulated.setMineralsForHarness(gt.minerals());
 
+            int gtGasBuildings = (int) gt.myBuildings().stream()
+                    .filter(b -> SC2Data.isGasBuilding(b.type()) && b.isComplete()).count();
+            emulated.syncGasRateFromGt(gtGasBuildings);
+
             GameState em = emulated.snapshot();
 
             Map<UnitType, Integer> gtUnitsByType = gt.myUnits().stream()

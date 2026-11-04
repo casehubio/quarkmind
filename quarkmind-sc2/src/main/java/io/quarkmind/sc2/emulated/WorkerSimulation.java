@@ -65,6 +65,7 @@ class WorkerSimulation {
     }
 
     void onGasBuildingCompleted(String tag, Point2d position) {
+        if (gasSlots.stream().anyMatch(s -> s.position.distanceTo(position) < 5.0)) return;
         int baseIdx = findNearestBaseIndex(position);
         if (baseIdx < 0) return;
         GasSlot slot = new GasSlot(tag, position, baseIdx);
@@ -286,6 +287,14 @@ class WorkerSimulation {
             formulaGas += SC2Data.gasIncomePerTick(slot.assignedWorkers.size());
         }
         return new TickIncome(formulaMineral, formulaGas);
+    }
+
+    int gasSlotCount() {
+        return gasSlots.size();
+    }
+
+    int totalGasWorkers() {
+        return gasSlots.stream().mapToInt(s -> s.assignedWorkers.size()).sum();
     }
 
 
