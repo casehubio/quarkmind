@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -258,7 +259,7 @@ class StandaloneEmulatedGameBaselineTest {
 
         Set<String> reactoredTags = groundTruth.reactoredBuildingTags();
         int cursor = 0;
-        Set<String> injectedTags = new HashSet<>();
+        Map<String, BuildingType> injectedBuildings = new HashMap<>();
         List<DivergenceReport.TickSnapshot> snapshots = new ArrayList<>(Math.min(tickLimit, 10000));
 
         for (int tick = 0; tick < tickLimit && !groundTruth.isComplete(); tick++) {
@@ -272,7 +273,7 @@ class StandaloneEmulatedGameBaselineTest {
             GameState gt = groundTruth.snapshot();
 
             // Buildings ARE injected — structural necessity
-            syncBuildings(emulated, gt, injectedTags, reactoredTags);
+            syncBuildings(emulated, gt, injectedBuildings, reactoredTags);
 
             // NO setSupplyCapForHarness — EmulatedGame tracks supply from buildings
             // NO setVespeneForHarness (pre-tick) — EmulatedGame earns vespene via mining
@@ -323,17 +324,25 @@ class StandaloneEmulatedGameBaselineTest {
     }
 
     private static void syncBuildings(EmulatedGame emulated, GameState gt,
-                                       Set<String> injectedTags, Set<String> reactoredTags) {
+                                       Map<String, BuildingType> injectedBuildings, Set<String> reactoredTags) {
+        Set<String> gtTags = new HashSet<>();
         for (Building gtBuilding : gt.myBuildings()) {
-            if (!injectedTags.contains(gtBuilding.tag())) {
+            gtTags.add(gtBuilding.tag());
+            if (!injectedBuildings.containsKey(gtBuilding.tag())) {
                 emulated.injectReplayBuilding(gtBuilding);
-                injectedTags.add(gtBuilding.tag());
+                injectedBuildings.put(gtBuilding.tag(), gtBuilding.type());
             } else {
                 emulated.syncReplayBuilding(gtBuilding);
             }
             if (gtBuilding.isComplete() && reactoredTags.contains(gtBuilding.tag())) {
                 emulated.markBuildingReactored(gtBuilding.tag());
             }
+        }
+        var destroyed = new ArrayList<>(injectedBuildings.keySet());
+        destroyed.removeAll(gtTags);
+        for (String tag : destroyed) {
+            BuildingType type = injectedBuildings.remove(tag);
+            emulated.removeDestroyedBuilding(tag, type);
         }
     }
 

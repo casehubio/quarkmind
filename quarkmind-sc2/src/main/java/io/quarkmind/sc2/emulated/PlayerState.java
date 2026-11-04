@@ -63,6 +63,7 @@ public class PlayerState implements PlayerStateView {
     public List<Unit> units()               { return Collections.unmodifiableList(units); }
 
     public void addBuilding(Building b)      { buildings.add(b); }
+    public void removeBuilding(String tag)  { buildings.removeIf(b -> b.tag().equals(tag)); }
     public List<Building> buildings()       { return Collections.unmodifiableList(buildings); }
 
     public void completeUpgrade(UpgradeType type)        { completedUpgrades.add(type); }

@@ -895,8 +895,11 @@ public class EmulatedGame {
         state.removeUnit(d.unitTag());
         state.addSupplyUsed(-SC2Data.supplyCost(d.unitType()));
         state.addSupply(-SC2Data.unitSupplyProvided(d.unitType()));
-        if (state == friendly && SC2Data.isWorker(d.unitType())) {
-            workerSimulation.onWorkerDied(d.unitTag());
+        if (state == friendly) {
+            if (SC2Data.isWorker(d.unitType())) {
+                workerSimulation.onWorkerDied(d.unitTag());
+            }
+            economyTracker.recordUnitDeath(d.unitType());
         }
         physics.unitTargets.remove(d.unitTag());
         physics.unitCooldowns.remove(d.unitTag());
@@ -1584,8 +1587,17 @@ public class EmulatedGame {
      * purchased), e.g. the initial Nexus. The real player never spent minerals on these,
      * so no cost deduction is correct.
      */
+    public void removeDestroyedBuilding(String tag, BuildingType type) {
+        friendly.buildings().stream().filter(b -> b.tag().equals(tag)).findFirst().ifPresent(b -> {
+            friendly.addSupply(-SC2Data.supplyBonus(type));
+            economyTracker.recordBuildingDestroyed(type);
+        });
+        friendly.removeBuilding(tag);
+    }
+
     public void injectReplayBuilding(Building building) {
         friendly.addBuilding(building);
+        economyTracker.recordBuildSpending(building.type(), SC2Data.mineralCost(building.type()), SC2Data.gasCost(building.type()));
         if (building.isComplete()) {
             friendly.addSupply(SC2Data.supplyBonus(building.type()));
             if (playerRaceModel != null) {

@@ -38,10 +38,16 @@ class EconomyTracker {
     }
 
     void recordBuildSpending(BuildingType type, int mineralCost) {
-        if (isTechBuilding(type)) {
-            mineralsUsedTechnology += mineralCost;
-        } else {
+        recordBuildSpending(type, mineralCost, 0);
+    }
+
+    void recordBuildSpending(BuildingType type, int mineralCost, int gasCost) {
+        if (isEconomyBuilding(type)) {
             mineralsUsedEconomy += mineralCost;
+            vespeneUsedEconomy += gasCost;
+        } else {
+            mineralsUsedTechnology += mineralCost;
+            vespeneUsedTechnology += gasCost;
         }
     }
 
@@ -51,12 +57,12 @@ class EconomyTracker {
     }
 
     void recordMorphSpending(BuildingType type, int mineralCost, int gasCost) {
-        if (isTechBuilding(type)) {
-            mineralsUsedTechnology += mineralCost;
-            vespeneUsedTechnology += gasCost;
-        } else {
+        if (isEconomyBuilding(type)) {
             mineralsUsedEconomy += mineralCost;
             vespeneUsedEconomy += gasCost;
+        } else {
+            mineralsUsedTechnology += mineralCost;
+            vespeneUsedTechnology += gasCost;
         }
     }
 
@@ -65,6 +71,29 @@ class EconomyTracker {
         vespeneUsedArmy += gasCost;
     }
 
+    void recordUnitDeath(UnitType type) {
+        int mCost = SC2Data.mineralCost(type);
+        int gCost = SC2Data.gasCost(type);
+        if (SC2Data.isWorker(type)) {
+            mineralsUsedEconomy = Math.max(0, mineralsUsedEconomy - mCost);
+            vespeneUsedEconomy = Math.max(0, vespeneUsedEconomy - gCost);
+        } else {
+            mineralsUsedArmy = Math.max(0, mineralsUsedArmy - mCost);
+            vespeneUsedArmy = Math.max(0, vespeneUsedArmy - gCost);
+        }
+    }
+
+    void recordBuildingDestroyed(BuildingType type) {
+        int mCost = SC2Data.mineralCost(type);
+        int gCost = SC2Data.gasCost(type);
+        if (isEconomyBuilding(type)) {
+            mineralsUsedEconomy = Math.max(0, mineralsUsedEconomy - mCost);
+            vespeneUsedEconomy = Math.max(0, vespeneUsedEconomy - gCost);
+        } else {
+            mineralsUsedTechnology = Math.max(0, mineralsUsedTechnology - mCost);
+            vespeneUsedTechnology = Math.max(0, vespeneUsedTechnology - gCost);
+        }
+    }
 
     void recordIncome(double mineralIncome, double vespeneIncome) {
         grossMinerals += mineralIncome;
@@ -157,14 +186,12 @@ class EconomyTracker {
         ticksSinceRateUpdate   = 0;
     }
 
-    private static boolean isTechBuilding(BuildingType type) {
+    static boolean isEconomyBuilding(BuildingType type) {
         return switch (type) {
-            case CYBERNETICS_CORE, TWILIGHT_COUNCIL, TEMPLAR_ARCHIVES,
-                 DARK_SHRINE, FLEET_BEACON, FORGE,
-                 ENGINEERING_BAY, ARMORY, GHOST_ACADEMY, FUSION_CORE,
-                 EVOLUTION_CHAMBER, SPIRE, GREATER_SPIRE,
-                 HYDRALISK_DEN, INFESTATION_PIT, ULTRALISK_CAVERN,
-                 BANELING_NEST, LURKER_DEN -> true;
+            case NEXUS, COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS,
+                 HATCHERY, LAIR, HIVE,
+                 PYLON, SUPPLY_DEPOT,
+                 ASSIMILATOR, ASSIMILATOR_RICH, REFINERY, EXTRACTOR -> true;
             default -> false;
         };
     }

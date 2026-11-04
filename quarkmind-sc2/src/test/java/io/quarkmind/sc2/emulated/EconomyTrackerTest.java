@@ -37,8 +37,8 @@ class EconomyTrackerTest {
         tracker.recordBuildSpending(BuildingType.CYBERNETICS_CORE, 150);
 
         var stats = tracker.currentStats(500, 200, 31, 14, 12);
-        assertThat(stats.mineralsUsedCurrentEconomy()).isEqualTo(550);
-        assertThat(stats.mineralsUsedCurrentTechnology()).isEqualTo(150);
+        assertThat(stats.mineralsUsedCurrentEconomy()).isEqualTo(400);
+        assertThat(stats.mineralsUsedCurrentTechnology()).isEqualTo(300);
     }
 
     @Test
