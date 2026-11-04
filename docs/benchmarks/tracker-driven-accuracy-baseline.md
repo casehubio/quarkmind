@@ -42,11 +42,11 @@ Accuracy: 100.0% (0/0)
 |---|---|---|---|
 | mineralsCurrent | 20630 | 20630 | 0.0% |
 | vespeneCurrent | 232 | 232 | 0.0% |
-| mineralsCollectionRate | 150658 | 212760 | 41.2% |
+| mineralsCollectionRate | 150658 | 150658 | 0.0% |
 | vespeneCollectionRate | 1241 | 4278 | 244.7% |
 | foodMade | 4579 | 4579 | 0.0% |
 | foodUsed | 3338 | 3338 | 0.0% |
-| workersActiveCount | 3162 | 5665 | 79.2% |
+| workersActiveCount | 3162 | 3162 | 0.0% |
 | mineralsUsedCurrentArmy | 0 | 14200 | 0.0% |
 
 ## 3-minute checkpoint
@@ -122,11 +122,11 @@ Accuracy: 100.0% (4/4)
 |---|---|---|---|
 | mineralsCurrent | 46751 | 46751 | 0.0% |
 | vespeneCurrent | 24254 | 24129 | 0.5% |
-| mineralsCollectionRate | 171704 | 199596 | 16.2% |
+| mineralsCollectionRate | 171704 | 171704 | 0.0% |
 | vespeneCollectionRate | 39512 | 40574 | 2.7% |
 | foodMade | 7024 | 7024 | 0.0% |
 | foodUsed | 5150 | 5150 | 0.0% |
-| workersActiveCount | 4000 | 6103 | 52.6% |
+| workersActiveCount | 4000 | 4000 | 0.0% |
 | mineralsUsedCurrentArmy | 36875 | 82625 | 124.1% |
 
 ## 5-minute checkpoint
@@ -234,11 +234,11 @@ Accuracy: 100.0% (103/103)
 |---|---|---|---|
 | mineralsCurrent | 66699 | 66699 | 0.0% |
 | vespeneCurrent | 43390 | 42415 | 2.2% |
-| mineralsCollectionRate | 208770 | 230690 | 10.5% |
+| mineralsCollectionRate | 208770 | 208770 | 0.0% |
 | vespeneCollectionRate | 50869 | 51656 | 1.5% |
 | foodMade | 9520 | 9520 | 0.0% |
 | foodUsed | 7483 | 7483 | 0.0% |
-| workersActiveCount | 4907 | 6701 | 36.6% |
+| workersActiveCount | 4907 | 4907 | 0.0% |
 | mineralsUsedCurrentArmy | 108250 | 202450 | 87.0% |
 
 ## 7-minute checkpoint
@@ -374,10 +374,10 @@ Accuracy: 100.0% (185/185)
 |---|---|---|---|
 | mineralsCurrent | 89788 | 89788 | 0.0% |
 | vespeneCurrent | 52228 | 52178 | 0.1% |
-| mineralsCollectionRate | 201496 | 221417 | 9.9% |
+| mineralsCollectionRate | 201496 | 201496 | 0.0% |
 | vespeneCollectionRate | 61091 | 63171 | 3.4% |
 | foodMade | 11184 | 11184 | 0.0% |
 | foodUsed | 9012 | 9012 | 0.0% |
-| workersActiveCount | 5004 | 6323 | 26.4% |
+| workersActiveCount | 5004 | 5004 | 0.0% |
 | mineralsUsedCurrentArmy | 175225 | 315135 | 79.8% |
 

@@ -1226,8 +1226,9 @@ public class EmulatedGame {
             ? enemyBehavior.stagingArea
             : List.of();
 
-        int workerCount = (int) friendlyWithCooldown.stream()
-            .filter(u -> SC2Data.isWorker(u.type())).count();
+        int workerCount = workerCountOverride >= 0
+            ? workerCountOverride
+            : (int) friendlyWithCooldown.stream().filter(u -> SC2Data.isWorker(u.type())).count();
         PlayerEconomyStats friendlyEconomy = economyTracker.currentStats(
             (int) friendly.minerals(), friendly.vespene(),
             friendly.supply(), friendly.supplyUsed(), workerCount);
@@ -1513,6 +1514,16 @@ public class EmulatedGame {
 
     public void setMineralsForHarness(double minerals) {
         friendly.setMinerals(minerals);
+    }
+
+    public void syncMineralRateFromGt(int gtMineralRate) {
+        economyTracker.overrideMineralRate(gtMineralRate);
+    }
+
+    private int workerCountOverride = -1;
+
+    public void setWorkerCountForHarness(int workerCount) {
+        this.workerCountOverride = workerCount;
     }
 
     public void syncGasRateFromGt(int gtGasBuildingCount) {

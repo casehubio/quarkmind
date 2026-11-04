@@ -72,9 +72,17 @@ class EconomyTracker {
     }
 
     private double gasIncomeOverride = -1;
+    private int mineralRateOverride = -1;
 
     void overrideGasIncome(double gasIncomePerTick) {
         this.gasIncomeOverride = gasIncomePerTick;
+    }
+
+    void overrideMineralRate(int ratePerMinute) {
+        this.mineralRateOverride = ratePerMinute;
+        if (ratePerMinute >= 0) {
+            this.mineralRate = ratePerMinute;
+        }
     }
 
 
@@ -86,7 +94,9 @@ class EconomyTracker {
             double perTickVespene = gasIncomeOverride >= 0
                     ? gasIncomeOverride
                     : (grossVespene - prevGrossVespene) / RATE_INTERVAL_TICKS;
-            mineralRate          = (int) Math.max(0, perTickMineral * TICKS_PER_MINUTE);
+            mineralRate          = mineralRateOverride >= 0
+                    ? mineralRateOverride
+                    : (int) Math.max(0, perTickMineral * TICKS_PER_MINUTE);
             vespeneRate          = (int) Math.max(0, perTickVespene * TICKS_PER_MINUTE);
             prevGrossMinerals    = grossMinerals;
             prevGrossVespene     = grossVespene;

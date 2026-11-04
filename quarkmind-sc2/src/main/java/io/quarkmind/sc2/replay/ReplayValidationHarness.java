@@ -119,12 +119,20 @@ public final class ReplayValidationHarness {
                     .filter(b -> SC2Data.isGasBuilding(b.type()) && b.isComplete()).count();
             emulated.syncGasRateFromGt(gtGasBuildings);
 
+            if (gt.playerEconomy() != null) {
+                emulated.syncMineralRateFromGt(gt.playerEconomy().mineralsCollectionRate());
+            }
+
             int emSupplyUsed = emulated.snapshot().supplyUsed();
             if (gt.supplyUsed() > 0) {
                 emulated.setSupplyUsedForHarness(gt.supplyUsed());
             }
+            if (gt.playerEconomy() != null && gt.playerEconomy().workersActiveCount() > 0) {
+                emulated.setWorkerCountForHarness(gt.playerEconomy().workersActiveCount());
+            }
             GameState em = emulated.snapshot();
             emulated.setSupplyUsedForHarness(emSupplyUsed);
+            emulated.setWorkerCountForHarness(-1);
 
             Map<UnitType, Integer> gtUnitsByType = gt.myUnits().stream()
                                                      .collect(Collectors.groupingBy(Unit::type, Collectors.summingInt(u -> 1)));
