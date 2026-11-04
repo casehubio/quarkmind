@@ -121,23 +121,7 @@ public class EmulatedGame {
 
 
     public void reset() {
-        friendly.clear();
-        friendlyPhysics.clear();
-        enemy.clear();
-        enemyPhysics.clear();
-        economyTracker.reset();
-        workerSimulation.reset();
-        nextTag     = 200;
-        gameFrame   = 0;
-        movementStrategy.reset();
-        visibility.reset();
-        geysers.clear();
-        deferredTrains.clear();
-        deferredResearch.clear();
-        trackerTrainDiagnostics.clear();
-        trackerDrivenBuildings.clear();
-        // pendingWaves intentionally NOT cleared — configured before reset() via configureWave()
-        // terrainGrid and random intentionally NOT cleared — set by EmulatedEngine before reset()
+        resetInternal();
 
         // Seed friendly player via race model
         playerRaceModel.seedInitialState(friendly, geysers);
@@ -163,6 +147,32 @@ public class EmulatedGame {
 
         // Reset enemy behavior (if set)
         if (enemyBehavior != null) enemyBehavior.reset(enemyBehavior.currentStrategy());
+    }
+
+    public void resetForHarness() {
+        resetInternal();
+        enemy.setSupply(200);
+        enemy.setVespene(9999);
+    }
+
+    private void resetInternal() {
+        friendly.clear();
+        friendlyPhysics.clear();
+        enemy.clear();
+        enemyPhysics.clear();
+        economyTracker.reset();
+        workerSimulation.reset();
+        nextTag     = 200;
+        gameFrame   = 0;
+        movementStrategy.reset();
+        visibility.reset();
+        geysers.clear();
+        deferredTrains.clear();
+        deferredResearch.clear();
+        trackerTrainDiagnostics.clear();
+        trackerDrivenBuildings.clear();
+        // pendingWaves intentionally NOT cleared — configured before reset() via configureWave()
+        // terrainGrid and random intentionally NOT cleared — set by EmulatedEngine before reset()
     }
 
     public void tick() {

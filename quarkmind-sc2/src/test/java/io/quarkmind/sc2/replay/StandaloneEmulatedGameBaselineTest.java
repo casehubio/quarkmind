@@ -254,14 +254,7 @@ class StandaloneEmulatedGameBaselineTest {
         emulated.setPlayerRaceModel(RaceModelFactory.forRace(race));
         groundTruth.reset();
         emulated.setMineralPatchResources(groundTruth.getMineralPatches());
-        emulated.reset();
-
-        // Zero out seeded supply — injected buildings will rebuild it.
-        // The race model seeds supply=15 for the initial town hall, but
-        // that same building will also be injected from GT, which now adds
-        // supply via injectReplayBuilding. Zeroing avoids double-counting.
-        emulated.setSupplyCapForHarness(0);
-        emulated.setSupplyUsedForHarness(0);
+        emulated.resetForHarness();
 
         Set<String> reactoredTags = groundTruth.reactoredBuildingTags();
         int cursor = 0;
