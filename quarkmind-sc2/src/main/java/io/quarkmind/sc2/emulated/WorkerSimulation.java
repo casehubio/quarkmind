@@ -275,6 +275,20 @@ class WorkerSimulation {
                 simulated.vespeneIncome(), formulaGas);
     }
 
+    TickIncome formulaIncome() {
+        double formulaMineral = 0;
+        int[]  mineralCounts  = mineralWorkersPerBase();
+        for (int count : mineralCounts) {
+            formulaMineral += SC2Data.mineralIncomePerTick(count);
+        }
+        double formulaGas = 0;
+        for (GasSlot slot : gasSlots) {
+            formulaGas += SC2Data.gasIncomePerTick(slot.assignedWorkers.size());
+        }
+        return new TickIncome(formulaMineral, formulaGas);
+    }
+
+
     int[] mineralWorkersPerBase() {
         int[] counts = new int[bases.size()];
         for (SimulatedWorker w : workers.values()) {

@@ -93,7 +93,6 @@ public final class ReplayValidationHarness {
 
             GameState gtBefore = groundTruth.snapshot();
             emulated.syncMineralWorkersFromGt(countWorkersPerBase(race, gtBefore));
-            emulated.syncGasWorkersFromGt(countGasWorkersPerBuilding(race, gtBefore));
 
             emulated.tick();
             groundTruth.tick();
