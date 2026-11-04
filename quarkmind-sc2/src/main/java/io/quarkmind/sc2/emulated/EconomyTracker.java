@@ -105,7 +105,7 @@ class EconomyTracker {
 
 
     void tickUpdate(double minerals, int vespene,
-                    int supply, int supplyUsed, int workerCount) {
+                    int supply, double supplyUsed, int workerCount) {
         ticksSinceRateUpdate++;
         if (ticksSinceRateUpdate >= RATE_INTERVAL_TICKS) {
             double perTickMineral = (grossMinerals - prevGrossMinerals) / RATE_INTERVAL_TICKS;
@@ -125,7 +125,7 @@ class EconomyTracker {
     }
 
     PlayerEconomyStats currentStats(int minerals, int vespene,
-                                     int supply, int supplyUsed,
+                                     int supply, double supplyUsed,
                                      int workerCount) {
         int[] s = spendingOverride;
         return new PlayerEconomyStats(

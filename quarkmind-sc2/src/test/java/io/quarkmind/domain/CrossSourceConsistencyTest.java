@@ -119,7 +119,7 @@ class CrossSourceConsistencyTest {
             var mismatches = new ArrayList<String>();
             for (UnitType type : UnitType.values()) {
                 Integer jsonCost = costs.get(type.name());
-                int sc2DataCost = SC2Data.supplyCost(type);
+                int sc2DataCost = (int) SC2Data.supplyCost(type);
                 if (jsonCost != null && jsonCost != sc2DataCost) {
                     mismatches.add(String.format("  %s: supply_costs.json=%d, SC2Data=%d", type, jsonCost, sc2DataCost));
                 }

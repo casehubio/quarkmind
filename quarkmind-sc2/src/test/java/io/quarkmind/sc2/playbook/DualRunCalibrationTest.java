@@ -165,7 +165,7 @@ class DualRunCalibrationTest {
             game.processDeferredResearchIntents();
             snapshots.add(CalibrationSnapshot.from(tick, game.snapshot()));
 
-            int supplyUsed = game.snapshot().supplyUsed();
+            int supplyUsed = (int) game.snapshot().supplyUsed();
 
             int reservedMinerals  = 0;
             int reservedStepIndex = -1;
@@ -247,7 +247,7 @@ class DualRunCalibrationTest {
                                   expected.vespene(), actual.vespene());
             }
 
-            int supplyUsed = game.snapshot().supplyUsed();
+            int supplyUsed = (int) game.snapshot().supplyUsed();
 
             int reservedMinerals  = 0;
             int reservedStepIndex = -1;

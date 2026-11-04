@@ -33,7 +33,7 @@ public class PlayerState implements PlayerStateView {
     private double minerals;
     private double vespene;
     private int    supply;
-    private int    supplyUsed;
+    private double supplyUsed;
 
     // --- Public typed API ---
 
@@ -54,9 +54,9 @@ public class PlayerState implements PlayerStateView {
     public void addSupply(int amount)        { this.supply += amount; }
     public int  supply()                     { return supply; }
 
-    public void setSupplyUsed(int s)         { this.supplyUsed = s; }
-    public void addSupplyUsed(int cost)      { this.supplyUsed += cost; }
-    public int  supplyUsed()                 { return supplyUsed; }
+    public void setSupplyUsed(double s)      { this.supplyUsed = s; }
+    public void addSupplyUsed(double cost)   { this.supplyUsed += cost; }
+    public double supplyUsed()               { return supplyUsed; }
 
     public void addUnit(Unit unit)           { units.add(unit); }
     public void removeUnit(String tag)       { units.removeIf(u -> u.tag().equals(tag)); }

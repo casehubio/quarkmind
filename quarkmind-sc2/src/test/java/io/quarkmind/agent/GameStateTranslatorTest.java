@@ -29,7 +29,7 @@ class GameStateTranslatorTest {
         assertThat(map.get(QuarkMindCaseFile.MINERALS)).isEqualTo(150);
         assertThat(map.get(QuarkMindCaseFile.VESPENE)).isEqualTo(75);
         assertThat(map.get(QuarkMindCaseFile.SUPPLY_CAP)).isEqualTo(23);
-        assertThat(map.get(QuarkMindCaseFile.SUPPLY_USED)).isEqualTo(14);
+        assertThat(map.get(QuarkMindCaseFile.SUPPLY_USED)).isEqualTo(14.0);
         assertThat(map.get(QuarkMindCaseFile.GAME_FRAME)).isEqualTo(42L);
         assertThat(map.get(QuarkMindCaseFile.READY)).isEqualTo(Boolean.TRUE);
     }

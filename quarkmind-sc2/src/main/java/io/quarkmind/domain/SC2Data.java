@@ -614,7 +614,7 @@ public final class SC2Data {
         map.put(UnitType.INTERCEPTOR,        new UnitCosts( 15,   0, 0));
         map.put(UnitType.ADEPT_PHASE_SHIFT,  new UnitCosts(  0,   0, 0));
         // Zerg
-        map.put(UnitType.ZERGLING,           new UnitCosts( 25,   0, 1));
+        map.put(UnitType.ZERGLING,           new UnitCosts( 25,   0, 0.5));
         map.put(UnitType.ROACH,              new UnitCosts( 75,  25, 2));
         map.put(UnitType.HYDRALISK,          new UnitCosts(100,  50, 2));
         map.put(UnitType.MUTALISK,           new UnitCosts(100, 100, 2));
@@ -630,7 +630,7 @@ public final class SC2Data {
         map.put(UnitType.DRONE,              new UnitCosts( 50,   0, 1));
         map.put(UnitType.OVERLORD,           new UnitCosts(100,   0, 0));
         map.put(UnitType.OVERSEER,           new UnitCosts( 50,  50, 0));
-        map.put(UnitType.BANELING,           new UnitCosts( 25,  25, 0));
+        map.put(UnitType.BANELING,           new UnitCosts( 25,  25, 0.5));
         map.put(UnitType.LOCUST,             new UnitCosts(  0,   0, 0));
         map.put(UnitType.BROODLING,          new UnitCosts(  0,   0, 0));
         map.put(UnitType.INFESTED_TERRAN,    new UnitCosts(  0,   0, 0));
@@ -672,7 +672,7 @@ public final class SC2Data {
 
     public static UnitCosts unitCosts(UnitType type) { return UNIT_COSTS.get(type); }
 
-    public static int supplyCost(UnitType type) { return UNIT_COSTS.get(type).supply(); }
+    public static double supplyCost(UnitType type) { return UNIT_COSTS.get(type).supply(); }
 
     public static int supplyBonus(BuildingType type) {
         return switch (type) {

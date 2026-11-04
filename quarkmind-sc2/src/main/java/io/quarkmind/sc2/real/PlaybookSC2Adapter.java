@@ -73,7 +73,7 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
         GameState state = ObservationTranslator.translate(obs, null);
         snapshots.add(CalibrationSnapshot.from(tick, state));
 
-        int supplyUsed = state.supplyUsed();
+        int supplyUsed = (int) state.supplyUsed();
         List<ResolvedCommand> commands = new ArrayList<>();
 
         for (int i = 0; i < steps.size(); i++) {

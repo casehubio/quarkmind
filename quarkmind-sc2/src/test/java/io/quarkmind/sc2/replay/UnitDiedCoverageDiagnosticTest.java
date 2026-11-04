@@ -148,7 +148,7 @@ class UnitDiedCoverageDiagnosticTest {
                         gapByTypeName.get(typeName)[1] += intent;
                         gapByTypeName.get(typeName)[2] += gap;
 
-                        int supplyCost = ut != UnitType.UNKNOWN ? SC2Data.supplyCost(ut) : 0;
+                        int supplyCost = ut != UnitType.UNKNOWN ? (int) SC2Data.supplyCost(ut) : 0;
                         totalMissedSupply += (long) gap * supplyCost;
                     }
                 }
@@ -170,7 +170,7 @@ class UnitDiedCoverageDiagnosticTest {
             String typeName = entry.getKey();
             long[] counts = entry.getValue();
             UnitType ut = Sc2ReplayShared.toUnitType(typeName);
-            int supplyCost = ut != UnitType.UNKNOWN ? SC2Data.supplyCost(ut) : 0;
+            int supplyCost = ut != UnitType.UNKNOWN ? (int) SC2Data.supplyCost(ut) : 0;
             System.out.printf("%-30s %8d %8d %8d %8d%n",
                 typeName, counts[0], counts[1], counts[2], counts[2] * supplyCost);
         }

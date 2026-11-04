@@ -919,7 +919,7 @@ public class StrippedReplayFeatureExtractor {
         }
         state.mineralsCurrent -= mineralCost;
         state.vespeneCurrent -= gasCost;
-        state.foodUsed += SC2Data.supplyCost(unitType) * 4096;
+        state.foodUsed += (int) (SC2Data.supplyCost(unitType) * 4096);
     }
 
     private void trackBuildSpending(String buildingName, PlayerState state) {
@@ -963,7 +963,7 @@ public class StrippedReplayFeatureExtractor {
             state.gasUsedArmy += gasCost;
             state.mineralsCurrent -= mineralCost;
             state.vespeneCurrent -= gasCost;
-            state.foodUsed += SC2Data.supplyCost(ut) * 4096;
+            state.foodUsed += (int) (SC2Data.supplyCost(ut) * 4096);
             return;
         }
         BuildingType bt = BUILDING_NAME_TO_TYPE.get(targetName);

@@ -44,7 +44,7 @@ public class StateBasedPhaseResolver implements PhaseResolver {
             .anyMatch(b -> TIER_2.contains(b.type()));
         boolean hasTier3 = gameState.myBuildings().stream()
             .anyMatch(b -> TIER_3.contains(b.type()));
-        int supply = gameState.supplyUsed();
+        int supply = (int) gameState.supplyUsed();
 
         GamePhase raw;
         if ((expansions >= LATE_EXPANSION_THRESHOLD && hasTier3) || supply >= LATE_SUPPLY_THRESHOLD) {

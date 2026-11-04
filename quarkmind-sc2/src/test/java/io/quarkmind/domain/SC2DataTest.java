@@ -346,7 +346,7 @@ class SC2DataTest {
     void overlordSupplyCost() { assertThat(SC2Data.supplyCost(UnitType.OVERLORD)).isEqualTo(0); }
 
     @Test
-    void zerglingSupplyCost() { assertThat(SC2Data.supplyCost(UnitType.ZERGLING)).isEqualTo(1); }
+    void zerglingSupplyCost() { assertThat(SC2Data.supplyCost(UnitType.ZERGLING)).isEqualTo(0.5); }
 
     @Test
     void roachGasCost() { assertThat(SC2Data.gasCost(UnitType.ROACH)).isEqualTo(25); }
@@ -517,7 +517,7 @@ class SC2DataTest {
     //          https://liquipedia.net/starcraft2/Units_(Terran)
     //          https://liquipedia.net/starcraft2/Units_(Zerg)
 
-    private static void assertCosts(UnitType type, int mineral, int gas, int supply) {
+    private static void assertCosts(UnitType type, int mineral, int gas, double supply) {
         assertThat(SC2Data.mineralCost(type)).as(type + " mineral").isEqualTo(mineral);
         assertThat(SC2Data.gasCost(type)).as(type + " gas").isEqualTo(gas);
         assertThat(SC2Data.supplyCost(type)).as(type + " supply").isEqualTo(supply);
@@ -577,7 +577,7 @@ class SC2DataTest {
 
     @Test
     void allZergUnitCosts() {
-        assertCosts(UnitType.ZERGLING,           25,   0, 1);
+        assertCosts(UnitType.ZERGLING,           25,   0, 0.5);
         assertCosts(UnitType.ROACH,              75,  25, 2);
         assertCosts(UnitType.HYDRALISK,         100,  50, 2);
         assertCosts(UnitType.MUTALISK,          100, 100, 2);
@@ -593,7 +593,7 @@ class SC2DataTest {
         assertCosts(UnitType.DRONE,              50,   0, 1);
         assertCosts(UnitType.OVERLORD,          100,   0, 0);
         assertCosts(UnitType.OVERSEER,           50,  50, 0);
-        assertCosts(UnitType.BANELING,           25,  25, 0);
+        assertCosts(UnitType.BANELING,           25,  25, 0.5);
         assertCosts(UnitType.LOCUST,              0,   0, 0);
         assertCosts(UnitType.BROODLING,           0,   0, 0);
         assertCosts(UnitType.INFESTED_TERRAN,     0,   0, 0);

@@ -451,9 +451,9 @@ public class EmulatedGame {
             final int count = SC2Data.trainCount(t.unitType());
             final int mCost = SC2Data.mineralCost(t.unitType()) * count;
             final int gCost = SC2Data.gasCost(t.unitType()) * count;
-            final int sCost = SC2Data.supplyCost(t.unitType());
-            final int queuedSupply = physics.buildingQueues.values().stream()
-                                                           .flatMapToInt(q -> q.stream().mapToInt(SC2Data::supplyCost)).sum();
+            final double sCost = SC2Data.supplyCost(t.unitType());
+            final double queuedSupply = physics.buildingQueues.values().stream()
+                                                              .flatMap(q -> q.stream()).mapToDouble(SC2Data::supplyCost).sum();
             if ((int) state.minerals() < mCost || state.vespene() < gCost
                 || state.supplyUsed() + queuedSupply + sCost > state.supply()) {
                 recordTrainDiagnostic(t, 4);
@@ -672,7 +672,7 @@ public class EmulatedGame {
             int slotsToFill = maxSlots - activeSlots;
             for (int s = 0; s < slotsToFill && !queue.isEmpty(); s++) {
                 UnitType next  = queue.peek();
-                int      sCost = SC2Data.supplyCost(next);
+                double   sCost = SC2Data.supplyCost(next);
                 if (!trackerDrivenBuildings.contains(buildingTag) && state.supplyUsed() + sCost > state.supply()) {break;}
                 queue.poll();
                 if (queue.isEmpty()) {physics.buildingQueues.remove(buildingTag);}
@@ -1483,7 +1483,7 @@ public class EmulatedGame {
     }
 
     /** Sets friendly supply caps — for tests that need more than the 3 default free supply. */
-    void setSupplyForTesting(int supply, int supplyUsed) {
+    void setSupplyForTesting(int supply, double supplyUsed) {
         friendly.setSupply(supply);
         friendly.setSupplyUsed(supplyUsed);
     }
@@ -1499,7 +1499,7 @@ public class EmulatedGame {
         friendly.setSupply(supply);
     }
 
-    public void setSupplyUsedForHarness(int supplyUsed) {
+    public void setSupplyUsedForHarness(double supplyUsed) {
         friendly.setSupplyUsed(supplyUsed);
     }
 

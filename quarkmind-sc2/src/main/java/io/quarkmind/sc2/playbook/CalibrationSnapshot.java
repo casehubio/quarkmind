@@ -40,7 +40,7 @@ public record CalibrationSnapshot(
             state.minerals(),
             state.vespene(),
             state.supply(),
-            state.supplyUsed(),
+            (int) state.supplyUsed(),
             unitCounts,
             buildingCounts,
             new TreeSet<>(state.playerUpgrades())

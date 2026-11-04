@@ -252,7 +252,7 @@ class EmulatedGameTest {
         long zealotsBefore = before.myUnits().stream()
                                    .filter(u -> u.type() == UnitType.ZEALOT).count();
         assertThat(zealotsBefore).isGreaterThan(0);
-        int supplyBefore = before.supplyUsed();
+        int supplyBefore = (int) before.supplyUsed();
 
         String zealotTag = before.myUnits().stream()
                                  .filter(u -> u.type() == UnitType.ZEALOT)

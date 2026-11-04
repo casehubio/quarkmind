@@ -75,8 +75,8 @@ class FeatureAlignmentTest {
         ObjectMapper mapper = new ObjectMapper();
         try (InputStream is = getClass().getResourceAsStream("/classifier/supply_costs.json")) {
             assertThat(is).as("supply_costs.json must exist on classpath").isNotNull();
-            Map<String, Integer> costs = mapper.readValue(is,
-                    mapper.getTypeFactory().constructMapType(Map.class, String.class, Integer.class));
+            Map<String, Double> costs = mapper.readValue(is,
+                    mapper.getTypeFactory().constructMapType(Map.class, String.class, Double.class));
             for (UnitType type : UnitType.values()) {
                 assertThat(costs.get(type.name()))
                         .as("Supply cost for %s", type.name())

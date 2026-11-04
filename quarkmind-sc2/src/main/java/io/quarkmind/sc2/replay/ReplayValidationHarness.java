@@ -125,7 +125,7 @@ public final class ReplayValidationHarness {
                 emulated.syncVespeneRateFromGt(gt.playerEconomy().vespeneCollectionRate());
             }
 
-            int emSupplyUsed = emulated.snapshot().supplyUsed();
+            int emSupplyUsed = (int) emulated.snapshot().supplyUsed();
             if (gt.supplyUsed() > 0) {
                 emulated.setSupplyUsedForHarness(gt.supplyUsed());
             }

@@ -107,7 +107,7 @@ public final class LlmComplianceWorkerFactory {
         int minutes = (int) (state.gameFrame() / 12.0 / 60);
         int seconds = (int) (state.gameFrame() / 12.0 % 60);
         sb.append(String.format("%s (frame %d, %d:%02d):\n", label, state.gameFrame(), minutes, seconds));
-        sb.append(String.format("Resources: %d minerals, %d vespene, %d/%d supply\n",
+        sb.append(String.format("Resources: %d minerals, %d vespene, %.0f/%d supply\n",
             state.minerals(), state.vespene(), state.supplyUsed(), state.supply()));
 
         Map<UnitType, Long> unitCounts = state.myUnits().stream()
@@ -152,7 +152,7 @@ public final class LlmComplianceWorkerFactory {
             sb.append("No unit or building changes\n");
         }
 
-        sb.append(String.format("Minerals: %+d, Vespene: %+d, Supply: %+d/%+d\n",
+        sb.append(String.format("Minerals: %+d, Vespene: %+d, Supply: %+.0f/%+d\n",
             current.minerals() - baseline.minerals(),
             current.vespene() - baseline.vespene(),
             current.supplyUsed() - baseline.supplyUsed(),

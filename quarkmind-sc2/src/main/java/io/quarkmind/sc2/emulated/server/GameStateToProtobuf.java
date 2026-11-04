@@ -188,7 +188,7 @@ public final class GameStateToProtobuf {
                 .setMinerals(state.minerals())
                 .setVespene(state.vespene())
                 .setFoodCap(state.supply())
-                .setFoodUsed(state.supplyUsed())
+                .setFoodUsed((int) state.supplyUsed())
                 .setFoodArmy(0)
                 .setFoodWorkers(0)
                 .setIdleWorkerCount(0)

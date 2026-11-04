@@ -169,7 +169,7 @@ class ZergEmulatedGameTest {
         assertThat(model.larvaCount(hatchTag)).isEqualTo(0);
 
         final int mineralsBeforeReject = game.snapshot().minerals();
-        final int supplyUsedBeforeReject = game.snapshot().supplyUsed();
+        final int supplyUsedBeforeReject = (int) game.snapshot().supplyUsed();
 
         // TrainIntent with no larva — must be rejected
         game.applyIntent(new TrainIntent(hatchTag, UnitType.ROACH));
@@ -524,11 +524,11 @@ class ZergEmulatedGameTest {
         game.setSupplyForTesting(30, 12);
         String hatch = hatcheryTag();
 
-        int supplyBefore = game.snapshot().supplyUsed();
+        int supplyBefore = (int) game.snapshot().supplyUsed();
 
         game.applyIntent(new TimedIntent(0, new TrainIntent(hatch, UnitType.DRONE, true, false, 100, "r-10-1")));
 
-        int supplyAfter = game.snapshot().supplyUsed();
+        int supplyAfter = (int) game.snapshot().supplyUsed();
         assertThat(supplyAfter - supplyBefore).as("One tracker-driven Drone should add exactly 1 supply").isEqualTo(1);
     }
 

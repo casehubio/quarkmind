@@ -14,7 +14,7 @@ public record TimelineObservation(
                 gs.gameFrame() / SC2Data.GAME_LOOPS_PER_SECOND / 60.0,
                 workers,
                 gs.minerals(),
-                gs.supplyUsed() - workers
+                (int) gs.supplyUsed() - workers
         );
     }
 }

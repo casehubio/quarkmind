@@ -29,7 +29,7 @@ public class SimulatedGame {
     private volatile int minerals;
     private volatile int vespene;
     private volatile int supply;
-    private volatile int supplyUsed;
+    private volatile double supplyUsed;
     private final AtomicLong gameFrame = new AtomicLong(0);
     private final List<Unit> myUnits = new CopyOnWriteArrayList<>();
     private final List<Building> myBuildings = new CopyOnWriteArrayList<>();
@@ -185,7 +185,7 @@ public class SimulatedGame {
     public void setMinerals(int amount) { this.minerals = amount; }
     public void setVespene(int amount) { this.vespene = amount; }
     public void setSupply(int cap) { this.supply = cap; }
-    public void setSupplyUsed(int used) { this.supplyUsed = used; }
+    public void setSupplyUsed(double used) { this.supplyUsed = used; }
 
     /** Sets a friendly unit's health — used by VisualizerRenderTest. */
     public void setUnitHealth(String tag, int health) {

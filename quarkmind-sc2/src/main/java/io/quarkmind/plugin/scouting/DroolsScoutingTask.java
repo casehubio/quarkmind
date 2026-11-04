@@ -647,10 +647,10 @@ public class DroolsScoutingTask implements ScoutingTask {
         float armySupply = 0;
         for (Unit u : allUnits) {
             if (!SC2Data.isWorker(u.type())) {
-                armySupply += SC2Data.supplyCost(u.type());
+                armySupply += (float) SC2Data.supplyCost(u.type());
             }
         }
-        float foodUsed = Math.max(eco.foodUsed() / 1000.0f, 1e-6f);
+        float foodUsed = (float) Math.max(eco.foodUsed() / 1000.0, 1e-6);
         features[offset] = armySupply / foodUsed;
         int baseCount = 0;
         for (Building b : buildings) {

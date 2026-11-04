@@ -183,7 +183,7 @@ class GameTickExecutor {
         long t3 = System.currentTimeMillis();
 
         var timings = new AgentOrchestrator.TickTimings(t1 - t0, t2 - t1b, t3 - t2, t1b - t1);
-        log.debugf("Tick %d — physics=%dms broker=%dms plugins=%dms dispatch=%dms total=%dms | minerals=%d supply=%d/%d",
+        log.debugf("Tick %d — physics=%dms broker=%dms plugins=%dms dispatch=%dms total=%dms | minerals=%d supply=%.0f/%d",
                    gameState.gameFrame(), timings.physicsMs(), timings.brokerMs(),
                    timings.pluginsMs(), timings.dispatchMs(), timings.totalMs(),
                    gameState.minerals(), gameState.supplyUsed(), gameState.supply());

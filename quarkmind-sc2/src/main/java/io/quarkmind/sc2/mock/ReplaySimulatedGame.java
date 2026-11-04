@@ -160,7 +160,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
                 safe(event.getMinsCollRate()),
                 safe(event.getGasCollRate()),
                 foodMade != null ? foodMade / 4096 : 0,
-                foodUsed != null ? foodUsed / 4096 : 0,
+                foodUsed != null ? foodUsed / 4096.0 : 0,
                 safe(event.getWorkersActiveCount()),
                 safe(event.getMinsUsedInCurrentArmy()),
                 safe(event.getMinsUsedInCurrentEcon()),
@@ -173,7 +173,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
         if (playerId == watchedPlayerId) {
             if (mins != null) {setMinerals(mins);}
             if (gas != null) {setVespene(gas);}
-            if (foodUsed != null) {setSupplyUsed(foodUsed / 4096);}
+            if (foodUsed != null) {setSupplyUsed(foodUsed / 4096.0);}
             if (foodMade != null) {setSupply(foodMade / 4096);}
             playerEconomy = eco;
         } else {

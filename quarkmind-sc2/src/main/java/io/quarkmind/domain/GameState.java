@@ -7,7 +7,7 @@ public record GameState(
         int minerals,
         int vespene,
         int supply,
-        int supplyUsed,
+        double supplyUsed,
         List<Unit> myUnits,
         List<Building> myBuildings,
         List<Unit> enemyUnits,

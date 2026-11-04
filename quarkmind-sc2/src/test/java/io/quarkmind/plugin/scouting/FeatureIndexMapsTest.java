@@ -59,7 +59,7 @@ class FeatureIndexMapsTest {
 
     @Test
     void generateSupplyCosts() throws Exception {
-        var costs = new java.util.LinkedHashMap<String, Integer>();
+        var costs = new java.util.LinkedHashMap<String, Double>();
         for (io.quarkmind.domain.UnitType type : io.quarkmind.domain.UnitType.values()) {
             costs.put(type.name(), io.quarkmind.domain.SC2Data.supplyCost(type));
         }
@@ -70,8 +70,8 @@ class FeatureIndexMapsTest {
         java.nio.file.Files.writeString(out, json);
         assertThat(out).exists();
         assertThat(costs).isNotEmpty();
-        assertThat(costs.get("MARINE")).isEqualTo(1);
-        assertThat(costs.get("SIEGE_TANK")).isEqualTo(3);
-        assertThat(costs.get("ZERGLING")).isEqualTo(1);
+        assertThat(costs.get("MARINE")).isEqualTo(1.0);
+        assertThat(costs.get("SIEGE_TANK")).isEqualTo(3.0);
+        assertThat(costs.get("ZERGLING")).isEqualTo(0.5);
     }
 }

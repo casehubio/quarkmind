@@ -431,7 +431,7 @@ class TerranEmulatedGameTest {
 
         // First SCV starts training immediately — supply consumed
         game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV));
-        final int supplyAfterFirst = game.snapshot().supplyUsed();
+        final int supplyAfterFirst = (int) game.snapshot().supplyUsed();
         assertThat(supplyAfterFirst).isEqualTo(13); // 12 initial + 1 training
 
         // Second SCV goes into queue — supply should NOT be consumed

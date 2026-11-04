@@ -14,7 +14,7 @@ public interface PlayerStateView {
     double minerals();
     int vespene();
     int supply();
-    int supplyUsed();
+    double supplyUsed();
     List<Unit> units();
     List<Building> buildings();
 }
