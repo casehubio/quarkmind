@@ -107,7 +107,7 @@ public final class TrackerIntentExtractor {
                     if (pid == null || pid != playerId) {continue;}
                     String typeName = String.valueOf(ue.getUnitTypeName()).trim();
                     if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) {
-                        consumeDroneForBuilding(unitTagToType, intents, ue.getLoop(), typeName);
+                        consumeDroneForBuilding(unitTagToType, typeName);
                         continue;
                     }
 
@@ -328,7 +328,6 @@ public final class TrackerIntentExtractor {
     );
 
     private static void consumeDroneForBuilding(Map<Long, UnitType> unitTagToType,
-                                                 List<TimedIntent> intents, int loop,
                                                  String buildingTypeName) {
         if (NON_DRONE_BUILDINGS.contains(buildingTypeName)) return;
         Long droneTag = null;
@@ -340,8 +339,5 @@ public final class TrackerIntentExtractor {
         }
         if (droneTag == null) return;
         unitTagToType.remove(droneTag);
-        int tagIndex = (int) (droneTag >>> 32);
-        int tagRecycle = (int) (droneTag & 0xFFFFFFFFL);
-        intents.add(new TimedIntent(loop, new UnitDiedIntent("r-" + tagIndex + "-" + tagRecycle, UnitType.DRONE)));
     }
 }
