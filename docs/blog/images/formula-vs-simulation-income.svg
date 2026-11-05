@@ -1,0 +1,58 @@
+<svg viewBox="0 0 780 400" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;font-family:system-ui,sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#475569"/></marker>
+    <marker id="arr-blue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#0284c7"/></marker>
+    <marker id="arr-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#16a34a"/></marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="390" y="28" text-anchor="middle" font-size="15" fill="#1e293b" font-weight="700">Dual-Model Architecture</text>
+  <text x="390" y="48" text-anchor="middle" font-size="11" fill="#94a3b8">Each model does what it's good at</text>
+
+  <!-- Calibrated Formula box (left) -->
+  <rect x="40" y="80" width="200" height="100" rx="10" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+  <text x="140" y="108" text-anchor="middle" font-size="13" fill="#0c4a6e" font-weight="700">Calibrated Formula</text>
+  <text x="140" y="128" text-anchor="middle" font-size="10" fill="#0369a1">SC2Data.mineralIncomePerTick()</text>
+  <text x="140" y="144" text-anchor="middle" font-size="10" fill="#0369a1">SC2Data.gasIncomePerTick()</text>
+  <text x="140" y="162" text-anchor="middle" font-size="9" fill="#64748b">Calibrated from 118 replays</text>
+
+  <!-- Worker Simulation box (right) -->
+  <rect x="540" y="80" width="200" height="100" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="640" y="108" text-anchor="middle" font-size="13" fill="#14532d" font-weight="700">Worker Simulation</text>
+  <text x="640" y="128" text-anchor="middle" font-size="10" fill="#166534">Position tracking</text>
+  <text x="640" y="144" text-anchor="middle" font-size="10" fill="#166534">Mining states, occupancy</text>
+  <text x="640" y="162" text-anchor="middle" font-size="9" fill="#64748b">Physics-based mechanics</text>
+
+  <!-- Central divider label -->
+  <rect x="300" y="105" width="180" height="50" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="390" y="127" text-anchor="middle" font-size="11" fill="#475569" font-weight="600">EconomyTracker</text>
+  <text x="390" y="143" text-anchor="middle" font-size="10" fill="#94a3b8">routes to correct model</text>
+
+  <!-- Arrows from EconomyTracker to models -->
+  <line x1="300" y1="130" x2="245" y2="130" stroke="#0284c7" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+  <line x1="480" y1="130" x2="535" y2="130" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arr-green)"/>
+
+  <!-- Output: Rates (from formula) -->
+  <rect x="40" y="230" width="200" height="90" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="140" y="255" text-anchor="middle" font-size="12" fill="#1e3a8a" font-weight="600">Rate Measurement</text>
+  <line x1="70" y1="265" x2="210" y2="265" stroke="#93c5fd" stroke-width="1"/>
+  <text x="140" y="282" text-anchor="middle" font-size="10" fill="#1e40af">mineralsCollectionRate</text>
+  <text x="140" y="298" text-anchor="middle" font-size="10" fill="#1e40af">vespeneCollectionRate</text>
+  <text x="140" y="312" text-anchor="middle" font-size="9" fill="#60a5fa">11% → 0% error (with GT sync)</text>
+
+  <!-- Output: Balance (from simulation) -->
+  <rect x="540" y="230" width="200" height="90" rx="8" fill="#bbf7d0" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="640" y="255" text-anchor="middle" font-size="12" fill="#14532d" font-weight="600">Balance Tracking</text>
+  <line x1="570" y1="265" x2="710" y2="265" stroke="#86efac" stroke-width="1"/>
+  <text x="640" y="282" text-anchor="middle" font-size="10" fill="#166534">mineralsCurrent</text>
+  <text x="640" y="298" text-anchor="middle" font-size="10" fill="#166534">vespeneCurrent</text>
+  <text x="640" y="312" text-anchor="middle" font-size="9" fill="#4ade80">Affordability checks</text>
+
+  <!-- Arrows from models to outputs -->
+  <line x1="140" y1="180" x2="140" y2="225" stroke="#0284c7" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+  <line x1="640" y1="180" x2="640" y2="225" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arr-green)"/>
+
+  <!-- Bottom summary -->
+  <rect x="200" y="350" width="380" height="35" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="390" y="372" text-anchor="middle" font-size="12" fill="#14532d" font-weight="600">Neither is the whole truth — together they cover more ground</text>
+</svg>

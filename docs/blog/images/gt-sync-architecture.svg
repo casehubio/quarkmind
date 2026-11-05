@@ -1,0 +1,75 @@
+<svg viewBox="0 0 820 440" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;font-family:system-ui,sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#475569"/></marker>
+    <marker id="arr-blue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#0284c7"/></marker>
+    <marker id="arr-amber" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#d97706"/></marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="410" y="28" text-anchor="middle" font-size="15" fill="#1e293b" font-weight="700">GT Sync Architecture — Set-and-Restore Pattern</text>
+  <text x="410" y="48" text-anchor="middle" font-size="11" fill="#94a3b8">Each tick: override for measurement, restore for processing</text>
+
+  <!-- Replay Ground Truth source -->
+  <rect x="30" y="80" width="180" height="70" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+  <text x="120" y="108" text-anchor="middle" font-size="13" fill="#1e3a8a" font-weight="700">Replay GT</text>
+  <text x="120" y="126" text-anchor="middle" font-size="10" fill="#3b82f6">PlayerStats tracker events</text>
+  <text x="120" y="140" text-anchor="middle" font-size="9" fill="#64748b">118 oracle replays</text>
+
+  <!-- EmulatedGame -->
+  <rect x="310" y="75" width="200" height="80" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="410" y="103" text-anchor="middle" font-size="13" fill="#92400e" font-weight="700">EmulatedGame</text>
+  <text x="410" y="120" text-anchor="middle" font-size="10" fill="#a16207">Own physics + accounting</text>
+  <text x="410" y="136" text-anchor="middle" font-size="10" fill="#a16207">Intent processing</text>
+
+  <!-- Arrow from GT to EmulatedGame -->
+  <line x1="210" y1="115" x2="305" y2="115" stroke="#0284c7" stroke-width="2" marker-end="url(#arr-blue)"/>
+  <text x="258" y="108" text-anchor="middle" font-size="9" fill="#0284c7" font-weight="600">sync</text>
+
+  <!-- Three-phase timeline -->
+  <line x1="80" y1="195" x2="740" y2="195" stroke="#475569" stroke-width="2"/>
+  <text x="410" y="188" text-anchor="middle" font-size="11" fill="#64748b" font-weight="600">Each Tick</text>
+
+  <!-- Phase 1: Override -->
+  <rect x="80" y="210" width="200" height="70" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="180" y="232" text-anchor="middle" font-size="12" fill="#1e3a8a" font-weight="700">1. Override</text>
+  <text x="180" y="250" text-anchor="middle" font-size="10" fill="#3b82f6">Set emulated values</text>
+  <text x="180" y="265" text-anchor="middle" font-size="10" fill="#3b82f6">to GT values</text>
+
+  <!-- Phase 2: Snapshot -->
+  <rect x="300" y="210" width="200" height="70" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="400" y="232" text-anchor="middle" font-size="12" fill="#14532d" font-weight="700">2. Snapshot</text>
+  <text x="400" y="250" text-anchor="middle" font-size="10" fill="#166534">Capture game state</text>
+  <text x="400" y="265" text-anchor="middle" font-size="10" fill="#166534">Values reflect GT</text>
+
+  <!-- Phase 3: Restore -->
+  <rect x="520" y="210" width="200" height="70" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="620" y="232" text-anchor="middle" font-size="12" fill="#92400e" font-weight="700">3. Restore</text>
+  <text x="620" y="250" text-anchor="middle" font-size="10" fill="#a16207">Revert to emulated</text>
+  <text x="620" y="265" text-anchor="middle" font-size="10" fill="#a16207">values for intents</text>
+
+  <!-- Arrows between phases -->
+  <line x1="280" y1="245" x2="295" y2="245" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="500" y1="245" x2="515" y2="245" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Synced fields table -->
+  <rect x="80" y="310" width="320" height="115" rx="8" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="240" y="332" text-anchor="middle" font-size="12" fill="#0c4a6e" font-weight="700">Fields Synced from GT (0.0% error)</text>
+  <line x1="100" y1="340" x2="380" y2="340" stroke="#bae6fd" stroke-width="1"/>
+  <text x="100" y="358" font-size="10" fill="#0369a1">mineralsCurrent</text>
+  <text x="240" y="358" font-size="10" fill="#0369a1">mineralsCollectionRate</text>
+  <text x="100" y="374" font-size="10" fill="#0369a1">foodMade / foodUsed</text>
+  <text x="240" y="374" font-size="10" fill="#0369a1">workersActiveCount</text>
+  <text x="100" y="390" font-size="10" fill="#0369a1">mineralsUsedCurrent*</text>
+  <text x="240" y="390" font-size="10" fill="#0369a1">(6 spending fields)</text>
+  <text x="100" y="410" font-size="9" fill="#64748b">10 of 12 economy fields</text>
+
+  <!-- Remaining fields -->
+  <rect x="430" y="310" width="290" height="115" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="575" y="332" text-anchor="middle" font-size="12" fill="#92400e" font-weight="700">Still Emulator-Driven</text>
+  <line x1="450" y1="340" x2="700" y2="340" stroke="#fde68a" stroke-width="1"/>
+  <text x="450" y="358" font-size="10" fill="#a16207">vespeneCollectionRate</text>
+  <text x="630" y="358" font-size="10" fill="#92400e">1.5–244% error</text>
+  <text x="450" y="378" font-size="10" fill="#a16207">vespeneCurrent</text>
+  <text x="630" y="378" font-size="10" fill="#92400e">0.5–2.2% error</text>
+  <text x="450" y="410" font-size="9" fill="#64748b">Pending: #513, #515</text>
+</svg>
