@@ -15,7 +15,12 @@ import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.UpgradeType;
 import io.quarkmind.sc2.SelectionState;
+import io.quarkmind.domain.Point2d;
 import io.quarkmind.sc2.intent.AbilityIntent;
+import io.quarkmind.sc2.intent.BuildIntent;
+import io.quarkmind.sc2.intent.BuildingBornIntent;
+import io.quarkmind.sc2.intent.BuildingDiedIntent;
+import io.quarkmind.sc2.intent.Intent;
 import io.quarkmind.sc2.intent.MorphIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
@@ -69,7 +74,21 @@ public final class TrackerIntentExtractor {
 
         int warpGateResearchLoop = findWarpGateResearchLoop(replay.trackerEvents.getEvents(), playerId);
 
-        Map<Long, UnitType> unitTagToType = new HashMap<>();
+        Map<Long, UnitType>     unitTagToType     = new HashMap<>();
+        Map<Long, BuildingType> buildingTagToType = new HashMap<>();
+
+        // Pre-pass: collect UnitDone loops for buildings (pinned completion)
+        Map<Long, Integer> buildingDoneLoops = new HashMap<>();
+        for (Event raw : replay.trackerEvents.getEvents()) {
+            if (raw.getId() == ITrackerEvents.ID_UNIT_DONE) {
+                Integer tagIndex   = raw.get("unitTagIndex");
+                Integer tagRecycle = raw.get("unitTagRecycle");
+                if (tagIndex != null && tagRecycle != null) {
+                    long compositeTag = ((long) tagIndex << 32) | (tagRecycle & 0xFFFFFFFFL);
+                    buildingDoneLoops.put(compositeTag, raw.getLoop());
+                }
+            }
+        }
 
         for (Event raw : replay.trackerEvents.getEvents()) {
             int id = raw.getId();
@@ -79,7 +98,15 @@ public final class TrackerIntentExtractor {
                     Integer pid = ue.getControlPlayerId();
                     if (pid == null || pid != playerId) {continue;}
                     String typeName = String.valueOf(ue.getUnitTypeName()).trim();
-                    if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) {continue;}
+                    if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) {
+                        long         compositeTag = ((long) ue.getUnitTagIndex() << 32) | (ue.getUnitTagRecycle() & 0xFFFFFFFFL);
+                        BuildingType bt           = Sc2ReplayShared.toBuildingType(typeName);
+                        buildingTagToType.put(compositeTag, bt);
+                        String  tag = "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
+                        Point2d pos = new Point2d(ue.getXCoord(), ue.getYCoord());
+                        intents.add(new TimedIntent(ue.getLoop(), new BuildingBornIntent(tag, bt, pos)));
+                        continue;
+                    }
 
                     UnitType unitType = Sc2ReplayShared.toUnitType(typeName);
                     if (unitType != UnitType.UNKNOWN) {
@@ -108,7 +135,22 @@ public final class TrackerIntentExtractor {
                     if (pid == null || pid != playerId) {continue;}
                     String typeName = String.valueOf(ue.getUnitTypeName()).trim();
                     if (Sc2ReplayShared.BUILDING_NAMES.contains(typeName)) {
-                        consumeDroneForBuilding(unitTagToType, typeName);
+                        long         compositeTag = ((long) ue.getUnitTagIndex() << 32) | (ue.getUnitTagRecycle() & 0xFFFFFFFFL);
+                        BuildingType bt           = Sc2ReplayShared.toBuildingType(typeName);
+                        String       tag          = "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
+                        Point2d      pos          = new Point2d(ue.getXCoord(), ue.getYCoord());
+                        int          doneLoop     = buildingDoneLoops.getOrDefault(compositeTag, -1);
+
+                        if (MORPH_BUILDING_SOURCES.containsKey(typeName)) {
+                            BuildingType sourceType = buildingTagToType.getOrDefault(compositeTag, MORPH_BUILDING_SOURCES.get(typeName));
+                            intents.add(new TimedIntent(ue.getLoop(),
+                                                        new MorphIntent(tag, sourceType.name(), typeName, doneLoop)));
+                        } else {
+                            consumeDroneForBuilding(unitTagToType, typeName);
+                            intents.add(new TimedIntent(ue.getLoop(),
+                                                        new BuildIntent("worker", bt, pos, tag, doneLoop)));
+                        }
+                        buildingTagToType.put(compositeTag, bt);
                         continue;
                     }
 
@@ -135,17 +177,33 @@ public final class TrackerIntentExtractor {
                     Integer tagIndex   = raw.get("unitTagIndex");
                     Integer tagRecycle = raw.get("unitTagRecycle");
                     if (tagIndex == null || tagRecycle == null) {continue;}
-                    long compositeTag = ((long) tagIndex << 32) | (tagRecycle & 0xFFFFFFFFL);
-                    if (!unitTagToType.containsKey(compositeTag)) {continue;}
-                    Object newTypeObj = raw.get("unitTypeName");
+                    long   compositeTag = ((long) tagIndex << 32) | (tagRecycle & 0xFFFFFFFFL);
+                    Object newTypeObj   = raw.get("unitTypeName");
                     if (newTypeObj == null) {continue;}
-                    UnitType newType = Sc2ReplayShared.toUnitType(String.valueOf(newTypeObj).trim());
+                    String newTypeName = String.valueOf(newTypeObj).trim();
+
+                    // Building type change (morph)
+                    BuildingType oldBt = buildingTagToType.get(compositeTag);
+                    if (oldBt != null) {
+                        BuildingType newBt = Sc2ReplayShared.toBuildingType(newTypeName);
+                        if (newBt != BuildingType.UNKNOWN && newBt != oldBt) {
+                            buildingTagToType.put(compositeTag, newBt);
+                            String tag = "r-" + tagIndex + "-" + tagRecycle;
+                            intents.add(new TimedIntent(raw.getLoop(),
+                                                        MorphIntent.of(tag, oldBt.name(), newTypeName)));
+                        }
+                        continue;
+                    }
+
+                    // Unit type change (morph)
+                    if (!unitTagToType.containsKey(compositeTag)) {continue;}
+                    UnitType newType = Sc2ReplayShared.toUnitType(newTypeName);
                     if (newType != UnitType.UNKNOWN) {
                         UnitType oldType = unitTagToType.put(compositeTag, newType);
                         if (oldType != null && SC2Data.morphSourceType(newType) != null) {
                             String unitTag = "r-" + tagIndex + "-" + tagRecycle;
                             intents.add(new TimedIntent(raw.getLoop(),
-                                MorphIntent.of(unitTag, oldType.name(), newType.name())));
+                                                        MorphIntent.of(unitTag, oldType.name(), newType.name())));
                         }
                     }
                 }
@@ -171,6 +229,16 @@ public final class TrackerIntentExtractor {
                     Integer tagRecycle = raw.get("unitTagRecycle");
                     if (tagIndex == null || tagRecycle == null) {continue;}
                     long compositeTag = ((long) tagIndex << 32) | (tagRecycle & 0xFFFFFFFFL);
+
+                    // Building death
+                    BuildingType deadBt = buildingTagToType.remove(compositeTag);
+                    if (deadBt != null) {
+                        String tag = "r-" + tagIndex + "-" + tagRecycle;
+                        intents.add(new TimedIntent(raw.getLoop(), new BuildingDiedIntent(tag, deadBt)));
+                        continue;
+                    }
+
+                    // Unit death
                     UnitType deadType = unitTagToType.remove(compositeTag);
                     if (deadType == null) {continue;}
                     String tag = "r-" + tagIndex + "-" + tagRecycle;
@@ -199,7 +267,8 @@ public final class TrackerIntentExtractor {
             }
         }
 
-        intents.sort(Comparator.comparingLong(TimedIntent::loop));
+        intents.sort(Comparator.comparingLong(TimedIntent::loop)
+                               .thenComparingInt(ti -> intentPriority(ti.intent())));
         return Collections.unmodifiableList(intents);
     }
 
@@ -345,6 +414,28 @@ public final class TrackerIntentExtractor {
         "Lair", "Hive", "GreaterSpire", "LurkerDen", "NydusCanal",
         "SpineCrawlerUprooted", "SporeCrawlerUprooted"
     );
+    private static final Map<String, BuildingType> MORPH_BUILDING_SOURCES = Map.of(
+            "Lair", BuildingType.HATCHERY,
+            "Hive", BuildingType.LAIR,
+            "GreaterSpire", BuildingType.SPIRE,
+            "OrbitalCommand", BuildingType.COMMAND_CENTER,
+            "PlanetaryFortress", BuildingType.COMMAND_CENTER
+                                                                                  );
+
+    private static int intentPriority(Intent intent) {
+        return switch (intent) {
+            case BuildingBornIntent ignored -> 0;
+            case BuildingDiedIntent ignored -> 1;
+            case BuildIntent ignored -> 2;
+            case MorphIntent ignored -> 3;
+            case TrainIntent ignored -> 5;
+            case ResearchIntent ignored -> 5;
+            case AbilityIntent ignored -> 5;
+            case UnitDiedIntent ignored -> 8;
+            default -> 10;
+        };
+    }
+
 
     private static void consumeDroneForBuilding(Map<Long, UnitType> unitTagToType,
                                                  String buildingTypeName) {

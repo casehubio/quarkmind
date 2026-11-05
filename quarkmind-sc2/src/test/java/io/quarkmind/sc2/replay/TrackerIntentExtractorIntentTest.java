@@ -7,6 +7,7 @@ import hu.scelight.sc2.rep.s2prot.Event;
 import hu.scelightapi.sc2.rep.model.trackerevents.IBaseUnitEvent;
 import hu.scelightapi.sc2.rep.model.trackerevents.ITrackerEvents;
 import io.quarkmind.sc2.intent.BuildIntent;
+import io.quarkmind.sc2.intent.BuildingBornIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
@@ -78,8 +79,12 @@ class TrackerIntentExtractorIntentTest {
 
         long buildCount = intents.stream()
                                  .filter(ti -> ti.intent() instanceof BuildIntent).count();
-        assertEquals(0, buildCount,
-                     "Tracker path should NOT produce BuildIntents — buildings are synced from ground truth by the harness");
+        assertTrue(buildCount > 0,
+                   "Tracker path should produce BuildIntents for buildings constructed during the game");
+        long buildingBornCount = intents.stream()
+                                        .filter(ti -> ti.intent() instanceof BuildingBornIntent).count();
+        assertTrue(buildingBornCount > 0,
+                   "Tracker path should produce BuildingBornIntents for initial buildings");
     }
 
     @Test
