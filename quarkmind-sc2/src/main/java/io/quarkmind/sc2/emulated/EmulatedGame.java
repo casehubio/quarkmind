@@ -18,6 +18,8 @@ import io.quarkmind.sc2.intent.AbilityIntent;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
+import io.quarkmind.sc2.intent.BuildingBornIntent;
+import io.quarkmind.sc2.intent.BuildingDiedIntent;
 import io.quarkmind.sc2.intent.Intent;
 import io.quarkmind.sc2.intent.MorphIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
@@ -341,6 +343,8 @@ public class EmulatedGame {
             case MorphIntent m -> () -> handleMorph(m, friendly, friendlyPhysics, ti.loop());
             case AbilityIntent a -> () -> handleAbilityInternal(a, friendly, friendlyPhysics, ti.loop());
             case UnitDiedIntent d -> () -> handleUnitDied(d, friendly, friendlyPhysics);
+            case BuildingBornIntent bb -> () -> handleBuildingBorn(bb, friendly, friendlyPhysics);
+            case BuildingDiedIntent bd -> () -> handleBuildingDied(bd, friendly, friendlyPhysics);
         };
         action.run();
     }
@@ -357,6 +361,8 @@ public class EmulatedGame {
             case MorphIntent m -> () -> handleMorph(m, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
             case AbilityIntent a -> () -> handleAbilityInternal(a, state, physics, gameFrame * SC2Data.LOOPS_PER_TICK);
             case UnitDiedIntent d -> () -> handleUnitDied(d, state, physics);
+            case BuildingBornIntent bb -> () -> handleBuildingBorn(bb, state, physics);
+            case BuildingDiedIntent bd -> () -> handleBuildingDied(bd, state, physics);
         };
         action.run();
     }
@@ -1601,6 +1607,28 @@ public class EmulatedGame {
         });
         friendly.removeBuilding(tag);
     }
+
+    private void handleBuildingBorn(BuildingBornIntent bb, PlayerState state, PhysicsState physics) {
+        state.addBuilding(new Building(bb.tag(), bb.type(), bb.position(),
+                                       SC2Data.maxBuildingHealth(bb.type()), SC2Data.maxBuildingHealth(bb.type()), true));
+        state.addSupply(SC2Data.supplyBonus(bb.type()));
+        if (state == friendly && playerRaceModel != null) {
+            if (playerRaceModel.townHallTypes().contains(bb.type())) {
+                registerTownHallWithPatches(bb.tag(), bb.position());
+            } else if (SC2Data.isGasBuilding(bb.type())) {
+                workerSimulation.onGasBuildingCompleted(bb.tag(), bb.position());
+            }
+        }
+    }
+
+    private void handleBuildingDied(BuildingDiedIntent bd, PlayerState state, PhysicsState physics) {
+        state.buildings().stream().filter(b -> b.tag().equals(bd.tag())).findFirst().ifPresent(b -> {
+            state.addSupply(-SC2Data.supplyBonus(bd.type()));
+            if (state == friendly) {economyTracker.recordBuildingDestroyed(bd.type());}
+        });
+        state.removeBuilding(bd.tag());
+    }
+
 
     public void injectReplayBuilding(Building building) {
         friendly.addBuilding(building);
