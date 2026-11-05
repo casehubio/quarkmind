@@ -697,27 +697,35 @@ public class EmulatedGame {
     }
 
     private void handleBuild(BuildIntent b, PlayerState state, PhysicsState physics, long absLoop) {
-        int mCost = SC2Data.mineralCost(b.buildingType());
-        if ((int) state.minerals() < mCost) {
-            log.debugf("[EMULATED] Cannot build %s — insufficient minerals", b.buildingType());
-            return;
+        final boolean trackerDriven = b.replayTag() != null;
+        int           mCost         = SC2Data.mineralCost(b.buildingType());
+        int           gCost         = SC2Data.gasCost(b.buildingType());
+        if (!trackerDriven) {
+            if ((int) state.minerals() < mCost || state.vespene() < gCost) {
+                log.debugf("[EMULATED] Cannot build %s — insufficient resources", b.buildingType());
+                return;
+            }
         }
         state.deductMinerals(mCost);
+        state.deductVespene(gCost);
         if (state == friendly) {
-            economyTracker.recordBuildSpending(b.buildingType(), mCost);
+            economyTracker.recordBuildSpending(b.buildingType(), mCost, gCost);
         }
-        final String tag = "bldg-" + nextTag++;
+        final String tag = trackerDriven ? b.replayTag() : "bldg-" + nextTag++;
+        if (trackerDriven) {trackerDrivenBuildings.add(tag);}
         final BuildingType bt = b.buildingType();
         state.addBuilding(new Building(tag, bt, b.location(),
-            SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), false));
-        final int loopOffset = (int)(absLoop % SC2Data.LOOPS_PER_TICK);
-        final long completesAt = gameFrame
-            + (loopOffset + SC2Data.buildTimeInLoops(bt)) / SC2Data.LOOPS_PER_TICK;
-        final RaceModel model = (state == friendly) ? playerRaceModel : null;
+                                       SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), false));
+        final int loopOffset = (int) (absLoop % SC2Data.LOOPS_PER_TICK);
+        final long completesAt = (b.completionLoop() >= 0)
+                                 ? b.completionLoop() / SC2Data.LOOPS_PER_TICK
+                                 : gameFrame + (loopOffset + SC2Data.buildTimeInLoops(bt)) / SC2Data.LOOPS_PER_TICK;
+        final RaceModel model     = (state == friendly) ? playerRaceModel : null;
+        final boolean   isReactor = tag.startsWith("r-") && isReactorAddOn(bt, state);
         physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
             markBuildingComplete(tag, state);
             state.addSupply(SC2Data.supplyBonus(bt));
-            if (model != null) model.onBuildingComplete(state, bt, tag);
+            if (model != null) {model.onBuildingComplete(state, bt, tag);}
             if (state == friendly && model != null) {
                 if (playerRaceModel.townHallTypes().contains(bt)) {
                     registerTownHallWithPatches(tag, b.location());
@@ -725,9 +733,36 @@ public class EmulatedGame {
                     workerSimulation.onGasBuildingCompleted(tag, b.location());
                 }
             }
+            if (isReactor) {
+                findNearestProductionBuilding(bt, b.location(), tag, state)
+                        .ifPresent(parentTag -> reactoredBuildings.add(parentTag));
+            }
             log.debugf("[EMULATED] Completed %s (tag=%s)", bt, tag);
         }));
     }
+
+    private static boolean isReactorAddOn(BuildingType type, PlayerState state) {
+        return state.buildings().stream()
+                    .anyMatch(b -> b.type() == type && b.isComplete());
+    }
+
+    private Optional<String> findNearestProductionBuilding(BuildingType type, Point2d addonPos, String excludeTag, PlayerState state) {
+        String bestTag  = null;
+        double bestDist = Double.MAX_VALUE;
+        for (Building b : state.buildings()) {
+            if (b.tag().equals(excludeTag)) {continue;}
+            if (b.type() != type || !b.isComplete()) {continue;}
+            double dx   = b.position().x() - addonPos.x();
+            double dy   = b.position().y() - addonPos.y();
+            double dist = dx * dx + dy * dy;
+            if (dist < bestDist) {
+                bestDist = dist;
+                bestTag  = b.tag();
+            }
+        }
+        return Optional.ofNullable(bestTag);
+    }
+
 
     private void markBuildingComplete(String tag, PlayerState state) {
         state.replaceAllBuildings(b -> b.tag().equals(tag)
@@ -1131,7 +1166,9 @@ public class EmulatedGame {
                                            ? new Building(b.tag(), targetBt, b.position(), b.health(), b.maxHealth(), false)
                                            : b);
             final RaceModel model       = (state == friendly) ? playerRaceModel : null;
-            long            completesAt = gameFrame + SC2Data.buildTimeInLoops(targetBt) / SC2Data.LOOPS_PER_TICK;
+            long            completesAt = (m.completionLoop() >= 0)
+                ? m.completionLoop() / SC2Data.LOOPS_PER_TICK
+                : gameFrame + SC2Data.buildTimeInLoops(targetBt) / SC2Data.LOOPS_PER_TICK;
             physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
                 markBuildingComplete(resolvedTag, state);
                 if (model != null) {model.onBuildingComplete(state, targetBt, resolvedTag);}

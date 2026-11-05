@@ -1032,12 +1032,13 @@ public final class SC2Data {
 
     public static int gasCost(BuildingType type) {
         return switch (type) {
-            // Protoss — no gas for morphs (Protoss has no building morphs)
+            // Protoss
             case NEXUS, PYLON, GATEWAY, CYBERNETICS_CORE, ASSIMILATOR,
-                 ROBOTICS_FACILITY, STARGATE, FORGE, TWILIGHT_COUNCIL,
-                 PHOTON_CANNON, SHIELD_BATTERY, FLEET_BEACON, ROBOTICS_BAY,
+                 FORGE, PHOTON_CANNON, SHIELD_BATTERY,
                  ASSIMILATOR_RICH -> 0;
-            case DARK_SHRINE, TEMPLAR_ARCHIVES -> 100;
+            case TWILIGHT_COUNCIL, ROBOTICS_FACILITY -> 100;
+            case STARGATE, DARK_SHRINE, ROBOTICS_BAY -> 150;
+            case FLEET_BEACON, TEMPLAR_ARCHIVES -> 200;
             // Terran
             case COMMAND_CENTER, SUPPLY_DEPOT, BARRACKS, ENGINEERING_BAY,
                  MISSILE_TURRET, BUNKER, SENSOR_TOWER, REFINERY -> 0;
