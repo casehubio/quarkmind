@@ -256,7 +256,7 @@ class TerranEmulatedGameTest {
                                 .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
                                 .findFirst().orElseThrow();
 
-        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
+        game.applyIntent(MorphIntent.of(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
 
         assertThat((int) game.snapshot().minerals()).isEqualTo(200 - SC2Data.mineralCost(BuildingType.ORBITAL_COMMAND));
     }
@@ -268,7 +268,7 @@ class TerranEmulatedGameTest {
                                 .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
                                 .findFirst().orElseThrow();
 
-        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
+        game.applyIntent(MorphIntent.of(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
 
         // Should still be CC — morph was rejected
         assertThat(game.snapshot().myBuildings().stream()
@@ -285,7 +285,7 @@ class TerranEmulatedGameTest {
                                 .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
                                 .findFirst().orElseThrow();
 
-        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "PlanetaryFortress"));
+        game.applyIntent(MorphIntent.of(cc.tag(), "COMMAND_CENTER", "PlanetaryFortress"));
 
         assertThat((int) game.snapshot().minerals()).isEqualTo(200 - SC2Data.mineralCost(BuildingType.PLANETARY_FORTRESS));
         assertThat(game.snapshot().vespene()).isEqualTo(200 - SC2Data.gasCost(BuildingType.PLANETARY_FORTRESS));
@@ -299,7 +299,7 @@ class TerranEmulatedGameTest {
                                 .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
                                 .findFirst().orElseThrow();
 
-        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "PlanetaryFortress"));
+        game.applyIntent(MorphIntent.of(cc.tag(), "COMMAND_CENTER", "PlanetaryFortress"));
 
         assertThat(game.snapshot().myBuildings().stream()
                        .anyMatch(b -> b.type() == BuildingType.COMMAND_CENTER)).isTrue();
@@ -314,7 +314,7 @@ class TerranEmulatedGameTest {
                                 .findFirst().orElseThrow();
 
         // r- prefix = tracker-driven, should skip economy gate
-        game.applyIntent(new MorphIntent("r-COMMAND_CENTER", "COMMAND_CENTER", "OrbitalCommand"));
+        game.applyIntent(MorphIntent.of("r-COMMAND_CENTER", "COMMAND_CENTER", "OrbitalCommand"));
 
         assertThat(game.snapshot().myBuildings().stream()
                        .anyMatch(b -> b.type() == BuildingType.ORBITAL_COMMAND)).isTrue();
@@ -331,7 +331,7 @@ class TerranEmulatedGameTest {
         game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV));  // queued
 
         // Morph CC → OC mid-training
-        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
+        game.applyIntent(MorphIntent.of(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
 
         // Advance past the first SCV's completion but before morph completes
         final int scvTicks = SC2Data.trainTimeInTicks(UnitType.SCV);
@@ -358,7 +358,7 @@ class TerranEmulatedGameTest {
                                 .findFirst().orElseThrow();
 
         game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV));
-        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
+        game.applyIntent(MorphIntent.of(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
 
         // Advance past SCV completion
         final int scvTicks = SC2Data.trainTimeInTicks(UnitType.SCV);
@@ -379,7 +379,7 @@ class TerranEmulatedGameTest {
         game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV));  // in-progress
         game.applyIntent(new TrainIntent(cc.tag(), UnitType.SCV));  // queued
 
-        game.applyIntent(new MorphIntent(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
+        game.applyIntent(MorphIntent.of(cc.tag(), "COMMAND_CENTER", "OrbitalCommand"));
 
         // Advance past morph completion + SCV train time + margin
         final int morphTicks = SC2Data.buildTimeInLoops(BuildingType.ORBITAL_COMMAND) / SC2Data.LOOPS_PER_TICK;

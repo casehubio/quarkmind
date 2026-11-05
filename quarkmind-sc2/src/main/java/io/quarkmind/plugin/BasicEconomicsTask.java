@@ -78,7 +78,7 @@ public class BasicEconomicsTask implements EconomicsTask {
         if (!budget.spendMinerals(PYLON_COST)) return;
         workers.stream().findFirst().ifPresent(probe -> {
             Point2d pos = pylonPosition(buildings.size());
-            intentQueue.add(new BuildIntent(probe.tag(), BuildingType.PYLON, pos));
+            intentQueue.add(BuildIntent.of(probe.tag(), BuildingType.PYLON, pos));
             log.debugf("[ECONOMICS] Queuing Pylon at %s (supply %d/%d)", pos, supplyUsed, supplyCap);
         });
     }

@@ -8,6 +8,8 @@ import io.quarkmind.sc2.intent.AbilityIntent;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
+import io.quarkmind.sc2.intent.BuildingBornIntent;
+import io.quarkmind.sc2.intent.BuildingDiedIntent;
 import io.quarkmind.sc2.intent.Intent;
 import io.quarkmind.sc2.intent.MorphIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
@@ -52,6 +54,8 @@ public final class ActionTranslator {
                     case MorphIntent        m -> null;
                     case AbilityIntent      a -> null;
                     case UnitDiedIntent     d -> null;
+                    case BuildingBornIntent b -> null;
+                    case BuildingDiedIntent b -> null;
                 };
                 if (cmd != null) commands.add(cmd);
             } catch (Exception e) {

@@ -333,14 +333,14 @@ class EmulatedGameTest {
     @Test
     void buildIntentDeductsMinerals() {
         game.setMineralsForTesting(500);
-        game.applyIntent(new BuildIntent("probe-0", BuildingType.PYLON, new Point2d(15, 15)));
+        game.applyIntent(BuildIntent.of("probe-0", BuildingType.PYLON, new Point2d(15, 15)));
         assertThat(game.snapshot().minerals()).isEqualTo(400); // 500 - 100
     }
 
     @Test
     void buildingCompletesAfterBuildTime() {
         game.setMineralsForTesting(500);
-        game.applyIntent(new BuildIntent("probe-0", BuildingType.PYLON, new Point2d(15, 15)));
+        game.applyIntent(BuildIntent.of("probe-0", BuildingType.PYLON, new Point2d(15, 15)));
         int supplyBefore = game.snapshot().supply();
         for (int i = 0; i < 18; i++) game.tick(); // Pylon = 18 ticks
         assertThat(game.snapshot().supply()).isEqualTo(supplyBefore + 8); // +8 from Pylon
@@ -1871,7 +1871,7 @@ class EmulatedGameTest {
         long completesBefore = game.snapshot().myBuildings().stream()
             .filter(Building::isComplete).count();
 
-        game.applyIntent(new TimedIntent(0L, new BuildIntent("probe-0", BuildingType.NEXUS, new Point2d(30, 30))));
+        game.applyIntent(new TimedIntent(0L, BuildIntent.of("probe-0", BuildingType.NEXUS, new Point2d(30, 30))));
 
         int buildTicks = SC2Data.buildTimeInTicks(BuildingType.NEXUS); // 1600 / 22 = 72
         for (int i = 0; i < buildTicks - 1; i++) game.tick(); // ticks 2–72; gameFrame = 72
@@ -1896,7 +1896,7 @@ class EmulatedGameTest {
         long completesBefore = game.snapshot().myBuildings().stream()
             .filter(Building::isComplete).count();
 
-        game.applyIntent(new TimedIntent(6L, new BuildIntent("probe-0", BuildingType.NEXUS, new Point2d(30, 30))));
+        game.applyIntent(new TimedIntent(6L, BuildIntent.of("probe-0", BuildingType.NEXUS, new Point2d(30, 30))));
 
         int buildTicks = SC2Data.buildTimeInTicks(BuildingType.NEXUS); // 72
         for (int i = 0; i < buildTicks; i++) game.tick(); // ticks 2–73; gameFrame = 73
@@ -2000,7 +2000,7 @@ class EmulatedGameTest {
         game.setMineralsForTesting(5000);
 
         // Build a second nexus at a distant location
-        game.applyIntent(new BuildIntent("probe-0", BuildingType.NEXUS, new Point2d(30, 30)));
+        game.applyIntent(BuildIntent.of("probe-0", BuildingType.NEXUS, new Point2d(30, 30)));
 
         // Tick through build time (NEXUS default = 40 ticks)
         int buildTicks = SC2Data.buildTimeInTicks(BuildingType.NEXUS);

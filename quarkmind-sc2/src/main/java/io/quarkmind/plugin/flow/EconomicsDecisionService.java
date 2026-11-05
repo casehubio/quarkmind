@@ -65,7 +65,7 @@ public class EconomicsDecisionService {
         if (!tick.budget().spendMinerals(PYLON_COST)) return;
         tick.workers().stream().findFirst().ifPresent(probe -> {
             Point2d pos = BasicEconomicsTask.pylonPosition(tick.buildings().size());
-            intentQueue.add(new BuildIntent(probe.tag(), BuildingType.PYLON, pos));
+            intentQueue.add(BuildIntent.of(probe.tag(), BuildingType.PYLON, pos));
             maybeFireBuildEvent("PYLON");
             log.debugf("[FLOW-ECONOMICS] Pylon at %s (supply %d/%d)",
                 pos, tick.supplyUsed(), tick.supplyCap());
@@ -109,7 +109,7 @@ public class EconomicsDecisionService {
             .ifPresent(geyser -> {
                 if (!tick.budget().spendMinerals(ASSIMILATOR_COST)) return;
                 tick.workers().stream().findFirst().ifPresent(probe -> {
-                    intentQueue.add(new BuildIntent(probe.tag(), BuildingType.ASSIMILATOR,
+                    intentQueue.add(BuildIntent.of(probe.tag(), BuildingType.ASSIMILATOR,
                         geyser.position()));
                     maybeFireBuildEvent("ASSIMILATOR");
                     log.debugf("[FLOW-ECONOMICS] Assimilator at %s", geyser.position());
@@ -146,7 +146,7 @@ public class EconomicsDecisionService {
         if (tick.workers().size() < PROBE_CAP) return;
         if (!tick.budget().spendMinerals(NEXUS_COST)) return;
         tick.workers().stream().findFirst().ifPresent(probe -> {
-            intentQueue.add(new BuildIntent(probe.tag(), BuildingType.NEXUS, NATURAL_EXPANSION_POS));
+            intentQueue.add(BuildIntent.of(probe.tag(), BuildingType.NEXUS, NATURAL_EXPANSION_POS));
             maybeFireBuildEvent("NEXUS");
             log.infof("[FLOW-ECONOMICS] Expanding to natural at %s", NATURAL_EXPANSION_POS);
         });

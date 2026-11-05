@@ -285,15 +285,15 @@ public class DroolsStrategyTask implements StrategyTask, ScoutingIntelConsumer, 
         for (String decision : decisions) {
             if (decision.equals("GATEWAY") && budget.spendMinerals(150)) {
                 workers.stream().findFirst().ifPresent(p ->
-                    intentQueue.add(new BuildIntent(p.tag(), BuildingType.GATEWAY, GATEWAY_POS)));
+                    intentQueue.add(BuildIntent.of(p.tag(), BuildingType.GATEWAY, GATEWAY_POS)));
             } else if (decision.equals("CYBERNETICS_CORE") && budget.spendMinerals(150)) {
                 workers.stream().findFirst().ifPresent(p ->
-                    intentQueue.add(new BuildIntent(p.tag(), BuildingType.CYBERNETICS_CORE, CYBERNETICS_CORE_POS)));
+                    intentQueue.add(BuildIntent.of(p.tag(), BuildingType.CYBERNETICS_CORE, CYBERNETICS_CORE_POS)));
             } else if (decision.equals("ASSIMILATOR")) {
                 firstFreeGeyser(buildings, geysers).ifPresent(g -> {
                     if (budget.spendMinerals(75)) {
                         workers.stream().findFirst().ifPresent(p ->
-                            intentQueue.add(new BuildIntent(p.tag(), BuildingType.ASSIMILATOR, g.position())));
+                            intentQueue.add(BuildIntent.of(p.tag(), BuildingType.ASSIMILATOR, g.position())));
                     }
                 });
             } else if (decision.startsWith("STALKER:") && budget.spend(125, 50)) {

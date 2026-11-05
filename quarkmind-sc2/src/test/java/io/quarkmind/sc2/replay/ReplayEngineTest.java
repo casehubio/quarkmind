@@ -84,7 +84,7 @@ class ReplayEngineTest {
 
         // Add an intent that would build a Pylon if applied
         String probeTag = before.myUnits().get(0).tag();
-        intentQueue.add(new BuildIntent(probeTag, BuildingType.PYLON, new Point2d(20, 20)));
+        intentQueue.add(BuildIntent.of(probeTag, BuildingType.PYLON, new Point2d(20, 20)));
         assertThat(intentQueue.pending()).hasSize(1);
 
         engine.dispatch(); // observe-only: drains but does not apply

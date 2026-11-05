@@ -88,7 +88,7 @@ public final class ReplayCommandExtractor {
     private static void convertBuild(ReplayCommand.BuildCommand b, List<TimedIntent> intents) {
         BuildingType bt = BUILDING_NAME_MAP.get(b.buildingName());
         if (bt != null) {
-            intents.add(new TimedIntent(b.loop(), new BuildIntent("worker", bt, b.position())));
+            intents.add(new TimedIntent(b.loop(), BuildIntent.of("worker", bt, b.position())));
         }
     }
 
@@ -105,7 +105,7 @@ public final class ReplayCommandExtractor {
     private static void convertMorph(ReplayCommand.MorphCommand m, AbilityMapping mapping,
                                      List<TimedIntent> intents) {
         String unitTag = mapping.selectionSize() > 0 ? mapping.selectionSnapshotForTest().get(0) : "unknown";
-        intents.add(new TimedIntent(m.loop(), new MorphIntent(unitTag, m.sourceName(), m.targetName())));
+        intents.add(new TimedIntent(m.loop(), MorphIntent.of(unitTag, m.sourceName(), m.targetName())));
     }
 
     private static final Map<String, UpgradeType> UPGRADE_NAME_MAP = Map.ofEntries(

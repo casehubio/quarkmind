@@ -190,7 +190,7 @@ class IEM10JsonSimulatedGameTest {
         IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
         int buildingsBeforeIntent = game.snapshot().myBuildings().size();
         String probeTag = game.snapshot().myUnits().get(0).tag();
-        game.applyIntent(new io.quarkmind.sc2.intent.BuildIntent(
+        game.applyIntent(io.quarkmind.sc2.intent.BuildIntent.of(
             probeTag, BuildingType.PYLON, new Point2d(20, 20)));
         game.tick();
         assertThat(game.snapshot().myBuildings().size())

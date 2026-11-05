@@ -84,7 +84,7 @@ public class SC2DeliveryHandler implements DeliveryHandler {
         if (mineralsBefore < cost) {
             return StepOutcome.fail(stepName, "insufficient minerals for " + bt);
         }
-        game.applyIntent(new BuildIntent("pb-playbook", bt, new Point2d(30, 30)));
+        game.applyIntent(BuildIntent.of("pb-playbook", bt, new Point2d(30, 30)));
         return StepOutcome.ok(stepName, Map.of("building", bt.name()));
     }
 
@@ -120,7 +120,7 @@ public class SC2DeliveryHandler implements DeliveryHandler {
                 }
             }
         }
-        game.applyIntent(new MorphIntent("pb-" + source.toLowerCase(), source, target));
+        game.applyIntent(MorphIntent.of("pb-" + source.toLowerCase(), source, target));
         return StepOutcome.ok(stepName, Map.of("morph", target));
     }
 
