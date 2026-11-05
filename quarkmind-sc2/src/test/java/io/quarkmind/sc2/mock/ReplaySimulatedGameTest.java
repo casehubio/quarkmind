@@ -222,7 +222,7 @@ class ReplaySimulatedGameTest {
         int buildingsBeforeIntent = game.snapshot().myBuildings().size();
         // Applying an intent should not change anything
         String probeTag = game.snapshot().myUnits().get(0).tag();
-        game.applyIntent(new io.quarkmind.sc2.intent.BuildIntent(
+        game.applyIntent(io.quarkmind.sc2.intent.BuildIntent.of(
             probeTag, BuildingType.PYLON, new Point2d(20, 20)));
         game.tick();
         // Buildings should only change from replay events, not the intent

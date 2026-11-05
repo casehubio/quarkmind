@@ -145,7 +145,7 @@ public final class TrackerIntentExtractor {
                         if (oldType != null && SC2Data.morphSourceType(newType) != null) {
                             String unitTag = "r-" + tagIndex + "-" + tagRecycle;
                             intents.add(new TimedIntent(raw.getLoop(),
-                                new MorphIntent(unitTag, oldType.name(), newType.name())));
+                                MorphIntent.of(unitTag, oldType.name(), newType.name())));
                         }
                     }
                 }

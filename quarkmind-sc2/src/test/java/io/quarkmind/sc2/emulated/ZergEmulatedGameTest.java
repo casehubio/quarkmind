@@ -420,7 +420,7 @@ class ZergEmulatedGameTest {
         game.setVespeneForTesting(100);
         String tag = game.spawnFriendlyForTesting(UnitType.ZERGLING, new Point2d(20, 20));
 
-        game.applyIntent(new MorphIntent(tag, "Zergling", "Baneling"));
+        game.applyIntent(MorphIntent.of(tag, "Zergling", "Baneling"));
 
         assertThat((int) game.snapshot().minerals()).isEqualTo(100 - SC2Data.mineralCost(UnitType.BANELING));
         assertThat(game.snapshot().vespene()).isEqualTo(100 - SC2Data.gasCost(UnitType.BANELING));
@@ -432,7 +432,7 @@ class ZergEmulatedGameTest {
         game.setVespeneForTesting(100);
         String tag = game.spawnFriendlyForTesting(UnitType.ZERGLING, new Point2d(20, 20));
 
-        game.applyIntent(new MorphIntent(tag, "Zergling", "Baneling"));
+        game.applyIntent(MorphIntent.of(tag, "Zergling", "Baneling"));
 
         // Zergling should still exist — morph was rejected
         assertThat(game.snapshot().myUnits().stream()
@@ -447,7 +447,7 @@ class ZergEmulatedGameTest {
         game.setVespeneForTesting(10); // Baneling costs 25 gas
         String tag = game.spawnFriendlyForTesting(UnitType.ZERGLING, new Point2d(20, 20));
 
-        game.applyIntent(new MorphIntent(tag, "Zergling", "Baneling"));
+        game.applyIntent(MorphIntent.of(tag, "Zergling", "Baneling"));
 
         assertThat(game.snapshot().myUnits().stream()
                        .anyMatch(u -> u.type() == UnitType.ZERGLING && u.tag().equals(tag))).isTrue();
@@ -461,7 +461,7 @@ class ZergEmulatedGameTest {
         game.spawnFriendlyForTesting(UnitType.ZERGLING, new Point2d(20, 20));
 
         // r- prefix = tracker-driven, resolves by source type
-        game.applyIntent(new MorphIntent("r-Zergling", "Zergling", "Baneling"));
+        game.applyIntent(MorphIntent.of("r-Zergling", "Zergling", "Baneling"));
 
         assertThat(game.snapshot().myUnits().stream()
                        .anyMatch(u -> u.type() == UnitType.BANELING)).isTrue();
@@ -473,7 +473,7 @@ class ZergEmulatedGameTest {
         game.setVespeneForTesting(200);
         final String hatchTag = hatcheryTag();
 
-        game.applyIntent(new MorphIntent(hatchTag, "HATCHERY", "Lair"));
+        game.applyIntent(MorphIntent.of(hatchTag, "HATCHERY", "Lair"));
 
         assertThat((int) game.snapshot().minerals()).isEqualTo(200 - SC2Data.mineralCost(BuildingType.LAIR));
         assertThat(game.snapshot().vespene()).isEqualTo(200 - SC2Data.gasCost(BuildingType.LAIR));

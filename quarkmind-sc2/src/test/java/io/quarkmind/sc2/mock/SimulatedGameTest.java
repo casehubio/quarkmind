@@ -49,7 +49,7 @@ class SimulatedGameTest {
     @Test
     void applyBuildIntentAddsPylonUnderConstruction() {
         String probeTag = game.snapshot().myUnits().get(0).tag();
-        game.applyIntent(new BuildIntent(probeTag, BuildingType.PYLON, new Point2d(15, 15)));
+        game.applyIntent(BuildIntent.of(probeTag, BuildingType.PYLON, new Point2d(15, 15)));
         game.tick(); // 1 tick — Pylon appears immediately as incomplete
         GameState state = game.snapshot();
         assertThat(state.myBuildings().stream()
@@ -60,7 +60,7 @@ class SimulatedGameTest {
     @Test
     void applyBuildIntentCompletesPylonAfterBuildTime() {
         String probeTag = game.snapshot().myUnits().get(0).tag();
-        game.applyIntent(new BuildIntent(probeTag, BuildingType.PYLON, new Point2d(15, 15)));
+        game.applyIntent(BuildIntent.of(probeTag, BuildingType.PYLON, new Point2d(15, 15)));
         // Pylon build time = 18 ticks (18s at Faster speed)
         for (int i = 0; i < 18; i++) game.tick();
         GameState state = game.snapshot();

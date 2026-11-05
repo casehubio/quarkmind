@@ -138,7 +138,7 @@ class GameStateRoundTripTest {
             .build();
 
         Intent rt = ProtobufToIntent.translate(proto);
-        assertThat(rt).isEqualTo(new BuildIntent("5", BuildingType.PYLON, new Point2d(25f, 30f)));
+        assertThat(rt).isEqualTo(BuildIntent.of("5", BuildingType.PYLON, new Point2d(25f, 30f)));
     }
 
     @Test

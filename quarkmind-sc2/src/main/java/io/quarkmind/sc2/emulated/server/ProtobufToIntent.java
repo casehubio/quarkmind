@@ -120,7 +120,7 @@ public final class ProtobufToIntent {
 
     private static void registerBuildAbility(Abilities ability, BuildingType buildingType) {
         ABILITY_TO_INTENT.put(ability.getAbilityId(),
-            (tag, cmd) -> new BuildIntent(tag, buildingType, toPoint(cmd)));
+            (tag, cmd) -> BuildIntent.of(tag, buildingType, toPoint(cmd)));
     }
 
     private static void registerTrainAbility(Abilities ability, UnitType unitType) {

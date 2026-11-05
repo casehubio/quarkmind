@@ -23,7 +23,7 @@ class EmulatedGameGasIncomeTest {
         assertThat(game.snapshot().vespene()).isEqualTo(0);
 
         game.setMineralsForTesting(500);
-        game.applyIntent(new BuildIntent("probe-0", BuildingType.ASSIMILATOR, new Point2d(10, 10)));
+        game.applyIntent(BuildIntent.of("probe-0", BuildingType.ASSIMILATOR, new Point2d(10, 10)));
         int buildTicks = SC2Data.buildTimeInLoops(BuildingType.ASSIMILATOR) / SC2Data.LOOPS_PER_TICK + 1;
         for (int i = 0; i < buildTicks; i++) game.tick();
 
@@ -49,7 +49,7 @@ class EmulatedGameGasIncomeTest {
         game.configureWave(9999, 4, UnitType.ZEALOT);
         game.reset();
         game.setMineralsForTesting(500);
-        game.applyIntent(new BuildIntent("probe-0", BuildingType.ASSIMILATOR, new Point2d(10, 10)));
+        game.applyIntent(BuildIntent.of("probe-0", BuildingType.ASSIMILATOR, new Point2d(10, 10)));
         int buildTicks = SC2Data.buildTimeInLoops(BuildingType.ASSIMILATOR) / SC2Data.LOOPS_PER_TICK + 1;
         for (int i = 0; i < buildTicks; i++) game.tick();
         double mineralsAtBuildComplete = game.snapshot().minerals();
@@ -66,7 +66,7 @@ class EmulatedGameGasIncomeTest {
     void multipleGasBuildings_workerBudgetCapsAtTotalWorkers() {
         game.setMineralsForTesting(2000);
         for (int i = 0; i < 5; i++) {
-            game.applyIntent(new BuildIntent("probe-0", BuildingType.ASSIMILATOR,
+            game.applyIntent(BuildIntent.of("probe-0", BuildingType.ASSIMILATOR,
                 new Point2d(10 + i * 5, 10)));
         }
         int buildTicks = SC2Data.buildTimeInLoops(BuildingType.ASSIMILATOR) / SC2Data.LOOPS_PER_TICK + 1;

@@ -101,7 +101,7 @@ class ActionTranslatorTest {
 
     @Test
     void buildIntentProducesPositionTargetedCommandWithCorrectTagAbilityAndLocation() {
-        var intent = new BuildIntent("456", BuildingType.GATEWAY,
+        var intent = BuildIntent.of("456", BuildingType.GATEWAY,
                                     new io.quarkmind.domain.Point2d(30f, 40f));
 
         var commands = ActionTranslator.translate(List.of(intent));
@@ -167,7 +167,7 @@ class ActionTranslatorTest {
 
     @Test
     void unknownBuildingTypeProducesNoCommand() {
-        var intent = new BuildIntent("444", BuildingType.UNKNOWN,
+        var intent = BuildIntent.of("444", BuildingType.UNKNOWN,
                                     new io.quarkmind.domain.Point2d(0f, 0f));
 
         var commands = ActionTranslator.translate(List.of(intent));
@@ -179,7 +179,7 @@ class ActionTranslatorTest {
     void malformedTagProducesNoCommandAndDoesNotThrow() {
         // Tags must be numeric (Long). A non-numeric tag is logged and skipped —
         // one bad intent must not abort the rest of the frame's dispatch.
-        var intent = new BuildIntent("not-a-number", BuildingType.PYLON,
+        var intent = BuildIntent.of("not-a-number", BuildingType.PYLON,
                                      new io.quarkmind.domain.Point2d(0f, 0f));
 
         var commands = ActionTranslator.translate(List.of(intent));
@@ -189,7 +189,7 @@ class ActionTranslatorTest {
 
     @Test
     void validAndInvalidIntentsMixed_onlyValidOnesProduceCommands() {
-        var valid   = new BuildIntent("100", BuildingType.PYLON,
+        var valid   = BuildIntent.of("100", BuildingType.PYLON,
                                      new io.quarkmind.domain.Point2d(15f, 25f));
         var archon  = new TrainIntent("200", UnitType.ARCHON);         // null ability
         var badTag  = new MoveIntent("oops", new io.quarkmind.domain.Point2d(0f, 0f)); // bad tag

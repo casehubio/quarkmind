@@ -131,7 +131,7 @@ public class EnemyBehavior implements PlayerBehavior {
                         enemy.deductMinerals(bCost);
                         String tag = "ebldg-" + nextTag++;
                         Point2d pos = buildingPosition(pendingBuildings.size());
-                        queue.add(new BuildIntent(tag, prereq, pos));
+                        queue.add(BuildIntent.of(tag, prereq, pos));
                         pendingBuildings.add(prereq);
                         log.debugf("[ENEMY] Queued BuildIntent: %s (prereq for %s)", prereq, target);
                     }
