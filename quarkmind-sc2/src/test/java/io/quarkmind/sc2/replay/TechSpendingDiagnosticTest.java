@@ -469,9 +469,7 @@ class TechSpendingDiagnosticTest {
         emulated.setMineralPatchResources(groundTruth.getMineralPatches());
         emulated.resetForHarness();
 
-        Set<String> reactoredTags = groundTruth.reactoredBuildingTags();
         int cursor = 0;
-        Map<String, BuildingType> injectedBuildings = new HashMap<>();
 
         Set<Integer> checkpointTicks = new HashSet<>();
         for (int cp : CHECKPOINTS_MIN) {
@@ -485,7 +483,6 @@ class TechSpendingDiagnosticTest {
             groundTruth.tick();
 
             GameState gt = groundTruth.snapshot();
-            syncBuildings(emulated, gt, injectedBuildings, reactoredTags);
 
             emulated.processDeferredTrainIntents();
             emulated.processDeferredResearchIntents();
@@ -503,29 +500,6 @@ class TechSpendingDiagnosticTest {
                 gtEcon.put(cpMin, gt.playerEconomy());
                 emEcon.put(cpMin, em.playerEconomy());
             }
-        }
-    }
-
-    private static void syncBuildings(EmulatedGame emulated, GameState gt,
-                                       Map<String, BuildingType> injectedBuildings, Set<String> reactoredTags) {
-        Set<String> gtTags = new HashSet<>();
-        for (Building gtBuilding : gt.myBuildings()) {
-            gtTags.add(gtBuilding.tag());
-            if (!injectedBuildings.containsKey(gtBuilding.tag())) {
-                emulated.injectReplayBuilding(gtBuilding);
-                injectedBuildings.put(gtBuilding.tag(), gtBuilding.type());
-            } else {
-                emulated.syncReplayBuilding(gtBuilding);
-            }
-            if (gtBuilding.isComplete() && reactoredTags.contains(gtBuilding.tag())) {
-                emulated.markBuildingReactored(gtBuilding.tag());
-            }
-        }
-        var destroyed = new ArrayList<>(injectedBuildings.keySet());
-        destroyed.removeAll(gtTags);
-        for (String tag : destroyed) {
-            BuildingType type = injectedBuildings.remove(tag);
-            emulated.removeDestroyedBuilding(tag, type);
         }
     }
 

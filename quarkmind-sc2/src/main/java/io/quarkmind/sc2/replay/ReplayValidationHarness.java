@@ -81,11 +81,7 @@ public final class ReplayValidationHarness {
 
         assertInitialStateMatch(groundTruth.snapshot(), emulated.snapshot(), groundTruth.getClass().getSimpleName());
 
-        Set<String> reactoredTags = (groundTruth instanceof ReplaySimulatedGame rsg)
-                                    ? rsg.reactoredBuildingTags() : Set.of();
-
         int                                 cursor       = 0;
-        Set<String>                         injectedTags = new HashSet<>();
         List<DivergenceReport.TickSnapshot> snapshots    = new ArrayList<>(Math.min(tickLimit, 10000));
 
         for (int tick = 0; tick < tickLimit && !groundTruth.isComplete(); tick++) {
@@ -98,7 +94,6 @@ public final class ReplayValidationHarness {
             groundTruth.tick();
 
             GameState gt = groundTruth.snapshot();
-            syncBuildings(emulated, gt, injectedTags, reactoredTags);
 
             if (gt.supply() > 0) {
                 emulated.setSupplyCapForHarness(gt.supply());
@@ -197,20 +192,6 @@ public final class ReplayValidationHarness {
             // fall through to default
         }
         return Race.PROTOSS;
-    }
-
-    private static void syncBuildings(EmulatedGame emulated, GameState gt, Set<String> injectedTags, Set<String> reactoredTags) {
-        for (Building gtBuilding : gt.myBuildings()) {
-            if (!injectedTags.contains(gtBuilding.tag())) {
-                emulated.injectReplayBuilding(gtBuilding);
-                injectedTags.add(gtBuilding.tag());
-            } else {
-                emulated.syncReplayBuilding(gtBuilding);
-            }
-            if (gtBuilding.isComplete() && reactoredTags.contains(gtBuilding.tag())) {
-                emulated.markBuildingReactored(gtBuilding.tag());
-            }
-        }
     }
 
     /** Counts worker units per base, assigning each to its nearest complete town hall. */
