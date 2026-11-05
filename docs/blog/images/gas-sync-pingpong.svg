@@ -1,0 +1,70 @@
+<svg viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;font-family:system-ui,sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#475569"/></marker>
+    <marker id="arr-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#dc2626"/></marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="410" y="28" text-anchor="middle" font-size="15" fill="#1e293b" font-weight="700">Gas Worker Sync Oscillation</text>
+  <text x="410" y="48" text-anchor="middle" font-size="11" fill="#94a3b8">Workers never complete a full harvest cycle</text>
+
+  <!-- Buildings -->
+  <rect x="30" y="120" width="100" height="60" rx="8" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="80" y="148" text-anchor="middle" font-size="11" fill="#0c4a6e" font-weight="600">Town Hall</text>
+  <text x="80" y="164" text-anchor="middle" font-size="10" fill="#0369a1">drop-off</text>
+
+  <rect x="690" y="120" width="100" height="60" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="740" y="148" text-anchor="middle" font-size="11" fill="#14532d" font-weight="600">Gas Building</text>
+  <text x="740" y="164" text-anchor="middle" font-size="10" fill="#166534">harvest site</text>
+
+  <!-- Distance annotation -->
+  <line x1="130" y1="100" x2="690" y2="100" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="410" y="95" text-anchor="middle" font-size="10" fill="#94a3b8">8-10 game units apart</text>
+
+  <!-- Sync radius -->
+  <circle cx="740" cy="150" r="55" fill="none" stroke="#16a34a" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="740" y="220" text-anchor="middle" font-size="10" fill="#16a34a">sync radius: 2.0</text>
+
+  <!-- Timeline -->
+  <line x1="60" y1="260" x2="760" y2="260" stroke="#475569" stroke-width="1.5"/>
+  <text x="410" y="252" text-anchor="middle" font-size="11" fill="#64748b" font-weight="600">Time</text>
+
+  <!-- Phase 1: Worker at gas -->
+  <rect x="80" y="270" width="120" height="40" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+  <text x="140" y="286" text-anchor="middle" font-size="10" fill="#14532d" font-weight="600">Worker at gas</text>
+  <text x="140" y="300" text-anchor="middle" font-size="9" fill="#166534">count = 3, within 2.0</text>
+
+  <!-- Phase 2: Worker returns -->
+  <rect x="220" y="270" width="120" height="40" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+  <text x="280" y="286" text-anchor="middle" font-size="10" fill="#92400e" font-weight="600">Worker leaves</text>
+  <text x="280" y="300" text-anchor="middle" font-size="9" fill="#a16207">walks to Town Hall</text>
+
+  <!-- Phase 3: Sync removes -->
+  <rect x="360" y="270" width="120" height="40" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="420" y="286" text-anchor="middle" font-size="10" fill="#991b1b" font-weight="600">Sync fires</text>
+  <text x="420" y="300" text-anchor="middle" font-size="9" fill="#dc2626">count drops to 2, remove!</text>
+
+  <!-- Phase 4: Worker returns -->
+  <rect x="500" y="270" width="120" height="40" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+  <text x="560" y="286" text-anchor="middle" font-size="10" fill="#92400e" font-weight="600">Worker returns</text>
+  <text x="560" y="300" text-anchor="middle" font-size="9" fill="#a16207">count back to 3</text>
+
+  <!-- Phase 5: Sync adds new -->
+  <rect x="640" y="270" width="120" height="40" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="700" y="286" text-anchor="middle" font-size="10" fill="#991b1b" font-weight="600">Sync adds new</text>
+  <text x="700" y="300" text-anchor="middle" font-size="9" fill="#dc2626">spawns at minerals!</text>
+
+  <!-- Arrows between phases -->
+  <line x1="200" y1="290" x2="215" y2="290" stroke="#475569" stroke-width="1" marker-end="url(#arr)"/>
+  <line x1="340" y1="290" x2="355" y2="290" stroke="#dc2626" stroke-width="1" marker-end="url(#arr-red)"/>
+  <line x1="480" y1="290" x2="495" y2="290" stroke="#475569" stroke-width="1" marker-end="url(#arr)"/>
+  <line x1="620" y1="290" x2="635" y2="290" stroke="#dc2626" stroke-width="1" marker-end="url(#arr-red)"/>
+
+  <!-- Loop arrow -->
+  <path d="M 700 310 L 700 340 L 140 340 L 140 310" stroke="#dc2626" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arr-red)"/>
+  <text x="420" y="355" text-anchor="middle" font-size="11" fill="#dc2626" font-weight="600">Repeats every tick: gas income collapses to near zero</text>
+
+  <!-- Result box -->
+  <rect x="200" y="65" width="400" height="30" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="400" y="85" text-anchor="middle" font-size="12" fill="#991b1b" font-weight="600">New worker must walk from minerals to gas: never completes harvest</text>
+</svg>
