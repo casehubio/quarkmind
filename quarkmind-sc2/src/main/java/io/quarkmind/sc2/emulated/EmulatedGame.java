@@ -475,17 +475,11 @@ public class EmulatedGame {
 
             state.deductMinerals(mCost);
             state.deductVespene(gCost);
-            if (state == friendly) {
-                economyTracker.recordTrainSpending(t.unitType(), mCost, gCost);
-            }
         } else {
             final int mCost = SC2Data.mineralCost(t.unitType());
             final int gCost = SC2Data.gasCost(t.unitType());
             state.deductMinerals(mCost);
             state.deductVespene(gCost);
-            if (state == friendly) {
-                economyTracker.recordTrainSpending(t.unitType(), mCost, gCost);
-            }
         }
 
         final boolean         parallel      = model != null && model.parallelProduction();
@@ -644,6 +638,9 @@ public class EmulatedGame {
                 && !physics.buildingTrainingUntil.containsKey(buildingTag)
                 && !physics.buildingTrainingUntil2.containsKey(buildingTag)) {
                 physics.buildingCompletionAtLoop.remove(buildingTag);
+            }
+            if (!isEnemy) {
+                economyTracker.recordTrainSpending(unitType, SC2Data.mineralCost(unitType) * spawnCount, SC2Data.gasCost(unitType) * spawnCount);
             }
             for (int i = 0; i < spawnCount; i++) {
                 final String tag = (replayUnitTag != null && i == 0) ? replayUnitTag : nextTagString();
@@ -1033,26 +1030,24 @@ public class EmulatedGame {
             }
             state.deductMinerals(mCost);
             state.deductVespene(gCost);
-            if (state == friendly) {
-                economyTracker.recordResearchSpending(mCost, gCost);
-            }
         } else {
             int mCost = SC2Data.upgradeMineralCost(r.upgradeType());
             int gCost = SC2Data.upgradeVespeneCost(r.upgradeType());
             state.deductMinerals(mCost);
             state.deductVespene(gCost);
-            if (state == friendly) {
-                economyTracker.recordResearchSpending(mCost, gCost);
-            }
         }
         int  durationLoops  = SC2Data.upgradeTimeInLoops(r.upgradeType());
         long effectiveStart = (r.commandLoop() >= 0) ? r.commandLoop() : absLoop;
         long completionLoop = effectiveStart + durationLoops;
         long completionTick = completionLoop / SC2Data.LOOPS_PER_TICK;
+        final boolean isFriendly = (state == friendly);
         physics.buildingResearching.put(resolvedTag, r.upgradeType());
         physics.buildingResearchUntil.put(resolvedTag, completionLoop);
         physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completionTick, () -> {
             state.completeUpgrade(r.upgradeType());
+            if (isFriendly) {
+                economyTracker.recordResearchSpending(SC2Data.upgradeMineralCost(r.upgradeType()), SC2Data.upgradeVespeneCost(r.upgradeType()));
+            }
             physics.buildingResearching.remove(resolvedTag);
             physics.buildingResearchUntil.remove(resolvedTag);
             log.debugf("[EMULATED] Research complete — %s", r.upgradeType());
@@ -1172,12 +1167,24 @@ public class EmulatedGame {
             if (state == friendly) {
                 economyTracker.recordMorphSpending(targetUnit, mCost, gCost);
             }
+            state.removeUnit(source.tag());
+            String tag = nextTagString();
+            int    hp  = SC2Data.maxHealth(targetUnit);
+            state.addUnit(new Unit(tag, targetUnit, source.position(), hp, hp, 0, 0, 0, 0));
+            log.debugf("[EMULATED] Unit morph %s → %s (tag=%s)", m.sourceName(), m.targetName(), tag);
+        } else {
+            if (state == friendly) {
+                int mCost = SC2Data.mineralCost(targetUnit);
+                int gCost = SC2Data.gasCost(targetUnit);
+                economyTracker.recordMorphSpending(targetUnit, mCost, gCost);
+            }
+            int hp = SC2Data.maxHealth(targetUnit);
+            final String sourceTag = source.tag();
+            state.replaceAllUnits(u -> u.tag().equals(sourceTag)
+                ? new Unit(u.tag(), targetUnit, u.position(), hp, hp, 0, 0, 0, 0)
+                : u);
+            log.debugf("[EMULATED] Unit morph %s → %s (tag=%s, tracker-driven)", m.sourceName(), m.targetName(), sourceTag);
         }
-        state.removeUnit(source.tag());
-        String tag = nextTagString();
-        int    hp  = SC2Data.maxHealth(targetUnit);
-        state.addUnit(new Unit(tag, targetUnit, source.position(), hp, hp, 0, 0, 0, 0));
-        log.debugf("[EMULATED] Unit morph %s → %s (tag=%s)", m.sourceName(), m.targetName(), tag);
     }
 
 
@@ -1597,8 +1604,8 @@ public class EmulatedGame {
 
     public void injectReplayBuilding(Building building) {
         friendly.addBuilding(building);
-        economyTracker.recordBuildSpending(building.type(), SC2Data.mineralCost(building.type()), SC2Data.gasCost(building.type()));
         if (building.isComplete()) {
+            economyTracker.recordBuildSpending(building.type(), SC2Data.mineralCost(building.type()), SC2Data.gasCost(building.type()));
             friendly.addSupply(SC2Data.supplyBonus(building.type()));
             if (playerRaceModel != null) {
                 if (playerRaceModel.townHallTypes().contains(building.type())) {
@@ -1671,6 +1678,7 @@ public class EmulatedGame {
         if (gtBuilding.isComplete()) {
             if (wasIncomplete) {
                 friendly.addSupply(SC2Data.supplyBonus(gtBuilding.type()));
+                economyTracker.recordBuildSpending(gtBuilding.type(), SC2Data.mineralCost(gtBuilding.type()), SC2Data.gasCost(gtBuilding.type()));
             }
             if (playerRaceModel != null) {
                 playerRaceModel.onBuildingComplete(friendly, gtBuilding.type(), gtBuilding.tag());
@@ -1687,6 +1695,23 @@ public class EmulatedGame {
                 }
             }
         }
+    }
+
+    public TechSpendingBreakdown techSpendingBreakdown() {
+        var bd = economyTracker.techSpendingBreakdown();
+        return new TechSpendingBreakdown(bd.buildSpending(), bd.morphSpending(),
+                                         bd.destroySubtractions(), bd.researchMinerals(), bd.researchVespene());
+    }
+
+    public record TechSpendingBreakdown(
+            Map<BuildingType, int[]> buildSpending,
+            Map<BuildingType, int[]> morphSpending,
+            Map<BuildingType, int[]> destroySubtractions,
+            int researchMinerals, int researchVespene) {
+    }
+
+    public static boolean isEconomyBuilding(BuildingType type) {
+        return EconomyTracker.isEconomyBuilding(type);
     }
 
 

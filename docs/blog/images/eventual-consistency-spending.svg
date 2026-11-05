@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#555"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="720" height="340" fill="#fafafa" rx="4"/>
+
+  <!-- Title -->
+  <text x="360" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#222">Three Counters, One Building</text>
+
+  <!-- Timeline axis -->
+  <line x1="60" y1="280" x2="680" y2="280" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="690" y="284" font-size="11" fill="#888">game loops</text>
+
+  <!-- Time markers -->
+  <line x1="140" y1="275" x2="140" y2="285" stroke="#bbb"/>
+  <text x="140" y="300" text-anchor="middle" font-size="10" fill="#888">Order placed</text>
+
+  <line x1="360" y1="275" x2="360" y2="285" stroke="#bbb"/>
+  <text x="360" y="300" text-anchor="middle" font-size="10" fill="#888">Construction</text>
+
+  <line x1="520" y1="275" x2="520" y2="285" stroke="#bbb"/>
+  <text x="520" y="300" text-anchor="middle" font-size="10" fill="#888">Complete</text>
+
+  <!-- PlayerStatsEvent ticks -->
+  <g fill="#d4a" opacity="0.3">
+    <rect x="100" y="46" width="2" height="228"/>
+    <rect x="210" y="46" width="2" height="228"/>
+    <rect x="320" y="46" width="2" height="228"/>
+    <rect x="430" y="46" width="2" height="228"/>
+    <rect x="540" y="46" width="2" height="228"/>
+    <rect x="650" y="46" width="2" height="228"/>
+  </g>
+  <text x="655" y="42" font-size="9" fill="#d4a">PlayerStatsEvent (~10s intervals)</text>
+
+  <!-- InProgress bar -->
+  <rect x="140" y="70" width="380" height="28" rx="3" fill="#f0c040" opacity="0.7"/>
+  <text x="330" y="89" text-anchor="middle" font-size="12" font-weight="500" fill="#6a5000">InProgress</text>
+  <text x="60" y="89" text-anchor="end" font-size="11" fill="#666">minerals</text>
+
+  <!-- Current bar -->
+  <rect x="520" y="120" width="140" height="28" rx="3" fill="#4a9" opacity="0.7"/>
+  <text x="590" y="139" text-anchor="middle" font-size="12" font-weight="500" fill="#1a5540">Current</text>
+
+  <!-- Our recording point -->
+  <circle cx="140" cy="195" r="6" fill="#e44" stroke="#fff" stroke-width="2"/>
+  <text x="155" y="199" font-size="12" font-weight="500" fill="#c33">Our model records here</text>
+
+  <!-- GT recording point -->
+  <circle cx="540" cy="195" r="6" fill="#48a" stroke="#fff" stroke-width="2"/>
+  <text x="555" y="199" font-size="12" font-weight="500" fill="#48a">GT reports here</text>
+
+  <!-- Gap annotation -->
+  <line x1="140" y1="225" x2="540" y2="225" stroke="#e44" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="340" y="245" text-anchor="middle" font-size="12" fill="#c33">← gap: we count it, GT doesn't (yet) →</text>
+
+  <!-- Legend -->
+  <rect x="60" y="315" width="12" height="12" rx="2" fill="#f0c040" opacity="0.7"/>
+  <text x="78" y="326" font-size="11" fill="#666">SC2 InProgress counter</text>
+  <rect x="240" y="315" width="12" height="12" rx="2" fill="#4a9" opacity="0.7"/>
+  <text x="258" y="326" font-size="11" fill="#666">SC2 Current counter</text>
+  <rect x="430" y="315" width="12" height="12" rx="2" fill="#d4a" opacity="0.3"/>
+  <text x="448" y="326" font-size="11" fill="#666">PlayerStatsEvent updates</text>
+</svg>

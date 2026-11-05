@@ -55,9 +55,12 @@ public final class Sc2ReplayShared {
         // Zerg
         "Hatchery", "Lair", "Hive", "SpawningPool", "EvolutionChamber",
         "RoachWarren", "BanelingNest", "SpineCrawler", "SpineCrawlerUprooted",
-        "SporeCrawler", "SporeCrawlerUprooted", "HydraliskDen", "LurkerDen",
+        "SporeCrawler", "SporeCrawlerUprooted", "HydraliskDen", "LurkerDen", "LurkerDenMP",
         "InfestationPit", "Spire", "GreaterSpire", "NydusNetwork", "NydusCanal",
-        "UltraliskCavern", "Extractor"
+        "UltraliskCavern", "Extractor",
+        // Ability-placed structures
+        "CreepTumor", "CreepTumorQueen", "CreepTumorBurrowed",
+        "OracleStasisTrap", "AssimilatorRich"
     );
 
     public static UnitType toUnitType(String name) {
@@ -200,6 +203,12 @@ public final class Sc2ReplayShared {
             case "NydusCanal"                     -> BuildingType.NYDUS_CANAL;
             case "UltraliskCavern"                -> BuildingType.ULTRALISK_CAVERN;
             case "Extractor"                      -> BuildingType.EXTRACTOR;
+            case "CreepTumor",
+                 "CreepTumorBurrowed"             -> BuildingType.CREEP_TUMOR;
+            case "CreepTumorQueen"                -> BuildingType.CREEP_TUMOR_QUEEN;
+            case "OracleStasisTrap"               -> BuildingType.ORACLE_STASIS_TRAP;
+            case "AssimilatorRich"                 -> BuildingType.ASSIMILATOR_RICH;
+            case "LurkerDenMP"                    -> BuildingType.LURKER_DEN;
             default                               -> BuildingType.UNKNOWN;
         };
     }

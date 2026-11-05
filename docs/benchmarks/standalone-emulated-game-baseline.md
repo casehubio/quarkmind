@@ -1,4 +1,4 @@
-# Standalone EmulatedGame Accuracy Baseline — 2026-11-04
+# Standalone EmulatedGame Accuracy Baseline — 2026-11-05
 
 **Dataset:** Oracle (118 replays, v4.9.3)
 **Processed:** 118 replays, 236 player runs
@@ -50,9 +50,9 @@ Accuracy: 100.0% (0/0)
 | foodMade | 4579 | 4619 | 40 | 0.9% |
 | foodUsed | 3338 | 3476 | 140 | 4.2% |
 | workersActiveCount | 3162 | 3286 | 124 | 3.9% |
-| mineralsUsedCurrentArmy | 0 | 14200 | 14200 | 0.0% |
-| mineralsUsedCurrentEconomy | 266325 | 286825 | 27100 | 10.2% |
-| mineralsUsedCurrentTechnology | 0 | 25100 | 25100 | 0.0% |
+| mineralsUsedCurrentArmy | 0 | 0 | 0 | 0.0% |
+| mineralsUsedCurrentEconomy | 266325 | 269350 | 3925 | 1.5% |
+| mineralsUsedCurrentTechnology | 0 | 0 | 0 | 0.0% |
 | vespeneUsedCurrentArmy | 0 | 0 | 0 | 0.0% |
 | vespeneUsedCurrentEconomy | 0 | 0 | 0 | 0.0% |
 | vespeneUsedCurrentTechnology | 0 | 0 | 0 | 0.0% |
@@ -112,7 +112,7 @@ Accuracy: 100.0% (0/0)
 | BANELING_NEST | 1 | 1 | 100.0% |
 | SPINE_CRAWLER | 2 | 2 | 100.0% |
 | EXTRACTOR | 68 | 68 | 100.0% |
-| UNKNOWN | 4 | 4 | 100.0% |
+| CREEP_TUMOR_QUEEN | 4 | 4 | 100.0% |
 | **TOTAL** | 1312 | 1312 | **100.0%** |
 
 ### Upgrades
@@ -135,12 +135,12 @@ Accuracy: 100.0% (4/4)
 | foodMade | 7024 | 7050 | 94 | 1.3% |
 | foodUsed | 5153 | 5297 | 166 | 3.2% |
 | workersActiveCount | 4000 | 4103 | 105 | 2.6% |
-| mineralsUsedCurrentArmy | 36875 | 79175 | 42300 | 114.7% |
-| mineralsUsedCurrentEconomy | 385100 | 386675 | 36925 | 9.6% |
-| mineralsUsedCurrentTechnology | 63850 | 95625 | 34275 | 53.7% |
-| vespeneUsedCurrentArmy | 4450 | 8000 | 3550 | 79.8% |
+| mineralsUsedCurrentArmy | 36875 | 38200 | 1925 | 5.2% |
+| mineralsUsedCurrentEconomy | 385100 | 373050 | 15650 | 4.1% |
+| mineralsUsedCurrentTechnology | 63850 | 65600 | 10050 | 15.7% |
+| vespeneUsedCurrentArmy | 4450 | 4600 | 200 | 4.5% |
 | vespeneUsedCurrentEconomy | 0 | 0 | 0 | 0.0% |
-| vespeneUsedCurrentTechnology | 5100 | 14250 | 10500 | 205.9% |
+| vespeneUsedCurrentTechnology | 5100 | 3900 | 3050 | 59.8% |
 
 ## 5-minute checkpoint
 
@@ -218,8 +218,10 @@ Accuracy: 100.0% (4/4)
 | HYDRALISK_DEN | 1 | 1 | 100.0% |
 | INFESTATION_PIT | 1 | 1 | 100.0% |
 | EXTRACTOR | 114 | 114 | 100.0% |
-| UNKNOWN | 218 | 218 | 100.0% |
-| **TOTAL** | 2255 | 2255 | **100.0%** |
+| CREEP_TUMOR | 41 | 41 | 100.0% |
+| CREEP_TUMOR_QUEEN | 69 | 69 | 100.0% |
+| ORACLE_STASIS_TRAP | 1 | 1 | 100.0% |
+| **TOTAL** | 2148 | 2148 | **100.0%** |
 
 ### Upgrades
 
@@ -245,19 +247,19 @@ Accuracy: 100.0% (103/103)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 66699 | -153555 | 221224 | 331.7% |
+| mineralsCurrent | 66699 | -153500 | 221169 | 331.6% |
 | vespeneCurrent | 43390 | 51316 | 24412 | 56.3% |
-| mineralsCollectionRate | 208770 | 174609 | 47767 | 22.9% |
+| mineralsCollectionRate | 208770 | 174760 | 47786 | 22.9% |
 | vespeneCollectionRate | 50869 | 42250 | 12985 | 25.5% |
 | foodMade | 9520 | 9581 | 247 | 2.6% |
-| foodUsed | 7488 | 7864 | 522 | 7.0% |
-| workersActiveCount | 4907 | 5084 | 219 | 4.5% |
-| mineralsUsedCurrentArmy | 108250 | 174250 | 67700 | 62.5% |
-| mineralsUsedCurrentEconomy | 478750 | 461875 | 49175 | 10.3% |
-| mineralsUsedCurrentTechnology | 119150 | 192650 | 75350 | 63.2% |
-| vespeneUsedCurrentArmy | 24475 | 35375 | 14300 | 58.4% |
+| foodUsed | 7488 | 7874 | 532 | 7.1% |
+| workersActiveCount | 4907 | 5094 | 229 | 4.7% |
+| mineralsUsedCurrentArmy | 108250 | 110175 | 11225 | 10.4% |
+| mineralsUsedCurrentEconomy | 478750 | 465000 | 22400 | 4.7% |
+| mineralsUsedCurrentTechnology | 119150 | 136425 | 28525 | 23.9% |
+| vespeneUsedCurrentArmy | 24475 | 24775 | 5200 | 21.2% |
 | vespeneUsedCurrentEconomy | 150 | 0 | 150 | 100.0% |
-| vespeneUsedCurrentTechnology | 25075 | 39325 | 20700 | 82.6% |
+| vespeneUsedCurrentTechnology | 25075 | 26350 | 14325 | 57.1% |
 
 ## 7-minute checkpoint
 
@@ -348,8 +350,9 @@ Accuracy: 100.0% (103/103)
 | NYDUS_NETWORK | 4 | 4 | 100.0% |
 | NYDUS_CANAL | 1 | 1 | 100.0% |
 | EXTRACTOR | 162 | 162 | 100.0% |
-| UNKNOWN | 506 | 506 | 100.0% |
-| **TOTAL** | 2938 | 2938 | **100.0%** |
+| CREEP_TUMOR | 152 | 152 | 100.0% |
+| CREEP_TUMOR_QUEEN | 115 | 115 | 100.0% |
+| **TOTAL** | 2699 | 2699 | **100.0%** |
 
 ### Upgrades
 
@@ -390,17 +393,17 @@ Accuracy: 100.0% (185/185)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 89788 | -203725 | 295043 | 328.6% |
-| vespeneCurrent | 52228 | 40236 | 34082 | 65.3% |
-| mineralsCollectionRate | 201496 | 145096 | 67626 | 33.6% |
-| vespeneCollectionRate | 61091 | 41477 | 23166 | 37.9% |
+| mineralsCurrent | 89788 | -203425 | 294743 | 328.3% |
+| vespeneCurrent | 52228 | 40532 | 34290 | 65.7% |
+| mineralsCollectionRate | 201496 | 145346 | 67564 | 33.5% |
+| vespeneCollectionRate | 61091 | 41726 | 22983 | 37.6% |
 | foodMade | 11184 | 11035 | 351 | 3.1% |
-| foodUsed | 9017 | 9281 | 462 | 5.1% |
-| workersActiveCount | 5004 | 5241 | 261 | 5.2% |
-| mineralsUsedCurrentArmy | 175225 | 247835 | 73610 | 42.0% |
-| mineralsUsedCurrentEconomy | 506875 | 471200 | 53425 | 10.5% |
-| mineralsUsedCurrentTechnology | 148600 | 253125 | 107725 | 72.5% |
-| vespeneUsedCurrentArmy | 57400 | 67825 | 14875 | 25.9% |
+| foodUsed | 9017 | 9336 | 481 | 5.3% |
+| workersActiveCount | 5004 | 5280 | 300 | 6.0% |
+| mineralsUsedCurrentArmy | 175225 | 171175 | 14450 | 8.2% |
+| mineralsUsedCurrentEconomy | 506875 | 490350 | 25425 | 5.0% |
+| mineralsUsedCurrentTechnology | 148600 | 172100 | 44800 | 30.1% |
+| vespeneUsedCurrentArmy | 57400 | 54100 | 6950 | 12.1% |
 | vespeneUsedCurrentEconomy | 50 | 0 | 50 | 100.0% |
-| vespeneUsedCurrentTechnology | 37950 | 60625 | 29025 | 76.5% |
+| vespeneUsedCurrentTechnology | 37950 | 45450 | 18150 | 47.8% |
 

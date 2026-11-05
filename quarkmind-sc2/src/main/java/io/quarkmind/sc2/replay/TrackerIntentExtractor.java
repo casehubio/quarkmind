@@ -16,6 +16,7 @@ import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.UpgradeType;
 import io.quarkmind.sc2.SelectionState;
 import io.quarkmind.sc2.intent.AbilityIntent;
+import io.quarkmind.sc2.intent.MorphIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
@@ -140,7 +141,12 @@ public final class TrackerIntentExtractor {
                     if (newTypeObj == null) {continue;}
                     UnitType newType = Sc2ReplayShared.toUnitType(String.valueOf(newTypeObj).trim());
                     if (newType != UnitType.UNKNOWN) {
-                        unitTagToType.put(compositeTag, newType);
+                        UnitType oldType = unitTagToType.put(compositeTag, newType);
+                        if (oldType != null && SC2Data.morphSourceType(newType) != null) {
+                            String unitTag = "r-" + tagIndex + "-" + tagRecycle;
+                            intents.add(new TimedIntent(raw.getLoop(),
+                                new MorphIntent(unitTag, oldType.name(), newType.name())));
+                        }
                     }
                 }
                 case ITrackerEvents.ID_UPGRADE -> {

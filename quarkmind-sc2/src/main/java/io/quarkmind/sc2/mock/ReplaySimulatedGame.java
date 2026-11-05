@@ -279,7 +279,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
                 reactoredBuildingTags.add(parentTag);
             }
         }
-        if (ctrlId == watchedPlayerId) {
+        if (ctrlId == watchedPlayerId && Sc2ReplayShared.BUILDING_NAMES.contains(unitName)) {
             Building b = new Building(tag, bt, pos, defaultBuildingHealth(bt), defaultBuildingHealth(bt), false);
             pendingBuildings.put(tag, b);
             addBuilding(b);

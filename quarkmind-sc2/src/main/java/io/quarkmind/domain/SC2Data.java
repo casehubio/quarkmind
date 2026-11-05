@@ -368,7 +368,7 @@ public final class SC2Data {
             case SPINE_CRAWLER     -> 800;  // empirical (47 obs, AI Arena replays)
             case SPORE_CRAWLER     -> 480;  // empirical (15 obs, AI Arena replays)
             case HYDRALISK_DEN     -> 640;  // empirical (3 obs, AI Arena replays)
-            case LURKER_DEN        -> 1254; // estimate: 57 × 22
+            case LURKER_DEN        -> 1280; // calibrated: oracle 3 obs
             case INFESTATION_PIT   -> 800;  // empirical (6 obs, AI Arena replays)
             case SPIRE             -> 1600; // empirical (3 obs, AI Arena replays)
             case GREATER_SPIRE     -> 1562; // estimate: 71 × 22
@@ -376,7 +376,8 @@ public final class SC2Data {
             case NYDUS_CANAL       -> 242;  // estimate: 11 × 22
             case ULTRALISK_CAVERN  -> 1012; // estimate: 46 × 22
             case EXTRACTOR         -> 480;  // empirical (67 obs, AI Arena replays)
-            case CREEP_TUMOR, CREEP_TUMOR_QUEEN -> 224; // estimate: ~10s
+            case CREEP_TUMOR       -> 279; // calibrated: oracle 639 obs
+            case CREEP_TUMOR_QUEEN -> 240; // calibrated: oracle
             case ORACLE_STASIS_TRAP -> 67;              // estimate: ~3s
             case ASSIMILATOR_RICH  -> 480;              // same as ASSIMILATOR
             case UNKNOWN           -> 880;              // estimate: 40 × 22
@@ -599,7 +600,7 @@ public final class SC2Data {
         map.put(UnitType.CARRIER,            new UnitCosts(350, 250, 6));
         map.put(UnitType.DARK_TEMPLAR,       new UnitCosts(125, 125, 2));
         map.put(UnitType.HIGH_TEMPLAR,       new UnitCosts( 50, 150, 2));
-        map.put(UnitType.ARCHON,             new UnitCosts(  0,   0, 0));
+        map.put(UnitType.ARCHON,             new UnitCosts(  0,   0, 4));
         map.put(UnitType.OBSERVER,           new UnitCosts( 25,  75, 1));
         map.put(UnitType.VOID_RAY,           new UnitCosts(250, 150, 4));
         map.put(UnitType.ADEPT,              new UnitCosts(100,  25, 2));
@@ -691,6 +692,17 @@ public final class SC2Data {
                  INFESTATION_PIT, SPIRE, GREATER_SPIRE, NYDUS_NETWORK, NYDUS_CANAL,
                  ULTRALISK_CAVERN, EXTRACTOR,
                  CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP, UNKNOWN -> 0;
+        };
+    }
+
+    public static UnitType morphSourceType(UnitType morphedType) {
+        return switch (morphedType) {
+            case BANELING -> UnitType.ZERGLING;
+            case RAVAGER -> UnitType.ROACH;
+            case BROOD_LORD -> UnitType.CORRUPTOR;
+            case LURKER -> UnitType.HYDRALISK;
+            case OVERSEER -> UnitType.OVERLORD;
+            default -> null;
         };
     }
 
@@ -1012,7 +1024,7 @@ public final class SC2Data {
             case CREEP_TUMOR, CREEP_TUMOR_QUEEN -> 0;
             case ORACLE_STASIS_TRAP -> 0;
             case ASSIMILATOR_RICH   -> 75;
-            case UNKNOWN            -> 100;
+            case UNKNOWN            -> 0;
         };
     }
 

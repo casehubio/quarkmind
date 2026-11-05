@@ -533,7 +533,7 @@ class SC2DataTest {
         assertCosts(UnitType.CARRIER,           350, 250, 6);
         assertCosts(UnitType.DARK_TEMPLAR,      125, 125, 2);
         assertCosts(UnitType.HIGH_TEMPLAR,       50, 150, 2);
-        assertCosts(UnitType.ARCHON,              0,   0, 0);
+        assertCosts(UnitType.ARCHON,              0,   0, 4);
         assertCosts(UnitType.OBSERVER,           25,  75, 1);
         assertCosts(UnitType.VOID_RAY,          250, 150, 4);
         assertCosts(UnitType.ADEPT,             100,  25, 2);
@@ -713,6 +713,38 @@ class SC2DataTest {
     void techTier_cyberneticsCore_returnsTier1() {
         assertThat(SC2Data.techTier(BuildingType.CYBERNETICS_CORE))
                 .isPresent().hasValue(1);
+    }
+
+    @Test
+    void morphSourceType_banelingFromZergling() {
+        assertThat(SC2Data.morphSourceType(UnitType.BANELING)).isEqualTo(UnitType.ZERGLING);
+    }
+
+    @Test
+    void morphSourceType_ravagerFromRoach() {
+        assertThat(SC2Data.morphSourceType(UnitType.RAVAGER)).isEqualTo(UnitType.ROACH);
+    }
+
+    @Test
+    void morphSourceType_broodLordFromCorruptor() {
+        assertThat(SC2Data.morphSourceType(UnitType.BROOD_LORD)).isEqualTo(UnitType.CORRUPTOR);
+    }
+
+    @Test
+    void morphSourceType_lurkerFromHydralisk() {
+        assertThat(SC2Data.morphSourceType(UnitType.LURKER)).isEqualTo(UnitType.HYDRALISK);
+    }
+
+    @Test
+    void morphSourceType_overseerFromOverlord() {
+        assertThat(SC2Data.morphSourceType(UnitType.OVERSEER)).isEqualTo(UnitType.OVERLORD);
+    }
+
+    @Test
+    void morphSourceType_nonMorphReturnsNull() {
+        assertThat(SC2Data.morphSourceType(UnitType.MARINE)).isNull();
+        assertThat(SC2Data.morphSourceType(UnitType.ZERGLING)).isNull();
+        assertThat(SC2Data.morphSourceType(UnitType.HELLBAT)).isNull();
     }
 
     @Test

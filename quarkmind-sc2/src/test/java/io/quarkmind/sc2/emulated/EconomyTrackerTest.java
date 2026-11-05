@@ -108,6 +108,29 @@ class EconomyTrackerTest {
     }
 
     @Test
+    void overlordTrainSpendingGoesToEconomy() {
+        var tracker = new EconomyTracker();
+        tracker.recordTrainSpending(UnitType.OVERLORD, 100, 0);
+
+        var stats = tracker.currentStats(0, 0, 22, 14, 12);
+        assertThat(stats.mineralsUsedCurrentEconomy()).isEqualTo(100);
+        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(0);
+    }
+
+    @Test
+    void overseerDeathSubtractsFromEconomy() {
+        var tracker = new EconomyTracker();
+        tracker.recordTrainSpending(UnitType.OVERLORD, 100, 0);
+        tracker.recordMorphSpending(UnitType.OVERSEER, 50, 50);
+
+        tracker.recordUnitDeath(UnitType.OVERSEER);
+
+        var stats = tracker.currentStats(0, 0, 22, 14, 12);
+        assertThat(stats.mineralsUsedCurrentEconomy()).isEqualTo(0);
+        assertThat(stats.vespeneUsedCurrentEconomy()).isEqualTo(0);
+    }
+
+    @Test
     void tracksUnitMorphSpendingAsArmy() {
         var tracker = new EconomyTracker();
         tracker.recordMorphSpending(UnitType.BANELING, 25, 25);
@@ -115,6 +138,45 @@ class EconomyTrackerTest {
         var stats = tracker.currentStats(200, 100, 23, 14, 12);
         assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(25);
         assertThat(stats.vespeneUsedCurrentArmy()).isEqualTo(25);
+    }
+
+    @Test
+    void unitDeathOfMorphedUnitSubtractsTotalInvestment() {
+        var tracker = new EconomyTracker();
+        tracker.recordTrainSpending(UnitType.ZERGLING, 25, 0);
+        tracker.recordMorphSpending(UnitType.BANELING, 25, 25);
+
+        var before = tracker.currentStats(0, 0, 15, 6, 12);
+        assertThat(before.mineralsUsedCurrentArmy()).isEqualTo(50);
+        assertThat(before.vespeneUsedCurrentArmy()).isEqualTo(25);
+
+        tracker.recordUnitDeath(UnitType.BANELING);
+
+        var after = tracker.currentStats(0, 0, 15, 6, 12);
+        assertThat(after.mineralsUsedCurrentArmy()).isEqualTo(0);
+        assertThat(after.vespeneUsedCurrentArmy()).isEqualTo(0);
+    }
+
+    @Test
+    void unitDeathOfNonMorphedUnitSubtractsOnlyBaseCost() {
+        var tracker = new EconomyTracker();
+        tracker.recordTrainSpending(UnitType.MARINE, 50, 0);
+        tracker.recordTrainSpending(UnitType.MARINE, 50, 0);
+
+        tracker.recordUnitDeath(UnitType.MARINE);
+
+        var stats = tracker.currentStats(0, 0, 15, 6, 12);
+        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(50);
+    }
+
+    @Test
+    void morphDeathNeverGoesNegative() {
+        var tracker = new EconomyTracker();
+        tracker.recordUnitDeath(UnitType.BANELING);
+
+        var stats = tracker.currentStats(0, 0, 15, 6, 12);
+        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(0);
+        assertThat(stats.vespeneUsedCurrentArmy()).isEqualTo(0);
     }
 
     @Test

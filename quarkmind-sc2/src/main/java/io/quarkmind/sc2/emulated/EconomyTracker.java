@@ -5,6 +5,10 @@ import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
+
 class EconomyTracker {
 
     private int mineralsUsedArmy;
@@ -13,6 +17,12 @@ class EconomyTracker {
     private int vespeneUsedEconomy;
     private int mineralsUsedTechnology;
     private int vespeneUsedTechnology;
+    private final Map<BuildingType, int[]> techBuildSpending       = new EnumMap<>(BuildingType.class);
+    private final Map<BuildingType, int[]> techMorphSpending       = new EnumMap<>(BuildingType.class);
+    private final Map<BuildingType, int[]> techDestroySubtractions = new EnumMap<>(BuildingType.class);
+    private int researchMineralsTotal;
+    private int researchVespeneTotal;
+
 
     private int mineralRate;
     private int vespeneRate;
@@ -28,7 +38,7 @@ class EconomyTracker {
 
 
     void recordTrainSpending(UnitType type, int mineralCost, int gasCost) {
-        if (SC2Data.isWorker(type)) {
+        if (SC2Data.isWorker(type) || SC2Data.unitSupplyProvided(type) > 0) {
             mineralsUsedEconomy += mineralCost;
             vespeneUsedEconomy += gasCost;
         } else {
@@ -48,12 +58,16 @@ class EconomyTracker {
         } else {
             mineralsUsedTechnology += mineralCost;
             vespeneUsedTechnology += gasCost;
+            techBuildSpending.merge(type, new int[]{mineralCost, gasCost},
+                                    (a, b) -> new int[]{a[0] + b[0], a[1] + b[1]});
         }
     }
 
     void recordResearchSpending(int mineralCost, int gasCost) {
         mineralsUsedTechnology += mineralCost;
         vespeneUsedTechnology += gasCost;
+        researchMineralsTotal += mineralCost;
+        researchVespeneTotal += gasCost;
     }
 
     void recordMorphSpending(BuildingType type, int mineralCost, int gasCost) {
@@ -63,6 +77,8 @@ class EconomyTracker {
         } else {
             mineralsUsedTechnology += mineralCost;
             vespeneUsedTechnology += gasCost;
+            techMorphSpending.merge(type, new int[]{mineralCost, gasCost},
+                                    (a, b) -> new int[]{a[0] + b[0], a[1] + b[1]});
         }
     }
 
@@ -74,7 +90,12 @@ class EconomyTracker {
     void recordUnitDeath(UnitType type) {
         int mCost = SC2Data.mineralCost(type);
         int gCost = SC2Data.gasCost(type);
-        if (SC2Data.isWorker(type)) {
+        UnitType source = SC2Data.morphSourceType(type);
+        if (source != null) {
+            mCost += SC2Data.mineralCost(source);
+            gCost += SC2Data.gasCost(source);
+        }
+        if (SC2Data.isWorker(type) || SC2Data.unitSupplyProvided(type) > 0) {
             mineralsUsedEconomy = Math.max(0, mineralsUsedEconomy - mCost);
             vespeneUsedEconomy = Math.max(0, vespeneUsedEconomy - gCost);
         } else {
@@ -88,10 +109,12 @@ class EconomyTracker {
         int gCost = SC2Data.gasCost(type);
         if (isEconomyBuilding(type)) {
             mineralsUsedEconomy = Math.max(0, mineralsUsedEconomy - mCost);
-            vespeneUsedEconomy = Math.max(0, vespeneUsedEconomy - gCost);
+            vespeneUsedEconomy  = Math.max(0, vespeneUsedEconomy - gCost);
         } else {
             mineralsUsedTechnology = Math.max(0, mineralsUsedTechnology - mCost);
-            vespeneUsedTechnology = Math.max(0, vespeneUsedTechnology - gCost);
+            vespeneUsedTechnology  = Math.max(0, vespeneUsedTechnology - gCost);
+            techDestroySubtractions.merge(type, new int[]{mCost, gCost},
+                                          (a, b) -> new int[]{a[0] + b[0], a[1] + b[1]});
         }
     }
 
@@ -184,6 +207,28 @@ class EconomyTracker {
         mineralRate            = 0;
         vespeneRate            = 0;
         ticksSinceRateUpdate   = 0;
+        techBuildSpending.clear();
+        techMorphSpending.clear();
+        techDestroySubtractions.clear();
+        researchMineralsTotal = 0;
+        researchVespeneTotal  = 0;
+    }
+
+
+    record TechSpendingBreakdown(
+            Map<BuildingType, int[]> buildSpending,
+            Map<BuildingType, int[]> morphSpending,
+            Map<BuildingType, int[]> destroySubtractions,
+            int researchMinerals, int researchVespene) {
+    }
+
+
+    TechSpendingBreakdown techSpendingBreakdown() {
+        return new TechSpendingBreakdown(
+                Collections.unmodifiableMap(new EnumMap<>(techBuildSpending)),
+                Collections.unmodifiableMap(new EnumMap<>(techMorphSpending)),
+                Collections.unmodifiableMap(new EnumMap<>(techDestroySubtractions)),
+                researchMineralsTotal, researchVespeneTotal);
     }
 
     static boolean isEconomyBuilding(BuildingType type) {
