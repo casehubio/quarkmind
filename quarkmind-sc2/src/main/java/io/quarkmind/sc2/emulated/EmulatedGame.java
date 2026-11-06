@@ -1660,11 +1660,15 @@ public class EmulatedGame {
         state.addBuilding(new Building(bb.tag(), bb.type(), bb.position(),
                                        SC2Data.maxBuildingHealth(bb.type()), SC2Data.maxBuildingHealth(bb.type()), true));
         state.addSupply(SC2Data.supplyBonus(bb.type()));
-        if (state == friendly && playerRaceModel != null) {
-            if (playerRaceModel.townHallTypes().contains(bb.type())) {
-                registerTownHallWithPatches(bb.tag(), bb.position());
-            } else if (SC2Data.isGasBuilding(bb.type())) {
-                workerSimulation.onGasBuildingCompleted(bb.tag(), bb.position());
+        if (state == friendly) {
+            economyTracker.recordBuildSpending(bb.type(),
+                SC2Data.mineralCost(bb.type()), SC2Data.gasCost(bb.type()));
+            if (playerRaceModel != null) {
+                if (playerRaceModel.townHallTypes().contains(bb.type())) {
+                    registerTownHallWithPatches(bb.tag(), bb.position());
+                } else if (SC2Data.isGasBuilding(bb.type())) {
+                    workerSimulation.onGasBuildingCompleted(bb.tag(), bb.position());
+                }
             }
         }
     }
