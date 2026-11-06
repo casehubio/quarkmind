@@ -17,6 +17,7 @@ import io.quarkmind.plugin.tactics.TerrainAwareKiteStrategy;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
+import io.quarkmind.sc2.intent.BuildingDiedIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
@@ -2038,6 +2039,48 @@ class EmulatedGameTest {
             List.of(nexus0, nexus1), probes);
 
         assertThat(result).containsExactly(1, 1);
+    }
+
+    // ---- #546: ghost completion — destroyed building must not record tech spending ----
+
+    @Test
+    void destroyedBuildingDoesNotRecordTechSpending() {
+        game.setMineralsForTesting(500);
+        game.applyIntent(BuildIntent.of("probe-0", BuildingType.GATEWAY, new Point2d(20, 20)));
+
+        // Gateway build time = 1040 loops / 22 = 47 ticks. Kill it at tick 10 (mid-construction).
+        for (int i = 0; i < 10; i++) game.tick();
+
+        String gatewayTag = game.snapshot().myBuildings().stream()
+            .filter(b -> b.type() == BuildingType.GATEWAY)
+            .findFirst().orElseThrow().tag();
+        game.applyIntent(new TimedIntent(0, new BuildingDiedIntent(gatewayTag, BuildingType.GATEWAY)));
+
+        // Advance past the completion tick — the ghost callback must NOT fire
+        for (int i = 0; i < 50; i++) game.tick();
+
+        var techBreakdown = game.techSpendingBreakdown();
+        int techMinerals = techBreakdown.buildSpending().values().stream()
+            .mapToInt(a -> a[0]).sum();
+        assertThat(techMinerals)
+            .as("Destroyed building must not record tech spending")
+            .isEqualTo(0);
+    }
+
+    @Test
+    void completedBuildingRecordsTechSpending() {
+        game.setMineralsForTesting(500);
+        game.applyIntent(BuildIntent.of("probe-0", BuildingType.GATEWAY, new Point2d(20, 20)));
+
+        // Advance past Gateway build time (47 ticks)
+        for (int i = 0; i < 50; i++) game.tick();
+
+        var techBreakdown = game.techSpendingBreakdown();
+        int techMinerals = techBreakdown.buildSpending().values().stream()
+            .mapToInt(a -> a[0]).sum();
+        assertThat(techMinerals)
+            .as("Completed building must record tech spending")
+            .isEqualTo(SC2Data.mineralCost(BuildingType.GATEWAY));
     }
 
     private static Unit probe(String tag, float x, float y) {

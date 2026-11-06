@@ -11,7 +11,7 @@ class PhysicsStateTest {
     void fireCompletions_runsActionAtCorrectTick() {
         PhysicsState s = new PhysicsState();
         boolean[] fired = {false};
-        s.pendingCompletions.add(new PhysicsState.PendingCompletion(5L, () -> fired[0] = true));
+        s.pendingCompletions.add(new PhysicsState.PendingCompletion(5L, null, () -> fired[0] = true));
         s.fireCompletions(4L);
         assertThat(fired[0]).isFalse();
         s.fireCompletions(5L);
@@ -23,7 +23,7 @@ class PhysicsStateTest {
     void fireCompletions_doesNotFireFutureCompletions() {
         PhysicsState s = new PhysicsState();
         boolean[] fired = {false};
-        s.pendingCompletions.add(new PhysicsState.PendingCompletion(10L, () -> fired[0] = true));
+        s.pendingCompletions.add(new PhysicsState.PendingCompletion(10L, null, () -> fired[0] = true));
         s.fireCompletions(5L);
         assertThat(fired[0]).isFalse();
         assertThat(s.pendingCompletions).hasSize(1);
@@ -33,8 +33,8 @@ class PhysicsStateTest {
     void fireCompletions_firesMultipleCompletionsAtSameTick() {
         PhysicsState s = new PhysicsState();
         int[] count = {0};
-        s.pendingCompletions.add(new PhysicsState.PendingCompletion(3L, () -> count[0]++));
-        s.pendingCompletions.add(new PhysicsState.PendingCompletion(3L, () -> count[0]++));
+        s.pendingCompletions.add(new PhysicsState.PendingCompletion(3L, null, () -> count[0]++));
+        s.pendingCompletions.add(new PhysicsState.PendingCompletion(3L, null, () -> count[0]++));
         s.fireCompletions(3L);
         assertThat(count[0]).isEqualTo(2);
         assertThat(s.pendingCompletions).isEmpty();
@@ -49,7 +49,7 @@ class PhysicsStateTest {
         s.buildingQueues.put("b1", new java.util.ArrayDeque<>());
         s.buildingTrainingUntil.put("b1", 10L);
         s.buildingCompletionAtLoop.put("b1", 220L);
-        s.pendingCompletions.add(new PhysicsState.PendingCompletion(999L, () -> {}));
+        s.pendingCompletions.add(new PhysicsState.PendingCompletion(999L, null, () -> {}));
         s.clear();
         assertThat(s.unitTargets).isEmpty();
         assertThat(s.unitCooldowns).isEmpty();

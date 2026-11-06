@@ -638,7 +638,7 @@ public class EmulatedGame {
         final boolean trackerDriven = pinnedCompletionLoop >= 0;
         final int spawnCount = trackerDriven ? 1
                              : (model != null) ? model.trainCount(unitType) : SC2Data.trainCount(unitType);
-        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
+        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, buildingTag, () -> {
             if (useSlot2) {
                 physics.buildingTrainingUntil2.remove(buildingTag);
             } else {
@@ -725,7 +725,7 @@ public class EmulatedGame {
         final boolean   isReactor = tag.startsWith("r-") && isReactorAddOn(bt, state);
         final int fMCost = mCost;
         final int fGCost = gCost;
-        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
+        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, tag, () -> {
             markBuildingComplete(tag, state);
             state.addSupply(SC2Data.supplyBonus(bt));
             if (state == friendly) {
@@ -997,7 +997,7 @@ public class EmulatedGame {
                 if (remaining <= 0) {return pc;}
                 long newCompletesAt = gameFrame + remaining / 2;
                 physics.buildingTrainingUntil.put(resolvedTarget, newCompletesAt);
-                return new PhysicsState.PendingCompletion(newCompletesAt, pc.action());
+                return new PhysicsState.PendingCompletion(newCompletesAt, pc.entityTag(), pc.action());
             });
         }
         return true;
@@ -1090,7 +1090,7 @@ public class EmulatedGame {
         final boolean isFriendly = (state == friendly);
         physics.buildingResearching.put(resolvedTag, r.upgradeType());
         physics.buildingResearchUntil.put(resolvedTag, completionLoop);
-        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completionTick, () -> {
+        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completionTick, resolvedTag, () -> {
             state.completeUpgrade(r.upgradeType());
             if (isFriendly) {
                 economyTracker.recordResearchSpending(SC2Data.upgradeMineralCost(r.upgradeType()), SC2Data.upgradeVespeneCost(r.upgradeType()));
@@ -1175,7 +1175,7 @@ public class EmulatedGame {
             long            completesAt = (m.completionLoop() >= 0)
                 ? m.completionLoop() / SC2Data.LOOPS_PER_TICK
                 : gameFrame + SC2Data.buildTimeInLoops(targetBt) / SC2Data.LOOPS_PER_TICK;
-            physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
+            physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, resolvedTag, () -> {
                 markBuildingComplete(resolvedTag, state);
                 if (shouldRecordSpending) {
                     economyTracker.recordMorphSpending(targetBt, morphMCost, morphGCost);
@@ -1674,6 +1674,7 @@ public class EmulatedGame {
     }
 
     private void handleBuildingDied(BuildingDiedIntent bd, PlayerState state, PhysicsState physics) {
+        physics.cancelCompletionsForEntity(bd.tag());
         state.buildings().stream().filter(b -> b.tag().equals(bd.tag())).findFirst().ifPresent(b -> {
             state.addSupply(-SC2Data.supplyBonus(bd.type()));
             if (state == friendly) {
