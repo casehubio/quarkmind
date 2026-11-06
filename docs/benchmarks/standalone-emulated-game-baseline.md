@@ -103,7 +103,7 @@ Accuracy: 100.0% (0/0)
 | ENGINEERING_BAY | 9 | 9 | 100.0% |
 | MISSILE_TURRET | 1 | 1 | 100.0% |
 | BUNKER | 6 | 6 | 100.0% |
-| FACTORY | 37 | 33 | 89.2% |
+| FACTORY | 37 | 37 | 100.0% |
 | STARPORT | 2 | 2 | 100.0% |
 | REFINERY | 121 | 121 | 100.0% |
 | HATCHERY | 119 | 119 | 100.0% |
@@ -114,7 +114,7 @@ Accuracy: 100.0% (0/0)
 | SPINE_CRAWLER | 2 | 2 | 100.0% |
 | EXTRACTOR | 68 | 68 | 100.0% |
 | CREEP_TUMOR | 4 | 0 | 0.0% |
-| **TOTAL** | 1312 | 1296 | **98.8%** |
+| **TOTAL** | 1312 | 1300 | **99.1%** |
 
 ### Upgrades
 
@@ -206,13 +206,13 @@ Accuracy: 100.0% (4/4)
 | ORBITAL_COMMAND | 90 | 86 | 95.6% |
 | PLANETARY_FORTRESS | 1 | 1 | 100.0% |
 | SUPPLY_DEPOT | 236 | 236 | 100.0% |
-| BARRACKS | 195 | 194 | 99.5% |
+| BARRACKS | 195 | 195 | 100.0% |
 | ENGINEERING_BAY | 31 | 31 | 100.0% |
 | ARMORY | 2 | 2 | 100.0% |
 | MISSILE_TURRET | 27 | 27 | 100.0% |
 | BUNKER | 17 | 17 | 100.0% |
-| FACTORY | 118 | 102 | 86.4% |
-| STARPORT | 62 | 57 | 91.9% |
+| FACTORY | 118 | 118 | 100.0% |
+| STARPORT | 62 | 62 | 100.0% |
 | FUSION_CORE | 3 | 3 | 100.0% |
 | REFINERY | 158 | 158 | 100.0% |
 | HATCHERY | 104 | 104 | 100.0% |
@@ -228,7 +228,7 @@ Accuracy: 100.0% (4/4)
 | EXTRACTOR | 114 | 114 | 100.0% |
 | CREEP_TUMOR | 110 | 42 | 38.2% |
 | ORACLE_STASIS_TRAP | 1 | 1 | 100.0% |
-| **TOTAL** | 2148 | 2040 | **95.0%** |
+| **TOTAL** | 2148 | 2062 | **96.0%** |
 
 ### Upgrades
 
@@ -338,15 +338,15 @@ Accuracy: 100.0% (103/103)
 | COMMAND_CENTER | 18 | 18 | 100.0% |
 | ORBITAL_COMMAND | 97 | 95 | 97.9% |
 | SUPPLY_DEPOT | 326 | 326 | 100.0% |
-| BARRACKS | 232 | 231 | 99.6% |
+| BARRACKS | 232 | 232 | 100.0% |
 | ENGINEERING_BAY | 51 | 51 | 100.0% |
 | ARMORY | 10 | 10 | 100.0% |
 | MISSILE_TURRET | 52 | 52 | 100.0% |
 | BUNKER | 21 | 21 | 100.0% |
 | SENSOR_TOWER | 3 | 3 | 100.0% |
 | GHOST_ACADEMY | 2 | 2 | 100.0% |
-| FACTORY | 140 | 128 | 91.4% |
-| STARPORT | 92 | 83 | 90.2% |
+| FACTORY | 140 | 140 | 100.0% |
+| STARPORT | 92 | 92 | 100.0% |
 | FUSION_CORE | 7 | 7 | 100.0% |
 | REFINERY | 181 | 181 | 100.0% |
 | HATCHERY | 73 | 73 | 100.0% |
@@ -364,7 +364,7 @@ Accuracy: 100.0% (103/103)
 | NYDUS_CANAL | 1 | 1 | 100.0% |
 | EXTRACTOR | 162 | 162 | 100.0% |
 | CREEP_TUMOR | 267 | 153 | 57.3% |
-| **TOTAL** | 2699 | 2555 | **94.7%** |
+| **TOTAL** | 2699 | 2577 | **95.5%** |
 
 ### Upgrades
 
