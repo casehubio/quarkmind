@@ -142,6 +142,7 @@ public class ReplaySimulatedGame extends SimulatedGame {
             case ITrackerEvents.ID_UNIT_DONE -> applyUnitDone(event);
             case ITrackerEvents.ID_UPGRADE -> applyUpgrade(event);
             case ITrackerEvents.ID_UNIT_POSITIONS -> applyUnitPositions(event);
+            case ITrackerEvents.ID_UNIT_TYPE_CHANGE -> applyUnitTypeChange(event);
         }
     }
 
@@ -305,6 +306,33 @@ public class ReplaySimulatedGame extends SimulatedGame {
         if (pending != null) {
             markBuildingComplete(tag);
             markEnemyBuildingComplete(tag);
+        }
+    }
+
+    private void applyUnitTypeChange(Event event) {
+        Integer tagIndex   = event.get("unitTagIndex");
+        Integer tagRecycle = event.get("unitTagRecycle");
+        if (tagIndex == null || tagRecycle == null) return;
+        Object newTypeObj = event.get("unitTypeName");
+        if (newTypeObj == null) return;
+        String newTypeName = String.valueOf(newTypeObj).trim();
+        String tag = Sc2ReplayShared.makeTag(tagIndex, tagRecycle);
+
+        BuildingType newBt = toBuildingType(newTypeName);
+        if (newBt != BuildingType.UNKNOWN) {
+            replaceBuildingType(tag, newBt);
+            replaceEnemyBuildingType(tag, newBt);
+            Building pending = pendingBuildings.get(tag);
+            if (pending != null) {
+                pendingBuildings.put(tag, new Building(tag, newBt, pending.position(),
+                    pending.health(), pending.maxHealth(), pending.isComplete()));
+            }
+            return;
+        }
+        UnitType newUt = toUnitType(newTypeName);
+        if (newUt != UnitType.UNKNOWN) {
+            replaceUnitType(tag, newUt);
+            replaceEnemyUnitType(tag, newUt);
         }
     }
 

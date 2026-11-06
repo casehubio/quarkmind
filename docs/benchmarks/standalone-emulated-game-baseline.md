@@ -3,7 +3,7 @@
 **Dataset:** Oracle (118 replays, v4.9.3)
 **Processed:** 118 replays, 236 player runs
 **Method:** Tracker-event-driven inputs, ALL economy GT syncs disabled
-**Buildings:** Injected from GT (structural — no build intents exist)
+**Buildings:** Tracker-driven (BuildIntent, MorphIntent, BuildingBornIntent)
 
 **Disabled GT syncs:** syncMineralWorkersFromGt, setMineralsForHarness, setVespeneForHarness, syncGasRateFromGt, syncMineralRateFromGt, syncVespeneRateFromGt, setSupplyCapForHarness, setSupplyUsedForHarness, setWorkerCountForHarness, syncSpendingFromGt
 
@@ -96,13 +96,14 @@ Accuracy: 100.0% (0/0)
 | FORGE | 9 | 9 | 100.0% |
 | TWILIGHT_COUNCIL | 6 | 6 | 100.0% |
 | PHOTON_CANNON | 6 | 6 | 100.0% |
-| COMMAND_CENTER | 94 | 42 | 44.7% |
+| COMMAND_CENTER | 41 | 41 | 100.0% |
+| ORBITAL_COMMAND | 53 | 45 | 84.9% |
 | SUPPLY_DEPOT | 153 | 153 | 100.0% |
-| BARRACKS | 139 | 139 | 100.0% |
+| BARRACKS | 135 | 135 | 100.0% |
 | ENGINEERING_BAY | 9 | 9 | 100.0% |
 | MISSILE_TURRET | 1 | 1 | 100.0% |
 | BUNKER | 6 | 6 | 100.0% |
-| FACTORY | 33 | 33 | 100.0% |
+| FACTORY | 37 | 33 | 89.2% |
 | STARPORT | 2 | 2 | 100.0% |
 | REFINERY | 121 | 121 | 100.0% |
 | HATCHERY | 119 | 119 | 100.0% |
@@ -112,8 +113,8 @@ Accuracy: 100.0% (0/0)
 | BANELING_NEST | 1 | 1 | 100.0% |
 | SPINE_CRAWLER | 2 | 2 | 100.0% |
 | EXTRACTOR | 68 | 68 | 100.0% |
-| CREEP_TUMOR_QUEEN | 4 | 4 | 100.0% |
-| **TOTAL** | 1312 | 1260 | **96.0%** |
+| CREEP_TUMOR | 4 | 0 | 0.0% |
+| **TOTAL** | 1312 | 1296 | **98.8%** |
 
 ### Upgrades
 
@@ -158,27 +159,31 @@ Accuracy: 100.0% (4/4)
 | SENTRY | 7 | 7 | 100.0% |
 | PHOENIX | 8 | 8 | 100.0% |
 | ORACLE | 9 | 9 | 100.0% |
-| WARP_PRISM | 4 | 4 | 100.0% |
+| WARP_PRISM | 3 | 3 | 100.0% |
+| WARP_PRISM_PHASING | 1 | 0 | 0.0% |
 | ZERGLING | 531 | 531 | 100.0% |
-| ROACH | 65 | 65 | 100.0% |
+| ROACH | 53 | 53 | 100.0% |
 | QUEEN | 145 | 145 | 100.0% |
+| RAVAGER | 12 | 0 | 0.0% |
 | DRONE | 1724 | 1724 | 100.0% |
 | OVERLORD | 305 | 305 | 100.0% |
 | BANELING | 17 | 17 | 100.0% |
 | MARINE | 372 | 372 | 100.0% |
 | MARAUDER | 25 | 25 | 100.0% |
 | MEDIVAC | 9 | 9 | 100.0% |
-| SIEGE_TANK | 33 | 33 | 100.0% |
+| SIEGE_TANK | 12 | 12 | 100.0% |
+| SIEGE_TANK_SIEGED | 21 | 0 | 0.0% |
 | VIKING | 4 | 4 | 100.0% |
 | RAVEN | 1 | 1 | 100.0% |
 | BANSHEE | 2 | 2 | 100.0% |
 | CYCLONE | 8 | 8 | 100.0% |
-| LIBERATOR | 3 | 3 | 100.0% |
+| LIBERATOR | 2 | 2 | 100.0% |
 | WIDOW_MINE | 28 | 28 | 100.0% |
 | SCV | 1850 | 1782 | 96.3% |
 | REAPER | 36 | 36 | 100.0% |
 | HELLION | 52 | 52 | 100.0% |
-| **TOTAL** | 6807 | 6739 | **99.0%** |
+| LIBERATOR_AG | 1 | 0 | 0.0% |
+| **TOTAL** | 6807 | 6704 | **98.5%** |
 
 ### Buildings — Per-Type
 
@@ -197,18 +202,21 @@ Accuracy: 100.0% (4/4)
 | SHIELD_BATTERY | 16 | 16 | 100.0% |
 | DARK_SHRINE | 3 | 3 | 100.0% |
 | ROBOTICS_BAY | 2 | 2 | 100.0% |
-| COMMAND_CENTER | 113 | 22 | 19.5% |
+| COMMAND_CENTER | 22 | 22 | 100.0% |
+| ORBITAL_COMMAND | 90 | 86 | 95.6% |
+| PLANETARY_FORTRESS | 1 | 1 | 100.0% |
 | SUPPLY_DEPOT | 236 | 236 | 100.0% |
-| BARRACKS | 212 | 212 | 100.0% |
+| BARRACKS | 195 | 194 | 99.5% |
 | ENGINEERING_BAY | 31 | 31 | 100.0% |
 | ARMORY | 2 | 2 | 100.0% |
 | MISSILE_TURRET | 27 | 27 | 100.0% |
 | BUNKER | 17 | 17 | 100.0% |
-| FACTORY | 105 | 105 | 100.0% |
-| STARPORT | 58 | 58 | 100.0% |
+| FACTORY | 118 | 102 | 86.4% |
+| STARPORT | 62 | 57 | 91.9% |
 | FUSION_CORE | 3 | 3 | 100.0% |
 | REFINERY | 158 | 158 | 100.0% |
-| HATCHERY | 122 | 104 | 85.2% |
+| HATCHERY | 104 | 104 | 100.0% |
+| LAIR | 18 | 4 | 22.2% |
 | SPAWNING_POOL | 54 | 54 | 100.0% |
 | EVOLUTION_CHAMBER | 15 | 15 | 100.0% |
 | ROACH_WARREN | 28 | 28 | 100.0% |
@@ -218,10 +226,9 @@ Accuracy: 100.0% (4/4)
 | HYDRALISK_DEN | 1 | 1 | 100.0% |
 | INFESTATION_PIT | 1 | 1 | 100.0% |
 | EXTRACTOR | 114 | 114 | 100.0% |
-| CREEP_TUMOR | 41 | 41 | 100.0% |
-| CREEP_TUMOR_QUEEN | 69 | 69 | 100.0% |
+| CREEP_TUMOR | 110 | 42 | 38.2% |
 | ORACLE_STASIS_TRAP | 1 | 1 | 100.0% |
-| **TOTAL** | 2148 | 2039 | **94.9%** |
+| **TOTAL** | 2148 | 2040 | **95.0%** |
 
 ### Upgrades
 
@@ -279,21 +286,25 @@ Accuracy: 100.0% (103/103)
 | SENTRY | 6 | 6 | 100.0% |
 | PHOENIX | 5 | 5 | 100.0% |
 | ORACLE | 10 | 10 | 100.0% |
-| WARP_PRISM | 10 | 10 | 100.0% |
+| WARP_PRISM | 7 | 7 | 100.0% |
+| WARP_PRISM_PHASING | 3 | 0 | 0.0% |
 | ZERGLING | 487 | 487 | 100.0% |
-| ROACH | 287 | 283 | 98.6% |
+| ROACH | 268 | 264 | 98.5% |
 | HYDRALISK | 9 | 9 | 100.0% |
 | MUTALISK | 11 | 11 | 100.0% |
 | SWARM_HOST | 6 | 6 | 100.0% |
 | QUEEN | 153 | 153 | 100.0% |
+| RAVAGER | 19 | 0 | 0.0% |
 | DRONE | 1848 | 1848 | 100.0% |
-| OVERLORD | 403 | 402 | 99.8% |
+| OVERLORD | 387 | 386 | 99.7% |
+| OVERSEER | 16 | 0 | 0.0% |
 | BANELING | 31 | 31 | 100.0% |
 | CHANGELING | 1 | 1 | 100.0% |
 | MARINE | 605 | 605 | 100.0% |
 | MARAUDER | 52 | 52 | 100.0% |
 | MEDIVAC | 45 | 45 | 100.0% |
-| SIEGE_TANK | 85 | 85 | 100.0% |
+| SIEGE_TANK | 35 | 35 | 100.0% |
+| SIEGE_TANK_SIEGED | 50 | 0 | 0.0% |
 | VIKING | 19 | 19 | 100.0% |
 | RAVEN | 3 | 3 | 100.0% |
 | BANSHEE | 6 | 6 | 100.0% |
@@ -304,7 +315,7 @@ Accuracy: 100.0% (103/103)
 | SCV | 1929 | 1872 | 97.0% |
 | REAPER | 17 | 17 | 100.0% |
 | HELLION | 39 | 39 | 100.0% |
-| **TOTAL** | 7558 | 7496 | **99.2%** |
+| **TOTAL** | 7558 | 7408 | **98.0%** |
 
 ### Buildings — Per-Type
 
@@ -324,20 +335,22 @@ Accuracy: 100.0% (103/103)
 | DARK_SHRINE | 3 | 3 | 100.0% |
 | FLEET_BEACON | 1 | 1 | 100.0% |
 | ROBOTICS_BAY | 5 | 5 | 100.0% |
-| COMMAND_CENTER | 115 | 18 | 15.7% |
+| COMMAND_CENTER | 18 | 18 | 100.0% |
+| ORBITAL_COMMAND | 97 | 95 | 97.9% |
 | SUPPLY_DEPOT | 326 | 326 | 100.0% |
-| BARRACKS | 245 | 245 | 100.0% |
+| BARRACKS | 232 | 231 | 99.6% |
 | ENGINEERING_BAY | 51 | 51 | 100.0% |
 | ARMORY | 10 | 10 | 100.0% |
 | MISSILE_TURRET | 52 | 52 | 100.0% |
 | BUNKER | 21 | 21 | 100.0% |
 | SENSOR_TOWER | 3 | 3 | 100.0% |
 | GHOST_ACADEMY | 2 | 2 | 100.0% |
-| FACTORY | 135 | 135 | 100.0% |
-| STARPORT | 84 | 84 | 100.0% |
+| FACTORY | 140 | 128 | 91.4% |
+| STARPORT | 92 | 83 | 90.2% |
 | FUSION_CORE | 7 | 7 | 100.0% |
 | REFINERY | 181 | 181 | 100.0% |
-| HATCHERY | 114 | 73 | 64.0% |
+| HATCHERY | 73 | 73 | 100.0% |
+| LAIR | 41 | 35 | 85.4% |
 | SPAWNING_POOL | 45 | 45 | 100.0% |
 | EVOLUTION_CHAMBER | 39 | 39 | 100.0% |
 | ROACH_WARREN | 32 | 32 | 100.0% |
@@ -350,9 +363,8 @@ Accuracy: 100.0% (103/103)
 | NYDUS_NETWORK | 4 | 4 | 100.0% |
 | NYDUS_CANAL | 1 | 1 | 100.0% |
 | EXTRACTOR | 162 | 162 | 100.0% |
-| CREEP_TUMOR | 152 | 152 | 100.0% |
-| CREEP_TUMOR_QUEEN | 115 | 115 | 100.0% |
-| **TOTAL** | 2699 | 2561 | **94.9%** |
+| CREEP_TUMOR | 267 | 153 | 57.3% |
+| **TOTAL** | 2699 | 2555 | **94.7%** |
 
 ### Upgrades
 
