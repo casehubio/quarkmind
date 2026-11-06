@@ -1130,6 +1130,16 @@ public class EmulatedGame {
             Map.entry("Archon", UnitType.ARCHON),
             Map.entry("Hellbat", UnitType.HELLBAT)
                                                                                  );
+    private static final Map<String, UnitType> MODE_SWITCH_TARGETS = Map.of(
+            "SiegeTankSieged", UnitType.SIEGE_TANK_SIEGED,
+            "SiegeTank", UnitType.SIEGE_TANK,
+            "WarpPrismPhasing", UnitType.WARP_PRISM_PHASING,
+            "WarpPrism", UnitType.WARP_PRISM,
+            "LiberatorAG", UnitType.LIBERATOR_AG,
+            "Liberator", UnitType.LIBERATOR,
+            "VikingFighter", UnitType.VIKING,
+            "VikingAssault", UnitType.VIKING_ASSAULT
+                                                                            );
     private static final Map<String, UnitType> MORPH_SOURCE_TYPES = Map.of(
             "Zergling", UnitType.ZERGLING,
             "Roach", UnitType.ROACH,
@@ -1207,6 +1217,13 @@ public class EmulatedGame {
                 ? new Building(b.tag(), addonTarget, b.position(), b.health(), b.maxHealth(), b.isComplete())
                 : b);
             log.debugf("[EMULATED] Add-on swap — %s → %s (tag=%s)", m.sourceName(), addonTarget, m.unitTag());
+            return;
+        }
+        UnitType modeTarget = MODE_SWITCH_TARGETS.get(m.targetName());
+        if (modeTarget != null) {
+            state.replaceAllUnits(u -> u.tag().equals(m.unitTag())
+                ? new Unit(u.tag(), modeTarget, u.position(), u.health(), u.maxHealth(), u.shields(), u.maxShields(), u.weaponCooldownTicks(), u.blinkCooldownTicks())
+                : u);
             return;
         }
         UnitType targetUnit = MORPH_UNIT_TARGETS.get(m.targetName());

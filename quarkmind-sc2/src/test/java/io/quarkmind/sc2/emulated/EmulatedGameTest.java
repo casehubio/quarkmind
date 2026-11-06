@@ -2042,6 +2042,29 @@ class EmulatedGameTest {
         assertThat(result).containsExactly(1, 1);
     }
 
+    // ---- #549: unit mode switches ----
+
+    @Test
+    void siegeTankSiegesViaModeSwitch() {
+        String tag = game.spawnFriendlyForTesting(UnitType.SIEGE_TANK, new Point2d(15, 15));
+        game.applyIntent(new TimedIntent(0, MorphIntent.of(tag, "SIEGE_TANK", "SiegeTankSieged")));
+
+        assertThat(game.snapshot().myUnits().stream()
+            .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow().type())
+            .isEqualTo(UnitType.SIEGE_TANK_SIEGED);
+    }
+
+    @Test
+    void modeSwitchPreservesHealth() {
+        String tag = game.spawnFriendlyForTesting(UnitType.SIEGE_TANK, new Point2d(15, 15));
+        game.setHealthForTesting(tag, 100);
+        game.applyIntent(new TimedIntent(0, MorphIntent.of(tag, "SIEGE_TANK", "SiegeTankSieged")));
+
+        Unit sieged = game.snapshot().myUnits().stream()
+            .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow();
+        assertThat(sieged.health()).isEqualTo(100);
+    }
+
     // ---- #548: creep tumor queen burrow morph ----
 
     @Test

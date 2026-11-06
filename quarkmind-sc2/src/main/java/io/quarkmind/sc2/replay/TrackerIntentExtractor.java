@@ -200,15 +200,15 @@ public final class TrackerIntentExtractor {
                         continue;
                     }
 
-                    // Unit type change (morph)
+                    // Unit type change (morph or mode switch)
                     if (!unitTagToType.containsKey(compositeTag)) {continue;}
                     UnitType newType = Sc2ReplayShared.toUnitType(newTypeName);
                     if (newType != UnitType.UNKNOWN) {
                         UnitType oldType = unitTagToType.put(compositeTag, newType);
-                        if (oldType != null && SC2Data.morphSourceType(newType) != null) {
+                        if (oldType != null && newType != oldType) {
                             String unitTag = "r-" + tagIndex + "-" + tagRecycle;
                             intents.add(new TimedIntent(raw.getLoop(),
-                                                        MorphIntent.of(unitTag, oldType.name(), newType.name())));
+                                                        MorphIntent.of(unitTag, oldType.name(), newTypeName)));
                         }
                     }
                 }

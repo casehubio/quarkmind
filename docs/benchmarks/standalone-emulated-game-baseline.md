@@ -160,11 +160,11 @@ Accuracy: 100.0% (4/4)
 | PHOENIX | 8 | 8 | 100.0% |
 | ORACLE | 9 | 9 | 100.0% |
 | WARP_PRISM | 3 | 3 | 100.0% |
-| WARP_PRISM_PHASING | 1 | 0 | 0.0% |
+| WARP_PRISM_PHASING | 1 | 1 | 100.0% |
 | ZERGLING | 531 | 529 | 99.6% |
 | ROACH | 53 | 53 | 100.0% |
 | QUEEN | 145 | 145 | 100.0% |
-| RAVAGER | 12 | 0 | 0.0% |
+| RAVAGER | 12 | 12 | 100.0% |
 | DRONE | 1724 | 1724 | 100.0% |
 | OVERLORD | 305 | 305 | 100.0% |
 | BANELING | 17 | 17 | 100.0% |
@@ -172,7 +172,7 @@ Accuracy: 100.0% (4/4)
 | MARAUDER | 25 | 25 | 100.0% |
 | MEDIVAC | 9 | 9 | 100.0% |
 | SIEGE_TANK | 12 | 12 | 100.0% |
-| SIEGE_TANK_SIEGED | 21 | 0 | 0.0% |
+| SIEGE_TANK_SIEGED | 21 | 21 | 100.0% |
 | VIKING | 4 | 4 | 100.0% |
 | RAVEN | 1 | 1 | 100.0% |
 | BANSHEE | 2 | 2 | 100.0% |
@@ -182,8 +182,8 @@ Accuracy: 100.0% (4/4)
 | SCV | 1850 | 1850 | 100.0% |
 | REAPER | 36 | 36 | 100.0% |
 | HELLION | 52 | 52 | 100.0% |
-| LIBERATOR_AG | 1 | 0 | 0.0% |
-| **TOTAL** | 6807 | 6770 | **99.5%** |
+| LIBERATOR_AG | 1 | 1 | 100.0% |
+| **TOTAL** | 6807 | 6805 | **100.0%** |
 
 ### Buildings — Per-Type
 
@@ -261,10 +261,10 @@ Accuracy: 100.0% (103/103)
 | foodMade | 9520 | 9644 | 280 | 2.9% |
 | foodUsed | 7488 | 7798 | 454 | 6.1% |
 | workersActiveCount | 4907 | 5002 | 159 | 3.2% |
-| mineralsUsedCurrentArmy | 108250 | 111525 | 10675 | 9.9% |
+| mineralsUsedCurrentArmy | 108250 | 111875 | 10625 | 9.8% |
 | mineralsUsedCurrentEconomy | 478750 | 461725 | 25175 | 5.3% |
 | mineralsUsedCurrentTechnology | 119150 | 136875 | 28975 | 24.3% |
-| vespeneUsedCurrentArmy | 24475 | 25500 | 4825 | 19.7% |
+| vespeneUsedCurrentArmy | 24475 | 26550 | 3775 | 15.4% |
 | vespeneUsedCurrentEconomy | 150 | 0 | 150 | 100.0% |
 | vespeneUsedCurrentTechnology | 25075 | 33700 | 11925 | 47.6% |
 
@@ -287,24 +287,24 @@ Accuracy: 100.0% (103/103)
 | PHOENIX | 5 | 5 | 100.0% |
 | ORACLE | 10 | 10 | 100.0% |
 | WARP_PRISM | 7 | 7 | 100.0% |
-| WARP_PRISM_PHASING | 3 | 0 | 0.0% |
+| WARP_PRISM_PHASING | 3 | 3 | 100.0% |
 | ZERGLING | 487 | 485 | 99.6% |
 | ROACH | 268 | 268 | 100.0% |
 | HYDRALISK | 9 | 9 | 100.0% |
 | MUTALISK | 11 | 11 | 100.0% |
 | SWARM_HOST | 6 | 6 | 100.0% |
 | QUEEN | 153 | 153 | 100.0% |
-| RAVAGER | 19 | 0 | 0.0% |
+| RAVAGER | 19 | 19 | 100.0% |
 | DRONE | 1848 | 1848 | 100.0% |
 | OVERLORD | 387 | 387 | 100.0% |
-| OVERSEER | 16 | 0 | 0.0% |
+| OVERSEER | 16 | 16 | 100.0% |
 | BANELING | 31 | 31 | 100.0% |
 | CHANGELING | 1 | 1 | 100.0% |
 | MARINE | 605 | 605 | 100.0% |
 | MARAUDER | 52 | 52 | 100.0% |
 | MEDIVAC | 45 | 45 | 100.0% |
 | SIEGE_TANK | 35 | 35 | 100.0% |
-| SIEGE_TANK_SIEGED | 50 | 0 | 0.0% |
+| SIEGE_TANK_SIEGED | 50 | 50 | 100.0% |
 | VIKING | 19 | 19 | 100.0% |
 | RAVEN | 3 | 3 | 100.0% |
 | BANSHEE | 6 | 6 | 100.0% |
@@ -315,7 +315,7 @@ Accuracy: 100.0% (103/103)
 | SCV | 1929 | 1929 | 100.0% |
 | REAPER | 17 | 17 | 100.0% |
 | HELLION | 39 | 39 | 100.0% |
-| **TOTAL** | 7558 | 7468 | **98.8%** |
+| **TOTAL** | 7558 | 7556 | **100.0%** |
 
 ### Buildings — Per-Type
 
@@ -412,10 +412,10 @@ Accuracy: 100.0% (185/185)
 | foodMade | 11184 | 11089 | 345 | 3.1% |
 | foodUsed | 9017 | 9195 | 335 | 3.7% |
 | workersActiveCount | 5004 | 5099 | 127 | 2.5% |
-| mineralsUsedCurrentArmy | 175225 | 173525 | 13550 | 7.7% |
+| mineralsUsedCurrentArmy | 175225 | 175050 | 12475 | 7.1% |
 | mineralsUsedCurrentEconomy | 506875 | 483200 | 29475 | 5.8% |
 | mineralsUsedCurrentTechnology | 148600 | 172600 | 45000 | 30.3% |
-| vespeneUsedCurrentArmy | 57400 | 55475 | 6175 | 10.8% |
+| vespeneUsedCurrentArmy | 57400 | 58050 | 4250 | 7.4% |
 | vespeneUsedCurrentEconomy | 50 | 0 | 50 | 100.0% |
 | vespeneUsedCurrentTechnology | 37950 | 53725 | 17625 | 46.4% |
 
