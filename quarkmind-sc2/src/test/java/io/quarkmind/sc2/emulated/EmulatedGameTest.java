@@ -2042,6 +2042,23 @@ class EmulatedGameTest {
         assertThat(result).containsExactly(1, 1);
     }
 
+    // ---- #548: creep tumor queen burrow morph ----
+
+    @Test
+    void creepTumorQueenBurrowChangesToCreepTumor() {
+        Building tumor = game.spawnBuildingForTesting(BuildingType.CREEP_TUMOR_QUEEN, new Point2d(20, 20));
+
+        game.applyIntent(new TimedIntent(0,
+            MorphIntent.of(tumor.tag(), "CREEP_TUMOR_QUEEN", "CreepTumorBurrowed")));
+
+        Building morphed = game.snapshot().myBuildings().stream()
+            .filter(b -> b.tag().equals(tumor.tag()))
+            .findFirst().orElseThrow();
+        assertThat(morphed.type())
+            .as("CreepTumorQueen burrow must change type to CREEP_TUMOR")
+            .isEqualTo(BuildingType.CREEP_TUMOR);
+    }
+
     // ---- #547: add-on swap morph — building type must change ----
 
     @Test

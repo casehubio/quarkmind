@@ -113,8 +113,8 @@ Accuracy: 100.0% (0/0)
 | BANELING_NEST | 1 | 1 | 100.0% |
 | SPINE_CRAWLER | 2 | 2 | 100.0% |
 | EXTRACTOR | 68 | 68 | 100.0% |
-| CREEP_TUMOR | 4 | 0 | 0.0% |
-| **TOTAL** | 1312 | 1308 | **99.7%** |
+| CREEP_TUMOR | 4 | 4 | 100.0% |
+| **TOTAL** | 1312 | 1312 | **100.0%** |
 
 ### Upgrades
 
@@ -226,9 +226,9 @@ Accuracy: 100.0% (4/4)
 | HYDRALISK_DEN | 1 | 1 | 100.0% |
 | INFESTATION_PIT | 1 | 1 | 100.0% |
 | EXTRACTOR | 114 | 114 | 100.0% |
-| CREEP_TUMOR | 110 | 42 | 38.2% |
+| CREEP_TUMOR | 110 | 110 | 100.0% |
 | ORACLE_STASIS_TRAP | 1 | 1 | 100.0% |
-| **TOTAL** | 2148 | 2080 | **96.8%** |
+| **TOTAL** | 2148 | 2148 | **100.0%** |
 
 ### Upgrades
 
@@ -363,8 +363,8 @@ Accuracy: 100.0% (103/103)
 | NYDUS_NETWORK | 4 | 4 | 100.0% |
 | NYDUS_CANAL | 1 | 1 | 100.0% |
 | EXTRACTOR | 162 | 162 | 100.0% |
-| CREEP_TUMOR | 267 | 153 | 57.3% |
-| **TOTAL** | 2699 | 2585 | **95.8%** |
+| CREEP_TUMOR | 267 | 267 | 100.0% |
+| **TOTAL** | 2699 | 2699 | **100.0%** |
 
 ### Upgrades
 

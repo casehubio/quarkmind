@@ -1109,7 +1109,8 @@ public class EmulatedGame {
             "Hive", BuildingType.HIVE,
             "GreaterSpire", BuildingType.GREATER_SPIRE,
             "OrbitalCommand", BuildingType.ORBITAL_COMMAND,
-            "PlanetaryFortress", BuildingType.PLANETARY_FORTRESS
+            "PlanetaryFortress", BuildingType.PLANETARY_FORTRESS,
+            "CreepTumorBurrowed", BuildingType.CREEP_TUMOR
                                                                                     );
     private static final Map<String, BuildingType> ADDON_SWAP_TARGETS = Map.of(
             "BarracksTechLab", BuildingType.BARRACKS,
