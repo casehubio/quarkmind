@@ -387,6 +387,8 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - `ReactorTagTraceDiagnosticTest` — per-replay Reactor UnitInit→building correlation trace; validates findNearestProductionBuilding matching
 - `TickTimingDiagnosticTest` — per-tick timing diagnostic: shows intent arrival, queue entry, and completion loops for Factory/Starport units
 - `ChronoBoostAbilLinkDiscoveryTest` — discovers Chrono Boost abilLink from game events across 65 Protoss oracle replays; found abilLink=716 (444 occurrences)
+- `VespeneSpendingDiagnosticTest` — per-replay vespene spending breakdown (army + technology); correlates GT InProgress/Current/Lost with EM spending; identifies structural floor from PlayerStatsEvent update cadence
+- `GasIncomeDiagnosticTest` — per-replay, per-race gas income variance; compares GT vespeneCollectionRate and vespeneCurrent against simulation; tracks gas slot count, gas worker count, cumulative gas income
 - Run with: `mvn test -pl quarkmind-sc2 -Pdiagnostic`
 
 **Never use `@QuarkusTest` for tests that can be plain JUnit** — boot cost is significant.

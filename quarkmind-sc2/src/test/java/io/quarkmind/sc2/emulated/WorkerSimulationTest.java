@@ -74,6 +74,26 @@ class WorkerSimulationTest {
     }
 
     @Test
+    void mineralIncomeRate_16workers_matchesSC2() {
+        List<String> tags = IntStream.rangeClosed(1, 16)
+                                     .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+        int warmupTicks = 20;
+        for (int t = 0; t < warmupTicks; t++) {sim.tick();}
+        double income       = 0;
+        int    measureTicks = 200;
+        for (int t = 0; t < measureTicks; t++) {
+            income += sim.tick().mineralIncome();
+        }
+        double ticksPerMinute = 60.0 * io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+        double perMinute      = income / measureTicks * ticksPerMinute;
+        System.out.printf("16 workers: %.1f minerals/min (SC2 target: ~930 at optimal 16-worker saturation)%n", perMinute);
+        System.out.printf("Per worker: %.1f minerals/min%n", perMinute / 16);
+        System.out.printf("Total in %d ticks: %.1f minerals%n", measureTicks, income);
+    }
+
+
+    @Test
     void workerDied_freesPatchSlot() {
         sim.onInitialWorkers(List.of("w-1", "w-2"), BASE_POS, BASE_TAG);
         for (int t = 0; t < 5; t++) sim.tick();

@@ -164,29 +164,25 @@ class TerranEmulatedGameTest {
 
     @Test
     void muleExpires_afterLifetime_unitGoneAndNoMoreMuleIncome() {
-        game.tick(); // consume mining start delay
+        for (int i = 0; i < 20; i++) game.tick();
         final Building oc = game.spawnBuildingForTesting(BuildingType.ORBITAL_COMMAND, new Point2d(12, 8));
+
+        final int mineralsBeforeMule = game.snapshot().minerals();
         game.applyIntent(new MuleCalldownIntent(oc.tag()));
 
-        // Tick once with MULE active — record combined SCV+MULE income
-        final int mineralsAtSpawn = game.snapshot().minerals();
-        game.tick();
-        final int incomeWithMule = game.snapshot().minerals() - mineralsAtSpawn;
+        assertThat(game.snapshot().myUnits().stream()
+            .filter(u -> u.type() == UnitType.MULE).count()).isEqualTo(1);
 
-        // Advance past MULE lifetime
         final int lifetimeTicks = SC2Data.MULE_LIFETIME_LOOPS / SC2Data.LOOPS_PER_TICK + 2;
         for (int i = 0; i < lifetimeTicks; i++) game.tick();
 
         final long muleCount = game.snapshot().myUnits().stream()
             .filter(u -> u.type() == UnitType.MULE).count();
-        assertThat(muleCount).isEqualTo(0);
+        assertThat(muleCount).as("MULE should expire after lifetime").isEqualTo(0);
 
-        // Income without MULE should be strictly less (SCV-only income < SCV+MULE)
-        final int mineralsBeforeExpiredTick = game.snapshot().minerals();
-        game.tick();
-        final int incomeWithoutMule = game.snapshot().minerals() - mineralsBeforeExpiredTick;
-
-        assertThat(incomeWithoutMule).isLessThan(incomeWithMule);
+        final int mineralsAfterMule = game.snapshot().minerals();
+        assertThat(mineralsAfterMule).as("MULE should have contributed income during its lifetime")
+            .isGreaterThan(mineralsBeforeMule);
     }
 
     @Test

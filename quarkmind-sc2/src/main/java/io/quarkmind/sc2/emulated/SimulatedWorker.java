@@ -7,7 +7,7 @@ class SimulatedWorker {
     static final double MINERAL_CARGO = 5.0;
     static final double RICH_MINERAL_CARGO = 7.0;
 
-    static final int MINING_DURATION_LOOPS = 46;
+    static final int MINING_DURATION_LOOPS = 16;
     static final int MINING_DURATION_TICKS =
             (int) Math.ceil((double) MINING_DURATION_LOOPS / SC2Data.LOOPS_PER_TICK);
     static final double GAS_CARGO = 4.0;

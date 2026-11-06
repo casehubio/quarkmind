@@ -59,6 +59,8 @@ public class EmulatedGame {
     final PlayerState friendly = new PlayerState();
     public final PlayerState enemy    = new PlayerState();
     private final WorkerSimulation workerSimulation = new WorkerSimulation();
+    private       double           cumulativeGasIncome;
+
 
     WorkerSimulation workerSimulation() {return workerSimulation;}
 
@@ -153,6 +155,7 @@ public class EmulatedGame {
 
     public void resetForHarness() {
         resetInternal();
+        friendly.addMinerals(SC2Data.INITIAL_MINERALS);
         enemy.setSupply(200);
         enemy.setVespene(9999);
     }
@@ -173,6 +176,7 @@ public class EmulatedGame {
         deferredResearch.clear();
         trackerTrainDiagnostics.clear();
         trackerDrivenBuildings.clear();
+        cumulativeGasIncome = 0;
         // pendingWaves intentionally NOT cleared — configured before reset() via configureWave()
         // terrainGrid and random intentionally NOT cleared — set by EmulatedEngine before reset()
     }
@@ -185,6 +189,7 @@ public class EmulatedGame {
         double tickGasIncome = workerIncome.vespeneIncome();
         friendly.addMinerals(tickMineralIncome);
         friendly.addVespene(tickGasIncome);
+        cumulativeGasIncome += tickGasIncome;
         double passiveMineralIncome = playerRaceModel.tickPassive(friendly, gameFrame * (long) SC2Data.LOOPS_PER_TICK);
         TickIncome formulaIncome = workerSimulation.formulaIncome();
         economyTracker.recordIncome(formulaIncome.mineralIncome() + passiveMineralIncome, formulaIncome.vespeneIncome());
@@ -481,7 +486,7 @@ public class EmulatedGame {
 
             state.deductMinerals(mCost);
             state.deductVespene(gCost);
-        } else {
+        } else if (t.completionLoop() > 0) {
             final int mCost = SC2Data.mineralCost(t.unitType());
             final int gCost = SC2Data.gasCost(t.unitType());
             state.deductMinerals(mCost);
@@ -1622,6 +1627,8 @@ public class EmulatedGame {
         return workerSimulation.totalGasWorkers();
     }
 
+    public double cumulativeGasIncome() {return cumulativeGasIncome;}
+
 
     private final Set<String> reactoredBuildings = new HashSet<>();
     private final Set<String> trackerDrivenBuildings = new HashSet<>();
@@ -1661,7 +1668,12 @@ public class EmulatedGame {
     private void handleBuildingDied(BuildingDiedIntent bd, PlayerState state, PhysicsState physics) {
         state.buildings().stream().filter(b -> b.tag().equals(bd.tag())).findFirst().ifPresent(b -> {
             state.addSupply(-SC2Data.supplyBonus(bd.type()));
-            if (state == friendly) {economyTracker.recordBuildingDestroyed(bd.type());}
+            if (state == friendly) {
+                economyTracker.recordBuildingDestroyed(bd.type());
+                if (SC2Data.isGasBuilding(bd.type())) {
+                    workerSimulation.onGasBuildingDestroyed(bd.tag());
+                }
+            }
         });
         state.removeBuilding(bd.tag());
     }

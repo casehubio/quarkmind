@@ -146,7 +146,6 @@ public final class TrackerIntentExtractor {
                             intents.add(new TimedIntent(ue.getLoop(),
                                                         new MorphIntent(tag, sourceType.name(), typeName, doneLoop)));
                         } else {
-                            consumeDroneForBuilding(unitTagToType, typeName);
                             intents.add(new TimedIntent(ue.getLoop(),
                                                         new BuildIntent("worker", bt, pos, tag, doneLoop)));
                         }
@@ -410,10 +409,6 @@ public final class TrackerIntentExtractor {
         return null;
     }
 
-    private static final Set<String> NON_DRONE_BUILDINGS = Set.of(
-        "Lair", "Hive", "GreaterSpire", "LurkerDen", "NydusCanal",
-        "SpineCrawlerUprooted", "SporeCrawlerUprooted"
-    );
     private static final Map<String, BuildingType> MORPH_BUILDING_SOURCES = Map.of(
             "Lair", BuildingType.HATCHERY,
             "Hive", BuildingType.LAIR,
@@ -434,20 +429,5 @@ public final class TrackerIntentExtractor {
             case UnitDiedIntent ignored -> 8;
             default -> 10;
         };
-    }
-
-
-    private static void consumeDroneForBuilding(Map<Long, UnitType> unitTagToType,
-                                                 String buildingTypeName) {
-        if (NON_DRONE_BUILDINGS.contains(buildingTypeName)) return;
-        Long droneTag = null;
-        for (Map.Entry<Long, UnitType> entry : unitTagToType.entrySet()) {
-            if (entry.getValue() == UnitType.DRONE) {
-                droneTag = entry.getKey();
-                break;
-            }
-        }
-        if (droneTag == null) return;
-        unitTagToType.remove(droneTag);
     }
 }

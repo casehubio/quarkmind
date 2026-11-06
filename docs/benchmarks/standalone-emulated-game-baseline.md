@@ -1,4 +1,4 @@
-# Standalone EmulatedGame Accuracy Baseline — 2026-11-05
+# Standalone EmulatedGame Accuracy Baseline — 2026-11-06
 
 **Dataset:** Oracle (118 replays, v4.9.3)
 **Processed:** 118 replays, 236 player runs
@@ -43,16 +43,16 @@ Accuracy: 100.0% (0/0)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 20630 | -130615 | 151245 | 733.1% |
-| vespeneCurrent | 232 | 504 | 272 | 117.2% |
-| mineralsCollectionRate | 150658 | 183927 | 33349 | 22.1% |
-| vespeneCollectionRate | 1241 | 2665 | 1466 | 118.1% |
-| foodMade | 4579 | 4619 | 40 | 0.9% |
-| foodUsed | 3338 | 3476 | 140 | 4.2% |
-| workersActiveCount | 3162 | 3286 | 124 | 3.9% |
+| mineralsCurrent | 20630 | 25775 | 11435 | 55.4% |
+| vespeneCurrent | 232 | 800 | 568 | 244.8% |
+| mineralsCollectionRate | 150658 | 182652 | 32394 | 21.5% |
+| vespeneCollectionRate | 1241 | 4147 | 2942 | 237.1% |
+| foodMade | 4579 | 4627 | 48 | 1.0% |
+| foodUsed | 3338 | 3473 | 137 | 4.1% |
+| workersActiveCount | 3162 | 3283 | 121 | 3.8% |
 | mineralsUsedCurrentArmy | 0 | 0 | 0 | 0.0% |
-| mineralsUsedCurrentEconomy | 266325 | 269350 | 3925 | 1.5% |
-| mineralsUsedCurrentTechnology | 0 | 0 | 0 | 0.0% |
+| mineralsUsedCurrentEconomy | 266325 | 215275 | 51850 | 19.5% |
+| mineralsUsedCurrentTechnology | 0 | 25100 | 25100 | 0.0% |
 | vespeneUsedCurrentArmy | 0 | 0 | 0 | 0.0% |
 | vespeneUsedCurrentEconomy | 0 | 0 | 0 | 0.0% |
 | vespeneUsedCurrentTechnology | 0 | 0 | 0 | 0.0% |
@@ -78,10 +78,10 @@ Accuracy: 100.0% (0/0)
 | MARINE | 98 | 98 | 100.0% |
 | MARAUDER | 2 | 2 | 100.0% |
 | WIDOW_MINE | 2 | 2 | 100.0% |
-| SCV | 1493 | 1493 | 100.0% |
+| SCV | 1493 | 1422 | 95.2% |
 | REAPER | 47 | 47 | 100.0% |
 | HELLION | 5 | 5 | 100.0% |
-| **TOTAL** | 4863 | 4863 | **100.0%** |
+| **TOTAL** | 4863 | 4792 | **98.5%** |
 
 ### Buildings — Per-Type
 
@@ -96,7 +96,7 @@ Accuracy: 100.0% (0/0)
 | FORGE | 9 | 9 | 100.0% |
 | TWILIGHT_COUNCIL | 6 | 6 | 100.0% |
 | PHOTON_CANNON | 6 | 6 | 100.0% |
-| COMMAND_CENTER | 94 | 94 | 100.0% |
+| COMMAND_CENTER | 94 | 42 | 44.7% |
 | SUPPLY_DEPOT | 153 | 153 | 100.0% |
 | BARRACKS | 139 | 139 | 100.0% |
 | ENGINEERING_BAY | 9 | 9 | 100.0% |
@@ -113,7 +113,7 @@ Accuracy: 100.0% (0/0)
 | SPINE_CRAWLER | 2 | 2 | 100.0% |
 | EXTRACTOR | 68 | 68 | 100.0% |
 | CREEP_TUMOR_QUEEN | 4 | 4 | 100.0% |
-| **TOTAL** | 1312 | 1312 | **100.0%** |
+| **TOTAL** | 1312 | 1260 | **96.0%** |
 
 ### Upgrades
 
@@ -128,19 +128,19 @@ Accuracy: 100.0% (4/4)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 46751 | -107225 | 154126 | 329.7% |
-| vespeneCurrent | 24254 | 30771 | 12601 | 52.0% |
-| mineralsCollectionRate | 171704 | 175296 | 19298 | 11.2% |
-| vespeneCollectionRate | 39512 | 37922 | 9628 | 24.4% |
-| foodMade | 7024 | 7050 | 94 | 1.3% |
-| foodUsed | 5153 | 5297 | 166 | 3.2% |
-| workersActiveCount | 4000 | 4103 | 105 | 2.6% |
+| mineralsCurrent | 46751 | 62000 | 27041 | 57.8% |
+| vespeneCurrent | 24254 | 21025 | 11377 | 46.9% |
+| mineralsCollectionRate | 171704 | 172425 | 20379 | 11.9% |
+| vespeneCollectionRate | 39512 | 38128 | 10324 | 26.1% |
+| foodMade | 7024 | 7087 | 103 | 1.5% |
+| foodUsed | 5153 | 5183 | 174 | 3.4% |
+| workersActiveCount | 4000 | 3990 | 130 | 3.3% |
 | mineralsUsedCurrentArmy | 36875 | 38200 | 1925 | 5.2% |
-| mineralsUsedCurrentEconomy | 385100 | 373050 | 15650 | 4.1% |
-| mineralsUsedCurrentTechnology | 63850 | 65600 | 10050 | 15.7% |
+| mineralsUsedCurrentEconomy | 385100 | 322425 | 64225 | 16.7% |
+| mineralsUsedCurrentTechnology | 63850 | 88625 | 29375 | 46.0% |
 | vespeneUsedCurrentArmy | 4450 | 4600 | 200 | 4.5% |
 | vespeneUsedCurrentEconomy | 0 | 0 | 0 | 0.0% |
-| vespeneUsedCurrentTechnology | 5100 | 3900 | 3050 | 59.8% |
+| vespeneUsedCurrentTechnology | 5100 | 11400 | 7150 | 140.2% |
 
 ## 5-minute checkpoint
 
@@ -175,10 +175,10 @@ Accuracy: 100.0% (4/4)
 | CYCLONE | 8 | 8 | 100.0% |
 | LIBERATOR | 3 | 3 | 100.0% |
 | WIDOW_MINE | 28 | 28 | 100.0% |
-| SCV | 1850 | 1850 | 100.0% |
+| SCV | 1850 | 1782 | 96.3% |
 | REAPER | 36 | 36 | 100.0% |
 | HELLION | 52 | 52 | 100.0% |
-| **TOTAL** | 6807 | 6807 | **100.0%** |
+| **TOTAL** | 6807 | 6739 | **99.0%** |
 
 ### Buildings — Per-Type
 
@@ -197,7 +197,7 @@ Accuracy: 100.0% (4/4)
 | SHIELD_BATTERY | 16 | 16 | 100.0% |
 | DARK_SHRINE | 3 | 3 | 100.0% |
 | ROBOTICS_BAY | 2 | 2 | 100.0% |
-| COMMAND_CENTER | 113 | 113 | 100.0% |
+| COMMAND_CENTER | 113 | 22 | 19.5% |
 | SUPPLY_DEPOT | 236 | 236 | 100.0% |
 | BARRACKS | 212 | 212 | 100.0% |
 | ENGINEERING_BAY | 31 | 31 | 100.0% |
@@ -208,7 +208,7 @@ Accuracy: 100.0% (4/4)
 | STARPORT | 58 | 58 | 100.0% |
 | FUSION_CORE | 3 | 3 | 100.0% |
 | REFINERY | 158 | 158 | 100.0% |
-| HATCHERY | 122 | 122 | 100.0% |
+| HATCHERY | 122 | 104 | 85.2% |
 | SPAWNING_POOL | 54 | 54 | 100.0% |
 | EVOLUTION_CHAMBER | 15 | 15 | 100.0% |
 | ROACH_WARREN | 28 | 28 | 100.0% |
@@ -221,7 +221,7 @@ Accuracy: 100.0% (4/4)
 | CREEP_TUMOR | 41 | 41 | 100.0% |
 | CREEP_TUMOR_QUEEN | 69 | 69 | 100.0% |
 | ORACLE_STASIS_TRAP | 1 | 1 | 100.0% |
-| **TOTAL** | 2148 | 2148 | **100.0%** |
+| **TOTAL** | 2148 | 2039 | **94.9%** |
 
 ### Upgrades
 
@@ -247,19 +247,19 @@ Accuracy: 100.0% (103/103)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 66699 | -153500 | 221169 | 331.6% |
-| vespeneCurrent | 43390 | 51316 | 24412 | 56.3% |
-| mineralsCollectionRate | 208770 | 174760 | 47786 | 22.9% |
-| vespeneCollectionRate | 50869 | 42250 | 12985 | 25.5% |
-| foodMade | 9520 | 9581 | 247 | 2.6% |
-| foodUsed | 7488 | 7874 | 532 | 7.1% |
-| workersActiveCount | 4907 | 5094 | 229 | 4.7% |
-| mineralsUsedCurrentArmy | 108250 | 110175 | 11225 | 10.4% |
-| mineralsUsedCurrentEconomy | 478750 | 465000 | 22400 | 4.7% |
-| mineralsUsedCurrentTechnology | 119150 | 136425 | 28525 | 23.9% |
-| vespeneUsedCurrentArmy | 24475 | 24775 | 5200 | 21.2% |
+| mineralsCurrent | 66699 | 70255 | 57182 | 85.7% |
+| vespeneCurrent | 43390 | 26303 | 29335 | 67.6% |
+| mineralsCollectionRate | 208770 | 177082 | 47518 | 22.8% |
+| vespeneCollectionRate | 50869 | 41749 | 13270 | 26.1% |
+| foodMade | 9520 | 9699 | 291 | 3.1% |
+| foodUsed | 7488 | 7719 | 449 | 6.0% |
+| workersActiveCount | 4907 | 4931 | 188 | 3.8% |
+| mineralsUsedCurrentArmy | 108250 | 111650 | 10700 | 9.9% |
+| mineralsUsedCurrentEconomy | 478750 | 416075 | 66125 | 13.8% |
+| mineralsUsedCurrentTechnology | 119150 | 158675 | 46875 | 39.3% |
+| vespeneUsedCurrentArmy | 24475 | 25500 | 4825 | 19.7% |
 | vespeneUsedCurrentEconomy | 150 | 0 | 150 | 100.0% |
-| vespeneUsedCurrentTechnology | 25075 | 26350 | 14325 | 57.1% |
+| vespeneUsedCurrentTechnology | 25075 | 39000 | 16225 | 64.7% |
 
 ## 7-minute checkpoint
 
@@ -281,13 +281,13 @@ Accuracy: 100.0% (103/103)
 | ORACLE | 10 | 10 | 100.0% |
 | WARP_PRISM | 10 | 10 | 100.0% |
 | ZERGLING | 487 | 487 | 100.0% |
-| ROACH | 287 | 287 | 100.0% |
+| ROACH | 287 | 283 | 98.6% |
 | HYDRALISK | 9 | 9 | 100.0% |
 | MUTALISK | 11 | 11 | 100.0% |
 | SWARM_HOST | 6 | 6 | 100.0% |
 | QUEEN | 153 | 153 | 100.0% |
 | DRONE | 1848 | 1848 | 100.0% |
-| OVERLORD | 403 | 403 | 100.0% |
+| OVERLORD | 403 | 402 | 99.8% |
 | BANELING | 31 | 31 | 100.0% |
 | CHANGELING | 1 | 1 | 100.0% |
 | MARINE | 605 | 605 | 100.0% |
@@ -301,10 +301,10 @@ Accuracy: 100.0% (103/103)
 | CYCLONE | 11 | 11 | 100.0% |
 | LIBERATOR | 9 | 9 | 100.0% |
 | WIDOW_MINE | 33 | 33 | 100.0% |
-| SCV | 1929 | 1929 | 100.0% |
+| SCV | 1929 | 1872 | 97.0% |
 | REAPER | 17 | 17 | 100.0% |
 | HELLION | 39 | 39 | 100.0% |
-| **TOTAL** | 7558 | 7558 | **100.0%** |
+| **TOTAL** | 7558 | 7496 | **99.2%** |
 
 ### Buildings — Per-Type
 
@@ -324,7 +324,7 @@ Accuracy: 100.0% (103/103)
 | DARK_SHRINE | 3 | 3 | 100.0% |
 | FLEET_BEACON | 1 | 1 | 100.0% |
 | ROBOTICS_BAY | 5 | 5 | 100.0% |
-| COMMAND_CENTER | 115 | 115 | 100.0% |
+| COMMAND_CENTER | 115 | 18 | 15.7% |
 | SUPPLY_DEPOT | 326 | 326 | 100.0% |
 | BARRACKS | 245 | 245 | 100.0% |
 | ENGINEERING_BAY | 51 | 51 | 100.0% |
@@ -337,7 +337,7 @@ Accuracy: 100.0% (103/103)
 | STARPORT | 84 | 84 | 100.0% |
 | FUSION_CORE | 7 | 7 | 100.0% |
 | REFINERY | 181 | 181 | 100.0% |
-| HATCHERY | 114 | 114 | 100.0% |
+| HATCHERY | 114 | 73 | 64.0% |
 | SPAWNING_POOL | 45 | 45 | 100.0% |
 | EVOLUTION_CHAMBER | 39 | 39 | 100.0% |
 | ROACH_WARREN | 32 | 32 | 100.0% |
@@ -352,7 +352,7 @@ Accuracy: 100.0% (103/103)
 | EXTRACTOR | 162 | 162 | 100.0% |
 | CREEP_TUMOR | 152 | 152 | 100.0% |
 | CREEP_TUMOR_QUEEN | 115 | 115 | 100.0% |
-| **TOTAL** | 2699 | 2699 | **100.0%** |
+| **TOTAL** | 2699 | 2561 | **94.9%** |
 
 ### Upgrades
 
@@ -393,17 +393,17 @@ Accuracy: 100.0% (185/185)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 89788 | -203425 | 294743 | 328.3% |
-| vespeneCurrent | 52228 | 40532 | 34290 | 65.7% |
-| mineralsCollectionRate | 201496 | 145346 | 67564 | 33.5% |
-| vespeneCollectionRate | 61091 | 41726 | 22983 | 37.6% |
-| foodMade | 11184 | 11035 | 351 | 3.1% |
-| foodUsed | 9017 | 9336 | 481 | 5.3% |
-| workersActiveCount | 5004 | 5280 | 300 | 6.0% |
-| mineralsUsedCurrentArmy | 175225 | 171175 | 14450 | 8.2% |
-| mineralsUsedCurrentEconomy | 506875 | 490350 | 25425 | 5.0% |
-| mineralsUsedCurrentTechnology | 148600 | 172100 | 44800 | 30.1% |
-| vespeneUsedCurrentArmy | 57400 | 54100 | 6950 | 12.1% |
+| mineralsCurrent | 89788 | 88520 | 90666 | 101.0% |
+| vespeneCurrent | 52228 | 11093 | 54841 | 105.0% |
+| mineralsCollectionRate | 201496 | 156047 | 58971 | 29.3% |
+| vespeneCollectionRate | 61091 | 40111 | 23596 | 38.6% |
+| foodMade | 11184 | 11189 | 261 | 2.3% |
+| foodUsed | 9017 | 9126 | 362 | 4.0% |
+| workersActiveCount | 5004 | 5041 | 161 | 3.2% |
+| mineralsUsedCurrentArmy | 175225 | 173300 | 13775 | 7.9% |
+| mineralsUsedCurrentEconomy | 506875 | 447550 | 61625 | 12.2% |
+| mineralsUsedCurrentTechnology | 148600 | 188775 | 55125 | 37.1% |
+| vespeneUsedCurrentArmy | 57400 | 55375 | 6275 | 10.9% |
 | vespeneUsedCurrentEconomy | 50 | 0 | 50 | 100.0% |
-| vespeneUsedCurrentTechnology | 37950 | 45450 | 18150 | 47.8% |
+| vespeneUsedCurrentTechnology | 37950 | 58325 | 21525 | 56.7% |
 
