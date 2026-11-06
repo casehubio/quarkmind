@@ -713,9 +713,6 @@ public class EmulatedGame {
         }
         state.deductMinerals(mCost);
         state.deductVespene(gCost);
-        if (state == friendly) {
-            economyTracker.recordBuildSpending(b.buildingType(), mCost, gCost);
-        }
         final String tag = trackerDriven ? b.replayTag() : "bldg-" + nextTag++;
         if (trackerDriven) {trackerDrivenBuildings.add(tag);}
         final BuildingType bt = b.buildingType();
@@ -727,9 +724,14 @@ public class EmulatedGame {
                                  : gameFrame + (loopOffset + SC2Data.buildTimeInLoops(bt)) / SC2Data.LOOPS_PER_TICK;
         final RaceModel model     = (state == friendly) ? playerRaceModel : null;
         final boolean   isReactor = tag.startsWith("r-") && isReactorAddOn(bt, state);
+        final int fMCost = mCost;
+        final int fGCost = gCost;
         physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
             markBuildingComplete(tag, state);
             state.addSupply(SC2Data.supplyBonus(bt));
+            if (state == friendly) {
+                economyTracker.recordBuildSpending(bt, fMCost, fGCost);
+            }
             if (model != null) {model.onBuildingComplete(state, bt, tag);}
             if (state == friendly && model != null) {
                 if (playerRaceModel.townHallTypes().contains(bt)) {
@@ -1163,10 +1165,10 @@ public class EmulatedGame {
                 }
                 state.deductMinerals(mCost);
                 state.deductVespene(gCost);
-                if (state == friendly) {
-                    economyTracker.recordMorphSpending(targetBt, mCost, gCost);
-                }
             }
+            final boolean shouldRecordSpending = !trackerDriven && state == friendly;
+            final int morphMCost = shouldRecordSpending ? SC2Data.mineralCost(targetBt) : 0;
+            final int morphGCost = shouldRecordSpending ? SC2Data.gasCost(targetBt) : 0;
             state.replaceAllBuildings(b -> b.tag().equals(resolvedTag)
                                            ? new Building(b.tag(), targetBt, b.position(), b.health(), b.maxHealth(), false)
                                            : b);
@@ -1176,6 +1178,9 @@ public class EmulatedGame {
                 : gameFrame + SC2Data.buildTimeInLoops(targetBt) / SC2Data.LOOPS_PER_TICK;
             physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
                 markBuildingComplete(resolvedTag, state);
+                if (shouldRecordSpending) {
+                    economyTracker.recordMorphSpending(targetBt, morphMCost, morphGCost);
+                }
                 if (model != null) {model.onBuildingComplete(state, targetBt, resolvedTag);}
                 log.debugf("[EMULATED] Building morph complete — %s → %s", m.sourceName(), targetBt);
             }));
