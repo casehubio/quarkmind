@@ -29,8 +29,10 @@ import io.quarkmind.sc2.intent.UnitDiedIntent;
 import io.quarkmind.sc2.mock.Sc2ReplayShared;
 
 import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -77,15 +79,18 @@ public final class TrackerIntentExtractor {
         Map<Long, UnitType>     unitTagToType     = new HashMap<>();
         Map<Long, BuildingType> buildingTagToType = new HashMap<>();
 
-        // Pre-pass: collect UnitDone loops for buildings (pinned completion)
-        Map<Long, Integer> buildingDoneLoops = new HashMap<>();
+        // Pre-pass: collect UnitDone loops for buildings (pinned completion).
+        // A building that morphs (CC→OC, Hatchery→Lair) has multiple UnitDone events:
+        // one for initial construction and one for each morph. Store all in order
+        // so each consumer (UnitInit for construction, UnitInit for morph) gets its own.
+        Map<Long, Deque<Integer>> buildingDoneLoops = new HashMap<>();
         for (Event raw : replay.trackerEvents.getEvents()) {
             if (raw.getId() == ITrackerEvents.ID_UNIT_DONE) {
                 Integer tagIndex   = raw.get("unitTagIndex");
                 Integer tagRecycle = raw.get("unitTagRecycle");
                 if (tagIndex != null && tagRecycle != null) {
                     long compositeTag = ((long) tagIndex << 32) | (tagRecycle & 0xFFFFFFFFL);
-                    buildingDoneLoops.put(compositeTag, raw.getLoop());
+                    buildingDoneLoops.computeIfAbsent(compositeTag, k -> new ArrayDeque<>()).add(raw.getLoop());
                 }
             }
         }
@@ -139,7 +144,8 @@ public final class TrackerIntentExtractor {
                         BuildingType bt           = Sc2ReplayShared.toBuildingType(typeName);
                         String       tag          = "r-" + ue.getUnitTagIndex() + "-" + ue.getUnitTagRecycle();
                         Point2d      pos          = new Point2d(ue.getXCoord(), ue.getYCoord());
-                        int          doneLoop     = buildingDoneLoops.getOrDefault(compositeTag, -1);
+                        Deque<Integer> doneQueue   = buildingDoneLoops.get(compositeTag);
+                        int          doneLoop     = (doneQueue != null && !doneQueue.isEmpty()) ? doneQueue.pollFirst() : -1;
 
                         if (MORPH_BUILDING_SOURCES.containsKey(typeName)) {
                             BuildingType sourceType = buildingTagToType.getOrDefault(compositeTag, MORPH_BUILDING_SOURCES.get(typeName));
