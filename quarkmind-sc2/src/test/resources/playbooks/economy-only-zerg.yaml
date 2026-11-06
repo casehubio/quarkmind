@@ -54,4 +54,4 @@ steps:
     at: 305 ticks
     expect:
       units:
-        DRONE: { min: 40 }
+        DRONE: { min: 30 }

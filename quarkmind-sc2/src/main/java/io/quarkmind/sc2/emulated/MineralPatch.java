@@ -2,6 +2,9 @@ package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.Point2d;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class MineralPatch {
     static final double CLOSE_PATCH_MINERALS   = 1500.0;
     static final double FAR_PATCH_MINERALS     = 750.0;
@@ -12,7 +15,8 @@ class MineralPatch {
     final   Point2d position;
     final   int     baseIndex;
     private double  remainingMinerals;
-    SimulatedWorker occupant;
+    static final int MAX_MINERS = 2;
+    final List<SimulatedWorker> miners = new ArrayList<>(MAX_MINERS);
     final boolean rich;
 
 

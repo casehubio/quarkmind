@@ -64,6 +64,15 @@ class WorkerSimulation {
         assignToNearestPatch(w);
     }
 
+    private GasSlot findUndersaturatedGasSlot(int baseIdx) {
+        for (GasSlot slot : gasSlots) {
+            if (slot.baseIndex == baseIdx && slot.assignedWorkers.size() < GasSlot.MAX_WORKERS) {
+                return slot;
+            }
+        }
+        return null;
+    }
+
     void onGasBuildingCompleted(String tag, Point2d position) {
         if (gasSlots.stream().anyMatch(s -> s.position.distanceTo(position) < 5.0)) return;
         int baseIdx = findNearestBaseIndex(position);
@@ -77,8 +86,8 @@ class WorkerSimulation {
             if (w.task != WorkerTask.MINING_MINERALS
                     && w.task != WorkerTask.RETURNING_MINERALS
                     && w.task != WorkerTask.IDLE) continue;
-            if (w.assignedPatch != null && w.assignedPatch.occupant == w) {
-                w.assignedPatch.occupant = null;
+            if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
+                w.assignedPatch.miners.remove(w);
             }
             w.assignedPatch = null;
             w.assignedGasSlot = slot;
@@ -89,11 +98,60 @@ class WorkerSimulation {
         }
     }
 
+    void rebalanceGasWorkers() {
+        for (GasSlot slot : gasSlots) {
+            int needed = GasSlot.MAX_WORKERS - slot.assignedWorkers.size();
+            if (needed <= 0) continue;
+            int mineralWorkersAtBase = countMineralWorkersAtBase(slot.baseIndex);
+            int available = mineralWorkersAtBase - MIN_MINERAL_WORKERS_BEFORE_GAS;
+            if (available <= 0) continue;
+            int toTransfer = Math.min(needed, available);
+            for (SimulatedWorker w : new ArrayList<>(workers.values())) {
+                if (toTransfer <= 0) break;
+                if (w.baseIndex != slot.baseIndex) continue;
+                if (w.assignedGasSlot != null) continue;
+                if (w.task != WorkerTask.MINING_MINERALS
+                        && w.task != WorkerTask.RETURNING_MINERALS
+                        && w.task != WorkerTask.IDLE) continue;
+                if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
+                    w.assignedPatch.miners.remove(w);
+                }
+                w.assignedPatch = null;
+                w.assignedGasSlot = slot;
+                w.task = WorkerTask.HARVESTING_GAS;
+                w.targetPosition = slot.position;
+                slot.assignedWorkers.add(w);
+                toTransfer--;
+            }
+        }
+    }
+
+    private static final int MIN_MINERAL_WORKERS_BEFORE_GAS = 8;
+
+    void onGasBuildingDestroyed(String tag) {
+        GasSlot slot = null;
+        for (GasSlot s : gasSlots) {
+            if (s.buildingTag.equals(tag)) {
+                slot = s;
+                break;
+            }
+        }
+        if (slot == null) {return;}
+        for (SimulatedWorker w : new ArrayList<>(slot.assignedWorkers)) {
+            slot.removeWorker(w);
+            w.assignedGasSlot = null;
+            w.task            = WorkerTask.IDLE;
+            assignToNearestPatch(w);
+        }
+        gasSlots.remove(slot);
+    }
+
+
     void onWorkerDied(String tag) {
         SimulatedWorker w = workers.remove(tag);
         if (w == null) return;
-        if (w.assignedPatch != null && w.assignedPatch.occupant == w) {
-            w.assignedPatch.occupant = null;
+        if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
+            w.assignedPatch.miners.remove(w);
         }
         if (w.assignedGasSlot != null) {
             w.assignedGasSlot.removeWorker(w);
@@ -129,7 +187,7 @@ class WorkerSimulation {
                 }
                 return 0;
             }
-            if (w.assignedPatch.occupant != w) {
+            if (!w.assignedPatch.miners.contains(w)) {
                 tryStartMining(w);
                 return 0;
             }
@@ -137,7 +195,7 @@ class WorkerSimulation {
             if (w.cycleTicksRemaining <= 0) {
                 double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
                 w.cargo = w.assignedPatch.harvest(cargo);
-                w.assignedPatch.occupant = null;
+                w.assignedPatch.miners.remove(w);
                 w.task = WorkerTask.RETURNING_MINERALS;
                 w.targetPosition = bases.get(w.baseIndex).position();
             }
@@ -159,8 +217,8 @@ class WorkerSimulation {
     }
 
     private void tryStartMining(SimulatedWorker w) {
-        if (w.assignedPatch.occupant == null) {
-            w.assignedPatch.occupant = w;
+        if (w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS) {
+            w.assignedPatch.miners.add(w);
             w.cycleTicksRemaining = SimulatedWorker.MINING_DURATION_TICKS;
         }
     }
@@ -212,7 +270,7 @@ class WorkerSimulation {
 
         for (MineralPatch p : base.patches()) {
             if (p.isDepleted()) continue;
-            if (p.occupant != null) continue;
+            if (p.miners.size() >= MineralPatch.MAX_MINERS) continue;
             double d = w.position.distanceTo(p.position);
             if (d < nearestDist) {
                 nearestDist = d;
@@ -242,8 +300,8 @@ class WorkerSimulation {
         w.targetPosition = nearest.position;
         w.task = WorkerTask.MINING_MINERALS;
         if (w.isAtTarget()) {
-            if (nearest.occupant == null || nearest.occupant == w) {
-                nearest.occupant = w;
+            if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
+                if (!nearest.miners.contains(w)) nearest.miners.add(w);
                 w.cycleTicksRemaining = SimulatedWorker.MINING_DURATION_TICKS;
             }
         }
@@ -320,8 +378,8 @@ class WorkerSimulation {
                     if (excess <= 0) break;
                     if (w.baseIndex == baseIdx
                             && (w.task == WorkerTask.MINING_MINERALS || w.task == WorkerTask.RETURNING_MINERALS)) {
-                        if (w.assignedPatch != null && w.assignedPatch.occupant == w) {
-                            w.assignedPatch.occupant = null;
+                        if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
+                            w.assignedPatch.miners.remove(w);
                         }
                         w.assignedPatch = null;
                         w.task = WorkerTask.IDLE;
@@ -363,8 +421,8 @@ class WorkerSimulation {
                             && (w.task == WorkerTask.MINING_MINERALS
                                 || w.task == WorkerTask.RETURNING_MINERALS
                                 || w.task == WorkerTask.IDLE)) {
-                        if (w.assignedPatch != null && w.assignedPatch.occupant == w) {
-                            w.assignedPatch.occupant = null;
+                        if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
+                            w.assignedPatch.miners.remove(w);
                         }
                         w.assignedPatch = null;
                         w.assignedGasSlot = slot;
@@ -391,8 +449,8 @@ class WorkerSimulation {
 
     void pauseAllWorkers() {
         for (SimulatedWorker w : workers.values()) {
-            if (w.assignedPatch != null && w.assignedPatch.occupant == w) {
-                w.assignedPatch.occupant = null;
+            if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
+                w.assignedPatch.miners.remove(w);
             }
             w.assignedPatch = null;
             if (w.assignedGasSlot != null) {
