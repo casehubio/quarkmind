@@ -18,6 +18,7 @@ import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.BuildingDiedIntent;
+import io.quarkmind.sc2.intent.MorphIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
@@ -2039,6 +2040,40 @@ class EmulatedGameTest {
             List.of(nexus0, nexus1), probes);
 
         assertThat(result).containsExactly(1, 1);
+    }
+
+    // ---- #547: add-on swap morph — building type must change ----
+
+    @Test
+    void addOnSwapChangesParentBuildingType() {
+        game.setMineralsForTesting(500);
+        Building reactor = game.spawnBuildingForTesting(BuildingType.BARRACKS, new Point2d(25, 25));
+
+        game.applyIntent(new TimedIntent(0,
+            MorphIntent.of(reactor.tag(), "BARRACKS", "FactoryReactor")));
+
+        assertThat(game.snapshot().myBuildings().stream()
+            .filter(b -> b.tag().equals(reactor.tag()))
+            .findFirst().orElseThrow().type())
+            .as("Add-on swap must change building type from BARRACKS to FACTORY")
+            .isEqualTo(BuildingType.FACTORY);
+    }
+
+    @Test
+    void addOnSwapKeepsBuildingComplete() {
+        game.setMineralsForTesting(500);
+        Building reactor = game.spawnBuildingForTesting(BuildingType.BARRACKS, new Point2d(25, 25));
+
+        game.applyIntent(new TimedIntent(0,
+            MorphIntent.of(reactor.tag(), "BARRACKS", "StarportTechLab")));
+
+        Building swapped = game.snapshot().myBuildings().stream()
+            .filter(b -> b.tag().equals(reactor.tag()))
+            .findFirst().orElseThrow();
+        assertThat(swapped.type()).isEqualTo(BuildingType.STARPORT);
+        assertThat(swapped.isComplete())
+            .as("Add-on swap is instant — building must stay complete")
+            .isTrue();
     }
 
     // ---- #546: ghost completion — destroyed building must not record tech spending ----

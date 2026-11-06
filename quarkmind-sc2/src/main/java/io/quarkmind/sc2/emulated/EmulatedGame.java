@@ -1111,6 +1111,14 @@ public class EmulatedGame {
             "OrbitalCommand", BuildingType.ORBITAL_COMMAND,
             "PlanetaryFortress", BuildingType.PLANETARY_FORTRESS
                                                                                     );
+    private static final Map<String, BuildingType> ADDON_SWAP_TARGETS = Map.of(
+            "BarracksTechLab", BuildingType.BARRACKS,
+            "BarracksReactor", BuildingType.BARRACKS,
+            "FactoryTechLab", BuildingType.FACTORY,
+            "FactoryReactor", BuildingType.FACTORY,
+            "StarportTechLab", BuildingType.STARPORT,
+            "StarportReactor", BuildingType.STARPORT
+                                                                                );
 
     private static final Map<String, UnitType> MORPH_UNIT_TARGETS = Map.ofEntries(
             Map.entry("Baneling", UnitType.BANELING),
@@ -1183,6 +1191,14 @@ public class EmulatedGame {
                 if (model != null) {model.onBuildingComplete(state, targetBt, resolvedTag);}
                 log.debugf("[EMULATED] Building morph complete — %s → %s", m.sourceName(), targetBt);
             }));
+            return;
+        }
+        BuildingType addonTarget = ADDON_SWAP_TARGETS.get(m.targetName());
+        if (addonTarget != null) {
+            state.replaceAllBuildings(b -> b.tag().equals(m.unitTag())
+                ? new Building(b.tag(), addonTarget, b.position(), b.health(), b.maxHealth(), b.isComplete())
+                : b);
+            log.debugf("[EMULATED] Add-on swap — %s → %s (tag=%s)", m.sourceName(), addonTarget, m.unitTag());
             return;
         }
         UnitType targetUnit = MORPH_UNIT_TARGETS.get(m.targetName());
