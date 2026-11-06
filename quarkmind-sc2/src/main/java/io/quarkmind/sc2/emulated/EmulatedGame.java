@@ -191,8 +191,7 @@ public class EmulatedGame {
         friendly.addVespene(tickGasIncome);
         cumulativeGasIncome += tickGasIncome;
         double passiveMineralIncome = playerRaceModel.tickPassive(friendly, gameFrame * (long) SC2Data.LOOPS_PER_TICK);
-        TickIncome formulaIncome = workerSimulation.formulaIncome();
-        economyTracker.recordIncome(formulaIncome.mineralIncome() + passiveMineralIncome, formulaIncome.vespeneIncome());
+        economyTracker.recordIncome(tickMineralIncome + passiveMineralIncome, tickGasIncome);
         moveFriendlyUnits();
         // Recompute after movement, before combat: a unit that dies this tick still
         // provided vision for this frame — correct SC2 behaviour.
