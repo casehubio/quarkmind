@@ -1154,28 +1154,35 @@ public class EmulatedGame {
                 } catch (IllegalArgumentException ignored) {}
             }
             final String resolvedTag = buildingTag;
+            boolean trackerDriven = m.unitTag() != null && m.unitTag().startsWith("r-");
             Building source = state.buildings().stream()
-                                   .filter(b -> b.tag().equals(resolvedTag) && b.isComplete())
+                                   .filter(b -> b.tag().equals(resolvedTag) && (b.isComplete() || trackerDriven))
                                    .findFirst().orElse(null);
             if (source == null) {
                 log.debugf("[EMULATED] Building morph rejected — building %s not found or incomplete", resolvedTag);
                 return;
             }
-            boolean trackerDriven = m.unitTag() != null && m.unitTag().startsWith("r-");
-            if (!trackerDriven) {
-                int mCost = SC2Data.mineralCost(targetBt);
-                int gCost = SC2Data.gasCost(targetBt);
-                if ((int) state.minerals() < mCost || state.vespene() < gCost) {
-                    log.debugf("[EMULATED] Building morph rejected — insufficient resources for %s (need %d/%d, have %d/%d)",
-                               targetBt, mCost, gCost, (int) state.minerals(), state.vespene());
-                    return;
-                }
-                state.deductMinerals(mCost);
-                state.deductVespene(gCost);
+            if (trackerDriven) {
+                // Tracker-driven morphs are instant type swaps — matches GT behavior.
+                // GT (ReplaySimulatedGame) applies UnitTypeChange as an instant swap,
+                // so the building stays complete throughout the morph.
+                state.replaceAllBuildings(b -> b.tag().equals(resolvedTag)
+                    ? new Building(b.tag(), targetBt, b.position(), b.health(), b.maxHealth(), b.isComplete())
+                    : b);
+                log.debugf("[EMULATED] Tracker-driven building morph — %s → %s (tag=%s)", m.sourceName(), targetBt, resolvedTag);
+                return;
             }
-            final boolean shouldRecordSpending = !trackerDriven && state == friendly;
-            final int morphMCost = shouldRecordSpending ? SC2Data.mineralCost(targetBt) : 0;
-            final int morphGCost = shouldRecordSpending ? SC2Data.gasCost(targetBt) : 0;
+            int mCost = SC2Data.mineralCost(targetBt);
+            int gCost = SC2Data.gasCost(targetBt);
+            if ((int) state.minerals() < mCost || state.vespene() < gCost) {
+                log.debugf("[EMULATED] Building morph rejected — insufficient resources for %s (need %d/%d, have %d/%d)",
+                           targetBt, mCost, gCost, (int) state.minerals(), state.vespene());
+                return;
+            }
+            state.deductMinerals(mCost);
+            state.deductVespene(gCost);
+            final int morphMCost = (state == friendly) ? SC2Data.mineralCost(targetBt) : 0;
+            final int morphGCost = (state == friendly) ? SC2Data.gasCost(targetBt) : 0;
             state.replaceAllBuildings(b -> b.tag().equals(resolvedTag)
                                            ? new Building(b.tag(), targetBt, b.position(), b.health(), b.maxHealth(), false)
                                            : b);
@@ -1185,7 +1192,7 @@ public class EmulatedGame {
                 : gameFrame + SC2Data.buildTimeInLoops(targetBt) / SC2Data.LOOPS_PER_TICK;
             physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, resolvedTag, () -> {
                 markBuildingComplete(resolvedTag, state);
-                if (shouldRecordSpending) {
+                if (state == friendly) {
                     economyTracker.recordMorphSpending(targetBt, morphMCost, morphGCost);
                 }
                 if (model != null) {model.onBuildingComplete(state, targetBt, resolvedTag);}
