@@ -1,4 +1,4 @@
-# Standalone EmulatedGame Accuracy Baseline — 2026-11-06
+# Standalone EmulatedGame Accuracy Baseline — 2026-11-07
 
 **Dataset:** Oracle (118 replays, v4.9.3)
 **Processed:** 118 replays, 236 player runs
