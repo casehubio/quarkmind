@@ -390,6 +390,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - `ChronoBoostAbilLinkDiscoveryTest` — discovers Chrono Boost abilLink from game events across 65 Protoss oracle replays; found abilLink=716 (444 occurrences)
 - `VespeneSpendingDiagnosticTest` — per-replay vespene spending breakdown (army + technology); correlates GT InProgress/Current/Lost with EM spending; identifies structural floor from PlayerStatsEvent update cadence
 - `GasIncomeDiagnosticTest` — per-replay, per-race gas income variance; compares GT vespeneCollectionRate and vespeneCurrent against simulation; tracks gas slot count, gas worker count, cumulative gas income
+- `EconomyDivergenceDiagnosticTest` — per-replay mineralsCurrent and vespeneCurrent divergence at 5/7-min checkpoints; top-20 worst replays with mineral/gas rates, workers, supply; per-race MAPE breakdown; error direction (over vs under)
 - Run with: `mvn test -pl quarkmind-sc2 -Pdiagnostic`
 
 **Never use `@QuarkusTest` for tests that can be plain JUnit** — boot cost is significant.
