@@ -1959,11 +1959,11 @@ class EmulatedGameTest {
 
         game.injectReplayBuildingWithCost(gateway);
 
-        // Minerals go negative (debt), matching the real player's constrained state.
-        // The debt is repaid through mining income over subsequent ticks.
+        // Internal balance goes negative (debt), repaid through mining income.
+        // Reported snapshot floors at 0 to match SC2's non-negative display.
         assertThat(game.snapshot().minerals())
-            .as("Mineral debt is tracked — balance is 50 - 150 = -100")
-            .isEqualTo(-100);
+            .as("Reported minerals floored at zero despite internal debt")
+            .isZero();
         assertThat(game.snapshot().myBuildings())
             .as("Building is still injected even with mineral debt")
             .anyMatch(b -> b.tag().equals("r-1-1"));
@@ -2210,6 +2210,30 @@ class EmulatedGameTest {
                 .isEqualTo(SC2Data.REACTOR_GAS_COST);
     }
 
+
+    @Test
+    void snapshotFloorsMineralsAtZero() {
+        game.reset();
+        game.friendly.setMinerals(-100);
+        GameState state = game.snapshot();
+        assertThat(state.minerals()).isZero();
+    }
+
+    @Test
+    void snapshotFloorsVespeneAtZero() {
+        game.reset();
+        game.friendly.setVespene(-50);
+        GameState state = game.snapshot();
+        assertThat(state.vespene()).isZero();
+    }
+
+    @Test
+    void snapshotPreservesPositiveMinerals() {
+        game.reset();
+        game.friendly.setMinerals(200);
+        GameState state = game.snapshot();
+        assertThat(state.minerals()).isEqualTo(200);
+    }
 
     private static Unit probe(String tag, float x, float y) {
         return new Unit(tag, UnitType.PROBE, new Point2d(x, y),

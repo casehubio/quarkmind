@@ -1351,8 +1351,10 @@ public class EmulatedGame {
         int workerCount = workerCountOverride >= 0
             ? workerCountOverride
             : (int) friendlyWithCooldown.stream().filter(u -> SC2Data.isWorker(u.type())).count();
+        int reportedMinerals = Math.max(0, (int) friendly.minerals());
+        int reportedVespene = Math.max(0, friendly.vespene());
         PlayerEconomyStats friendlyEconomy = economyTracker.currentStats(
-            (int) friendly.minerals(), friendly.vespene(),
+            reportedMinerals, reportedVespene,
             friendly.supply(), friendly.supplyUsed(), workerCount);
 
         if (terrainGrid != null) {
@@ -1362,9 +1364,9 @@ public class EmulatedGame {
             List<Unit> visibleStaging = stagingArea.stream()
                 .filter(u -> visibility.isVisible(u.position()))
                 .toList();
-            return new GameState((int) friendly.minerals(), friendly.vespene(), friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), visibleEnemies, List.copyOf(enemy.buildings()), visibleStaging, List.copyOf(geysers), List.of(), gameFrame, null, friendlyEconomy, PlayerEconomyStats.EMPTY, friendly.completedUpgradeNames(), Set.of());
+            return new GameState(reportedMinerals, reportedVespene, friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), visibleEnemies, List.copyOf(enemy.buildings()), visibleStaging, List.copyOf(geysers), List.of(), gameFrame, null, friendlyEconomy, PlayerEconomyStats.EMPTY, friendly.completedUpgradeNames(), Set.of());
         }
-        return new GameState((int) friendly.minerals(), friendly.vespene(), friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), List.copyOf(enemy.units()), List.copyOf(enemy.buildings()), List.copyOf(stagingArea), List.copyOf(geysers), List.of(), gameFrame, null, friendlyEconomy, PlayerEconomyStats.EMPTY, friendly.completedUpgradeNames(), Set.of());
+        return new GameState(reportedMinerals, reportedVespene, friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), List.copyOf(enemy.units()), List.copyOf(enemy.buildings()), List.copyOf(stagingArea), List.copyOf(geysers), List.of(), gameFrame, null, friendlyEconomy, PlayerEconomyStats.EMPTY, friendly.completedUpgradeNames(), Set.of());
     }
 
     private GameState snapshotForEnemy() {
