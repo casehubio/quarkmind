@@ -164,13 +164,14 @@ class WorkerSimulation {
 
     TickIncome tick() {
         double mineralIncome = 0;
-        double gasIncome = 0;
         for (SimulatedWorker w : workers.values()) {
-            if (w.assignedGasSlot != null) {
-                gasIncome += tickGasWorker(w);
-            } else {
+            if (w.assignedGasSlot == null) {
                 mineralIncome += tickMineralWorker(w);
             }
+        }
+        double gasIncome = 0;
+        for (GasSlot slot : gasSlots) {
+            gasIncome += SC2Data.gasIncomePerTick(slot.assignedWorkers.size());
         }
         return new TickIncome(mineralIncome, gasIncome);
     }
