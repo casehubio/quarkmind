@@ -2016,15 +2016,19 @@ class EmulatedGameTest {
             .count();
         assertThat(nexusCount).as("Two nexuses should be complete").isEqualTo(2);
 
-        // All 12 probes are near nexus-0 at (8,8), far from nexus-1 at (30,30).
-        // Workers should stay assigned to base 0, not redistribute to base 1.
+        // #554: workers rebalance to expansion when town hall completes.
+        // Excess workers from base 0 transfer to base 1 (min 8 kept at base 0).
         int[] mineralWorkers = game.workerSimulation().mineralWorkersPerBase();
+        int total = mineralWorkers[0] + mineralWorkers[1];
         assertThat(mineralWorkers[0])
-            .as("All probes near base 0 — all assigned to base 0")
-            .isGreaterThanOrEqualTo(SC2Data.INITIAL_PROBES - 1);
+            .as("Base 0 keeps at least MIN_MINERAL_WORKERS_BEFORE_GAS")
+            .isGreaterThanOrEqualTo(8);
         assertThat(mineralWorkers[1])
-            .as("No probes near base 1")
-            .isLessThanOrEqualTo(1);
+            .as("Expansion receives transferred workers")
+            .isGreaterThan(0);
+        assertThat(total)
+            .as("Total mineral workers preserved")
+            .isGreaterThanOrEqualTo(SC2Data.INITIAL_PROBES - 1);
     }
 
     @Test

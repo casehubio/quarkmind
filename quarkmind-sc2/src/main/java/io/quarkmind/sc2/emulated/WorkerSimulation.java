@@ -24,6 +24,8 @@ class WorkerSimulation {
         this.workerDistancePerTick = speed / SC2Data.GAME_LOOPS_PER_SECOND * SC2Data.LOOPS_PER_TICK;
     }
 
+    private static final int OPTIMAL_WORKERS_PER_BASE = MineralPatch.PATCHES_PER_BASE * MineralPatch.MAX_MINERS;
+
     void onTownHallCompleted(String tag, Point2d position) {
         List<MineralPatch> patches   = new ArrayList<>();
         int                baseIdx   = bases.size();
@@ -35,6 +37,7 @@ class WorkerSimulation {
             patches.add(new MineralPatch(positions[i], baseIdx, amount));
         }
         bases.add(new BaseEntry(tag, position, patches));
+        rebalanceMineralWorkersAcrossBases();
     }
 
     void onTownHallCompleted(String tag, Point2d position, List<Resource> mineralResources) {
@@ -44,6 +47,51 @@ class WorkerSimulation {
             patches.add(new MineralPatch(r.position(), baseIdx, r.remaining(), r.rich()));
         }
         bases.add(new BaseEntry(tag, position, patches));
+        rebalanceMineralWorkersAcrossBases();
+    }
+
+    static final int MAX_TRANSFER_PER_EXPANSION = 4;
+
+    private void rebalanceMineralWorkersAcrossBases() {
+        if (bases.size() < 2) return;
+        int newBaseIdx = bases.size() - 1;
+
+        int bestSrcIdx = -1;
+        int bestSrcCount = 0;
+        for (int i = 0; i < bases.size() - 1; i++) {
+            int count = countMineralWorkersAtBase(i);
+            if (count > bestSrcCount) {
+                bestSrcCount = count;
+                bestSrcIdx = i;
+            }
+        }
+        if (bestSrcIdx < 0) return;
+
+        int excess = bestSrcCount - MIN_MINERAL_WORKERS_BEFORE_GAS;
+        if (excess <= 0) return;
+
+        int toTransfer = Math.min(excess, MAX_TRANSFER_PER_EXPANSION);
+        transferMineralWorkers(bestSrcIdx, newBaseIdx, toTransfer);
+    }
+
+    private int transferMineralWorkers(int fromBase, int toBase, int count) {
+        int transferred = 0;
+        for (SimulatedWorker w : new ArrayList<>(workers.values())) {
+            if (transferred >= count) break;
+            if (w.baseIndex != fromBase) continue;
+            if (w.assignedGasSlot != null) continue;
+            if (w.task != WorkerTask.MINING_MINERALS
+                    && w.task != WorkerTask.RETURNING_MINERALS
+                    && w.task != WorkerTask.IDLE) continue;
+            if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
+                w.assignedPatch.miners.remove(w);
+            }
+            w.assignedPatch = null;
+            w.baseIndex = toBase;
+            assignToNearestPatch(w);
+            transferred++;
+        }
+        return transferred;
     }
 
 

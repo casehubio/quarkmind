@@ -145,6 +145,83 @@ class WorkerSimulationTest {
         assertEquals(1, counts[1]);
     }
 
+    // --- Expansion worker transfer tests ---
+
+    @Test
+    void newExpansion_transfersWorkersFromOversaturatedBase() {
+        List<String> tags = IntStream.rangeClosed(1, 20)
+                .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+        assertEquals(20, sim.mineralWorkersPerBase()[0]);
+
+        Point2d base2Pos = new Point2d(100, 50);
+        sim.onTownHallCompleted("base-2", base2Pos);
+
+        int[] counts = sim.mineralWorkersPerBase();
+        assertEquals(16, counts[0], "Main base loses 4 workers (capped transfer)");
+        assertEquals(4, counts[1], "Expansion receives 4 workers");
+        assertEquals(20, counts[0] + counts[1], "Total preserved");
+    }
+
+    @Test
+    void newExpansion_doesNotTransferBelowMinimum() {
+        List<String> tags = IntStream.rangeClosed(1, 10)
+                .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+
+        Point2d base2Pos = new Point2d(100, 50);
+        sim.onTownHallCompleted("base-2", base2Pos);
+
+        int[] counts = sim.mineralWorkersPerBase();
+        assertTrue(counts[0] >= 8,
+                "Should not transfer below MIN_MINERAL_WORKERS_BEFORE_GAS, got " + counts[0]);
+        assertEquals(10, counts[0] + counts[1],
+                "Total mineral workers should be preserved");
+    }
+
+    @Test
+    void newExpansion_doesNotTransferGasWorkers() {
+        List<String> tags = IntStream.rangeClosed(1, 20)
+                .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+        sim.onGasBuildingCompleted("gas-1", new Point2d(45, 50));
+        int gasWorkersBefore = sim.totalGasWorkers();
+        assertEquals(3, gasWorkersBefore);
+
+        Point2d base2Pos = new Point2d(100, 50);
+        sim.onTownHallCompleted("base-2", base2Pos);
+
+        assertEquals(gasWorkersBefore, sim.totalGasWorkers(),
+                "Gas workers should not be affected by expansion transfer");
+    }
+
+    @Test
+    void newExpansion_firstBase_noTransfer() {
+        sim.reset();
+        sim.onTownHallCompleted(BASE_TAG, BASE_POS);
+        assertEquals(0, sim.mineralWorkersPerBase()[0]);
+    }
+
+    @Test
+    void newExpansion_transfersCappedAt4PerExpansion() {
+        List<String> tags = IntStream.rangeClosed(1, 30)
+                .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+
+        sim.onTownHallCompleted("base-2", new Point2d(100, 50));
+        int[] afterSecond = sim.mineralWorkersPerBase();
+        assertEquals(26, afterSecond[0], "Base 0 loses 4 workers");
+        assertEquals(4, afterSecond[1], "Base 1 receives 4 workers");
+
+        sim.onTownHallCompleted("base-3", new Point2d(150, 50));
+        int[] afterThird = sim.mineralWorkersPerBase();
+        assertEquals(22, afterThird[0], "Base 0 loses 4 more workers");
+        assertEquals(4, afterThird[1], "Base 1 unchanged");
+        assertEquals(4, afterThird[2], "Base 2 receives 4 workers");
+        assertEquals(30, afterThird[0] + afterThird[1] + afterThird[2],
+                "Total workers preserved");
+    }
+
     // --- Gas harvesting tests ---
 
     @Test
