@@ -26,7 +26,7 @@ import java.util.Map;
  * Per-replay economy divergence diagnostic — identifies worst-case replays
  * for mineralsCurrent and vespeneCurrent to guide targeted accuracy improvements.
  *
- * Refs #553
+ * Refs #553, #538
  */
 @Tag("diagnostic")
 class EconomyDivergenceDiagnosticTest {
@@ -49,7 +49,21 @@ class EconomyDivergenceDiagnosticTest {
         int gtMineralRate, int emMineralRate,
         int gtVespeneRate, int emVespeneRate,
         int gtWorkers, int emWorkers,
-        double gtSupplyUsed, double emSupplyUsed) {}
+        double gtSupplyUsed, double emSupplyUsed,
+        int gtMineralGross, int emMineralGross, int mineralIncomeError,
+        int gtVespeneGross, int emVespeneGross, int vespeneIncomeError,
+        int gtMineralSpending, int emMineralSpending, int mineralSpendingError,
+        int gtVespeneSpending, int emVespeneSpending, int vespeneSpendingError) {}
+
+    private static int totalMineralSpending(PlayerEconomyStats e) {
+        return e.mineralsUsedCurrentArmy() + e.mineralsUsedCurrentEconomy()
+            + e.mineralsUsedCurrentTechnology();
+    }
+
+    private static int totalVespeneSpending(PlayerEconomyStats e) {
+        return e.vespeneUsedCurrentArmy() + e.vespeneUsedCurrentEconomy()
+            + e.vespeneUsedCurrentTechnology();
+    }
 
     static boolean oracleExists() {
         if (!Files.isDirectory(ORACLE_DIR)) return false;
@@ -97,6 +111,15 @@ class EconomyDivergenceDiagnosticTest {
                         PlayerEconomyStats gt = snap.groundTruthEconomy();
                         PlayerEconomyStats em = snap.emulatedEconomy();
 
+                        int gtMnSpend = totalMineralSpending(gt);
+                        int emMnSpend = totalMineralSpending(em);
+                        int gtGsSpend = totalVespeneSpending(gt);
+                        int emGsSpend = totalVespeneSpending(em);
+                        int gtMnGross = gt.mineralsCurrent() + gtMnSpend;
+                        int emMnGross = em.mineralsCurrent() + emMnSpend;
+                        int gtGsGross = gt.vespeneCurrent() + gtGsSpend;
+                        int emGsGross = em.vespeneCurrent() + emGsSpend;
+
                         allEntries.add(new ReplayEconomyEntry(
                             replayPath.getFileName().toString(),
                             playerId,
@@ -109,7 +132,11 @@ class EconomyDivergenceDiagnosticTest {
                             gt.mineralsCollectionRate(), em.mineralsCollectionRate(),
                             gt.vespeneCollectionRate(), em.vespeneCollectionRate(),
                             gt.workersActiveCount(), em.workersActiveCount(),
-                            gt.foodUsed(), em.foodUsed()));
+                            gt.foodUsed(), em.foodUsed(),
+                            gtMnGross, emMnGross, Math.abs(gtMnGross - emMnGross),
+                            gtGsGross, emGsGross, Math.abs(gtGsGross - emGsGross),
+                            gtMnSpend, emMnSpend, Math.abs(gtMnSpend - emMnSpend),
+                            gtGsSpend, emGsSpend, Math.abs(gtGsSpend - emGsSpend)));
                     }
                 } catch (Exception e) { /* skip failed replays */ }
             }
@@ -129,6 +156,7 @@ class EconomyDivergenceDiagnosticTest {
 
             printRaceBreakdown(atCheckpoint);
             printDirectionBreakdown(atCheckpoint);
+            printIncomeVsSpendingDecomposition(atCheckpoint);
         }
     }
 
@@ -195,6 +223,57 @@ class EconomyDivergenceDiagnosticTest {
         System.out.println("--- Error direction ---");
         System.out.printf("mineralsCurrent: %d over / %d under / %d exact%n", mineralOver, mineralUnder, mineralExact);
         System.out.printf("vespeneCurrent:  %d over / %d under / %d exact%n%n", vespeneOver, vespeneUnder, vespeneExact);
+    }
+
+    private void printIncomeVsSpendingDecomposition(List<ReplayEconomyEntry> entries) {
+        System.out.println("--- Income vs Spending decomposition (balance = income - spending) ---");
+
+        double mnIncomeErrMean = entries.stream().mapToInt(ReplayEconomyEntry::mineralIncomeError).average().orElse(0);
+        double mnSpendErrMean = entries.stream().mapToInt(ReplayEconomyEntry::mineralSpendingError).average().orElse(0);
+        double mnBalanceErrMean = entries.stream().mapToInt(ReplayEconomyEntry::mineralAbsError).average().orElse(0);
+        double gsIncomeErrMean = entries.stream().mapToInt(ReplayEconomyEntry::vespeneIncomeError).average().orElse(0);
+        double gsSpendErrMean = entries.stream().mapToInt(ReplayEconomyEntry::vespeneSpendingError).average().orElse(0);
+        double gsBalanceErrMean = entries.stream().mapToInt(ReplayEconomyEntry::vespeneAbsError).average().orElse(0);
+
+        long mnIncomeOver = entries.stream().filter(e -> e.emMineralGross > e.gtMineralGross).count();
+        long mnIncomeUnder = entries.stream().filter(e -> e.emMineralGross < e.gtMineralGross).count();
+        long mnSpendOver = entries.stream().filter(e -> e.emMineralSpending > e.gtMineralSpending).count();
+        long mnSpendUnder = entries.stream().filter(e -> e.emMineralSpending < e.gtMineralSpending).count();
+        long gsIncomeOver = entries.stream().filter(e -> e.emVespeneGross > e.gtVespeneGross).count();
+        long gsIncomeUnder = entries.stream().filter(e -> e.emVespeneGross < e.gtVespeneGross).count();
+        long gsSpendOver = entries.stream().filter(e -> e.emVespeneSpending > e.gtVespeneSpending).count();
+        long gsSpendUnder = entries.stream().filter(e -> e.emVespeneSpending < e.gtVespeneSpending).count();
+
+        System.out.println("| Component         | Mineral Mean Err | Mineral Direction     | Vespene Mean Err | Vespene Direction     |");
+        System.out.println("|-------------------|------------------|-----------------------|------------------|-----------------------|");
+        System.out.printf("| Gross income      | %16.1f | %3d over / %-3d under | %16.1f | %3d over / %-3d under |%n",
+            mnIncomeErrMean, mnIncomeOver, mnIncomeUnder, gsIncomeErrMean, gsIncomeOver, gsIncomeUnder);
+        System.out.printf("| Total spending    | %16.1f | %3d over / %-3d under | %16.1f | %3d over / %-3d under |%n",
+            mnSpendErrMean, mnSpendOver, mnSpendUnder, gsSpendErrMean, gsSpendOver, gsSpendUnder);
+        System.out.printf("| Balance (result)  | %16.1f | (see direction above) | %16.1f | (see direction above) |%n",
+            mnBalanceErrMean, gsBalanceErrMean);
+        System.out.println();
+
+        System.out.println("--- Per-race income vs spending ---");
+        System.out.println("| Race     | Mn Income Err | Mn Spend Err | Mn Balance Err | Gs Income Err | Gs Spend Err | Gs Balance Err |");
+        System.out.println("|----------|---------------|--------------|----------------|---------------|--------------|----------------|");
+        Map<Race, List<ReplayEconomyEntry>> byRace = new EnumMap<>(Race.class);
+        for (ReplayEconomyEntry e : entries) {
+            byRace.computeIfAbsent(e.race, k -> new ArrayList<>()).add(e);
+        }
+        for (Race race : Race.values()) {
+            List<ReplayEconomyEntry> re = byRace.getOrDefault(race, List.of());
+            if (re.isEmpty()) continue;
+            System.out.printf("| %-8s | %13.1f | %12.1f | %14.1f | %13.1f | %12.1f | %14.1f |%n",
+                race,
+                re.stream().mapToInt(ReplayEconomyEntry::mineralIncomeError).average().orElse(0),
+                re.stream().mapToInt(ReplayEconomyEntry::mineralSpendingError).average().orElse(0),
+                re.stream().mapToInt(ReplayEconomyEntry::mineralAbsError).average().orElse(0),
+                re.stream().mapToInt(ReplayEconomyEntry::vespeneIncomeError).average().orElse(0),
+                re.stream().mapToInt(ReplayEconomyEntry::vespeneSpendingError).average().orElse(0),
+                re.stream().mapToInt(ReplayEconomyEntry::vespeneAbsError).average().orElse(0));
+        }
+        System.out.println();
     }
 
     private static double computeMape(List<ReplayEconomyEntry> entries,
