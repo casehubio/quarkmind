@@ -17,6 +17,7 @@ import io.quarkmind.domain.UpgradeType;
 import io.quarkmind.sc2.SelectionState;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.sc2.intent.AbilityIntent;
+import io.quarkmind.sc2.intent.AddonKind;
 import io.quarkmind.sc2.intent.BuildIntent;
 import io.quarkmind.sc2.intent.BuildingBornIntent;
 import io.quarkmind.sc2.intent.BuildingDiedIntent;
@@ -152,8 +153,9 @@ public final class TrackerIntentExtractor {
                             intents.add(new TimedIntent(ue.getLoop(),
                                                         new MorphIntent(tag, sourceType.name(), typeName, doneLoop)));
                         } else {
+                            AddonKind addonKind = Sc2ReplayShared.addonKind(typeName);
                             intents.add(new TimedIntent(ue.getLoop(),
-                                                        new BuildIntent("worker", bt, pos, tag, doneLoop)));
+                                                        new BuildIntent("worker", bt, pos, tag, doneLoop, addonKind)));
                         }
                         buildingTagToType.put(compositeTag, bt);
                         continue;

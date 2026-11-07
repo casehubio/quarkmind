@@ -15,6 +15,7 @@ import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.AbilityIntent;
+import io.quarkmind.sc2.intent.AddonKind;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
@@ -702,8 +703,14 @@ public class EmulatedGame {
 
     private void handleBuild(BuildIntent b, PlayerState state, PhysicsState physics, long absLoop) {
         final boolean trackerDriven = b.replayTag() != null;
-        int           mCost         = SC2Data.mineralCost(b.buildingType());
-        int           gCost         = SC2Data.gasCost(b.buildingType());
+        int mCost, gCost;
+        if (b.addonKind() != AddonKind.NONE) {
+            mCost = SC2Data.ADDON_MINERAL_COST;
+            gCost = b.addonKind() == AddonKind.REACTOR ? SC2Data.REACTOR_GAS_COST : SC2Data.TECH_LAB_GAS_COST;
+        } else {
+            mCost = SC2Data.mineralCost(b.buildingType());
+            gCost = SC2Data.gasCost(b.buildingType());
+        }
         if (!trackerDriven) {
             if ((int) state.minerals() < mCost || state.vespene() < gCost) {
                 log.debugf("[EMULATED] Cannot build %s — insufficient resources", b.buildingType());

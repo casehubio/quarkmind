@@ -3,6 +3,7 @@ package io.quarkmind.sc2.mock;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.sc2.intent.AddonKind;
 
 import java.util.Set;
 
@@ -212,6 +213,15 @@ public final class Sc2ReplayShared {
             default                               -> BuildingType.UNKNOWN;
         };
     }
+
+    public static AddonKind addonKind(String name) {
+        return switch (name) {
+            case "BarracksReactor", "FactoryReactor", "StarportReactor" -> AddonKind.REACTOR;
+            case "BarracksTechLab", "FactoryTechLab", "StarportTechLab" -> AddonKind.TECH_LAB;
+            default -> AddonKind.NONE;
+        };
+    }
+
 
     static int defaultUnitHealth(UnitType type) {
         return switch (type) {

@@ -14,6 +14,7 @@ import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.UpgradeType;
 import io.quarkmind.plugin.tactics.TerrainAwareKiteStrategy;
+import io.quarkmind.sc2.intent.AddonKind;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
@@ -2157,6 +2158,58 @@ class EmulatedGameTest {
             .as("Completed building must record tech spending")
             .isEqualTo(SC2Data.mineralCost(BuildingType.GATEWAY));
     }
+// ---- #550: add-on cost deduction ----
+
+    @Test
+    void reactorAddonDeductsCorrectCost() {
+        game.setMineralsForTesting(500);
+        game.setVespeneForTesting(200);
+        game.applyIntent(new TimedIntent(0L,
+                                         new BuildIntent("worker", BuildingType.BARRACKS, new Point2d(20, 20),
+                                                         "r-100-1", -1, AddonKind.REACTOR)));
+        assertThat(game.snapshot().minerals())
+                .as("Reactor costs 50 minerals, not 150 (parent Barracks cost)")
+                .isEqualTo(450);
+        assertThat(game.snapshot().vespene())
+                .as("Reactor costs 50 gas")
+                .isEqualTo(150);
+    }
+
+    @Test
+    void techLabAddonDeductsCorrectCost() {
+        game.setMineralsForTesting(500);
+        game.setVespeneForTesting(200);
+        game.applyIntent(new TimedIntent(0L,
+                                         new BuildIntent("worker", BuildingType.FACTORY, new Point2d(20, 20),
+                                                         "r-200-1", -1, AddonKind.TECH_LAB)));
+        assertThat(game.snapshot().minerals())
+                .as("TechLab costs 50 minerals, not 150 (parent Factory cost)")
+                .isEqualTo(450);
+        assertThat(game.snapshot().vespene())
+                .as("TechLab costs 25 gas, not 100 (parent Factory gas cost)")
+                .isEqualTo(175);
+    }
+
+    @Test
+    void addonRecordsTechSpendingWithCorrectCost() {
+        game.setMineralsForTesting(500);
+        game.setVespeneForTesting(200);
+        game.applyIntent(new TimedIntent(0L,
+                                         new BuildIntent("worker", BuildingType.STARPORT, new Point2d(20, 20),
+                                                         "r-300-1", 22, AddonKind.REACTOR)));
+        // Advance past completion (doneLoop=22 → completesAt=22/22=1, fires at gameFrame=1)
+        game.tick();
+        var   techBreakdown    = game.techSpendingBreakdown();
+        int[] starportSpending = techBreakdown.buildSpending().get(BuildingType.STARPORT);
+        assertThat(starportSpending).isNotNull();
+        assertThat(starportSpending[0])
+                .as("Reactor tech spending minerals = 50")
+                .isEqualTo(SC2Data.ADDON_MINERAL_COST);
+        assertThat(starportSpending[1])
+                .as("Reactor tech spending gas = 50")
+                .isEqualTo(SC2Data.REACTOR_GAS_COST);
+    }
+
 
     private static Unit probe(String tag, float x, float y) {
         return new Unit(tag, UnitType.PROBE, new Point2d(x, y),
