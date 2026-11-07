@@ -8,20 +8,17 @@ class SimulatedWorker {
     static final double RICH_MINERAL_CARGO = 7.0;
 
     static final int MINING_DURATION_LOOPS = 16;
-    static final int MINING_DURATION_TICKS =
-            (int) Math.ceil((double) MINING_DURATION_LOOPS / SC2Data.LOOPS_PER_TICK);
-    static final double GAS_CARGO = 4.0;
-    static final int GAS_HARVEST_DURATION_LOOPS_DEFAULT = 29;
-    static int GAS_HARVEST_DURATION_TICKS =
-            (int) Math.ceil((double) GAS_HARVEST_DURATION_LOOPS_DEFAULT / SC2Data.LOOPS_PER_TICK);
+    static final double GAS_CARGO_DEFAULT = 4.0;
+    static double GAS_CARGO = GAS_CARGO_DEFAULT;
+    static final int GAS_HARVEST_DURATION_LOOPS_DEFAULT = 32;
+    static int GAS_HARVEST_DURATION_LOOPS = GAS_HARVEST_DURATION_LOOPS_DEFAULT;
 
     static void setGasHarvestDurationLoops(int loops) {
-        GAS_HARVEST_DURATION_TICKS = (int) Math.ceil((double) loops / SC2Data.LOOPS_PER_TICK);
+        GAS_HARVEST_DURATION_LOOPS = loops;
     }
 
     static void resetGasHarvestDuration() {
-        GAS_HARVEST_DURATION_TICKS =
-                (int) Math.ceil((double) GAS_HARVEST_DURATION_LOOPS_DEFAULT / SC2Data.LOOPS_PER_TICK);
+        GAS_HARVEST_DURATION_LOOPS = GAS_HARVEST_DURATION_LOOPS_DEFAULT;
     }
     static final double ARRIVAL_THRESHOLD = 0.5;
 
@@ -34,7 +31,7 @@ class SimulatedWorker {
     MineralPatch assignedPatch;
     GasSlot assignedGasSlot;
     double cargo;
-    int cycleTicksRemaining;
+    int cycleLoopsRemaining;
 
     SimulatedWorker(String tag, Point2d position, int baseIndex) {
         this.tag = tag;

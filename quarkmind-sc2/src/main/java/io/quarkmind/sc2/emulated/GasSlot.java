@@ -28,7 +28,7 @@ class GasSlot {
 
     void enterBuilding(SimulatedWorker w) {
         insideWorkers.add(w);
-        w.cycleTicksRemaining = SimulatedWorker.GAS_HARVEST_DURATION_TICKS;
+        w.cycleLoopsRemaining = SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
     }
 
     void exitBuilding(SimulatedWorker w) {
