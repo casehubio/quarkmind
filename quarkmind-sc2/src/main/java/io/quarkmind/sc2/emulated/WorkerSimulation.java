@@ -218,8 +218,10 @@ class WorkerSimulation {
             }
         }
         double gasIncome = 0;
-        for (GasSlot slot : gasSlots) {
-            gasIncome += SC2Data.gasIncomePerTick(slot.assignedWorkers.size());
+        for (SimulatedWorker w : workers.values()) {
+            if (w.assignedGasSlot != null) {
+                gasIncome += tickGasWorker(w);
+            }
         }
         return new TickIncome(mineralIncome, gasIncome);
     }
@@ -244,8 +246,8 @@ class WorkerSimulation {
                 tryStartMining(w);
                 return 0;
             }
-            w.cycleTicksRemaining--;
-            if (w.cycleTicksRemaining <= 0) {
+            w.cycleLoopsRemaining -= SC2Data.LOOPS_PER_TICK;
+            if (w.cycleLoopsRemaining <= 0) {
                 double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
                 w.cargo = w.assignedPatch.harvest(cargo);
                 w.assignedPatch.miners.remove(w);
@@ -272,7 +274,7 @@ class WorkerSimulation {
     private void tryStartMining(SimulatedWorker w) {
         if (w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS) {
             w.assignedPatch.miners.add(w);
-            w.cycleTicksRemaining = SimulatedWorker.MINING_DURATION_TICKS;
+            w.cycleLoopsRemaining = SimulatedWorker.MINING_DURATION_LOOPS;
         }
     }
 
@@ -282,8 +284,8 @@ class WorkerSimulation {
 
         if (w.task == WorkerTask.HARVESTING_GAS) {
             if (slot.insideWorkers.contains(w)) {
-                w.cycleTicksRemaining--;
-                if (w.cycleTicksRemaining <= 0) {
+                w.cycleLoopsRemaining -= SC2Data.LOOPS_PER_TICK;
+                if (w.cycleLoopsRemaining <= 0) {
                     w.cargo = SimulatedWorker.GAS_CARGO;
                     slot.exitBuilding(w);
                     w.task           = WorkerTask.RETURNING_GAS;
@@ -363,7 +365,7 @@ class WorkerSimulation {
         if (w.isAtTarget()) {
             if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
                 if (!nearest.miners.contains(w)) nearest.miners.add(w);
-                w.cycleTicksRemaining = SimulatedWorker.MINING_DURATION_TICKS;
+                w.cycleLoopsRemaining = SimulatedWorker.MINING_DURATION_LOOPS;
             }
         }
     }
