@@ -17,6 +17,13 @@ class EconomyTracker {
     private int vespeneUsedEconomy;
     private int mineralsUsedTechnology;
     private int vespeneUsedTechnology;
+
+    private int inProgressMineralArmy;
+    private int inProgressVespeneArmy;
+    private int inProgressMineralEconomy;
+    private int inProgressVespeneEconomy;
+    private int inProgressMineralTechnology;
+    private int inProgressVespeneTechnology;
     private final Map<BuildingType, int[]> techBuildSpending       = new EnumMap<>(BuildingType.class);
     private final Map<BuildingType, int[]> techMorphSpending       = new EnumMap<>(BuildingType.class);
     private final Map<BuildingType, int[]> techDestroySubtractions = new EnumMap<>(BuildingType.class);
@@ -118,6 +125,83 @@ class EconomyTracker {
         }
     }
 
+    void addInProgressTrainSpending(UnitType type, int mineralCost, int gasCost) {
+        if (SC2Data.isWorker(type) || SC2Data.unitSupplyProvided(type) > 0) {
+            addInProgressEconomy(mineralCost, gasCost);
+        } else {
+            addInProgressArmy(mineralCost, gasCost);
+        }
+    }
+
+    void completeInProgressTrainSpending(UnitType type, int mineralCost, int gasCost) {
+        if (SC2Data.isWorker(type) || SC2Data.unitSupplyProvided(type) > 0) {
+            completeInProgressEconomy(mineralCost, gasCost);
+        } else {
+            completeInProgressArmy(mineralCost, gasCost);
+        }
+    }
+
+    void addInProgressBuildSpending(BuildingType type, int mineralCost, int gasCost) {
+        if (isEconomyBuilding(type)) {
+            addInProgressEconomy(mineralCost, gasCost);
+        } else {
+            addInProgressTechnology(mineralCost, gasCost);
+        }
+    }
+
+    void completeInProgressBuildSpending(BuildingType type, int mineralCost, int gasCost) {
+        if (isEconomyBuilding(type)) {
+            completeInProgressEconomy(mineralCost, gasCost);
+        } else {
+            completeInProgressTechnology(mineralCost, gasCost);
+        }
+    }
+
+    void addInProgressArmy(int mineralCost, int gasCost) {
+        inProgressMineralArmy += mineralCost;
+        inProgressVespeneArmy += gasCost;
+    }
+
+    void completeInProgressArmy(int mineralCost, int gasCost) {
+        inProgressMineralArmy = Math.max(0, inProgressMineralArmy - mineralCost);
+        inProgressVespeneArmy = Math.max(0, inProgressVespeneArmy - gasCost);
+    }
+
+    void cancelInProgressArmy(int mineralCost, int gasCost) {
+        inProgressMineralArmy = Math.max(0, inProgressMineralArmy - mineralCost);
+        inProgressVespeneArmy = Math.max(0, inProgressVespeneArmy - gasCost);
+    }
+
+    void addInProgressEconomy(int mineralCost, int gasCost) {
+        inProgressMineralEconomy += mineralCost;
+        inProgressVespeneEconomy += gasCost;
+    }
+
+    void completeInProgressEconomy(int mineralCost, int gasCost) {
+        inProgressMineralEconomy = Math.max(0, inProgressMineralEconomy - mineralCost);
+        inProgressVespeneEconomy = Math.max(0, inProgressVespeneEconomy - gasCost);
+    }
+
+    void cancelInProgressEconomy(int mineralCost, int gasCost) {
+        inProgressMineralEconomy = Math.max(0, inProgressMineralEconomy - mineralCost);
+        inProgressVespeneEconomy = Math.max(0, inProgressVespeneEconomy - gasCost);
+    }
+
+    void addInProgressTechnology(int mineralCost, int gasCost) {
+        inProgressMineralTechnology += mineralCost;
+        inProgressVespeneTechnology += gasCost;
+    }
+
+    void completeInProgressTechnology(int mineralCost, int gasCost) {
+        inProgressMineralTechnology = Math.max(0, inProgressMineralTechnology - mineralCost);
+        inProgressVespeneTechnology = Math.max(0, inProgressVespeneTechnology - gasCost);
+    }
+
+    void cancelInProgressTechnology(int mineralCost, int gasCost) {
+        inProgressMineralTechnology = Math.max(0, inProgressMineralTechnology - mineralCost);
+        inProgressVespeneTechnology = Math.max(0, inProgressVespeneTechnology - gasCost);
+    }
+
     void recordIncome(double mineralIncome, double vespeneIncome) {
         grossMinerals += mineralIncome;
         grossVespene += vespeneIncome;
@@ -185,12 +269,12 @@ class EconomyTracker {
             mineralRate, vespeneRate,
             supply, supplyUsed,
             workerCount,
-            s != null ? s[0] : mineralsUsedArmy,
-            s != null ? s[1] : mineralsUsedEconomy,
-            s != null ? s[2] : mineralsUsedTechnology,
-            s != null ? s[3] : vespeneUsedArmy,
-            s != null ? s[4] : vespeneUsedEconomy,
-            s != null ? s[5] : vespeneUsedTechnology);
+            s != null ? s[0] : mineralsUsedArmy + inProgressMineralArmy,
+            s != null ? s[1] : mineralsUsedEconomy + inProgressMineralEconomy,
+            s != null ? s[2] : mineralsUsedTechnology + inProgressMineralTechnology,
+            s != null ? s[3] : vespeneUsedArmy + inProgressVespeneArmy,
+            s != null ? s[4] : vespeneUsedEconomy + inProgressVespeneEconomy,
+            s != null ? s[5] : vespeneUsedTechnology + inProgressVespeneTechnology);
     }
 
     void reset() {
@@ -200,6 +284,12 @@ class EconomyTracker {
         vespeneUsedEconomy     = 0;
         mineralsUsedTechnology = 0;
         vespeneUsedTechnology  = 0;
+        inProgressMineralArmy       = 0;
+        inProgressVespeneArmy       = 0;
+        inProgressMineralEconomy    = 0;
+        inProgressVespeneEconomy    = 0;
+        inProgressMineralTechnology = 0;
+        inProgressVespeneTechnology = 0;
         grossMinerals          = 0;
         grossVespene           = 0;
         prevGrossMinerals      = 0;
