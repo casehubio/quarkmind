@@ -189,4 +189,87 @@ class EconomyTrackerTest {
         assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(0);
         assertThat(stats.mineralsCollectionRate()).isEqualTo(0);
     }
+
+    // --- InProgress spending tests (#555) ---
+
+    @Test
+    void inProgressTrainSpending_includedInSnapshot() {
+        var tracker = new EconomyTracker();
+        tracker.addInProgressArmy(150, 25);
+
+        var stats = tracker.currentStats(200, 100, 23, 14, 12);
+        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(150);
+        assertThat(stats.vespeneUsedCurrentArmy()).isEqualTo(25);
+    }
+
+    @Test
+    void inProgressCompleted_movesToCurrent() {
+        var tracker = new EconomyTracker();
+        tracker.addInProgressArmy(150, 25);
+        tracker.completeInProgressArmy(150, 25);
+        tracker.recordTrainSpending(UnitType.STALKER, 125, 50);
+
+        var stats = tracker.currentStats(200, 100, 23, 14, 12);
+        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(125);
+        assertThat(stats.vespeneUsedCurrentArmy()).isEqualTo(50);
+    }
+
+    @Test
+    void inProgressCancelled_removedFromInProgress() {
+        var tracker = new EconomyTracker();
+        tracker.addInProgressArmy(150, 25);
+        tracker.cancelInProgressArmy(150, 25);
+
+        var stats = tracker.currentStats(200, 100, 23, 14, 12);
+        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(0);
+        assertThat(stats.vespeneUsedCurrentArmy()).isEqualTo(0);
+    }
+
+    @Test
+    void inProgressBuildSpending_includedInSnapshot() {
+        var tracker = new EconomyTracker();
+        tracker.addInProgressTechnology(150, 0);
+
+        var stats = tracker.currentStats(200, 100, 23, 14, 12);
+        assertThat(stats.mineralsUsedCurrentTechnology()).isEqualTo(150);
+    }
+
+    @Test
+    void inProgressEconomySpending_includedInSnapshot() {
+        var tracker = new EconomyTracker();
+        tracker.addInProgressEconomy(400, 0);
+
+        var stats = tracker.currentStats(200, 100, 23, 14, 12);
+        assertThat(stats.mineralsUsedCurrentEconomy()).isEqualTo(400);
+    }
+
+    @Test
+    void inProgressPlusCurrent_combinedInSnapshot() {
+        var tracker = new EconomyTracker();
+        tracker.addInProgressArmy(100, 0);
+        tracker.recordTrainSpending(UnitType.MARINE, 50, 0);
+
+        var stats = tracker.currentStats(200, 100, 23, 14, 12);
+        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(150);
+    }
+
+    @Test
+    void inProgressNeverGoesNegative() {
+        var tracker = new EconomyTracker();
+        tracker.cancelInProgressArmy(100, 50);
+
+        var stats = tracker.currentStats(200, 100, 23, 14, 12);
+        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(0);
+        assertThat(stats.vespeneUsedCurrentArmy()).isEqualTo(0);
+    }
+
+    @Test
+    void resetClearsInProgress() {
+        var tracker = new EconomyTracker();
+        tracker.addInProgressArmy(100, 50);
+        tracker.reset();
+
+        var stats = tracker.currentStats(200, 100, 23, 14, 12);
+        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(0);
+    }
 }
