@@ -69,5 +69,9 @@ class PhysicsState {
         pendingCompletions.clear();
     }
 
-    record PendingCompletion(long completesAtTick, Runnable action) {}
+    record PendingCompletion(long completesAtTick, String entityTag, Runnable action) {}
+
+    void cancelCompletionsForEntity(String tag) {
+        pendingCompletions.removeIf(pc -> tag.equals(pc.entityTag()));
+    }
 }

@@ -172,7 +172,7 @@ class WorkerSimulationTest {
     @Test
     void threeGasWorkers_totalThroughputExceedsTwoWorkers() {
         List<String> tags3 = IntStream.rangeClosed(1, 12)
-                .mapToObj(i -> "w-" + i).toList();
+                                      .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags3, BASE_POS, BASE_TAG);
         sim.onGasBuildingCompleted("gas-3w", new Point2d(45, 50));
         double totalGas3 = 0;
@@ -182,8 +182,8 @@ class WorkerSimulationTest {
 
         sim.reset();
         sim.onTownHallCompleted(BASE_TAG, BASE_POS);
-        List<String> tags2 = IntStream.rangeClosed(1, 12)
-                .mapToObj(i -> "w-" + i).toList();
+        List<String> tags2 = IntStream.rangeClosed(1, 11)
+                                      .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags2, BASE_POS, BASE_TAG);
         sim.onGasBuildingCompleted("gas-2w", new Point2d(45, 50));
         sim.onWorkerDied("w-1");
@@ -193,11 +193,11 @@ class WorkerSimulationTest {
         }
 
         assertTrue(totalGas3 > totalGas2,
-                "Total gas from 3 workers (" + totalGas3
-                        + ") should exceed 2 workers (" + totalGas2 + ")");
+                   "Total gas from 3 workers (" + totalGas3
+                   + ") should exceed 2 workers (" + totalGas2 + ")");
         double ratio = totalGas3 / totalGas2;
         assertTrue(ratio > 1.2 && ratio < 1.7,
-                "3-worker/2-worker gas ratio should be ~1.5 (concurrent), got " + ratio);
+                   "3-worker/2-worker gas ratio should be ~1.5 (concurrent), got " + ratio);
     }
 
     @Test
@@ -214,6 +214,62 @@ class WorkerSimulationTest {
         }
         assertTrue(totalGas > 0);
     }
+
+    @Test
+    void gasWorkerDied_replacedFromMineralPool() {
+        List<String> tags = IntStream.rangeClosed(1, 12)
+                                     .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+        sim.onGasBuildingCompleted("gas-1", new Point2d(45, 50));
+
+        assertEquals(3, sim.totalGasWorkers());
+        assertEquals(9, sim.mineralWorkersPerBase()[0]);
+
+        sim.onWorkerDied("w-1");
+        assertEquals(3, sim.totalGasWorkers(), "Dead gas worker should be replaced from mineral pool");
+        assertEquals(8, sim.mineralWorkersPerBase()[0], "Mineral pool should lose one worker to gas replacement");
+    }
+
+    @Test
+    void gasWorkerDied_notReplacedWhenTooFewMineralWorkers() {
+        List<String> tags = IntStream.rangeClosed(1, 10)
+                                     .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+        sim.onGasBuildingCompleted("gas-1", new Point2d(45, 50));
+
+        assertEquals(3, sim.totalGasWorkers());
+        assertEquals(7, sim.mineralWorkersPerBase()[0]);
+
+        sim.onWorkerDied("w-1");
+        assertEquals(2, sim.totalGasWorkers(), "No replacement when mineral workers below threshold");
+        assertEquals(7, sim.mineralWorkersPerBase()[0], "Mineral pool should not lose workers");
+    }
+
+    @Test
+    void gasIncomeRate_3workers_matchesExpected() {
+        List<String> tags = IntStream.rangeClosed(1, 12)
+                                     .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+        sim.onGasBuildingCompleted("gas-1", new Point2d(45, 50));
+
+        int warmupTicks = 20;
+        for (int t = 0; t < warmupTicks; t++) {sim.tick();}
+
+        double gasIncome    = 0;
+        int    measureTicks = 200;
+        for (int t = 0; t < measureTicks; t++) {
+            gasIncome += sim.tick().vespeneIncome();
+        }
+
+        double avgPerTick     = gasIncome / measureTicks;
+        double ticksPerMinute = 60.0 * io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+        double perMinute      = avgPerTick * ticksPerMinute;
+        System.out.printf("3 gas workers: %.1f gas/min, %.3f gas/tick (formula target: ~138 gas/min, 2.27 gas/tick)%n",
+                          perMinute, avgPerTick);
+        assertTrue(avgPerTick >= 2.2,
+                   "Gas per tick should be >= 2.2 for 3 workers at 5-tile distance with transition fix, got " + avgPerTick);
+    }
+
 
     // --- Formula validator ---
 

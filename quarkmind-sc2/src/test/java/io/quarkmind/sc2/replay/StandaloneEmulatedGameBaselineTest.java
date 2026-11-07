@@ -34,11 +34,10 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
- * Measures EmulatedGame accuracy with ALL economy GT syncs disabled.
- * Buildings are still injected from GT (structural necessity — no build intents exist).
- * This establishes the honest starting point for standalone EmulatedGame accuracy.
+ * Measures EmulatedGame accuracy with ALL GT syncs disabled.
+ * Buildings tracked via tracker-driven intents (BuildIntent, MorphIntent, BuildingBornIntent).
  *
- * Refs #517
+ * Refs #517, #523, #535
  */
 @Tag("report")
 class StandaloneEmulatedGameBaselineTest {
@@ -151,7 +150,7 @@ class StandaloneEmulatedGameBaselineTest {
         sb.append(String.format("**Processed:** %d replays, %d player runs%n",
             replays.size(), totalPlayerRuns));
         sb.append(String.format("**Method:** Tracker-event-driven inputs, ALL economy GT syncs disabled%n"));
-        sb.append(String.format("**Buildings:** Injected from GT (structural — no build intents exist)%n%n"));
+        sb.append(String.format("**Buildings:** Tracker-driven (BuildIntent, MorphIntent, BuildingBornIntent)%n%n"));
         sb.append("**Disabled GT syncs:** syncMineralWorkersFromGt, setMineralsForHarness, ");
         sb.append("setVespeneForHarness, syncGasRateFromGt, syncMineralRateFromGt, ");
         sb.append("syncVespeneRateFromGt, setSupplyCapForHarness, setSupplyUsedForHarness, ");

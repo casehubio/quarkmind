@@ -29,6 +29,10 @@ public final class SC2Data {
 
     /** Mineral patches in a standard base. Determines the width of each saturation tier. */
     public static final int MINERAL_PATCHES_PER_BASE = 8;
+    public static final int ADDON_MINERAL_COST       = 50;
+    public static final int REACTOR_GAS_COST         = 50;
+    public static final int TECH_LAB_GAS_COST        = 25;
+
 
     /**
      * Per-probe mineral income per outer tick for each saturation tier.

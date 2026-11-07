@@ -14,9 +14,12 @@ import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.domain.UpgradeType;
 import io.quarkmind.plugin.tactics.TerrainAwareKiteStrategy;
+import io.quarkmind.sc2.intent.AddonKind;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
+import io.quarkmind.sc2.intent.BuildingDiedIntent;
+import io.quarkmind.sc2.intent.MorphIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
 import io.quarkmind.sc2.intent.ResearchIntent;
 import io.quarkmind.sc2.intent.TimedIntent;
@@ -2039,6 +2042,174 @@ class EmulatedGameTest {
 
         assertThat(result).containsExactly(1, 1);
     }
+
+    // ---- #549: unit mode switches ----
+
+    @Test
+    void siegeTankSiegesViaModeSwitch() {
+        String tag = game.spawnFriendlyForTesting(UnitType.SIEGE_TANK, new Point2d(15, 15));
+        game.applyIntent(new TimedIntent(0, MorphIntent.of(tag, "SIEGE_TANK", "SiegeTankSieged")));
+
+        assertThat(game.snapshot().myUnits().stream()
+            .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow().type())
+            .isEqualTo(UnitType.SIEGE_TANK_SIEGED);
+    }
+
+    @Test
+    void modeSwitchPreservesHealth() {
+        String tag = game.spawnFriendlyForTesting(UnitType.SIEGE_TANK, new Point2d(15, 15));
+        game.setHealthForTesting(tag, 100);
+        game.applyIntent(new TimedIntent(0, MorphIntent.of(tag, "SIEGE_TANK", "SiegeTankSieged")));
+
+        Unit sieged = game.snapshot().myUnits().stream()
+            .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow();
+        assertThat(sieged.health()).isEqualTo(100);
+    }
+
+    // ---- #548: creep tumor queen burrow morph ----
+
+    @Test
+    void creepTumorQueenBurrowChangesToCreepTumor() {
+        Building tumor = game.spawnBuildingForTesting(BuildingType.CREEP_TUMOR_QUEEN, new Point2d(20, 20));
+
+        game.applyIntent(new TimedIntent(0,
+            MorphIntent.of(tumor.tag(), "CREEP_TUMOR_QUEEN", "CreepTumorBurrowed")));
+
+        Building morphed = game.snapshot().myBuildings().stream()
+            .filter(b -> b.tag().equals(tumor.tag()))
+            .findFirst().orElseThrow();
+        assertThat(morphed.type())
+            .as("CreepTumorQueen burrow must change type to CREEP_TUMOR")
+            .isEqualTo(BuildingType.CREEP_TUMOR);
+    }
+
+    // ---- #547: add-on swap morph — building type must change ----
+
+    @Test
+    void addOnSwapChangesParentBuildingType() {
+        game.setMineralsForTesting(500);
+        Building reactor = game.spawnBuildingForTesting(BuildingType.BARRACKS, new Point2d(25, 25));
+
+        game.applyIntent(new TimedIntent(0,
+            MorphIntent.of(reactor.tag(), "BARRACKS", "FactoryReactor")));
+
+        assertThat(game.snapshot().myBuildings().stream()
+            .filter(b -> b.tag().equals(reactor.tag()))
+            .findFirst().orElseThrow().type())
+            .as("Add-on swap must change building type from BARRACKS to FACTORY")
+            .isEqualTo(BuildingType.FACTORY);
+    }
+
+    @Test
+    void addOnSwapKeepsBuildingComplete() {
+        game.setMineralsForTesting(500);
+        Building reactor = game.spawnBuildingForTesting(BuildingType.BARRACKS, new Point2d(25, 25));
+
+        game.applyIntent(new TimedIntent(0,
+            MorphIntent.of(reactor.tag(), "BARRACKS", "StarportTechLab")));
+
+        Building swapped = game.snapshot().myBuildings().stream()
+            .filter(b -> b.tag().equals(reactor.tag()))
+            .findFirst().orElseThrow();
+        assertThat(swapped.type()).isEqualTo(BuildingType.STARPORT);
+        assertThat(swapped.isComplete())
+            .as("Add-on swap is instant — building must stay complete")
+            .isTrue();
+    }
+
+    // ---- #546: ghost completion — destroyed building must not record tech spending ----
+
+    @Test
+    void destroyedBuildingDoesNotRecordTechSpending() {
+        game.setMineralsForTesting(500);
+        game.applyIntent(BuildIntent.of("probe-0", BuildingType.GATEWAY, new Point2d(20, 20)));
+
+        // Gateway build time = 1040 loops / 22 = 47 ticks. Kill it at tick 10 (mid-construction).
+        for (int i = 0; i < 10; i++) game.tick();
+
+        String gatewayTag = game.snapshot().myBuildings().stream()
+            .filter(b -> b.type() == BuildingType.GATEWAY)
+            .findFirst().orElseThrow().tag();
+        game.applyIntent(new TimedIntent(0, new BuildingDiedIntent(gatewayTag, BuildingType.GATEWAY)));
+
+        // Advance past the completion tick — the ghost callback must NOT fire
+        for (int i = 0; i < 50; i++) game.tick();
+
+        var techBreakdown = game.techSpendingBreakdown();
+        int techMinerals = techBreakdown.buildSpending().values().stream()
+            .mapToInt(a -> a[0]).sum();
+        assertThat(techMinerals)
+            .as("Destroyed building must not record tech spending")
+            .isEqualTo(0);
+    }
+
+    @Test
+    void completedBuildingRecordsTechSpending() {
+        game.setMineralsForTesting(500);
+        game.applyIntent(BuildIntent.of("probe-0", BuildingType.GATEWAY, new Point2d(20, 20)));
+
+        // Advance past Gateway build time (47 ticks)
+        for (int i = 0; i < 50; i++) game.tick();
+
+        var techBreakdown = game.techSpendingBreakdown();
+        int techMinerals = techBreakdown.buildSpending().values().stream()
+            .mapToInt(a -> a[0]).sum();
+        assertThat(techMinerals)
+            .as("Completed building must record tech spending")
+            .isEqualTo(SC2Data.mineralCost(BuildingType.GATEWAY));
+    }
+// ---- #550: add-on cost deduction ----
+
+    @Test
+    void reactorAddonDeductsCorrectCost() {
+        game.setMineralsForTesting(500);
+        game.setVespeneForTesting(200);
+        game.applyIntent(new TimedIntent(0L,
+                                         new BuildIntent("worker", BuildingType.BARRACKS, new Point2d(20, 20),
+                                                         "r-100-1", -1, AddonKind.REACTOR)));
+        assertThat(game.snapshot().minerals())
+                .as("Reactor costs 50 minerals, not 150 (parent Barracks cost)")
+                .isEqualTo(450);
+        assertThat(game.snapshot().vespene())
+                .as("Reactor costs 50 gas")
+                .isEqualTo(150);
+    }
+
+    @Test
+    void techLabAddonDeductsCorrectCost() {
+        game.setMineralsForTesting(500);
+        game.setVespeneForTesting(200);
+        game.applyIntent(new TimedIntent(0L,
+                                         new BuildIntent("worker", BuildingType.FACTORY, new Point2d(20, 20),
+                                                         "r-200-1", -1, AddonKind.TECH_LAB)));
+        assertThat(game.snapshot().minerals())
+                .as("TechLab costs 50 minerals, not 150 (parent Factory cost)")
+                .isEqualTo(450);
+        assertThat(game.snapshot().vespene())
+                .as("TechLab costs 25 gas, not 100 (parent Factory gas cost)")
+                .isEqualTo(175);
+    }
+
+    @Test
+    void addonRecordsTechSpendingWithCorrectCost() {
+        game.setMineralsForTesting(500);
+        game.setVespeneForTesting(200);
+        game.applyIntent(new TimedIntent(0L,
+                                         new BuildIntent("worker", BuildingType.STARPORT, new Point2d(20, 20),
+                                                         "r-300-1", 22, AddonKind.REACTOR)));
+        // Advance past completion (doneLoop=22 → completesAt=22/22=1, fires at gameFrame=1)
+        game.tick();
+        var   techBreakdown    = game.techSpendingBreakdown();
+        int[] starportSpending = techBreakdown.buildSpending().get(BuildingType.STARPORT);
+        assertThat(starportSpending).isNotNull();
+        assertThat(starportSpending[0])
+                .as("Reactor tech spending minerals = 50")
+                .isEqualTo(SC2Data.ADDON_MINERAL_COST);
+        assertThat(starportSpending[1])
+                .as("Reactor tech spending gas = 50")
+                .isEqualTo(SC2Data.REACTOR_GAS_COST);
+    }
+
 
     private static Unit probe(String tag, float x, float y) {
         return new Unit(tag, UnitType.PROBE, new Point2d(x, y),

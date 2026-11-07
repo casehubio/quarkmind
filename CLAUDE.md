@@ -381,6 +381,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - `AbilityDiscoveryCalibrationTest.dumpAllCmdEventsNearMissedUpgrades` — per-replay CmdEvent dump (including null-abilLink) within 5000 loops of each missed upgrade; discovered abilLinks 191 (HydraliskDen), 608 (DarkShrine), 69 (FleetBeacon) that standard correlation missed due to noise
 - `TrackerTrainDiagnosticTest` — per-unit-type tracker-driven train intent rejection breakdown across 118 oracle replays; identifies building resolution failures and queue rejections
 - `TrainDiagnosticTest` — train intent funnel diagnostic: counts intents created, accepted, rejected per unit type with rejection reasons
+- `BuildingExpansionDiagnosticTest` — per-replay CC/Hatchery/Nexus building count comparison (GT vs EM) at all checkpoints; traces CC-related intents for worst-deficit replay
 - `HellionDeficitDiagnosticTest` — per-replay Hellion deficit analysis: compares tracker-driven EmulatedGame Hellion count vs oracle at 5-min checkpoint
 - `HellionTickTraceDiagnosticTest` — per-tick Hellion production trace: shows exact loop each Hellion intent enters queue, starts training, and completes
 - `ReactorStateAtIntentTest` — traces Reactor detection state at each Factory/Starport train intent; validates per-building Reactor tag assignment

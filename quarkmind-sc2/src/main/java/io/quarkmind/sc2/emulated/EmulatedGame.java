@@ -15,6 +15,7 @@ import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.IntentQueue;
 import io.quarkmind.sc2.intent.AbilityIntent;
+import io.quarkmind.sc2.intent.AddonKind;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
@@ -191,8 +192,7 @@ public class EmulatedGame {
         friendly.addVespene(tickGasIncome);
         cumulativeGasIncome += tickGasIncome;
         double passiveMineralIncome = playerRaceModel.tickPassive(friendly, gameFrame * (long) SC2Data.LOOPS_PER_TICK);
-        TickIncome formulaIncome = workerSimulation.formulaIncome();
-        economyTracker.recordIncome(formulaIncome.mineralIncome() + passiveMineralIncome, formulaIncome.vespeneIncome());
+        economyTracker.recordIncome(tickMineralIncome + passiveMineralIncome, tickGasIncome);
         moveFriendlyUnits();
         // Recompute after movement, before combat: a unit that dies this tick still
         // provided vision for this frame — correct SC2 behaviour.
@@ -639,7 +639,7 @@ public class EmulatedGame {
         final boolean trackerDriven = pinnedCompletionLoop >= 0;
         final int spawnCount = trackerDriven ? 1
                              : (model != null) ? model.trainCount(unitType) : SC2Data.trainCount(unitType);
-        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
+        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, buildingTag, () -> {
             if (useSlot2) {
                 physics.buildingTrainingUntil2.remove(buildingTag);
             } else {
@@ -703,8 +703,14 @@ public class EmulatedGame {
 
     private void handleBuild(BuildIntent b, PlayerState state, PhysicsState physics, long absLoop) {
         final boolean trackerDriven = b.replayTag() != null;
-        int           mCost         = SC2Data.mineralCost(b.buildingType());
-        int           gCost         = SC2Data.gasCost(b.buildingType());
+        int mCost, gCost;
+        if (b.addonKind() != AddonKind.NONE) {
+            mCost = SC2Data.ADDON_MINERAL_COST;
+            gCost = b.addonKind() == AddonKind.REACTOR ? SC2Data.REACTOR_GAS_COST : SC2Data.TECH_LAB_GAS_COST;
+        } else {
+            mCost = SC2Data.mineralCost(b.buildingType());
+            gCost = SC2Data.gasCost(b.buildingType());
+        }
         if (!trackerDriven) {
             if ((int) state.minerals() < mCost || state.vespene() < gCost) {
                 log.debugf("[EMULATED] Cannot build %s — insufficient resources", b.buildingType());
@@ -713,9 +719,6 @@ public class EmulatedGame {
         }
         state.deductMinerals(mCost);
         state.deductVespene(gCost);
-        if (state == friendly) {
-            economyTracker.recordBuildSpending(b.buildingType(), mCost, gCost);
-        }
         final String tag = trackerDriven ? b.replayTag() : "bldg-" + nextTag++;
         if (trackerDriven) {trackerDrivenBuildings.add(tag);}
         final BuildingType bt = b.buildingType();
@@ -727,9 +730,14 @@ public class EmulatedGame {
                                  : gameFrame + (loopOffset + SC2Data.buildTimeInLoops(bt)) / SC2Data.LOOPS_PER_TICK;
         final RaceModel model     = (state == friendly) ? playerRaceModel : null;
         final boolean   isReactor = tag.startsWith("r-") && isReactorAddOn(bt, state);
-        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
+        final int fMCost = mCost;
+        final int fGCost = gCost;
+        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, tag, () -> {
             markBuildingComplete(tag, state);
             state.addSupply(SC2Data.supplyBonus(bt));
+            if (state == friendly) {
+                economyTracker.recordBuildSpending(bt, fMCost, fGCost);
+            }
             if (model != null) {model.onBuildingComplete(state, bt, tag);}
             if (state == friendly && model != null) {
                 if (playerRaceModel.townHallTypes().contains(bt)) {
@@ -996,7 +1004,7 @@ public class EmulatedGame {
                 if (remaining <= 0) {return pc;}
                 long newCompletesAt = gameFrame + remaining / 2;
                 physics.buildingTrainingUntil.put(resolvedTarget, newCompletesAt);
-                return new PhysicsState.PendingCompletion(newCompletesAt, pc.action());
+                return new PhysicsState.PendingCompletion(newCompletesAt, pc.entityTag(), pc.action());
             });
         }
         return true;
@@ -1089,7 +1097,7 @@ public class EmulatedGame {
         final boolean isFriendly = (state == friendly);
         physics.buildingResearching.put(resolvedTag, r.upgradeType());
         physics.buildingResearchUntil.put(resolvedTag, completionLoop);
-        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completionTick, () -> {
+        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completionTick, resolvedTag, () -> {
             state.completeUpgrade(r.upgradeType());
             if (isFriendly) {
                 economyTracker.recordResearchSpending(SC2Data.upgradeMineralCost(r.upgradeType()), SC2Data.upgradeVespeneCost(r.upgradeType()));
@@ -1108,8 +1116,17 @@ public class EmulatedGame {
             "Hive", BuildingType.HIVE,
             "GreaterSpire", BuildingType.GREATER_SPIRE,
             "OrbitalCommand", BuildingType.ORBITAL_COMMAND,
-            "PlanetaryFortress", BuildingType.PLANETARY_FORTRESS
+            "PlanetaryFortress", BuildingType.PLANETARY_FORTRESS,
+            "CreepTumorBurrowed", BuildingType.CREEP_TUMOR
                                                                                     );
+    private static final Map<String, BuildingType> ADDON_SWAP_TARGETS = Map.of(
+            "BarracksTechLab", BuildingType.BARRACKS,
+            "BarracksReactor", BuildingType.BARRACKS,
+            "FactoryTechLab", BuildingType.FACTORY,
+            "FactoryReactor", BuildingType.FACTORY,
+            "StarportTechLab", BuildingType.STARPORT,
+            "StarportReactor", BuildingType.STARPORT
+                                                                                );
 
     private static final Map<String, UnitType> MORPH_UNIT_TARGETS = Map.ofEntries(
             Map.entry("Baneling", UnitType.BANELING),
@@ -1120,6 +1137,16 @@ public class EmulatedGame {
             Map.entry("Archon", UnitType.ARCHON),
             Map.entry("Hellbat", UnitType.HELLBAT)
                                                                                  );
+    private static final Map<String, UnitType> MODE_SWITCH_TARGETS = Map.of(
+            "SiegeTankSieged", UnitType.SIEGE_TANK_SIEGED,
+            "SiegeTank", UnitType.SIEGE_TANK,
+            "WarpPrismPhasing", UnitType.WARP_PRISM_PHASING,
+            "WarpPrism", UnitType.WARP_PRISM,
+            "LiberatorAG", UnitType.LIBERATOR_AG,
+            "Liberator", UnitType.LIBERATOR,
+            "VikingFighter", UnitType.VIKING,
+            "VikingAssault", UnitType.VIKING_ASSAULT
+                                                                            );
     private static final Map<String, UnitType> MORPH_SOURCE_TYPES = Map.of(
             "Zergling", UnitType.ZERGLING,
             "Roach", UnitType.ROACH,
@@ -1145,28 +1172,35 @@ public class EmulatedGame {
                 } catch (IllegalArgumentException ignored) {}
             }
             final String resolvedTag = buildingTag;
+            boolean trackerDriven = m.unitTag() != null && m.unitTag().startsWith("r-");
             Building source = state.buildings().stream()
-                                   .filter(b -> b.tag().equals(resolvedTag) && b.isComplete())
+                                   .filter(b -> b.tag().equals(resolvedTag) && (b.isComplete() || trackerDriven))
                                    .findFirst().orElse(null);
             if (source == null) {
                 log.debugf("[EMULATED] Building morph rejected — building %s not found or incomplete", resolvedTag);
                 return;
             }
-            boolean trackerDriven = m.unitTag() != null && m.unitTag().startsWith("r-");
-            if (!trackerDriven) {
-                int mCost = SC2Data.mineralCost(targetBt);
-                int gCost = SC2Data.gasCost(targetBt);
-                if ((int) state.minerals() < mCost || state.vespene() < gCost) {
-                    log.debugf("[EMULATED] Building morph rejected — insufficient resources for %s (need %d/%d, have %d/%d)",
-                               targetBt, mCost, gCost, (int) state.minerals(), state.vespene());
-                    return;
-                }
-                state.deductMinerals(mCost);
-                state.deductVespene(gCost);
-                if (state == friendly) {
-                    economyTracker.recordMorphSpending(targetBt, mCost, gCost);
-                }
+            if (trackerDriven) {
+                // Tracker-driven morphs are instant type swaps — matches GT behavior.
+                // GT (ReplaySimulatedGame) applies UnitTypeChange as an instant swap,
+                // so the building stays complete throughout the morph.
+                state.replaceAllBuildings(b -> b.tag().equals(resolvedTag)
+                    ? new Building(b.tag(), targetBt, b.position(), b.health(), b.maxHealth(), b.isComplete())
+                    : b);
+                log.debugf("[EMULATED] Tracker-driven building morph — %s → %s (tag=%s)", m.sourceName(), targetBt, resolvedTag);
+                return;
             }
+            int mCost = SC2Data.mineralCost(targetBt);
+            int gCost = SC2Data.gasCost(targetBt);
+            if ((int) state.minerals() < mCost || state.vespene() < gCost) {
+                log.debugf("[EMULATED] Building morph rejected — insufficient resources for %s (need %d/%d, have %d/%d)",
+                           targetBt, mCost, gCost, (int) state.minerals(), state.vespene());
+                return;
+            }
+            state.deductMinerals(mCost);
+            state.deductVespene(gCost);
+            final int morphMCost = (state == friendly) ? SC2Data.mineralCost(targetBt) : 0;
+            final int morphGCost = (state == friendly) ? SC2Data.gasCost(targetBt) : 0;
             state.replaceAllBuildings(b -> b.tag().equals(resolvedTag)
                                            ? new Building(b.tag(), targetBt, b.position(), b.health(), b.maxHealth(), false)
                                            : b);
@@ -1174,11 +1208,29 @@ public class EmulatedGame {
             long            completesAt = (m.completionLoop() >= 0)
                 ? m.completionLoop() / SC2Data.LOOPS_PER_TICK
                 : gameFrame + SC2Data.buildTimeInLoops(targetBt) / SC2Data.LOOPS_PER_TICK;
-            physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, () -> {
+            physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, resolvedTag, () -> {
                 markBuildingComplete(resolvedTag, state);
+                if (state == friendly) {
+                    economyTracker.recordMorphSpending(targetBt, morphMCost, morphGCost);
+                }
                 if (model != null) {model.onBuildingComplete(state, targetBt, resolvedTag);}
                 log.debugf("[EMULATED] Building morph complete — %s → %s", m.sourceName(), targetBt);
             }));
+            return;
+        }
+        BuildingType addonTarget = ADDON_SWAP_TARGETS.get(m.targetName());
+        if (addonTarget != null) {
+            state.replaceAllBuildings(b -> b.tag().equals(m.unitTag())
+                ? new Building(b.tag(), addonTarget, b.position(), b.health(), b.maxHealth(), b.isComplete())
+                : b);
+            log.debugf("[EMULATED] Add-on swap — %s → %s (tag=%s)", m.sourceName(), addonTarget, m.unitTag());
+            return;
+        }
+        UnitType modeTarget = MODE_SWITCH_TARGETS.get(m.targetName());
+        if (modeTarget != null) {
+            state.replaceAllUnits(u -> u.tag().equals(m.unitTag())
+                ? new Unit(u.tag(), modeTarget, u.position(), u.health(), u.maxHealth(), u.shields(), u.maxShields(), u.weaponCooldownTicks(), u.blinkCooldownTicks())
+                : u);
             return;
         }
         UnitType targetUnit = MORPH_UNIT_TARGETS.get(m.targetName());
@@ -1656,16 +1708,21 @@ public class EmulatedGame {
         state.addBuilding(new Building(bb.tag(), bb.type(), bb.position(),
                                        SC2Data.maxBuildingHealth(bb.type()), SC2Data.maxBuildingHealth(bb.type()), true));
         state.addSupply(SC2Data.supplyBonus(bb.type()));
-        if (state == friendly && playerRaceModel != null) {
-            if (playerRaceModel.townHallTypes().contains(bb.type())) {
-                registerTownHallWithPatches(bb.tag(), bb.position());
-            } else if (SC2Data.isGasBuilding(bb.type())) {
-                workerSimulation.onGasBuildingCompleted(bb.tag(), bb.position());
+        if (state == friendly) {
+            economyTracker.recordBuildSpending(bb.type(),
+                SC2Data.mineralCost(bb.type()), SC2Data.gasCost(bb.type()));
+            if (playerRaceModel != null) {
+                if (playerRaceModel.townHallTypes().contains(bb.type())) {
+                    registerTownHallWithPatches(bb.tag(), bb.position());
+                } else if (SC2Data.isGasBuilding(bb.type())) {
+                    workerSimulation.onGasBuildingCompleted(bb.tag(), bb.position());
+                }
             }
         }
     }
 
     private void handleBuildingDied(BuildingDiedIntent bd, PlayerState state, PhysicsState physics) {
+        physics.cancelCompletionsForEntity(bd.tag());
         state.buildings().stream().filter(b -> b.tag().equals(bd.tag())).findFirst().ifPresent(b -> {
             state.addSupply(-SC2Data.supplyBonus(bd.type()));
             if (state == friendly) {

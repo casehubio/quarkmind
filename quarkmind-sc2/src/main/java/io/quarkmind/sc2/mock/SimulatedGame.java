@@ -220,6 +220,28 @@ public class SimulatedGame {
             ? new Building(b.tag(), b.type(), b.position(), b.health(), b.maxHealth(), true)
             : b);
     }
+    protected void replaceBuildingType(String tag, BuildingType newType) {
+        myBuildings.replaceAll(b -> b.tag().equals(tag)
+            ? new Building(b.tag(), newType, b.position(), b.health(), b.maxHealth(), b.isComplete())
+            : b);
+    }
+    protected void replaceEnemyBuildingType(String tag, BuildingType newType) {
+        enemyBuildings.replaceAll(b -> b.tag().equals(tag)
+            ? new Building(b.tag(), newType, b.position(), b.health(), b.maxHealth(), b.isComplete())
+            : b);
+    }
+    protected void replaceUnitType(String tag, UnitType newType) {
+        myUnits.replaceAll(u -> u.tag().equals(tag)
+            ? new Unit(u.tag(), newType, u.position(), u.health(), u.maxHealth(),
+                       u.shields(), u.maxShields(), u.weaponCooldownTicks(), u.blinkCooldownTicks())
+            : u);
+    }
+    protected void replaceEnemyUnitType(String tag, UnitType newType) {
+        enemyUnits.replaceAll(u -> u.tag().equals(tag)
+            ? new Unit(u.tag(), newType, u.position(), u.health(), u.maxHealth(),
+                       u.shields(), u.maxShields(), u.weaponCooldownTicks(), u.blinkCooldownTicks())
+            : u);
+    }
 
     protected void replaceUnitPosition(String tag, Point2d newPos) {
         myUnits.replaceAll(u -> u.tag().equals(tag)
