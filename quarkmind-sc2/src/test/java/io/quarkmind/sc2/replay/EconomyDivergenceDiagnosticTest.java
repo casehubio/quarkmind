@@ -166,9 +166,9 @@ class EconomyDivergenceDiagnosticTest {
             .sorted(comparator).limit(TOP_N).toList();
 
         System.out.printf("--- Top %d worst replays for %s ---%n", TOP_N, field);
-        System.out.printf("| %-40s | P | Race | GT    | EM    | Error | MnRate GT/EM | GasRate GT/EM | Workers GT/EM | Supply GT/EM |%n",
+        System.out.printf("| %-40s | P | Race | GT    | EM    | Error | Income GT/EM | Spend GT/EM | Rate GT/EM | Workers |%n",
             "Replay");
-        System.out.printf("|%-42s|---|------|-------|-------|-------|--------------|---------------|---------------|--------------|%n",
+        System.out.printf("|%-42s|---|------|-------|-------|-------|--------------|-------------|------------|---------|%n",
             "-".repeat(42));
 
         boolean isMinerals = field.equals("mineralsCurrent");
@@ -176,13 +176,17 @@ class EconomyDivergenceDiagnosticTest {
             int error = isMinerals ? e.mineralAbsError : e.vespeneAbsError;
             int gt = isMinerals ? e.gtMinerals : e.gtVespene;
             int em = isMinerals ? e.emMinerals : e.emVespene;
-            System.out.printf("| %-40s | %d | %-4s | %5d | %5d | %5d | %5d / %-5d | %5d / %-5d | %5d / %-5d | %5.0f / %-5.0f |%n",
+            int gtIncome = isMinerals ? e.gtMineralGross : e.gtVespeneGross;
+            int emIncome = isMinerals ? e.emMineralGross : e.emVespeneGross;
+            int gtSpend = isMinerals ? e.gtMineralSpending : e.gtVespeneSpending;
+            int emSpend = isMinerals ? e.emMineralSpending : e.emVespeneSpending;
+            int gtRate = isMinerals ? e.gtMineralRate : e.gtVespeneRate;
+            int emRate = isMinerals ? e.emMineralRate : e.emVespeneRate;
+            System.out.printf("| %-40s | %d | %-4s | %5d | %5d | %5d | %5d / %-5d | %5d / %-5d | %5d / %-5d | %3d / %-3d |%n",
                 truncate(e.replayFile, 40), e.playerId, e.race,
                 gt, em, error,
-                e.gtMineralRate, e.emMineralRate,
-                e.gtVespeneRate, e.emVespeneRate,
-                e.gtWorkers, e.emWorkers,
-                e.gtSupplyUsed, e.emSupplyUsed);
+                gtIncome, emIncome, gtSpend, emSpend,
+                gtRate, emRate, e.gtWorkers, e.emWorkers);
         }
         System.out.println();
     }
