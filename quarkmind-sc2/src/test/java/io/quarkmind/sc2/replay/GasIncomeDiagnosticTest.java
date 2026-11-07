@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Refs #562, #519
+ * Refs #556, #562, #519
  */
 @Tag("diagnostic")
 class GasIncomeDiagnosticTest {
@@ -55,7 +55,8 @@ class GasIncomeDiagnosticTest {
             int[] gasSlotCounts, int[] gasWorkerCounts,
             double[] cumulativeGasIncome,
             int[] gtTownHallCounts, int[] emTownHallCounts,
-            int firstGtGasTick, int firstEmGasTick) {}
+            int firstGtGasTick, int firstEmGasTick,
+            double[] avgGeyserDistances) {}
 
     @Test
     @EnabledIf("oracleExists")
@@ -99,6 +100,7 @@ class GasIncomeDiagnosticTest {
                     double[] cumulativeGasIncome = new double[CHECKPOINTS_MIN.length];
                     int[] gtTownHallCounts = new int[CHECKPOINTS_MIN.length];
                     int[] emTownHallCounts = new int[CHECKPOINTS_MIN.length];
+                    double[] avgGeyserDistances = new double[CHECKPOINTS_MIN.length];
                     int firstGtGasTick = -1;
                     int firstEmGasTick = -1;
 
@@ -138,6 +140,7 @@ class GasIncomeDiagnosticTest {
                                 cumulativeGasIncome[i] = emulated.cumulativeGasIncome();
                                 gtTownHallCounts[i] = countTownHalls(gt);
                                 emTownHallCounts[i] = countTownHalls(em);
+                                avgGeyserDistances[i] = avgGeyserDistance(gt);
                             }
                         }
                     }
@@ -147,7 +150,8 @@ class GasIncomeDiagnosticTest {
                             gtVesRate, emVesRate, gtVesCurrent, emVesCurrent,
                             gasSlotCounts, gasWorkerCounts, cumulativeGasIncome,
                             gtTownHallCounts, emTownHallCounts,
-                            firstGtGasTick, firstEmGasTick));
+                            firstGtGasTick, firstEmGasTick,
+                            avgGeyserDistances));
 
                 } catch (Exception e) { /* skip */ }
             }
@@ -164,6 +168,7 @@ class GasIncomeDiagnosticTest {
         printGasTimingAnalysis(results);
         printExpansionCorrelation(results);
         printPerWorkerEfficiency(results);
+        printDistanceCorrelation(results);
         printWorstReplays(results, 2, 20);
     }
 
@@ -228,6 +233,26 @@ class GasIncomeDiagnosticTest {
         return (int) state.myBuildings().stream()
                 .filter(b -> TOWN_HALLS.contains(b.type()) && b.isComplete())
                 .count();
+    }
+
+    private static double avgGeyserDistance(GameState state) {
+        var townHalls = state.myBuildings().stream()
+                .filter(b -> TOWN_HALLS.contains(b.type()) && b.isComplete())
+                .toList();
+        var gasBuildings = state.myBuildings().stream()
+                .filter(b -> SC2Data.isGasBuilding(b.type()) && b.isComplete())
+                .toList();
+        if (townHalls.isEmpty() || gasBuildings.isEmpty()) return 0;
+        double totalDist = 0;
+        for (var gas : gasBuildings) {
+            double minDist = Double.MAX_VALUE;
+            for (var th : townHalls) {
+                double d = gas.position().distanceTo(th.position());
+                if (d < minDist) minDist = d;
+            }
+            totalDist += minDist;
+        }
+        return totalDist / gasBuildings.size();
     }
 
     private void printDirectionBreakdown(List<PerReplayGas> results) {
@@ -457,6 +482,68 @@ class GasIncomeDiagnosticTest {
                     raceNames[ri], raceW.size(), gtPW, emPW, ratio);
         }
         System.out.println();
+    }
+
+    private void printDistanceCorrelation(List<PerReplayGas> results) {
+        System.out.println("=== GEYSER DISTANCE CORRELATION — Error by avg geyser distance at 5-min ===");
+        int cpIdx = 2;
+
+        List<PerReplayGas> withGas = results.stream()
+                .filter(r -> r.gasSlotCounts[cpIdx] > 0 && r.avgGeyserDistances[cpIdx] > 0)
+                .toList();
+        if (withGas.isEmpty()) {
+            System.out.println("No replays with gas buildings at 5-min checkpoint.\n");
+            return;
+        }
+
+        double[] distBins = {0, 7, 8, 9, 10, 15, 100};
+        String[] binLabels = {"<7", "7-8", "8-9", "9-10", "10-15", ">15"};
+
+        System.out.printf("%-8s %8s %10s %10s %12s %10s%n",
+                "Dist", "Count", "AvgGTRate", "AvgEMRate", "AvgError", "AvgDist");
+
+        for (int b = 0; b < binLabels.length; b++) {
+            double lo = distBins[b];
+            double hi = distBins[b + 1];
+            List<PerReplayGas> bin = withGas.stream()
+                    .filter(r -> r.avgGeyserDistances[cpIdx] >= lo && r.avgGeyserDistances[cpIdx] < hi)
+                    .toList();
+            if (bin.isEmpty()) continue;
+
+            double avgGt = bin.stream().mapToInt(r -> r.gtVesRate[cpIdx]).average().orElse(0);
+            double avgEm = bin.stream().mapToInt(r -> r.emVesRate[cpIdx]).average().orElse(0);
+            double avgErr = bin.stream()
+                    .mapToInt(r -> r.emVesRate[cpIdx] - r.gtVesRate[cpIdx]).average().orElse(0);
+            double avgDist = bin.stream()
+                    .mapToDouble(r -> r.avgGeyserDistances[cpIdx]).average().orElse(0);
+
+            System.out.printf("%-8s %8d %10.1f %10.1f %+12.1f %10.1f%n",
+                    binLabels[b], bin.size(), avgGt, avgEm, avgErr, avgDist);
+        }
+
+        double correlation = computeCorrelation(withGas, cpIdx);
+        System.out.printf("%nPearson r(distance, signed_error): %.3f  (n=%d)%n", correlation, withGas.size());
+        System.out.printf("Distance range: %.1f — %.1f  Mean: %.1f%n%n",
+                withGas.stream().mapToDouble(r -> r.avgGeyserDistances[cpIdx]).min().orElse(0),
+                withGas.stream().mapToDouble(r -> r.avgGeyserDistances[cpIdx]).max().orElse(0),
+                withGas.stream().mapToDouble(r -> r.avgGeyserDistances[cpIdx]).average().orElse(0));
+    }
+
+    private static double computeCorrelation(List<PerReplayGas> data, int cpIdx) {
+        int n = data.size();
+        if (n < 2) return 0;
+        double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+        for (var r : data) {
+            double x = r.avgGeyserDistances[cpIdx];
+            double y = r.emVesRate[cpIdx] - r.gtVesRate[cpIdx];
+            sumX += x;
+            sumY += y;
+            sumXY += x * y;
+            sumX2 += x * x;
+            sumY2 += y * y;
+        }
+        double denom = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+        return denom == 0 ? 0 : (n * sumXY - sumX * sumY) / denom;
     }
 
     private void printWorstReplays(List<PerReplayGas> results, int cpIdx, int limit) {
