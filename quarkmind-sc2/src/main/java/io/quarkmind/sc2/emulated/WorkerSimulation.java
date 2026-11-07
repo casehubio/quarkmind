@@ -58,7 +58,7 @@ class WorkerSimulation {
 
     void onWorkerProduced(String tag, Point2d position) {
         int baseIdx = findNearestBaseIndex(position);
-        if (baseIdx < 0) return;
+        if (baseIdx < 0) {return;}
         SimulatedWorker w = new SimulatedWorker(tag, position, baseIdx);
         workers.put(tag, w);
         assignToNearestPatch(w);
