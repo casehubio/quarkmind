@@ -149,12 +149,16 @@ class WorkerSimulation {
 
     void onWorkerDied(String tag) {
         SimulatedWorker w = workers.remove(tag);
-        if (w == null) return;
+        if (w == null) {return;}
         if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
             w.assignedPatch.miners.remove(w);
         }
+        boolean wasGasWorker = w.assignedGasSlot != null;
         if (w.assignedGasSlot != null) {
             w.assignedGasSlot.removeWorker(w);
+        }
+        if (wasGasWorker) {
+            rebalanceGasWorkers();
         }
     }
 
@@ -235,6 +239,14 @@ class WorkerSimulation {
                     slot.exitBuilding(w);
                     w.task           = WorkerTask.RETURNING_GAS;
                     w.targetPosition = bases.get(w.baseIndex).position();
+                    w.moveToward(workerDistancePerTick);
+                    if (w.isAtTarget()) {
+                        double deposited = w.cargo;
+                        w.cargo          = 0;
+                        w.task           = WorkerTask.HARVESTING_GAS;
+                        w.targetPosition = slot.position;
+                        return deposited;
+                    }
                 }
                 return 0;
             }
