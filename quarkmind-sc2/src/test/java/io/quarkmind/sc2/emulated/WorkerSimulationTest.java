@@ -246,7 +246,7 @@ class WorkerSimulationTest {
     }
 
     @Test
-    void gasHarvestTransition_noWastedTick() {
+    void gasIncomeRate_3workers_matchesExpected() {
         List<String> tags = IntStream.rangeClosed(1, 12)
                                      .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
@@ -261,9 +261,13 @@ class WorkerSimulationTest {
             gasIncome += sim.tick().vespeneIncome();
         }
 
-        double avgPerTick = gasIncome / measureTicks;
+        double avgPerTick     = gasIncome / measureTicks;
+        double ticksPerMinute = 60.0 * io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+        double perMinute      = avgPerTick * ticksPerMinute;
+        System.out.printf("3 gas workers: %.1f gas/min, %.3f gas/tick (formula target: ~138 gas/min, 2.27 gas/tick)%n",
+                          perMinute, avgPerTick);
         assertTrue(avgPerTick >= 2.2,
-                   "Gas per tick should be >= 2.2 after transition fix (5-tile geyser, 3 workers), got " + avgPerTick);
+                   "Gas per tick should be >= 2.2 for 3 workers at 5-tile distance with transition fix, got " + avgPerTick);
     }
 
 
