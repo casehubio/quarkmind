@@ -71,8 +71,8 @@ class EconomyTracker {
     }
 
     void recordResearchSpending(int mineralCost, int gasCost) {
-        mineralsUsedArmy += mineralCost;
-        vespeneUsedArmy += gasCost;
+        mineralsUsedTechnology += mineralCost;
+        vespeneUsedTechnology += gasCost;
         researchMineralsTotal += mineralCost;
         researchVespeneTotal += gasCost;
     }
