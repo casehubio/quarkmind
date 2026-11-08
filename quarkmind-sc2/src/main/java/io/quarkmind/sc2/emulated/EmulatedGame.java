@@ -73,6 +73,11 @@ public class EmulatedGame {
         workerSimulation.syncGasWorkersFromGt(gasWorkersPerBuilding);
     }
 
+    public void syncTotalGasWorkers(int target) {
+        workerSimulation.syncTotalGasWorkers(target);
+    }
+
+
     public void setMineralPatchResources(List<Resource> patches) {
         this.mineralPatchResources = List.copyOf(patches);
     }

@@ -92,6 +92,26 @@ public final class SC2Data {
         return income;
     }
 
+    public static int estimateGasWorkersFromRate(int ratePerMinute) {
+        if (ratePerMinute <= 0) {return 0;}
+        double ticksPerMinute = 60.0 * GAME_LOOPS_PER_SECOND / LOOPS_PER_TICK;
+        double ratePerTick    = ratePerMinute / ticksPerMinute;
+        int    best           = 0;
+        double bestDiff       = ratePerTick;
+        double cumulative     = 0;
+        for (int n = 1; n <= 24; n++) {
+            int workerIndex = ((n - 1) % GAS_TIER_RATES_PER_TICK.length);
+            cumulative += GAS_TIER_RATES_PER_TICK[workerIndex];
+            double diff = Math.abs(cumulative - ratePerTick);
+            if (diff < bestDiff) {
+                bestDiff = diff;
+                best     = n;
+            }
+        }
+        return best;
+    }
+
+
     public static boolean isGasBuilding(final BuildingType type) {
         return type == BuildingType.ASSIMILATOR || type == BuildingType.ASSIMILATOR_RICH
                || type == BuildingType.REFINERY || type == BuildingType.EXTRACTOR;

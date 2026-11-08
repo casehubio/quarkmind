@@ -499,6 +499,51 @@ class WorkerSimulation {
         }
     }
 
+    void syncTotalGasWorkers(int target) {
+        int current = totalGasWorkers();
+        if (current == target) {return;}
+        if (current > target) {
+            int excess = current - target;
+            for (GasSlot slot : gasSlots) {
+                while (excess > 0 && !slot.assignedWorkers.isEmpty()) {
+                    SimulatedWorker w = slot.assignedWorkers.remove(slot.assignedWorkers.size() - 1);
+                    slot.removeWorker(w);
+                    w.assignedGasSlot = null;
+                    w.task            = WorkerTask.IDLE;
+                    assignToNearestPatch(w);
+                    excess--;
+                }
+            }
+        } else {
+            int needed = target - current;
+            for (GasSlot slot : gasSlots) {
+                while (needed > 0 && slot.assignedWorkers.size() < GasSlot.MAX_WORKERS) {
+                    SimulatedWorker best = null;
+                    for (SimulatedWorker w : workers.values()) {
+                        if (w.baseIndex != slot.baseIndex) {continue;}
+                        if (w.assignedGasSlot != null) {continue;}
+                        if (w.task != WorkerTask.MINING_MINERALS && w.task != WorkerTask.RETURNING_MINERALS && w.task != WorkerTask.IDLE) {
+                            continue;
+                        }
+                        best = w;
+                        break;
+                    }
+                    if (best == null) {break;}
+                    if (best.assignedPatch != null && best.assignedPatch.miners.contains(best)) {
+                        best.assignedPatch.miners.remove(best);
+                    }
+                    best.assignedPatch   = null;
+                    best.assignedGasSlot = slot;
+                    best.task            = WorkerTask.HARVESTING_GAS;
+                    best.targetPosition  = slot.position;
+                    slot.assignedWorkers.add(best);
+                    needed--;
+                }
+            }
+        }
+    }
+
+
     private int countMineralWorkersAtBase(int baseIdx) {
         int count = 0;
         for (SimulatedWorker w : workers.values()) {
