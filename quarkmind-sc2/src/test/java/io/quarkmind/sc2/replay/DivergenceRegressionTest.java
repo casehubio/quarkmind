@@ -7,6 +7,8 @@ import hu.scelight.sc2.rep.model.details.Player;
 import hu.scelight.sc2.rep.model.details.Race;
 import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.SC2Data;
+import io.quarkmind.sc2.intent.TimedIntent;
+import io.quarkmind.sc2.mock.ReplaySimulatedGame;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -22,11 +24,12 @@ import java.util.TreeMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Regression test for EmulatedGame divergence — fails if any per-matchup
- * metric exceeds the baseline from #347 by more than 10%.
+ * Regression test for EmulatedGame simulation physics — fails if any per-matchup
+ * metric exceeds the baseline by more than 10%.
  *
- * Baselines from docs/benchmarks/emulated-game-divergence-baseline.md
- * (Oracle v4.9.3 dataset, 5-minute checkpoint).
+ * Uses TrackerIntentExtractor (100% input coverage) to isolate simulation
+ * accuracy from CmdEvent extraction coverage. Building accuracy should be
+ * near 100% when the simulation physics are correct.
  */
 @Tag("report")
 class DivergenceRegressionTest {
@@ -53,14 +56,14 @@ class DivergenceRegressionTest {
     private static final double VESPENE_RATE_ERROR_CEILING = 5.0;
     private static final double FOOD_USED_ERROR_CEILING = 5.0;
 
-    // Oracle v4.9.3 baseline at 5-minute mark (#384 Phase 2)
+    // Oracle v4.9.3 baseline at 5-minute mark — tracker-driven (#565)
     private static final Map<String, double[]> BASELINE_5MIN = Map.of(
-        "PvP", new double[]{  5.1, 15.1 },  // [unitDelta, buildingDelta]
-        "PvT", new double[]{  8.0, 16.5 },
-        "PvZ", new double[]{ 11.0, 14.9 },
-        "TvT", new double[]{  9.1, 14.3 },
-        "TvZ", new double[]{ 12.2, 14.2 },
-        "ZvZ", new double[]{ 13.0,  8.6 }
+        "PvP", new double[]{ 14.9,  1.0 },  // [unitDelta, buildingDelta]
+        "PvT", new double[]{ 12.1,  1.0 },
+        "PvZ", new double[]{ 15.3,  1.0 },
+        "TvT", new double[]{ 11.2,  1.0 },
+        "TvZ", new double[]{ 14.3,  1.0 },
+        "ZvZ", new double[]{ 20.2,  1.0 }
     );
 
     static boolean oracleExists() {
@@ -100,7 +103,7 @@ class DivergenceRegressionTest {
 
             for (int playerId = 1; playerId <= 2; playerId++) {
                 try {
-                    DivergenceReport report = ReplayValidationHarness.run(replayPath, playerId, TICK_LIMIT);
+                    DivergenceReport report = runTrackerDriven(replayPath, replay, playerId);
                     int tickIndex = CHECKPOINT_MINUTE * TICKS_PER_MINUTE - 1;
                     if (tickIndex >= report.ticks().size()) continue;
 
@@ -183,8 +186,7 @@ class DivergenceRegressionTest {
 
             for (int playerId = 1; playerId <= 2; playerId++) {
                 try {
-                    DivergenceReport report = ReplayValidationHarness.run(
-                            replayPath, playerId, TICK_LIMIT);
+                    DivergenceReport report = runTrackerDriven(replayPath, replay, playerId);
                     int tickIndex = CHECKPOINT_MINUTE * TICKS_PER_MINUTE - 1;
                     if (tickIndex >= report.ticks().size()) {continue;}
                     DivergenceReport.TickSnapshot snap = report.ticks().get(tickIndex);
@@ -296,14 +298,15 @@ class DivergenceRegressionTest {
 
     private static final int SAMPLE_CAP = 20;
 
+    // Cross-patch baselines — tracker-driven (#565)
     private static final Map<String, DatasetBaseline> CROSS_PATCH_BASELINES = new java.util.LinkedHashMap<>();
     static {
         CROSS_PATCH_BASELINES.put("AI Arena (4.9.3)",
-            new DatasetBaseline(0.79, 1.0, 0.0, 693.0));
+            new DatasetBaseline(1.0, 1.0, 1.0, 1.0));
         CROSS_PATCH_BASELINES.put("IEM PyeongChang 2018",
-            new DatasetBaseline(0.21, 1.0, 0.0, 598.0));
+            new DatasetBaseline(1.0, 1.0, 0.96, 1.0));
         CROSS_PATCH_BASELINES.put("ASUS ROG 2020",
-            new DatasetBaseline(0.22, 1.0, 0.0, 1140.0));
+            new DatasetBaseline(1.0, 1.0, 1.0, 1.0));
     }
 
     record DatasetSource(String name, Path dir) {}
@@ -359,8 +362,8 @@ class DivergenceRegressionTest {
 
                 for (int playerId = 1; playerId <= 2; playerId++) {
                     try {
-                        DivergenceReport report = ReplayValidationHarness.run(
-                            replayPath, playerId, TICK_LIMIT);
+                        DivergenceReport report = runTrackerDriven(
+                            replayPath, replay, playerId);
                         int tickIndex = CHECKPOINT_MINUTE * TICKS_PER_MINUTE - 1;
                         if (tickIndex >= report.ticks().size()) continue;
 
@@ -423,6 +426,13 @@ class DivergenceRegressionTest {
 
         assertThat(totalProcessed).as("Must process at least 1 cross-patch replay").isGreaterThan(0);
         System.out.printf("%nTotal: %d replays processed across tournament datasets%n", totalProcessed);
+    }
+
+    private static DivergenceReport runTrackerDriven(Path replayPath, Replay replay, int playerId) {
+        ReplaySimulatedGame groundTruth = new ReplaySimulatedGame(replayPath, playerId);
+        List<TimedIntent> intents = TrackerIntentExtractor.extract(replayPath, playerId);
+        io.quarkmind.domain.Race race = TrackerIntentExtractor.resolvePlayerRace(replay, playerId);
+        return ReplayValidationHarness.run(groundTruth, intents, TICK_LIMIT, race);
     }
 
     static double economyMape(PlayerEconomyStats gt, PlayerEconomyStats em) {
