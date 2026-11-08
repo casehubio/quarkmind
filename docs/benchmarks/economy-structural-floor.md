@@ -13,9 +13,9 @@
 | Field | Current MAPE | Structural floor | Gap | Improvable? |
 |-------|-------------|-----------------|-----|-------------|
 | mineralsCurrent | 61.5% | ~40-50% | ~10-20% | Partially — cumulative drift compounds |
-| vespeneCurrent | 52.5% | ~35-45% | ~10-15% | Partially — gas rate residual |
+| vespeneCurrent | 52.1% | ~35-45% | ~7-10% | Partially — gas rate residual |
 | mineralsCollectionRate | 17.0% | ~10-12% | ~5-7% | Yes — per-map patch distances |
-| vespeneCollectionRate | 20.9% | ~12-15% | ~6-9% | Yes — harvest cycle calibration |
+| vespeneCollectionRate | 19.6% | ~12-15% | ~5-7% | Partially — sub-tick carry-forward applied (#571) |
 | foodMade | 3.1% | ~2-3% | ~0-1% | At floor |
 | foodUsed | 3.7% | ~2-3% | ~0-1% | At floor |
 | workersActiveCount | 2.5% | ~2-3% | 0% | At floor |
@@ -101,7 +101,7 @@ These fields are already at their structural limit. Further optimisation is not 
 | Field | Current | Floor | Action |
 |-------|---------|-------|--------|
 | vespeneUsedCurrentArmy | 35.4% | ~15-20% | Death timing + spending model alignment |
-| vespeneCollectionRate | 20.9% | ~12-15% | Sub-tick carry-forward (#571) — re-baseline needed |
+| vespeneCollectionRate | 19.6% | ~12-15% | Sub-tick carry-forward applied (#571); remaining gap ~5-7% |
 | mineralsCollectionRate | 17.0% | ~10-12% | Per-map patch distances (#567) |
 | mineralsCurrent | 61.5% | ~40-50% | Compounds from rate improvements |
 | vespeneCurrent | 52.5% | ~35-45% | Compounds from rate improvements |
