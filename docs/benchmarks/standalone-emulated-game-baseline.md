@@ -43,9 +43,9 @@ Accuracy: 100.0% (0/0)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 20630 | 25140 | 9464 | 45.9% |
+| mineralsCurrent | 20630 | 20366 | 8292 | 40.2% |
 | vespeneCurrent | 232 | 8 | 224 | 96.6% |
-| mineralsCollectionRate | 150658 | 159004 | 14504 | 9.6% |
+| mineralsCollectionRate | 150658 | 152298 | 12706 | 8.4% |
 | vespeneCollectionRate | 1241 | 0 | 1241 | 100.0% |
 | foodMade | 4579 | 4627 | 48 | 1.0% |
 | foodUsed | 3338 | 3473 | 137 | 4.1% |
@@ -129,9 +129,9 @@ Accuracy: 100.0% (4/4)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 46751 | 66000 | 25403 | 54.3% |
+| mineralsCurrent | 46751 | 49820 | 24133 | 51.6% |
 | vespeneCurrent | 24254 | 14534 | 10788 | 44.5% |
-| mineralsCollectionRate | 171704 | 168356 | 23896 | 13.9% |
+| mineralsCollectionRate | 171704 | 161107 | 22391 | 13.0% |
 | vespeneCollectionRate | 39512 | 33393 | 9341 | 23.6% |
 | foodMade | 7024 | 7073 | 117 | 1.7% |
 | foodUsed | 5153 | 5259 | 128 | 2.5% |
@@ -254,9 +254,9 @@ Accuracy: 100.0% (103/103)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 66699 | 98255 | 52236 | 78.3% |
+| mineralsCurrent | 66699 | 69495 | 41028 | 61.5% |
 | vespeneCurrent | 43390 | 35049 | 17109 | 39.4% |
-| mineralsCollectionRate | 208770 | 195418 | 33424 | 16.0% |
+| mineralsCollectionRate | 208770 | 187458 | 35758 | 17.1% |
 | vespeneCollectionRate | 50869 | 44823 | 10224 | 20.1% |
 | foodMade | 9520 | 9644 | 280 | 2.9% |
 | foodUsed | 7488 | 7798 | 454 | 6.1% |
@@ -405,9 +405,9 @@ Accuracy: 100.0% (185/185)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 89788 | 123015 | 71523 | 79.7% |
+| mineralsCurrent | 89788 | 89292 | 55260 | 61.5% |
 | vespeneCurrent | 52228 | 47181 | 27423 | 52.5% |
-| mineralsCollectionRate | 201496 | 184477 | 30341 | 15.1% |
+| mineralsCollectionRate | 201496 | 177224 | 34278 | 17.0% |
 | vespeneCollectionRate | 61091 | 51254 | 12763 | 20.9% |
 | foodMade | 11184 | 11089 | 345 | 3.1% |
 | foodUsed | 9017 | 9195 | 335 | 3.7% |
