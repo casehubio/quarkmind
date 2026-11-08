@@ -281,6 +281,16 @@ class WorkerSimulation {
                     w.targetPosition = bases.get(w.baseIndex).position();
                     continue;
                 }
+                int loopsUntilDone = (int) Math.ceil(w.phaseEndLoop - currentLoop);
+                if (loopsUntilDone < loopsRemaining) {
+                    loopsRemaining -= loopsUntilDone;
+                    double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
+                    w.cargo = w.assignedPatch.harvest(cargo);
+                    w.assignedPatch.miners.remove(w);
+                    w.task = WorkerTask.RETURNING_MINERALS;
+                    w.targetPosition = bases.get(w.baseIndex).position();
+                    continue;
+                }
                 return income;
             }
 
