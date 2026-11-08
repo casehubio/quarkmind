@@ -6,7 +6,7 @@ class SimulatedWorker {
     static final double MINERAL_CARGO = 5.0;
     static final double RICH_MINERAL_CARGO = 7.0;
 
-    static final double MINING_DURATION_LOOPS_DEFAULT = 5.0;
+    static final double MINING_DURATION_LOOPS_DEFAULT = 12.0;
     static double MINING_DURATION_LOOPS = MINING_DURATION_LOOPS_DEFAULT;
 
     static void setMiningDurationLoops(double loops) {
