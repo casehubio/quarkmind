@@ -134,4 +134,9 @@ class TerranRaceModel implements RaceModel {
     public Set<BuildingType> townHallTypes() {return TOWN_HALLS;}
 
     int activeMuleCount()                    {return muleExpiresAtLoop.size();}
+
+    @Override
+    public long buildWorkerPauseTicks(BuildingType type, long buildDurationTicks) {
+        return buildDurationTicks;
+    }
 }

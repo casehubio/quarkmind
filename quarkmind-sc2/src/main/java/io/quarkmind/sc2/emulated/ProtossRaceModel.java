@@ -111,4 +111,11 @@ class ProtossRaceModel implements RaceModel {
 
     @Override
     public Set<BuildingType> townHallTypes() {return TOWN_HALLS;}
+
+    private static final long PROBE_BUILD_ROUND_TRIP_TICKS = 7;
+
+    @Override
+    public long buildWorkerPauseTicks(BuildingType type, long buildDurationTicks) {
+        return PROBE_BUILD_ROUND_TRIP_TICKS;
+    }
 }

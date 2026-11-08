@@ -107,6 +107,13 @@ public interface RaceModel {
     default boolean handleAbility(PlayerState state, String casterTag, String ability,
                                   String targetTag, long gameLoop) {return false;}
 
+    /**
+     * How long a worker is paused from mining during building placement, in ticks.
+     * Terran: full build duration (SCV stays). Protoss: brief walk time. Zerg: 0 (Drone consumed).
+     */
+    default long buildWorkerPauseTicks(BuildingType type, long buildDurationTicks) {return 0;}
+
+
     default boolean forceAbility(PlayerState state, String casterTag, String ability,
                                  String targetTag, long gameLoop) {
         return handleAbility(state, casterTag, ability, targetTag, gameLoop);
