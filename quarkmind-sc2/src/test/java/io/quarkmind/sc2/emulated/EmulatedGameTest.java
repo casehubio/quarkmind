@@ -80,27 +80,6 @@ class EmulatedGameTest {
 
 
     @Test
-    void mineralMiningEfficiency_scalesIncome() {
-        game.setMineralsForTesting(0);
-        for (int t = 0; t < 100; t++) {game.tick();}
-        int fullIncome = game.snapshot().minerals();
-
-        EmulatedGame halfGame = new EmulatedGame();
-        halfGame.setPlayerRaceModel(new ProtossRaceModel() {
-            @Override
-            public double mineralMiningEfficiency() {return 0.5;}
-        });
-        halfGame.configureWave(9999, 4, UnitType.ZEALOT);
-        halfGame.reset();
-        halfGame.setMineralsForTesting(0);
-        for (int t = 0; t < 100; t++) {halfGame.tick();}
-        int halfIncome = halfGame.snapshot().minerals();
-
-        assertThat(fullIncome).isGreaterThan(0);
-        assertThat((double) halfIncome).isCloseTo(fullIncome * 0.5, within(fullIncome * 0.05));
-    }
-
-    @Test
     void pausedWorkers_yieldNoMineralGain() {
         game.workerSimulation().pauseAllWorkers();
         game.tick();

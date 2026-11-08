@@ -15,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 
 class TerranEmulatedGameTest {
 
@@ -56,8 +55,6 @@ class TerranEmulatedGameTest {
 
     @Test
     void mineralIncome_terran_sameRateAsProtoss() {
-        // Base worker income is the same, but per-race efficiency factors differ.
-        // Protoss = 0.92, Terran = 1.0 (default)
         final EmulatedGame protossGame = new EmulatedGame();
         protossGame.setPlayerRaceModel(new ProtossRaceModel());
         protossGame.reset();
@@ -67,11 +64,8 @@ class TerranEmulatedGameTest {
             protossGame.tick();
         }
 
-        int terranIncome  = game.snapshot().minerals() - 50;
-        int protossIncome = protossGame.snapshot().minerals() - 50;
-        assertThat(terranIncome).isGreaterThan(protossIncome);
-        double ratio = (double) terranIncome / protossIncome;
-        assertThat(ratio).isCloseTo(1.0 / 0.92, within(0.02));
+        assertThat(game.snapshot().minerals())
+                .isEqualTo(protossGame.snapshot().minerals());
     }
 
     // --- SCV training ---

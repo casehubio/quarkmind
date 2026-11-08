@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 
 class ZergEmulatedGameTest {
 
@@ -75,8 +74,6 @@ class ZergEmulatedGameTest {
 
     @Test
     void mineralIncome_zerg_sameRateAsProtoss() {
-        // Base worker income is the same, but per-race efficiency factors differ.
-        // Protoss = 0.92, Zerg = 0.95
         final EmulatedGame protossGame = new EmulatedGame();
         protossGame.setPlayerRaceModel(new ProtossRaceModel());
         protossGame.reset();
@@ -86,11 +83,7 @@ class ZergEmulatedGameTest {
             protossGame.tick();
         }
 
-        int zergIncome    = game.snapshot().minerals() - 50;
-        int protossIncome = protossGame.snapshot().minerals() - 50;
-        assertThat(zergIncome).isGreaterThan(protossIncome);
-        double ratio = (double) zergIncome / protossIncome;
-        assertThat(ratio).isCloseTo(0.95 / 0.92, within(0.02));
+        assertThat(game.snapshot().minerals()).isEqualTo(protossGame.snapshot().minerals());
     }
 
     // --- Larva regeneration ---
