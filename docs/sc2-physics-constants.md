@@ -310,7 +310,7 @@ Sub-tick chaining (implemented in #578 for movement, #583 for mining, #584 for g
 
 ### Cumulative drift
 
-Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 1-min is 11.4%, growing to 22.3% at 7-min. Each tick's income error accumulates in mineralsCurrent — a 12% per-tick over-production doesn't stay at 12%; it means the mineral *balance* diverges by roughly 12% × elapsed time. This is why mineralsCurrent MAPE (67.6%) is far higher than the rate MAPE (22.3%).
+Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 1-min is 11.4%, growing to 22.8% at 7-min. Each tick's income error accumulates in mineralsCurrent — a 12% per-tick over-production doesn't stay at 12%; it means the mineral *balance* diverges by roughly 12% × elapsed time. This is why mineralsCurrent MAPE (67.5%) is far higher than the rate MAPE (22.8%).
 
 Fixing rate accuracy is the primary lever for reducing balance MAPE. The balance fields will converge automatically as rate accuracy improves.
 
@@ -360,15 +360,15 @@ Explicit gaps between the simulation and real SC2. Each gap's impact on economy 
 
 ### Deposit time
 
-Workers spend 2-3 loops stationary at the town hall depositing resources. Currently modeled as instant — the worker transitions directly from `RETURNING_MINERALS` to `MINING_MINERALS` in the same loop. Impact: absorbed into the mining duration constant (12 loops instead of measured 5). See #587.
+Workers spend 2-3 loops stationary at the town hall depositing resources. Currently modeled as instant — the worker transitions directly from `RETURNING_MINERALS` to `MINING_MINERALS` in the same loop. Impact: absorbed into mining duration (12 loops instead of measured 5) and gas harvest duration (22.0 loops); explicitly modeling deposit would reduce both constants toward their measured values. See #587.
 
 ### Approach and docking animation
 
-Workers decelerate and align with the mineral patch before the mining animation starts. Currently: the arrival threshold (0.5 units) triggers immediate mining. Real SC2: 2-3 loops of approach/docking visible in position data. Impact: absorbed into mining=12.
+Workers decelerate and align with the mineral patch before the mining animation starts. Currently: the arrival threshold (0.5 units) triggers immediate mining. Real SC2: 2-3 loops of approach/docking visible in position data. Impact: absorbed into mining=12; the gas equivalent (geyser entry/exit animation) is absorbed into gas harvest=22.
 
 ### Path contention
 
-Workers physically block each other on paths to and from mineral patches. Currently: workers pass through each other (no collision). Real SC2: workers path around each other, adding 1-2 loops average overhead per cycle. Impact: absorbed into mining=12. True collision modelling would require spatial awareness between workers.
+Workers physically block each other on paths to and from mineral patches. Currently: workers pass through each other (no collision). Real SC2: workers path around each other, adding 1-2 loops average overhead per cycle. Impact: absorbed into mining=12 and gas harvest=22. True collision modelling would require spatial awareness between workers.
 
 ### Close/far patch income differential in unit tests
 
@@ -448,6 +448,7 @@ Standalone EmulatedGame accuracy at 7-min checkpoint (118 oracle replays, all GT
 |------|-----------------|----------|
 | MiningDurationCalibrationTest | Saturation curves + oracle MAPE sweep | `-Preport` |
 | MiningAnimationMeasurementTest | Real SC2 mining animation via API | `-Dtest=MiningAnimationMeasurementTest` |
+| GasHarvestCalibrationTest | Gas harvest duration sweep + oracle MAPE | `-Preport` |
 | StandaloneEmulatedGameBaselineTest | Full economy MAPE, all fields | `-Preport` |
 | DivergenceRegressionTest | Regression thresholds (units/buildings/economy) | `-Preport` |
 | SC2TrainTimeCalibrationTest | Unit train times vs oracle replays | `-Preport` |
