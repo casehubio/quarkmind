@@ -306,7 +306,7 @@ class WorkerSimulation {
             if (w.isAtTarget() && slot.canEnter()) {
                 double fractionUsed = Math.min(distBefore / workerDistancePerTick, 1.0);
                 slot.enterBuilding(w);
-                w.cycleLoopsRemaining -= (int) ((1.0 - fractionUsed) * SC2Data.LOOPS_PER_TICK);
+                w.cycleLoopsRemaining -= (1.0 - fractionUsed) * SC2Data.LOOPS_PER_TICK;
             }
             return 0;
         }
