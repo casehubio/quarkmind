@@ -326,14 +326,14 @@ Protoss=0.92, Zerg=0.95, Terran=1.0. These empirical factors absorb race-specifi
 
 Mining animation is 5 loops (0.22s) in real SC2, measured via the SC2 API by tracking Probe position frame-by-frame for 3000 game loops. The simulation uses 12 loops (0.54s). The 7-loop gap breaks down as:
 
-| Component | Loops | Source | Modelable? |
-|-----------|-------|--------|------------|
-| Deposit at town hall | 2-3 | SC2 API measurement (stationary at Nexus) | Yes — #587 |
-| Approach/docking at patch | 2-3 | SC2 API measurement (deceleration near patch) | Yes |
-| Path contention | 1-2 | Average across worker interactions | Partial |
+| Component | Loops | Source | Status |
+|-----------|-------|--------|--------|
+| Deposit at town hall | 2-3 | SC2 API measurement (stationary at Nexus) | Investigated #587 — lumped constant more accurate |
+| Approach/docking at patch | 2-3 | SC2 API measurement (deceleration near patch) | Not yet modeled |
+| Path contention | 1-2 | Average across worker interactions | Not yet modeled |
 | **Total overhead** | **~7** | | |
 
-As these components are modeled explicitly, the mining duration constant should decrease toward the measured 5 loops.
+Deposit was investigated in #587: explicit modeling (2-loop delay at base) shifted the MAPE minimum without reducing it. The lumped constants (mining=12, gas=22) absorb all three overhead components more accurately than splitting them into separate phases. The remaining components (approach/docking, contention) are individually too small to justify separate modeling.
 
 ### Rate measurement cadence
 
@@ -360,7 +360,7 @@ Explicit gaps between the simulation and real SC2. Each gap's impact on economy 
 
 ### Deposit time
 
-Workers spend 2-3 loops stationary at the town hall depositing resources. Currently modeled as instant — the worker transitions directly from `RETURNING_MINERALS` to `MINING_MINERALS` in the same loop. Impact: absorbed into mining duration (12 loops instead of measured 5) and gas harvest duration (22.0 loops); explicitly modeling deposit would reduce both constants toward their measured values. See #587.
+Workers spend 2-3 loops stationary at the town hall depositing resources. Infrastructure exists (`DEPOSITING_MINERALS`/`DEPOSITING_GAS` task states, configurable via `starcraft.worker.deposit-duration-loops`), but default is 0.0 — oracle MAPE sweep (#587) showed that explicit deposit modeling doesn't improve accuracy. The mining=12 and gas=22 constants already absorb deposit overhead optimally as lumped constants; splitting the overhead shifts the MAPE minimum without reducing it.
 
 ### Approach and docking animation
 
@@ -469,6 +469,7 @@ Worker physics constants — override without recompiling:
 # application.properties or -D flags
 starcraft.worker.mining-duration-loops=12.0
 starcraft.worker.gas-harvest-duration-loops=22.0
+starcraft.worker.deposit-duration-loops=0.0
 starcraft.worker.acceleration=3.5
 starcraft.worker.deceleration=3.5
 ```
