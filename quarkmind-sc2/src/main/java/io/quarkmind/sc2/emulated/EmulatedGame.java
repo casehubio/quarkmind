@@ -185,6 +185,7 @@ public class EmulatedGame {
     public void tick() {
         gameFrame++;
 
+        workerSimulation.tickBuilderReturns(gameFrame);
         TickIncome workerIncome = workerSimulation.tick();
         double tickMineralIncome = workerIncome.mineralIncome();
         double tickGasIncome = workerIncome.vespeneIncome();
@@ -732,6 +733,12 @@ public class EmulatedGame {
         final boolean   isReactor = tag.startsWith("r-") && isReactorAddOn(bt, state);
         final int fMCost = mCost;
         final int fGCost = gCost;
+        if (state == friendly && model != null) {
+            long pauseTicks = model.buildWorkerPauseTicks(bt, completesAt - gameFrame);
+            if (pauseTicks > 0) {
+                workerSimulation.pauseWorkerForBuilding(b.location(), gameFrame + pauseTicks);
+            }
+        }
         physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, tag, () -> {
             markBuildingComplete(tag, state);
             state.addSupply(SC2Data.supplyBonus(bt));

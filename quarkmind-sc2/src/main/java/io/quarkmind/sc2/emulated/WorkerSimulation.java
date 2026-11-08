@@ -524,10 +524,50 @@ class WorkerSimulation {
         }
     }
 
+
+    private record BuildingWorkerReturn(String workerTag, long returnAtTick) {}
+
+    private final List<BuildingWorkerReturn> pendingBuilderReturns = new ArrayList<>();
+
+    void pauseWorkerForBuilding(Point2d buildSite, long returnAtTick) {
+        SimulatedWorker nearest     = null;
+        double          nearestDist = Double.MAX_VALUE;
+        for (SimulatedWorker w : workers.values()) {
+            if (w.task != WorkerTask.MINING_MINERALS && w.task != WorkerTask.RETURNING_MINERALS) {continue;}
+            double d = w.position.distanceTo(buildSite);
+            if (d < nearestDist) {
+                nearestDist = d;
+                nearest     = w;
+            }
+        }
+        if (nearest == null) {return;}
+        if (nearest.assignedPatch != null && nearest.assignedPatch.miners.contains(nearest)) {
+            nearest.assignedPatch.miners.remove(nearest);
+        }
+        nearest.assignedPatch = null;
+        nearest.task          = WorkerTask.BUILDING;
+        pendingBuilderReturns.add(new BuildingWorkerReturn(nearest.tag, returnAtTick));
+    }
+
+    void tickBuilderReturns(long currentTick) {
+        var it = pendingBuilderReturns.iterator();
+        while (it.hasNext()) {
+            var entry = it.next();
+            if (currentTick >= entry.returnAtTick()) {
+                SimulatedWorker w = workers.get(entry.workerTag());
+                if (w != null && w.task == WorkerTask.BUILDING) {
+                    assignToNearestPatch(w);
+                }
+                it.remove();
+            }
+        }
+    }
+
     void reset() {
         bases.clear();
         gasSlots.clear();
         workers.clear();
+        pendingBuilderReturns.clear();
     }
 
     private int findBaseIndex(String baseTag) {
