@@ -214,6 +214,13 @@ class WorkerSimulation {
     TickIncome tick(double tickStartLoop) {
         this.currentTickStartLoop = tickStartLoop;
         double tickEndLoop = tickStartLoop + SC2Data.LOOPS_PER_TICK;
+
+        for (SimulatedWorker w : new ArrayList<>(workers.values())) {
+            if (w.task == WorkerTask.SCOUTING && tickEndLoop >= w.scoutReturnLoop) {
+                onWorkerReturnFromScout(w.tag);
+            }
+        }
+
         double mineralIncome = 0;
         for (SimulatedWorker w : workers.values()) {
             if (w.assignedGasSlot == null) {
@@ -230,7 +237,8 @@ class WorkerSimulation {
     }
 
     private double tickMineralWorker(SimulatedWorker w, double tickStartLoop, double tickEndLoop) {
-        if (w.task == WorkerTask.BUILDING || w.task == WorkerTask.IDLE) return 0;
+        if (w.task == WorkerTask.BUILDING || w.task == WorkerTask.IDLE
+                || w.task == WorkerTask.SCOUTING || w.task == WorkerTask.TRANSFERRING) return 0;
         if (w.task == WorkerTask.HARVESTING_GAS || w.task == WorkerTask.RETURNING_GAS) return 0;
 
         if (w.task == WorkerTask.MINING_MINERALS) {
@@ -577,6 +585,29 @@ class WorkerSimulation {
             }
         }
     }
+
+    void onWorkerScouting(String tag, double returnAtLoop) {
+        SimulatedWorker w = workers.get(tag);
+        if (w == null) {return;}
+        if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
+            w.assignedPatch.miners.remove(w);
+        }
+        w.assignedPatch = null;
+        if (w.assignedGasSlot != null) {
+            w.assignedGasSlot.removeWorker(w);
+            w.assignedGasSlot = null;
+        }
+        w.task            = WorkerTask.SCOUTING;
+        w.scoutReturnLoop = returnAtLoop;
+    }
+
+    void onWorkerReturnFromScout(String tag) {
+        SimulatedWorker w = workers.get(tag);
+        if (w == null || w.task != WorkerTask.SCOUTING) {return;}
+        w.task = WorkerTask.IDLE;
+        assignToNearestPatch(w);
+    }
+
 
     void reset() {
         bases.clear();

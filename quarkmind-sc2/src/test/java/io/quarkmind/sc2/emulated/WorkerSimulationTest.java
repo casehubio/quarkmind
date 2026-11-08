@@ -544,3 +544,64 @@ class WorkerSimulationTest {
         // Fixing the mining duration constant is #575's scope; the contention model (MAX_MINERS=2
         // + tryStartMining wait) is mechanically correct.}
 }
+
+    @Test
+    void workerScouting_producesNoIncome() {
+        sim.onInitialWorkers(List.of("w-1", "w-2"), BASE_POS, BASE_TAG);
+        for (int t = 0; t < 20; t++) {tick();}
+
+        double incomeBeforeScout = 0;
+        for (int t = 0; t < 50; t++) {
+            incomeBeforeScout += tick().mineralIncome();
+        }
+
+        sim.onWorkerScouting("w-1", Double.MAX_VALUE);
+
+        double incomeWhileScouting = 0;
+        for (int t = 0; t < 50; t++) {
+            incomeWhileScouting += tick().mineralIncome();
+        }
+
+        assertTrue(incomeWhileScouting < incomeBeforeScout,
+                   "Income should drop when a worker is scouting");
+    }
+
+    @Test
+    void workerScouting_autoReturnsAtScheduledLoop() {
+        sim.onInitialWorkers(List.of("w-1", "w-2"), BASE_POS, BASE_TAG);
+        for (int t = 0; t < 20; t++) {tick();}
+
+        double scoutReturnLoop = (tickCount + 10) * (double) io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+        sim.onWorkerScouting("w-1", scoutReturnLoop);
+
+        for (int t = 0; t < 30; t++) {tick();}
+
+        double incomeAfterReturn = 0;
+        for (int t = 0; t < 50; t++) {
+            incomeAfterReturn += tick().mineralIncome();
+        }
+
+        assertTrue(incomeAfterReturn > 0,
+                   "Income should recover after scout auto-returns");
+    }
+
+    @Test
+    void workerScouting_manualReturnResumesMining() {
+        sim.onInitialWorkers(List.of("w-1", "w-2"), BASE_POS, BASE_TAG);
+        for (int t = 0; t < 20; t++) {tick();}
+
+        sim.onWorkerScouting("w-1", Double.MAX_VALUE);
+        for (int t = 0; t < 20; t++) {tick();}
+
+        sim.onWorkerReturnFromScout("w-1");
+
+        double incomeAfterReturn = 0;
+        for (int t = 0; t < 50; t++) {
+            incomeAfterReturn += tick().mineralIncome();
+        }
+
+        assertTrue(incomeAfterReturn > 0,
+                   "Worker should resume mining after manual return");
+    }
+
+}
