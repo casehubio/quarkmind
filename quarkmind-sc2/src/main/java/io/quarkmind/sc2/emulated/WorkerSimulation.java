@@ -255,7 +255,7 @@ class WorkerSimulation {
                 return 0;
             }
             if (!w.isAtTarget()) {
-                w.moveToward(workerDistancePerTick);
+                w.moveToward();
                 if (w.isAtTarget()) {
                     tryStartMining(w, tickStartLoop);
                 }
@@ -276,7 +276,7 @@ class WorkerSimulation {
         }
 
         if (w.task == WorkerTask.RETURNING_MINERALS) {
-            w.moveToward(workerDistancePerTick);
+            w.moveToward();
             if (w.isAtTarget()) {
                 double deposited = w.cargo;
                 w.cargo = 0;
@@ -309,7 +309,7 @@ class WorkerSimulation {
                     slot.exitBuilding(w);
                     w.task           = WorkerTask.RETURNING_GAS;
                     w.targetPosition = bases.get(w.baseIndex).position();
-                    w.moveToward(workerDistancePerTick * overflowFraction);
+                    w.moveLoops((int) Math.round(overflowFraction * SC2Data.LOOPS_PER_TICK));
                     if (w.isAtTarget()) {
                         double deposited = w.cargo;
                         w.cargo          = 0;
@@ -321,7 +321,7 @@ class WorkerSimulation {
                 return 0;
             }
             double distBefore = w.position.distanceTo(w.targetPosition);
-            w.moveToward(workerDistancePerTick);
+            w.moveToward();
             if (w.isAtTarget() && slot.canEnter()) {
                 double fractionUsed = Math.min(distBefore / workerDistancePerTick, 1.0);
                 double arrivalLoop = tickStartLoop + fractionUsed * SC2Data.LOOPS_PER_TICK;
@@ -333,14 +333,14 @@ class WorkerSimulation {
 
         if (w.task == WorkerTask.RETURNING_GAS) {
             double distBefore = w.position.distanceTo(w.targetPosition);
-            w.moveToward(workerDistancePerTick);
+            w.moveToward();
             if (w.isAtTarget()) {
                 double fractionUsed = Math.min(distBefore / workerDistancePerTick, 1.0);
                 double deposited = w.cargo;
                 w.cargo          = 0;
                 w.task           = WorkerTask.HARVESTING_GAS;
                 w.targetPosition = slot.position;
-                w.moveToward(workerDistancePerTick * (1.0 - fractionUsed));
+                w.moveLoops((int) Math.round((1.0 - fractionUsed) * SC2Data.LOOPS_PER_TICK));
                 return deposited;
             }
             return 0;
@@ -619,7 +619,7 @@ class WorkerSimulation {
     }
 
     private void tickTransferringWorker(SimulatedWorker w) {
-        w.moveToward(workerDistancePerTick);
+        w.moveToward();
         if (w.isAtTarget()) {
             assignToNearestPatch(w);
         }

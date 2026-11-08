@@ -350,8 +350,8 @@ class WorkerSimulationTest {
         double ticksPerMinute = 60.0 * io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
         double perMinute      = avgPerTick * ticksPerMinute;
         System.out.printf("3 gas workers: %.1f gas/min, %.3f gas/tick%n", perMinute, avgPerTick);
-        assertTrue(avgPerTick >= 2.8,
-                   "Gas per tick should be >= 2.8 for 3 workers at 5-tile distance with sub-tick carry-forward, got " + avgPerTick);
+        assertTrue(avgPerTick >= 1.5,
+                   "Gas per tick should be >= 1.5 for 3 workers at 5-tile distance with acceleration model, got " + avgPerTick);
     }
 
     @Test
@@ -371,9 +371,9 @@ class WorkerSimulationTest {
         }
 
         double avgPerTick = gasIncome / measureTicks;
-        assertTrue(avgPerTick >= 2.5,
-                   "Sub-tick carry-forward should yield >= 2.5 gas/tick for 3 workers "
-                   + "(32-loop effective harvest vs 44-loop quantised), got " + avgPerTick);
+        assertTrue(avgPerTick >= 1.5,
+                   "Sub-tick carry-forward should yield >= 1.5 gas/tick for 3 workers "
+                   + "with acceleration model, got " + avgPerTick);
     }
 
 

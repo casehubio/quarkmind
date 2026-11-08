@@ -20,6 +20,12 @@ class SimulatedWorker {
         GAS_HARVEST_DURATION_LOOPS = GAS_HARVEST_DURATION_LOOPS_DEFAULT;
     }
     static final double ARRIVAL_THRESHOLD = 0.5;
+    static final double MAX_SPEED         = io.quarkmind.domain.SC2Data.unitSpeed(io.quarkmind.domain.UnitType.PROBE);
+    static final double ACCELERATION      = 2.5;
+    static final double DECELERATION      = 2.5;
+    static final double LOOP_DURATION     = 1.0 / io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND;
+    static final int    LOOPS_PER_TICK    = io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+
 
     final String tag;
     Point2d position;
@@ -32,6 +38,7 @@ class SimulatedWorker {
     double cargo;
     double phaseEndLoop;
     double scoutReturnLoop;
+    double currentSpeed;
 
 
     SimulatedWorker(String tag, Point2d position, int baseIndex) {
@@ -46,19 +53,38 @@ class SimulatedWorker {
                 && position.distanceTo(targetPosition) <= ARRIVAL_THRESHOLD;
     }
 
-    void moveToward(double distancePerTick) {
-        if (targetPosition == null) return;
-        double dist = position.distanceTo(targetPosition);
-        if (dist <= distancePerTick) {
-            position = targetPosition;
-        } else {
-            float dx = targetPosition.x() - position.x();
-            float dy = targetPosition.y() - position.y();
-            float ratio = (float) (distancePerTick / dist);
+    void moveToward() {moveLoops(LOOPS_PER_TICK);}
+
+    void moveLoops(int loops) {
+        if (targetPosition == null) {return;}
+        for (int loop = 0; loop < loops; loop++) {
+            double dist = position.distanceTo(targetPosition);
+            if (dist <= ARRIVAL_THRESHOLD) {
+                position     = targetPosition;
+                currentSpeed = 0;
+                return;
+            }
+            double decelDist = currentSpeed * currentSpeed / (2.0 * DECELERATION);
+            if (dist <= decelDist) {
+                currentSpeed = Math.max(0, currentSpeed - DECELERATION * LOOP_DURATION);
+            } else if (currentSpeed < MAX_SPEED) {
+                currentSpeed = Math.min(MAX_SPEED, currentSpeed + ACCELERATION * LOOP_DURATION);
+            }
+            double stepDist = currentSpeed * LOOP_DURATION;
+            if (stepDist <= 0) {continue;}
+            if (stepDist >= dist) {
+                position     = targetPosition;
+                currentSpeed = 0;
+                return;
+            }
+            float dx    = targetPosition.x() - position.x();
+            float dy    = targetPosition.y() - position.y();
+            float ratio = (float) (stepDist / dist);
             position = new Point2d(
                     position.x() + dx * ratio,
                     position.y() + dy * ratio
             );
         }
     }
+
 }
