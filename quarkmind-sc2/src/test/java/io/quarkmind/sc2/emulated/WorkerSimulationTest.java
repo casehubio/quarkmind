@@ -497,4 +497,50 @@ class WorkerSimulationTest {
                    "Mixed base (9000) should yield less total minerals than uniform (12000)");
     }
 
+
+    @Test
+    void saturationCurve_thirdWorkerEarnsLessThanSecond() {
+        int warmup  = 20;
+        int measure = 300;
+        double ticksPerMinute = 60.0 * io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND
+                                / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+
+        int[]    workerCounts   = {8, 12, 16, 20, 24};
+        double[] perWorkerRates = new double[workerCounts.length];
+
+        for (int idx = 0; idx < workerCounts.length; idx++) {
+            sim.reset();
+            sim.onTownHallCompleted(BASE_TAG, BASE_POS);
+            tickCount = 0;
+
+            int count = workerCounts[idx];
+            List<String> initial = IntStream.rangeClosed(1, Math.min(count, 12))
+                                            .mapToObj(i -> "w-" + i).toList();
+            sim.onInitialWorkers(initial, BASE_POS, BASE_TAG);
+            for (int i = 12; i < count; i++) {
+                sim.onWorkerProduced("w-" + (i + 1), BASE_POS);
+            }
+
+            for (int t = 0; t < warmup; t++) {tick();}
+            double income = 0;
+            for (int t = 0; t < measure; t++) {
+                income += tick().mineralIncome();
+            }
+
+            double perMinute = income / measure * ticksPerMinute;
+            perWorkerRates[idx] = perMinute / count;
+            System.out.printf("%d workers: %.1f minerals/min total, %.1f per worker%n",
+                              count, perMinute, perWorkerRates[idx]);
+        }
+
+        double rate16 = perWorkerRates[2];
+        double rate24 = perWorkerRates[4];
+        assertTrue(rate24 < rate16,
+                   "24-worker per-worker rate should be less than 16-worker rate");
+        double drop = (1.0 - rate24 / rate16) * 100;
+        System.out.printf("Efficiency drop 16→24: %.1f%% (SC2 reference: ~40-50%%)%n", drop);
+        // FINDING: drop is ~5.6% — far below SC2's ~40-50%. Root cause: MINING_DURATION_LOOPS=16
+        // is too short, so workers spend little time at the patch and 3rd workers barely wait.
+        // Fixing the mining duration constant is #575's scope; the contention model (MAX_MINERS=2
+        // + tryStartMining wait) is mechanically correct.}
 }
