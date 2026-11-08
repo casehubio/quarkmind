@@ -36,10 +36,11 @@ class SimulatedWorker {
     static final int    LOOPS_PER_TICK    = io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
 
     static void configure(WorkerPhysicsConfig config) {
-        MINING_DURATION_LOOPS = config.miningDurationLoops();
+        MINING_DURATION_LOOPS      = config.miningDurationLoops();
         GAS_HARVEST_DURATION_LOOPS = config.gasHarvestDurationLoops();
-        ACCELERATION = config.acceleration();
-        DECELERATION = config.deceleration();
+        DEPOSIT_DURATION_LOOPS     = config.depositDurationLoops();
+        ACCELERATION               = config.acceleration();
+        DECELERATION               = config.deceleration();
     }
 
     static void resetToDefaults() {
@@ -108,4 +109,14 @@ class SimulatedWorker {
         return loops;
     }
 
+
+    static double DEPOSIT_DURATION_LOOPS = WorkerPhysicsConfig.DEFAULT_DEPOSIT_DURATION_LOOPS;
+
+    static void setDepositDurationLoops(double loops) {
+        DEPOSIT_DURATION_LOOPS = loops;
+    }
+
+    static void resetDepositDuration() {
+        DEPOSIT_DURATION_LOOPS = WorkerPhysicsConfig.DEFAULT_DEPOSIT_DURATION_LOOPS;
+    }
 }

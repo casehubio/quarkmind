@@ -136,6 +136,7 @@ class WorkerSimulation {
             if (w.baseIndex != baseIdx) continue;
             if (w.task != WorkerTask.MINING_MINERALS
                     && w.task != WorkerTask.RETURNING_MINERALS
+                    && w.task != WorkerTask.DEPOSITING_MINERALS
                     && w.task != WorkerTask.IDLE) continue;
             if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
                 w.assignedPatch.miners.remove(w);
@@ -163,6 +164,7 @@ class WorkerSimulation {
                 if (w.assignedGasSlot != null) continue;
                 if (w.task != WorkerTask.MINING_MINERALS
                         && w.task != WorkerTask.RETURNING_MINERALS
+                        && w.task != WorkerTask.DEPOSITING_MINERALS
                         && w.task != WorkerTask.IDLE) continue;
                 if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
                     w.assignedPatch.miners.remove(w);
@@ -246,12 +248,13 @@ class WorkerSimulation {
 
     private double tickMineralWorker(SimulatedWorker w, double tickStartLoop, double tickEndLoop) {
         if (w.task == WorkerTask.BUILDING || w.task == WorkerTask.IDLE
-                || w.task == WorkerTask.SCOUTING || w.task == WorkerTask.TRANSFERRING) return 0;
-        if (w.task == WorkerTask.HARVESTING_GAS || w.task == WorkerTask.RETURNING_GAS) return 0;
+            || w.task == WorkerTask.SCOUTING || w.task == WorkerTask.TRANSFERRING) {return 0;}
+        if (w.task == WorkerTask.HARVESTING_GAS || w.task == WorkerTask.RETURNING_GAS
+            || w.task == WorkerTask.DEPOSITING_GAS) {return 0;}
 
-        int loopsPerTick = SimulatedWorker.LOOPS_PER_TICK;
-        int loopsRemaining = loopsPerTick;
-        double income = 0;
+        int    loopsPerTick   = SimulatedWorker.LOOPS_PER_TICK;
+        int    loopsRemaining = loopsPerTick;
+        double income         = 0;
 
         while (loopsRemaining > 0) {
             if (w.task == WorkerTask.MINING_MINERALS) {
@@ -265,7 +268,7 @@ class WorkerSimulation {
                     if (w.isAtTarget()) {
                         tryStartMining(w, tickStartLoop + (loopsPerTick - loopsRemaining));
                     }
-                    if (loopsRemaining <= 0) return income;
+                    if (loopsRemaining <= 0) {return income;}
                     continue;
                 }
                 if (!w.assignedPatch.miners.contains(w)) {
@@ -277,7 +280,7 @@ class WorkerSimulation {
                     double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
                     w.cargo = w.assignedPatch.harvest(cargo);
                     w.assignedPatch.miners.remove(w);
-                    w.task = WorkerTask.RETURNING_MINERALS;
+                    w.task           = WorkerTask.RETURNING_MINERALS;
                     w.targetPosition = bases.get(w.baseIndex).position();
                     continue;
                 }
@@ -287,7 +290,7 @@ class WorkerSimulation {
                     double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
                     w.cargo = w.assignedPatch.harvest(cargo);
                     w.assignedPatch.miners.remove(w);
-                    w.task = WorkerTask.RETURNING_MINERALS;
+                    w.task           = WorkerTask.RETURNING_MINERALS;
                     w.targetPosition = bases.get(w.baseIndex).position();
                     continue;
                 }
@@ -300,8 +303,27 @@ class WorkerSimulation {
                 if (w.isAtTarget()) {
                     income += w.cargo;
                     w.cargo = 0;
+                    double arrivalLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
+                    w.task         = WorkerTask.DEPOSITING_MINERALS;
+                    w.phaseEndLoop = arrivalLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
+                    if (loopsRemaining <= 0) {return income;}
+                    continue;
+                }
+                return income;
+            }
+
+            if (w.task == WorkerTask.DEPOSITING_MINERALS) {
+                double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
+                if (currentLoop >= w.phaseEndLoop) {
                     assignToNearestPatch(w);
-                    if (loopsRemaining <= 0) return income;
+                    if (loopsRemaining <= 0) {return income;}
+                    continue;
+                }
+                int loopsUntilDone = (int) Math.ceil(w.phaseEndLoop - currentLoop);
+                if (loopsUntilDone < loopsRemaining) {
+                    loopsRemaining -= loopsUntilDone;
+                    assignToNearestPatch(w);
+                    if (loopsRemaining <= 0) {return income;}
                     continue;
                 }
                 return income;
@@ -323,9 +345,9 @@ class WorkerSimulation {
         GasSlot slot = w.assignedGasSlot;
         if (slot == null) {return 0;}
 
-        int loopsPerTick = SimulatedWorker.LOOPS_PER_TICK;
-        int loopsRemaining = loopsPerTick;
-        double income = 0;
+        int    loopsPerTick   = SimulatedWorker.LOOPS_PER_TICK;
+        int    loopsRemaining = loopsPerTick;
+        double income         = 0;
 
         while (loopsRemaining > 0) {
             if (w.task == WorkerTask.HARVESTING_GAS) {
@@ -355,7 +377,7 @@ class WorkerSimulation {
                     double arrivalLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
                     slot.enterBuilding(w);
                     w.phaseEndLoop = arrivalLoop + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
-                    if (loopsRemaining <= 0) return income;
+                    if (loopsRemaining <= 0) {return income;}
                     continue;
                 }
                 return income;
@@ -366,10 +388,30 @@ class WorkerSimulation {
                 loopsRemaining -= used;
                 if (w.isAtTarget()) {
                     income += w.cargo;
-                    w.cargo          = 0;
+                    w.cargo = 0;
+                    double arrivalLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
+                    w.task         = WorkerTask.DEPOSITING_GAS;
+                    w.phaseEndLoop = arrivalLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
+                    if (loopsRemaining <= 0) {return income;}
+                    continue;
+                }
+                return income;
+            }
+
+            if (w.task == WorkerTask.DEPOSITING_GAS) {
+                double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
+                if (currentLoop >= w.phaseEndLoop) {
                     w.task           = WorkerTask.HARVESTING_GAS;
                     w.targetPosition = slot.position;
-                    if (loopsRemaining <= 0) return income;
+                    if (loopsRemaining <= 0) {return income;}
+                    continue;
+                }
+                int loopsUntilDone = (int) Math.ceil(w.phaseEndLoop - currentLoop);
+                if (loopsUntilDone < loopsRemaining) {
+                    loopsRemaining -= loopsUntilDone;
+                    w.task           = WorkerTask.HARVESTING_GAS;
+                    w.targetPosition = slot.position;
+                    if (loopsRemaining <= 0) {return income;}
                     continue;
                 }
                 return income;
@@ -441,7 +483,7 @@ class WorkerSimulation {
         int[] counts = new int[bases.size()];
         for (SimulatedWorker w : workers.values()) {
             if (w.task == WorkerTask.MINING_MINERALS || w.task == WorkerTask.RETURNING_MINERALS
-                || w.task == WorkerTask.TRANSFERRING) {
+                || w.task == WorkerTask.DEPOSITING_MINERALS || w.task == WorkerTask.TRANSFERRING) {
                 if (w.baseIndex >= 0 && w.baseIndex < counts.length) {
                     counts[w.baseIndex]++;
                 }
@@ -541,7 +583,7 @@ class WorkerSimulation {
                     for (SimulatedWorker w : workers.values()) {
                         if (w.baseIndex != slot.baseIndex) {continue;}
                         if (w.assignedGasSlot != null) {continue;}
-                        if (w.task != WorkerTask.MINING_MINERALS && w.task != WorkerTask.RETURNING_MINERALS && w.task != WorkerTask.IDLE) {
+                        if (w.task != WorkerTask.MINING_MINERALS && w.task != WorkerTask.RETURNING_MINERALS && w.task != WorkerTask.DEPOSITING_MINERALS && w.task != WorkerTask.IDLE) {
                             continue;
                         }
                         best = w;
@@ -568,7 +610,7 @@ class WorkerSimulation {
         for (SimulatedWorker w : workers.values()) {
             if (w.baseIndex == baseIdx
                 && (w.task == WorkerTask.MINING_MINERALS || w.task == WorkerTask.RETURNING_MINERALS
-                    || w.task == WorkerTask.TRANSFERRING)) {
+                    || w.task == WorkerTask.DEPOSITING_MINERALS || w.task == WorkerTask.TRANSFERRING)) {
                 count++;
             }
         }
@@ -598,7 +640,7 @@ class WorkerSimulation {
         SimulatedWorker nearest     = null;
         double          nearestDist = Double.MAX_VALUE;
         for (SimulatedWorker w : workers.values()) {
-            if (w.task != WorkerTask.MINING_MINERALS && w.task != WorkerTask.RETURNING_MINERALS) {continue;}
+            if (w.task != WorkerTask.MINING_MINERALS && w.task != WorkerTask.RETURNING_MINERALS && w.task != WorkerTask.DEPOSITING_MINERALS) {continue;}
             double d = w.position.distanceTo(buildSite);
             if (d < nearestDist) {
                 nearestDist = d;
