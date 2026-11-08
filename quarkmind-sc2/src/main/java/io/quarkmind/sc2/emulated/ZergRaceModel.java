@@ -180,6 +180,5 @@ class ZergRaceModel implements RaceModel {
         return q != null && !q.isEmpty();
     }
 
-    @Override
-    public double mineralMiningEfficiency() {return 0.95;}
+
 }

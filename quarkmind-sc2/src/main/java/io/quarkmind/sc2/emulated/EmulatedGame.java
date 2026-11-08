@@ -192,7 +192,7 @@ public class EmulatedGame {
 
         workerSimulation.tickBuilderReturns(gameFrame);
         TickIncome workerIncome = workerSimulation.tick();
-        double tickMineralIncome = workerIncome.mineralIncome() * playerRaceModel.mineralMiningEfficiency();
+        double tickMineralIncome = workerIncome.mineralIncome();
         double tickGasIncome = workerIncome.vespeneIncome();
         friendly.addMinerals(tickMineralIncome);
         friendly.addVespene(tickGasIncome);
