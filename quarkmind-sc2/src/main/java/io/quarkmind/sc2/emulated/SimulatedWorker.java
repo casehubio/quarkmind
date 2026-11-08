@@ -6,7 +6,7 @@ class SimulatedWorker {
     static final double MINERAL_CARGO = 5.0;
     static final double RICH_MINERAL_CARGO = 7.0;
 
-    static final int MINING_DURATION_LOOPS = 16;
+    static final double MINING_DURATION_LOOPS = 44.576;
     static final double GAS_CARGO_DEFAULT = 4.0;
     static double GAS_CARGO = GAS_CARGO_DEFAULT;
     static final double GAS_HARVEST_DURATION_LOOPS_DEFAULT = 31.696;
