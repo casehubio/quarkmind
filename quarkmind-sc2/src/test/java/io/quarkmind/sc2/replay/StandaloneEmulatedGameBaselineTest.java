@@ -281,6 +281,11 @@ class StandaloneEmulatedGameBaselineTest {
                 cursor++;
             }
 
+            // Sync gas worker count from GT rate — EM auto-saturates but real
+            // players vary gas worker count significantly (#564)
+            int gtGasRate = gt.playerEconomy().vespeneCollectionRate();
+            emulated.syncTotalGasWorkers(SC2Data.estimateGasWorkersFromRate(gtGasRate));
+
             // NO setMineralsForHarness (post-tick) — EmulatedGame uses own balance
             // NO setVespeneForHarness (post-tick) — EmulatedGame uses own balance
             // NO syncGasRateFromGt — EmulatedGame calculates own gas rate
