@@ -71,8 +71,8 @@ class EconomyTracker {
     }
 
     void recordResearchSpending(int mineralCost, int gasCost) {
-        mineralsUsedTechnology += mineralCost;
-        vespeneUsedTechnology += gasCost;
+        mineralsUsedArmy += mineralCost;
+        vespeneUsedArmy += gasCost;
         researchMineralsTotal += mineralCost;
         researchVespeneTotal += gasCost;
     }
@@ -269,12 +269,12 @@ class EconomyTracker {
             mineralRate, vespeneRate,
             supply, supplyUsed,
             workerCount,
-            s != null ? s[0] : mineralsUsedArmy + inProgressMineralArmy,
-            s != null ? s[1] : mineralsUsedEconomy + inProgressMineralEconomy,
-            s != null ? s[2] : mineralsUsedTechnology + inProgressMineralTechnology,
-            s != null ? s[3] : vespeneUsedArmy + inProgressVespeneArmy,
-            s != null ? s[4] : vespeneUsedEconomy + inProgressVespeneEconomy,
-            s != null ? s[5] : vespeneUsedTechnology + inProgressVespeneTechnology);
+            s != null ? s[0] : mineralsUsedArmy,
+            s != null ? s[1] : mineralsUsedEconomy,
+            s != null ? s[2] : mineralsUsedTechnology,
+            s != null ? s[3] : vespeneUsedArmy,
+            s != null ? s[4] : vespeneUsedEconomy,
+            s != null ? s[5] : vespeneUsedTechnology);
     }
 
     void reset() {

@@ -193,13 +193,13 @@ class EconomyTrackerTest {
     // --- InProgress spending tests (#555) ---
 
     @Test
-    void inProgressTrainSpending_includedInSnapshot() {
+    void inProgressTrainSpending_excludedFromSnapshot() {
         var tracker = new EconomyTracker();
         tracker.addInProgressArmy(150, 25);
 
         var stats = tracker.currentStats(200, 100, 23, 14, 12);
-        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(150);
-        assertThat(stats.vespeneUsedCurrentArmy()).isEqualTo(25);
+        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(0);
+        assertThat(stats.vespeneUsedCurrentArmy()).isEqualTo(0);
     }
 
     @Test
@@ -226,31 +226,31 @@ class EconomyTrackerTest {
     }
 
     @Test
-    void inProgressBuildSpending_includedInSnapshot() {
+    void inProgressBuildSpending_excludedFromSnapshot() {
         var tracker = new EconomyTracker();
         tracker.addInProgressTechnology(150, 0);
 
         var stats = tracker.currentStats(200, 100, 23, 14, 12);
-        assertThat(stats.mineralsUsedCurrentTechnology()).isEqualTo(150);
+        assertThat(stats.mineralsUsedCurrentTechnology()).isEqualTo(0);
     }
 
     @Test
-    void inProgressEconomySpending_includedInSnapshot() {
+    void inProgressEconomySpending_excludedFromSnapshot() {
         var tracker = new EconomyTracker();
         tracker.addInProgressEconomy(400, 0);
 
         var stats = tracker.currentStats(200, 100, 23, 14, 12);
-        assertThat(stats.mineralsUsedCurrentEconomy()).isEqualTo(400);
+        assertThat(stats.mineralsUsedCurrentEconomy()).isEqualTo(0);
     }
 
     @Test
-    void inProgressPlusCurrent_combinedInSnapshot() {
+    void currentStats_reportsCompletedOnly() {
         var tracker = new EconomyTracker();
         tracker.addInProgressArmy(100, 0);
         tracker.recordTrainSpending(UnitType.MARINE, 50, 0);
 
         var stats = tracker.currentStats(200, 100, 23, 14, 12);
-        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(150);
+        assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(50);
     }
 
     @Test
