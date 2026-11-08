@@ -23,14 +23,22 @@ class WorkerSimulationTest {
     void setUp() {
         sim = new WorkerSimulation();
         sim.onTownHallCompleted(BASE_TAG, BASE_POS);
+        tickCount = 0;
     }
+
+    private int tickCount = 0;
+
+    private TickIncome tick() {
+        return sim.tick(tickCount++ * (double) io.quarkmind.domain.SC2Data.LOOPS_PER_TICK);
+    }
+
 
     @Test
     void singleWorker_completesFullMiningCycle() {
         sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
         double totalIncome = 0;
         for (int t = 0; t < 20; t++) {
-            totalIncome += sim.tick().mineralIncome();
+            totalIncome += tick().mineralIncome();
         }
         assertTrue(totalIncome > 0, "Worker should deposit minerals within 20 ticks");
     }
@@ -42,7 +50,7 @@ class WorkerSimulationTest {
         sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
         double totalIncome = 0;
         for (int t = 0; t < 40; t++) {
-            totalIncome += sim.tick().mineralIncome();
+            totalIncome += tick().mineralIncome();
         }
         assertTrue(totalIncome > 0);
     }
@@ -54,7 +62,7 @@ class WorkerSimulationTest {
         sim.onInitialWorkers(tags8, BASE_POS, BASE_TAG);
         double income8workers = 0;
         for (int t = 0; t < 100; t++) {
-            income8workers += sim.tick().mineralIncome();
+            income8workers += tick().mineralIncome();
         }
 
         sim.reset();
@@ -64,7 +72,7 @@ class WorkerSimulationTest {
         sim.onInitialWorkers(tags16, BASE_POS, BASE_TAG);
         double income16workers = 0;
         for (int t = 0; t < 100; t++) {
-            income16workers += sim.tick().mineralIncome();
+            income16workers += tick().mineralIncome();
         }
 
         assertTrue(income16workers > income8workers,
@@ -79,11 +87,11 @@ class WorkerSimulationTest {
                                      .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
         int warmupTicks = 20;
-        for (int t = 0; t < warmupTicks; t++) {sim.tick();}
+        for (int t = 0; t < warmupTicks; t++) {tick();}
         double income       = 0;
         int    measureTicks = 200;
         for (int t = 0; t < measureTicks; t++) {
-            income += sim.tick().mineralIncome();
+            income += tick().mineralIncome();
         }
         double ticksPerMinute = 60.0 * io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
         double perMinute      = income / measureTicks * ticksPerMinute;
@@ -96,11 +104,11 @@ class WorkerSimulationTest {
     @Test
     void workerDied_freesPatchSlot() {
         sim.onInitialWorkers(List.of("w-1", "w-2"), BASE_POS, BASE_TAG);
-        for (int t = 0; t < 5; t++) sim.tick();
+        for (int t = 0; t < 5; t++) tick();
         sim.onWorkerDied("w-1");
         double income = 0;
         for (int t = 0; t < 20; t++) {
-            income += sim.tick().mineralIncome();
+            income += tick().mineralIncome();
         }
         assertTrue(income > 0);
     }
@@ -110,12 +118,12 @@ class WorkerSimulationTest {
         sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
         double totalIncome = 0;
         for (int t = 0; t < 100_000; t++) {
-            totalIncome += sim.tick().mineralIncome();
+            totalIncome += tick().mineralIncome();
         }
         assertTrue(totalIncome > 0);
         double incomeAfterDepletion = 0;
         for (int t = 0; t < 100; t++) {
-            incomeAfterDepletion += sim.tick().mineralIncome();
+            incomeAfterDepletion += tick().mineralIncome();
         }
         assertEquals(0.0, incomeAfterDepletion, 0.001);
     }
@@ -241,7 +249,7 @@ class WorkerSimulationTest {
         sim.onGasBuildingCompleted("gas-1", new Point2d(45, 50));
         double totalGas = 0;
         for (int t = 0; t < 40; t++) {
-            totalGas += sim.tick().vespeneIncome();
+            totalGas += tick().vespeneIncome();
         }
         assertTrue(totalGas > 0, "Gas workers should deposit vespene");
     }
@@ -254,7 +262,7 @@ class WorkerSimulationTest {
         sim.onGasBuildingCompleted("gas-3w", new Point2d(45, 50));
         double totalGas3 = 0;
         for (int t = 0; t < 200; t++) {
-            totalGas3 += sim.tick().vespeneIncome();
+            totalGas3 += tick().vespeneIncome();
         }
 
         sim.reset();
@@ -266,7 +274,7 @@ class WorkerSimulationTest {
         sim.onWorkerDied("w-1");
         double totalGas2 = 0;
         for (int t = 0; t < 200; t++) {
-            totalGas2 += sim.tick().vespeneIncome();
+            totalGas2 += tick().vespeneIncome();
         }
 
         assertTrue(totalGas3 > totalGas2,
@@ -283,11 +291,11 @@ class WorkerSimulationTest {
                 .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
         sim.onGasBuildingCompleted("gas-1", new Point2d(45, 50));
-        for (int t = 0; t < 5; t++) sim.tick();
+        for (int t = 0; t < 5; t++) tick();
         sim.onWorkerDied("w-1");
         double totalGas = 0;
         for (int t = 0; t < 40; t++) {
-            totalGas += sim.tick().vespeneIncome();
+            totalGas += tick().vespeneIncome();
         }
         assertTrue(totalGas > 0);
     }
@@ -330,21 +338,42 @@ class WorkerSimulationTest {
         sim.onGasBuildingCompleted("gas-1", new Point2d(45, 50));
 
         int warmupTicks = 20;
-        for (int t = 0; t < warmupTicks; t++) {sim.tick();}
+        for (int t = 0; t < warmupTicks; t++) {tick();}
 
         double gasIncome    = 0;
         int    measureTicks = 200;
         for (int t = 0; t < measureTicks; t++) {
-            gasIncome += sim.tick().vespeneIncome();
+            gasIncome += tick().vespeneIncome();
         }
 
         double avgPerTick     = gasIncome / measureTicks;
         double ticksPerMinute = 60.0 * io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
         double perMinute      = avgPerTick * ticksPerMinute;
-        System.out.printf("3 gas workers: %.1f gas/min, %.3f gas/tick (formula target: ~138 gas/min, 2.27 gas/tick)%n",
-                          perMinute, avgPerTick);
-        assertTrue(avgPerTick >= 2.2,
-                   "Gas per tick should be >= 2.2 for 3 workers at 5-tile distance with transition fix, got " + avgPerTick);
+        System.out.printf("3 gas workers: %.1f gas/min, %.3f gas/tick%n", perMinute, avgPerTick);
+        assertTrue(avgPerTick >= 2.8,
+                   "Gas per tick should be >= 2.8 for 3 workers at 5-tile distance with sub-tick carry-forward, got " + avgPerTick);
+    }
+
+    @Test
+    void gasHarvest_subTickCarryForward_increasesRate() {
+        List<String> tags = IntStream.rangeClosed(1, 12)
+                                     .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+        sim.onGasBuildingCompleted("gas-1", new Point2d(45, 50));
+
+        int warmupTicks = 20;
+        for (int t = 0; t < warmupTicks; t++) {tick();}
+
+        double gasIncome    = 0;
+        int    measureTicks = 400;
+        for (int t = 0; t < measureTicks; t++) {
+            gasIncome += tick().vespeneIncome();
+        }
+
+        double avgPerTick = gasIncome / measureTicks;
+        assertTrue(avgPerTick >= 2.5,
+                   "Sub-tick carry-forward should yield >= 2.5 gas/tick for 3 workers "
+                   + "(32-loop effective harvest vs 44-loop quantised), got " + avgPerTick);
     }
 
 
@@ -357,7 +386,7 @@ class WorkerSimulationTest {
         sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
         double totalIncome = 0;
         for (int t = 0; t < 200_000; t++) {
-            totalIncome += sim.tick().mineralIncome();
+            totalIncome += tick().mineralIncome();
         }
         double expectedTotal = MineralPatch.CLOSE_PATCHES_PER_BASE * MineralPatch.CLOSE_PATCH_MINERALS
                                + (MineralPatch.PATCHES_PER_BASE - MineralPatch.CLOSE_PATCHES_PER_BASE) * MineralPatch.FAR_PATCH_MINERALS;
@@ -378,7 +407,7 @@ class WorkerSimulationTest {
         explicitSim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
         double totalIncome = 0;
         for (int t = 0; t < 200_000; t++) {
-            totalIncome += explicitSim.tick().mineralIncome();
+            totalIncome += explicitSim.tick(t * (double) io.quarkmind.domain.SC2Data.LOOPS_PER_TICK).mineralIncome();
         }
         assertEquals(2500.0, totalIncome, 0.001,
                      "Total should equal sum of explicit amounts: 1000 + 500 + 500 + 500");
@@ -406,8 +435,8 @@ class WorkerSimulationTest {
         double richIncome   = 0;
         double normalIncome = 0;
         for (int t = 0; t < 200; t++) {
-            richIncome += richSim.tick().mineralIncome();
-            normalIncome += normalSim.tick().mineralIncome();
+            richIncome += richSim.tick(t * (double) io.quarkmind.domain.SC2Data.LOOPS_PER_TICK).mineralIncome();
+            normalIncome += normalSim.tick(t * (double) io.quarkmind.domain.SC2Data.LOOPS_PER_TICK).mineralIncome();
         }
 
         assertTrue(richIncome > normalIncome,
@@ -427,7 +456,7 @@ class WorkerSimulationTest {
         richSim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
         double totalRich = 0;
         for (int t = 0; t < 100_000; t++) {
-            totalRich += richSim.tick().mineralIncome();
+            totalRich += richSim.tick(t * (double) io.quarkmind.domain.SC2Data.LOOPS_PER_TICK).mineralIncome();
         }
         assertEquals(100.0, totalRich, 0.001,
                      "Rich patch still has same total minerals — just harvested faster");
@@ -445,7 +474,7 @@ class WorkerSimulationTest {
         sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
         double mixedTotal = 0;
         for (int t = 0; t < 200_000; t++) {
-            mixedTotal += sim.tick().mineralIncome();
+            mixedTotal += tick().mineralIncome();
         }
 
         WorkerSimulation uniformSim     = new WorkerSimulation();
@@ -457,7 +486,7 @@ class WorkerSimulationTest {
         uniformSim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
         double uniformTotal = 0;
         for (int t = 0; t < 200_000; t++) {
-            uniformTotal += uniformSim.tick().mineralIncome();
+            uniformTotal += uniformSim.tick(t * (double) io.quarkmind.domain.SC2Data.LOOPS_PER_TICK).mineralIncome();
         }
 
         double expectedMixed   = 4 * 1500.0 + 4 * 750.0;

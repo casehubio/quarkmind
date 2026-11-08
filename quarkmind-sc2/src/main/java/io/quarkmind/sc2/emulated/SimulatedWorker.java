@@ -9,10 +9,10 @@ class SimulatedWorker {
     static final int MINING_DURATION_LOOPS = 16;
     static final double GAS_CARGO_DEFAULT = 4.0;
     static double GAS_CARGO = GAS_CARGO_DEFAULT;
-    static final int GAS_HARVEST_DURATION_LOOPS_DEFAULT = 32;
-    static int GAS_HARVEST_DURATION_LOOPS = GAS_HARVEST_DURATION_LOOPS_DEFAULT;
+    static final double GAS_HARVEST_DURATION_LOOPS_DEFAULT = 31.696;
+    static double GAS_HARVEST_DURATION_LOOPS = GAS_HARVEST_DURATION_LOOPS_DEFAULT;
 
-    static void setGasHarvestDurationLoops(int loops) {
+    static void setGasHarvestDurationLoops(double loops) {
         GAS_HARVEST_DURATION_LOOPS = loops;
     }
 
@@ -30,7 +30,7 @@ class SimulatedWorker {
     MineralPatch assignedPatch;
     GasSlot assignedGasSlot;
     double cargo;
-    int cycleLoopsRemaining;
+    double phaseEndLoop;
 
     SimulatedWorker(String tag, Point2d position, int baseIndex) {
         this.tag = tag;

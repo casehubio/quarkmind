@@ -18,6 +18,7 @@ class WorkerSimulation {
     private final List<GasSlot> gasSlots = new ArrayList<>();
     private final Map<String, SimulatedWorker> workers = new LinkedHashMap<>();
     private final double workerDistancePerTick;
+    private double currentTickStartLoop;
 
     WorkerSimulation() {
         double speed = SC2Data.unitSpeed(UnitType.PROBE);
@@ -210,23 +211,25 @@ class WorkerSimulation {
         }
     }
 
-    TickIncome tick() {
+    TickIncome tick(double tickStartLoop) {
+        this.currentTickStartLoop = tickStartLoop;
+        double tickEndLoop = tickStartLoop + SC2Data.LOOPS_PER_TICK;
         double mineralIncome = 0;
         for (SimulatedWorker w : workers.values()) {
             if (w.assignedGasSlot == null) {
-                mineralIncome += tickMineralWorker(w);
+                mineralIncome += tickMineralWorker(w, tickStartLoop, tickEndLoop);
             }
         }
         double gasIncome = 0;
         for (SimulatedWorker w : workers.values()) {
             if (w.assignedGasSlot != null) {
-                gasIncome += tickGasWorker(w);
+                gasIncome += tickGasWorker(w, tickStartLoop, tickEndLoop);
             }
         }
         return new TickIncome(mineralIncome, gasIncome);
     }
 
-    private double tickMineralWorker(SimulatedWorker w) {
+    private double tickMineralWorker(SimulatedWorker w, double tickStartLoop, double tickEndLoop) {
         if (w.task == WorkerTask.BUILDING || w.task == WorkerTask.IDLE) return 0;
         if (w.task == WorkerTask.HARVESTING_GAS || w.task == WorkerTask.RETURNING_GAS) return 0;
 
@@ -238,16 +241,15 @@ class WorkerSimulation {
             if (!w.isAtTarget()) {
                 w.moveToward(workerDistancePerTick);
                 if (w.isAtTarget()) {
-                    tryStartMining(w);
+                    tryStartMining(w, tickStartLoop);
                 }
                 return 0;
             }
             if (!w.assignedPatch.miners.contains(w)) {
-                tryStartMining(w);
+                tryStartMining(w, tickStartLoop);
                 return 0;
             }
-            w.cycleLoopsRemaining -= SC2Data.LOOPS_PER_TICK;
-            if (w.cycleLoopsRemaining <= 0) {
+            if (tickEndLoop >= w.phaseEndLoop) {
                 double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
                 w.cargo = w.assignedPatch.harvest(cargo);
                 w.assignedPatch.miners.remove(w);
@@ -271,26 +273,27 @@ class WorkerSimulation {
         return 0;
     }
 
-    private void tryStartMining(SimulatedWorker w) {
+    private void tryStartMining(SimulatedWorker w, double tickStartLoop) {
         if (w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS) {
             w.assignedPatch.miners.add(w);
-            w.cycleLoopsRemaining = SimulatedWorker.MINING_DURATION_LOOPS;
+            w.phaseEndLoop = tickStartLoop + SimulatedWorker.MINING_DURATION_LOOPS;
         }
     }
 
-    private double tickGasWorker(SimulatedWorker w) {
+    private double tickGasWorker(SimulatedWorker w, double tickStartLoop, double tickEndLoop) {
         GasSlot slot = w.assignedGasSlot;
         if (slot == null) {return 0;}
 
         if (w.task == WorkerTask.HARVESTING_GAS) {
             if (slot.insideWorkers.contains(w)) {
-                w.cycleLoopsRemaining -= SC2Data.LOOPS_PER_TICK;
-                if (w.cycleLoopsRemaining <= 0) {
+                if (tickEndLoop >= w.phaseEndLoop) {
+                    double overflowLoops = tickEndLoop - w.phaseEndLoop;
+                    double overflowFraction = overflowLoops / SC2Data.LOOPS_PER_TICK;
                     w.cargo = SimulatedWorker.GAS_CARGO;
                     slot.exitBuilding(w);
                     w.task           = WorkerTask.RETURNING_GAS;
                     w.targetPosition = bases.get(w.baseIndex).position();
-                    w.moveToward(workerDistancePerTick);
+                    w.moveToward(workerDistancePerTick * overflowFraction);
                     if (w.isAtTarget()) {
                         double deposited = w.cargo;
                         w.cargo          = 0;
@@ -301,20 +304,27 @@ class WorkerSimulation {
                 }
                 return 0;
             }
+            double distBefore = w.position.distanceTo(w.targetPosition);
             w.moveToward(workerDistancePerTick);
             if (w.isAtTarget() && slot.canEnter()) {
+                double fractionUsed = Math.min(distBefore / workerDistancePerTick, 1.0);
+                double arrivalLoop = tickStartLoop + fractionUsed * SC2Data.LOOPS_PER_TICK;
                 slot.enterBuilding(w);
+                w.phaseEndLoop = arrivalLoop + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
             }
             return 0;
         }
 
         if (w.task == WorkerTask.RETURNING_GAS) {
+            double distBefore = w.position.distanceTo(w.targetPosition);
             w.moveToward(workerDistancePerTick);
             if (w.isAtTarget()) {
+                double fractionUsed = Math.min(distBefore / workerDistancePerTick, 1.0);
                 double deposited = w.cargo;
                 w.cargo          = 0;
                 w.task           = WorkerTask.HARVESTING_GAS;
                 w.targetPosition = slot.position;
+                w.moveToward(workerDistancePerTick * (1.0 - fractionUsed));
                 return deposited;
             }
             return 0;
@@ -365,7 +375,7 @@ class WorkerSimulation {
         if (w.isAtTarget()) {
             if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
                 if (!nearest.miners.contains(w)) nearest.miners.add(w);
-                w.cycleLoopsRemaining = SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop = currentTickStartLoop + SimulatedWorker.MINING_DURATION_LOOPS;
             }
         }
     }

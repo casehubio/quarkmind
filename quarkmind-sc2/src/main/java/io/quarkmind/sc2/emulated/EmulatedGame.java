@@ -191,7 +191,7 @@ public class EmulatedGame {
         gameFrame++;
 
         workerSimulation.tickBuilderReturns(gameFrame);
-        TickIncome workerIncome = workerSimulation.tick();
+        TickIncome workerIncome = workerSimulation.tick((gameFrame - 1) * (double) SC2Data.LOOPS_PER_TICK);
         double tickMineralIncome = workerIncome.mineralIncome();
         double tickGasIncome = workerIncome.vespeneIncome();
         friendly.addMinerals(tickMineralIncome);
