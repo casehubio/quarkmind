@@ -70,13 +70,11 @@ The mining efficiency factor (#566) models aggregate worker availability per rac
 **Estimated contribution:** 3-5% MAPE residual in income rate fields
 **Evidence:** Mining efficiency calibration reduced mineralsCurrent MAPE from ~80% to ~62% at 7-min. Remaining gap includes per-game variance.
 
-### 6. Gas harvest cycle quantisation
+### 6. ~~Gas harvest cycle quantisation~~ — RESOLVED (#571)
 
-The gas worker simulation updates once per tick (22 game loops). A 32-loop gas harvest duration rounds up to 2 ticks (44 loops). Workers sit inside the geyser for 38% longer than SC2's actual 1.415-second harvest, reducing per-worker gas throughput by ~7%.
+Sub-tick time carry-forward eliminates the 32→44 loop quantisation. When any gas worker phase completes mid-tick, the remaining time carries forward to the next phase: harvest overflow applies proportional movement, geyser arrival starts the harvest countdown immediately, and base arrival applies remaining movement back toward the geyser. Effective harvest is now exactly 32 loops regardless of tick boundaries.
 
-**Affected fields:** vespeneCollectionRate, vespeneCurrent
-**Estimated contribution:** 7% MAPE for gas rate fields (systematic under-collection)
-**Evidence:** Per-worker gas ratio is 0.93 across all checkpoints (documented in #563)
+**Status:** Resolved by #571 — no longer a structural floor contributor
 
 ### 7. Early checkpoint gas timing (#569)
 
@@ -103,7 +101,7 @@ These fields are already at their structural limit. Further optimisation is not 
 | Field | Current | Floor | Action |
 |-------|---------|-------|--------|
 | vespeneUsedCurrentArmy | 35.4% | ~15-20% | Death timing + spending model alignment |
-| vespeneCollectionRate | 20.9% | ~12-15% | Gas harvest calibration (#568) |
+| vespeneCollectionRate | 20.9% | ~12-15% | Sub-tick carry-forward (#571) — re-baseline needed |
 | mineralsCollectionRate | 17.0% | ~10-12% | Per-map patch distances (#567) |
 | mineralsCurrent | 61.5% | ~40-50% | Compounds from rate improvements |
 | vespeneCurrent | 52.5% | ~35-45% | Compounds from rate improvements |
