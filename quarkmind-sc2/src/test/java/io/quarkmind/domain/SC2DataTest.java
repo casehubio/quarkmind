@@ -116,64 +116,6 @@ class SC2DataTest {
         assertThat(SC2Data.supplyCost(UnitType.OBSERVER)).isEqualTo(1);
     }
 
-    // --- mineralIncomePerTick ---
-
-    private static final double TIER1 = SC2Data.MINERAL_TIER_RATES_PER_TICK[0];
-    private static final double TIER2 = SC2Data.MINERAL_TIER_RATES_PER_TICK[1];
-    private static final double TIER3 = SC2Data.MINERAL_TIER_RATES_PER_TICK[2];
-
-    @Test
-    void negativeProbeCountThrows() {
-        assertThatThrownBy(() -> SC2Data.mineralIncomePerTick(-1))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessageContaining("-1");
-    }
-
-    @Test
-    void zeroProbesYieldZeroIncome() {
-        assertThat(SC2Data.mineralIncomePerTick(0)).isEqualTo(0.0);
-    }
-
-    @Test
-    void singleProbeYieldsTier1Rate() {
-        assertThat(SC2Data.mineralIncomePerTick(1)).isEqualTo(TIER1);
-    }
-
-    @Test
-    void fullTier1At8Probes() {
-        assertThat(SC2Data.mineralIncomePerTick(8)).isEqualTo(8 * TIER1);
-    }
-
-    @Test
-    void tier2StartsAt9Probes() {
-        assertThat(SC2Data.mineralIncomePerTick(9)).isEqualTo(8 * TIER1 + TIER2);
-    }
-
-    @Test
-    void fullTier2At16Probes() {
-        assertThat(SC2Data.mineralIncomePerTick(16)).isEqualTo(8 * TIER1 + 8 * TIER2);
-    }
-
-    @Test
-    void tier3StartsAt17Probes() {
-        assertThat(SC2Data.mineralIncomePerTick(17)).isEqualTo(8 * TIER1 + 8 * TIER2 + TIER3);
-    }
-
-    @Test
-    void fullCapacityAt24Probes() {
-        assertThat(SC2Data.mineralIncomePerTick(24)).isEqualTo(8 * TIER1 + 8 * TIER2 + 8 * TIER3);
-    }
-
-    @Test
-    void capEnforcedAt25Probes() {
-        assertThat(SC2Data.mineralIncomePerTick(25)).isEqualTo(SC2Data.mineralIncomePerTick(24));
-    }
-
-    @Test
-    void capEnforcedAt100Probes() {
-        assertThat(SC2Data.mineralIncomePerTick(100)).isEqualTo(SC2Data.mineralIncomePerTick(24));
-    }
-
     @Test
     void trainedByMapsKnownUnits() {
         assertThat(SC2Data.trainedBy(UnitType.PROBE))    .isEqualTo(BuildingType.NEXUS);

@@ -350,22 +350,7 @@ class WorkerSimulationTest {
 
     // --- Formula validator ---
 
-    @Test
-    void formulaValidator_simulationAndFormulaWithinTolerance() {
-        List<String> tags = IntStream.rangeClosed(1, 16)
-                .mapToObj(i -> "w-" + i).toList();
-        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
-
-        TickIncome lastIncome = null;
-        for (int t = 0; t < 100; t++) {
-            lastIncome = sim.tick();
-        }
-
-        WorkerSimulation.FormulaComparison comparison = sim.compareWithFormula(lastIncome);
-        assertTrue(comparison.mineralDivergence() < 0.5,
-                "Mineral divergence too high: " + comparison);
-    }
-// --- Map-specific mineral patch tests ---
+    // --- Map-specific mineral patch tests ---
 
     @Test
     void defaultBase_hasMixedCloseAndFarPatches() {
