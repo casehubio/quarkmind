@@ -6,5 +6,7 @@ enum WorkerTask {
     HARVESTING_GAS,
     RETURNING_GAS,
     IDLE,
-    BUILDING
+    BUILDING,
+    SCOUTING,
+    TRANSFERRING
 }
