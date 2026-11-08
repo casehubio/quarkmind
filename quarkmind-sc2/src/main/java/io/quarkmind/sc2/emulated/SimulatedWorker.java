@@ -31,6 +31,8 @@ class SimulatedWorker {
     GasSlot assignedGasSlot;
     double cargo;
     double phaseEndLoop;
+    double scoutReturnLoop;
+
 
     SimulatedWorker(String tag, Point2d position, int baseIndex) {
         this.tag = tag;
