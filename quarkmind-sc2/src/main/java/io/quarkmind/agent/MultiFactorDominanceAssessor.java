@@ -158,7 +158,7 @@ public class MultiFactorDominanceAssessor implements DominanceAssessor {
             .filter(u -> SC2Data.isWorker(u.type())).count();
         if (enemyWorkers == 0) return 0.0;
 
-        double rate = SC2Data.MINERAL_TIER_RATES_PER_TICK[0];
+        double rate = 77.7 / 60.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND;
         double delta = (ownWorkers - enemyWorkers) * rate;
         return clamp(delta / maxExpectedEconomyDelta);
     }

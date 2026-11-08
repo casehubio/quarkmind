@@ -907,6 +907,23 @@ public class StrippedReplayFeatureExtractor {
         38.0 / 60.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND;
     private static final int GAS_WORKERS_PER_GEYSER = 3;
 
+    private static final int PATCHES_PER_BASE = 8;
+    private static final double[] MINERAL_TIERS = {
+        77.7 / 60.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND,
+        38.8 / 60.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND,
+        7.8 / 60.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND,
+    };
+
+    private static double approxMineralIncomePerTick(int workerCount) {
+        double income = 0;
+        for (int tier = 0; tier < MINERAL_TIERS.length; tier++) {
+            int start = tier * PATCHES_PER_BASE;
+            int inTier = Math.min(Math.max(workerCount - start, 0), PATCHES_PER_BASE);
+            income += inTier * MINERAL_TIERS[tier];
+        }
+        return income;
+    }
+
     private void trackTrainSpending(UnitType unitType, PlayerState state) {
         int mineralCost = SC2Data.mineralCost(unitType);
         int gasCost = SC2Data.gasCost(unitType);
@@ -999,12 +1016,12 @@ public class StrippedReplayFeatureExtractor {
             int fullTicks = (int) (loopsSinceLastTick / SC2Data.LOOPS_PER_TICK);
             int miningWorkers = Math.max(state.workersActive - state.gasBuildingCount * GAS_WORKERS_PER_GEYSER, 0);
             for (int t = 0; t < fullTicks; t++) {
-                state.mineralsCurrent += SC2Data.mineralIncomePerTick(miningWorkers);
+                state.mineralsCurrent += approxMineralIncomePerTick(miningWorkers);
                 state.vespeneCurrent += state.gasBuildingCount * GAS_WORKERS_PER_GEYSER * GAS_INCOME_PER_WORKER_PER_TICK;
             }
             lastTickLoop = tick;
 
-            double rateMinerals = SC2Data.mineralIncomePerTick(miningWorkers)
+            double rateMinerals = approxMineralIncomePerTick(miningWorkers)
                 * SC2Data.GAME_LOOPS_PER_SECOND / SC2Data.LOOPS_PER_TICK * 60;
             double rateVespene = state.gasBuildingCount * GAS_WORKERS_PER_GEYSER
                 * GAS_INCOME_PER_WORKER_PER_TICK * SC2Data.GAME_LOOPS_PER_SECOND / SC2Data.LOOPS_PER_TICK * 60;

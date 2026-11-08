@@ -1676,13 +1676,7 @@ public class EmulatedGame {
         this.workerCountOverride = workerCount;
     }
 
-    public void syncGasRateFromGt(int gtGasBuildingCount) {
-        double gasIncome = 0;
-        for (int i = 0; i < gtGasBuildingCount; i++) {
-            gasIncome += SC2Data.gasIncomePerTick(SC2Data.GAS_WORKERS_PER_BUILDING);
-        }
-        economyTracker.overrideGasIncome(gasIncome);
-    }
+
 
 
     public int gasSlotCount() {

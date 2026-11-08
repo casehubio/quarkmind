@@ -111,10 +111,6 @@ public final class ReplayValidationHarness {
             emulated.setMineralsForHarness(gt.minerals());
             emulated.setVespeneForHarness(gt.vespene());
 
-            int gtGasBuildings = (int) gt.myBuildings().stream()
-                    .filter(b -> SC2Data.isGasBuilding(b.type()) && b.isComplete()).count();
-            emulated.syncGasRateFromGt(gtGasBuildings);
-
             if (gt.playerEconomy() != null) {
                 emulated.syncMineralRateFromGt(gt.playerEconomy().mineralsCollectionRate());
                 emulated.syncVespeneRateFromGt(gt.playerEconomy().vespeneCollectionRate());

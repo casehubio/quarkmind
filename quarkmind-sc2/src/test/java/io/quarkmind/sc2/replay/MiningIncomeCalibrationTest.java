@@ -102,16 +102,6 @@ class MiningIncomeCalibrationTest {
         System.out.println("=== Mining Income Calibration Report ===");
         System.out.printf("Replays: %d, Player runs: %d%n%n", replays.size(), totalPlayerRuns);
 
-        System.out.println("Current SC2Data constants:");
-        System.out.printf("  MINERAL_TIER_RATES (min/min/worker): %.1f / %.1f / %.1f%n",
-            SC2Data.MINERAL_TIER_RATES_PER_TICK[0] / SC2Data.LOOPS_PER_TICK * SC2Data.GAME_LOOPS_PER_SECOND * 60,
-            SC2Data.MINERAL_TIER_RATES_PER_TICK[1] / SC2Data.LOOPS_PER_TICK * SC2Data.GAME_LOOPS_PER_SECOND * 60,
-            SC2Data.MINERAL_TIER_RATES_PER_TICK[2] / SC2Data.LOOPS_PER_TICK * SC2Data.GAME_LOOPS_PER_SECOND * 60);
-        System.out.printf("  GAS_TIER_RATES (gas/min/worker): %.1f / %.1f / %.1f%n%n",
-            SC2Data.GAS_TIER_RATES_PER_TICK[0] / SC2Data.LOOPS_PER_TICK * SC2Data.GAME_LOOPS_PER_SECOND * 60,
-            SC2Data.GAS_TIER_RATES_PER_TICK[1] / SC2Data.LOOPS_PER_TICK * SC2Data.GAME_LOOPS_PER_SECOND * 60,
-            SC2Data.GAS_TIER_RATES_PER_TICK[2] / SC2Data.LOOPS_PER_TICK * SC2Data.GAME_LOOPS_PER_SECOND * 60);
-
         System.out.printf("%-6s  %10s  %10s  %7s  %10s  %10s  %7s  %8s  %6s%n",
             "Chkpt", "GT MinRate", "Em MinRate", "Ratio",
             "GT GasRate", "Em GasRate", "Ratio", "Workers", "Runs");

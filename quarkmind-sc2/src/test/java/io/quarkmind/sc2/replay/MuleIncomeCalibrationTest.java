@@ -40,6 +40,21 @@ class MuleIncomeCalibrationTest {
         7 * 60 * (int) SC2Data.GAME_LOOPS_PER_SECOND
     };
     private static final double TICKS_PER_MINUTE = 60.0 * SC2Data.GAME_LOOPS_PER_SECOND / SC2Data.LOOPS_PER_TICK;
+    private static final int PATCHES_PER_BASE = 8;
+    private static final double[] MINERAL_TIERS = {
+        77.7 / 60.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND,
+        38.8 / 60.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND,
+        7.8 / 60.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND,
+    };
+    private static double approxMineralIncomePerTick(int workerCount) {
+        double income = 0;
+        for (int tier = 0; tier < MINERAL_TIERS.length; tier++) {
+            int start = tier * PATCHES_PER_BASE;
+            int inTier = Math.min(Math.max(workerCount - start, 0), PATCHES_PER_BASE);
+            income += inTier * MINERAL_TIERS[tier];
+        }
+        return income;
+    }
 
     static boolean oracleExists() {
         if (!Files.isDirectory(ORACLE_DIR)) return false;
@@ -162,7 +177,7 @@ class MuleIncomeCalibrationTest {
                     mineralWorkers = Math.max(0, mineralWorkers - estimatedGasWorkers);
 
                     // Expected worker-only income per minute using calibrated rates
-                    double workerIncomePerMin = SC2Data.mineralIncomePerTick(mineralWorkers) * TICKS_PER_MINUTE;
+                    double workerIncomePerMin = approxMineralIncomePerTick(mineralWorkers) * TICKS_PER_MINUTE;
 
                     // MULE contribution = GT rate - worker income
                     double muleContribution = gtMineralRate - workerIncomePerMin;
