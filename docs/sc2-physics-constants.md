@@ -33,7 +33,7 @@ Each entry documents value, source, and confidence level.
 | Deceleration | 3.5 | u/s² | SC2Mapster (defaults to accel) × 1.4 | **Calibrated** — #578 | `starcraft.worker.deceleration` |
 | Arrival threshold | 0.5 | units | Engineering choice | N/A | — |
 
-**Movement profile at 6-unit distance:** Triangular (accelerate 3 units, decelerate 3 units). Peak speed: 3.87 u/s. Trip takes 47 game loops (2.10 seconds). Workers never reach max speed at typical patch distances.
+**Movement profile:** Workers reach max speed (3.94 u/s) after 2.22 units of acceleration. At all real mineral patch distances (6.0–8.5 units) the velocity profile is trapezoidal: accelerate for 2.22 units, cruise at max speed, decelerate for 2.22 units. Below 4.4 units (rare) the profile is triangular and the worker never reaches max speed. Trip at 6.0 units: 47 loops (2.10s). At 6.6 units: 50 loops (2.23s). At 7.6 units: 57 loops (2.54s).
 
 **Unit speeds (28 types mapped):** Source: Liquipedia (Faster speed). Unmapped types use default 3.0 u/s.
 
@@ -254,7 +254,151 @@ Confidence: **Published** (SC2 map editor).
 
 ---
 
-## 14. Economy Baseline
+## 14. Insights and Derived Physics
+
+The constants above combine with the simulation mechanics to produce emergent behaviour. These derived values explain *why* the economy numbers are what they are.
+
+### Mining cycle breakdown
+
+At a close mineral patch (6.6 units from town hall):
+
+| Phase | Loops | Seconds | Notes |
+|-------|-------|---------|-------|
+| Walk to patch | 50 | 2.23 | Trapezoidal profile — accel 2.22u, cruise 2.16u, decel 2.22u |
+| Mine | 12 | 0.54 | Absorbs 7 loops of unmodeled overhead (deposit, docking, contention) |
+| Walk home | 50 | 2.23 | Same distance, same profile |
+| **Total cycle** | **112** | **5.00** | 5 minerals per trip |
+
+**Per-worker income:** 5 minerals × (22.4 loops/sec × 60 sec / 112 loops) = **60.0 minerals/min** on a close patch.
+
+At a far mineral patch (7.6 units): 57 loops per leg, 126-loop cycle, **53.3 minerals/min** per worker. At uniform 6.0 units (unit tests): 47 loops per leg, 106-loop cycle, **63.4 minerals/min** per worker.
+
+A fully saturated base (16 workers on 8 patches — 2 per patch) at real distances: ~4 close workers × 60.0 + 4 far workers × 53.3 + 8 second-workers with contention ≈ **~900 minerals/min** (SC2 published: ~930).
+
+### Saturation curve mechanics
+
+With `MAX_MINERS=1`, the mining duration controls patch occupancy. At mining=12, a patch is occupied 12/112 = **10.7%** of each cycle. Two workers per patch alternate efficiently — one mines while the other walks, and they rarely collide. The third worker on a patch must wait for the active miner to finish.
+
+Current model: **10.2%** per-worker rate drop from 16→24 workers. SC2 actual: **~20-25%**. The gap has two causes:
+
+1. **Uniform test distances.** Unit tests use 6.0 units for all 8 patches. Real maps have close patches (6.6u) and far patches (7.6u). Close patches produce more per-worker income, making the 3rd worker on a close patch more valuable than on a far patch. Uniform distance flattens this distinction. Oracle replays use real positions and show steeper saturation.
+
+2. **Instant deposit.** The model treats mineral deposit at the town hall as instantaneous. Real SC2: 2-3 loops stationary. This adds 2-3 loops to every cycle where workers are queued at the base, creating additional contention.
+
+### Gas cycle breakdown
+
+Three workers per geyser, concurrent access (`GasSlot.canEnter()` allows all 3 inside simultaneously).
+
+| Phase | Loops | Seconds | Notes |
+|-------|-------|---------|-------|
+| Walk to geyser | 41 | 1.83 | ~5-unit typical geyser distance |
+| Harvest inside | 31.7 | 1.42 | Liquipedia 1.415s × 22.4 |
+| Walk home | 41 | 1.83 | Same distance |
+| **Total cycle** | **113.7** | **5.08** | 4 gas per trip |
+
+**Per-worker income:** 47.3 gas/min. **Per-geyser (3 workers):** 141.9 gas/min. SC2 published: ~170 gas/min — the gap suggests the gas harvest duration (31.696 loops) may need recalibration like mining did.
+
+### Tick-boundary quantisation
+
+The simulation's 22-loop tick creates a time resolution of 0.982 seconds. Before sub-tick chaining, state transitions (arrive→mine, mine→return, return→deposit) wasted the remaining loops in the tick — up to 22 loops lost per transition, 3 transitions per cycle, potentially 15% of cycle time evaporated at tick boundaries.
+
+Sub-tick chaining (implemented in #578 for movement, #583 for mining, #584 for gas) tracks `loopsRemaining` within each tick and chains transitions immediately. This eliminated the dead time but also exposed physics constant errors that the quantisation had been masking — calibration sweeps that previously showed wide plateaus of identical output now show distinct values at each constant.
+
+**General principle:** In any tick-based simulation, if a calibration sweep shows plateaus where different constant values produce identical output, the time resolution is too coarse to express the constant. Fix the resolution before calibrating the constant.
+
+### Cumulative drift
+
+Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 1-min is 11.4%, growing to 22.3% at 7-min. Each tick's income error accumulates in mineralsCurrent — a 12% per-tick over-production doesn't stay at 12%; it means the mineral *balance* diverges by roughly 12% × elapsed time. This is why mineralsCurrent MAPE (67.6%) is far higher than the rate MAPE (22.3%).
+
+Fixing rate accuracy is the primary lever for reducing balance MAPE. The balance fields will converge automatically as rate accuracy improves.
+
+### Per-race efficiency factors
+
+Protoss=0.92, Zerg=0.95, Terran=1.0. These empirical factors absorb race-specific worker mechanics the simulation doesn't model directly:
+
+- **Protoss:** Probes warp buildings — the worker returns to mining immediately after placing, but there's a brief interruption. Factor < 1.0 compensates.
+- **Zerg:** Drones sacrifice themselves to become buildings. The worker is permanently lost. Factor < 1.0 compensates for the income loss during replacement training.
+- **Terran:** SCVs stay at building sites for the full build duration, then return. The simulation models building pauses explicitly (`pauseWorkerForBuilding`), so no factor adjustment needed.
+
+### The overhead gap
+
+Mining animation is 5 loops (0.22s) in real SC2, measured via the SC2 API by tracking Probe position frame-by-frame for 3000 game loops. The simulation uses 12 loops (0.54s). The 7-loop gap breaks down as:
+
+| Component | Loops | Source | Modelable? |
+|-----------|-------|--------|------------|
+| Deposit at town hall | 2-3 | SC2 API measurement (stationary at Nexus) | Yes — #587 |
+| Approach/docking at patch | 2-3 | SC2 API measurement (deceleration near patch) | Yes |
+| Path contention | 1-2 | Average across worker interactions | Partial |
+| **Total overhead** | **~7** | | |
+
+As these components are modeled explicitly, the mining duration constant should decrease toward the measured 5 loops.
+
+### Rate measurement cadence
+
+SC2 emits PlayerStatsEvents every ~160 game loops (~7.14 seconds). The simulation's `EconomyTracker` averages rates over `RATE_INTERVAL_TICKS=7` ticks (154 loops, 6.88 seconds). The ~6-loop cadence mismatch means the simulation and ground truth sample at slightly different intervals, creating a structural floor on rate field accuracy regardless of how correct the underlying physics is.
+
+### Worker management constants
+
+| Constant | Value | Effect |
+|----------|-------|--------|
+| `MAX_TRANSFER_PER_EXPANSION` | 4 | Workers auto-transferred when a new base completes |
+| `MIN_MINERAL_WORKERS_BEFORE_GAS` | 8 | Gas workers won't be assigned if mineral count drops below this |
+| `OPTIMAL_WORKERS_PER_BASE` | 8 | `PATCHES_PER_BASE × MAX_MINERS` — first saturation tier |
+| `PROBE_BUILD_ROUND_TRIP_TICKS` | 7 | Protoss worker returns to mining after 7 ticks when warping a building |
+
+### Known constant discrepancy
+
+`LARVA_REGEN_LOOPS=245` (ZergRaceModel) and `LARVA_SPAWN_INTERVAL=246` (SC2Data) represent the same mechanic — larva auto-spawn interval — with a 1-loop difference. Both are estimated from community sources. Should be unified once calibrated against oracle data.
+
+---
+
+## 15. Not Yet Modeled
+
+Explicit gaps between the simulation and real SC2. Each gap's impact on economy accuracy is noted.
+
+### Deposit time
+
+Workers spend 2-3 loops stationary at the town hall depositing resources. Currently modeled as instant — the worker transitions directly from `RETURNING_MINERALS` to `MINING_MINERALS` in the same loop. Impact: absorbed into the mining duration constant (12 loops instead of measured 5). See #587.
+
+### Approach and docking animation
+
+Workers decelerate and align with the mineral patch before the mining animation starts. Currently: the arrival threshold (0.5 units) triggers immediate mining. Real SC2: 2-3 loops of approach/docking visible in position data. Impact: absorbed into mining=12.
+
+### Path contention
+
+Workers physically block each other on paths to and from mineral patches. Currently: workers pass through each other (no collision). Real SC2: workers path around each other, adding 1-2 loops average overhead per cycle. Impact: absorbed into mining=12. True collision modelling would require spatial awareness between workers.
+
+### Close/far patch income differential in unit tests
+
+Real SC2 close patches (4-6 units from town hall) yield ~40% more per-worker income than far patches (7-9 units) due to shorter round trips. The model uses per-map ground truth positions for replay mode (correctly variable distances), but unit tests use uniform 6.0 units for all 8 patches. This flattens the saturation curve in unit tests compared to real SC2. Oracle replay baselines are not affected.
+
+### Building morph unavailability
+
+Building morphs (Hatchery→Lair→Hive, CC→OC/PF) are tracked via tracker events and the building type is updated immediately. The morph period during which the building is functionally unavailable (can't produce units, reduced or absent capabilities) is not simulated. Impact: minor for economy — these morphs are infrequent and short relative to game duration.
+
+### Worker pathing around mineral line
+
+Real SC2 workers path around the mineral line formation — the semicircular arrangement creates choke points. The model uses direct-line movement with acceleration between the town hall and the assigned patch. Impact: small — mineral patches are arranged in a semicircle centred on one side of the town hall, so workers approach from the centre and rarely need to path around other patches.
+
+### Larva spawn calibration
+
+Larva spawn interval (246 loops) and inject larva count (4 per inject) are estimated from community sources. `AutoSpawnCalibrationTest` exists but hasn't been run against sufficient oracle data to calibrate. Impact: affects Zerg unit production timing, not mineral/gas income directly.
+
+### MULE lifetime
+
+MULE lifetime (1434 loops = 64 seconds) is estimated. MULE income rate (277.8 minerals/min) is calibrated from 115 oracle observations, but the lifetime determines when income stops. A wrong lifetime shifts cumulative Terran mineral income. Impact: proportional to MULE usage frequency — significant in macro-heavy Terran play.
+
+### Chrono Boost interaction model
+
+Whether multiple Chrono Boosts on the same building stack additively, refresh the timer, or are rejected. Currently modeled as a 50% speed multiplier for 448 loops (single application). Real SC2: a second Chrono Boost refreshes the timer (resets to 20 seconds). Impact: affects Protoss production timing for key units (early Stalkers, Immortals).
+
+### Rally point walk time
+
+Newly produced workers spawn at the town hall position and walk to an assigned mineral patch. Real SC2: workers auto-rally to a mineral patch if the rally is set there, beginning mining faster. Impact: small — the rally walk is a few seconds per worker, amortised over the worker's full game lifetime.
+
+---
+
+## 16. Economy Baseline
 
 Standalone EmulatedGame accuracy at 7-min checkpoint (118 oracle replays, all GT syncs disabled):
 
@@ -275,7 +419,7 @@ Standalone EmulatedGame accuracy at 7-min checkpoint (118 oracle replays, all GT
 
 ---
 
-## 15. Calibration Coverage Summary
+## 17. Calibration Coverage Summary
 
 | Category | Total | Calibrated | Published | Estimated | Placeholder |
 |----------|-------|------------|-----------|-----------|-------------|
@@ -296,7 +440,7 @@ Standalone EmulatedGame accuracy at 7-min checkpoint (118 oracle replays, all GT
 
 ---
 
-## 16. Key Calibration Tests
+## 18. Key Calibration Tests
 
 | Test | What it measures | Run with |
 |------|-----------------|----------|
@@ -314,7 +458,7 @@ Standalone EmulatedGame accuracy at 7-min checkpoint (118 oracle replays, all GT
 
 ---
 
-## 17. Quarkus Config Properties
+## 19. Quarkus Config Properties
 
 Worker physics constants — override without recompiling:
 
