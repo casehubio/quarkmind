@@ -249,44 +249,57 @@ class WorkerSimulation {
                 || w.task == WorkerTask.SCOUTING || w.task == WorkerTask.TRANSFERRING) return 0;
         if (w.task == WorkerTask.HARVESTING_GAS || w.task == WorkerTask.RETURNING_GAS) return 0;
 
-        if (w.task == WorkerTask.MINING_MINERALS) {
-            if (w.assignedPatch == null) {
-                w.task = WorkerTask.IDLE;
-                return 0;
-            }
-            if (!w.isAtTarget()) {
-                w.moveToward();
-                if (w.isAtTarget()) {
-                    tryStartMining(w, tickStartLoop);
+        int loopsPerTick = SimulatedWorker.LOOPS_PER_TICK;
+        int loopsRemaining = loopsPerTick;
+        double income = 0;
+
+        while (loopsRemaining > 0) {
+            if (w.task == WorkerTask.MINING_MINERALS) {
+                if (w.assignedPatch == null) {
+                    w.task = WorkerTask.IDLE;
+                    return income;
                 }
-                return 0;
+                if (!w.isAtTarget()) {
+                    int used = w.moveLoops(loopsRemaining);
+                    loopsRemaining -= used;
+                    if (w.isAtTarget()) {
+                        tryStartMining(w, tickStartLoop + (loopsPerTick - loopsRemaining));
+                    }
+                    if (loopsRemaining <= 0) return income;
+                    continue;
+                }
+                if (!w.assignedPatch.miners.contains(w)) {
+                    tryStartMining(w, tickStartLoop + (loopsPerTick - loopsRemaining));
+                    return income;
+                }
+                double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
+                if (currentLoop >= w.phaseEndLoop) {
+                    double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
+                    w.cargo = w.assignedPatch.harvest(cargo);
+                    w.assignedPatch.miners.remove(w);
+                    w.task = WorkerTask.RETURNING_MINERALS;
+                    w.targetPosition = bases.get(w.baseIndex).position();
+                    continue;
+                }
+                return income;
             }
-            if (!w.assignedPatch.miners.contains(w)) {
-                tryStartMining(w, tickStartLoop);
-                return 0;
-            }
-            if (tickEndLoop >= w.phaseEndLoop) {
-                double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
-                w.cargo = w.assignedPatch.harvest(cargo);
-                w.assignedPatch.miners.remove(w);
-                w.task = WorkerTask.RETURNING_MINERALS;
-                w.targetPosition = bases.get(w.baseIndex).position();
-            }
-            return 0;
-        }
 
-        if (w.task == WorkerTask.RETURNING_MINERALS) {
-            w.moveToward();
-            if (w.isAtTarget()) {
-                double deposited = w.cargo;
-                w.cargo = 0;
-                assignToNearestPatch(w);
-                return deposited;
+            if (w.task == WorkerTask.RETURNING_MINERALS) {
+                int used = w.moveLoops(loopsRemaining);
+                loopsRemaining -= used;
+                if (w.isAtTarget()) {
+                    income += w.cargo;
+                    w.cargo = 0;
+                    assignToNearestPatch(w);
+                    if (loopsRemaining <= 0) return income;
+                    continue;
+                }
+                return income;
             }
-            return 0;
-        }
 
-        return 0;
+            return income;
+        }
+        return income;
     }
 
     private void tryStartMining(SimulatedWorker w, double tickStartLoop) {

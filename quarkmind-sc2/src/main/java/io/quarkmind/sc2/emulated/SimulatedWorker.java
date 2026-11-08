@@ -6,7 +6,16 @@ class SimulatedWorker {
     static final double MINERAL_CARGO = 5.0;
     static final double RICH_MINERAL_CARGO = 7.0;
 
-    static final double MINING_DURATION_LOOPS = 44.576;
+    static final double MINING_DURATION_LOOPS_DEFAULT = 44.576;
+    static double MINING_DURATION_LOOPS = MINING_DURATION_LOOPS_DEFAULT;
+
+    static void setMiningDurationLoops(double loops) {
+        MINING_DURATION_LOOPS = loops;
+    }
+
+    static void resetMiningDuration() {
+        MINING_DURATION_LOOPS = MINING_DURATION_LOOPS_DEFAULT;
+    }
     static final double GAS_CARGO_DEFAULT = 4.0;
     static double GAS_CARGO = GAS_CARGO_DEFAULT;
     static final double GAS_HARVEST_DURATION_LOOPS_DEFAULT = 31.696;
@@ -21,8 +30,8 @@ class SimulatedWorker {
     }
     static final double ARRIVAL_THRESHOLD = 0.5;
     static final double MAX_SPEED         = io.quarkmind.domain.SC2Data.unitSpeed(io.quarkmind.domain.UnitType.PROBE);
-    static final double ACCELERATION      = 2.5;
-    static final double DECELERATION      = 2.5;
+    static final double ACCELERATION      = 3.5;
+    static final double DECELERATION      = 3.5;
     static final double LOOP_DURATION     = 1.0 / io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND;
     static final int    LOOPS_PER_TICK    = io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
 
@@ -55,14 +64,14 @@ class SimulatedWorker {
 
     void moveToward() {moveLoops(LOOPS_PER_TICK);}
 
-    void moveLoops(int loops) {
-        if (targetPosition == null) {return;}
+    int moveLoops(int loops) {
+        if (targetPosition == null) {return loops;}
         for (int loop = 0; loop < loops; loop++) {
             double dist = position.distanceTo(targetPosition);
             if (dist <= ARRIVAL_THRESHOLD) {
                 position     = targetPosition;
                 currentSpeed = 0;
-                return;
+                return loop;
             }
             double decelDist = currentSpeed * currentSpeed / (2.0 * DECELERATION);
             if (dist <= decelDist) {
@@ -75,7 +84,7 @@ class SimulatedWorker {
             if (stepDist >= dist) {
                 position     = targetPosition;
                 currentSpeed = 0;
-                return;
+                return loop + 1;
             }
             float dx    = targetPosition.x() - position.x();
             float dy    = targetPosition.y() - position.y();
@@ -85,6 +94,7 @@ class SimulatedWorker {
                     position.y() + dy * ratio
             );
         }
+        return loops;
     }
 
 }

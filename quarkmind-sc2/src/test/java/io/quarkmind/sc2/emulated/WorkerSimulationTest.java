@@ -539,11 +539,71 @@ class WorkerSimulationTest {
                    "24-worker per-worker rate should be less than 16-worker rate");
         double drop = (1.0 - rate24 / rate16) * 100;
         System.out.printf("Efficiency drop 16→24: %.1f%% (SC2 reference: ~40-50%%)%n", drop);
-        // FINDING: drop is ~5.6% — far below SC2's ~40-50%. Root cause: MINING_DURATION_LOOPS=16
-        // is too short, so workers spend little time at the patch and 3rd workers barely wait.
-        // Fixing the mining duration constant is #575's scope; the contention model (MAX_MINERS=2
-        // + tryStartMining wait) is mechanically correct.}
-}
+    }
+
+    @Test
+    void miningDurationSweep() {
+        double ticksPerMinute = 60.0 * io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND
+                                / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+        int warmup  = 20;
+        int measure = 300;
+
+        System.out.printf("%nACCELERATION=%.2f, DECELERATION=%.2f, MAX_SPEED=%.2f, LOOPS_PER_TICK=%d%n",
+                SimulatedWorker.ACCELERATION, SimulatedWorker.DECELERATION, SimulatedWorker.MAX_SPEED, SimulatedWorker.LOOPS_PER_TICK);
+
+        // Trace single worker movement at 6-unit distance
+        SimulatedWorker tracer = new SimulatedWorker("tracer", new Point2d(50,50), 0);
+        tracer.targetPosition = new Point2d(56, 50);
+        tracer.currentSpeed = 0;
+        int loops = 0;
+        while (!tracer.isAtTarget()) { tracer.moveLoops(1); loops++; }
+        System.out.printf("Single 6-unit trip: %d loops (%.2f seconds, %.1f ticks)%n",
+                loops, loops / io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND,
+                loops / (double) SimulatedWorker.LOOPS_PER_TICK);
+
+        System.out.println("\n=== Mining Duration Sweep (16 workers, 8 patches at 6-unit distance) ===");
+        System.out.printf("%-12s %-12s %-12s %-12s%n", "Duration", "Total/min", "Per worker", "SC2 target");
+
+        double[] durations = {5, 10, 15, 20, 25, 30, 35, 40, 44.576};
+        double bestDuration = 0;
+        double bestError = Double.MAX_VALUE;
+
+        for (double duration : durations) {
+            SimulatedWorker.setMiningDurationLoops(duration);
+            try {
+                sim.reset();
+                sim.onTownHallCompleted(BASE_TAG, BASE_POS);
+                tickCount = 0;
+
+                List<String> initial = IntStream.rangeClosed(1, 12)
+                        .mapToObj(i -> "w-" + i).toList();
+                sim.onInitialWorkers(initial, BASE_POS, BASE_TAG);
+                for (int i = 12; i < 16; i++) {
+                    sim.onWorkerProduced("w-" + (i + 1), BASE_POS);
+                }
+
+                for (int t = 0; t < warmup; t++) { tick(); }
+                double income = 0;
+                for (int t = 0; t < measure; t++) {
+                    income += tick().mineralIncome();
+                }
+
+                double perMinute = income / measure * ticksPerMinute;
+                double perWorker = perMinute / 16;
+                double error = Math.abs(perWorker - 55.0);
+                System.out.printf("%-12.1f %-12.1f %-12.1f %-12s%n",
+                        duration, perMinute, perWorker, error < bestError ? "←" : "");
+                if (error < bestError) {
+                    bestError = error;
+                    bestDuration = duration;
+                }
+            } finally {
+                SimulatedWorker.resetMiningDuration();
+            }
+        }
+        System.out.printf("%nBest duration: %.1f loops (%.2f seconds)%n",
+                bestDuration, bestDuration / io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND);
+    }
 
     @Test
     void workerScouting_producesNoIncome() {
