@@ -1,16 +1,15 @@
 package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.Point2d;
-import io.quarkmind.domain.SC2Data;
 
 class SimulatedWorker {
     static final double MINERAL_CARGO = 5.0;
     static final double RICH_MINERAL_CARGO = 7.0;
 
     static final int MINING_DURATION_LOOPS = 16;
-    static final double GAS_CARGO_DEFAULT = 4.0;
+    static final double GAS_CARGO_DEFAULT = 3.3;
     static double GAS_CARGO = GAS_CARGO_DEFAULT;
-    static final int GAS_HARVEST_DURATION_LOOPS_DEFAULT = 32;
+    static final int GAS_HARVEST_DURATION_LOOPS_DEFAULT = 22;
     static int GAS_HARVEST_DURATION_LOOPS = GAS_HARVEST_DURATION_LOOPS_DEFAULT;
 
     static void setGasHarvestDurationLoops(int loops) {
