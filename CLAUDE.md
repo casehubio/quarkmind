@@ -391,6 +391,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - `VespeneSpendingDiagnosticTest` — per-replay vespene spending breakdown (army + technology); correlates GT InProgress/Current/Lost with EM spending; identifies structural floor from PlayerStatsEvent update cadence
 - `GasIncomeDiagnosticTest` — per-replay, per-race gas income variance; compares GT vespeneCollectionRate and vespeneCurrent against simulation; tracks gas slot count, gas worker count, cumulative gas income
 - `EconomyDivergenceDiagnosticTest` — per-replay mineralsCurrent and vespeneCurrent divergence at 5/7-min checkpoints; top-20 worst replays with mineral/gas rates, workers, supply; per-race MAPE breakdown; error direction (over vs under)
+- `MiningEfficiencyCalibrationTest` — sweeps per-race mineral mining efficiency factors (0.85–1.00) against 118 oracle replays; uses linear approximation from cumulative mineral income to find MAPE-minimising factor at 5/7-min checkpoints; calibrated values: Protoss=0.92, Zerg=0.95, Terran=1.0
 - Run with: `mvn test -pl quarkmind-sc2 -Pdiagnostic`
 
 **Never use `@QuarkusTest` for tests that can be plain JUnit** — boot cost is significant.

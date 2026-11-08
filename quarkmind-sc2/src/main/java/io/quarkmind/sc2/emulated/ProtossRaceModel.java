@@ -118,4 +118,8 @@ class ProtossRaceModel implements RaceModel {
     public long buildWorkerPauseTicks(BuildingType type, long buildDurationTicks) {
         return PROBE_BUILD_ROUND_TRIP_TICKS;
     }
+
+    @Override
+    public double mineralMiningEfficiency() {return 0.92;}
+
 }

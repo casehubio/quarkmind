@@ -179,4 +179,7 @@ class ZergRaceModel implements RaceModel {
         final Deque<String> q = eggTagByBuilding.get(buildingTag);
         return q != null && !q.isEmpty();
     }
+
+    @Override
+    public double mineralMiningEfficiency() {return 0.95;}
 }
