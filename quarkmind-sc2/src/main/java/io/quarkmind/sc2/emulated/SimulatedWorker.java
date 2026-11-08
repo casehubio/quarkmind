@@ -6,34 +6,45 @@ class SimulatedWorker {
     static final double MINERAL_CARGO = 5.0;
     static final double RICH_MINERAL_CARGO = 7.0;
 
-    static final double MINING_DURATION_LOOPS_DEFAULT = 12.0;
-    static double MINING_DURATION_LOOPS = MINING_DURATION_LOOPS_DEFAULT;
+    static double MINING_DURATION_LOOPS = WorkerPhysicsConfig.DEFAULT_MINING_DURATION_LOOPS;
 
     static void setMiningDurationLoops(double loops) {
         MINING_DURATION_LOOPS = loops;
     }
 
     static void resetMiningDuration() {
-        MINING_DURATION_LOOPS = MINING_DURATION_LOOPS_DEFAULT;
+        MINING_DURATION_LOOPS = WorkerPhysicsConfig.DEFAULT_MINING_DURATION_LOOPS;
     }
+
     static final double GAS_CARGO_DEFAULT = 4.0;
     static double GAS_CARGO = GAS_CARGO_DEFAULT;
-    static final double GAS_HARVEST_DURATION_LOOPS_DEFAULT = 31.696;
-    static double GAS_HARVEST_DURATION_LOOPS = GAS_HARVEST_DURATION_LOOPS_DEFAULT;
+    static double GAS_HARVEST_DURATION_LOOPS = WorkerPhysicsConfig.DEFAULT_GAS_HARVEST_DURATION_LOOPS;
 
     static void setGasHarvestDurationLoops(double loops) {
         GAS_HARVEST_DURATION_LOOPS = loops;
     }
 
     static void resetGasHarvestDuration() {
-        GAS_HARVEST_DURATION_LOOPS = GAS_HARVEST_DURATION_LOOPS_DEFAULT;
+        GAS_HARVEST_DURATION_LOOPS = WorkerPhysicsConfig.DEFAULT_GAS_HARVEST_DURATION_LOOPS;
     }
+
     static final double ARRIVAL_THRESHOLD = 0.5;
     static final double MAX_SPEED         = io.quarkmind.domain.SC2Data.unitSpeed(io.quarkmind.domain.UnitType.PROBE);
-    static final double ACCELERATION      = 3.5;
-    static final double DECELERATION      = 3.5;
+    static double ACCELERATION            = WorkerPhysicsConfig.DEFAULT_ACCELERATION;
+    static double DECELERATION            = WorkerPhysicsConfig.DEFAULT_DECELERATION;
     static final double LOOP_DURATION     = 1.0 / io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND;
     static final int    LOOPS_PER_TICK    = io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+
+    static void configure(WorkerPhysicsConfig config) {
+        MINING_DURATION_LOOPS = config.miningDurationLoops();
+        GAS_HARVEST_DURATION_LOOPS = config.gasHarvestDurationLoops();
+        ACCELERATION = config.acceleration();
+        DECELERATION = config.deceleration();
+    }
+
+    static void resetToDefaults() {
+        configure(WorkerPhysicsConfig.defaults());
+    }
 
 
     final String tag;

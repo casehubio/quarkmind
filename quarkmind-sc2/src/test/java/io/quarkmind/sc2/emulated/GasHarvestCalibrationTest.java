@@ -55,7 +55,7 @@ class GasHarvestCalibrationTest {
         System.out.println("-".repeat(70));
 
         double bestMape  = Double.MAX_VALUE;
-        double bestLoops = SimulatedWorker.GAS_HARVEST_DURATION_LOOPS_DEFAULT;
+        double bestLoops = WorkerPhysicsConfig.DEFAULT_GAS_HARVEST_DURATION_LOOPS;
 
         for (int loops = 5; loops <= 50; loops += 5) {
             SimulatedWorker.setGasHarvestDurationLoops(loops);
