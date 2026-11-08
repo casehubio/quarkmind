@@ -416,6 +416,168 @@ class VespeneSpendingDiagnosticTest {
         System.out.println();
     }
 
+
+    @Test
+    @EnabledIf("oracleExists")
+    void spendingCategoryBreakdown() throws IOException {
+        List<Path> replays;
+        try (var stream = Files.list(ORACLE_DIR)) {
+            replays = stream.filter(p -> p.toString().endsWith(".SC2Replay"))
+                            .sorted().toList();
+        }
+
+        int[] checkpointsMin = {1, 3, 5, 7};
+        int   tickLimit      = TICKS_PER_MINUTE * 8;
+
+        // Per-checkpoint accumulators: [gtCurrent, gtInProgress, emTotal, emBuildings, emResearch, playerRuns]
+        Map<Integer, long[]> accum = new TreeMap<>();
+        for (int cp : checkpointsMin) {accum.put(cp, new long[6]);}
+
+        // Per-checkpoint per-race accumulators: [gtCurrent, emTotal, emBuildings, emResearch]
+        Map<Integer, Map<Race, long[]>> raceAccum = new TreeMap<>();
+        for (int cp : checkpointsMin) {
+            Map<Race, long[]> raceMap = new EnumMap<>(Race.class);
+            for (Race r : Race.values()) {raceMap.put(r, new long[4]);}
+            raceAccum.put(cp, raceMap);
+        }
+
+        for (Path replayPath : replays) {
+            Replay replay;
+            try {
+                replay = RepParserEngine.parseReplay(replayPath,
+                                                     EnumSet.of(RepContent.TRACKER_EVENTS, RepContent.DETAILS, RepContent.GAME_EVENTS));
+            } catch (Exception e) {continue;}
+            if (replay == null || replay.details == null || replay.trackerEvents == null) {continue;}
+            if (replay.details.getPlayerList().length < 2) {continue;}
+
+            for (int playerId = 1; playerId <= 2; playerId++) {
+                try {
+                    ReplaySimulatedGame groundTruth = new ReplaySimulatedGame(replayPath, playerId);
+                    List<TimedIntent>   intents     = TrackerIntentExtractor.extract(replayPath, playerId);
+                    Race                race        = TrackerIntentExtractor.resolvePlayerRace(replay, playerId);
+
+                    Map<Integer, int[]> gtInProgressPerCp = extractGtInProgressPerCheckpoint(
+                            replay, playerId, checkpointsMin);
+
+                    EmulatedGame emulated = new EmulatedGame();
+                    emulated.setPlayerRaceModel(RaceModelFactory.forRace(race));
+                    groundTruth.reset();
+                    emulated.setMineralPatchResources(groundTruth.getMineralPatches());
+                    emulated.resetForHarness();
+
+                    int cursor = 0;
+
+                    for (int tick = 0; tick < tickLimit && !groundTruth.isComplete(); tick++) {
+                        long windowEnd = (long) (tick + 1) * SC2Data.LOOPS_PER_TICK;
+                        emulated.tick();
+                        groundTruth.tick();
+
+                        emulated.processDeferredTrainIntents();
+                        emulated.processDeferredResearchIntents();
+
+                        while (cursor < intents.size() && intents.get(cursor).loop() < windowEnd) {
+                            emulated.applyIntent(intents.get(cursor));
+                            cursor++;
+                        }
+
+                        for (int cp : checkpointsMin) {
+                            if (tick == cp * TICKS_PER_MINUTE - 1) {
+                                GameState                          gtState = groundTruth.snapshot();
+                                GameState                          emState = emulated.snapshot();
+                                EmulatedGame.TechSpendingBreakdown bd      = emulated.techSpendingBreakdown();
+
+                                int gtCur  = gtState.playerEconomy().vespeneUsedCurrentTechnology();
+                                int emTech = emState.playerEconomy().vespeneUsedCurrentTechnology();
+                                int emBldGas = bd.buildSpending().values().stream().mapToInt(a -> a[1]).sum()
+                                               + bd.morphSpending().values().stream().mapToInt(a -> a[1]).sum()
+                                               - bd.destroySubtractions().values().stream().mapToInt(a -> a[1]).sum();
+                                int emResGas = bd.researchVespene();
+
+                                int[] gtIp             = gtInProgressPerCp.getOrDefault(cp, new int[]{0, 0});
+                                int   gtInProgressTech = gtIp[1];
+
+                                long[] a = accum.get(cp);
+                                a[0] += gtCur;
+                                a[1] += gtInProgressTech;
+                                a[2] += emTech;
+                                a[3] += emBldGas;
+                                a[4] += emResGas;
+                                a[5]++;
+
+                                long[] ra = raceAccum.get(cp).get(race);
+                                ra[0] += gtCur;
+                                ra[1] += emTech;
+                                ra[2] += emBldGas;
+                                ra[3] += emResGas;
+                            }
+                        }
+                    }
+                } catch (Exception e) { /* skip */ }
+            }
+        }
+
+        System.out.println("\n=== Vespene Technology Spending Breakdown (#559) ===");
+        System.out.printf("%-12s %12s %12s %12s %12s %12s %12s %12s %8s%n",
+                          "Checkpoint", "GT Current", "GT InProg", "GT IP+Cur", "EM Total",
+                          "EM Bldgs", "EM Research", "EM-GT Cur", "Runs");
+        for (int cp : checkpointsMin) {
+            long[] a = accum.get(cp);
+            System.out.printf("%-12s %,12d %,12d %,12d %,12d %,12d %,12d %+,12d %8d%n",
+                              cp + "-min", a[0], a[1], a[0] + a[1], a[2], a[3], a[4], a[2] - a[0], a[5]);
+        }
+
+        System.out.println("\n--- Hypothesis: research should be Army, not Tech ---");
+        System.out.printf("%-12s %12s %12s %12s %12s%n",
+                          "Checkpoint", "GT Current", "EM Bldg-Only", "AbsErr", "MAPE");
+        for (int cp : checkpointsMin) {
+            long[] a      = accum.get(cp);
+            long   absErr = Math.abs(a[3] - a[0]);
+            System.out.printf("%-12s %,12d %,12d %,12d %11.1f%%%n",
+                              cp + "-min", a[0], a[3], absErr,
+                              a[0] > 0 ? absErr * 100.0 / a[0] : 0);
+        }
+
+        System.out.println("\n--- Per-Race breakdown (all checkpoints summed) ---");
+        System.out.printf("%-10s %12s %12s %12s %12s %12s%n",
+                          "Race", "GT Current", "EM Total", "EM Bldgs", "EM Research", "EM-GT");
+        for (Race race : List.of(Race.PROTOSS, Race.TERRAN, Race.ZERG)) {
+            long gtSum = 0, emSum = 0, bldgSum = 0, resSum = 0;
+            for (int cp : checkpointsMin) {
+                long[] ra = raceAccum.get(cp).get(race);
+                gtSum += ra[0];
+                emSum += ra[1];
+                bldgSum += ra[2];
+                resSum += ra[3];
+            }
+            System.out.printf("%-10s %,12d %,12d %,12d %,12d %+,12d%n",
+                              race, gtSum, emSum, bldgSum, resSum, emSum - gtSum);
+        }
+        System.out.println();
+    }
+
+    private Map<Integer, int[]> extractGtInProgressPerCheckpoint(
+            Replay replay, int playerId, int[] checkpointsMin) {
+        Map<Integer, int[]> result = new TreeMap<>();
+        int[]               latest = {0, 0};
+
+        for (var event : replay.trackerEvents.getEvents()) {
+            if (!(event instanceof IPlayerStatsEvent pse)) {continue;}
+            Integer pid = event.getPlayerId();
+            if (pid == null || pid != playerId) {continue;}
+
+            latest[0] = safe(pse.getGasUsedInProgressArmy());
+            latest[1] = safe(pse.getGasUsedInProgressTech());
+
+            for (int cp : checkpointsMin) {
+                long cpLoop = (long) (cp * 60 * SC2Data.GAME_LOOPS_PER_SECOND);
+                if (event.getLoop() <= cpLoop) {
+                    result.put(cp, new int[]{latest[0], latest[1]});
+                }
+            }
+        }
+        return result;
+    }
+
     private int[] extractGtInProgressAndLost(Replay replay, int playerId) {
         int vesInProgressArmy = 0, vesInProgressTech = 0;
         int vesLostArmy = 0, vesLostTech = 0;
