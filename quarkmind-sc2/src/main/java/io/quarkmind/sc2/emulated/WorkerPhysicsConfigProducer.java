@@ -12,7 +12,7 @@ class WorkerPhysicsConfigProducer {
     double miningDurationLoops;
 
     @ConfigProperty(name = "starcraft.worker.gas-harvest-duration-loops",
-        defaultValue = "31.696")
+        defaultValue = "22.0")
     double gasHarvestDurationLoops;
 
     @ConfigProperty(name = "starcraft.worker.acceleration",

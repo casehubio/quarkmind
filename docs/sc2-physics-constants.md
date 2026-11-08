@@ -62,7 +62,7 @@ Each entry documents value, source, and confidence level.
 
 | Constant | Code value | Source | Confidence | Config property |
 |----------|-----------|--------|------------|-----------------|
-| Gas harvest duration | 31.696 loops (1.415s) | Liquipedia | **Calibrated** — #571 | `starcraft.worker.gas-harvest-duration-loops` |
+| Gas harvest duration | 22.0 loops (0.98s) | Oracle MAPE sweep (118 replays) | **Calibrated** — #586 | `starcraft.worker.gas-harvest-duration-loops` |
 | Gas cargo | 4 | Liquipedia | **Published** | — |
 | Max workers per geyser | 3 | SC2 mechanics | **Published** | — |
 | Gas geyser distance | Per-map GT positions | Oracle replay data | **Calibrated** — #556 | — |
@@ -292,11 +292,13 @@ Three workers per geyser, concurrent access (`GasSlot.canEnter()` allows all 3 i
 | Phase | Loops | Seconds | Notes |
 |-------|-------|---------|-------|
 | Walk to geyser | 41 | 1.83 | ~5-unit typical geyser distance |
-| Harvest inside | 31.7 | 1.42 | Liquipedia 1.415s × 22.4 |
+| Harvest inside | 22.0 | 0.98 | Oracle MAPE sweep — calibrated #586 |
 | Walk home | 41 | 1.83 | Same distance |
-| **Total cycle** | **113.7** | **5.08** | 4 gas per trip |
+| **Total cycle** | **104.0** | **4.64** | 4 gas per trip |
 
-**Per-worker income:** 47.3 gas/min. **Per-geyser (3 workers):** 141.9 gas/min. SC2 published: ~170 gas/min — the gap suggests the gas harvest duration (31.696 loops) may need recalibration like mining did.
+**Per-worker income:** 51.7 gas/min. **Per-geyser (3 workers):** 155.1 gas/min. SC2 published: ~170 gas/min. The remaining gap (~9%) is unmodeled per-cycle overhead (deposit time at town hall, entry/exit animation at geyser), same pattern as mineral mining (#587).
+
+**Why harvest=22 when Liquipedia says 1.415s (31.7 loops):** The 9.7-loop reduction absorbs per-cycle overhead not explicitly modeled — gas deposit at town hall (~2-3 loops), geyser entry/exit animation (~2-3 loops), and path contention near the geyser (~2-3 loops). This parallels the mining calibration (#583) where the measured 5-loop mining animation expanded to 12 loops to absorb similar overhead.
 
 ### Tick-boundary quantisation
 
@@ -404,10 +406,10 @@ Standalone EmulatedGame accuracy at 7-min checkpoint (118 oracle replays, all GT
 
 | Field | MAPE | Confidence | Status |
 |-------|------|------------|--------|
-| mineralsCollectionRate | 22.3% | — | Active calibration |
-| vespeneCollectionRate | 37.1% | — | Active calibration |
-| mineralsCurrent | 67.6% | — | Cumulative drift |
-| vespeneCurrent | 77.4% | — | Cumulative drift |
+| mineralsCollectionRate | 22.8% | — | Active calibration |
+| vespeneCollectionRate | 26.7% | — | Active calibration |
+| mineralsCurrent | 67.5% | — | Cumulative drift |
+| vespeneCurrent | 65.4% | — | Cumulative drift |
 | foodMade | 3.1% | — | At floor |
 | foodUsed | 3.7% | — | At floor |
 | workersActiveCount | 2.5% | — | At floor |
@@ -465,7 +467,7 @@ Worker physics constants — override without recompiling:
 ```properties
 # application.properties or -D flags
 starcraft.worker.mining-duration-loops=12.0
-starcraft.worker.gas-harvest-duration-loops=31.696
+starcraft.worker.gas-harvest-duration-loops=22.0
 starcraft.worker.acceleration=3.5
 starcraft.worker.deceleration=3.5
 ```
