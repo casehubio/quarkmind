@@ -3,7 +3,7 @@
 **Purpose:** Document the accuracy ceiling per economy field — the MAPE that cannot be improved by code changes because it originates from measurement artifacts, reporting granularity, or behaviours the simulation cannot observe.
 
 **Dataset:** Oracle (118 replays, 236 player runs, v4.9.3)
-**Method:** Standalone EmulatedGame with all fixes through #566 (mining efficiency), #564 (gas worker sync), #563 (gas simulation), #560 (building pause), #559 (spending reclassification)
+**Method:** Standalone EmulatedGame with all fixes through #576 (spending classification), #574 (acceleration model), #575 (mining duration), #571 (sub-tick gas carry-forward), #566 (mining efficiency)
 **Reference:** `standalone-emulated-game-baseline.md` (same date)
 
 ---
@@ -12,19 +12,19 @@
 
 | Field | Current MAPE | Structural floor | Gap | Improvable? |
 |-------|-------------|-----------------|-----|-------------|
-| mineralsCurrent | 61.5% | ~40-50% | ~10-20% | Partially — cumulative drift compounds |
-| vespeneCurrent | 52.1% | ~35-45% | ~7-10% | Partially — gas rate residual |
-| mineralsCollectionRate | 17.0% | ~10-12% | ~5-7% | Yes — per-map patch distances |
-| vespeneCollectionRate | 19.6% | ~12-15% | ~5-7% | Partially — sub-tick carry-forward applied (#571) |
-| foodMade | 3.1% | ~2-3% | ~0-1% | At floor |
-| foodUsed | 3.7% | ~2-3% | ~0-1% | At floor |
-| workersActiveCount | 2.5% | ~2-3% | 0% | At floor |
-| mineralsUsedCurrentArmy | 14.0% | ~10-12% | ~2-4% | Marginal |
+| mineralsCurrent | 100.0% | ~40-50% | ~50% | Yes — acceleration model regression (#578) |
+| vespeneCurrent | 82.3% | ~35-45% | ~37% | Yes — acceleration model regression (#578) |
+| mineralsCollectionRate | 50.0% | ~10-12% | ~38% | Yes — acceleration model regression (#578) |
+| vespeneCollectionRate | 43.0% | ~12-15% | ~28% | Yes — acceleration model regression (#578) |
+| foodMade | 2.9% | ~2-3% | 0% | At floor |
+| foodUsed | 6.1% | ~2-3% | ~3% | Near floor |
+| workersActiveCount | 3.2% | ~2-3% | ~1% | Near floor |
+| mineralsUsedCurrentArmy | 7.1% | ~5-8% | ~0-2% | At floor — classification fix (#576) |
 | mineralsUsedCurrentEconomy | 5.8% | ~3-5% | ~1-3% | Marginal |
-| mineralsUsedCurrentTechnology | 15.7% | ~10-12% | ~4-6% | Marginal |
-| vespeneUsedCurrentArmy | 35.4% | ~15-20% | ~15-20% | Yes — army gas spending model |
+| mineralsUsedCurrentTechnology | 17.0% | ~10-12% | ~5-7% | Marginal — timing artifact |
+| vespeneUsedCurrentArmy | 7.4% | ~5-8% | ~0-2% | At floor — classification fix (#576) |
 | vespeneUsedCurrentEconomy | 100.0% | 100% | 0% | At floor (GT=50, negligible) |
-| vespeneUsedCurrentTechnology | 15.4% | ~10-12% | ~3-5% | Marginal |
+| vespeneUsedCurrentTechnology | 42.0% | ~10-15% | ~27% | Partially — InProgress/Current timing boundary (§8) |
 
 ---
 
@@ -60,7 +60,7 @@ EmulatedGame resolves combat at tick granularity (22 game loops). Real SC2 resol
 
 **Affected fields:** mineralsUsedCurrentArmy, vespeneUsedCurrentArmy, and indirectly balance fields
 **Estimated contribution:** 5-10% MAPE for army spending fields
-**Evidence:** vespeneUsedCurrentArmy (35.4%) is the highest spending MAPE — gas-cost units (Stalkers, Immortals, Medivacs) die in combat more often than mineral-only units
+**Evidence:** After classification fix (#576), army spending fields are at 7.1-7.4% MAPE — consistent with death timing being the dominant remaining source
 
 ### 5. Worker activity budget residual
 
@@ -90,9 +90,11 @@ At the 1-minute checkpoint, gas buildings have just completed. GT's PlayerStatsE
 
 These fields are already at their structural limit. Further optimisation is not expected to improve them:
 
-- **foodMade** (3.1%) — building completion timing matches 100%; residual is PlayerStatsEvent lag
-- **foodUsed** (3.7%) — unit training timing matches 100%; residual is reporting lag + death timing
-- **workersActiveCount** (2.5%) — worker count matches; residual is mining efficiency approximation
+- **foodMade** (2.9%) — building completion timing matches 100%; residual is PlayerStatsEvent lag
+- **foodUsed** (6.1%) — unit training timing matches 100%; residual is reporting lag + death timing
+- **workersActiveCount** (3.2%) — worker count matches; residual is mining efficiency approximation
+- **mineralsUsedCurrentArmy** (7.1%) — classification fix (#576); residual is death timing (§4)
+- **vespeneUsedCurrentArmy** (7.4%) — classification fix (#576); residual is death timing (§4)
 - **mineralsUsedCurrentEconomy** (5.8%) — building and worker costs well-modelled; residual is reporting lag
 - **vespeneUsedCurrentEconomy** (100%) — structural: GT=50 total, negligible absolute value
 
@@ -100,11 +102,12 @@ These fields are already at their structural limit. Further optimisation is not 
 
 | Field | Current | Floor | Action |
 |-------|---------|-------|--------|
-| vespeneUsedCurrentArmy | 35.4% | ~15-20% | Death timing + spending model alignment |
-| vespeneCollectionRate | 19.6% | ~12-15% | Sub-tick carry-forward applied (#571); remaining gap ~5-7% |
-| mineralsCollectionRate | 17.0% | ~10-12% | Per-map patch distances (#567) |
-| mineralsCurrent | 61.5% | ~40-50% | Compounds from rate improvements |
-| vespeneCurrent | 52.5% | ~35-45% | Compounds from rate improvements |
+| mineralsCollectionRate | 50.0% | ~10-12% | Acceleration model regression (#578) |
+| vespeneCollectionRate | 43.0% | ~12-15% | Acceleration model regression (#578) |
+| vespeneUsedCurrentTechnology | 42.0% | ~10-15% | InProgress/Current timing boundary (§8) |
+| mineralsUsedCurrentTechnology | 17.0% | ~10-12% | Timing artifact; marginal improvement possible |
+| mineralsCurrent | 100.0% | ~40-50% | Blocked by #578 (acceleration model) |
+| vespeneCurrent | 82.3% | ~35-45% | Blocked by #578 (acceleration model) |
 
 ---
 
@@ -124,4 +127,23 @@ The practical ceiling for the 7-minute checkpoint:
 - **Balance fields:** ~35-50% MAPE (limited by cumulative drift of the above)
 - **Supply fields:** ~2-3% MAPE (already at floor)
 
-Refs #534, #559, #560, #563, #564, #566, #569
+### 8. Research spending classification — RESOLVED (#576)
+
+`EconomyTracker.recordResearchSpending` was routing upgrade costs to Army counters. SC2's PlayerStatsEvent reports upgrades as Technology spending. Fix: route to Technology.
+
+**Impact at 7-min:** mineralsUsedCurrentArmy 14.0% → 7.1%, vespeneUsedCurrentArmy 35.4% → 7.4%. Both Army fields are now at the death-timing floor (§4).
+
+**Side effect:** vespeneUsedCurrentTechnology rose from 15.4% → 42.0% because research vespene now correctly accumulates in Technology. The elevated MAPE is from the InProgress/Current timing boundary — EM records spending at completion tick, GT only surfaces it at the next 160-loop PlayerStatsEvent. Multiple in-flight upgrades (one per tech building) compound the gap. This is a measurement artifact, not a simulation bug.
+
+**Status:** Classification resolved. Timing boundary is the structural floor for this field.
+
+### 9. Acceleration model income regression (#578)
+
+Per-loop acceleration model (#574) halved standalone mineral collection rate. mineralsCollectionRate went from ~12% to ~50% MAPE. mineralsCurrent collapsed to 0% (EM earns less than it spends). Root cause under investigation — may be interaction between acceleration constant (2.5 u/s²) and mining duration (44.576 loops from #575).
+
+**Affected fields:** mineralsCurrent, vespeneCurrent, mineralsCollectionRate, vespeneCollectionRate
+**Status:** Filed as #578. Tracker-driven mode unaffected (GT economy syncs mask the regression).
+
+---
+
+Refs #534, #559, #560, #563, #564, #566, #569, #576, #578
