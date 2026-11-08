@@ -129,10 +129,10 @@ Accuracy: 100.0% (4/4)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 46751 | 33495 | 22948 | 49.1% |
-| vespeneCurrent | 24254 | 6323 | 18259 | 75.3% |
-| mineralsCollectionRate | 171704 | 152427 | 28601 | 16.7% |
-| vespeneCollectionRate | 39512 | 24888 | 14760 | 37.4% |
+| mineralsCurrent | 46751 | 33540 | 23023 | 49.2% |
+| vespeneCurrent | 24254 | 6315 | 18259 | 75.3% |
+| mineralsCollectionRate | 171704 | 152994 | 27740 | 16.2% |
+| vespeneCollectionRate | 39512 | 24819 | 14779 | 37.4% |
 | foodMade | 7024 | 7073 | 117 | 1.7% |
 | foodUsed | 5153 | 5259 | 128 | 2.5% |
 | workersActiveCount | 4000 | 4065 | 67 | 1.7% |
@@ -254,10 +254,10 @@ Accuracy: 100.0% (103/103)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 66699 | 50440 | 41397 | 62.1% |
-| vespeneCurrent | 43390 | 14349 | 30241 | 69.7% |
-| mineralsCollectionRate | 208770 | 183587 | 38645 | 18.5% |
-| vespeneCollectionRate | 50869 | 32383 | 18694 | 36.7% |
+| mineralsCurrent | 66699 | 50090 | 40961 | 61.4% |
+| vespeneCurrent | 43390 | 14501 | 30077 | 69.3% |
+| mineralsCollectionRate | 208770 | 181403 | 40161 | 19.2% |
+| vespeneCollectionRate | 50869 | 32172 | 18903 | 37.2% |
 | foodMade | 9520 | 9644 | 280 | 2.9% |
 | foodUsed | 7488 | 7798 | 454 | 6.1% |
 | workersActiveCount | 4907 | 5002 | 159 | 3.2% |
@@ -405,10 +405,10 @@ Accuracy: 100.0% (185/185)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 89788 | 59750 | 60708 | 67.6% |
-| vespeneCurrent | 52228 | 16427 | 40413 | 77.4% |
-| mineralsCollectionRate | 201496 | 163053 | 46507 | 23.1% |
-| vespeneCollectionRate | 61091 | 37682 | 23585 | 38.6% |
+| mineralsCurrent | 89788 | 59535 | 60743 | 67.7% |
+| vespeneCurrent | 52228 | 16547 | 40433 | 77.4% |
+| mineralsCollectionRate | 201496 | 162789 | 44955 | 22.3% |
+| vespeneCollectionRate | 61091 | 38447 | 22644 | 37.1% |
 | foodMade | 11184 | 11089 | 345 | 3.1% |
 | foodUsed | 9017 | 9195 | 335 | 3.7% |
 | workersActiveCount | 5004 | 5099 | 127 | 2.5% |

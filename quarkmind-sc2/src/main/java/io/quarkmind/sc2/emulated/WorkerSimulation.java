@@ -323,52 +323,61 @@ class WorkerSimulation {
         GasSlot slot = w.assignedGasSlot;
         if (slot == null) {return 0;}
 
-        if (w.task == WorkerTask.HARVESTING_GAS) {
-            if (slot.insideWorkers.contains(w)) {
-                if (tickEndLoop >= w.phaseEndLoop) {
-                    double overflowLoops = tickEndLoop - w.phaseEndLoop;
-                    double overflowFraction = overflowLoops / SC2Data.LOOPS_PER_TICK;
-                    w.cargo = SimulatedWorker.GAS_CARGO;
-                    slot.exitBuilding(w);
-                    w.task           = WorkerTask.RETURNING_GAS;
-                    w.targetPosition = bases.get(w.baseIndex).position();
-                    w.moveLoops((int) Math.round(overflowFraction * SC2Data.LOOPS_PER_TICK));
-                    if (w.isAtTarget()) {
-                        double deposited = w.cargo;
-                        w.cargo          = 0;
-                        w.task           = WorkerTask.HARVESTING_GAS;
-                        w.targetPosition = slot.position;
-                        return deposited;
-                    }
-                }
-                return 0;
-            }
-            double distBefore = w.position.distanceTo(w.targetPosition);
-            w.moveToward();
-            if (w.isAtTarget() && slot.canEnter()) {
-                double fractionUsed = Math.min(distBefore / workerDistancePerTick, 1.0);
-                double arrivalLoop = tickStartLoop + fractionUsed * SC2Data.LOOPS_PER_TICK;
-                slot.enterBuilding(w);
-                w.phaseEndLoop = arrivalLoop + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
-            }
-            return 0;
-        }
+        int loopsPerTick = SimulatedWorker.LOOPS_PER_TICK;
+        int loopsRemaining = loopsPerTick;
+        double income = 0;
 
-        if (w.task == WorkerTask.RETURNING_GAS) {
-            double distBefore = w.position.distanceTo(w.targetPosition);
-            w.moveToward();
-            if (w.isAtTarget()) {
-                double fractionUsed = Math.min(distBefore / workerDistancePerTick, 1.0);
-                double deposited = w.cargo;
-                w.cargo          = 0;
-                w.task           = WorkerTask.HARVESTING_GAS;
-                w.targetPosition = slot.position;
-                w.moveLoops((int) Math.round((1.0 - fractionUsed) * SC2Data.LOOPS_PER_TICK));
-                return deposited;
+        while (loopsRemaining > 0) {
+            if (w.task == WorkerTask.HARVESTING_GAS) {
+                if (slot.insideWorkers.contains(w)) {
+                    double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
+                    if (currentLoop >= w.phaseEndLoop) {
+                        w.cargo = SimulatedWorker.GAS_CARGO;
+                        slot.exitBuilding(w);
+                        w.task           = WorkerTask.RETURNING_GAS;
+                        w.targetPosition = bases.get(w.baseIndex).position();
+                        continue;
+                    }
+                    int loopsUntilDone = (int) Math.ceil(w.phaseEndLoop - currentLoop);
+                    if (loopsUntilDone < loopsRemaining) {
+                        loopsRemaining -= loopsUntilDone;
+                        w.cargo = SimulatedWorker.GAS_CARGO;
+                        slot.exitBuilding(w);
+                        w.task           = WorkerTask.RETURNING_GAS;
+                        w.targetPosition = bases.get(w.baseIndex).position();
+                        continue;
+                    }
+                    return income;
+                }
+                int used = w.moveLoops(loopsRemaining);
+                loopsRemaining -= used;
+                if (w.isAtTarget() && slot.canEnter()) {
+                    double arrivalLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
+                    slot.enterBuilding(w);
+                    w.phaseEndLoop = arrivalLoop + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
+                    if (loopsRemaining <= 0) return income;
+                    continue;
+                }
+                return income;
             }
-            return 0;
+
+            if (w.task == WorkerTask.RETURNING_GAS) {
+                int used = w.moveLoops(loopsRemaining);
+                loopsRemaining -= used;
+                if (w.isAtTarget()) {
+                    income += w.cargo;
+                    w.cargo          = 0;
+                    w.task           = WorkerTask.HARVESTING_GAS;
+                    w.targetPosition = slot.position;
+                    if (loopsRemaining <= 0) return income;
+                    continue;
+                }
+                return income;
+            }
+
+            return income;
         }
-        return 0;
+        return income;
     }
 
     private void assignToNearestPatch(SimulatedWorker w) {
