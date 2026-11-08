@@ -30,7 +30,7 @@ class SimulatedWorker {
     MineralPatch assignedPatch;
     GasSlot assignedGasSlot;
     double cargo;
-    double cycleLoopsRemaining;
+    double phaseEndLoop;
 
     SimulatedWorker(String tag, Point2d position, int baseIndex) {
         this.tag = tag;

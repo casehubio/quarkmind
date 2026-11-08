@@ -132,7 +132,7 @@ class GasHarvestCalibrationTest {
         }
 
         SimulatedWorker.resetGasHarvestDuration();
-        System.out.printf("%nBest: GAS_HARVEST_DURATION_LOOPS = %d (MAPE: %.1f%%)%n",
+        System.out.printf("%nBest: GAS_HARVEST_DURATION_LOOPS = %.0f (MAPE: %.1f%%)%n",
                           bestLoops, bestMape);
     }
 
