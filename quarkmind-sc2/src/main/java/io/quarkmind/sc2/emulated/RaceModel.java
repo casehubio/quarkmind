@@ -113,6 +113,13 @@ public interface RaceModel {
      */
     default long buildWorkerPauseTicks(BuildingType type, long buildDurationTicks) {return 0;}
 
+    /**
+     * Fraction of mineral workers actively mining at any given time.
+     * Accounts for scouting, transit, idle time, and proxy walks.
+     * Default 1.0 (all workers mining). Override per race with calibrated values.
+     */
+    default double mineralMiningEfficiency() {return 1.0;}
+
 
     default boolean forceAbility(PlayerState state, String casterTag, String ability,
                                  String targetTag, long gameLoop) {
