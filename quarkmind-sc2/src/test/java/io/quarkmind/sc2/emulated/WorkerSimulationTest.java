@@ -347,6 +347,28 @@ class WorkerSimulationTest {
                    "Gas per tick should be >= 2.2 for 3 workers at 5-tile distance with transition fix, got " + avgPerTick);
     }
 
+    @Test
+    void gasHarvest_subTickCarryForward_increasesRate() {
+        List<String> tags = IntStream.rangeClosed(1, 12)
+                                     .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+        sim.onGasBuildingCompleted("gas-1", new Point2d(45, 50));
+
+        int warmupTicks = 20;
+        for (int t = 0; t < warmupTicks; t++) {sim.tick();}
+
+        double gasIncome    = 0;
+        int    measureTicks = 400;
+        for (int t = 0; t < measureTicks; t++) {
+            gasIncome += sim.tick().vespeneIncome();
+        }
+
+        double avgPerTick = gasIncome / measureTicks;
+        assertTrue(avgPerTick >= 2.5,
+                   "Sub-tick carry-forward should yield >= 2.5 gas/tick for 3 workers "
+                   + "(32-loop effective harvest vs 44-loop quantised), got " + avgPerTick);
+    }
+
 
     // --- Formula validator ---
 
