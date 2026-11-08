@@ -77,6 +77,14 @@ public class EmulatedGame {
         workerSimulation.syncTotalGasWorkers(target);
     }
 
+    public void onWorkerScouting(String tag, double returnAtLoop) {
+        workerSimulation.onWorkerScouting(tag, returnAtLoop);
+    }
+
+    public void onWorkerReturnFromScout(String tag) {
+        workerSimulation.onWorkerReturnFromScout(tag);
+    }
+
 
     public void setMineralPatchResources(List<Resource> patches) {
         this.mineralPatchResources = List.copyOf(patches);
