@@ -303,6 +303,11 @@ class WorkerSimulation {
                 if (w.isAtTarget()) {
                     income += w.cargo;
                     w.cargo = 0;
+                    if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
+                        assignToNearestPatch(w);
+                        if (loopsRemaining <= 0) {return income;}
+                        continue;
+                    }
                     double arrivalLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
                     w.task         = WorkerTask.DEPOSITING_MINERALS;
                     w.phaseEndLoop = arrivalLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
@@ -389,6 +394,12 @@ class WorkerSimulation {
                 if (w.isAtTarget()) {
                     income += w.cargo;
                     w.cargo = 0;
+                    if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
+                        w.task           = WorkerTask.HARVESTING_GAS;
+                        w.targetPosition = slot.position;
+                        if (loopsRemaining <= 0) {return income;}
+                        continue;
+                    }
                     double arrivalLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
                     w.task         = WorkerTask.DEPOSITING_GAS;
                     w.phaseEndLoop = arrivalLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
