@@ -286,13 +286,11 @@ class WorkerSimulation {
             if (slot.insideWorkers.contains(w)) {
                 w.cycleLoopsRemaining -= SC2Data.LOOPS_PER_TICK;
                 if (w.cycleLoopsRemaining <= 0) {
-                    int overflowLoops = -w.cycleLoopsRemaining;
-                    double fractionRemaining = (double) overflowLoops / SC2Data.LOOPS_PER_TICK;
                     w.cargo = SimulatedWorker.GAS_CARGO;
                     slot.exitBuilding(w);
                     w.task           = WorkerTask.RETURNING_GAS;
                     w.targetPosition = bases.get(w.baseIndex).position();
-                    w.moveToward(workerDistancePerTick * fractionRemaining);
+                    w.moveToward(workerDistancePerTick);
                     if (w.isAtTarget()) {
                         double deposited = w.cargo;
                         w.cargo          = 0;
