@@ -76,20 +76,22 @@ class WorkerSimulation {
     }
 
     private int transferMineralWorkers(int fromBase, int toBase, int count) {
-        int transferred = 0;
+        int     transferred = 0;
+        Point2d targetPos   = bases.get(toBase).position();
         for (SimulatedWorker w : new ArrayList<>(workers.values())) {
-            if (transferred >= count) break;
-            if (w.baseIndex != fromBase) continue;
-            if (w.assignedGasSlot != null) continue;
+            if (transferred >= count) {break;}
+            if (w.baseIndex != fromBase) {continue;}
+            if (w.assignedGasSlot != null) {continue;}
             if (w.task != WorkerTask.MINING_MINERALS
-                    && w.task != WorkerTask.RETURNING_MINERALS
-                    && w.task != WorkerTask.IDLE) continue;
+                && w.task != WorkerTask.RETURNING_MINERALS
+                && w.task != WorkerTask.IDLE) {continue;}
             if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
                 w.assignedPatch.miners.remove(w);
             }
-            w.assignedPatch = null;
-            w.baseIndex = toBase;
-            assignToNearestPatch(w);
+            w.assignedPatch  = null;
+            w.baseIndex      = toBase;
+            w.task           = WorkerTask.TRANSFERRING;
+            w.targetPosition = targetPos;
             transferred++;
         }
         return transferred;
@@ -218,6 +220,12 @@ class WorkerSimulation {
         for (SimulatedWorker w : new ArrayList<>(workers.values())) {
             if (w.task == WorkerTask.SCOUTING && tickEndLoop >= w.scoutReturnLoop) {
                 onWorkerReturnFromScout(w.tag);
+            }
+        }
+
+        for (SimulatedWorker w : workers.values()) {
+            if (w.task == WorkerTask.TRANSFERRING) {
+                tickTransferringWorker(w);
             }
         }
 
@@ -400,7 +408,8 @@ class WorkerSimulation {
     int[] mineralWorkersPerBase() {
         int[] counts = new int[bases.size()];
         for (SimulatedWorker w : workers.values()) {
-            if (w.task == WorkerTask.MINING_MINERALS || w.task == WorkerTask.RETURNING_MINERALS) {
+            if (w.task == WorkerTask.MINING_MINERALS || w.task == WorkerTask.RETURNING_MINERALS
+                || w.task == WorkerTask.TRANSFERRING) {
                 if (w.baseIndex >= 0 && w.baseIndex < counts.length) {
                     counts[w.baseIndex]++;
                 }
@@ -526,7 +535,8 @@ class WorkerSimulation {
         int count = 0;
         for (SimulatedWorker w : workers.values()) {
             if (w.baseIndex == baseIdx
-                    && (w.task == WorkerTask.MINING_MINERALS || w.task == WorkerTask.RETURNING_MINERALS)) {
+                && (w.task == WorkerTask.MINING_MINERALS || w.task == WorkerTask.RETURNING_MINERALS
+                    || w.task == WorkerTask.TRANSFERRING)) {
                 count++;
             }
         }
@@ -606,6 +616,13 @@ class WorkerSimulation {
         if (w == null || w.task != WorkerTask.SCOUTING) {return;}
         w.task = WorkerTask.IDLE;
         assignToNearestPatch(w);
+    }
+
+    private void tickTransferringWorker(SimulatedWorker w) {
+        w.moveToward(workerDistancePerTick);
+        if (w.isAtTarget()) {
+            assignToNearestPatch(w);
+        }
     }
 
 

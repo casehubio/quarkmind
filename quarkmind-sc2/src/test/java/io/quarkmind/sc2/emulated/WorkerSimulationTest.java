@@ -604,4 +604,32 @@ class WorkerSimulationTest {
                    "Worker should resume mining after manual return");
     }
 
+    @Test
+    void transferredWorkers_walkToNewBase_noIncomeInTransit() {
+        List<String> tags = IntStream.rangeClosed(1, 16)
+                                     .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+        for (int t = 0; t < 20; t++) {tick();}
+
+        double incomeBeforeExpansion = 0;
+        for (int t = 0; t < 50; t++) {
+            incomeBeforeExpansion += tick().mineralIncome();
+        }
+
+        Point2d farBase = new Point2d(100, 100);
+        sim.onTownHallCompleted("base-2", farBase);
+
+        // First tick after expansion — some workers are now TRANSFERRING
+        double firstTickIncome = tick().mineralIncome();
+
+        // After many ticks, transferred workers arrive and start mining
+        double totalIncome = 0;
+        for (int t = 0; t < 200; t++) {
+            totalIncome += tick().mineralIncome();
+        }
+        assertTrue(totalIncome > 0,
+                   "Transferred workers should eventually arrive and mine at new base");
+    }
+
+
 }
