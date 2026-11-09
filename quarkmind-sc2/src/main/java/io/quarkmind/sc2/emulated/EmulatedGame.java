@@ -90,6 +90,11 @@ public class EmulatedGame {
         this.mineralPatchResources = List.copyOf(patches);
     }
 
+    public void setEconomyConfig(EconomyConfig config) {
+        this.economyTracker = new EconomyTracker(config.rateIntervalLoops());
+    }
+
+
     private static final double MINERAL_PATCH_SEARCH_RADIUS = 12.0;
 
     List<Resource> findNearbyMineralPatches(Point2d townHallPos) {
@@ -126,7 +131,7 @@ public class EmulatedGame {
     private final List<Resource> geysers = new ArrayList<>();
     private final List<EnemyWave> pendingWaves = new ArrayList<>();
     private final DamageCalculator damageCalculator = new DamageCalculator();
-    private final EconomyTracker   economyTracker   = new EconomyTracker();
+    private EconomyTracker economyTracker = new EconomyTracker();
 
     private MovementStrategy movementStrategy = new DirectMovement();
     // E7: hard physics constraint — no unit may land on a wall tile regardless of movement strategy.
