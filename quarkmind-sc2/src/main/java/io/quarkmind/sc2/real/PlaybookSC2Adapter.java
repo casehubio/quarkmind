@@ -86,19 +86,14 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
                     boolean canFire = step.shouldFire(tick, supplyUsed)
                                       && (!fired[i] || step.loop());
                     if (canFire) {
-                        if ("build".equals(step.action())) {
-                            translateStep(step, state);
+                        ResolvedCommand cmd = translateStep(step, state);
+                        if (cmd != null) {
+                            commands.add(cmd);
+                        }
+                        if (cmd != null || "build".equals(step.action())) {
                             fired[i] = true;
                             log.infof("[Recorder] tick %d (loop %d): %s supply=%d/%d",
                                       tick, gameLoop, step.action(), supplyUsed, (int) state.supply());
-                        } else {
-                            ResolvedCommand cmd = translateStep(step, state);
-                            if (cmd != null) {
-                                commands.add(cmd);
-                                fired[i] = true;
-                                log.infof("[Recorder] tick %d (loop %d): %s supply=%d/%d",
-                                          tick, gameLoop, step.action(), supplyUsed, (int) state.supply());
-                            }
                         }
                     }
                 }
