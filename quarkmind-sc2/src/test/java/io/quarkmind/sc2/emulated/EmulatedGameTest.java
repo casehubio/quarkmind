@@ -2249,6 +2249,39 @@ class EmulatedGameTest {
 
 
     @Test
+    void pureMiningSixteenWorkers_incomeRateVsTwelve() {
+        EmulatedGame g12 = new EmulatedGame();
+        g12.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));
+        g12.reset();
+
+        EmulatedGame g16 = new EmulatedGame();
+        g16.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));
+        g16.reset();
+        g16.setSupplyForTesting(200);
+        Point2d nexusPos = g16.snapshot().myBuildings().stream()
+                              .filter(b -> b.type() == BuildingType.NEXUS).findFirst().orElseThrow().position();
+        for (int i = 0; i < 4; i++) {
+            g16.spawnUnit(1, UnitType.PROBE, nexusPos);
+        }
+
+        for (int t = 0; t < 304; t++) {
+            g12.tick();
+            g16.tick();
+        }
+
+        int    m12    = g12.snapshot().minerals();
+        int    m16    = g16.snapshot().minerals();
+        double rate12 = (m12 - 50.0) / 304;
+        double rate16 = (m16 - 50.0) / 304;
+        double ratio  = rate16 / rate12;
+        System.out.printf("12w: %d minerals (%.2f/tick), 16w: %d minerals (%.2f/tick), ratio: %.3f%n",
+                          m12, rate12, m16, rate16, ratio);
+        assertThat(ratio)
+                .as("16w/12w income ratio — 2 workers/patch should produce 33%% more than 1.5 workers/patch")
+                .isBetween(1.25, 1.40);
+    }
+
+    @Test
     void probeTrainingCadence_matchesSC2Pattern() {
         EmulatedGame g = new EmulatedGame();
         g.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));

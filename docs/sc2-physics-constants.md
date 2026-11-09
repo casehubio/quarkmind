@@ -92,7 +92,7 @@ Each entry documents value, source, and confidence level.
 
 | Race | Factor | Source | Confidence |
 |------|--------|--------|------------|
-| Protoss | 1.0 | SC2 dual-run calibration | **Calibrated** — #591 |
+| Protoss | 0.997 | SC2 dual-run sweep (3460 at tick 304) | **Calibrated** — #601 |
 | Terran | 0.984 | SC2 dual-run sweep (3415 at tick 304) | **Calibrated** — #600 |
 | Zerg | 0.984 | SC2 dual-run sweep (3415 at tick 304) | **Calibrated** — #600 |
 
@@ -100,12 +100,12 @@ Each entry documents value, source, and confidence level.
 
 | Baseline | SC2 minerals | EM minerals | Delta |
 |----------|-------------|------------|-------|
-| 12w Protoss (tick 304) | 3460 | 3470 | **+0.3%** |
+| 12w Protoss (tick 304) | 3460 | 3460 | **0.0%** |
 | 12w Terran (tick 304) | 3415 | 3415 | **0.0%** |
 | 12w Zerg (tick 304) | 3415 | 3415 | **0.0%** |
 | 16w saturation (tick 304) | 4260 | 4555 | +6.9% |
 
-16w 6.9% gap: sub-tick training resolution (#601) fixed the Probe training cadence (first Probe now correctly at tick 13, not 12) but did not reduce the 16w gap. The 6.9% has a different primary cause — not the training phase shift.
+16w 6.6% gap (was 6.9%): sub-tick training resolution (#601) fixed Probe cadence. Protoss factor refined to 0.997. Root cause: the EM trains 23 Probes (not 16 — continuous to supply cap). The 0.3% per-worker over-production (before factor fix) compounded through 11 training cycles, each Probe arriving slightly earlier in the EM. Reducing per-worker error to 0.0% only closes 16 minerals of the 295-mineral gap, because the EM and SC2 have different Probe arrival timing even at identical per-worker rates. Investigation needed: per-tick Probe count comparison between EM and SC2 baseline.
 
 ### Saturation curve (SC2 dual-run, Protoss, TorchesAIE_v4)
 
@@ -346,7 +346,7 @@ Fixing rate accuracy is the primary lever for reducing balance MAPE. The balance
 
 ### Per-race efficiency factors
 
-Protoss=1.0, Terran=0.984, Zerg=0.984. Calibrated via SC2 dual-run sweep (#600). Terran and Zerg produce 1.3% fewer minerals than Protoss at identical worker counts in real SC2 — likely race-specific worker animation timing. The factor compensates without modelling the animation difference explicitly.
+Protoss=0.997, Terran=0.984, Zerg=0.984. Calibrated via SC2 dual-run sweep (#600, #601). Terran and Zerg produce 1.3% fewer minerals than Protoss in real SC2 — likely race-specific worker animation timing. Protoss refined from 1.0 to 0.997 to eliminate the 0.3% residual over-production at 12w.
 
 ### The overhead gap
 

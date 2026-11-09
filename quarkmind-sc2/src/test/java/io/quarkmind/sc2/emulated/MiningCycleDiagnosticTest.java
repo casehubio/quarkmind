@@ -371,5 +371,27 @@ class MiningCycleDiagnosticTest {
         }
     }
 
+    @Test
+    void protossEfficiencyFactorSweepForSixteenWorkers() {
+        System.out.println("=== Protoss Efficiency Factor Sweep: 16w dual-run mineral impact ===");
+        System.out.println("SC2 12w=3460, 16w dual-run SC2=4260");
+        System.out.printf("%-8s %-10s %-10s %-12s%n", "Factor", "12w EM", "vs 3460", "Impact");
+        System.out.println("-".repeat(45));
+
+        EmulatedGame baseline = new EmulatedGame();
+        baseline.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));
+        baseline.reset();
+        for (int t = 0; t < 304; t++) {baseline.tick();}
+        double baseIncome = baseline.snapshot().minerals() - SC2Data.INITIAL_MINERALS;
+
+        for (double factor : new double[]{0.995, 0.996, 0.997, 0.9971, 0.998, 0.999, 1.000}) {
+            double adjusted12w = SC2Data.INITIAL_MINERALS + baseIncome * factor;
+            double vs3460      = (adjusted12w - 3460) / 3460 * 100;
+            System.out.printf("%-8.4f %-10.0f %-10.1f%% %-12s%n",
+                              factor, adjusted12w, vs3460,
+                              Math.abs(vs3460) < 0.1 ? "EXACT" : "");
+        }
+    }
+
 
 }
