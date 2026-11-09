@@ -1,0 +1,48 @@
+playbook: cal-gas-baseline-3w
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 305 ticks
+  purpose: Gas baseline — 3 workers on 1 geyser, rest on minerals
+
+steps:
+  - train: PROBE
+    loop: continuous
+
+  - build: PYLON
+    at: 14 supply
+
+  - build: ASSIMILATOR
+    at: 15 supply
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        PROBE: { min: 14 }
+
+  - assert: tick-122
+    at: 122 ticks
+    expect:
+      units:
+        PROBE: { min: 16 }
+      buildings:
+        ASSIMILATOR: { min: 1 }
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      vespene:
+        min: 50
+
+  - assert: tick-244
+    at: 244 ticks
+    expect:
+      vespene:
+        min: 100
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      vespene:
+        min: 150

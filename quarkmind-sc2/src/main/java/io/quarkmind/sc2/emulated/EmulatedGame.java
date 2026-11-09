@@ -77,10 +77,23 @@ public class EmulatedGame {
         workerSimulation.syncTotalGasWorkers(target);
     }
 
+    public void onWorkerScouting(String tag, double returnAtLoop) {
+        workerSimulation.onWorkerScouting(tag, returnAtLoop);
+    }
+
+    public void onWorkerReturnFromScout(String tag) {
+        workerSimulation.onWorkerReturnFromScout(tag);
+    }
+
 
     public void setMineralPatchResources(List<Resource> patches) {
         this.mineralPatchResources = List.copyOf(patches);
     }
+
+    public void setEconomyConfig(EconomyConfig config) {
+        this.economyTracker = new EconomyTracker(config.rateIntervalLoops());
+    }
+
 
     private static final double MINERAL_PATCH_SEARCH_RADIUS = 12.0;
 
@@ -118,7 +131,7 @@ public class EmulatedGame {
     private final List<Resource> geysers = new ArrayList<>();
     private final List<EnemyWave> pendingWaves = new ArrayList<>();
     private final DamageCalculator damageCalculator = new DamageCalculator();
-    private final EconomyTracker   economyTracker   = new EconomyTracker();
+    private EconomyTracker economyTracker = new EconomyTracker();
 
     private MovementStrategy movementStrategy = new DirectMovement();
     // E7: hard physics constraint — no unit may land on a wall tile regardless of movement strategy.
@@ -192,8 +205,8 @@ public class EmulatedGame {
 
         workerSimulation.tickBuilderReturns(gameFrame);
         TickIncome workerIncome = workerSimulation.tick((gameFrame - 1) * (double) SC2Data.LOOPS_PER_TICK);
-        double tickMineralIncome = workerIncome.mineralIncome();
-        double tickGasIncome = workerIncome.vespeneIncome();
+        double tickMineralIncome = workerIncome.mineralIncome() * playerRaceModel.miningEfficiencyFactor();
+        double tickGasIncome = workerIncome.vespeneIncome() * playerRaceModel.gasEfficiencyFactor();
         friendly.addMinerals(tickMineralIncome);
         friendly.addVespene(tickGasIncome);
         cumulativeGasIncome += tickGasIncome;
@@ -523,7 +536,7 @@ public class EmulatedGame {
             intentExecutionListener.onTrainOutcome((int) gameFrame, t, resolvedTag, true, null);
         }
         int maxConcurrent = reactored ? 2 : 1;
-        if (autoResolved && !reactored && activeSlots == 1) {
+        if (trackerDriven && autoResolved && !reactored && activeSlots == 1) {
             long prevStartLoop = physics.buildingCompletionAtLoop.getOrDefault(resolvedTag, 0L)
                                  - SC2Data.trainTimeInLoops(t.unitType());
             if (Math.abs(absLoop - prevStartLoop) <= 10) {
@@ -602,6 +615,18 @@ public class EmulatedGame {
         }
     }
 
+
+    public void debugCreateBuilding(BuildingType bt, Point2d location) {
+        String tag = "debug-" + nextTag++;
+        friendly.addBuilding(new Building(tag, bt, location,
+                                          SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), true));
+        friendly.addSupply(SC2Data.supplyBonus(bt));
+        if (playerRaceModel != null && playerRaceModel.townHallTypes().contains(bt)) {
+            registerTownHallWithPatches(tag, location);
+        } else if (SC2Data.isGasBuilding(bt)) {
+            workerSimulation.onGasBuildingCompleted(tag, location);
+        }
+    }
 
     private String nextTagString() {
         return "unit-" + nextTag++;

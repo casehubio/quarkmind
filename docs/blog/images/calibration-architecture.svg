@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 320">
+  <defs>
+    <style>
+      .box { stroke: #94a3b8; stroke-width: 1.5; rx: 6; }
+      .box-sc2 { fill: #eff6ff; }
+      .box-em { fill: #fef2f2; }
+      .box-test { fill: #f0fdf4; }
+      .box-data { fill: #fefce8; }
+      .arrow { stroke: #64748b; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+      .arrow-data { stroke: #2563eb; stroke-width: 2; fill: none; marker-end: url(#arrowhead-blue); }
+      .label { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; fill: #334155; text-anchor: middle; }
+      .sublabel { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 10px; fill: #64748b; text-anchor: middle; }
+      .title { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 14px; fill: #1e293b; font-weight: 600; text-anchor: middle; }
+      .phase { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 11px; fill: #94a3b8; font-weight: 600; }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#64748b"/>
+    </marker>
+    <marker id="arrowhead-blue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#2563eb"/>
+    </marker>
+  </defs>
+
+  <text x="350" y="24" class="title">SC2 Playbook Calibration Architecture</text>
+
+  <!-- Phase labels -->
+  <text x="50" y="55" class="phase">RECORD</text>
+  <text x="350" y="55" class="phase">COMPARE</text>
+  <text x="600" y="55" class="phase">CALIBRATE</text>
+
+  <!-- Phase 1: Record -->
+  <rect x="20" y="70" width="130" height="50" class="box box-data"/>
+  <text x="85" y="92" class="label">Playbook YAML</text>
+  <text x="85" y="106" class="sublabel">cal-mineral-12w.yaml</text>
+
+  <path d="M 85 120 L 85 145" class="arrow"/>
+
+  <rect x="20" y="150" width="130" height="60" class="box box-sc2"/>
+  <text x="85" y="172" class="label">SC2 Game</text>
+  <text x="85" y="186" class="sublabel">PlaybookSC2Adapter</text>
+  <text x="85" y="199" class="sublabel">debug API for buildings</text>
+
+  <path d="M 85 210 L 85 240" class="arrow-data"/>
+
+  <rect x="20" y="245" width="130" height="45" class="box box-data"/>
+  <text x="85" y="267" class="label">SC2 Baseline JSON</text>
+  <text x="85" y="281" class="sublabel">per-tick minerals/vespene</text>
+
+  <!-- Phase 2: Compare -->
+  <rect x="220" y="70" width="130" height="50" class="box box-data"/>
+  <text x="285" y="92" class="label">Same Playbook</text>
+  <text x="285" y="106" class="sublabel">parsed by SC2PlaybookRunner</text>
+
+  <path d="M 285 120 L 285 145" class="arrow"/>
+
+  <rect x="220" y="150" width="130" height="60" class="box box-em"/>
+  <text x="285" y="172" class="label">EmulatedGame</text>
+  <text x="285" y="186" class="sublabel">SC2DeliveryHandler</text>
+  <text x="285" y="199" class="sublabel">tick-by-tick execution</text>
+
+  <path d="M 285 210 L 285 240" class="arrow"/>
+  <path d="M 150 267 L 218 267" class="arrow-data"/>
+
+  <rect x="220" y="245" width="130" height="45" class="box box-test"/>
+  <text x="285" y="267" class="label">DualRunCalibration</text>
+  <text x="285" y="281" class="sublabel">compare() per-tick delta</text>
+
+  <!-- Phase 3: Calibrate -->
+  <path d="M 350 267 L 440 180" class="arrow"/>
+
+  <rect x="440" y="70" width="150" height="50" class="box box-em"/>
+  <text x="515" y="92" class="label">Physics Constants</text>
+  <text x="515" y="106" class="sublabel">mining-duration, speed, ...</text>
+
+  <path d="M 515 120 L 515 145" class="arrow"/>
+
+  <rect x="440" y="150" width="150" height="60" class="box box-test"/>
+  <text x="515" y="172" class="label">Adjust + Re-run</text>
+  <text x="515" y="186" class="sublabel">externalized config</text>
+  <text x="515" y="199" class="sublabel">no recompilation</text>
+
+  <path d="M 515 210 L 515 240" class="arrow"/>
+
+  <rect x="440" y="245" width="150" height="45" class="box box-test"/>
+  <text x="515" y="267" class="label">0% Error Target</text>
+  <text x="515" y="281" class="sublabel">minerals match per-tick</text>
+
+  <!-- Feedback loop -->
+  <path d="M 515 290 Q 515 310 285 310 Q 85 310 85 290" class="arrow" stroke-dasharray="4,3"/>
+  <text x="300" y="305" class="sublabel">iterate until converged</text>
+</svg>

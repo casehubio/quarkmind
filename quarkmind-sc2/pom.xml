@@ -369,6 +369,25 @@
     </build>
 
     <profiles>
+        <!-- Run SC2 live tests: mvn test -Psc2 -pl quarkmind-sc2 -Dtest=PlaybookSC2RecorderTest -->
+        <profile>
+            <id>sc2</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.self="override">
+                            <groups>sc2</groups>
+                            <argLine>@{argLine}</argLine>
+                            <systemPropertyVariables>
+                                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                                <maven.home>${maven.home}</maven.home>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <!-- Run game loop benchmarks: mvn test -Pbenchmark -pl quarkmind-sc2 -->
         <profile>
             <id>benchmark</id>

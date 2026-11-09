@@ -6,11 +6,13 @@ import com.github.ocraft.s2client.protocol.unit.Tag;
 
 import java.util.Optional;
 
-/**
- * A resolved SC2 command ready for dispatch via ActionInterface.
- * Package-private — only SC2BotAgent and ActionTranslator interact with this type.
- *
- * target is present for position-targeted commands (build, attack, move)
- * and empty for non-positional commands (train).
- */
-record ResolvedCommand(Tag tag, Abilities ability, Optional<Point2d> target) {}
+record ResolvedCommand(Tag tag, Abilities ability, Optional<Point2d> target, Optional<Long> targetUnitTag) {
+
+    ResolvedCommand(Tag tag, Abilities ability, Optional<Point2d> target) {
+        this(tag, ability, target, Optional.empty());
+    }
+
+    static ResolvedCommand targetUnit(Tag casterTag, Abilities ability, long targetTag) {
+        return new ResolvedCommand(casterTag, ability, Optional.empty(), Optional.of(targetTag));
+    }
+}

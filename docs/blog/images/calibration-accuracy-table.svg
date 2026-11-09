@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 340">
+  <defs>
+    <style>
+      .bg { fill: #fafafa; }
+      .header-bg { fill: #1e293b; }
+      .row-even { fill: #f8fafc; }
+      .row-odd { fill: #ffffff; }
+      .pass-bg { fill: #dcfce7; }
+      .warn-bg { fill: #fef9c3; }
+      .fail-bg { fill: #fee2e2; }
+      .header-text { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; fill: #f1f5f9; font-weight: 600; }
+      .cell { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; fill: #334155; }
+      .cell-bold { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; fill: #0f172a; font-weight: 600; }
+      .cell-num { font-family: 'JetBrains Mono', 'SF Mono', monospace; font-size: 11px; fill: #334155; }
+      .pass { font-family: 'JetBrains Mono', 'SF Mono', monospace; font-size: 11px; fill: #166534; font-weight: 600; }
+      .warn { font-family: 'JetBrains Mono', 'SF Mono', monospace; font-size: 11px; fill: #854d0e; font-weight: 600; }
+      .fail { font-family: 'JetBrains Mono', 'SF Mono', monospace; font-size: 11px; fill: #991b1b; font-weight: 600; }
+      .title { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 15px; fill: #0f172a; font-weight: 700; }
+      .subtitle { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 11px; fill: #64748b; }
+      .border { stroke: #e2e8f0; stroke-width: 1; fill: none; }
+    </style>
+  </defs>
+
+  <rect width="700" height="340" class="bg" rx="8"/>
+
+  <text x="350" y="28" text-anchor="middle" class="title">Dual-Run Calibration: EmulatedGame vs SC2</text>
+  <text x="350" y="46" text-anchor="middle" class="subtitle">Tick 304 (305 ticks, ~5 minutes game time) — all baselines recorded from live SC2</text>
+
+  <!-- Header -->
+  <rect x="20" y="60" width="660" height="30" class="header-bg" rx="4"/>
+  <text x="40" y="80" class="header-text">Baseline</text>
+  <text x="220" y="80" class="header-text">SC2 Min</text>
+  <text x="300" y="80" class="header-text">EM Min</text>
+  <text x="380" y="80" class="header-text">Δ Min</text>
+  <text x="450" y="80" class="header-text">SC2 Gas</text>
+  <text x="520" y="80" class="header-text">EM Gas</text>
+  <text x="590" y="80" class="header-text">Δ Gas</text>
+
+  <!-- Row 1: 12w Protoss -->
+  <rect x="20" y="92" width="660" height="28" class="row-odd"/>
+  <rect x="570" y="92" width="110" height="28" class="pass-bg"/>
+  <text x="40" y="110" class="cell-bold">12w Protoss</text>
+  <text x="230" y="110" class="cell-num">3460</text>
+  <text x="310" y="110" class="cell-num">3470</text>
+  <text x="380" y="110" class="pass">+0.3%</text>
+  <text x="460" y="110" class="cell-num">—</text>
+  <text x="530" y="110" class="cell-num">—</text>
+  <text x="600" y="110" class="cell">—</text>
+
+  <!-- Row 2: 12w Terran -->
+  <rect x="20" y="120" width="660" height="28" class="row-even"/>
+  <rect x="570" y="120" width="110" height="28" class="warn-bg"/>
+  <text x="40" y="138" class="cell-bold">12w Terran</text>
+  <text x="230" y="138" class="cell-num">3415</text>
+  <text x="310" y="138" class="cell-num">3470</text>
+  <text x="380" y="138" class="warn">+1.6%</text>
+  <text x="460" y="138" class="cell-num">—</text>
+  <text x="530" y="138" class="cell-num">—</text>
+  <text x="600" y="138" class="cell">—</text>
+
+  <!-- Row 3: 12w Zerg -->
+  <rect x="20" y="148" width="660" height="28" class="row-odd"/>
+  <rect x="570" y="148" width="110" height="28" class="warn-bg"/>
+  <text x="40" y="166" class="cell-bold">12w Zerg</text>
+  <text x="230" y="166" class="cell-num">3415</text>
+  <text x="310" y="166" class="cell-num">3470</text>
+  <text x="380" y="166" class="warn">+1.6%</text>
+  <text x="460" y="166" class="cell-num">—</text>
+  <text x="530" y="166" class="cell-num">—</text>
+  <text x="600" y="166" class="cell">—</text>
+
+  <!-- Row 4: Worker speed -->
+  <rect x="20" y="176" width="660" height="28" class="row-even"/>
+  <rect x="570" y="176" width="110" height="28" class="pass-bg"/>
+  <text x="40" y="194" class="cell-bold">Worker speed</text>
+  <text x="230" y="194" class="cell-num">1355</text>
+  <text x="310" y="194" class="cell-num">1370</text>
+  <text x="380" y="194" class="pass">+1.1%</text>
+  <text x="460" y="194" class="cell-num">—</text>
+  <text x="530" y="194" class="cell-num">—</text>
+  <text x="600" y="194" class="cell">—</text>
+
+  <!-- Row 5: 16w saturation -->
+  <rect x="20" y="204" width="660" height="28" class="row-odd"/>
+  <rect x="570" y="204" width="110" height="28" class="warn-bg"/>
+  <text x="40" y="222" class="cell-bold">16w saturation</text>
+  <text x="230" y="222" class="cell-num">4260</text>
+  <text x="310" y="222" class="cell-num">4555</text>
+  <text x="380" y="222" class="warn">+6.9%</text>
+  <text x="460" y="222" class="cell-num">—</text>
+  <text x="530" y="222" class="cell-num">—</text>
+  <text x="600" y="222" class="cell">—</text>
+
+  <!-- Row 6: Gas 3w -->
+  <rect x="20" y="232" width="660" height="28" class="row-even"/>
+  <rect x="360" y="232" width="110" height="28" class="warn-bg"/>
+  <rect x="570" y="232" width="110" height="28" class="warn-bg"/>
+  <text x="40" y="250" class="cell-bold">Gas 3w</text>
+  <text x="230" y="250" class="cell-num">3885</text>
+  <text x="310" y="250" class="cell-num">4095</text>
+  <text x="380" y="250" class="warn">+5.4%</text>
+  <text x="460" y="250" class="cell-num">596</text>
+  <text x="530" y="250" class="cell-num">644</text>
+  <text x="600" y="250" class="warn">+8.1%</text>
+
+  <!-- Legend -->
+  <rect x="20" y="280" width="660" height="48" rx="4" fill="#f1f5f9"/>
+  <rect x="35" y="292" width="12" height="12" rx="2" class="pass-bg" stroke="#166534" stroke-width="0.5"/>
+  <text x="52" y="302" class="cell">≤1% — physics match</text>
+  <rect x="210" y="292" width="12" height="12" rx="2" class="warn-bg" stroke="#854d0e" stroke-width="0.5"/>
+  <text x="227" y="302" class="cell">1–9% — known gap, tracked</text>
+  <rect x="430" y="292" width="12" height="12" rx="2" class="fail-bg" stroke="#991b1b" stroke-width="0.5"/>
+  <text x="447" y="302" class="cell">&gt;9% — structural divergence</text>
+  <text x="35" y="320" class="subtitle">All baselines recorded from live SC2 via PlaybookSC2Adapter. Buildings placed via debug API (instant, free).</text>
+</svg>

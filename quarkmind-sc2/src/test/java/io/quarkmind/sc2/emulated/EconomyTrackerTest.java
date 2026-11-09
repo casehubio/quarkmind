@@ -56,16 +56,15 @@ class EconomyTrackerTest {
     @Test
     void collectionRateIsConvertedToPerMinute() {
         var tracker = new EconomyTracker();
-        // Record exactly 10.0 minerals/tick and 2.0 gas/tick for one rate interval (7 ticks)
-        for (int i = 0; i < 7; i++) {
+        // 8 ticks = 176 loops >= 160 (default). Income: 10.0/tick * 8 = 80.0 total
+        for (int i = 0; i < 8; i++) {
             tracker.recordIncome(10.0, 2.0);
             tracker.tickUpdate(0, 0, 15, 6, 12);
         }
-        var stats = tracker.currentStats(0, 0, 15, 6, 12);
-        // Expected: 10.0 minerals/tick × (60 × 22.4 / 22) ticks/min ≈ 610 minerals/min
-        double ticksPerMin = 60.0 * 22.4 / 22.0;
-        assertThat(stats.mineralsCollectionRate()).isEqualTo((int) (10.0 * ticksPerMin));
-        assertThat(stats.vespeneCollectionRate()).isEqualTo((int) (2.0 * ticksPerMin));
+        var    stats       = tracker.currentStats(0, 0, 15, 6, 12);
+        double loopsPerMin = 60.0 * 22.4;
+        assertThat(stats.mineralsCollectionRate()).isEqualTo((int) (80.0 / 176.0 * loopsPerMin));
+        assertThat(stats.vespeneCollectionRate()).isEqualTo((int) (16.0 / 176.0 * loopsPerMin));
     }
 
 
@@ -272,4 +271,41 @@ class EconomyTrackerTest {
         var stats = tracker.currentStats(200, 100, 23, 14, 12);
         assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(0);
     }
+
+    @Test
+    void rateRecalculationFiresAtLoopThreshold() {
+        var tracker = new EconomyTracker(160);
+        // 160 loops / 22 loops per tick = 7.27 ticks — rate should NOT fire after 7 ticks
+        for (int i = 0; i < 7; i++) {
+            tracker.recordIncome(10.0, 2.0);
+            tracker.tickUpdate(0, 0, 15, 6, 12);
+        }
+        var after7 = tracker.currentStats(0, 0, 15, 6, 12);
+        assertThat(after7.mineralsCollectionRate()).as("rate should not update after 7 ticks (154 loops < 160)").isEqualTo(0);
+
+        // 8th tick pushes to 176 loops >= 160 — rate should fire
+        tracker.recordIncome(10.0, 2.0);
+        tracker.tickUpdate(0, 0, 15, 6, 12);
+        var after8 = tracker.currentStats(0, 0, 15, 6, 12);
+        assertThat(after8.mineralsCollectionRate()).as("rate should update after 8 ticks (176 loops >= 160)").isGreaterThan(0);
+    }
+
+    @Test
+    void loopBasedRateUsesActualElapsedLoops() {
+        var tracker = new EconomyTracker(160);
+        // 8 ticks = 176 loops. Income: 10.0 minerals/tick over 8 ticks = 80.0 total
+        // Rate = 80.0 / 176 loops * (60 * 22.4) loops/min = 80.0 / 176 * 1344 = 610.9 → 610
+        for (int i = 0; i < 8; i++) {
+            tracker.recordIncome(10.0, 2.0);
+            tracker.tickUpdate(0, 0, 15, 6, 12);
+        }
+        var    stats               = tracker.currentStats(0, 0, 15, 6, 12);
+        double loopsPerMinute      = 60.0 * 22.4;
+        int    expectedMineralRate = (int) (80.0 / 176.0 * loopsPerMinute);
+        int    expectedVespeneRate = (int) (16.0 / 176.0 * loopsPerMinute);
+        assertThat(stats.mineralsCollectionRate()).isEqualTo(expectedMineralRate);
+        assertThat(stats.vespeneCollectionRate()).isEqualTo(expectedVespeneRate);
+    }
+
+
 }

@@ -1,0 +1,41 @@
+playbook: cal-mineral-baseline-zerg
+schema: sc2
+meta:
+  race: ZERG
+  duration: 305 ticks
+  purpose: Zerg per-worker mineral rate — 12 Drones, no gas, no buildings, no training
+
+steps:
+  # No actions — starting 12 Drones mine. Compare to Protoss/Terran baselines.
+  # Zerg workers mine identically but sacrifice themselves for buildings.
+  # This baseline has NO building — pure mining.
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        DRONE: { min: 12, max: 12 }
+
+  - assert: tick-122
+    at: 122 ticks
+    expect:
+      units:
+        DRONE: { min: 12, max: 12 }
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      units:
+        DRONE: { min: 12, max: 12 }
+
+  - assert: tick-244
+    at: 244 ticks
+    expect:
+      units:
+        DRONE: { min: 12, max: 12 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        DRONE: { min: 12, max: 12 }

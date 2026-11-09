@@ -1,0 +1,47 @@
+playbook: cal-mule-isolation
+schema: sc2
+meta:
+  race: TERRAN
+  duration: 305 ticks
+  purpose: MULE income isolation — workers + MULEs. Compare to Terran baseline to isolate MULE contribution.
+
+steps:
+  - train: SCV
+    loop: continuous
+
+  - build: SUPPLY_DEPOT
+    at: 14 supply
+
+  - build: SUPPLY_DEPOT
+    at: 21 supply
+
+  - morph: ORBITAL_COMMAND
+    source: COMMAND_CENTER
+    at: 22 supply
+
+  - calldown: MULE
+    loop: continuous
+
+  - build: SUPPLY_DEPOT
+    at: 27 supply
+
+  - build: SUPPLY_DEPOT
+    at: 33 supply
+
+  - assert: tick-122
+    at: 122 ticks
+    expect:
+      units:
+        SCV: { min: 18 }
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      units:
+        SCV: { min: 22 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        SCV: { min: 24 }

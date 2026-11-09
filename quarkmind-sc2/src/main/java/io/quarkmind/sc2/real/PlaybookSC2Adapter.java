@@ -11,7 +11,6 @@ import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Race;
-import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.playbook.CalibrationBaseline;
@@ -21,9 +20,7 @@ import org.jboss.logging.Logger;
 
 import java.time.Instant;
 import java.util.ArrayList;
-
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class PlaybookSC2Adapter implements SC2FrameCallback {
@@ -39,7 +36,12 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
     private final String playbookName;
 
     private final List<CalibrationSnapshot> snapshots = new ArrayList<>();
-    private int tick = 0;
+    private final java.util.Set<String> assignedGasBuildings = new java.util.HashSet<>();
+    private int gameLoop = 0;
+    private int tick = -1;
+    private int buildIndex = 0;
+    private int gasIndex = 0;
+
 
     public PlaybookSC2Adapter(QuarkusSC2Transport transport, String playbookResource) {
         this.transport = transport;
@@ -65,35 +67,45 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
 
     @Override
     public void onStep(Observation obs) throws InterruptedException {
-        if (tick >= durationTicks) {
-            transport.quit();
-            return;
-        }
+            int emTick = gameLoop / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+            if (emTick >= durationTicks) {
+                transport.quit();
+                return;
+            }
 
-        GameState state = ObservationTranslator.translate(obs, null);
-        snapshots.add(CalibrationSnapshot.from(tick, state));
+            boolean newTick = emTick > tick;
+            if (newTick) {
+                tick = emTick;
+                GameState state = ObservationTranslator.translate(obs, null);
+                snapshots.add(CalibrationSnapshot.from(tick, state));
 
-        int supplyUsed = (int) state.supplyUsed();
-        List<ResolvedCommand> commands = new ArrayList<>();
+                int                   supplyUsed = (int) state.supplyUsed();
+                List<ResolvedCommand> commands   = new ArrayList<>();
 
-        for (int i = 0; i < steps.size(); i++) {
-            SC2PlaybookRunner.PlaybookStep step = steps.get(i);
-            boolean canFire = step.shouldFire(tick, supplyUsed)
-                && (!fired[i] || step.loop());
-            if (canFire) {
-                ResolvedCommand cmd = translateStep(step, state);
-                if (cmd != null) {
-                    commands.add(cmd);
-                    fired[i] = true;
-                    log.debugf("[Recorder] tick %d: %s", tick, step.action());
+                for (int i = 0; i < steps.size(); i++) {
+                    SC2PlaybookRunner.PlaybookStep step = steps.get(i);
+                    boolean canFire = step.shouldFire(tick, supplyUsed)
+                                      && (!fired[i] || step.loop());
+                    if (canFire) {
+                        ResolvedCommand cmd = translateStep(step, state);
+                        if (cmd != null) {
+                            commands.add(cmd);
+                        }
+                        if (cmd != null || "build".equals(step.action())) {
+                            fired[i] = true;
+                            log.infof("[Recorder] tick %d (loop %d): %s supply=%d/%d",
+                                      tick, gameLoop, step.action(), supplyUsed, (int) state.supply());
+                        }
+                    }
+                }
+
+                assignWorkersToGas(state, commands);
+
+                if (!commands.isEmpty()) {
+                    transport.sendActions(commands);
                 }
             }
-        }
-
-        if (!commands.isEmpty()) {
-            transport.sendActions(commands);
-        }
-        tick++;
+        gameLoop++;
     }
 
     @Override
@@ -115,13 +127,15 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
 
     private ResolvedCommand translateStep(SC2PlaybookRunner.PlaybookStep step, GameState state) {
         return switch (step.action()) {
-            case "train" -> translateTrain(step, state);
-            case "build" -> translateBuild(step, state);
-            case "assert" -> null;
-            default -> {
-                log.warnf("[Recorder] Unsupported action for SC2 recording: %s", step.action());
-                yield null;
-            }
+                case "train" -> translateTrain(step, state);
+                case "build" -> translateBuild(step, state);
+                case "morph" -> translateMorph(step, state);
+                case "calldown" -> translateCalldown(step, state);
+                case "assert" -> null;
+                default -> {
+                    log.warnf("[Recorder] Unsupported action for SC2 recording: %s", step.action());
+                    yield null;
+                }
         };
     }
 
@@ -142,19 +156,209 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
     }
 
     private ResolvedCommand translateBuild(SC2PlaybookRunner.PlaybookStep step, GameState state) {
-        BuildingType bt = BuildingType.valueOf((String) step.params().get("build"));
-        Abilities ability = ActionTranslator.mapBuildAbility(bt);
-        if (ability == null) return null;
+            BuildingType bt = BuildingType.valueOf((String) step.params().get("build"));
 
-        UnitType workerType = workerForRace(race);
-        Tag workerTag = findUnitTag(state, workerType);
-        if (workerTag == null) {
-            log.debugf("[Recorder] No worker found for building %s", bt);
+            if (bt == BuildingType.ASSIMILATOR || bt == BuildingType.REFINERY || bt == BuildingType.EXTRACTOR) {
+                return translateGasBuildingDebug(bt, state);
+            }
+
+            io.quarkmind.domain.Point2d basePos = findBasePosition(state);
+            if (basePos == null) {
+                log.infof("[Recorder] No base found for build placement");
+                return null;
+            }
+
+            float offsetX = -8f - (buildIndex % 3) * 4f;
+            float offsetY = 8f + (buildIndex / 3) * 4f;
+            buildIndex++;
+
+            int sc2UnitType = mapToSC2UnitTypeId(bt);
+            if (sc2UnitType < 0) {
+                log.infof("[Recorder] No SC2 unit type ID for %s", bt);
+                return null;
+            }
+
+            try {
+                SC2APIProtocol.Debug.DebugCreateUnit createUnit = SC2APIProtocol.Debug.DebugCreateUnit.newBuilder()
+                                                                                                      .setUnitType(sc2UnitType)
+                                                                                                      .setOwner(1)
+                                                                                                      .setPos(SC2APIProtocol.Common.Point2D.newBuilder()
+                                                                                                                                           .setX(basePos.x() + offsetX)
+                                                                                                                                           .setY(basePos.y() + offsetY)
+                                                                                                                                           .build())
+                                                                                                      .setQuantity(1)
+                                                                                                      .build();
+                SC2APIProtocol.Sc2Api.RequestDebug debugReq = SC2APIProtocol.Sc2Api.RequestDebug.newBuilder()
+                                                                                                .addDebug(SC2APIProtocol.Debug.DebugCommand.newBuilder()
+                                                                                                                                           .setCreateUnit(createUnit)
+                                                                                                                                           .build())
+                                                                                                .build();
+                transport.sendDebug(debugReq);
+                log.infof("[Recorder] DEBUG CREATE %s at (%.1f, %.1f) — base=(%.1f, %.1f)",
+                          bt, basePos.x() + offsetX, basePos.y() + offsetY, basePos.x(), basePos.y());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        return null;
+    }
+
+    private ResolvedCommand translateGasBuildingDebug(BuildingType bt, GameState state) {
+        var geysers = state.geysers();
+        if (geysers == null || gasIndex >= geysers.size()) {
+            log.debugf("[Recorder] No geyser available at index %d", gasIndex);
             return null;
         }
+        io.quarkmind.domain.Point2d basePos = findBasePosition(state);
+        if (basePos == null) return null;
+        var sortedGeysers = geysers.stream()
+            .sorted(java.util.Comparator.comparingDouble(g ->
+                Math.pow(g.position().x() - basePos.x(), 2) + Math.pow(g.position().y() - basePos.y(), 2)))
+            .toList();
+        if (gasIndex >= sortedGeysers.size()) return null;
+        var geyser = sortedGeysers.get(gasIndex);
+        gasIndex++;
+        int sc2UnitType = mapToSC2UnitTypeId(bt);
+        if (sc2UnitType < 0) {
+            log.infof("[Recorder] No SC2 unit type ID for gas building %s", bt);
+            return null;
+        }
+        try {
+            SC2APIProtocol.Debug.DebugCreateUnit createUnit = SC2APIProtocol.Debug.DebugCreateUnit.newBuilder()
+                .setUnitType(sc2UnitType)
+                .setOwner(1)
+                .setPos(SC2APIProtocol.Common.Point2D.newBuilder()
+                    .setX(geyser.position().x())
+                    .setY(geyser.position().y())
+                    .build())
+                .setQuantity(1)
+                .build();
+            SC2APIProtocol.Sc2Api.RequestDebug debugReq = SC2APIProtocol.Sc2Api.RequestDebug.newBuilder()
+                .addDebug(SC2APIProtocol.Debug.DebugCommand.newBuilder()
+                    .setCreateUnit(createUnit)
+                    .build())
+                .build();
+            transport.sendDebug(debugReq);
+            log.infof("[Recorder] DEBUG CREATE %s at geyser (%.1f, %.1f) — base=(%.1f, %.1f)",
+                      bt, geyser.position().x(), geyser.position().y(), basePos.x(), basePos.y());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return null;
+    }
+
+    private ResolvedCommand translateGasBuilding(Tag workerTag, Abilities ability, GameState state) {
+        var geysers = state.geysers();
+        if (geysers == null || gasIndex >= geysers.size()) {
+            log.debugf("[Recorder] No geyser available at index %d", gasIndex);
+            return null;
+        }
+
+        io.quarkmind.domain.Point2d basePos = findBasePosition(state);
+        if (basePos == null) {return null;}
+
+        var sortedGeysers = geysers.stream()
+                                   .sorted(java.util.Comparator.comparingDouble(g ->
+                                                                                        Math.pow(g.position().x() - basePos.x(), 2) + Math.pow(g.position().y() - basePos.y(), 2)))
+                                   .toList();
+
+        if (gasIndex >= sortedGeysers.size()) {return null;}
+
+        var geyser = sortedGeysers.get(gasIndex);
+        gasIndex++;
+        long geyserTag = Long.parseLong(geyser.tag());
+        log.infof("[Recorder] Gas build: worker=%s ability=%s geyser=%s at (%.1f, %.1f)",
+                  workerTag, ability, geyserTag, geyser.position().x(), geyser.position().y());
+        return ResolvedCommand.targetUnit(workerTag, ability, geyserTag);
+    }
+
+    private ResolvedCommand translateMorph(SC2PlaybookRunner.PlaybookStep step, GameState state) {
+        String sourceStr   = (String) step.params().get("source");
+        String morphTarget = (String) step.params().get("morph");
+        if (sourceStr == null) {
+            log.warnf("[Recorder] morph step missing 'source' param");
+            return null;
+        }
+        BuildingType sourceType = BuildingType.valueOf(sourceStr);
+        BuildingType targetType = BuildingType.valueOf(morphTarget != null ? morphTarget : sourceStr);
+        Abilities    ability    = ActionTranslator.mapBuildAbility(targetType);
+        if (ability == null) {
+            log.warnf("[Recorder] No ability mapped for morph target %s", targetType);
+            return null;
+        }
+        Tag buildingTag = findBuildingTag(state, sourceType);
+        if (buildingTag == null) {
+            log.debugf("[Recorder] No %s found for morph to %s", sourceType, targetType);
+            return null;
+        }
+        return new ResolvedCommand(buildingTag, ability, Optional.empty());
+    }
+
+    private ResolvedCommand translateCalldown(SC2PlaybookRunner.PlaybookStep step, GameState state) {
+        String calldownType = (String) step.params().get("calldown");
+        if (!"MULE".equals(calldownType)) {
+            log.warnf("[Recorder] Unsupported calldown type: %s", calldownType);
+            return null;
+        }
+        Tag ocTag = findBuildingTag(state, BuildingType.ORBITAL_COMMAND);
+        if (ocTag == null) {
+            log.debugf("[Recorder] No Orbital Command found for MULE calldown");
+            return null;
+        }
+        var minerals = state.mineralPatches();
+        if (minerals == null || minerals.isEmpty()) {return null;}
+        io.quarkmind.domain.Point2d basePos = findBasePosition(state);
+        if (basePos == null) {return null;}
+        var nearest = minerals.stream()
+                              .min(java.util.Comparator.comparingDouble(m ->
+                                                                                Math.pow(m.position().x() - basePos.x(), 2) + Math.pow(m.position().y() - basePos.y(), 2)))
+                              .orElse(null);
+        if (nearest == null) {return null;}
         com.github.ocraft.s2client.protocol.spatial.Point2d pos =
-            com.github.ocraft.s2client.protocol.spatial.Point2d.of(30f, 30f);
-        return new ResolvedCommand(workerTag, ability, Optional.of(pos));
+                com.github.ocraft.s2client.protocol.spatial.Point2d.of(
+                        nearest.position().x(), nearest.position().y());
+        return new ResolvedCommand(ocTag, Abilities.EFFECT_CALL_DOWN_MULE, Optional.of(pos));
+    }
+
+    private io.quarkmind.domain.Point2d findBasePosition(GameState state) {
+        BuildingType baseType = switch (race) {
+            case PROTOSS -> BuildingType.NEXUS;
+            case TERRAN -> BuildingType.COMMAND_CENTER;
+            case ZERG -> BuildingType.HATCHERY;
+        };
+        return state.myBuildings().stream()
+                    .filter(b -> b.type() == baseType || b.type() == BuildingType.ORBITAL_COMMAND
+                                 || b.type() == BuildingType.PLANETARY_FORTRESS
+                                 || b.type() == BuildingType.LAIR || b.type() == BuildingType.HIVE)
+                    .map(Building::position)
+                    .findFirst()
+                    .orElse(null);
+    }
+
+
+    private void assignWorkersToGas(GameState state, List<ResolvedCommand> commands) {
+        Abilities harvestAbility = switch (race) {
+            case PROTOSS -> Abilities.HARVEST_GATHER_PROBE;
+            case TERRAN  -> Abilities.HARVEST_GATHER_SCV;
+            case ZERG    -> Abilities.HARVEST_GATHER_DRONE;
+        };
+        UnitType workerType = workerForRace(race);
+        for (Building b : state.myBuildings()) {
+            if (!b.isComplete()) continue;
+            if (!io.quarkmind.domain.SC2Data.isGasBuilding(b.type())) continue;
+            if (assignedGasBuildings.contains(b.tag())) continue;
+            assignedGasBuildings.add(b.tag());
+            long gasTag = Long.parseLong(b.tag());
+            int assigned = 0;
+            for (var u : state.myUnits()) {
+                if (u.type() != workerType) continue;
+                if (assigned >= 3) break;
+                Tag wTag = Tag.of(Long.parseLong(u.tag()));
+                commands.add(ResolvedCommand.targetUnit(wTag, harvestAbility, gasTag));
+                assigned++;
+            }
+            log.infof("[Recorder] tick %d: assigned %d workers to gas %s (tag=%s)",
+                      tick, assigned, b.type(), b.tag());
+        }
     }
 
     private Tag findBuildingTag(GameState state, BuildingType type) {
@@ -191,4 +395,25 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
             default -> null;
         };
     }
+
+    private static int mapToSC2UnitTypeId(BuildingType bt) {
+        return switch (bt) {
+            case PYLON -> 60;
+            case NEXUS -> 59;
+            case GATEWAY -> 62;
+            case CYBERNETICS_CORE -> 72;
+            case FORGE -> 63;
+            case ASSIMILATOR -> 61;
+            case SUPPLY_DEPOT -> 19;
+            case COMMAND_CENTER -> 18;
+            case BARRACKS -> 21;
+            case ENGINEERING_BAY -> 22;
+            case REFINERY -> 20;
+            case HATCHERY -> 86;
+            case SPAWNING_POOL -> 89;
+            case EXTRACTOR -> 88;
+            default -> -1;
+        };
+    }
+
 }

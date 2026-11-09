@@ -207,6 +207,7 @@ public final class ObservationTranslator {
 
     public static UnitType mapUnitType(Units type) {
         return switch (type) {
+            // Protoss
             case PROTOSS_PROBE        -> UnitType.PROBE;
             case PROTOSS_ZEALOT       -> UnitType.ZEALOT;
             case PROTOSS_STALKER      -> UnitType.STALKER;
@@ -218,6 +219,63 @@ public final class ObservationTranslator {
             case PROTOSS_ARCHON       -> UnitType.ARCHON;
             case PROTOSS_OBSERVER     -> UnitType.OBSERVER;
             case PROTOSS_VOIDRAY      -> UnitType.VOID_RAY;
+            case PROTOSS_ADEPT        -> UnitType.ADEPT;
+            case PROTOSS_SENTRY       -> UnitType.SENTRY;
+            case PROTOSS_PHOENIX      -> UnitType.PHOENIX;
+            case PROTOSS_ORACLE       -> UnitType.ORACLE;
+            case PROTOSS_TEMPEST      -> UnitType.TEMPEST;
+            case PROTOSS_DISRUPTOR    -> UnitType.DISRUPTOR;
+            case PROTOSS_MOTHERSHIP   -> UnitType.MOTHERSHIP;
+            case PROTOSS_WARP_PRISM, PROTOSS_WARP_PRISM_PHASING -> UnitType.WARP_PRISM;
+            case PROTOSS_INTERCEPTOR  -> UnitType.INTERCEPTOR;
+            // Terran
+            case TERRAN_SCV           -> UnitType.SCV;
+            case TERRAN_MARINE        -> UnitType.MARINE;
+            case TERRAN_MARAUDER      -> UnitType.MARAUDER;
+            case TERRAN_REAPER        -> UnitType.REAPER;
+            case TERRAN_GHOST         -> UnitType.GHOST;
+            case TERRAN_HELLION       -> UnitType.HELLION;
+            case TERRAN_HELLION_TANK  -> UnitType.HELLBAT;
+            case TERRAN_SIEGE_TANK    -> UnitType.SIEGE_TANK;
+            case TERRAN_SIEGE_TANK_SIEGED -> UnitType.SIEGE_TANK_SIEGED;
+            case TERRAN_CYCLONE       -> UnitType.CYCLONE;
+            case TERRAN_THOR, TERRAN_THOR_AP -> UnitType.THOR;
+            case TERRAN_WIDOWMINE, TERRAN_WIDOWMINE_BURROWED -> UnitType.WIDOW_MINE;
+            case TERRAN_MEDIVAC       -> UnitType.MEDIVAC;
+            case TERRAN_LIBERATOR     -> UnitType.LIBERATOR;
+            case TERRAN_LIBERATOR_AG  -> UnitType.LIBERATOR_AG;
+            case TERRAN_VIKING_FIGHTER -> UnitType.VIKING;
+            case TERRAN_VIKING_ASSAULT -> UnitType.VIKING_ASSAULT;
+            case TERRAN_BANSHEE       -> UnitType.BANSHEE;
+            case TERRAN_RAVEN         -> UnitType.RAVEN;
+            case TERRAN_BATTLECRUISER -> UnitType.BATTLECRUISER;
+            case TERRAN_MULE          -> UnitType.MULE;
+            case TERRAN_AUTO_TURRET   -> UnitType.AUTO_TURRET;
+            // Zerg
+            case ZERG_DRONE, ZERG_DRONE_BURROWED -> UnitType.DRONE;
+            case ZERG_LARVA           -> UnitType.LARVA;
+            case ZERG_EGG             -> UnitType.EGG;
+            case ZERG_OVERLORD, ZERG_OVERLORD_TRANSPORT -> UnitType.OVERLORD;
+            case ZERG_OVERSEER, ZERG_OVERSEER_SIEGED -> UnitType.OVERSEER;
+            case ZERG_QUEEN, ZERG_QUEEN_BURROWED -> UnitType.QUEEN;
+            case ZERG_ZERGLING, ZERG_ZERGLING_BURROWED -> UnitType.ZERGLING;
+            case ZERG_BANELING, ZERG_BANELING_BURROWED -> UnitType.BANELING;
+            case ZERG_ROACH, ZERG_ROACH_BURROWED -> UnitType.ROACH;
+            case ZERG_RAVAGER, ZERG_RAVAGER_BURROWED -> UnitType.RAVAGER;
+            case ZERG_HYDRALISK, ZERG_HYDRALISK_BURROWED -> UnitType.HYDRALISK;
+            case ZERG_LURKER_MP, ZERG_LURKER_MP_BURROWED -> UnitType.LURKER;
+            case ZERG_INFESTOR, ZERG_INFESTOR_BURROWED -> UnitType.INFESTOR;
+            case ZERG_SWARM_HOST_MP, ZERG_SWARM_HOST_BURROWED_MP -> UnitType.SWARM_HOST;
+            case ZERG_MUTALISK        -> UnitType.MUTALISK;
+            case ZERG_CORRUPTOR       -> UnitType.CORRUPTOR;
+            case ZERG_BROODLORD       -> UnitType.BROOD_LORD;
+            case ZERG_VIPER           -> UnitType.VIPER;
+            case ZERG_ULTRALISK, ZERG_ULTRALISK_BURROWED -> UnitType.ULTRALISK;
+            case ZERG_LOCUS_TMP, ZERG_LOCUS_TMP_FLYING -> UnitType.LOCUST;
+            case ZERG_BROODLING       -> UnitType.BROODLING;
+            case ZERG_CHANGELING, ZERG_CHANGELING_ZEALOT, ZERG_CHANGELING_MARINE,
+                 ZERG_CHANGELING_MARINE_SHIELD, ZERG_CHANGELING_ZERGLING,
+                 ZERG_CHANGELING_ZERGLING_WINGS -> UnitType.CHANGELING;
             default                   -> UnitType.UNKNOWN;
         };
     }

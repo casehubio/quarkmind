@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400">
+  <defs>
+    <style>
+      .axis { stroke: #555; stroke-width: 1.5; fill: none; }
+      .grid { stroke: #ddd; stroke-width: 0.5; }
+      .label { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 12px; fill: #333; }
+      .title { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 14px; fill: #222; font-weight: 600; }
+      .sc2-line { stroke: #2563eb; stroke-width: 2.5; fill: none; }
+      .em-line { stroke: #dc2626; stroke-width: 2.5; fill: none; stroke-dasharray: 8,4; }
+      .ideal-line { stroke: #9ca3af; stroke-width: 1; fill: none; stroke-dasharray: 3,3; }
+      .sc2-dot { fill: #2563eb; }
+      .em-dot { fill: #dc2626; }
+      .legend-text { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 11px; fill: #555; }
+      .annotation { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Title -->
+  <text x="320" y="28" text-anchor="middle" class="title">Per-Worker Mineral Rate vs Worker Count</text>
+  <text x="320" y="44" text-anchor="middle" class="annotation">SC2 controlled playbook (TorchesAIE_v4) vs EmulatedGame model</text>
+
+  <!-- Chart area: x=80..580, y=60..340 -->
+  <!-- Y axis: 0-70 minerals/min/worker -->
+  <!-- X axis: 8-24 workers -->
+
+  <!-- Grid lines -->
+  <line x1="80" y1="100" x2="580" y2="100" class="grid"/>
+  <line x1="80" y1="140" x2="580" y2="140" class="grid"/>
+  <line x1="80" y1="180" x2="580" y2="180" class="grid"/>
+  <line x1="80" y1="220" x2="580" y2="220" class="grid"/>
+  <line x1="80" y1="260" x2="580" y2="260" class="grid"/>
+  <line x1="80" y1="300" x2="580" y2="300" class="grid"/>
+
+  <!-- Axes -->
+  <line x1="80" y1="340" x2="580" y2="340" class="axis"/>
+  <line x1="80" y1="60" x2="80" y2="340" class="axis"/>
+
+  <!-- Y axis labels -->
+  <text x="72" y="344" text-anchor="end" class="label">0</text>
+  <text x="72" y="304" text-anchor="end" class="label">10</text>
+  <text x="72" y="264" text-anchor="end" class="label">20</text>
+  <text x="72" y="224" text-anchor="end" class="label">30</text>
+  <text x="72" y="184" text-anchor="end" class="label">40</text>
+  <text x="72" y="144" text-anchor="end" class="label">50</text>
+  <text x="72" y="104" text-anchor="end" class="label">60</text>
+  <text x="72" y="64" text-anchor="end" class="label">70</text>
+
+  <!-- Y axis title -->
+  <text x="20" y="200" text-anchor="middle" class="label" transform="rotate(-90, 20, 200)">minerals / min / worker</text>
+
+  <!-- X axis labels -->
+  <text x="112" y="358" text-anchor="middle" class="label">8</text>
+  <text x="174" y="358" text-anchor="middle" class="label">10</text>
+  <text x="236" y="358" text-anchor="middle" class="label">12</text>
+  <text x="299" y="358" text-anchor="middle" class="label">14</text>
+  <text x="361" y="358" text-anchor="middle" class="label">16</text>
+  <text x="423" y="358" text-anchor="middle" class="label">18</text>
+  <text x="486" y="358" text-anchor="middle" class="label">20</text>
+  <text x="548" y="358" text-anchor="middle" class="label">22</text>
+
+  <!-- X axis title -->
+  <text x="330" y="380" text-anchor="middle" class="label">workers on 8 mineral patches</text>
+
+  <!-- Ideal line (linear, no saturation) -->
+  <line x1="112" y1="109" x2="548" y2="109" class="ideal-line"/>
+  <text x="556" y="106" class="annotation">ideal (no contention)</text>
+
+  <!-- SC2 data points and line -->
+  <!-- 8w: ~58/min (extrapolated), 12w: 57.9, 16w: ~53 (interpolated), 20w: ~50, 23w: 48.6 -->
+  <polyline points="112,113 236,115 361,132 486,147 535,150" class="sc2-line"/>
+  <circle cx="236" cy="115" r="4" class="sc2-dot"/>
+  <circle cx="535" cy="150" r="4" class="sc2-dot"/>
+
+  <!-- EM model line -->
+  <!-- 8w: 63.4 (formula), 12w: 60.2, 16w: 60.2, 20w: 60.2, 24w: 57.3 -->
+  <polyline points="112,97 236,103 361,103 486,103 548,110" class="em-line"/>
+  <circle cx="112" cy="97" r="4" class="em-dot"/>
+  <circle cx="236" cy="103" r="4" class="em-dot"/>
+  <circle cx="548" cy="110" r="4" class="em-dot"/>
+
+  <!-- Gap annotation -->
+  <line x1="535" y1="110" x2="535" y2="150" stroke="#666" stroke-width="1" stroke-dasharray="2,2"/>
+  <text x="542" y="127" class="annotation" font-weight="600">6% gap</text>
+  <text x="542" y="139" class="annotation">at 23 workers</text>
+
+  <!-- Legend -->
+  <rect x="400" y="62" width="170" height="52" fill="white" stroke="#ddd" rx="4"/>
+  <line x1="410" y1="76" x2="435" y2="76" class="sc2-line"/>
+  <circle cx="422" cy="76" r="3" class="sc2-dot"/>
+  <text x="442" y="80" class="legend-text">SC2 real (playbook)</text>
+  <line x1="410" y1="96" x2="435" y2="96" class="em-line"/>
+  <circle cx="422" cy="96" r="3" class="em-dot"/>
+  <text x="442" y="100" class="legend-text">EmulatedGame model</text>
+</svg>

@@ -1,0 +1,47 @@
+playbook: cal-mineral-saturated-16w
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 305 ticks
+  purpose: Saturation tier 1 — 16 workers (2 per patch), needs 1 Pylon for supply
+
+steps:
+  - train: PROBE
+    loop: continuous
+
+  - build: PYLON
+    at: 14 supply
+
+  # Stop training at 16 supply (16 Probes = 16 supply used)
+  # continuous train + Pylon gives us Probes until supply cap
+  # We need exactly 16 Probes, so we stop at 16 supply
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        PROBE: { min: 14 }
+
+  - assert: tick-122
+    at: 122 ticks
+    expect:
+      units:
+        PROBE: { min: 16 }
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      units:
+        PROBE: { min: 16 }
+
+  - assert: tick-244
+    at: 244 ticks
+    expect:
+      units:
+        PROBE: { min: 16 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        PROBE: { min: 16 }

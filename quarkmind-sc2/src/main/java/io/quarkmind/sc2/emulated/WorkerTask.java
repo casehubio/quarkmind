@@ -3,8 +3,12 @@ package io.quarkmind.sc2.emulated;
 enum WorkerTask {
     MINING_MINERALS,
     RETURNING_MINERALS,
+    DEPOSITING_MINERALS,
     HARVESTING_GAS,
     RETURNING_GAS,
+    DEPOSITING_GAS,
     IDLE,
-    BUILDING
+    BUILDING,
+    SCOUTING,
+    TRANSFERRING
 }

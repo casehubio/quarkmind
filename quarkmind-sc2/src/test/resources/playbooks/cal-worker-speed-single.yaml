@@ -1,0 +1,28 @@
+playbook: cal-worker-speed-single
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 122 ticks
+  purpose: Single worker trip timing — 1 Probe mines, 11 idle. Measure exact per-trip time.
+
+steps:
+  # Start with 12 Probes. Kill 11 to isolate a single worker.
+  # Can't kill workers in playbook, so instead we measure with all 12 but
+  # at 12 workers / 8 patches = 1.5 per patch, most trips are uncontested.
+  # Use cal-mineral-baseline-12w instead — this scenario is the same.
+  # Keeping this for explicit single-worker testing if the delivery handler
+  # gains a "kill" action.
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        PROBE: { min: 12, max: 12 }
+
+  - assert: tick-122
+    at: 122 ticks
+    expect:
+      units:
+        PROBE: { min: 12, max: 12 }
+      minerals:
+        min: 300

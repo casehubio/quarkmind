@@ -1,4 +1,4 @@
-# Standalone EmulatedGame Accuracy Baseline — 2026-11-08
+# Standalone EmulatedGame Accuracy Baseline — 2026-11-09
 
 **Dataset:** Oracle (118 replays, v4.9.3)
 **Processed:** 118 replays, 236 player runs
@@ -43,10 +43,10 @@ Accuracy: 100.0% (0/0)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 20630 | 25140 | 9464 | 45.9% |
+| mineralsCurrent | 20630 | 30725 | 13187 | 63.9% |
 | vespeneCurrent | 232 | 16 | 216 | 93.1% |
-| mineralsCollectionRate | 150658 | 158961 | 14461 | 9.6% |
-| vespeneCollectionRate | 1241 | 0 | 1241 | 100.0% |
+| mineralsCollectionRate | 150658 | 155464 | 12880 | 8.5% |
+| vespeneCollectionRate | 1241 | 60 | 1181 | 95.2% |
 | foodMade | 4579 | 4627 | 48 | 1.0% |
 | foodUsed | 3338 | 3473 | 137 | 4.1% |
 | workersActiveCount | 3162 | 3283 | 121 | 3.8% |
@@ -129,19 +129,19 @@ Accuracy: 100.0% (4/4)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 46751 | 67430 | 26343 | 56.3% |
-| vespeneCurrent | 24254 | 11040 | 13982 | 57.6% |
-| mineralsCollectionRate | 171704 | 169356 | 24396 | 14.2% |
-| vespeneCollectionRate | 39512 | 30102 | 10704 | 27.1% |
+| mineralsCurrent | 46751 | 84890 | 39529 | 84.6% |
+| vespeneCurrent | 24254 | 9324 | 15466 | 63.8% |
+| mineralsCollectionRate | 171704 | 170516 | 23546 | 13.7% |
+| vespeneCollectionRate | 39512 | 28015 | 12471 | 31.6% |
 | foodMade | 7024 | 7073 | 117 | 1.7% |
 | foodUsed | 5153 | 5259 | 128 | 2.5% |
 | workersActiveCount | 4000 | 4065 | 67 | 1.7% |
-| mineralsUsedCurrentArmy | 36875 | 38550 | 2225 | 6.0% |
+| mineralsUsedCurrentArmy | 36875 | 38200 | 1925 | 5.2% |
 | mineralsUsedCurrentEconomy | 385100 | 371725 | 17125 | 4.4% |
-| mineralsUsedCurrentTechnology | 63850 | 60900 | 5750 | 9.0% |
-| vespeneUsedCurrentArmy | 4450 | 4950 | 550 | 12.4% |
+| mineralsUsedCurrentTechnology | 63850 | 61250 | 5600 | 8.8% |
+| vespeneUsedCurrentArmy | 4450 | 4600 | 200 | 4.5% |
 | vespeneUsedCurrentEconomy | 0 | 0 | 0 | 0.0% |
-| vespeneUsedCurrentTechnology | 5100 | 5725 | 625 | 12.3% |
+| vespeneUsedCurrentTechnology | 5100 | 6075 | 975 | 19.1% |
 
 ## 5-minute checkpoint
 
@@ -254,19 +254,19 @@ Accuracy: 100.0% (103/103)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 66699 | 101485 | 54298 | 81.4% |
-| vespeneCurrent | 43390 | 25596 | 21668 | 49.9% |
-| mineralsCollectionRate | 208770 | 198161 | 33173 | 15.9% |
-| vespeneCollectionRate | 50869 | 39966 | 12249 | 24.1% |
+| mineralsCurrent | 66699 | 127320 | 71505 | 107.2% |
+| vespeneCurrent | 43390 | 23755 | 23155 | 53.4% |
+| mineralsCollectionRate | 208770 | 203706 | 28992 | 13.9% |
+| vespeneCollectionRate | 50869 | 38557 | 13162 | 25.9% |
 | foodMade | 9520 | 9644 | 280 | 2.9% |
 | foodUsed | 7488 | 7798 | 454 | 6.1% |
 | workersActiveCount | 4907 | 5002 | 159 | 3.2% |
-| mineralsUsedCurrentArmy | 108250 | 120225 | 16375 | 15.1% |
+| mineralsUsedCurrentArmy | 108250 | 111875 | 10625 | 9.8% |
 | mineralsUsedCurrentEconomy | 478750 | 461725 | 25175 | 5.3% |
-| mineralsUsedCurrentTechnology | 119150 | 113925 | 14025 | 11.8% |
-| vespeneUsedCurrentArmy | 24475 | 34875 | 11300 | 46.2% |
+| mineralsUsedCurrentTechnology | 119150 | 122275 | 14575 | 12.2% |
+| vespeneUsedCurrentArmy | 24475 | 26550 | 3775 | 15.4% |
 | vespeneUsedCurrentEconomy | 150 | 0 | 150 | 100.0% |
-| vespeneUsedCurrentTechnology | 25075 | 24850 | 2675 | 10.7% |
+| vespeneUsedCurrentTechnology | 25075 | 33150 | 9475 | 37.8% |
 
 ## 7-minute checkpoint
 
@@ -405,17 +405,17 @@ Accuracy: 100.0% (185/185)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 89788 | 128405 | 73533 | 81.9% |
-| vespeneCurrent | 52228 | 32886 | 31482 | 60.3% |
-| mineralsCollectionRate | 201496 | 185784 | 31452 | 15.6% |
-| vespeneCollectionRate | 61091 | 46468 | 15875 | 26.0% |
+| mineralsCurrent | 89788 | 126215 | 78895 | 87.9% |
+| vespeneCurrent | 52228 | 29131 | 34103 | 65.3% |
+| mineralsCollectionRate | 201496 | 147050 | 65378 | 32.4% |
+| vespeneCollectionRate | 61091 | 44194 | 17223 | 28.2% |
 | foodMade | 11184 | 11089 | 345 | 3.1% |
 | foodUsed | 9017 | 9195 | 335 | 3.7% |
 | workersActiveCount | 5004 | 5099 | 127 | 2.5% |
-| mineralsUsedCurrentArmy | 175225 | 192600 | 24575 | 14.0% |
+| mineralsUsedCurrentArmy | 175225 | 175050 | 12475 | 7.1% |
 | mineralsUsedCurrentEconomy | 506875 | 483200 | 29475 | 5.8% |
-| mineralsUsedCurrentTechnology | 148600 | 134575 | 23375 | 15.7% |
-| vespeneUsedCurrentArmy | 57400 | 75675 | 20325 | 35.4% |
+| mineralsUsedCurrentTechnology | 148600 | 152200 | 25200 | 17.0% |
+| vespeneUsedCurrentArmy | 57400 | 58050 | 4250 | 7.4% |
 | vespeneUsedCurrentEconomy | 50 | 0 | 50 | 100.0% |
-| vespeneUsedCurrentTechnology | 37950 | 34700 | 5850 | 15.4% |
+| vespeneUsedCurrentTechnology | 37950 | 52275 | 15925 | 42.0% |
 
