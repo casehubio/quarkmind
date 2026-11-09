@@ -225,4 +225,42 @@ class MiningCycleDiagnosticTest {
         System.out.println("SC2 reference points: 12w=57.9, 23w=48.6 minerals/min/worker (TorchesAIE_v4)");
         System.out.println("Efficiency is relative to 1-worker baseline (64.1/min at 6.0u)");
     }
+
+    @Test
+    void patchDistanceSweep() {
+        System.out.println("=== Patch Distance Sweep: 12 workers, 300 ticks ===");
+        System.out.println("SC2 target: 3460 minerals at tick 304 (57.9/min/worker)");
+        System.out.printf("%-10s %-18s %-18s %-10s%n", "Distance", "Total Income", "Rate/worker/min", "vs SC2");
+        System.out.println("-".repeat(60));
+
+        for (double dist : new double[]{6.0, 6.2, 6.4, 6.5, 6.55, 6.6, 6.65, 6.7, 6.75, 6.8, 6.9, 7.0}) {
+            WorkerSimulation                   s       = new WorkerSimulation();
+            Point2d                            basePos = new Point2d(50, 50);
+            List<io.quarkmind.domain.Resource> patches = new java.util.ArrayList<>();
+            for (int i = 0; i < MineralPatch.PATCHES_PER_BASE; i++) {
+                double angle = Math.PI * (0.2 + 0.6 * i / (MineralPatch.PATCHES_PER_BASE - 1));
+                float  px    = basePos.x() + (float) (dist * Math.cos(angle));
+                float  py    = basePos.y() + (float) (dist * Math.sin(angle));
+                patches.add(new io.quarkmind.domain.Resource(
+                        "m-" + i, new Point2d(px, py), 1500, false));
+            }
+            s.onTownHallCompleted(BASE_TAG, basePos, patches);
+            List<String> tags = IntStream.rangeClosed(1, 12)
+                                         .mapToObj(i -> "w-" + i).toList();
+            s.onInitialWorkers(tags, basePos, BASE_TAG);
+
+            double totalIncome = 0;
+            for (int t = 0; t < 304; t++) {
+                totalIncome += s.tick(t * (double) SC2Data.LOOPS_PER_TICK).mineralIncome();
+            }
+
+            double totalSeconds  = 304.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND;
+            double ratePerWorker = totalIncome / 12.0 / totalSeconds * 60;
+            double pctDiff       = (totalIncome - 3460) / 3460 * 100;
+
+            System.out.printf("%-10.1f %-18.0f %-18.1f %-10.1f%%%n",
+                              dist, totalIncome, ratePerWorker, pctDiff);
+        }
+    }
+
 }
