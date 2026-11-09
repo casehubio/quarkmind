@@ -34,9 +34,8 @@ class PlaybookSC2RecorderTest {
 
         transport.runGameLoop(adapter);
 
-        while (transport.isRunning()) {
-            Thread.sleep(100);
-        }
+        while (!transport.isRunning()) { Thread.sleep(50); }
+        while (transport.isRunning()) { Thread.sleep(100); }
 
         assertFalse(adapter.snapshots().isEmpty(), "Should have recorded snapshots");
         System.out.printf("[Recorder] Captured %d snapshots%n", adapter.snapshots().size());
@@ -116,9 +115,8 @@ class PlaybookSC2RecorderTest {
 
         transport.runGameLoop(adapter);
 
-        while (transport.isRunning()) {
-            Thread.sleep(100);
-        }
+        while (!transport.isRunning()) { Thread.sleep(50); }
+        while (transport.isRunning()) { Thread.sleep(100); }
 
         assertFalse(adapter.snapshots().isEmpty(), "Should have recorded snapshots");
         System.out.printf("[Recorder] %s: Captured %d snapshots%n", playbookResource, adapter.snapshots().size());

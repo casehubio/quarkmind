@@ -7,11 +7,9 @@ import com.github.ocraft.s2client.protocol.data.Abilities;
 import com.github.ocraft.s2client.protocol.observation.Observation;
 import com.github.ocraft.s2client.protocol.response.ResponseGameInfo;
 import com.github.ocraft.s2client.protocol.unit.Tag;
-import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Race;
-import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.GameResult;
 import io.quarkmind.sc2.playbook.CalibrationBaseline;
@@ -21,9 +19,7 @@ import org.jboss.logging.Logger;
 
 import java.time.Instant;
 import java.util.ArrayList;
-
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class PlaybookSC2Adapter implements SC2FrameCallback {
@@ -39,7 +35,8 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
     private final String playbookName;
 
     private final List<CalibrationSnapshot> snapshots = new ArrayList<>();
-    private int tick = 0;
+    private int gameLoop = 0;
+    private int tick = -1;
 
     public PlaybookSC2Adapter(QuarkusSC2Transport transport, String playbookResource) {
         this.transport = transport;
@@ -65,35 +62,40 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
 
     @Override
     public void onStep(Observation obs) throws InterruptedException {
-        if (tick >= durationTicks) {
+        int emTick = gameLoop / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+        if (emTick >= durationTicks) {
             transport.quit();
             return;
         }
 
-        GameState state = ObservationTranslator.translate(obs, null);
-        snapshots.add(CalibrationSnapshot.from(tick, state));
+        boolean newTick = emTick > tick;
+        if (newTick) {
+            tick = emTick;
+            GameState state = ObservationTranslator.translate(obs, null);
+            snapshots.add(CalibrationSnapshot.from(tick, state));
 
-        int supplyUsed = (int) state.supplyUsed();
-        List<ResolvedCommand> commands = new ArrayList<>();
+            int                   supplyUsed = (int) state.supplyUsed();
+            List<ResolvedCommand> commands   = new ArrayList<>();
 
-        for (int i = 0; i < steps.size(); i++) {
-            SC2PlaybookRunner.PlaybookStep step = steps.get(i);
-            boolean canFire = step.shouldFire(tick, supplyUsed)
-                && (!fired[i] || step.loop());
-            if (canFire) {
-                ResolvedCommand cmd = translateStep(step, state);
-                if (cmd != null) {
-                    commands.add(cmd);
-                    fired[i] = true;
-                    log.debugf("[Recorder] tick %d: %s", tick, step.action());
+            for (int i = 0; i < steps.size(); i++) {
+                SC2PlaybookRunner.PlaybookStep step = steps.get(i);
+                boolean canFire = step.shouldFire(tick, supplyUsed)
+                                  && (!fired[i] || step.loop());
+                if (canFire) {
+                    ResolvedCommand cmd = translateStep(step, state);
+                    if (cmd != null) {
+                        commands.add(cmd);
+                        fired[i] = true;
+                        log.debugf("[Recorder] tick %d (loop %d): %s", tick, gameLoop, step.action());
+                    }
                 }
             }
-        }
 
-        if (!commands.isEmpty()) {
-            transport.sendActions(commands);
+            if (!commands.isEmpty()) {
+                transport.sendActions(commands);
+            }
         }
-        tick++;
+        gameLoop++;
     }
 
     @Override
