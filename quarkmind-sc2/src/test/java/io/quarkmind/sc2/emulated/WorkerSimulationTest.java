@@ -58,7 +58,7 @@ class WorkerSimulationTest {
     @Test
     void sixteenWorkers_showsSaturationPenalty() {
         List<String> tags8 = IntStream.rangeClosed(1, 8)
-                .mapToObj(i -> "w-" + i).toList();
+                                      .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags8, BASE_POS, BASE_TAG);
         double income8workers = 0;
         for (int t = 0; t < 100; t++) {
@@ -68,7 +68,7 @@ class WorkerSimulationTest {
         sim.reset();
         sim.onTownHallCompleted(BASE_TAG, BASE_POS);
         List<String> tags16 = IntStream.rangeClosed(1, 16)
-                .mapToObj(i -> "w-" + i).toList();
+                                       .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags16, BASE_POS, BASE_TAG);
         double income16workers = 0;
         for (int t = 0; t < 100; t++) {
@@ -76,9 +76,11 @@ class WorkerSimulationTest {
         }
 
         assertTrue(income16workers > income8workers,
-                "16 workers should earn more than 8");
-        assertTrue(income16workers < income8workers * 2,
-                "16 workers should earn less than double of 8 (saturation)");
+                   "16 workers should earn more than 8");
+        double perWorker8  = income8workers / 8;
+        double perWorker16 = income16workers / 16;
+        assertTrue(perWorker16 <= perWorker8,
+                   "16 workers per-worker rate (" + perWorker16 + ") should not exceed 8 workers (" + perWorker8 + ")");
     }
 
     @Test

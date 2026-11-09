@@ -237,6 +237,17 @@ class WorkerSimulation {
                 mineralIncome += tickMineralWorker(w, tickStartLoop, tickEndLoop);
             }
         }
+
+// Wake-up pass: workers waiting at a patch that was freed during this tick
+        for (SimulatedWorker w : workers.values()) {
+            if (w.task == WorkerTask.MINING_MINERALS && w.isAtTarget()
+                && w.assignedPatch != null && !w.assignedPatch.miners.contains(w)
+                && w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS) {
+                w.assignedPatch.miners.add(w);
+                w.phaseEndLoop = tickEndLoop + SimulatedWorker.MINING_DURATION_LOOPS;
+            }
+        }
+
         double gasIncome = 0;
         for (SimulatedWorker w : workers.values()) {
             if (w.assignedGasSlot != null) {
@@ -433,49 +444,48 @@ class WorkerSimulation {
         return income;
     }
 
+
+    private int countAssignedWorkers(MineralPatch p, SimulatedWorker exclude) {
+        int count = 0;
+        for (SimulatedWorker other : workers.values()) {
+            if (other != exclude && other.assignedPatch == p) {count++;}
+        }
+        return count;
+    }
+
     private void assignToNearestPatch(SimulatedWorker w) {
         if (w.baseIndex < 0 || w.baseIndex >= bases.size()) {
             w.task = WorkerTask.IDLE;
             return;
         }
-        BaseEntry base = bases.get(w.baseIndex);
-        MineralPatch nearest = null;
-        double nearestDist = Double.MAX_VALUE;
+        BaseEntry    base            = bases.get(w.baseIndex);
+        MineralPatch nearest         = null;
+        int          nearestAssigned = Integer.MAX_VALUE;
+        double       nearestDist     = Double.MAX_VALUE;
 
         for (MineralPatch p : base.patches()) {
-            if (p.isDepleted()) continue;
-            if (p.miners.size() >= MineralPatch.MAX_MINERS) continue;
-            double d = w.position.distanceTo(p.position);
-            if (d < nearestDist) {
-                nearestDist = d;
-                nearest = p;
+            if (p.isDepleted()) {continue;}
+            int    assigned = countAssignedWorkers(p, w);
+            double d        = w.position.distanceTo(p.position);
+            if (assigned < nearestAssigned || (assigned == nearestAssigned && d < nearestDist)) {
+                nearestAssigned = assigned;
+                nearestDist     = d;
+                nearest         = p;
             }
         }
 
         if (nearest == null) {
-            nearestDist = Double.MAX_VALUE;
-            for (MineralPatch p : base.patches()) {
-                if (p.isDepleted()) continue;
-                double d = w.position.distanceTo(p.position);
-                if (d < nearestDist) {
-                    nearestDist = d;
-                    nearest = p;
-                }
-            }
-        }
-
-        if (nearest == null) {
-            w.task = WorkerTask.IDLE;
+            w.task          = WorkerTask.IDLE;
             w.assignedPatch = null;
             return;
         }
 
-        w.assignedPatch = nearest;
+        w.assignedPatch  = nearest;
         w.targetPosition = nearest.position;
-        w.task = WorkerTask.MINING_MINERALS;
+        w.task           = WorkerTask.MINING_MINERALS;
         if (w.isAtTarget()) {
             if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
-                if (!nearest.miners.contains(w)) nearest.miners.add(w);
+                if (!nearest.miners.contains(w)) {nearest.miners.add(w);}
                 w.phaseEndLoop = currentTickStartLoop + SimulatedWorker.MINING_DURATION_LOOPS;
             }
         }
@@ -710,6 +720,14 @@ class WorkerSimulation {
         }
     }
 
+
+    SimulatedWorker worker(String tag) {
+        return workers.get(tag);
+    }
+
+    java.util.Collection<SimulatedWorker> allWorkers() {
+        return workers.values();
+    }
 
     void reset() {
         bases.clear();
