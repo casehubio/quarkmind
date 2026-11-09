@@ -33,15 +33,23 @@ class EconomyTracker {
 
     private int mineralRate;
     private int vespeneRate;
-    private int ticksSinceRateUpdate;
+    private int loopsSinceRateUpdate;
     private double grossMinerals;
     private double grossVespene;
     private double prevGrossMinerals;
     private double prevGrossVespene;
 
 
-    private static final int RATE_INTERVAL_TICKS = 7;
-    private static final double TICKS_PER_MINUTE = 60.0 * SC2Data.GAME_LOOPS_PER_SECOND / SC2Data.LOOPS_PER_TICK;
+    private final int rateIntervalLoops;
+    private static final double LOOPS_PER_MINUTE = 60.0 * SC2Data.GAME_LOOPS_PER_SECOND;
+
+    EconomyTracker() {
+        this(160);
+    }
+
+    EconomyTracker(int rateIntervalLoops) {
+        this.rateIntervalLoops = rateIntervalLoops;
+    }
 
 
     void recordTrainSpending(UnitType type, int mineralCost, int gasCost) {
@@ -237,19 +245,19 @@ class EconomyTracker {
 
     void tickUpdate(double minerals, int vespene,
                     int supply, double supplyUsed, int workerCount) {
-        ticksSinceRateUpdate++;
-        if (ticksSinceRateUpdate >= RATE_INTERVAL_TICKS) {
-            double perTickMineral = (grossMinerals - prevGrossMinerals) / RATE_INTERVAL_TICKS;
-            double perTickVespene = (grossVespene - prevGrossVespene) / RATE_INTERVAL_TICKS;
+        loopsSinceRateUpdate += SC2Data.LOOPS_PER_TICK;
+        if (loopsSinceRateUpdate >= rateIntervalLoops) {
+            double perLoopMineral = (grossMinerals - prevGrossMinerals) / loopsSinceRateUpdate;
+            double perLoopVespene = (grossVespene - prevGrossVespene) / loopsSinceRateUpdate;
             mineralRate          = mineralRateOverride >= 0
-                    ? mineralRateOverride
-                    : (int) Math.max(0, perTickMineral * TICKS_PER_MINUTE);
+                                   ? mineralRateOverride
+                                   : (int) Math.max(0, perLoopMineral * LOOPS_PER_MINUTE);
             vespeneRate          = vespeneRateOverride >= 0
-                    ? vespeneRateOverride
-                    : (int) Math.max(0, perTickVespene * TICKS_PER_MINUTE);
+                                   ? vespeneRateOverride
+                                   : (int) Math.max(0, perLoopVespene * LOOPS_PER_MINUTE);
             prevGrossMinerals    = grossMinerals;
             prevGrossVespene     = grossVespene;
-            ticksSinceRateUpdate = 0;
+            loopsSinceRateUpdate = 0;
         }
     }
 
@@ -289,7 +297,7 @@ class EconomyTracker {
         prevGrossVespene       = 0;
         mineralRate            = 0;
         vespeneRate            = 0;
-        ticksSinceRateUpdate   = 0;
+        loopsSinceRateUpdate   = 0;
         techBuildSpending.clear();
         techMorphSpending.clear();
         techDestroySubtractions.clear();
