@@ -8,7 +8,7 @@ import java.util.List;
 class MineralPatch {
     static final double CLOSE_PATCH_MINERALS   = 1500.0;
     static final double FAR_PATCH_MINERALS     = 750.0;
-    static final float  PATCH_DISTANCE         = 7.0f;
+    static float  PATCH_DISTANCE         = WorkerPhysicsConfig.DEFAULT_PATCH_DISTANCE;
     static final int    PATCHES_PER_BASE       = 8;
     static final int    CLOSE_PATCHES_PER_BASE = 4;
 

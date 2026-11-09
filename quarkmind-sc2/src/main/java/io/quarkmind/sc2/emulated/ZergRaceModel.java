@@ -61,8 +61,8 @@ class ZergRaceModel implements RaceModel {
         state.addUnit(new Unit("overlord-0", UnitType.OVERLORD,
             new Point2d(14, 14), overlordHp, overlordHp, 0, 0, 0, 0));
 
-        geysers.add(new Resource("geyser-0", new Point2d(5, 11), 2250));
-        geysers.add(new Resource("geyser-1", new Point2d(11, 5), 2250));
+        geysers.add(new Resource("geyser-0", new Point2d(15, 11), 2250));
+        geysers.add(new Resource("geyser-1", new Point2d(11, 15), 2250));
     }
 
     @Override

@@ -50,11 +50,14 @@ Each entry documents value, source, and confidence level.
 | Patches per base | 8 | 8 | SC2 map standard | **Published** | — |
 | Close patches per base | 4 | 4 | SC2 map standard | **Published** | — |
 | Mining start delay | 1 tick | — | Dual-run calibration #401 | **Calibrated** | — |
+| Patch docking overhead | 34 loops | — | SC2 dual-run sweep (23w saturation) | **Calibrated** — #599 | `starcraft.worker.patch-docking-overhead-loops` |
 
 **Why mining=12 when real animation is ~5:** Absorbs unmodeled per-cycle overhead:
 - Deposit time at town hall: ~2-3 loops (measured via SC2 API)
 - Approach/docking delay: ~2-3 loops
 - Path contention: ~1-2 loops average
+
+**Patch docking overhead:** After a miner departs a mineral patch, the patch remains locked for 34 loops to model the real SC2 docking animation. A waiting worker consumes this lock time within the same tick (sub-tick resolution). Calibrated from dual-run sweep against SC2 23-worker saturation baseline — matches SC2's 84% efficiency at 2.9 workers/patch.
 
 ---
 
@@ -65,7 +68,9 @@ Each entry documents value, source, and confidence level.
 | Gas harvest duration | 22.0 loops (0.98s) | Oracle MAPE sweep (118 replays) | **Calibrated** — #586 | `starcraft.worker.gas-harvest-duration-loops` |
 | Gas cargo | 4 | Liquipedia | **Published** | — |
 | Max workers per geyser | 3 | SC2 mechanics | **Published** | — |
-| Gas geyser distance | Per-map GT positions | Oracle replay data | **Calibrated** — #556 | — |
+| Gas geyser distance | ~7.6u from town hall | SC2 dual-run (TorchesAIE_v4) | **Calibrated** — #597 | — |
+
+**Seeded geyser positions (all races):** (15,11) and (11,15) relative to town hall at (8,8) = 7.6u. SC2 3w gas rate: 44.3 vespene/min/worker. EM: 45.9 (+3.7%).
 
 ---
 
@@ -75,7 +80,7 @@ Each entry documents value, source, and confidence level.
 |----------|-------|--------|------------|
 | Close patch distance | avg 6.6 units | Oracle replay mineral positions | **Calibrated** — #567 |
 | Far patch distance | avg 7.6 units | Oracle replay mineral positions | **Calibrated** — #567 |
-| Unit test patch distance | 6.0 units (uniform) | Fixed for test stability | N/A |
+| Default patch distance | 7.0 units (uniform) | SC2 dual-run calibration sweep | **Calibrated** — #599 | `starcraft.worker.patch-distance` |
 | Close patch minerals | 1500 | SC2 standard | **Published** |
 | Far patch minerals | 750 | SC2 standard | **Published** |
 
@@ -91,24 +96,30 @@ Each entry documents value, source, and confidence level.
 | Zerg | 1.0 | SC2 playbook calibration | **Calibrated** — #591 |
 | Terran | 1.0 | SC2 playbook calibration | **Calibrated** — #591 |
 
-### SC2 playbook calibration results (12 workers, no buildings, TorchesAIE_v4)
+### SC2 dual-run calibration results (TorchesAIE_v4)
 
-| Race | SC2 real | EM model (6.0u) | EM at real distances | Delta |
-|------|----------|-----------------|---------------------|-------|
-| Protoss | 57.9/min/worker | 54.0 (dual-run) | ~57.8 (weighted avg) | <1% |
-| Terran | 57.2/min/worker | — | ~57.8 (weighted avg) | ~1% |
-| Zerg | 57.2/min/worker | — | ~57.8 (weighted avg) | ~1% |
+| Baseline | SC2 minerals | EM minerals | Delta |
+|----------|-------------|------------|-------|
+| 12w Protoss (tick 304) | 3460 | 3470 | **+0.3%** |
+| 12w Terran (tick 304) | 3415 | 3470 | +1.6% |
+| 12w Zerg (tick 304) | 3415 | 3470 | +1.6% |
+| 16w saturation (tick 304) | 4260 | 4555 | +6.9% |
 
-**Key insight:** EM at uniform 6.0u test distance under-produces by 7% vs SC2. At real map distances (4 close patches × 6.6u + 4 far patches × 7.6u), the weighted average matches SC2 within 1%. The 22% rate MAPE in oracle replays is entirely worker allocation — too many EM workers are productive (no building pauses, scouting, transfers).
+Terran/Zerg 1.6% gap: SC2 produces 3415 vs Protoss 3460 — a per-race difference the EM doesn't yet model. Tracked as #600.
 
-### Saturation curve (SC2 playbook, Protoss, TorchesAIE_v4)
+16w 6.9% gap: primarily from Probe training phase shift (integer division of 272/22 train time). Tracked as #601.
 
-| Workers | Workers/patch | SC2 rate | SC2 efficiency | EM efficiency | Gap |
-|---------|---------------|----------|----------------|---------------|-----|
-| 12 | 1.5 | 57.9/min/worker | 100% (base) | ~95% | — |
-| 23 | 2.875 | 48.6/min/worker | 84% | ~90% | EM 6% too lenient |
+### Saturation curve (SC2 dual-run, Protoss, TorchesAIE_v4)
 
-EM saturation is too flat — 3rd workers per patch add proportionally too much income. This is a worker contention model gap (#572), not a physics constant issue.
+| Workers | Workers/patch | Rate/worker/min | Efficiency |
+|---------|---------------|----------------|------------|
+| 1-16 | ≤2.0 | 57.0 | 100% |
+| 20 | 2.5 | 50.9 | 89.3% |
+| 23 | 2.9 | 47.7 | 83.7% |
+| 24 | 3.0 | 46.8 | 82.1% |
+| 30 | 3.8 | 37.5 | 65.7% |
+
+**Saturation model calibrated** — contention fix (assignment-based spreading + wake-up pass) and patch docking overhead (34 loops) match SC2's 84% efficiency at 2.9 workers/patch. The 22% rate MAPE in oracle replays is entirely worker allocation, not physics.
 
 ---
 
