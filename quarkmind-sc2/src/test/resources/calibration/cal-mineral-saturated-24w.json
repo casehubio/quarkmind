@@ -2,7 +2,7 @@
   "playbook" : "cal-mineral-saturated-24w",
   "race" : "PROTOSS",
   "sc2Build" : "unknown",
-  "recordedAt" : "2026-11-09T19:57:11.513613Z",
+  "recordedAt" : "2026-11-09T20:29:46.043014Z",
   "tickCount" : 305,
   "snapshots" : [ {
     "tick" : 0,
@@ -162,7 +162,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 12,
-    "minerals" : 35,
+    "minerals" : 40,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 13,
@@ -188,7 +188,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 14,
-    "minerals" : 20,
+    "minerals" : 15,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 14,
@@ -230,7 +230,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 17,
-    "minerals" : 40,
+    "minerals" : 45,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 14,
@@ -244,7 +244,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 18,
-    "minerals" : 55,
+    "minerals" : 50,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 14,
@@ -300,7 +300,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 22,
-    "minerals" : 50,
+    "minerals" : 40,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 14,
@@ -314,7 +314,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 23,
-    "minerals" : 15,
+    "minerals" : 60,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 14,
@@ -384,7 +384,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 28,
-    "minerals" : 25,
+    "minerals" : 20,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 15,
@@ -398,7 +398,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 29,
-    "minerals" : 40,
+    "minerals" : 35,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 15,
@@ -412,7 +412,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 30,
-    "minerals" : 55,
+    "minerals" : 45,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 15,
@@ -426,7 +426,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 31,
-    "minerals" : 20,
+    "minerals" : 60,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 15,
@@ -454,7 +454,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 33,
-    "minerals" : 35,
+    "minerals" : 30,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 15,
@@ -468,7 +468,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 34,
-    "minerals" : 50,
+    "minerals" : 45,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 15,
@@ -482,7 +482,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 35,
-    "minerals" : 65,
+    "minerals" : 55,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 15,
@@ -496,7 +496,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 36,
-    "minerals" : 75,
+    "minerals" : 80,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 15,
@@ -510,7 +510,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 37,
-    "minerals" : 95,
+    "minerals" : 85,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 16,
@@ -524,7 +524,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 38,
-    "minerals" : 50,
+    "minerals" : 40,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 16,
@@ -552,7 +552,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 40,
-    "minerals" : 80,
+    "minerals" : 65,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 16,
@@ -566,7 +566,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 41,
-    "minerals" : 90,
+    "minerals" : 85,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 16,
@@ -580,7 +580,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 42,
-    "minerals" : 105,
+    "minerals" : 100,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 16,
@@ -594,7 +594,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 43,
-    "minerals" : 120,
+    "minerals" : 110,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 16,
@@ -608,7 +608,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 44,
-    "minerals" : 135,
+    "minerals" : 125,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 16,
@@ -622,7 +622,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 45,
-    "minerals" : 150,
+    "minerals" : 140,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 16,
@@ -650,7 +650,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 47,
-    "minerals" : 175,
+    "minerals" : 170,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 16,
@@ -664,7 +664,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 48,
-    "minerals" : 190,
+    "minerals" : 180,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 16,
@@ -678,7 +678,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 49,
-    "minerals" : 200,
+    "minerals" : 190,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 16,
@@ -692,7 +692,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 50,
-    "minerals" : 220,
+    "minerals" : 210,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 17,
@@ -706,7 +706,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 51,
-    "minerals" : 180,
+    "minerals" : 170,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 17,
@@ -720,7 +720,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 52,
-    "minerals" : 200,
+    "minerals" : 195,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 17,
@@ -734,7 +734,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 53,
-    "minerals" : 205,
+    "minerals" : 200,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 17,
@@ -748,7 +748,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 54,
-    "minerals" : 225,
+    "minerals" : 205,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 17,
@@ -762,7 +762,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 55,
-    "minerals" : 240,
+    "minerals" : 225,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 17,
@@ -776,7 +776,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 56,
-    "minerals" : 255,
+    "minerals" : 245,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 17,
@@ -790,7 +790,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 57,
-    "minerals" : 265,
+    "minerals" : 255,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 17,
@@ -804,7 +804,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 58,
-    "minerals" : 275,
+    "minerals" : 270,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 17,
@@ -818,7 +818,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 59,
-    "minerals" : 285,
+    "minerals" : 280,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 17,
@@ -832,7 +832,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 60,
-    "minerals" : 305,
+    "minerals" : 295,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 17,
@@ -846,7 +846,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 61,
-    "minerals" : 320,
+    "minerals" : 315,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 17,
@@ -860,7 +860,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 62,
-    "minerals" : 335,
+    "minerals" : 320,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 18,
@@ -874,7 +874,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 63,
-    "minerals" : 300,
+    "minerals" : 295,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 18,
@@ -888,7 +888,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 64,
-    "minerals" : 310,
+    "minerals" : 300,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 18,
@@ -902,7 +902,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 65,
-    "minerals" : 330,
+    "minerals" : 315,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 18,
@@ -916,7 +916,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 66,
-    "minerals" : 345,
+    "minerals" : 335,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 18,
@@ -930,7 +930,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 67,
-    "minerals" : 365,
+    "minerals" : 345,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 18,
@@ -944,7 +944,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 68,
-    "minerals" : 375,
+    "minerals" : 355,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 18,
@@ -958,7 +958,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 69,
-    "minerals" : 385,
+    "minerals" : 380,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 18,
@@ -972,7 +972,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 70,
-    "minerals" : 405,
+    "minerals" : 385,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 18,
@@ -986,7 +986,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 71,
-    "minerals" : 420,
+    "minerals" : 405,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 18,
@@ -1000,7 +1000,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 72,
-    "minerals" : 435,
+    "minerals" : 415,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 18,
@@ -1014,7 +1014,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 73,
-    "minerals" : 455,
+    "minerals" : 430,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 18,
@@ -1028,34 +1028,6 @@
     "upgrades" : [ ]
   }, {
     "tick" : 74,
-    "minerals" : 460,
-    "vespene" : 0,
-    "supply" : 23,
-    "supplyUsed" : 19,
-    "units" : {
-      "PROBE" : 18
-    },
-    "buildings" : {
-      "NEXUS" : 1,
-      "PYLON" : 1
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 75,
-    "minerals" : 440,
-    "vespene" : 0,
-    "supply" : 23,
-    "supplyUsed" : 19,
-    "units" : {
-      "PROBE" : 18
-    },
-    "buildings" : {
-      "NEXUS" : 1,
-      "PYLON" : 1
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 76,
     "minerals" : 450,
     "vespene" : 0,
     "supply" : 23,
@@ -1069,8 +1041,36 @@
     },
     "upgrades" : [ ]
   }, {
+    "tick" : 75,
+    "minerals" : 420,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "PROBE" : 18
+    },
+    "buildings" : {
+      "NEXUS" : 1,
+      "PYLON" : 1
+    },
+    "upgrades" : [ ]
+  }, {
+    "tick" : 76,
+    "minerals" : 425,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "PROBE" : 18
+    },
+    "buildings" : {
+      "NEXUS" : 1,
+      "PYLON" : 1
+    },
+    "upgrades" : [ ]
+  }, {
     "tick" : 77,
-    "minerals" : 470,
+    "minerals" : 445,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 19,
@@ -1084,7 +1084,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 78,
-    "minerals" : 480,
+    "minerals" : 455,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 19,
@@ -1098,7 +1098,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 79,
-    "minerals" : 485,
+    "minerals" : 480,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 19,
@@ -1112,7 +1112,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 80,
-    "minerals" : 510,
+    "minerals" : 495,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 19,
@@ -1126,7 +1126,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 81,
-    "minerals" : 525,
+    "minerals" : 510,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 19,
@@ -1140,7 +1140,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 82,
-    "minerals" : 545,
+    "minerals" : 520,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 19,
@@ -1154,7 +1154,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 83,
-    "minerals" : 555,
+    "minerals" : 535,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 19,
@@ -1168,7 +1168,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 84,
-    "minerals" : 575,
+    "minerals" : 560,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 19,
@@ -1182,7 +1182,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 85,
-    "minerals" : 590,
+    "minerals" : 570,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 19,
@@ -1196,7 +1196,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 86,
-    "minerals" : 605,
+    "minerals" : 590,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 19,
@@ -1210,7 +1210,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 87,
-    "minerals" : 630,
+    "minerals" : 595,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1224,7 +1224,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 88,
-    "minerals" : 585,
+    "minerals" : 575,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1238,7 +1238,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 89,
-    "minerals" : 600,
+    "minerals" : 580,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1252,7 +1252,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 90,
-    "minerals" : 625,
+    "minerals" : 605,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1266,7 +1266,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 91,
-    "minerals" : 630,
+    "minerals" : 610,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1280,7 +1280,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 92,
-    "minerals" : 655,
+    "minerals" : 630,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1294,7 +1294,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 93,
-    "minerals" : 665,
+    "minerals" : 645,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1308,7 +1308,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 94,
-    "minerals" : 690,
+    "minerals" : 665,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1322,7 +1322,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 95,
-    "minerals" : 705,
+    "minerals" : 680,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1336,7 +1336,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 96,
-    "minerals" : 725,
+    "minerals" : 695,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1350,7 +1350,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 97,
-    "minerals" : 730,
+    "minerals" : 720,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1364,7 +1364,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 98,
-    "minerals" : 755,
+    "minerals" : 730,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1378,7 +1378,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 99,
-    "minerals" : 765,
+    "minerals" : 745,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1392,7 +1392,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 100,
-    "minerals" : 740,
+    "minerals" : 710,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1406,7 +1406,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 101,
-    "minerals" : 755,
+    "minerals" : 725,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1420,7 +1420,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 102,
-    "minerals" : 760,
+    "minerals" : 740,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1434,7 +1434,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 103,
-    "minerals" : 780,
+    "minerals" : 760,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1448,7 +1448,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 104,
-    "minerals" : 800,
+    "minerals" : 775,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1462,7 +1462,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 105,
-    "minerals" : 810,
+    "minerals" : 790,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1476,7 +1476,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 106,
-    "minerals" : 840,
+    "minerals" : 805,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1490,7 +1490,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 107,
-    "minerals" : 845,
+    "minerals" : 830,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1504,7 +1504,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 108,
-    "minerals" : 865,
+    "minerals" : 845,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1518,7 +1518,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 109,
-    "minerals" : 885,
+    "minerals" : 860,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1532,7 +1532,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 110,
-    "minerals" : 900,
+    "minerals" : 875,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1546,7 +1546,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 111,
-    "minerals" : 920,
+    "minerals" : 885,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 22,
@@ -1560,7 +1560,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 112,
-    "minerals" : 885,
+    "minerals" : 865,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1574,7 +1574,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 113,
-    "minerals" : 900,
+    "minerals" : 870,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1588,7 +1588,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 114,
-    "minerals" : 915,
+    "minerals" : 900,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1602,7 +1602,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 115,
-    "minerals" : 935,
+    "minerals" : 910,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1616,7 +1616,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 116,
-    "minerals" : 950,
+    "minerals" : 925,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1630,7 +1630,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 117,
-    "minerals" : 975,
+    "minerals" : 950,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1644,7 +1644,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 118,
-    "minerals" : 985,
+    "minerals" : 960,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1658,7 +1658,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 119,
-    "minerals" : 1005,
+    "minerals" : 980,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1672,7 +1672,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 120,
-    "minerals" : 1025,
+    "minerals" : 990,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1686,7 +1686,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 121,
-    "minerals" : 1040,
+    "minerals" : 1005,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1700,7 +1700,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 122,
-    "minerals" : 1055,
+    "minerals" : 1035,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1714,7 +1714,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 123,
-    "minerals" : 1080,
+    "minerals" : 1040,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1728,7 +1728,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 124,
-    "minerals" : 1085,
+    "minerals" : 1065,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 23,
@@ -1742,7 +1742,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 125,
-    "minerals" : 1060,
+    "minerals" : 1025,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 23,
@@ -1756,7 +1756,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 126,
-    "minerals" : 1075,
+    "minerals" : 1050,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 23,
@@ -1770,7 +1770,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 127,
-    "minerals" : 1085,
+    "minerals" : 1065,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 23,
@@ -1784,7 +1784,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 128,
-    "minerals" : 1115,
+    "minerals" : 1080,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 23,
@@ -1798,7 +1798,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 129,
-    "minerals" : 1125,
+    "minerals" : 1105,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 23,
@@ -1812,7 +1812,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 130,
-    "minerals" : 1145,
+    "minerals" : 1115,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 23,
@@ -1826,7 +1826,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 131,
-    "minerals" : 1160,
+    "minerals" : 1135,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 23,
@@ -1840,7 +1840,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 132,
-    "minerals" : 1180,
+    "minerals" : 1150,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 23,
@@ -1854,7 +1854,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 133,
-    "minerals" : 1195,
+    "minerals" : 1175,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 23,
@@ -1868,7 +1868,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 134,
-    "minerals" : 1210,
+    "minerals" : 1195,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 23,
@@ -1882,7 +1882,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 135,
-    "minerals" : 1230,
+    "minerals" : 1205,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 23,
@@ -1896,7 +1896,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 136,
-    "minerals" : 1245,
+    "minerals" : 1225,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 24,
@@ -1910,7 +1910,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 137,
-    "minerals" : 1220,
+    "minerals" : 1190,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 24,
@@ -1924,7 +1924,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 138,
-    "minerals" : 1230,
+    "minerals" : 1215,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 24,
@@ -1938,7 +1938,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 139,
-    "minerals" : 1255,
+    "minerals" : 1230,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 24,
@@ -1952,7 +1952,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 140,
-    "minerals" : 1270,
+    "minerals" : 1250,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 24,
@@ -1966,7 +1966,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 141,
-    "minerals" : 1290,
+    "minerals" : 1265,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 24,
@@ -1980,7 +1980,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 142,
-    "minerals" : 1310,
+    "minerals" : 1280,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 24,
@@ -1994,7 +1994,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 143,
-    "minerals" : 1320,
+    "minerals" : 1300,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 24,
@@ -2008,7 +2008,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 144,
-    "minerals" : 1345,
+    "minerals" : 1325,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 24,
@@ -2022,7 +2022,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 145,
-    "minerals" : 1355,
+    "minerals" : 1345,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 24,
@@ -2036,7 +2036,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 146,
-    "minerals" : 1385,
+    "minerals" : 1360,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 24,
@@ -2050,7 +2050,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 147,
-    "minerals" : 1395,
+    "minerals" : 1370,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 24,
@@ -2064,7 +2064,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 148,
-    "minerals" : 1415,
+    "minerals" : 1400,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2078,7 +2078,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 149,
-    "minerals" : 1380,
+    "minerals" : 1360,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2092,7 +2092,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 150,
-    "minerals" : 1405,
+    "minerals" : 1380,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2106,7 +2106,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 151,
-    "minerals" : 1420,
+    "minerals" : 1395,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2120,7 +2120,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 152,
-    "minerals" : 1440,
+    "minerals" : 1415,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2134,7 +2134,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 153,
-    "minerals" : 1450,
+    "minerals" : 1435,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2148,7 +2148,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 154,
-    "minerals" : 1480,
+    "minerals" : 1450,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2162,7 +2162,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 155,
-    "minerals" : 1490,
+    "minerals" : 1470,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2176,7 +2176,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 156,
-    "minerals" : 1515,
+    "minerals" : 1490,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2190,7 +2190,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 157,
-    "minerals" : 1525,
+    "minerals" : 1510,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2204,7 +2204,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 158,
-    "minerals" : 1545,
+    "minerals" : 1525,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2218,7 +2218,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 159,
-    "minerals" : 1565,
+    "minerals" : 1545,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2232,7 +2232,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 160,
-    "minerals" : 1580,
+    "minerals" : 1565,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 25,
@@ -2246,7 +2246,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 161,
-    "minerals" : 1605,
+    "minerals" : 1580,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 26,
@@ -2260,7 +2260,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 162,
-    "minerals" : 1570,
+    "minerals" : 1550,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 26,
@@ -2274,7 +2274,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 163,
-    "minerals" : 1590,
+    "minerals" : 1570,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 26,
@@ -2288,7 +2288,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 164,
-    "minerals" : 1610,
+    "minerals" : 1590,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 26,
@@ -2302,7 +2302,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 165,
-    "minerals" : 1625,
+    "minerals" : 1605,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 26,
@@ -2316,7 +2316,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 166,
-    "minerals" : 1645,
+    "minerals" : 1620,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 26,
@@ -2330,7 +2330,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 167,
-    "minerals" : 1665,
+    "minerals" : 1645,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 26,
@@ -2344,7 +2344,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 168,
-    "minerals" : 1680,
+    "minerals" : 1660,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 26,
@@ -2358,7 +2358,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 169,
-    "minerals" : 1705,
+    "minerals" : 1680,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 26,
@@ -2372,7 +2372,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 170,
-    "minerals" : 1715,
+    "minerals" : 1690,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 26,
@@ -2386,7 +2386,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 171,
-    "minerals" : 1740,
+    "minerals" : 1710,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 26,
@@ -2400,7 +2400,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 172,
-    "minerals" : 1760,
+    "minerals" : 1735,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 26,
@@ -2414,20 +2414,6 @@
     "upgrades" : [ ]
   }, {
     "tick" : 173,
-    "minerals" : 1780,
-    "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 27,
-    "units" : {
-      "PROBE" : 26
-    },
-    "buildings" : {
-      "NEXUS" : 1,
-      "PYLON" : 2
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 174,
     "minerals" : 1750,
     "vespene" : 0,
     "supply" : 31,
@@ -2441,8 +2427,22 @@
     },
     "upgrades" : [ ]
   }, {
+    "tick" : 174,
+    "minerals" : 1715,
+    "vespene" : 0,
+    "supply" : 31,
+    "supplyUsed" : 27,
+    "units" : {
+      "PROBE" : 26
+    },
+    "buildings" : {
+      "NEXUS" : 1,
+      "PYLON" : 2
+    },
+    "upgrades" : [ ]
+  }, {
     "tick" : 175,
-    "minerals" : 1765,
+    "minerals" : 1735,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 27,
@@ -2456,7 +2456,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 176,
-    "minerals" : 1780,
+    "minerals" : 1755,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 27,
@@ -2470,7 +2470,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 177,
-    "minerals" : 1805,
+    "minerals" : 1775,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 27,
@@ -2484,7 +2484,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 178,
-    "minerals" : 1820,
+    "minerals" : 1795,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 27,
@@ -2498,7 +2498,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 179,
-    "minerals" : 1840,
+    "minerals" : 1815,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 27,
@@ -2512,7 +2512,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 180,
-    "minerals" : 1860,
+    "minerals" : 1830,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 27,
@@ -2526,7 +2526,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 181,
-    "minerals" : 1875,
+    "minerals" : 1850,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 27,
@@ -2540,7 +2540,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 182,
-    "minerals" : 1895,
+    "minerals" : 1870,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 27,
@@ -2554,7 +2554,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 183,
-    "minerals" : 1915,
+    "minerals" : 1890,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 27,
@@ -2568,7 +2568,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 184,
-    "minerals" : 1935,
+    "minerals" : 1905,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 27,
@@ -2582,7 +2582,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 185,
-    "minerals" : 1955,
+    "minerals" : 1925,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2596,7 +2596,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 186,
-    "minerals" : 1930,
+    "minerals" : 1895,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2610,7 +2610,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 187,
-    "minerals" : 1935,
+    "minerals" : 1915,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2624,7 +2624,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 188,
-    "minerals" : 1955,
+    "minerals" : 1935,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2638,7 +2638,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 189,
-    "minerals" : 1975,
+    "minerals" : 1955,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2652,7 +2652,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 190,
-    "minerals" : 1995,
+    "minerals" : 1975,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2666,7 +2666,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 191,
-    "minerals" : 2010,
+    "minerals" : 1990,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2680,7 +2680,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 192,
-    "minerals" : 2035,
+    "minerals" : 2010,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2694,7 +2694,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 193,
-    "minerals" : 2050,
+    "minerals" : 2035,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2708,7 +2708,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 194,
-    "minerals" : 2070,
+    "minerals" : 2050,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2722,7 +2722,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 195,
-    "minerals" : 2085,
+    "minerals" : 2070,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2736,7 +2736,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 196,
-    "minerals" : 2110,
+    "minerals" : 2085,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2750,7 +2750,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 197,
-    "minerals" : 2125,
+    "minerals" : 2105,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 28,
@@ -2764,20 +2764,6 @@
     "upgrades" : [ ]
   }, {
     "tick" : 198,
-    "minerals" : 2145,
-    "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 29,
-    "units" : {
-      "PROBE" : 28
-    },
-    "buildings" : {
-      "NEXUS" : 1,
-      "PYLON" : 2
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 199,
     "minerals" : 2115,
     "vespene" : 0,
     "supply" : 31,
@@ -2791,8 +2777,22 @@
     },
     "upgrades" : [ ]
   }, {
+    "tick" : 199,
+    "minerals" : 2095,
+    "vespene" : 0,
+    "supply" : 31,
+    "supplyUsed" : 29,
+    "units" : {
+      "PROBE" : 28
+    },
+    "buildings" : {
+      "NEXUS" : 1,
+      "PYLON" : 2
+    },
+    "upgrades" : [ ]
+  }, {
     "tick" : 200,
-    "minerals" : 2135,
+    "minerals" : 2115,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 29,
@@ -2806,7 +2806,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 201,
-    "minerals" : 2155,
+    "minerals" : 2135,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 29,
@@ -2820,7 +2820,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 202,
-    "minerals" : 2175,
+    "minerals" : 2150,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 29,
@@ -2834,7 +2834,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 203,
-    "minerals" : 2195,
+    "minerals" : 2170,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 29,
@@ -2848,7 +2848,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 204,
-    "minerals" : 2210,
+    "minerals" : 2185,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 29,
@@ -2862,7 +2862,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 205,
-    "minerals" : 2230,
+    "minerals" : 2205,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 29,
@@ -2876,7 +2876,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 206,
-    "minerals" : 2250,
+    "minerals" : 2225,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 29,
@@ -2890,7 +2890,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 207,
-    "minerals" : 2275,
+    "minerals" : 2245,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 29,
@@ -2904,7 +2904,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 208,
-    "minerals" : 2285,
+    "minerals" : 2265,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 29,
@@ -2918,7 +2918,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 209,
-    "minerals" : 2315,
+    "minerals" : 2280,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 29,
@@ -2932,7 +2932,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 210,
-    "minerals" : 2325,
+    "minerals" : 2305,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 30,
@@ -2946,7 +2946,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 211,
-    "minerals" : 2295,
+    "minerals" : 2270,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 30,
@@ -2960,7 +2960,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 212,
-    "minerals" : 2310,
+    "minerals" : 2295,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 30,
@@ -2974,7 +2974,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 213,
-    "minerals" : 2335,
+    "minerals" : 2310,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 30,
@@ -2988,7 +2988,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 214,
-    "minerals" : 2350,
+    "minerals" : 2330,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 30,
@@ -3002,7 +3002,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 215,
-    "minerals" : 2375,
+    "minerals" : 2350,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 30,
@@ -3016,7 +3016,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 216,
-    "minerals" : 2390,
+    "minerals" : 2370,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 30,
@@ -3030,7 +3030,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 217,
-    "minerals" : 2415,
+    "minerals" : 2375,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 30,
@@ -3044,7 +3044,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 218,
-    "minerals" : 2430,
+    "minerals" : 2410,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 30,
@@ -3058,7 +3058,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 219,
-    "minerals" : 2450,
+    "minerals" : 2420,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 30,
@@ -3072,7 +3072,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 220,
-    "minerals" : 2460,
+    "minerals" : 2445,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 30,
@@ -3086,7 +3086,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 221,
-    "minerals" : 2485,
+    "minerals" : 2455,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 30,
@@ -3100,7 +3100,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 222,
-    "minerals" : 2500,
+    "minerals" : 2485,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3114,7 +3114,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 223,
-    "minerals" : 2470,
+    "minerals" : 2450,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3128,7 +3128,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 224,
-    "minerals" : 2490,
+    "minerals" : 2475,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3142,7 +3142,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 225,
-    "minerals" : 2515,
+    "minerals" : 2490,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3156,7 +3156,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 226,
-    "minerals" : 2530,
+    "minerals" : 2510,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3170,7 +3170,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 227,
-    "minerals" : 2555,
+    "minerals" : 2525,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3184,7 +3184,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 228,
-    "minerals" : 2570,
+    "minerals" : 2540,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3198,7 +3198,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 229,
-    "minerals" : 2585,
+    "minerals" : 2565,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3212,7 +3212,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 230,
-    "minerals" : 2610,
+    "minerals" : 2580,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3226,7 +3226,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 231,
-    "minerals" : 2625,
+    "minerals" : 2605,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3240,7 +3240,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 232,
-    "minerals" : 2650,
+    "minerals" : 2615,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3254,7 +3254,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 233,
-    "minerals" : 2665,
+    "minerals" : 2645,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3268,7 +3268,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 234,
-    "minerals" : 2685,
+    "minerals" : 2660,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3282,7 +3282,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 235,
-    "minerals" : 2700,
+    "minerals" : 2685,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3296,7 +3296,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 236,
-    "minerals" : 2675,
+    "minerals" : 2650,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3310,7 +3310,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 237,
-    "minerals" : 2690,
+    "minerals" : 2675,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3324,7 +3324,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 238,
-    "minerals" : 2715,
+    "minerals" : 2685,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3338,7 +3338,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 239,
-    "minerals" : 2725,
+    "minerals" : 2710,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3352,7 +3352,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 240,
-    "minerals" : 2750,
+    "minerals" : 2725,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3366,7 +3366,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 241,
-    "minerals" : 2770,
+    "minerals" : 2745,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3380,7 +3380,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 242,
-    "minerals" : 2795,
+    "minerals" : 2760,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3394,7 +3394,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 243,
-    "minerals" : 2800,
+    "minerals" : 2785,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3408,7 +3408,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 244,
-    "minerals" : 2830,
+    "minerals" : 2800,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3422,7 +3422,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 245,
-    "minerals" : 2840,
+    "minerals" : 2825,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3436,7 +3436,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 246,
-    "minerals" : 2870,
+    "minerals" : 2840,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3450,7 +3450,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 247,
-    "minerals" : 2880,
+    "minerals" : 2865,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3464,7 +3464,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 248,
-    "minerals" : 2910,
+    "minerals" : 2880,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3478,7 +3478,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 249,
-    "minerals" : 2920,
+    "minerals" : 2900,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3492,7 +3492,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 250,
-    "minerals" : 2945,
+    "minerals" : 2915,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3506,7 +3506,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 251,
-    "minerals" : 2960,
+    "minerals" : 2935,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3520,7 +3520,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 252,
-    "minerals" : 2980,
+    "minerals" : 2955,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3534,7 +3534,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 253,
-    "minerals" : 3000,
+    "minerals" : 2970,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3548,7 +3548,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 254,
-    "minerals" : 3015,
+    "minerals" : 2995,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3562,7 +3562,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 255,
-    "minerals" : 3040,
+    "minerals" : 3010,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3576,7 +3576,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 256,
-    "minerals" : 3055,
+    "minerals" : 3035,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3590,7 +3590,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 257,
-    "minerals" : 3075,
+    "minerals" : 3050,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3604,7 +3604,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 258,
-    "minerals" : 3090,
+    "minerals" : 3075,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3618,7 +3618,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 259,
-    "minerals" : 3115,
+    "minerals" : 3090,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3632,7 +3632,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 260,
-    "minerals" : 3130,
+    "minerals" : 3115,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3646,7 +3646,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 261,
-    "minerals" : 3155,
+    "minerals" : 3130,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3660,7 +3660,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 262,
-    "minerals" : 3170,
+    "minerals" : 3150,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3674,7 +3674,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 263,
-    "minerals" : 3195,
+    "minerals" : 3160,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3688,7 +3688,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 264,
-    "minerals" : 3210,
+    "minerals" : 3190,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3702,7 +3702,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 265,
-    "minerals" : 3230,
+    "minerals" : 3200,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3716,7 +3716,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 266,
-    "minerals" : 3240,
+    "minerals" : 3225,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3730,7 +3730,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 267,
-    "minerals" : 3270,
+    "minerals" : 3240,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3744,7 +3744,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 268,
-    "minerals" : 3280,
+    "minerals" : 3260,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3758,7 +3758,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 269,
-    "minerals" : 3310,
+    "minerals" : 3280,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3772,7 +3772,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 270,
-    "minerals" : 3320,
+    "minerals" : 3305,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3786,7 +3786,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 271,
-    "minerals" : 3350,
+    "minerals" : 3320,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3800,7 +3800,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 272,
-    "minerals" : 3360,
+    "minerals" : 3340,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3814,7 +3814,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 273,
-    "minerals" : 3380,
+    "minerals" : 3355,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3828,7 +3828,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 274,
-    "minerals" : 3400,
+    "minerals" : 3375,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3842,7 +3842,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 275,
-    "minerals" : 3415,
+    "minerals" : 3400,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3856,7 +3856,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 276,
-    "minerals" : 3440,
+    "minerals" : 3410,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3870,7 +3870,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 277,
-    "minerals" : 3455,
+    "minerals" : 3435,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3884,7 +3884,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 278,
-    "minerals" : 3475,
+    "minerals" : 3445,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3898,7 +3898,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 279,
-    "minerals" : 3495,
+    "minerals" : 3475,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3912,7 +3912,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 280,
-    "minerals" : 3515,
+    "minerals" : 3490,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3926,7 +3926,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 281,
-    "minerals" : 3530,
+    "minerals" : 3515,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3940,7 +3940,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 282,
-    "minerals" : 3555,
+    "minerals" : 3525,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3954,7 +3954,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 283,
-    "minerals" : 3570,
+    "minerals" : 3550,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3968,7 +3968,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 284,
-    "minerals" : 3595,
+    "minerals" : 3570,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3982,7 +3982,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 285,
-    "minerals" : 3605,
+    "minerals" : 3590,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -3996,7 +3996,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 286,
-    "minerals" : 3635,
+    "minerals" : 3605,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4010,7 +4010,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 287,
-    "minerals" : 3650,
+    "minerals" : 3625,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4024,7 +4024,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 288,
-    "minerals" : 3675,
+    "minerals" : 3640,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4038,7 +4038,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 289,
-    "minerals" : 3680,
+    "minerals" : 3665,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4052,7 +4052,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 290,
-    "minerals" : 3710,
+    "minerals" : 3680,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4066,7 +4066,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 291,
-    "minerals" : 3720,
+    "minerals" : 3705,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4080,7 +4080,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 292,
-    "minerals" : 3750,
+    "minerals" : 3720,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4094,7 +4094,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 293,
-    "minerals" : 3760,
+    "minerals" : 3745,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4108,7 +4108,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 294,
-    "minerals" : 3785,
+    "minerals" : 3760,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4122,7 +4122,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 295,
-    "minerals" : 3800,
+    "minerals" : 3785,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4136,7 +4136,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 296,
-    "minerals" : 3825,
+    "minerals" : 3800,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4150,7 +4150,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 297,
-    "minerals" : 3840,
+    "minerals" : 3820,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4164,7 +4164,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 298,
-    "minerals" : 3860,
+    "minerals" : 3835,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4178,7 +4178,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 299,
-    "minerals" : 3880,
+    "minerals" : 3850,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4192,7 +4192,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 300,
-    "minerals" : 3895,
+    "minerals" : 3875,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4206,7 +4206,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 301,
-    "minerals" : 3920,
+    "minerals" : 3890,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4220,7 +4220,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 302,
-    "minerals" : 3935,
+    "minerals" : 3915,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4234,7 +4234,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 303,
-    "minerals" : 3955,
+    "minerals" : 3930,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4248,7 +4248,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 304,
-    "minerals" : 3970,
+    "minerals" : 3955,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 31,
@@ -4262,428 +4262,18 @@
     "upgrades" : [ ]
   } ],
   "mineralPatches" : [ {
-    "x" : 96.0,
-    "y" : 43.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 34.0,
-    "y" : 80.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 102.0,
-    "y" : 48.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 63.0,
-    "y" : 103.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 125.0,
-    "y" : 165.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 69.0,
-    "y" : 44.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 96.0,
-    "y" : 137.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 103.0,
-    "y" : 49.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 109.0,
-    "y" : 70.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 113.0,
-    "y" : 70.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
     "x" : 107.0,
-    "y" : 136.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 126.0,
-    "y" : 166.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 123.0,
-    "y" : 103.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 65.0,
-    "y" : 165.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 25.0,
-    "y" : 43.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 57.0,
-    "y" : 43.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 28.0,
-    "y" : 129.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 25.0,
-    "y" : 45.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 130.0,
-    "y" : 43.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 26.0,
-    "y" : 42.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 25.0,
-    "y" : 164.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 161.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 98.0,
-    "y" : 75.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 103.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 102.0,
-    "y" : 46.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 98.0,
-    "y" : 163.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 97.0,
-    "y" : 76.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 113.0,
-    "y" : 137.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 61.0,
-    "y" : 104.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 132.0,
-    "y" : 47.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 113.0,
-    "y" : 138.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 31.0,
-    "y" : 41.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 113.0,
-    "y" : 139.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 96.0,
-    "y" : 164.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 60.0,
-    "y" : 103.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 95.0,
-    "y" : 163.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 98.0,
     "y" : 134.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 28.0,
-    "y" : 131.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 96.0,
-    "y" : 70.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 29.0,
-    "y" : 79.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 95.0,
-    "y" : 44.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 92.0,
-    "y" : 68.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 102.0,
-    "y" : 159.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 111.0,
-    "y" : 70.5,
     "amount" : 1500,
     "rich" : true
-  }, {
-    "x" : 126.0,
-    "y" : 41.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 132.0,
-    "y" : 160.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 68.0,
-    "y" : 43.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 46.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 113.0,
-    "y" : 69.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 64.0,
-    "y" : 166.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 56.0,
-    "y" : 44.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 33.0,
-    "y" : 81.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 163.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 129.0,
-    "y" : 165.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 130.0,
-    "y" : 136.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 113.0,
-    "y" : 68.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 131.0,
-    "y" : 133.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 102.0,
-    "y" : 157.5,
-    "amount" : 1500,
-    "rich" : false
   }, {
     "x" : 54.0,
     "y" : 103.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 33.0,
-    "y" : 126.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 107.0,
-    "y" : 134.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 131.0,
-    "y" : 72.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 125.0,
-    "y" : 70.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 60.0,
-    "y" : 165.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 111.0,
-    "y" : 137.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 97.0,
-    "y" : 135.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 56.0,
-    "y" : 104.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 131.0,
-    "y" : 48.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 109.0,
-    "y" : 137.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 98.0,
-    "y" : 132.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 125.0,
-    "y" : 42.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
     "x" : 98.0,
     "y" : 44.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 95.0,
-    "y" : 69.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 60.0,
-    "y" : 42.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 27.0,
-    "y" : 132.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 31.0,
-    "y" : 166.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 101.0,
-    "y" : 45.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 28.0,
-    "y" : 133.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 107.0,
-    "y" : 73.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 25.0,
-    "y" : 47.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 109.0,
-    "y" : 72.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 111.0,
-    "y" : 69.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 102.0,
-    "y" : 50.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 27.0,
-    "y" : 41.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 24.0,
-    "y" : 46.5,
     "amount" : 750,
     "rich" : false
   }, {
@@ -4692,144 +4282,19 @@
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 92.0,
-    "y" : 139.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 115.0,
-    "y" : 68.5,
+    "x" : 109.0,
+    "y" : 136.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 111.0,
-    "y" : 71.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 26.0,
-    "y" : 165.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 27.0,
-    "y" : 166.5,
+    "x" : 24.0,
+    "y" : 46.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 30.0,
-    "y" : 80.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 107.0,
-    "y" : 135.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 131.0,
+    "x" : 95.0,
     "y" : 44.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 53.0,
-    "y" : 104.5,
     "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 131.0,
-    "y" : 74.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 129.0,
-    "y" : 137.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 129.0,
-    "y" : 70.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 25.0,
-    "y" : 160.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 91.0,
-    "y" : 138.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 56.0,
-    "y" : 163.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 115.0,
-    "y" : 138.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 30.0,
-    "y" : 40.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 115.0,
-    "y" : 69.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 131.0,
-    "y" : 135.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 97.0,
-    "y" : 72.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 76.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 105.0,
-    "y" : 72.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 61.0,
-    "y" : 41.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 27.0,
-    "y" : 75.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 131.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 132.0,
-    "y" : 75.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 130.0,
-    "y" : 104.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 61.0,
-    "y" : 166.5,
-    "amount" : 750,
     "rich" : false
   }, {
     "x" : 109.0,
@@ -4837,43 +4302,23 @@
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 105.0,
-    "y" : 135.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 28.0,
-    "y" : 76.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 65.0,
-    "y" : 42.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 103.0,
-    "y" : 158.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 64.0,
+    "x" : 126.0,
     "y" : 41.5,
     "amount" : 750,
     "rich" : false
   }, {
+    "x" : 102.0,
+    "y" : 46.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
     "x" : 125.0,
-    "y" : 137.5,
+    "y" : 42.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 107.0,
-    "y" : 71.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 91.0,
-    "y" : 69.5,
+    "x" : 125.0,
+    "y" : 137.5,
     "amount" : 1500,
     "rich" : false
   }, {
@@ -4882,23 +4327,143 @@
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 97.0,
-    "y" : 131.5,
+    "x" : 113.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 126.0,
+    "y" : 138.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 61.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 64.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 46.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 61.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 57.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 60.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 161.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 125.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 47.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 70.5,
     "amount" : 1500,
     "rich" : false
   }, {
     "x" : 111.0,
-    "y" : 136.5,
+    "y" : 138.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 69.0,
-    "y" : 163.5,
+    "x" : 30.0,
+    "y" : 127.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 60.0,
+    "y" : 42.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 121.0,
+    "x" : 132.0,
+    "y" : 160.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 157.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 44.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 56.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 92.0,
+    "y" : 68.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 56.0,
     "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 98.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 74.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 105.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 107.0,
+    "y" : 71.5,
     "amount" : 1500,
     "rich" : true
   }, {
@@ -4907,29 +4472,489 @@
     "amount" : 750,
     "rich" : true
   }, {
-    "x" : 115.0,
-    "y" : 139.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 57.0,
-    "y" : 164.5,
+    "x" : 129.0,
+    "y" : 137.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 109.0,
-    "y" : 135.5,
+    "x" : 61.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 115.0,
+    "y" : 68.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 98.0,
-    "y" : 73.5,
+    "x" : 131.0,
+    "y" : 159.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 95.0,
+    "y" : 163.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 29.0,
+    "y" : 128.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 30.0,
+    "y" : 167.5,
     "amount" : 750,
     "rich" : false
   }, {
     "x" : 24.0,
     "y" : 161.5,
     "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 63.0,
+    "y" : 103.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 91.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 91.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 103.0,
+    "y" : 158.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 163.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 160.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 68.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 109.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 95.0,
+    "y" : 69.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 26.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 27.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 159.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 121.0,
+    "y" : 104.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 109.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 113.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 107.0,
+    "y" : 73.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 103.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 25.0,
+    "y" : 47.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 30.0,
+    "y" : 80.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 162.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 33.0,
+    "y" : 126.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 92.0,
+    "y" : 139.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 134.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 163.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 123.0,
+    "y" : 103.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 115.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 130.0,
+    "y" : 164.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 31.0,
+    "y" : 41.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 101.0,
+    "y" : 162.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 26.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 57.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 34.0,
+    "y" : 80.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 101.0,
+    "y" : 45.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 31.0,
+    "y" : 166.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 48.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 95.0,
+    "y" : 138.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 45.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 129.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 126.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 113.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 161.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 48.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 50.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 132.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 42.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 27.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 33.0,
+    "y" : 81.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 27.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 133.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 64.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 135.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 73.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 115.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 107.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 72.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 70.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 69.0,
+    "y" : 163.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 139.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 129.0,
+    "y" : 165.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 29.0,
+    "y" : 79.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 74.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 105.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 130.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 126.0,
+    "y" : 69.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 68.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 103.0,
+    "y" : 49.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 113.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 111.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 25.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 69.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 133.5,
+    "amount" : 1500,
     "rich" : false
   }, {
     "x" : 28.0,
@@ -4942,183 +4967,130 @@
     "amount" : 750,
     "rich" : true
   }, {
-    "x" : 30.0,
-    "y" : 127.5,
+    "x" : 65.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 27.0,
+    "y" : 41.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 111.0,
-    "y" : 138.5,
+    "x" : 53.0,
+    "y" : 104.5,
     "amount" : 1500,
     "rich" : true
+  }, {
+    "x" : 115.0,
+    "y" : 139.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 96.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 43.5,
+    "amount" : 1500,
+    "rich" : false
   }, {
     "x" : 68.0,
     "y" : 164.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 131.0,
-    "y" : 159.5,
+    "x" : 56.0,
+    "y" : 163.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 95.0,
-    "y" : 138.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 107.0,
-    "y" : 72.5,
+    "x" : 130.0,
+    "y" : 104.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 126.0,
-    "y" : 138.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 126.0,
-    "y" : 69.5,
-    "amount" : 750,
+    "x" : 65.0,
+    "y" : 165.5,
+    "amount" : 1500,
     "rich" : false
   }, {
     "x" : 30.0,
-    "y" : 167.5,
+    "y" : 40.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 109.0,
-    "y" : 136.5,
-    "amount" : 1500,
+    "x" : 60.0,
+    "y" : 103.5,
+    "amount" : 750,
     "rich" : true
-  }, {
-    "x" : 130.0,
-    "y" : 164.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 28.0,
-    "y" : 74.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 29.0,
-    "y" : 128.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 25.0,
-    "y" : 162.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 101.0,
-    "y" : 162.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 129.0,
-    "y" : 42.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 130.0,
-    "y" : 71.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 102.0,
-    "y" : 161.5,
-    "amount" : 750,
-    "rich" : false
   } ],
   "geyserPositions" : [ {
-    "x" : 27.5,
-    "y" : 136.5,
-    "amount" : 2250
-  }, {
-    "x" : 69.5,
-    "y" : 47.5,
-    "amount" : 2250
-  }, {
-    "x" : 88.5,
-    "y" : 47.5,
-    "amount" : 2250
-  }, {
-    "x" : 31.5,
-    "y" : 140.5,
-    "amount" : 2250
-  }, {
-    "x" : 131.5,
-    "y" : 156.5,
-    "amount" : 2250
-  }, {
-    "x" : 55.5,
-    "y" : 47.5,
-    "amount" : 2250
-  }, {
-    "x" : 131.5,
-    "y" : 128.5,
-    "amount" : 2250
-  }, {
-    "x" : 132.5,
-    "y" : 99.5,
-    "amount" : 2250
-  }, {
     "x" : 121.5,
-    "y" : 138.5,
-    "amount" : 2250
-  }, {
-    "x" : 131.5,
-    "y" : 79.5,
-    "amount" : 2250
-  }, {
-    "x" : 88.5,
-    "y" : 160.5,
-    "amount" : 2250
-  }, {
-    "x" : 132.5,
-    "y" : 108.5,
-    "amount" : 2250
-  }, {
-    "x" : 97.5,
-    "y" : 128.5,
+    "y" : 69.5,
     "amount" : 2250
   }, {
     "x" : 34.5,
     "y" : 40.5,
     "amount" : 2250
   }, {
-    "x" : 55.5,
-    "y" : 160.5,
+    "x" : 97.5,
+    "y" : 128.5,
     "amount" : 2250
   }, {
     "x" : 131.5,
     "y" : 51.5,
     "amount" : 2250
   }, {
-    "x" : 50.5,
-    "y" : 108.5,
+    "x" : 24.5,
+    "y" : 157.5,
+    "amount" : 2250
+  }, {
+    "x" : 55.5,
+    "y" : 160.5,
+    "amount" : 2250
+  }, {
+    "x" : 132.5,
+    "y" : 99.5,
     "amount" : 2250
   }, {
     "x" : 31.5,
     "y" : 67.5,
     "amount" : 2250
   }, {
-    "x" : 50.5,
-    "y" : 99.5,
-    "amount" : 2250
-  }, {
     "x" : 121.5,
-    "y" : 41.5,
+    "y" : 138.5,
     "amount" : 2250
   }, {
     "x" : 121.5,
     "y" : 166.5,
     "amount" : 2250
   }, {
+    "x" : 131.5,
+    "y" : 156.5,
+    "amount" : 2250
+  }, {
     "x" : 88.5,
     "y" : 68.5,
+    "amount" : 2250
+  }, {
+    "x" : 131.5,
+    "y" : 128.5,
+    "amount" : 2250
+  }, {
+    "x" : 132.5,
+    "y" : 108.5,
+    "amount" : 2250
+  }, {
+    "x" : 27.5,
+    "y" : 136.5,
     "amount" : 2250
   }, {
     "x" : 24.5,
@@ -5126,11 +5098,15 @@
     "amount" : 2250
   }, {
     "x" : 69.5,
+    "y" : 47.5,
+    "amount" : 2250
+  }, {
+    "x" : 88.5,
     "y" : 160.5,
     "amount" : 2250
   }, {
-    "x" : 91.5,
-    "y" : 43.5,
+    "x" : 50.5,
+    "y" : 108.5,
     "amount" : 2250
   }, {
     "x" : 88.5,
@@ -5141,25 +5117,49 @@
     "y" : 79.5,
     "amount" : 2250
   }, {
-    "x" : 27.5,
-    "y" : 71.5,
-    "amount" : 2250
-  }, {
     "x" : 34.5,
     "y" : 167.5,
+    "amount" : 2250
+  }, {
+    "x" : 121.5,
+    "y" : 41.5,
+    "amount" : 2250
+  }, {
+    "x" : 31.5,
+    "y" : 140.5,
     "amount" : 2250
   }, {
     "x" : 91.5,
     "y" : 164.5,
     "amount" : 2250
   }, {
-    "x" : 121.5,
-    "y" : 69.5,
+    "x" : 69.5,
+    "y" : 160.5,
     "amount" : 2250
   }, {
-    "x" : 24.5,
-    "y" : 157.5,
+    "x" : 88.5,
+    "y" : 47.5,
+    "amount" : 2250
+  }, {
+    "x" : 50.5,
+    "y" : 99.5,
+    "amount" : 2250
+  }, {
+    "x" : 27.5,
+    "y" : 71.5,
+    "amount" : 2250
+  }, {
+    "x" : 55.5,
+    "y" : 47.5,
+    "amount" : 2250
+  }, {
+    "x" : 131.5,
+    "y" : 79.5,
+    "amount" : 2250
+  }, {
+    "x" : 91.5,
+    "y" : 43.5,
     "amount" : 2250
   } ],
-  "basePosition" : [ 124.5, 48.5 ]
+  "basePosition" : [ 124.5, 159.5 ]
 }

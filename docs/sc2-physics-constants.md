@@ -373,7 +373,7 @@ A full 3D sweep (#592) of deposit (0-5) × mining (8-15) × gas (16-26) across 1
 | Combined balance MAPE (7-min) | 71.5% | (0, 15, 22) → 69.3% | -2.1% |
 
 Key observations:
-- **Gas=22 is optimal** — every top-10 triple uses gas=22. No alternative gas value improves either metric.
+- **Gas=26 is optimal** — recalibrated from 22 via dual-run sweep (#606). The 3D sweep (#592) used gas=22 (pre-coordinate-translation); with working injection, 26 is the correct value.
 - **Deposit=0 dominates** — no deposit > 0 appears in any top-10. Confirms #587: explicit deposit modeling does not help.
 - **Rate and balance optima conflict** — lower mining (10) improves rate accuracy but worsens balance; higher mining (15) improves balance but worsens rate. Mining=12 is a reasonable midpoint.
 - **Improvements are marginal** — 1.3% rate and 2.1% balance improvements do not justify changing the defaults. The lumped-constant architecture has reached its accuracy ceiling for rate fields.
@@ -433,7 +433,7 @@ Workers spend 2-3 loops stationary at the town hall depositing resources. Infras
 
 ### Approach/docking and path contention — resolved, not modeled
 
-Approach/docking (2-3 loops) and path contention (1-2 loops) are absorbed into mining=12 and gas=22. The #592 3D sweep confirmed that these components interact non-linearly — the overhead is an emergent property of the lumped constant, not three additive components. Modeling them separately cannot improve on the lumped approach within the current fixed-duration-phase architecture.
+Approach/docking (2-3 loops) and path contention (1-2 loops) are absorbed into mining=12 and gas=26. The #592 3D sweep confirmed that these components interact non-linearly — the overhead is an emergent property of the lumped constant, not three additive components. Modeling them separately cannot improve on the lumped approach within the current fixed-duration-phase architecture.
 
 ### Close/far patch income differential in unit tests
 
@@ -476,16 +476,16 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA
 | 1-min | 10.7% | 100.0% (no gas yet) |
 | 3-min | 12.8% | 37.3% |
 | 5-min | 17.0% | 28.7% |
-| 7-min | **30.2%** | **30.3%** |
+| 7-min | **30.1%** | **38.1%** |
 
 ### Full economy at 7-min
 
 | Field | MAPE | Status |
 |-------|------|--------|
-| mineralsCollectionRate | 30.2% | Structural — worker allocation (#572), not physics |
-| vespeneCollectionRate | 30.3% | Gas worker count synced from GT; residual is rate computation |
-| mineralsCurrent | 77.6% | Cumulative drift from rate error |
-| vespeneCurrent | 65.3% | Cumulative drift |
+| mineralsCollectionRate | 30.1% | Structural — worker allocation (#572), not physics |
+| vespeneCollectionRate | 38.1% | Regressed from gas harvest recalibration (#606→#608) |
+| mineralsCurrent | 77.4% | Cumulative drift from rate error |
+| vespeneCurrent | 74.7% | Regressed — gas harvest increase amplifies worker allocation gap (#608) |
 | foodMade | 2.9% | At floor |
 | foodUsed | 3.7% | At floor |
 | workersActiveCount | 2.5% | At floor |
@@ -497,9 +497,13 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA
 
 ### Rate algorithm impact
 
-The EMA switch (#593) increased the reported mineralsCollectionRate MAPE from 22.1% (simple window) to 30.2% (EMA α=0.25). The physics haven't changed — the EMA measurement is more honest because it matches SC2's own rate algorithm. With simple windowed averaging, the algorithm mismatch between EM (window) and SC2 (EMA) partially cancelled the income mismatch, producing a deceptively lower MAPE. With EMA on both sides, the rate comparison is apples-to-apples.
+The EMA switch (#593) increased the reported mineralsCollectionRate MAPE from 22.1% (simple window) to 30.1% (EMA α=0.25). The physics haven't changed — the EMA measurement is more honest because it matches SC2's own rate algorithm. With simple windowed averaging, the algorithm mismatch between EM (window) and SC2 (EMA) partially cancelled the income mismatch, producing a deceptively lower MAPE. With EMA on both sides, the rate comparison is apples-to-apples.
 
-The mineralsCurrent MAPE improved from 126.1% to 77.6% — this reflects the per-race efficiency factors (#600, #601) reducing EM over-production.
+The mineralsCurrent MAPE improved from 126.1% to 77.4% — this reflects the per-race efficiency factors (#600, #601) reducing EM over-production.
+
+### Gas harvest recalibration tradeoff (#606)
+
+Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3w: -2.2%, 6w: +4.0%). This regressed oracle MAPE: vespeneCollectionRate 29.1%→38.1%, vespeneCurrent 65.4%→74.7%. The regression is from amplifying the existing worker allocation gap — the EM has fewer gas workers than real games, and slower per-worker gas income widens that gap. Filed as #608 for gas efficiency factor calibration.
 
 ---
 
@@ -551,7 +555,7 @@ Worker physics and economy constants — override without recompiling:
 ```properties
 # application.properties or -D flags
 starcraft.worker.mining-duration-loops=12.0
-starcraft.worker.gas-harvest-duration-loops=22.0
+starcraft.worker.gas-harvest-duration-loops=26.0
 starcraft.worker.deposit-duration-loops=0.0
 starcraft.worker.acceleration=3.5
 starcraft.worker.deceleration=3.5

@@ -417,6 +417,12 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
             case ZEALOT, STALKER, ADEPT, SENTRY, DARK_TEMPLAR, HIGH_TEMPLAR ->
                 BuildingType.GATEWAY;
             case MARINE, MARAUDER, REAPER, GHOST -> BuildingType.BARRACKS;
+            case HELLION, HELLBAT, SIEGE_TANK, CYCLONE, THOR -> BuildingType.FACTORY;
+            case MEDIVAC, VIKING, RAVEN, BANSHEE, BATTLECRUISER, LIBERATOR -> BuildingType.STARPORT;
+            case DRONE -> BuildingType.HATCHERY;
+            case QUEEN -> BuildingType.HATCHERY;
+            case OVERLORD -> BuildingType.HATCHERY;
+            case ZERGLING, ROACH, HYDRALISK, MUTALISK, CORRUPTOR, INFESTOR, SWARM_HOST, VIPER, ULTRALISK -> BuildingType.HATCHERY;
             default -> null;
         };
     }

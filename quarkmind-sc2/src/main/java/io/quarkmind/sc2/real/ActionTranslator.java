@@ -216,17 +216,41 @@ public final class ActionTranslator {
             // Archon requires two Templar — single-tag TrainIntent cannot express this
             case ARCHON       -> null;
             // Zerg and Terran types exist for scouting recognition, not Protoss training
-            case ZERGLING, ROACH, HYDRALISK, MUTALISK, ULTRALISK,
-                 BROOD_LORD, CORRUPTOR, INFESTOR, SWARM_HOST, VIPER, QUEEN, RAVAGER, LURKER,
-                 DRONE, OVERLORD, OVERSEER, BANELING, LOCUST, BROODLING, INFESTED_TERRAN, CHANGELING,
-                 MARINE, MARAUDER, MEDIVAC, SIEGE_TANK, SIEGE_TANK_SIEGED, THOR, VIKING,
-                 GHOST, RAVEN, BANSHEE, BATTLECRUISER, CYCLONE, LIBERATOR, WIDOW_MINE,
-                 SCV, REAPER, HELLION, HELLBAT, MULE, VIKING_ASSAULT, LIBERATOR_AG, AUTO_TURRET,
-                 ADEPT, DISRUPTOR, SENTRY,
-                 PHOENIX, ORACLE, TEMPEST, MOTHERSHIP, WARP_PRISM, WARP_PRISM_PHASING,
-                 INTERCEPTOR, ADEPT_PHASE_SHIFT,
-                 EGG, LARVA,
-                 UNKNOWN      -> null;
+            case ADEPT       -> Abilities.TRAIN_ADEPT;
+            case SENTRY      -> Abilities.TRAIN_SENTRY;
+            case PHOENIX     -> Abilities.TRAIN_PHOENIX;
+            case ORACLE      -> Abilities.TRAIN_ORACLE;
+            case TEMPEST     -> Abilities.TRAIN_TEMPEST;
+            case WARP_PRISM  -> Abilities.TRAIN_WARP_PRISM;
+            case MARINE      -> Abilities.TRAIN_MARINE;
+            case MARAUDER    -> Abilities.TRAIN_MARAUDER;
+            case REAPER      -> Abilities.TRAIN_REAPER;
+            case GHOST       -> Abilities.TRAIN_GHOST;
+            case SCV         -> Abilities.TRAIN_SCV;
+            case MEDIVAC     -> Abilities.TRAIN_MEDIVAC;
+            case SIEGE_TANK  -> Abilities.TRAIN_SIEGE_TANK;
+            case THOR        -> Abilities.TRAIN_THOR;
+            case VIKING      -> Abilities.TRAIN_VIKING_FIGHTER;
+            case RAVEN       -> Abilities.TRAIN_RAVEN;
+            case BANSHEE     -> Abilities.TRAIN_BANSHEE;
+            case BATTLECRUISER -> Abilities.TRAIN_BATTLECRUISER;
+            case HELLION     -> Abilities.TRAIN_HELLION;
+            case CYCLONE     -> Abilities.TRAIN_CYCLONE;
+            case LIBERATOR   -> Abilities.TRAIN_LIBERATOR;
+            case WIDOW_MINE  -> null;
+            case DRONE       -> Abilities.TRAIN_DRONE;
+            case QUEEN       -> Abilities.TRAIN_QUEEN;
+            case OVERLORD    -> Abilities.TRAIN_OVERLORD;
+            case ZERGLING    -> Abilities.TRAIN_ZERGLING;
+            case ROACH       -> Abilities.TRAIN_ROACH;
+            case HYDRALISK   -> Abilities.TRAIN_HYDRALISK;
+            case MUTALISK    -> Abilities.TRAIN_MUTALISK;
+            case CORRUPTOR   -> Abilities.TRAIN_CORRUPTOR;
+            case INFESTOR    -> Abilities.TRAIN_INFESTOR;
+            case SWARM_HOST  -> null;
+            case VIPER       -> Abilities.TRAIN_VIPER;
+            case ULTRALISK   -> Abilities.TRAIN_ULTRALISK;
+            default          -> null;
         };
     }
 }
