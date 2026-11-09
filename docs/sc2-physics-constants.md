@@ -65,7 +65,7 @@ Each entry documents value, source, and confidence level.
 
 | Constant | Code value | Source | Confidence | Config property |
 |----------|-----------|--------|------------|-----------------|
-| Gas harvest duration | 22.0 loops (0.98s) | Oracle MAPE sweep (118 replays) | **Calibrated** — #586 | `starcraft.worker.gas-harvest-duration-loops` |
+| Gas harvest duration | 26.0 loops (1.16s) | Dual-run sweep (3w/6w ±5% target) | **Calibrated** — #606 | `starcraft.worker.gas-harvest-duration-loops` |
 | Gas cargo | 4 | Liquipedia | **Published** | — |
 | Max workers per geyser | 3 | SC2 mechanics | **Published** | — |
 | Gas geyser distance (seeded) | ~7.6u from town hall | SC2 dual-run (TorchesAIE_v4) | **Calibrated** — #597 | — |
@@ -323,14 +323,14 @@ Three workers per geyser, concurrent access (`GasSlot.canEnter()` allows all 3 i
 
 | Phase | Loops | Seconds | Notes |
 |-------|-------|---------|-------|
-| Walk to geyser | 41 | 1.83 | ~5-unit typical geyser distance |
-| Harvest inside | 22.0 | 0.98 | Oracle MAPE sweep — calibrated #586 |
+| Walk to geyser | 41 | 1.83 | 7.6u geyser distance |
+| Harvest inside | 26.0 | 1.16 | Dual-run sweep — calibrated #606 |
 | Walk home | 41 | 1.83 | Same distance |
-| **Total cycle** | **104.0** | **4.64** | 4 gas per trip |
+| **Total cycle** | **108.0** | **4.82** | 4 gas per trip |
 
-**Per-worker income:** 51.7 gas/min. **Per-geyser (3 workers):** 155.1 gas/min. SC2 published: ~170 gas/min. The remaining gap (~9%) is unmodeled per-cycle overhead (deposit time at town hall, entry/exit animation at geyser), same pattern as mineral mining (#587).
+**Per-worker income:** 49.8 gas/min. **Per-geyser (3 workers):** 149.3 gas/min. SC2 dual-run (TorchesAIE_v4): 3w/1g=41.4/min/worker, 6w/2g=38.6/min/worker. EM at 26 loops: 3w within -2.2%, 6w within +4.0% — both within ±5% target.
 
-**Why harvest=22 when Liquipedia says 1.415s (31.7 loops):** The 9.7-loop reduction absorbs per-cycle overhead not explicitly modeled — gas deposit at town hall (~2-3 loops), geyser entry/exit animation (~2-3 loops), and path contention near the geyser (~2-3 loops). This parallels the mining calibration (#583) where the measured 5-loop mining animation expanded to 12 loops to absorb similar overhead.
+**Gas harvest recalibration (#606):** The coordinate translation fix (#605/#602) revealed the EM was over-producing gas by 19-27% at harvest=22. Dual-run sweep against 3w and 6w baselines found 26 loops minimises combined error. The increase from 22→26 absorbs additional per-cycle overhead not explicitly modeled — entry/exit animation and worker queuing at the geyser entrance. The oracle MAPE was calibrated at 22 but the dual-run uses correct geyser distances with exact worker counts, making it the more reliable reference for absolute gas rate.
 
 ### Tick-boundary quantisation
 
