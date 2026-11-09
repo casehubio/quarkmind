@@ -28,6 +28,7 @@ import io.quarkmind.sc2.intent.UnitDiedIntent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -2240,6 +2241,50 @@ class EmulatedGameTest {
         assertThat(state.minerals()).isEqualTo(200);
     }
 
+
+    @Test
+    void probeTrainingCadence_matchesSC2Pattern() {
+        EmulatedGame g = new EmulatedGame();
+        g.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));
+        g.reset();
+        g.setMineralsForTesting(2000);
+        g.setSupplyForTesting(200);
+
+        String nexusTag = g.snapshot().myBuildings().stream()
+                           .filter(b -> b.type() == BuildingType.NEXUS).findFirst().orElseThrow().tag();
+
+        for (int i = 0; i < 5; i++) {
+            g.applyIntent(new TrainIntent(nexusTag, UnitType.PROBE));
+        }
+
+        int           initialWorkers  = 12;
+        List<Integer> completionTicks = new ArrayList<>();
+        int           lastCount       = initialWorkers;
+        for (int t = 1; t <= 70; t++) {
+            g.tick();
+            int probeCount = (int) g.snapshot().myUnits().stream()
+                                    .filter(u -> u.type() == UnitType.PROBE).count();
+            if (probeCount > lastCount) {
+                completionTicks.add(t);
+                lastCount = probeCount;
+            }
+        }
+
+        assertThat(completionTicks).hasSize(5);
+        List<Integer> intervals = new ArrayList<>();
+        intervals.add(completionTicks.get(0));
+        for (int i = 1; i < completionTicks.size(); i++) {
+            intervals.add(completionTicks.get(i) - completionTicks.get(i - 1));
+        }
+        System.out.println("Probe training cadence: " + intervals);
+        int total3 = intervals.get(0) + intervals.get(1) + intervals.get(2);
+        assertThat(total3)
+                .as("3-Probe cycle must total 37 ticks (272*3/22 = 37.09)")
+                .isEqualTo(37);
+        assertThat(intervals.get(0))
+                .as("First Probe must take 13 ticks (272 loops crosses tick boundary)")
+                .isEqualTo(13);
+    }
 
     @Test
     void perRaceMineralAccuracy_protoss() {

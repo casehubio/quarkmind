@@ -1539,6 +1539,8 @@ public class EmulatedGame {
 
     void setVespeneForTesting(int amount) {friendly.setVespene(amount);}
 
+    void setSupplyForTesting(int amount)  {friendly.setSupply(amount);}
+
 
     /** Positions an enemy near the base for combat tests. */
     void spawnEnemyForTesting(UnitType type, Point2d position) {
