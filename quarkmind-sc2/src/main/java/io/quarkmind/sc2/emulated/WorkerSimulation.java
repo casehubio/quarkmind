@@ -284,8 +284,16 @@ class WorkerSimulation {
                     continue;
                 }
                 if (!w.assignedPatch.miners.contains(w)) {
-                    tryStartMining(w, tickStartLoop + (loopsPerTick - loopsRemaining));
-                    return income;
+                    double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
+                    if (currentLoop < w.assignedPatch.lockEndLoop) {
+                        int waitLoops = (int) Math.ceil(w.assignedPatch.lockEndLoop - currentLoop);
+                        if (waitLoops >= loopsRemaining) return income;
+                        loopsRemaining -= waitLoops;
+                        currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
+                    }
+                    tryStartMining(w, currentLoop);
+                    if (!w.assignedPatch.miners.contains(w)) return income;
+                    continue;
                 }
                 double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
                 if (currentLoop >= w.phaseEndLoop) {
