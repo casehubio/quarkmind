@@ -559,5 +559,7 @@ starcraft.worker.gas-harvest-duration-loops=26.0
 starcraft.worker.deposit-duration-loops=0.0
 starcraft.worker.acceleration=3.5
 starcraft.worker.deceleration=3.5
+starcraft.worker.patch-docking-overhead-loops=34.0
+starcraft.worker.patch-distance=7.0
 starcraft.economy.rate-interval-loops=160
 ```
