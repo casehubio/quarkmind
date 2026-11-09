@@ -762,7 +762,8 @@ public class EmulatedGame {
         final int fMCost = mCost;
         final int fGCost = gCost;
         if (state == friendly && model != null) {
-            long buildDurationTicks = (completesAtLoop - gameFrame * (long) SC2Data.LOOPS_PER_TICK) / SC2Data.LOOPS_PER_TICK;
+            long buildDurationLoops = completesAtLoop - gameFrame * (long) SC2Data.LOOPS_PER_TICK;
+            long buildDurationTicks = (buildDurationLoops + SC2Data.LOOPS_PER_TICK - 1) / SC2Data.LOOPS_PER_TICK;
             long pauseTicks = model.buildWorkerPauseTicks(bt, buildDurationTicks);
             if (pauseTicks > 0) {
                 workerSimulation.pauseWorkerForBuilding(b.location(), gameFrame + pauseTicks);
