@@ -105,7 +105,7 @@ Each entry documents value, source, and confidence level.
 | 12w Zerg (tick 304) | 3415 | 3415 | **0.0%** |
 | 16w saturation (tick 304) | 4260 | 4555 | +6.9% |
 
-16w 6.9% gap: primarily from Probe training phase shift (integer division of 272/22 train time). Tracked as #601.
+16w 6.9% gap: sub-tick training resolution (#601) fixed the Probe training cadence (first Probe now correctly at tick 13, not 12) but did not reduce the 16w gap. The 6.9% has a different primary cause — not the training phase shift.
 
 ### Saturation curve (SC2 dual-run, Protoss, TorchesAIE_v4)
 
@@ -333,6 +333,8 @@ Three workers per geyser, concurrent access (`GasSlot.canEnter()` allows all 3 i
 The simulation's 22-loop tick creates a time resolution of 0.982 seconds. Before sub-tick chaining, state transitions (arrive→mine, mine→return, return→deposit) wasted the remaining loops in the tick — up to 22 loops lost per transition, 3 transitions per cycle, potentially 15% of cycle time evaporated at tick boundaries.
 
 Sub-tick chaining (implemented in #578 for movement, #583 for mining, #584 for gas) tracks `loopsRemaining` within each tick and chains transitions immediately. This eliminated the dead time but also exposed physics constant errors that the quantisation had been masking — calibration sweeps that previously showed wide plateaus of identical output now show distinct values at each constant.
+
+**Production completions** also use loop precision (#601). `PendingCompletion` tracks `completesAtLoop` and `fireCompletions` compares against `gameFrame * LOOPS_PER_TICK`. Training/building/research completions fire in the first tick whose loop range includes the completion loop — no truncation. Probe training cadence: [13, 12, 13, 12, 12] (was [12, 12, 13, 12, 12] with tick-level integer division).
 
 **General principle:** In any tick-based simulation, if a calibration sweep shows plateaus where different constant values produce identical output, the time resolution is too coarse to express the constant. Fix the resolution before calibrating the constant.
 
