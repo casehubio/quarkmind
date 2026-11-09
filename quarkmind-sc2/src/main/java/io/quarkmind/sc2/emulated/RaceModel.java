@@ -123,6 +123,11 @@ public interface RaceModel {
 
     default boolean parallelProduction() {return false;}
 
+    default double miningEfficiencyFactor() {return 1.0;}
+
+    default double gasEfficiencyFactor() {return 1.0;}
+
+
     /** The worker unit type for this race — used by countWorkersPerBase. */
     UnitType workerType();
 

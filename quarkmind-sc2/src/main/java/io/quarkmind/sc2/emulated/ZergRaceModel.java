@@ -170,6 +170,10 @@ class ZergRaceModel implements RaceModel {
     public boolean parallelProduction()                {return true;}
 
     @Override public UnitType workerType()             { return UnitType.DRONE; }
+
+    @Override
+    public double miningEfficiencyFactor() {return 1.12;}
+
     @Override public Set<BuildingType> townHallTypes() { return TOWN_HALLS; }
 
     int larvaCount(final String hatcheryTag)  { return hatcheryLarvaCount.getOrDefault(hatcheryTag, 0); }

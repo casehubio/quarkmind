@@ -110,6 +110,10 @@ class ProtossRaceModel implements RaceModel {
     public UnitType workerType()             {return UnitType.PROBE;}
 
     @Override
+    public double miningEfficiencyFactor() {return 1.18;}
+
+
+    @Override
     public Set<BuildingType> townHallTypes() {return TOWN_HALLS;}
 
     private static final long PROBE_BUILD_ROUND_TRIP_TICKS = 7;
