@@ -68,9 +68,10 @@ Each entry documents value, source, and confidence level.
 | Gas harvest duration | 22.0 loops (0.98s) | Oracle MAPE sweep (118 replays) | **Calibrated** — #586 | `starcraft.worker.gas-harvest-duration-loops` |
 | Gas cargo | 4 | Liquipedia | **Published** | — |
 | Max workers per geyser | 3 | SC2 mechanics | **Published** | — |
-| Gas geyser distance | ~7.6u from town hall | SC2 dual-run (TorchesAIE_v4) | **Calibrated** — #597 | — |
+| Gas geyser distance (seeded) | ~7.6u from town hall | SC2 dual-run (TorchesAIE_v4) | **Calibrated** — #597 | — |
+| Gas geyser distance (SC2 API) | 5.7u and 8.5u | SC2 observation API | **Calibrated** — #602 | — |
 
-**Seeded geyser positions (all races):** (15,11) and (11,15) relative to town hall at (8,8) = 7.6u. SC2 3w gas rate: 44.3 vespene/min/worker. EM: 45.9 (+3.7%).
+**Seeded geyser positions (all races):** (15,11) and (11,15) relative to town hall at (8,8) = 7.6u symmetric. **SC2 API positions (#602):** real geysers on TorchesAIE_v4 are asymmetric — 5.7u and 8.5u from Nexus center (avg 7.1u). All 10 calibration baselines now include 32 geyser positions (full map); `DualRunCalibrationTest` filters to the 2 within 12u of the town hall.
 
 ---
 
@@ -81,8 +82,11 @@ Each entry documents value, source, and confidence level.
 | Close patch distance | avg 6.6 units | Oracle replay mineral positions | **Calibrated** — #567 |
 | Far patch distance | avg 7.6 units | Oracle replay mineral positions | **Calibrated** — #567 |
 | Default patch distance | 7.0 units (uniform) | SC2 dual-run calibration sweep | **Calibrated** — #599 | `starcraft.worker.patch-distance` |
+| SC2 API distances (TorchesAIE_v4) | 3.0–5.9u (center-to-center) | SC2 observation API | **Calibrated** — #605 |
 | Close patch minerals | 1500 | SC2 standard | **Published** |
 | Far patch minerals | 750 | SC2 standard | **Published** |
+
+**SC2 API patch positions (#605):** All 10 calibration baselines now include exact mineral patch positions from the SC2 observation API (154 patches per map). The DualRunCalibrationTest injects these via `setMineralPatchResources()` before `reset()`, so the EM uses real distances instead of the default 7.0u uniform distance. TorchesAIE_v4 starting base patches are 3.0–5.9u from Nexus center (close=4.0u avg, far=4.6u avg) — much shorter than the oracle replay averages because the API returns center-to-center distances while replay distances include model offsets.
 
 ---
 

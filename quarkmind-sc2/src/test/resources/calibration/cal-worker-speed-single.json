@@ -2,7 +2,7 @@
   "playbook" : "cal-worker-speed-single",
   "race" : "PROTOSS",
   "sc2Build" : "unknown",
-  "recordedAt" : "2026-11-09T03:15:21.644110Z",
+  "recordedAt" : "2026-11-09T20:01:33.997866Z",
   "tickCount" : 122,
   "snapshots" : [ {
     "tick" : 0,
@@ -162,7 +162,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 12,
-    "minerals" : 135,
+    "minerals" : 140,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -188,7 +188,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 14,
-    "minerals" : 170,
+    "minerals" : 165,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -227,7 +227,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 17,
-    "minerals" : 190,
+    "minerals" : 195,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -240,7 +240,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 18,
-    "minerals" : 205,
+    "minerals" : 200,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -279,7 +279,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 21,
-    "minerals" : 230,
+    "minerals" : 235,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -344,7 +344,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 26,
-    "minerals" : 290,
+    "minerals" : 295,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -383,7 +383,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 29,
-    "minerals" : 330,
+    "minerals" : 325,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -409,7 +409,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 31,
-    "minerals" : 355,
+    "minerals" : 350,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -448,7 +448,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 34,
-    "minerals" : 380,
+    "minerals" : 385,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -474,7 +474,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 36,
-    "minerals" : 410,
+    "minerals" : 415,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -513,7 +513,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 39,
-    "minerals" : 435,
+    "minerals" : 440,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -552,7 +552,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 42,
-    "minerals" : 475,
+    "minerals" : 480,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -591,7 +591,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 45,
-    "minerals" : 500,
+    "minerals" : 510,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -604,7 +604,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 46,
-    "minerals" : 520,
+    "minerals" : 525,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -617,7 +617,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 47,
-    "minerals" : 530,
+    "minerals" : 535,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -656,7 +656,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 50,
-    "minerals" : 560,
+    "minerals" : 570,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -682,7 +682,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 52,
-    "minerals" : 590,
+    "minerals" : 595,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -695,7 +695,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 53,
-    "minerals" : 595,
+    "minerals" : 600,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -734,7 +734,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 56,
-    "minerals" : 625,
+    "minerals" : 635,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -747,19 +747,6 @@
     "upgrades" : [ ]
   }, {
     "tick" : 57,
-    "minerals" : 645,
-    "vespene" : 0,
-    "supply" : 15,
-    "supplyUsed" : 12,
-    "units" : {
-      "PROBE" : 12
-    },
-    "buildings" : {
-      "NEXUS" : 1
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 58,
     "minerals" : 650,
     "vespene" : 0,
     "supply" : 15,
@@ -772,8 +759,21 @@
     },
     "upgrades" : [ ]
   }, {
+    "tick" : 58,
+    "minerals" : 655,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 12,
+    "units" : {
+      "PROBE" : 12
+    },
+    "buildings" : {
+      "NEXUS" : 1
+    },
+    "upgrades" : [ ]
+  }, {
     "tick" : 59,
-    "minerals" : 660,
+    "minerals" : 665,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -799,19 +799,6 @@
     "upgrades" : [ ]
   }, {
     "tick" : 61,
-    "minerals" : 685,
-    "vespene" : 0,
-    "supply" : 15,
-    "supplyUsed" : 12,
-    "units" : {
-      "PROBE" : 12
-    },
-    "buildings" : {
-      "NEXUS" : 1
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 62,
     "minerals" : 695,
     "vespene" : 0,
     "supply" : 15,
@@ -824,8 +811,21 @@
     },
     "upgrades" : [ ]
   }, {
+    "tick" : 62,
+    "minerals" : 700,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 12,
+    "units" : {
+      "PROBE" : 12
+    },
+    "buildings" : {
+      "NEXUS" : 1
+    },
+    "upgrades" : [ ]
+  }, {
     "tick" : 63,
-    "minerals" : 705,
+    "minerals" : 715,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -838,7 +838,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 64,
-    "minerals" : 720,
+    "minerals" : 730,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -864,7 +864,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 66,
-    "minerals" : 745,
+    "minerals" : 755,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -877,7 +877,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 67,
-    "minerals" : 750,
+    "minerals" : 755,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -890,7 +890,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 68,
-    "minerals" : 765,
+    "minerals" : 770,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -903,19 +903,6 @@
     "upgrades" : [ ]
   }, {
     "tick" : 69,
-    "minerals" : 775,
-    "vespene" : 0,
-    "supply" : 15,
-    "supplyUsed" : 12,
-    "units" : {
-      "PROBE" : 12
-    },
-    "buildings" : {
-      "NEXUS" : 1
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 70,
     "minerals" : 790,
     "vespene" : 0,
     "supply" : 15,
@@ -928,8 +915,8 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 71,
-    "minerals" : 800,
+    "tick" : 70,
+    "minerals" : 795,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -941,7 +928,7 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 72,
+    "tick" : 71,
     "minerals" : 810,
     "vespene" : 0,
     "supply" : 15,
@@ -954,8 +941,21 @@
     },
     "upgrades" : [ ]
   }, {
+    "tick" : 72,
+    "minerals" : 815,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 12,
+    "units" : {
+      "PROBE" : 12
+    },
+    "buildings" : {
+      "NEXUS" : 1
+    },
+    "upgrades" : [ ]
+  }, {
     "tick" : 73,
-    "minerals" : 820,
+    "minerals" : 815,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -968,7 +968,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 74,
-    "minerals" : 840,
+    "minerals" : 850,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -981,7 +981,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 75,
-    "minerals" : 840,
+    "minerals" : 850,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -994,7 +994,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 76,
-    "minerals" : 855,
+    "minerals" : 860,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1007,7 +1007,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 77,
-    "minerals" : 865,
+    "minerals" : 875,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1020,7 +1020,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 78,
-    "minerals" : 870,
+    "minerals" : 880,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1033,7 +1033,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 79,
-    "minerals" : 895,
+    "minerals" : 910,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1046,7 +1046,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 80,
-    "minerals" : 900,
+    "minerals" : 910,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1059,7 +1059,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 81,
-    "minerals" : 905,
+    "minerals" : 915,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1085,7 +1085,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 83,
-    "minerals" : 935,
+    "minerals" : 945,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1098,7 +1098,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 84,
-    "minerals" : 955,
+    "minerals" : 950,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1111,32 +1111,6 @@
     "upgrades" : [ ]
   }, {
     "tick" : 85,
-    "minerals" : 960,
-    "vespene" : 0,
-    "supply" : 15,
-    "supplyUsed" : 12,
-    "units" : {
-      "PROBE" : 12
-    },
-    "buildings" : {
-      "NEXUS" : 1
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 86,
-    "minerals" : 965,
-    "vespene" : 0,
-    "supply" : 15,
-    "supplyUsed" : 12,
-    "units" : {
-      "PROBE" : 12
-    },
-    "buildings" : {
-      "NEXUS" : 1
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 87,
     "minerals" : 970,
     "vespene" : 0,
     "supply" : 15,
@@ -1149,8 +1123,8 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 88,
-    "minerals" : 990,
+    "tick" : 86,
+    "minerals" : 975,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1162,7 +1136,20 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 89,
+    "tick" : 87,
+    "minerals" : 975,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 12,
+    "units" : {
+      "PROBE" : 12
+    },
+    "buildings" : {
+      "NEXUS" : 1
+    },
+    "upgrades" : [ ]
+  }, {
+    "tick" : 88,
     "minerals" : 1005,
     "vespene" : 0,
     "supply" : 15,
@@ -1175,8 +1162,21 @@
     },
     "upgrades" : [ ]
   }, {
+    "tick" : 89,
+    "minerals" : 1010,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 12,
+    "units" : {
+      "PROBE" : 12
+    },
+    "buildings" : {
+      "NEXUS" : 1
+    },
+    "upgrades" : [ ]
+  }, {
     "tick" : 90,
-    "minerals" : 1015,
+    "minerals" : 1025,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1189,7 +1189,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 91,
-    "minerals" : 1025,
+    "minerals" : 1035,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1202,7 +1202,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 92,
-    "minerals" : 1025,
+    "minerals" : 1040,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1215,7 +1215,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 93,
-    "minerals" : 1060,
+    "minerals" : 1055,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1228,19 +1228,6 @@
     "upgrades" : [ ]
   }, {
     "tick" : 94,
-    "minerals" : 1060,
-    "vespene" : 0,
-    "supply" : 15,
-    "supplyUsed" : 12,
-    "units" : {
-      "PROBE" : 12
-    },
-    "buildings" : {
-      "NEXUS" : 1
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 95,
     "minerals" : 1070,
     "vespene" : 0,
     "supply" : 15,
@@ -1253,8 +1240,8 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 96,
-    "minerals" : 1080,
+    "tick" : 95,
+    "minerals" : 1075,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1266,7 +1253,7 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 97,
+    "tick" : 96,
     "minerals" : 1090,
     "vespene" : 0,
     "supply" : 15,
@@ -1279,8 +1266,21 @@
     },
     "upgrades" : [ ]
   }, {
+    "tick" : 97,
+    "minerals" : 1100,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 12,
+    "units" : {
+      "PROBE" : 12
+    },
+    "buildings" : {
+      "NEXUS" : 1
+    },
+    "upgrades" : [ ]
+  }, {
     "tick" : 98,
-    "minerals" : 1105,
+    "minerals" : 1110,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1293,7 +1293,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 99,
-    "minerals" : 1120,
+    "minerals" : 1130,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1306,7 +1306,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 100,
-    "minerals" : 1125,
+    "minerals" : 1130,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1319,7 +1319,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 101,
-    "minerals" : 1140,
+    "minerals" : 1150,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1332,19 +1332,6 @@
     "upgrades" : [ ]
   }, {
     "tick" : 102,
-    "minerals" : 1145,
-    "vespene" : 0,
-    "supply" : 15,
-    "supplyUsed" : 12,
-    "units" : {
-      "PROBE" : 12
-    },
-    "buildings" : {
-      "NEXUS" : 1
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 103,
     "minerals" : 1160,
     "vespene" : 0,
     "supply" : 15,
@@ -1357,8 +1344,8 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 104,
-    "minerals" : 1165,
+    "tick" : 103,
+    "minerals" : 1170,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1370,7 +1357,7 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 105,
+    "tick" : 104,
     "minerals" : 1180,
     "vespene" : 0,
     "supply" : 15,
@@ -1383,7 +1370,7 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 106,
+    "tick" : 105,
     "minerals" : 1190,
     "vespene" : 0,
     "supply" : 15,
@@ -1396,7 +1383,7 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 107,
+    "tick" : 106,
     "minerals" : 1205,
     "vespene" : 0,
     "supply" : 15,
@@ -1409,7 +1396,7 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 108,
+    "tick" : 107,
     "minerals" : 1220,
     "vespene" : 0,
     "supply" : 15,
@@ -1422,8 +1409,8 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 109,
-    "minerals" : 1225,
+    "tick" : 108,
+    "minerals" : 1230,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1435,7 +1422,7 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 110,
+    "tick" : 109,
     "minerals" : 1235,
     "vespene" : 0,
     "supply" : 15,
@@ -1448,8 +1435,8 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 111,
-    "minerals" : 1255,
+    "tick" : 110,
+    "minerals" : 1245,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1461,7 +1448,7 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 112,
+    "tick" : 111,
     "minerals" : 1260,
     "vespene" : 0,
     "supply" : 15,
@@ -1474,20 +1461,7 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 113,
-    "minerals" : 1275,
-    "vespene" : 0,
-    "supply" : 15,
-    "supplyUsed" : 12,
-    "units" : {
-      "PROBE" : 12
-    },
-    "buildings" : {
-      "NEXUS" : 1
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 114,
+    "tick" : 112,
     "minerals" : 1280,
     "vespene" : 0,
     "supply" : 15,
@@ -1500,7 +1474,7 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 115,
+    "tick" : 113,
     "minerals" : 1285,
     "vespene" : 0,
     "supply" : 15,
@@ -1513,8 +1487,8 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 116,
-    "minerals" : 1310,
+    "tick" : 114,
+    "minerals" : 1290,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1526,7 +1500,20 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 117,
+    "tick" : 115,
+    "minerals" : 1300,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 12,
+    "units" : {
+      "PROBE" : 12
+    },
+    "buildings" : {
+      "NEXUS" : 1
+    },
+    "upgrades" : [ ]
+  }, {
+    "tick" : 116,
     "minerals" : 1320,
     "vespene" : 0,
     "supply" : 15,
@@ -1539,33 +1526,20 @@
     },
     "upgrades" : [ ]
   }, {
+    "tick" : 117,
+    "minerals" : 1335,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 12,
+    "units" : {
+      "PROBE" : 12
+    },
+    "buildings" : {
+      "NEXUS" : 1
+    },
+    "upgrades" : [ ]
+  }, {
     "tick" : 118,
-    "minerals" : 1335,
-    "vespene" : 0,
-    "supply" : 15,
-    "supplyUsed" : 12,
-    "units" : {
-      "PROBE" : 12
-    },
-    "buildings" : {
-      "NEXUS" : 1
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 119,
-    "minerals" : 1335,
-    "vespene" : 0,
-    "supply" : 15,
-    "supplyUsed" : 12,
-    "units" : {
-      "PROBE" : 12
-    },
-    "buildings" : {
-      "NEXUS" : 1
-    },
-    "upgrades" : [ ]
-  }, {
-    "tick" : 120,
     "minerals" : 1345,
     "vespene" : 0,
     "supply" : 15,
@@ -1578,8 +1552,8 @@
     },
     "upgrades" : [ ]
   }, {
-    "tick" : 121,
-    "minerals" : 1355,
+    "tick" : 119,
+    "minerals" : 1350,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1590,5 +1564,932 @@
       "NEXUS" : 1
     },
     "upgrades" : [ ]
-  } ]
+  }, {
+    "tick" : 120,
+    "minerals" : 1360,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 12,
+    "units" : {
+      "PROBE" : 12
+    },
+    "buildings" : {
+      "NEXUS" : 1
+    },
+    "upgrades" : [ ]
+  }, {
+    "tick" : 121,
+    "minerals" : 1370,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 12,
+    "units" : {
+      "PROBE" : 12
+    },
+    "buildings" : {
+      "NEXUS" : 1
+    },
+    "upgrades" : [ ]
+  } ],
+  "mineralPatches" : [ {
+    "x" : 109.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 65.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 61.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 91.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 44.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 31.0,
+    "y" : 166.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 65.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 164.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 27.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 134.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 61.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 97.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 27.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 160.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 63.0,
+    "y" : 103.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 97.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 60.0,
+    "y" : 103.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 161.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 126.0,
+    "y" : 69.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 42.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 24.0,
+    "y" : 46.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 33.0,
+    "y" : 81.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 47.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 104.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 102.0,
+    "y" : 50.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 27.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 57.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 29.0,
+    "y" : 128.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 48.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 26.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 33.0,
+    "y" : 126.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 103.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 113.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 115.0,
+    "y" : 68.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 102.0,
+    "y" : 157.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 44.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 160.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 72.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 47.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 103.0,
+    "y" : 158.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 133.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 31.0,
+    "y" : 41.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 73.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 68.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 109.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 115.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 27.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 134.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 26.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 45.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 30.0,
+    "y" : 80.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 29.0,
+    "y" : 79.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 46.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 74.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 163.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 64.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 54.0,
+    "y" : 103.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 135.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 95.0,
+    "y" : 163.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 64.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 137.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 43.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 109.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 103.0,
+    "y" : 49.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 97.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 95.0,
+    "y" : 138.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 30.0,
+    "y" : 127.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 115.0,
+    "y" : 139.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 133.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 124.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 101.0,
+    "y" : 162.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 56.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 60.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 105.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 107.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 28.0,
+    "y" : 129.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 125.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 165.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 34.0,
+    "y" : 80.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 61.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 92.0,
+    "y" : 139.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 105.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 30.0,
+    "y" : 40.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 46.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 56.0,
+    "y" : 163.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 53.0,
+    "y" : 104.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 91.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 101.0,
+    "y" : 45.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 70.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 126.0,
+    "y" : 138.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 115.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 126.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 95.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 92.0,
+    "y" : 68.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 34.0,
+    "y" : 127.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 162.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 121.0,
+    "y" : 104.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 30.0,
+    "y" : 167.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 95.0,
+    "y" : 69.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 78.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 68.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 24.0,
+    "y" : 161.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 123.0,
+    "y" : 103.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 69.0,
+    "y" : 163.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 159.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 161.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 126.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 57.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 68.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 60.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 74.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 96.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 48.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 69.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 139.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 107.0,
+    "y" : 73.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 159.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 56.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 98.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 128.0,
+    "y" : 103.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 163.5,
+    "amount" : 750,
+    "rich" : false
+  } ],
+  "geyserPositions" : [ {
+    "x" : 97.5,
+    "y" : 128.5,
+    "amount" : 2250
+  }, {
+    "x" : 27.5,
+    "y" : 136.5,
+    "amount" : 2250
+  }, {
+    "x" : 91.5,
+    "y" : 43.5,
+    "amount" : 2250
+  }, {
+    "x" : 88.5,
+    "y" : 68.5,
+    "amount" : 2250
+  }, {
+    "x" : 131.5,
+    "y" : 79.5,
+    "amount" : 2250
+  }, {
+    "x" : 88.5,
+    "y" : 160.5,
+    "amount" : 2250
+  }, {
+    "x" : 24.5,
+    "y" : 50.5,
+    "amount" : 2250
+  }, {
+    "x" : 34.5,
+    "y" : 40.5,
+    "amount" : 2250
+  }, {
+    "x" : 55.5,
+    "y" : 47.5,
+    "amount" : 2250
+  }, {
+    "x" : 131.5,
+    "y" : 156.5,
+    "amount" : 2250
+  }, {
+    "x" : 121.5,
+    "y" : 69.5,
+    "amount" : 2250
+  }, {
+    "x" : 121.5,
+    "y" : 41.5,
+    "amount" : 2250
+  }, {
+    "x" : 88.5,
+    "y" : 47.5,
+    "amount" : 2250
+  }, {
+    "x" : 50.5,
+    "y" : 108.5,
+    "amount" : 2250
+  }, {
+    "x" : 31.5,
+    "y" : 67.5,
+    "amount" : 2250
+  }, {
+    "x" : 132.5,
+    "y" : 108.5,
+    "amount" : 2250
+  }, {
+    "x" : 31.5,
+    "y" : 140.5,
+    "amount" : 2250
+  }, {
+    "x" : 131.5,
+    "y" : 51.5,
+    "amount" : 2250
+  }, {
+    "x" : 24.5,
+    "y" : 157.5,
+    "amount" : 2250
+  }, {
+    "x" : 69.5,
+    "y" : 160.5,
+    "amount" : 2250
+  }, {
+    "x" : 97.5,
+    "y" : 79.5,
+    "amount" : 2250
+  }, {
+    "x" : 69.5,
+    "y" : 47.5,
+    "amount" : 2250
+  }, {
+    "x" : 55.5,
+    "y" : 160.5,
+    "amount" : 2250
+  }, {
+    "x" : 88.5,
+    "y" : 139.5,
+    "amount" : 2250
+  }, {
+    "x" : 91.5,
+    "y" : 164.5,
+    "amount" : 2250
+  }, {
+    "x" : 121.5,
+    "y" : 138.5,
+    "amount" : 2250
+  }, {
+    "x" : 50.5,
+    "y" : 99.5,
+    "amount" : 2250
+  }, {
+    "x" : 27.5,
+    "y" : 71.5,
+    "amount" : 2250
+  }, {
+    "x" : 121.5,
+    "y" : 166.5,
+    "amount" : 2250
+  }, {
+    "x" : 132.5,
+    "y" : 99.5,
+    "amount" : 2250
+  }, {
+    "x" : 131.5,
+    "y" : 128.5,
+    "amount" : 2250
+  }, {
+    "x" : 34.5,
+    "y" : 167.5,
+    "amount" : 2250
+  } ],
+  "basePosition" : [ 124.5, 159.5 ]
 }

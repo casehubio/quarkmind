@@ -83,7 +83,8 @@ class CalibrationBaselineTest {
         CalibrationBaseline baseline = new CalibrationBaseline(
             "economy-only-protoss", "PROTOSS", "5.0.16.90136",
             "2026-10-30T14:00:00Z", 2,
-            List.of(snap0, snap1)
+            List.of(snap0, snap1),
+            null, null, null
         );
 
         String json = baseline.toJson();

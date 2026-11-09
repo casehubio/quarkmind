@@ -90,6 +90,12 @@ public class EmulatedGame {
         this.mineralPatchResources = List.copyOf(patches);
     }
 
+    public void setGeyserResources(List<Resource> resources) {
+        geysers.clear();
+        geysers.addAll(resources);
+    }
+
+
     public void setEconomyConfig(EconomyConfig config) {
         this.economyTracker = new EconomyTracker(config.rateIntervalLoops());
     }

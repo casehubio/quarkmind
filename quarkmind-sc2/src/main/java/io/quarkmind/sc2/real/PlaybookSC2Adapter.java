@@ -41,6 +41,9 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
     private int tick = -1;
     private int buildIndex = 0;
     private int gasIndex = 0;
+    private List<CalibrationBaseline.PatchPosition> capturedMineralPatches;
+    private List<CalibrationBaseline.GeyserPosition> capturedGeyserPositions;
+    private float[] capturedBasePosition;
 
 
     public PlaybookSC2Adapter(QuarkusSC2Transport transport, String playbookResource) {
@@ -78,6 +81,25 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
                 tick = emTick;
                 GameState state = ObservationTranslator.translate(obs, null);
                 snapshots.add(CalibrationSnapshot.from(tick, state));
+
+                if (capturedMineralPatches == null && state.mineralPatches() != null) {
+                    capturedMineralPatches = state.mineralPatches().stream()
+                        .map(r -> new CalibrationBaseline.PatchPosition(
+                            r.position().x(), r.position().y(), r.remaining(), r.rich()))
+                        .toList();
+                }
+                if (capturedGeyserPositions == null && state.geysers() != null) {
+                    capturedGeyserPositions = state.geysers().stream()
+                        .map(r -> new CalibrationBaseline.GeyserPosition(
+                            r.position().x(), r.position().y(), r.remaining()))
+                        .toList();
+                }
+                if (capturedBasePosition == null) {
+                    state.myBuildings().stream()
+                        .filter(b -> b.isComplete())
+                        .findFirst()
+                        .ifPresent(b -> capturedBasePosition = new float[]{b.position().x(), b.position().y()});
+                }
 
                 int                   supplyUsed = (int) state.supplyUsed();
                 List<ResolvedCommand> commands   = new ArrayList<>();
@@ -117,7 +139,10 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
         return new CalibrationBaseline(
             playbookName, race.name(), sc2Build,
             Instant.now().toString(), snapshots.size(),
-            List.copyOf(snapshots)
+            List.copyOf(snapshots),
+            capturedMineralPatches,
+            capturedGeyserPositions,
+            capturedBasePosition
         );
     }
 

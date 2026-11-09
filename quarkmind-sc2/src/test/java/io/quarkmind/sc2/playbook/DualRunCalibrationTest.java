@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.quarkmind.domain.BuildingType;
+import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
-import io.quarkmind.domain.Point2d;
 import io.quarkmind.sc2.emulated.EmulatedGame;
 import io.quarkmind.sc2.emulated.RaceModelFactory;
 import org.junit.jupiter.api.Test;
@@ -48,6 +48,40 @@ class DualRunCalibrationTest {
         }
     }
 
+    @org.junit.jupiter.api.Tag("diagnostic")
+    @Test
+    void diagnosticEarlyTickMineralTrace() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-12w.json");
+        Race                race        = Race.PROTOSS;
+        EmulatedGame        game        = new EmulatedGame();
+        game.setPlayerRaceModel(RaceModelFactory.forRace(race));
+        if (sc2Baseline.basePosition() != null && sc2Baseline.mineralPatches() != null) {
+            float fx = 8f - sc2Baseline.basePosition()[0];
+            float fy = 8f - sc2Baseline.basePosition()[1];
+            game.setMineralPatchResources(sc2Baseline.mineralPatches().stream()
+                                                     .map(p -> new io.quarkmind.domain.Resource(
+                                                             "cal-" + sc2Baseline.mineralPatches().indexOf(p),
+                                                             new Point2d(p.x() + fx, p.y() + fy), p.amount(), p.rich()))
+                                                     .toList());
+        }
+        game.reset();
+
+        System.out.println("=== EM per-tick mineral trace (real patch positions) ===");
+        System.out.println("Tick | EM minerals | SC2 minerals | Delta | EM delta");
+        int prevEm = 50;
+        for (int tick = 0; tick <= 20; tick++) {
+            int emMinerals  = game.snapshot().minerals();
+            int sc2Minerals = sc2Baseline.snapshots().get(tick).minerals();
+            int delta       = emMinerals - sc2Minerals;
+            int emDelta     = emMinerals - prevEm;
+            System.out.printf("  %3d |  %10d |   %10d |  %+4d | %+4d%n",
+                              tick, emMinerals, sc2Minerals, delta, emDelta);
+            prevEm = emMinerals;
+            game.tick();
+        }
+    }
+
+
     @Test
     void dualRunCalMineralBaselineTerranAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-terran.json");
@@ -85,6 +119,27 @@ class DualRunCalibrationTest {
                               result.expected(), result.actual());
         }
     }
+
+    @Test
+    void dualRunCalGasDual6wAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-gas-dual-6w.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-gas-dual-6w.yaml", sc2Baseline, true, 3);
+        System.out.println(result.report());
+        if (!result.passed()) {
+            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
+                              result.divergenceTick(), result.divergenceField(),
+                              result.expected(), result.actual());
+        }
+        // Print gas rate comparison at checkpoints
+        var snapshots = sc2Baseline.snapshots();
+        for (int cp : new int[]{60, 120, 180, 240, 304}) {
+            if (cp < snapshots.size()) {
+                var s = snapshots.get(cp);
+                System.out.printf("[Gas] tick %d: SC2 vespene=%d%n", cp, s.vespene());
+            }
+        }
+    }
+
 
     @Test
     void dualRunCalMineralSaturated24wAgainstSC2() {
@@ -125,7 +180,8 @@ class DualRunCalibrationTest {
                 new CalibrationSnapshot(0, 50, 0, 15, 12, Map.of("PROBE", 12), Map.of("NEXUS", 1), Set.of()),
                 new CalibrationSnapshot(1, 62, 0, 15, 12, Map.of("PROBE", 12), Map.of("NEXUS", 1), Set.of()),
                 new CalibrationSnapshot(2, 74, 0, 15, 12, Map.of("PROBE", 99), Map.of("NEXUS", 1), Set.of())
-            )
+            ),
+            null, null, null
         );
 
         CalibrationResult result = calibrate("playbooks/economy-only-protoss.yaml", baseline);
@@ -144,7 +200,8 @@ class DualRunCalibrationTest {
             List.of(
                 new CalibrationSnapshot(0, 50, 0, 15, 12, Map.of("PROBE", 12), Map.of("NEXUS", 1), Set.of()),
                 new CalibrationSnapshot(1, 62, 0, 15, 12, Map.of("PROBE", 12), Map.of("NEXUS", 1, "GATEWAY", 3), Set.of())
-            )
+            ),
+            null, null, null
         );
 
         CalibrationResult result = calibrate("playbooks/economy-only-protoss.yaml", baseline);
@@ -163,7 +220,8 @@ class DualRunCalibrationTest {
             List.of(
                 new CalibrationSnapshot(0, 50, 0, 15, 12, Map.of("PROBE", 12), Map.of("NEXUS", 1), Set.of()),
                 new CalibrationSnapshot(1, 62, 0, 15, 12, Map.of("PROBE", 12), Map.of("NEXUS", 1), Set.of("WarpGateResearch"))
-            )
+            ),
+            null, null, null
         );
 
         CalibrationResult result = calibrate("playbooks/economy-only-protoss.yaml", baseline);
@@ -185,7 +243,8 @@ class DualRunCalibrationTest {
 
         CalibrationBaseline baseline = new CalibrationBaseline(
             "self-test", "PROTOSS", "emulated", "2026-10-30T00:00:00Z", 2,
-            List.of(tick0, tick1)
+            List.of(tick0, tick1),
+            null, null, null
         );
 
         CalibrationResult result = calibrate("playbooks/economy-only-protoss.yaml", baseline);
@@ -339,7 +398,7 @@ class DualRunCalibrationTest {
 
         CalibrationBaseline baseline = new CalibrationBaseline(
                 playbookResource, race.name(), "emulated-self", java.time.Instant.now().toString(),
-                durationTicks, snapshots);
+                durationTicks, snapshots, null, null, null);
 
         CalibrationResult result = calibrate(playbookResource, baseline);
         assertTrue(result.passed(), "Self-baseline should always pass: " + result.report());
@@ -367,7 +426,28 @@ class DualRunCalibrationTest {
 
         EmulatedGame game = new EmulatedGame();
         game.setPlayerRaceModel(RaceModelFactory.forRace(race));
+        float offX = 0, offY = 0;
+        if (baseline.basePosition() != null && baseline.mineralPatches() != null) {
+            offX = 8f - baseline.basePosition()[0];
+            offY = 8f - baseline.basePosition()[1];
+            float fx = offX, fy = offY;
+            game.setMineralPatchResources(baseline.mineralPatches().stream()
+                .map(p -> new io.quarkmind.domain.Resource(
+                    "cal-" + baseline.mineralPatches().indexOf(p),
+                    new Point2d(p.x() + fx, p.y() + fy), p.amount(), p.rich()))
+                .toList());
+        }
         game.reset();
+        if (baseline.basePosition() != null && baseline.geyserPositions() != null) {
+            float fx = offX, fy = offY;
+            Point2d emBase = new Point2d(8, 8);
+            game.setGeyserResources(baseline.geyserPositions().stream()
+                .map(g -> new io.quarkmind.domain.Resource(
+                    "cal-geyser-" + baseline.geyserPositions().indexOf(g),
+                    new Point2d(g.x() + fx, g.y() + fy), g.amount()))
+                .filter(g -> g.position().distanceTo(emBase) <= 12.0)
+                .toList());
+        }
         SC2DeliveryHandler handler = new SC2DeliveryHandler(game);
 
         boolean[] fired     = new boolean[steps.size()];
