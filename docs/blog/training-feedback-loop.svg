@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 260" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#475569" stroke-width="1.2"/>
+    </marker>
+    <marker id="arr-amber" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#d97706" stroke-width="1.2"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="350" y="24" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">The Training Feedback Loop</text>
+  <text x="350" y="42" text-anchor="middle" font-size="11" fill="#64748b">0.3% per-worker over-production compounds through 11 training cycles</text>
+
+  <!-- Boxes in the feedback loop -->
+  <rect x="40" y="70" width="160" height="50" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="120" y="92" text-anchor="middle" font-size="12" fill="#1e40af" font-weight="600">Per-worker income</text>
+  <text x="120" y="108" text-anchor="middle" font-size="11" fill="#3b82f6">+0.3% vs SC2</text>
+
+  <rect x="270" y="70" width="160" height="50" rx="8" fill="#fefce8" stroke="#ca8a04" stroke-width="1.5"/>
+  <text x="350" y="92" text-anchor="middle" font-size="12" fill="#854d0e" font-weight="600">Mineral balance</text>
+  <text x="350" y="108" text-anchor="middle" font-size="11" fill="#ca8a04">slightly higher</text>
+
+  <rect x="500" y="70" width="160" height="50" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="580" y="92" text-anchor="middle" font-size="12" fill="#166534" font-weight="600">Next Probe</text>
+  <text x="580" y="108" text-anchor="middle" font-size="11" fill="#16a34a">trained earlier</text>
+
+  <!-- Forward arrows -->
+  <line x1="200" y1="95" x2="262" y2="95" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="430" y1="95" x2="492" y2="95" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Feedback arrow (curves down and back) -->
+  <path d="M 580,120 L 580,170 Q 580,190 560,190 L 140,190 Q 120,190 120,170 L 120,120" fill="none" stroke="#d97706" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arr-amber)"/>
+  <text x="350" y="208" text-anchor="middle" font-size="12" fill="#d97706" font-weight="600">more workers mining = more income</text>
+  <text x="350" y="224" text-anchor="middle" font-size="11" fill="#92400e">x11 training cycles over 150 ticks</text>
+
+  <!-- Result -->
+  <text x="350" y="252" text-anchor="middle" font-size="13" fill="#1e293b" font-weight="600">0.3% rate error  x  11 cycles  =  6.6% economy gap</text>
+</svg>

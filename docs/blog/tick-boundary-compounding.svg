@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#334155" stroke-width="1.2"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#dc2626" stroke-width="1.2"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#16a34a" stroke-width="1.2"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="360" y="24" text-anchor="middle" font-size="15" font-weight="600" fill="#1e293b">Integer Division Truncation in Production Timing</text>
+  <text x="360" y="42" text-anchor="middle" font-size="11" fill="#64748b">Probe training: 272 loops = 12.36 ticks</text>
+
+  <!-- Timeline axis -->
+  <line x1="60" y1="100" x2="680" y2="100" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Tick boundaries -->
+  <line x1="120" y1="85" x2="120" y2="115" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="120" y="80" text-anchor="middle" font-size="10" fill="#94a3b8">loop 242</text>
+
+  <line x1="300" y1="85" x2="300" y2="115" stroke="#334155" stroke-width="2"/>
+  <text x="300" y="80" text-anchor="middle" font-size="11" fill="#334155" font-weight="600">loop 264</text>
+  <text x="300" y="130" text-anchor="middle" font-size="10" fill="#64748b">tick 12 | tick 13</text>
+
+  <line x1="480" y1="85" x2="480" y2="115" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="480" y="80" text-anchor="middle" font-size="10" fill="#94a3b8">loop 286</text>
+
+  <line x1="660" y1="85" x2="660" y2="115" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="660" y="80" text-anchor="middle" font-size="10" fill="#94a3b8">loop 308</text>
+
+  <!-- Tick labels -->
+  <text x="210" y="145" text-anchor="middle" font-size="12" fill="#475569">tick 12</text>
+  <text x="390" y="145" text-anchor="middle" font-size="12" fill="#475569">tick 13</text>
+  <text x="570" y="145" text-anchor="middle" font-size="12" fill="#475569">tick 14</text>
+
+  <!-- Completion point at loop 272 -->
+  <circle cx="348" cy="100" r="5" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
+  <text x="348" y="70" text-anchor="middle" font-size="11" fill="#d97706" font-weight="600">loop 272</text>
+
+  <!-- OLD: fires at tick 12 boundary (too early) -->
+  <line x1="300" y1="180" x2="300" y2="200" stroke="#dc2626" stroke-width="2" stroke-dasharray="4,3"/>
+  <circle cx="300" cy="200" r="4" fill="#dc2626"/>
+  <text x="295" y="220" text-anchor="end" font-size="12" fill="#dc2626" font-weight="600">272 / 22 = 12</text>
+  <text x="295" y="236" text-anchor="end" font-size="11" fill="#dc2626">fires at tick 12</text>
+  <text x="295" y="252" text-anchor="end" font-size="10" fill="#ef4444">8 loops early</text>
+
+  <!-- NEW: fires at tick 13 (correct) -->
+  <line x1="348" y1="180" x2="390" y2="200" stroke="#16a34a" stroke-width="2"/>
+  <circle cx="390" cy="200" r="4" fill="#16a34a"/>
+  <text x="395" y="220" text-anchor="start" font-size="12" fill="#16a34a" font-weight="600">completesAtLoop = 272</text>
+  <text x="395" y="236" text-anchor="start" font-size="11" fill="#16a34a">fires during tick 13</text>
+  <text x="395" y="252" text-anchor="start" font-size="10" fill="#16a34a">loop 272 is in tick 13's range</text>
+
+  <!-- Legend -->
+  <rect x="100" y="285" width="12" height="12" rx="2" fill="#dc2626"/>
+  <text x="118" y="296" font-size="11" fill="#475569">Old: integer division truncates to tick 12</text>
+  <rect x="400" y="285" width="12" height="12" rx="2" fill="#16a34a"/>
+  <text x="418" y="296" font-size="11" fill="#475569">New: loop precision fires in correct tick</text>
+
+  <!-- Shaded tick 12 range -->
+  <rect x="120" y="92" width="180" height="16" rx="2" fill="#fee2e2" opacity="0.5"/>
+  <!-- Shaded tick 13 range -->
+  <rect x="300" y="92" width="180" height="16" rx="2" fill="#dcfce7" opacity="0.5"/>
+</svg>
