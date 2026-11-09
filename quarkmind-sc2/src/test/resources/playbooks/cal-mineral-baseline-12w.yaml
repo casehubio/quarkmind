@@ -1,0 +1,40 @@
+playbook: cal-mineral-baseline-12w
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 305 ticks
+  purpose: Baseline per-worker mineral rate — 12 workers, no gas, no buildings, no training
+
+steps:
+  # No actions — just let the starting 12 Probes mine for 5 minutes.
+  # No Probe training, no buildings, no gas. Pure mineral income measurement.
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        PROBE: { min: 12, max: 12 }
+
+  - assert: tick-122
+    at: 122 ticks
+    expect:
+      units:
+        PROBE: { min: 12, max: 12 }
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      units:
+        PROBE: { min: 12, max: 12 }
+
+  - assert: tick-244
+    at: 244 ticks
+    expect:
+      units:
+        PROBE: { min: 12, max: 12 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        PROBE: { min: 12, max: 12 }
