@@ -371,6 +371,7 @@ class DualRunCalibrationTest {
         SC2DeliveryHandler handler = new SC2DeliveryHandler(game);
 
         boolean[] fired     = new boolean[steps.size()];
+        int       gasIdx    = 0;
         int       tickLimit = Math.min(baseline.tickCount(), baseline.snapshots().size());
 
         for (int tick = 0; tick < tickLimit; tick++) {
@@ -420,7 +421,15 @@ class DualRunCalibrationTest {
                 if (canFire) {
                     if (skipBuildings && "build".equals(step.action())) {
                         BuildingType bt = BuildingType.valueOf((String) step.params().get("build"));
-                        Point2d pos = SC2Data.isGasBuilding(bt) ? new Point2d(16, 12) : new Point2d(30, 30);
+                        Point2d pos;
+                        if (SC2Data.isGasBuilding(bt)) {
+                            var geysers = game.snapshot().geysers();
+                            pos = (geysers != null && gasIdx < geysers.size())
+                                  ? geysers.get(gasIdx++).position()
+                                  : new Point2d(16, 12);
+                        } else {
+                            pos = new Point2d(30, 30);
+                        }
                         game.debugCreateBuilding(bt, pos);
                         fired[i] = true;
                     } else {

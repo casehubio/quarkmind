@@ -272,6 +272,42 @@ class MiningCycleDiagnosticTest {
     }
 
     @Test
+    void gasHarvestDurationSweep() {
+        System.out.println("=== Gas Harvest Duration Sweep: 3 workers on 1 geyser at 7.6u, 250 ticks ===");
+        System.out.println("SC2 target: 44.3 vespene/min/worker (121 loops per trip)");
+        System.out.printf("%-12s %-16s %-20s %-12s%n", "Duration", "Total Gas", "Rate/worker/min", "vs SC2 44.3");
+        System.out.println("-".repeat(65));
+
+        double savedDuration = SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
+        try {
+            for (double duration : new double[]{22, 30, 35, 40, 42, 44, 45, 46, 48, 50, 55}) {
+                SimulatedWorker.setGasHarvestDurationLoops(duration);
+                WorkerSimulation s = new WorkerSimulation();
+                s.onTownHallCompleted(BASE_TAG, BASE_POS);
+                List<String> tags = IntStream.rangeClosed(1, 12)
+                                             .mapToObj(i -> "w-" + i).toList();
+                s.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+                Point2d gasPos = new Point2d((float)(BASE_POS.x() + 7.0), (float)(BASE_POS.y() + 3.0));
+                s.onGasBuildingCompleted("gas-1", gasPos);
+
+                double totalGas = 0;
+                for (int t = 0; t < 250; t++) {
+                    totalGas += s.tick(t * (double) SC2Data.LOOPS_PER_TICK).vespeneIncome();
+                }
+
+                double totalSeconds  = 250.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND;
+                double ratePerWorker = totalGas / 3.0 / totalSeconds * 60;
+                double pctDiff       = (ratePerWorker - 44.3) / 44.3 * 100;
+
+                System.out.printf("%-12.0f %-16.0f %-20.1f %-12.1f%%%n",
+                                  duration, totalGas, ratePerWorker, pctDiff);
+            }
+        } finally {
+            SimulatedWorker.setGasHarvestDurationLoops(savedDuration);
+        }
+    }
+
+    @Test
     void dockingOverheadSweep() {
         System.out.println("=== Docking Overhead Sweep: 23 workers on 8 patches at 7.0u, 300 ticks ===");
         System.out.println("SC2 target at 23w: 48.6/min/worker (84% of 12w rate)");
