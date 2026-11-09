@@ -44,6 +44,7 @@ class SimulatedWorker {
         ACCELERATION                 = config.acceleration();
         DECELERATION                 = config.deceleration();
         PATCH_DOCKING_OVERHEAD_LOOPS = config.patchDockingOverheadLoops();
+        MineralPatch.PATCH_DISTANCE = config.patchDistance();
     }
 
     static void resetToDefaults() {
