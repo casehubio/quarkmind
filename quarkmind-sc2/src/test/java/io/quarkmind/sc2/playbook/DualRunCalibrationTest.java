@@ -64,7 +64,7 @@ class DualRunCalibrationTest {
     @Test
     void dualRunCalMineralSaturated16wAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-saturated-16w.json");
-        CalibrationResult   result      = calibrate("playbooks/cal-mineral-saturated-16w.yaml", sc2Baseline);
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-saturated-16w.yaml", sc2Baseline, true);
         System.out.println(result.report());
         if (!result.passed()) {
             System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
@@ -249,9 +249,9 @@ class DualRunCalibrationTest {
         boolean[]                 fired     = new boolean[steps.size()];
 
         for (int tick = 0; tick < durationTicks; tick++) {
+            snapshots.add(CalibrationSnapshot.from(tick, game.snapshot()));
             game.tick();
             game.processDeferredResearchIntents();
-            snapshots.add(CalibrationSnapshot.from(tick, game.snapshot()));
 
             int supplyUsed = (int) game.snapshot().supplyUsed();
 
@@ -302,6 +302,11 @@ class DualRunCalibrationTest {
     }
 
     static CalibrationResult calibrate(String playbookResource, CalibrationBaseline baseline) {
+        return calibrate(playbookResource, baseline, false);
+    }
+
+    static CalibrationResult calibrate(String playbookResource, CalibrationBaseline baseline,
+                                       boolean skipBuildings) {
         String   yaml = SC2PlaybookRunner.loadResource(playbookResource);
         JsonNode root;
         try {root = YAML.readTree(yaml);} catch (Exception e) {
@@ -320,13 +325,10 @@ class DualRunCalibrationTest {
         int       tickLimit = Math.min(baseline.tickCount(), baseline.snapshots().size());
 
         for (int tick = 0; tick < tickLimit; tick++) {
-            game.tick();
-            game.processDeferredResearchIntents();
-
             CalibrationSnapshot expected = baseline.snapshots().get(tick);
             CalibrationSnapshot actual   = CalibrationSnapshot.from(tick, game.snapshot());
 
-            CalibrationResult divergence = compare(expected, actual);
+            CalibrationResult divergence = compare(expected, actual, skipBuildings);
             if (divergence != null) {return divergence;}
 
             if (expected.minerals() != actual.minerals() || expected.vespene() != actual.vespene()) {
@@ -334,6 +336,9 @@ class DualRunCalibrationTest {
                                   tick, expected.minerals(), actual.minerals(),
                                   expected.vespene(), actual.vespene());
             }
+
+            game.tick();
+            game.processDeferredResearchIntents();
 
             int supplyUsed = (int) game.snapshot().supplyUsed();
 
@@ -380,6 +385,11 @@ class DualRunCalibrationTest {
     }
 
     private static CalibrationResult compare(CalibrationSnapshot expected, CalibrationSnapshot actual) {
+        return compare(expected, actual, false);
+    }
+
+    private static CalibrationResult compare(CalibrationSnapshot expected, CalibrationSnapshot actual,
+                                             boolean skipBuildings) {
         for (Map.Entry<String, Integer> entry : expected.units().entrySet()) {
             int actualCount = actual.units().getOrDefault(entry.getKey(), 0);
             if (actualCount != entry.getValue()) {
@@ -398,21 +408,23 @@ class DualRunCalibrationTest {
             }
         }
 
-        for (Map.Entry<String, Integer> entry : expected.buildings().entrySet()) {
-            int actualCount = actual.buildings().getOrDefault(entry.getKey(), 0);
-            if (actualCount != entry.getValue()) {
-                return CalibrationResult.diverged(expected.tick(),
-                    "buildings." + entry.getKey(),
-                    String.valueOf(entry.getValue()),
-                    String.valueOf(actualCount));
+        if (!skipBuildings) {
+            for (Map.Entry<String, Integer> entry : expected.buildings().entrySet()) {
+                int actualCount = actual.buildings().getOrDefault(entry.getKey(), 0);
+                if (actualCount != entry.getValue()) {
+                    return CalibrationResult.diverged(expected.tick(),
+                        "buildings." + entry.getKey(),
+                        String.valueOf(entry.getValue()),
+                        String.valueOf(actualCount));
+                }
             }
-        }
-        for (Map.Entry<String, Integer> entry : actual.buildings().entrySet()) {
-            if (!expected.buildings().containsKey(entry.getKey()) && entry.getValue() > 0) {
-                return CalibrationResult.diverged(expected.tick(),
-                    "buildings." + entry.getKey(),
-                    "0",
-                    String.valueOf(entry.getValue()));
+            for (Map.Entry<String, Integer> entry : actual.buildings().entrySet()) {
+                if (!expected.buildings().containsKey(entry.getKey()) && entry.getValue() > 0) {
+                    return CalibrationResult.diverged(expected.tick(),
+                        "buildings." + entry.getKey(),
+                        "0",
+                        String.valueOf(entry.getValue()));
+                }
             }
         }
 

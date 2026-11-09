@@ -536,7 +536,7 @@ public class EmulatedGame {
             intentExecutionListener.onTrainOutcome((int) gameFrame, t, resolvedTag, true, null);
         }
         int maxConcurrent = reactored ? 2 : 1;
-        if (autoResolved && !reactored && activeSlots == 1) {
+        if (trackerDriven && autoResolved && !reactored && activeSlots == 1) {
             long prevStartLoop = physics.buildingCompletionAtLoop.getOrDefault(resolvedTag, 0L)
                                  - SC2Data.trainTimeInLoops(t.unitType());
             if (Math.abs(absLoop - prevStartLoop) <= 10) {
