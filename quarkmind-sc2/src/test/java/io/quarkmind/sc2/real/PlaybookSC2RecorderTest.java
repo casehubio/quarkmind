@@ -95,6 +95,12 @@ class PlaybookSC2RecorderTest {
         recordPlaybook("PROTOSS", "playbooks/cal-expansion-transfer.yaml", "calibration/cal-expansion-transfer.json");
     }
 
+    @Test
+    void recordCalWorkerSpeedSingle() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-worker-speed-single.yaml", "calibration/cal-worker-speed-single.json");
+    }
+
+
     private void recordPlaybook(String race, String playbookResource, String outputPath) throws Exception {
         assumeTrue(QuarkusSC2Transport.isSC2Available(),
                    "StarCraft II not installed — skipping live SC2 test");

@@ -6,7 +6,6 @@ import com.github.ocraft.s2client.protocol.game.Difficulty;
 import com.github.ocraft.s2client.protocol.game.PlayerType;
 import com.github.ocraft.s2client.protocol.game.Race;
 import com.github.ocraft.s2client.protocol.observation.Observation;
-import com.github.ocraft.s2client.protocol.observation.Result;
 import com.github.ocraft.s2client.protocol.response.ResponseGameInfo;
 import com.github.ocraft.s2client.protocol.response.ResponseObservation;
 import io.quarkmind.sc2.GameResult;
@@ -16,14 +15,19 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
-import java.io.*;
-import java.net.*;
-import java.nio.file.*;
-import java.security.*;
-import java.time.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Quarkus-native SC2 WebSocket transport — raw socket implementation.
@@ -280,24 +284,27 @@ public class QuarkusSC2Transport {
 
     public void sendActions(List<ResolvedCommand> commands) throws InterruptedException {
         Sc2Api.RequestAction.Builder actionReq = Sc2Api.RequestAction.newBuilder();
-        for (ResolvedCommand cmd : commands) {
-            Raw.ActionRawUnitCommand.Builder unitCmd = Raw.ActionRawUnitCommand.newBuilder()
-                .addUnitTags(cmd.tag().toSc2Api())
-                .setAbilityId(cmd.ability().getAbilityId())
-                .setQueueCommand(false);
-            cmd.target().ifPresent(pos -> unitCmd.setTargetWorldSpacePos(pos.toSc2Api()));
-            actionReq.addActions(Sc2Api.Action.newBuilder()
-                .setActionRaw(Raw.ActionRaw.newBuilder().setUnitCommand(unitCmd.build()).build())
-                .build());
-        }
-        try {
-            sendSync(Sc2Api.Request.newBuilder().setAction(actionReq.build()).build(),
-                Duration.ofSeconds(5));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("[SC2] sendActions() failed: " + e.getMessage(), e);
+            for (ResolvedCommand cmd : commands) {
+                Raw.ActionRawUnitCommand.Builder unitCmd = Raw.ActionRawUnitCommand.newBuilder()
+                                                                                   .addUnitTags(cmd.tag().toSc2Api())
+                                                                                   .setAbilityId(cmd.ability().getAbilityId())
+                                                                                   .setQueueCommand(false);
+                cmd.targetUnitTag().ifPresentOrElse(
+                        unitCmd::setTargetUnitTag,
+                        () -> cmd.target().ifPresent(pos -> unitCmd.setTargetWorldSpacePos(pos.toSc2Api()))
+                                                   );
+                actionReq.addActions(Sc2Api.Action.newBuilder()
+                                                  .setActionRaw(Raw.ActionRaw.newBuilder().setUnitCommand(unitCmd.build()).build())
+                                                  .build());
+            }
+            try {
+                sendSync(Sc2Api.Request.newBuilder().setAction(actionReq.build()).build(),
+                         Duration.ofSeconds(5));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw e;
+            } catch (Exception e) {
+                throw new RuntimeException("[SC2] sendActions() failed: " + e.getMessage(), e);
         }
     }
 

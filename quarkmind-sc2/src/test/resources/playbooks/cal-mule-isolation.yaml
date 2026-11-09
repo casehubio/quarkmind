@@ -15,7 +15,7 @@ steps:
   - build: SUPPLY_DEPOT
     at: 21 supply
 
-  - morph: OrbitalCommand
+  - morph: ORBITAL_COMMAND
     source: COMMAND_CENTER
     at: 22 supply
 

@@ -186,6 +186,11 @@ class DualRunCalibrationTest {
         assertSelfBaseline("playbooks/cal-expansion-transfer.yaml", Race.PROTOSS);
     }
 
+    @Test
+    void selfBaselineCalWorkerSpeedSingle() {
+        assertSelfBaseline("playbooks/cal-worker-speed-single.yaml", Race.PROTOSS);
+    }
+
 
     private static void assertSelfBaseline(String playbookResource, Race race) {
         String   yaml = SC2PlaybookRunner.loadResource(playbookResource);

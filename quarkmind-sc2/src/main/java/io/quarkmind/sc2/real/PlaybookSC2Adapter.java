@@ -7,6 +7,7 @@ import com.github.ocraft.s2client.protocol.data.Abilities;
 import com.github.ocraft.s2client.protocol.observation.Observation;
 import com.github.ocraft.s2client.protocol.response.ResponseGameInfo;
 import com.github.ocraft.s2client.protocol.unit.Tag;
+import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Race;
@@ -37,6 +38,9 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
     private final List<CalibrationSnapshot> snapshots = new ArrayList<>();
     private int gameLoop = 0;
     private int tick = -1;
+    private int buildIndex = 0;
+    private int gasIndex = 0;
+
 
     public PlaybookSC2Adapter(QuarkusSC2Transport transport, String playbookResource) {
         this.transport = transport;
@@ -117,13 +121,15 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
 
     private ResolvedCommand translateStep(SC2PlaybookRunner.PlaybookStep step, GameState state) {
         return switch (step.action()) {
-            case "train" -> translateTrain(step, state);
-            case "build" -> translateBuild(step, state);
-            case "assert" -> null;
-            default -> {
-                log.warnf("[Recorder] Unsupported action for SC2 recording: %s", step.action());
-                yield null;
-            }
+                case "train" -> translateTrain(step, state);
+                case "build" -> translateBuild(step, state);
+                case "morph" -> translateMorph(step, state);
+                case "calldown" -> translateCalldown(step, state);
+                case "assert" -> null;
+                default -> {
+                    log.warnf("[Recorder] Unsupported action for SC2 recording: %s", step.action());
+                    yield null;
+                }
         };
     }
 
@@ -144,20 +150,124 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
     }
 
     private ResolvedCommand translateBuild(SC2PlaybookRunner.PlaybookStep step, GameState state) {
-        BuildingType bt = BuildingType.valueOf((String) step.params().get("build"));
-        Abilities ability = ActionTranslator.mapBuildAbility(bt);
-        if (ability == null) return null;
+        BuildingType bt      = BuildingType.valueOf((String) step.params().get("build"));
+            Abilities    ability = ActionTranslator.mapBuildAbility(bt);
+            if (ability == null) {return null;}
 
-        UnitType workerType = workerForRace(race);
-        Tag workerTag = findUnitTag(state, workerType);
-        if (workerTag == null) {
-            log.debugf("[Recorder] No worker found for building %s", bt);
-            return null;
-        }
-        com.github.ocraft.s2client.protocol.spatial.Point2d pos =
-            com.github.ocraft.s2client.protocol.spatial.Point2d.of(30f, 30f);
+            UnitType workerType = workerForRace(race);
+            Tag      workerTag  = findUnitTag(state, workerType);
+            if (workerTag == null) {
+                log.debugf("[Recorder] No worker found for building %s", bt);
+                return null;
+            }
+
+            if (bt == BuildingType.ASSIMILATOR || bt == BuildingType.REFINERY || bt == BuildingType.EXTRACTOR) {
+                return translateGasBuilding(workerTag, ability, state);
+            }
+
+            io.quarkmind.domain.Point2d basePos = findBasePosition(state);
+            if (basePos == null) {
+                log.warnf("[Recorder] No base found for build placement");
+                return null;
+            }
+
+            float offsetX = 5f + (buildIndex % 3) * 3f;
+            float offsetY = -3f + (buildIndex / 3) * 3f;
+            buildIndex++;
+
+            com.github.ocraft.s2client.protocol.spatial.Point2d pos =
+                    com.github.ocraft.s2client.protocol.spatial.Point2d.of(
+                            basePos.x() + offsetX, basePos.y() + offsetY);
+
         return new ResolvedCommand(workerTag, ability, Optional.of(pos));
     }
+
+    private ResolvedCommand translateGasBuilding(Tag workerTag, Abilities ability, GameState state) {
+        var geysers = state.geysers();
+        if (geysers == null || gasIndex >= geysers.size()) {
+            log.debugf("[Recorder] No geyser available at index %d", gasIndex);
+            return null;
+        }
+
+        io.quarkmind.domain.Point2d basePos = findBasePosition(state);
+        if (basePos == null) {return null;}
+
+        var sortedGeysers = geysers.stream()
+                                   .sorted(java.util.Comparator.comparingDouble(g ->
+                                                                                        Math.pow(g.position().x() - basePos.x(), 2) + Math.pow(g.position().y() - basePos.y(), 2)))
+                                   .toList();
+
+        if (gasIndex >= sortedGeysers.size()) {return null;}
+
+        var geyser = sortedGeysers.get(gasIndex);
+        gasIndex++;
+        long geyserTag = Long.parseLong(geyser.tag());
+        return ResolvedCommand.targetUnit(workerTag, ability, geyserTag);
+    }
+
+    private ResolvedCommand translateMorph(SC2PlaybookRunner.PlaybookStep step, GameState state) {
+        String sourceStr   = (String) step.params().get("source");
+        String morphTarget = (String) step.params().get("morph");
+        if (sourceStr == null) {
+            log.warnf("[Recorder] morph step missing 'source' param");
+            return null;
+        }
+        BuildingType sourceType = BuildingType.valueOf(sourceStr);
+        BuildingType targetType = BuildingType.valueOf(morphTarget != null ? morphTarget : sourceStr);
+        Abilities    ability    = ActionTranslator.mapBuildAbility(targetType);
+        if (ability == null) {
+            log.warnf("[Recorder] No ability mapped for morph target %s", targetType);
+            return null;
+        }
+        Tag buildingTag = findBuildingTag(state, sourceType);
+        if (buildingTag == null) {
+            log.debugf("[Recorder] No %s found for morph to %s", sourceType, targetType);
+            return null;
+        }
+        return new ResolvedCommand(buildingTag, ability, Optional.empty());
+    }
+
+    private ResolvedCommand translateCalldown(SC2PlaybookRunner.PlaybookStep step, GameState state) {
+        String calldownType = (String) step.params().get("calldown");
+        if (!"MULE".equals(calldownType)) {
+            log.warnf("[Recorder] Unsupported calldown type: %s", calldownType);
+            return null;
+        }
+        Tag ocTag = findBuildingTag(state, BuildingType.ORBITAL_COMMAND);
+        if (ocTag == null) {
+            log.debugf("[Recorder] No Orbital Command found for MULE calldown");
+            return null;
+        }
+        var minerals = state.mineralPatches();
+        if (minerals == null || minerals.isEmpty()) {return null;}
+        io.quarkmind.domain.Point2d basePos = findBasePosition(state);
+        if (basePos == null) {return null;}
+        var nearest = minerals.stream()
+                              .min(java.util.Comparator.comparingDouble(m ->
+                                                                                Math.pow(m.position().x() - basePos.x(), 2) + Math.pow(m.position().y() - basePos.y(), 2)))
+                              .orElse(null);
+        if (nearest == null) {return null;}
+        com.github.ocraft.s2client.protocol.spatial.Point2d pos =
+                com.github.ocraft.s2client.protocol.spatial.Point2d.of(
+                        nearest.position().x(), nearest.position().y());
+        return new ResolvedCommand(ocTag, Abilities.EFFECT_CALL_DOWN_MULE, Optional.of(pos));
+    }
+
+    private io.quarkmind.domain.Point2d findBasePosition(GameState state) {
+        BuildingType baseType = switch (race) {
+            case PROTOSS -> BuildingType.NEXUS;
+            case TERRAN -> BuildingType.COMMAND_CENTER;
+            case ZERG -> BuildingType.HATCHERY;
+        };
+        return state.myBuildings().stream()
+                    .filter(b -> b.type() == baseType || b.type() == BuildingType.ORBITAL_COMMAND
+                                 || b.type() == BuildingType.PLANETARY_FORTRESS
+                                 || b.type() == BuildingType.LAIR || b.type() == BuildingType.HIVE)
+                    .map(Building::position)
+                    .findFirst()
+                    .orElse(null);
+    }
+
 
     private Tag findBuildingTag(GameState state, BuildingType type) {
         return state.myBuildings().stream()
