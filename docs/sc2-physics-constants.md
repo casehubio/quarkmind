@@ -359,7 +359,34 @@ Mining animation is 5 loops (0.22s) in real SC2, measured via the SC2 API by tra
 | Path contention | 1-2 | Average across worker interactions | Not yet modeled |
 | **Total overhead** | **~7** | | |
 
-Deposit was investigated in #587: explicit modeling (2-loop delay at base) shifted the MAPE minimum without reducing it. The lumped constants (mining=12, gas=22) absorb all three overhead components more accurately than splitting them into separate phases. The remaining components (approach/docking, contention) are individually too small to justify separate modeling.
+Deposit was investigated in #587: explicit modeling (2-loop delay at base) shifted the MAPE minimum without reducing it.
+
+A full 3D sweep (#592) of deposit (0-5) × mining (8-15) × gas (16-26) across 118 oracle replays confirmed that the lumped constants are near the model's accuracy ceiling:
+
+| Metric | Current (0, 12, 22) | Best triple | Delta |
+|--------|-------------------|-------------|-------|
+| Combined rate MAPE (7-min) | 30.9% | (0, 10, 22) → 29.6% | -1.3% |
+| Combined balance MAPE (7-min) | 71.5% | (0, 15, 22) → 69.3% | -2.1% |
+
+Key observations:
+- **Gas=22 is optimal** — every top-10 triple uses gas=22. No alternative gas value improves either metric.
+- **Deposit=0 dominates** — no deposit > 0 appears in any top-10. Confirms #587: explicit deposit modeling does not help.
+- **Rate and balance optima conflict** — lower mining (10) improves rate accuracy but worsens balance; higher mining (15) improves balance but worsens rate. Mining=12 is a reasonable midpoint.
+- **Improvements are marginal** — 1.3% rate and 2.1% balance improvements do not justify changing the defaults. The lumped-constant architecture has reached its accuracy ceiling for rate fields.
+
+### Rate computation algorithm
+
+SC2 uses **exponential moving average (EMA)**, not a simple windowed average. Confirmed by RateAlgorithmAnalysisTest (#593), which computed income from delta(totalMined) across consecutive PlayerStatsEvents and fitted simple window vs EMA (11 alpha values) against SC2's reported rates:
+
+| Algorithm | Mineral MAPE | Gas MAPE |
+|-----------|-------------|----------|
+| Simple window | 39.2% | 36.1% |
+| **EMA α=0.25** | **15.8%** | 27.6% |
+| EMA α=0.30 | 16.1% | 26.7% |
+| **EMA α=0.35** | — | **~26.5%** |
+| EMA α=0.40 | 18.0% | 26.4% |
+
+EconomyTracker now uses EMA: `MINERAL_EMA_ALPHA=0.25`, `VESPENE_EMA_ALPHA=0.35`. First window seeds the EMA with the instantaneous rate to avoid cold-start suppression.
 
 ### Rate measurement cadence
 
@@ -386,17 +413,13 @@ Diagnostic (#590) measured the cadence contribution by comparing MAPE at 154-loo
 
 Explicit gaps between the simulation and real SC2. Each gap's impact on economy accuracy is noted.
 
-### Deposit time
+### Deposit time — resolved, not modeled
 
-Workers spend 2-3 loops stationary at the town hall depositing resources. Infrastructure exists (`DEPOSITING_MINERALS`/`DEPOSITING_GAS` task states, configurable via `starcraft.worker.deposit-duration-loops`), but default is 0.0 — oracle MAPE sweep (#587) showed that explicit deposit modeling doesn't improve accuracy. The mining=12 and gas=22 constants already absorb deposit overhead optimally as lumped constants; splitting the overhead shifts the MAPE minimum without reducing it.
+Workers spend 2-3 loops stationary at the town hall depositing resources. Infrastructure exists (`DEPOSITING_MINERALS`/`DEPOSITING_GAS` task states, configurable via `starcraft.worker.deposit-duration-loops`), but default is 0.0. Investigated twice: #587 (single sweep) and #592 (3D sweep across 288 deposit/mining/gas combinations). Both confirmed that deposit=0 is optimal — no deposit value > 0 appears in any top-10 ranking across either rate or balance MAPE.
 
-### Approach and docking animation
+### Approach/docking and path contention — resolved, not modeled
 
-Workers decelerate and align with the mineral patch before the mining animation starts. Currently: the arrival threshold (0.5 units) triggers immediate mining. Real SC2: 2-3 loops of approach/docking visible in position data. Impact: absorbed into mining=12; the gas equivalent (geyser entry/exit animation) is absorbed into gas harvest=22.
-
-### Path contention
-
-Workers physically block each other on paths to and from mineral patches. Currently: workers pass through each other (no collision). Real SC2: workers path around each other, adding 1-2 loops average overhead per cycle. Impact: absorbed into mining=12 and gas harvest=22. True collision modelling would require spatial awareness between workers.
+Approach/docking (2-3 loops) and path contention (1-2 loops) are absorbed into mining=12 and gas=22. The #592 3D sweep confirmed that these components interact non-linearly — the overhead is an emergent property of the lumped constant, not three additive components. Modeling them separately cannot improve on the lumped approach within the current fixed-duration-phase architecture.
 
 ### Close/far patch income differential in unit tests
 

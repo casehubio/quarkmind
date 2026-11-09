@@ -38,7 +38,12 @@ class EconomyTracker {
     private double grossVespene;
     private double prevGrossMinerals;
     private double prevGrossVespene;
+    private double emaMineralRate;
+    private double emaVespeneRate;
+    private boolean emaSeeded;
 
+    static final double MINERAL_EMA_ALPHA = 0.25;
+    static final double VESPENE_EMA_ALPHA = 0.35;
 
     private final int rateIntervalLoops;
     private static final double LOOPS_PER_MINUTE = 60.0 * SC2Data.GAME_LOOPS_PER_SECOND;
@@ -249,12 +254,22 @@ class EconomyTracker {
         if (loopsSinceRateUpdate >= rateIntervalLoops) {
             double perLoopMineral = (grossMinerals - prevGrossMinerals) / loopsSinceRateUpdate;
             double perLoopVespene = (grossVespene - prevGrossVespene) / loopsSinceRateUpdate;
-            mineralRate          = mineralRateOverride >= 0
-                                   ? mineralRateOverride
-                                   : (int) Math.max(0, perLoopMineral * LOOPS_PER_MINUTE);
-            vespeneRate          = vespeneRateOverride >= 0
-                                   ? vespeneRateOverride
-                                   : (int) Math.max(0, perLoopVespene * LOOPS_PER_MINUTE);
+            double instantMinRate = perLoopMineral * LOOPS_PER_MINUTE;
+            double instantGasRate = perLoopVespene * LOOPS_PER_MINUTE;
+            if (!emaSeeded) {
+                emaMineralRate = instantMinRate;
+                emaVespeneRate = instantGasRate;
+                emaSeeded = true;
+            } else {
+                emaMineralRate = MINERAL_EMA_ALPHA * instantMinRate + (1 - MINERAL_EMA_ALPHA) * emaMineralRate;
+                emaVespeneRate = VESPENE_EMA_ALPHA * instantGasRate + (1 - VESPENE_EMA_ALPHA) * emaVespeneRate;
+            }
+            mineralRate    = mineralRateOverride >= 0
+                             ? mineralRateOverride
+                             : (int) Math.max(0, emaMineralRate);
+            vespeneRate    = vespeneRateOverride >= 0
+                             ? vespeneRateOverride
+                             : (int) Math.max(0, emaVespeneRate);
             prevGrossMinerals    = grossMinerals;
             prevGrossVespene     = grossVespene;
             loopsSinceRateUpdate = 0;
@@ -297,6 +312,9 @@ class EconomyTracker {
         prevGrossVespene       = 0;
         mineralRate            = 0;
         vespeneRate            = 0;
+        emaMineralRate         = 0;
+        emaVespeneRate         = 0;
+        emaSeeded              = false;
         loopsSinceRateUpdate   = 0;
         techBuildSpending.clear();
         techMorphSpending.clear();
