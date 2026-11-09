@@ -83,13 +83,15 @@ Each entry documents value, source, and confidence level.
 
 ## 6. Mining Efficiency Factors
 
-Per-race mineral mining efficiency (MAPE-minimising factor at 5/7-min checkpoints):
+Per-race mineral mining efficiency (rate-MAPE-minimising factor at 5/7-min checkpoints). Applied in `EmulatedGame.tick()` via `playerRaceModel.miningEfficiencyFactor()`. Factors > 1.0 compensate for unmodeled per-cycle overhead that makes real SC2 workers more efficient per trip than the simulation:
 
-| Race | Factor | Source | Confidence |
-|------|--------|--------|------------|
-| Protoss | 0.92 | MiningEfficiencyCalibrationTest sweep | **Calibrated** — #566 |
-| Zerg | 0.95 | MiningEfficiencyCalibrationTest sweep | **Calibrated** — #566 |
-| Terran | 1.0 | MiningEfficiencyCalibrationTest sweep | **Calibrated** — #566 |
+| Race | Factor | Rate MAPE | Source | Confidence |
+|------|--------|-----------|--------|------------|
+| Protoss | 1.18 | 13.1% | MiningEfficiencyCalibrationTest rate sweep | **Calibrated** — #591 |
+| Zerg | 1.12 | 12.2% | MiningEfficiencyCalibrationTest rate sweep | **Calibrated** — #591 |
+| Terran | 1.28 | 18.1% | MiningEfficiencyCalibrationTest rate sweep | **Calibrated** — #591 |
+
+Previous factors (0.92/0.95/1.0 from #566) were calibrated pre-sub-tick against balance MAPE and reverted. Current factors are rate-optimized (mineralsCollectionRate MAPE) post sub-tick fixes (#578/#583/#584/#586). Note: Terran factor 1.28 is large — may include compensation for MULE income under-modeling. Refine with controlled SC2 playbooks.
 
 ---
 
@@ -408,9 +410,9 @@ Standalone EmulatedGame accuracy at 7-min checkpoint (118 oracle replays, all GT
 
 | Field | MAPE | Confidence | Status |
 |-------|------|------------|--------|
-| mineralsCollectionRate | 22.1% | — | Active calibration |
-| vespeneCollectionRate | 29.1% | — | Active calibration |
-| mineralsCurrent | 67.5% | — | Cumulative drift |
+| mineralsCollectionRate | 14.5% | — | Active calibration — down from 22.1% (#591 factors) |
+| vespeneCollectionRate | 29.1% | — | Active calibration — gas factors not yet applied |
+| mineralsCurrent | 126.1% | — | Worsened — factors increase income but spending unchanged |
 | vespeneCurrent | 65.4% | — | Cumulative drift |
 | foodMade | 3.1% | — | At floor |
 | foodUsed | 3.7% | — | At floor |
