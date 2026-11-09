@@ -219,8 +219,8 @@ public class EmulatedGame {
         moveEnemyUnits();
         resolveCombat();
         tickEnemyRetreatTransfer();
-        friendlyPhysics.fireCompletions(gameFrame);
-        enemyPhysics.fireCompletions(gameFrame);
+        friendlyPhysics.fireCompletions(gameFrame * SC2Data.LOOPS_PER_TICK);
+        enemyPhysics.fireCompletions(gameFrame * SC2Data.LOOPS_PER_TICK);
         drainBuildingQueues(friendly, friendlyPhysics);
         drainBuildingQueues(enemy, enemyPhysics);
         spawnEnemyWaves();
@@ -655,22 +655,21 @@ public class EmulatedGame {
                                  ? model.trainingSpeedMultiplier(buildingTag, absLoop) : 1.0;
         final int baseTrainLoops = warpedIn ? SC2Data.GATEWAY_WARP_IN_LOOPS : SC2Data.trainTimeInLoops(unitType);
         final int effectiveTrainLoops = (int) (baseTrainLoops * speedMult);
-        final int loopOffset          = (int) (absLoop % SC2Data.LOOPS_PER_TICK);
-        final long completesAt = (pinnedCompletionLoop >= 0)
-                                 ? pinnedCompletionLoop / SC2Data.LOOPS_PER_TICK
-                                 : gameFrame + (loopOffset + effectiveTrainLoops) / SC2Data.LOOPS_PER_TICK;
+        final long completesAtLoop = (pinnedCompletionLoop >= 0)
+                                     ? pinnedCompletionLoop
+                                     : absLoop + effectiveTrainLoops;
 
         final boolean useSlot2 = physics.buildingTrainingUntil.containsKey(buildingTag);
         if (useSlot2) {
-            physics.buildingTrainingUntil2.put(buildingTag, completesAt);
+            physics.buildingTrainingUntil2.put(buildingTag, completesAtLoop);
         } else {
-            physics.buildingTrainingUntil.put(buildingTag, completesAt);
+            physics.buildingTrainingUntil.put(buildingTag, completesAtLoop);
         }
-        physics.buildingCompletionAtLoop.put(buildingTag, absLoop + effectiveTrainLoops);
+        physics.buildingCompletionAtLoop.put(buildingTag, completesAtLoop);
         final boolean trackerDriven = pinnedCompletionLoop >= 0;
         final int spawnCount = trackerDriven ? 1
                              : (model != null) ? model.trainCount(unitType) : SC2Data.trainCount(unitType);
-        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, buildingTag, () -> {
+        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAtLoop, buildingTag, () -> {
             if (useSlot2) {
                 physics.buildingTrainingUntil2.remove(buildingTag);
             } else {
@@ -755,21 +754,21 @@ public class EmulatedGame {
         final BuildingType bt = b.buildingType();
         state.addBuilding(new Building(tag, bt, b.location(),
                                        SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), false));
-        final int loopOffset = (int) (absLoop % SC2Data.LOOPS_PER_TICK);
-        final long completesAt = (b.completionLoop() >= 0)
-                                 ? b.completionLoop() / SC2Data.LOOPS_PER_TICK
-                                 : gameFrame + (loopOffset + SC2Data.buildTimeInLoops(bt)) / SC2Data.LOOPS_PER_TICK;
+        final long completesAtLoop = (b.completionLoop() >= 0)
+                                     ? b.completionLoop()
+                                     : absLoop + SC2Data.buildTimeInLoops(bt);
         final RaceModel model     = (state == friendly) ? playerRaceModel : null;
         final boolean   isReactor = tag.startsWith("r-") && isReactorAddOn(bt, state);
         final int fMCost = mCost;
         final int fGCost = gCost;
         if (state == friendly && model != null) {
-            long pauseTicks = model.buildWorkerPauseTicks(bt, completesAt - gameFrame);
+            long buildDurationTicks = (completesAtLoop - gameFrame * (long) SC2Data.LOOPS_PER_TICK) / SC2Data.LOOPS_PER_TICK;
+            long pauseTicks = model.buildWorkerPauseTicks(bt, buildDurationTicks);
             if (pauseTicks > 0) {
                 workerSimulation.pauseWorkerForBuilding(b.location(), gameFrame + pauseTicks);
             }
         }
-        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, tag, () -> {
+        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAtLoop, tag, () -> {
             markBuildingComplete(tag, state);
             state.addSupply(SC2Data.supplyBonus(bt));
             if (state == friendly) {
@@ -1034,14 +1033,15 @@ public class EmulatedGame {
 
         if (targetTag != null && model.trainingSpeedMultiplier(targetTag, absLoop) < 1.0) {
             final String resolvedTarget = targetTag;
+            final long currentLoop = absLoop;
             physics.pendingCompletions.replaceAll(pc -> {
                 Long trainingUntil = physics.buildingTrainingUntil.get(resolvedTarget);
-                if (trainingUntil == null || pc.completesAtTick() != trainingUntil) {return pc;}
-                long remaining = pc.completesAtTick() - gameFrame;
+                if (trainingUntil == null || pc.completesAtLoop() != trainingUntil) {return pc;}
+                long remaining = pc.completesAtLoop() - currentLoop;
                 if (remaining <= 0) {return pc;}
-                long newCompletesAt = gameFrame + remaining / 2;
-                physics.buildingTrainingUntil.put(resolvedTarget, newCompletesAt);
-                return new PhysicsState.PendingCompletion(newCompletesAt, pc.entityTag(), pc.action());
+                long newCompletesAtLoop = currentLoop + remaining / 2;
+                physics.buildingTrainingUntil.put(resolvedTarget, newCompletesAtLoop);
+                return new PhysicsState.PendingCompletion(newCompletesAtLoop, pc.entityTag(), pc.action());
             });
         }
         return true;
@@ -1130,11 +1130,10 @@ public class EmulatedGame {
         int  durationLoops  = SC2Data.upgradeTimeInLoops(r.upgradeType());
         long effectiveStart = (r.commandLoop() >= 0) ? r.commandLoop() : absLoop;
         long completionLoop = effectiveStart + durationLoops;
-        long completionTick = completionLoop / SC2Data.LOOPS_PER_TICK;
         final boolean isFriendly = (state == friendly);
         physics.buildingResearching.put(resolvedTag, r.upgradeType());
         physics.buildingResearchUntil.put(resolvedTag, completionLoop);
-        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completionTick, resolvedTag, () -> {
+        physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completionLoop, resolvedTag, () -> {
             state.completeUpgrade(r.upgradeType());
             if (isFriendly) {
                 economyTracker.recordResearchSpending(SC2Data.upgradeMineralCost(r.upgradeType()), SC2Data.upgradeVespeneCost(r.upgradeType()));
@@ -1242,10 +1241,10 @@ public class EmulatedGame {
                                            ? new Building(b.tag(), targetBt, b.position(), b.health(), b.maxHealth(), false)
                                            : b);
             final RaceModel model       = (state == friendly) ? playerRaceModel : null;
-            long            completesAt = (m.completionLoop() >= 0)
-                ? m.completionLoop() / SC2Data.LOOPS_PER_TICK
-                : gameFrame + SC2Data.buildTimeInLoops(targetBt) / SC2Data.LOOPS_PER_TICK;
-            physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAt, resolvedTag, () -> {
+            long completesAtLoop = (m.completionLoop() >= 0)
+                ? m.completionLoop()
+                : gameFrame * (long) SC2Data.LOOPS_PER_TICK + SC2Data.buildTimeInLoops(targetBt);
+            physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAtLoop, resolvedTag, () -> {
                 markBuildingComplete(resolvedTag, state);
                 if (state == friendly) {
                     economyTracker.recordMorphSpending(targetBt, morphMCost, morphGCost);
@@ -1538,6 +1537,8 @@ public class EmulatedGame {
     void setMineralsForTesting(int amount) { friendly.setMinerals(amount); }
 
     void setVespeneForTesting(int amount) {friendly.setVespene(amount);}
+
+    void setSupplyForTesting(int amount)  {friendly.setSupply(amount);}
 
 
     /** Positions an enemy near the base for combat tests. */

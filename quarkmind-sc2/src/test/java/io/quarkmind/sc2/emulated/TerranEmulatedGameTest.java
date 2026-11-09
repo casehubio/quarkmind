@@ -65,7 +65,8 @@ class TerranEmulatedGameTest {
         }
 
         assertThat(game.snapshot().minerals())
-                .isEqualTo(protossGame.snapshot().minerals());
+                .as("Terran income lower than Protoss (efficiency factor 0.984)")
+                .isLessThan(protossGame.snapshot().minerals());
     }
 
     // --- SCV training ---
@@ -73,21 +74,20 @@ class TerranEmulatedGameTest {
     @Test
     void trainSCV_deductsMineralsAndAppearsAfterBuildTime() {
         final Building cc = game.snapshot().myBuildings().stream()
-            .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
-            .findFirst().orElseThrow();
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
 
         game.setMineralsForTesting(100);
         game.applyIntent(new io.quarkmind.sc2.intent.TrainIntent(cc.tag(), UnitType.SCV));
 
-        // 50 minerals deducted
         assertThat(game.snapshot().minerals()).isEqualTo(50);
 
-        // Unit appears after trainTimeInTicks ticks
-        final int buildTicks = SC2Data.trainTimeInTicks(UnitType.SCV);
-        for (int i = 0; i < buildTicks; i++) game.tick();
+        int buildLoops = SC2Data.trainTimeInLoops(UnitType.SCV);
+        int buildTicks = (buildLoops + SC2Data.LOOPS_PER_TICK - 1) / SC2Data.LOOPS_PER_TICK;
+        for (int i = 0; i < buildTicks; i++) {game.tick();}
 
         final long scvCount = game.snapshot().myUnits().stream()
-            .filter(u -> u.type() == UnitType.SCV).count();
+                                  .filter(u -> u.type() == UnitType.SCV).count();
         assertThat(scvCount).isEqualTo(13);
     }
 
@@ -115,13 +115,14 @@ class TerranEmulatedGameTest {
         final Building barracks = game.spawnBuildingForTesting(BuildingType.BARRACKS, new Point2d(15, 15));
 
         game.applyIntent(new io.quarkmind.sc2.intent.TrainIntent(barracks.tag(), UnitType.MARINE));
-        assertThat(game.snapshot().minerals()).isEqualTo(150); // 50 deducted
+        assertThat(game.snapshot().minerals()).isEqualTo(150);
 
-        final int buildTicks = SC2Data.trainTimeInTicks(UnitType.MARINE);
-        for (int i = 0; i < buildTicks; i++) game.tick();
+        int buildLoops = SC2Data.trainTimeInLoops(UnitType.MARINE);
+        int buildTicks = (buildLoops + SC2Data.LOOPS_PER_TICK - 1) / SC2Data.LOOPS_PER_TICK;
+        for (int i = 0; i < buildTicks; i++) {game.tick();}
 
         final long marineCount = game.snapshot().myUnits().stream()
-            .filter(u -> u.type() == UnitType.MARINE).count();
+                                     .filter(u -> u.type() == UnitType.MARINE).count();
         assertThat(marineCount).isEqualTo(1);
     }
 

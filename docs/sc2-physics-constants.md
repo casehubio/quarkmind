@@ -88,26 +88,24 @@ Each entry documents value, source, and confidence level.
 
 ## 6. Mining Efficiency Factors
 
-**Status: reverted to 1.0 for all races.** SC2 playbook calibration (#591) proved the oracle-derived factors (1.18/1.12/1.28) were compensating for worker allocation gaps, not physics deficits. Per-worker mining physics is within 1% of SC2 at real map distances.
+**Per-race factors calibrated via SC2 dual-run sweep (#600).** Protoss 1.0 (within 0.3% of SC2). Terran and Zerg produce 1.3% fewer minerals than Protoss in real SC2 — likely race-specific worker animation differences. Factor 0.984 matches both SC2 baselines exactly (3415 at tick 304).
 
 | Race | Factor | Source | Confidence |
 |------|--------|--------|------------|
-| Protoss | 1.0 | SC2 playbook calibration | **Calibrated** — #591 |
-| Zerg | 1.0 | SC2 playbook calibration | **Calibrated** — #591 |
-| Terran | 1.0 | SC2 playbook calibration | **Calibrated** — #591 |
+| Protoss | 0.997 | SC2 dual-run sweep (3460 at tick 304) | **Calibrated** — #601 |
+| Terran | 0.984 | SC2 dual-run sweep (3415 at tick 304) | **Calibrated** — #600 |
+| Zerg | 0.984 | SC2 dual-run sweep (3415 at tick 304) | **Calibrated** — #600 |
 
 ### SC2 dual-run calibration results (TorchesAIE_v4)
 
 | Baseline | SC2 minerals | EM minerals | Delta |
 |----------|-------------|------------|-------|
-| 12w Protoss (tick 304) | 3460 | 3470 | **+0.3%** |
-| 12w Terran (tick 304) | 3415 | 3470 | +1.6% |
-| 12w Zerg (tick 304) | 3415 | 3470 | +1.6% |
+| 12w Protoss (tick 304) | 3460 | 3460 | **0.0%** |
+| 12w Terran (tick 304) | 3415 | 3415 | **0.0%** |
+| 12w Zerg (tick 304) | 3415 | 3415 | **0.0%** |
 | 16w saturation (tick 304) | 4260 | 4555 | +6.9% |
 
-Terran/Zerg 1.6% gap: SC2 produces 3415 vs Protoss 3460 — a per-race difference the EM doesn't yet model. Tracked as #600.
-
-16w 6.9% gap: primarily from Probe training phase shift (integer division of 272/22 train time). Tracked as #601.
+16w 6.6% gap (was 6.9%): sub-tick training resolution (#601) fixed Probe cadence. Protoss factor refined to 0.997. Root cause: the EM trains 23 Probes (not 16 — continuous to supply cap). The 0.3% per-worker over-production (before factor fix) compounded through 11 training cycles, each Probe arriving slightly earlier in the EM. Reducing per-worker error to 0.0% only closes 16 minerals of the 295-mineral gap, because the EM and SC2 have different Probe arrival timing even at identical per-worker rates. Investigation needed: per-tick Probe count comparison between EM and SC2 baseline.
 
 ### Saturation curve (SC2 dual-run, Protoss, TorchesAIE_v4)
 
@@ -336,6 +334,8 @@ The simulation's 22-loop tick creates a time resolution of 0.982 seconds. Before
 
 Sub-tick chaining (implemented in #578 for movement, #583 for mining, #584 for gas) tracks `loopsRemaining` within each tick and chains transitions immediately. This eliminated the dead time but also exposed physics constant errors that the quantisation had been masking — calibration sweeps that previously showed wide plateaus of identical output now show distinct values at each constant.
 
+**Production completions** also use loop precision (#601). `PendingCompletion` tracks `completesAtLoop` and `fireCompletions` compares against `gameFrame * LOOPS_PER_TICK`. Training/building/research completions fire in the first tick whose loop range includes the completion loop — no truncation. Probe training cadence: [13, 12, 13, 12, 12] (was [12, 12, 13, 12, 12] with tick-level integer division).
+
 **General principle:** In any tick-based simulation, if a calibration sweep shows plateaus where different constant values produce identical output, the time resolution is too coarse to express the constant. Fix the resolution before calibrating the constant.
 
 ### Cumulative drift
@@ -346,11 +346,7 @@ Fixing rate accuracy is the primary lever for reducing balance MAPE. The balance
 
 ### Per-race efficiency factors
 
-Protoss=0.92, Zerg=0.95, Terran=1.0. These empirical factors absorb race-specific worker mechanics the simulation doesn't model directly:
-
-- **Protoss:** Probes warp buildings — the worker returns to mining immediately after placing, but there's a brief interruption. Factor < 1.0 compensates.
-- **Zerg:** Drones sacrifice themselves to become buildings. The worker is permanently lost. Factor < 1.0 compensates for the income loss during replacement training.
-- **Terran:** SCVs stay at building sites for the full build duration, then return. The simulation models building pauses explicitly (`pauseWorkerForBuilding`), so no factor adjustment needed.
+Protoss=0.997, Terran=0.984, Zerg=0.984. Calibrated via SC2 dual-run sweep (#600, #601). Terran and Zerg produce 1.3% fewer minerals than Protoss in real SC2 — likely race-specific worker animation timing. Protoss refined from 1.0 to 0.997 to eliminate the 0.3% residual over-production at 12w.
 
 ### The overhead gap
 
