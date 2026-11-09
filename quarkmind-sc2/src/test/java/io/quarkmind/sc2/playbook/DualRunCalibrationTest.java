@@ -47,6 +47,20 @@ class DualRunCalibrationTest {
         }
     }
 
+    @Test
+    void dualRunCalMineralBaselineTerranAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-terran.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-baseline-terran.yaml", sc2Baseline);
+        System.out.println(result.report());
+    }
+
+    @Test
+    void dualRunCalMineralBaselineZergAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-zerg.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-baseline-zerg.yaml", sc2Baseline);
+        System.out.println(result.report());
+    }
+
 
     @Test
     void earlyExitOnUnitMismatch() {
