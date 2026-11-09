@@ -32,15 +32,18 @@ class SimulatedWorker {
     static final double MAX_SPEED         = io.quarkmind.domain.SC2Data.unitSpeed(io.quarkmind.domain.UnitType.PROBE);
     static double ACCELERATION            = WorkerPhysicsConfig.DEFAULT_ACCELERATION;
     static double DECELERATION            = WorkerPhysicsConfig.DEFAULT_DECELERATION;
+    static double PATCH_DOCKING_OVERHEAD_LOOPS = WorkerPhysicsConfig.DEFAULT_PATCH_DOCKING_OVERHEAD;
+
     static final double LOOP_DURATION     = 1.0 / io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND;
     static final int    LOOPS_PER_TICK    = io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
 
     static void configure(WorkerPhysicsConfig config) {
-        MINING_DURATION_LOOPS      = config.miningDurationLoops();
-        GAS_HARVEST_DURATION_LOOPS = config.gasHarvestDurationLoops();
-        DEPOSIT_DURATION_LOOPS     = config.depositDurationLoops();
-        ACCELERATION               = config.acceleration();
-        DECELERATION               = config.deceleration();
+        MINING_DURATION_LOOPS        = config.miningDurationLoops();
+        GAS_HARVEST_DURATION_LOOPS   = config.gasHarvestDurationLoops();
+        DEPOSIT_DURATION_LOOPS       = config.depositDurationLoops();
+        ACCELERATION                 = config.acceleration();
+        DECELERATION                 = config.deceleration();
+        PATCH_DOCKING_OVERHEAD_LOOPS = config.patchDockingOverheadLoops();
     }
 
     static void resetToDefaults() {

@@ -18,6 +18,7 @@ class MineralPatch {
     static final int MAX_MINERS = 1;
     final List<SimulatedWorker> miners = new ArrayList<>(MAX_MINERS);
     final boolean rich;
+    double lockEndLoop;
 
 
     MineralPatch(Point2d position, int baseIndex, double initialMinerals, boolean rich) {

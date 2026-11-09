@@ -190,15 +190,19 @@ class MiningCycleDiagnosticTest {
 
     @Test
     void rateComparison_1v8v12workers() {
-        System.out.println("=== Rate Comparison: 1 vs 8 vs 12 workers (300 ticks each) ===");
-        System.out.printf("%-10s %-15s %-18s %-10s%n", "Workers", "Total Income", "Rate/worker/min", "Efficiency");
-        System.out.println("-".repeat(60));
+        System.out.println("=== Saturation Curve: 1-30 workers on 8 patches (300 ticks each) ===");
+        System.out.printf("%-10s %-8s %-15s %-18s %-12s %-10s%n",
+                          "Workers", "W/Patch", "Total Income", "Rate/worker/min", "Efficiency", "SC2 ref");
+        System.out.println("-".repeat(80));
 
-        for (int workerCount : new int[]{1, 8, 12, 16}) {
+        double[] sc2Rates = {0, 64.1, 64.1, 64.1, 64.1, 64.1, 64.1, 64.1, 57.9,
+                             0, 0, 0, 57.9, 0, 0, 0, 57.9, 0, 0, 0, 0, 0, 0, 48.6};
+
+        for (int workerCount : new int[]{1, 2, 4, 8, 10, 12, 14, 16, 20, 23, 24, 30}) {
             WorkerSimulation s = new WorkerSimulation();
             s.onTownHallCompleted(BASE_TAG, BASE_POS);
             List<String> tags = IntStream.rangeClosed(1, workerCount)
-                    .mapToObj(i -> "w-" + i).toList();
+                                         .mapToObj(i -> "w-" + i).toList();
             s.onInitialWorkers(tags, BASE_POS, BASE_TAG);
 
             double totalIncome = 0;
@@ -206,15 +210,19 @@ class MiningCycleDiagnosticTest {
                 totalIncome += s.tick(t * (double) SC2Data.LOOPS_PER_TICK).mineralIncome();
             }
 
-            double totalSeconds = 300.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND;
-            double ratePerWorker = totalIncome / workerCount / totalSeconds * 60;
+            double totalSeconds    = 300.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND;
+            double ratePerWorker   = totalIncome / workerCount / totalSeconds * 60;
+            double workersPerPatch = workerCount / 8.0;
+            String sc2Ref = (workerCount < sc2Rates.length && sc2Rates[workerCount] > 0)
+                            ? String.format("%.1f", sc2Rates[workerCount]) : "—";
 
-            System.out.printf("%-10d %-15.0f %-18.1f %-10.1f%%%n",
-                    workerCount, totalIncome, ratePerWorker,
-                    100.0 * ratePerWorker / 57.9);
+            System.out.printf("%-10d %-8.1f %-15.0f %-18.1f %-12.1f%% %-10s%n",
+                              workerCount, workersPerPatch, totalIncome, ratePerWorker,
+                              100.0 * ratePerWorker / 64.1, sc2Ref);
         }
 
         System.out.println();
-        System.out.println("SC2 reference: 57.9 minerals/min/worker (12w Protoss baseline)");
+        System.out.println("SC2 reference points: 12w=57.9, 23w=48.6 minerals/min/worker (TorchesAIE_v4)");
+        System.out.println("Efficiency is relative to 1-worker baseline (64.1/min at 6.0u)");
     }
 }

@@ -242,7 +242,8 @@ class WorkerSimulation {
         for (SimulatedWorker w : workers.values()) {
             if (w.task == WorkerTask.MINING_MINERALS && w.isAtTarget()
                 && w.assignedPatch != null && !w.assignedPatch.miners.contains(w)
-                && w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS) {
+                && w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
+                && tickEndLoop >= w.assignedPatch.lockEndLoop) {
                 w.assignedPatch.miners.add(w);
                 w.phaseEndLoop = tickEndLoop + SimulatedWorker.MINING_DURATION_LOOPS;
             }
@@ -291,6 +292,7 @@ class WorkerSimulation {
                     double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
                     w.cargo = w.assignedPatch.harvest(cargo);
                     w.assignedPatch.miners.remove(w);
+                    w.assignedPatch.lockEndLoop = currentLoop + SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS;
                     w.task           = WorkerTask.RETURNING_MINERALS;
                     w.targetPosition = bases.get(w.baseIndex).position();
                     continue;
@@ -298,9 +300,11 @@ class WorkerSimulation {
                 int loopsUntilDone = (int) Math.ceil(w.phaseEndLoop - currentLoop);
                 if (loopsUntilDone < loopsRemaining) {
                     loopsRemaining -= loopsUntilDone;
+                    double doneLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
                     double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
                     w.cargo = w.assignedPatch.harvest(cargo);
                     w.assignedPatch.miners.remove(w);
+                    w.assignedPatch.lockEndLoop = doneLoop + SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS;
                     w.task           = WorkerTask.RETURNING_MINERALS;
                     w.targetPosition = bases.get(w.baseIndex).position();
                     continue;
@@ -350,10 +354,11 @@ class WorkerSimulation {
         return income;
     }
 
-    private void tryStartMining(SimulatedWorker w, double tickStartLoop) {
-        if (w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS) {
+    private void tryStartMining(SimulatedWorker w, double currentLoop) {
+        if (w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
+            && currentLoop >= w.assignedPatch.lockEndLoop) {
             w.assignedPatch.miners.add(w);
-            w.phaseEndLoop = tickStartLoop + SimulatedWorker.MINING_DURATION_LOOPS;
+            w.phaseEndLoop = currentLoop + SimulatedWorker.MINING_DURATION_LOOPS;
         }
     }
 

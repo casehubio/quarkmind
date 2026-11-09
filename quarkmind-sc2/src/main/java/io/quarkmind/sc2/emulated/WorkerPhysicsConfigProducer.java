@@ -27,12 +27,16 @@ class WorkerPhysicsConfigProducer {
                     defaultValue = "3.5")
     double deceleration;
 
+    @ConfigProperty(name = "starcraft.worker.patch-docking-overhead-loops",
+                    defaultValue = "30.0")
+    double patchDockingOverheadLoops;
+
     @Produces
     @ApplicationScoped
     WorkerPhysicsConfig produce() {
         WorkerPhysicsConfig config = new WorkerPhysicsConfig(
                 miningDurationLoops, gasHarvestDurationLoops, depositDurationLoops,
-                acceleration, deceleration);
+                acceleration, deceleration, patchDockingOverheadLoops);
         SimulatedWorker.configure(config);
         return config;
     }
