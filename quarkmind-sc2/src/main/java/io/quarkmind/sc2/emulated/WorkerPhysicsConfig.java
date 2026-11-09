@@ -14,7 +14,7 @@ public record WorkerPhysicsConfig(
     public static final double DEFAULT_DEPOSIT_DURATION_LOOPS     = 0.0;
     public static final double DEFAULT_ACCELERATION               = 3.5;
     public static final double DEFAULT_DECELERATION               = 3.5;
-    public static final double DEFAULT_PATCH_DOCKING_OVERHEAD     = 30.0;
+    public static final double DEFAULT_PATCH_DOCKING_OVERHEAD     = 34.0;
 
     public static WorkerPhysicsConfig defaults() {
         return new WorkerPhysicsConfig(

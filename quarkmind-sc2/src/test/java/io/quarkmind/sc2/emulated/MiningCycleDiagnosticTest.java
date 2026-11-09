@@ -198,6 +198,13 @@ class MiningCycleDiagnosticTest {
         double[] sc2Rates = {0, 64.1, 64.1, 64.1, 64.1, 64.1, 64.1, 64.1, 57.9,
                              0, 0, 0, 57.9, 0, 0, 0, 57.9, 0, 0, 0, 0, 0, 0, 48.6};
 
+        WorkerSimulation ref = new WorkerSimulation();
+        ref.onTownHallCompleted(BASE_TAG, BASE_POS);
+        ref.onInitialWorkers(List.of("ref-1"), BASE_POS, BASE_TAG);
+        double refIncome = 0;
+        for (int t = 0; t < 300; t++) refIncome += ref.tick(t * (double) SC2Data.LOOPS_PER_TICK).mineralIncome();
+        double singleWorkerRate = refIncome / (300.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND) * 60;
+
         for (int workerCount : new int[]{1, 2, 4, 8, 10, 12, 14, 16, 20, 23, 24, 30}) {
             WorkerSimulation s = new WorkerSimulation();
             s.onTownHallCompleted(BASE_TAG, BASE_POS);
@@ -218,12 +225,13 @@ class MiningCycleDiagnosticTest {
 
             System.out.printf("%-10d %-8.1f %-15.0f %-18.1f %-12.1f%% %-10s%n",
                               workerCount, workersPerPatch, totalIncome, ratePerWorker,
-                              100.0 * ratePerWorker / 64.1, sc2Ref);
+                              100.0 * ratePerWorker / singleWorkerRate, sc2Ref);
         }
 
         System.out.println();
         System.out.println("SC2 reference points: 12w=57.9, 23w=48.6 minerals/min/worker (TorchesAIE_v4)");
-        System.out.println("Efficiency is relative to 1-worker baseline (64.1/min at 6.0u)");
+        System.out.printf("Efficiency is relative to 1-worker baseline (%.1f/min at %.1fu)%n",
+                singleWorkerRate, MineralPatch.PATCH_DISTANCE);
     }
 
     @Test
@@ -262,5 +270,40 @@ class MiningCycleDiagnosticTest {
                               dist, totalIncome, ratePerWorker, pctDiff);
         }
     }
+
+    @Test
+    void dockingOverheadSweep() {
+        System.out.println("=== Docking Overhead Sweep: 23 workers on 8 patches at 7.0u, 300 ticks ===");
+        System.out.println("SC2 target at 23w: 48.6/min/worker (84% of 12w rate)");
+        System.out.printf("%-10s %-18s %-18s %-12s%n", "Docking", "Total Income", "Rate/worker/min", "vs SC2 48.6");
+        System.out.println("-".repeat(65));
+
+        double savedDocking = SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS;
+        try {
+            for (double docking : new double[]{28, 30, 31, 32, 33, 34, 35, 36, 38}) {
+                SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS = docking;
+                WorkerSimulation s = new WorkerSimulation();
+                s.onTownHallCompleted(BASE_TAG, BASE_POS);
+                List<String> tags = IntStream.rangeClosed(1, 23)
+                                             .mapToObj(i -> "w-" + i).toList();
+                s.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+
+                double totalIncome = 0;
+                for (int t = 0; t < 300; t++) {
+                    totalIncome += s.tick(t * (double) SC2Data.LOOPS_PER_TICK).mineralIncome();
+                }
+
+                double totalSeconds  = 300.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND;
+                double ratePerWorker = totalIncome / 23.0 / totalSeconds * 60;
+                double pctDiff       = (ratePerWorker - 48.6) / 48.6 * 100;
+
+                System.out.printf("%-10.0f %-18.0f %-18.1f %-12.1f%%%n",
+                                  docking, totalIncome, ratePerWorker, pctDiff);
+            }
+        } finally {
+            SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS = savedDocking;
+        }
+    }
+
 
 }
