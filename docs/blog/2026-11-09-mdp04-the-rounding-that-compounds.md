@@ -44,6 +44,8 @@ With 23 Probes trained over 150 ticks, each costing 50 minerals from the same in
 
 Eleven training cycles amplify a 0.3% rate error into a 6.6% economy gap. The mineral delta between EM and SC2 reached its full 285-mineral gap by tick 150 and stayed flat for the remaining 154 ticks. The steady-state income at 23 workers was identical between EM and SC2. The gap was established entirely during the ramp-up.
 
-## The Real Lesson
+## The Last Place We Hadn't Looked
 
-Rounding errors in tick-based simulations are not noise. They are a directional bias with a compounding mechanism anywhere a produced unit feeds back into production capacity. The fix for the cadence was a one-line change. The fix for the economy is a 0.3% per-worker rate correction — from a mining efficiency factor of 1.0 to 0.997. But we would not have found the factor without first eliminating the truncation error that was hiding behind it.
+We already knew this. Sub-tick chaining for worker movement, mining, and gas harvesting established the principle months ago: never truncate to tick boundaries, keep everything at loop precision, let fractional remainders carry forward. Production completions were the last place where integer division was still silently rounding away information. Same error class, same fix pattern — but with a compounding mechanism that the worker phases never had, because trained units feed back into the income that funds the next one.
+
+The cadence fix was a one-line semantic change. The economy fix is a 0.3% rate correction — from a mining efficiency factor of 1.0 to 0.997. We would not have isolated the factor without first eliminating the truncation that was hiding behind it.
