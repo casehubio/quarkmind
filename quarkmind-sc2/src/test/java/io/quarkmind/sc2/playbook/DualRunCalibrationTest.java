@@ -61,6 +61,17 @@ class DualRunCalibrationTest {
         System.out.println(result.report());
     }
 
+    @Test
+    void dualRunCalMineralSaturated16wAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-saturated-16w.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-saturated-16w.yaml", sc2Baseline);
+        System.out.println(result.report());
+        if (!result.passed()) {
+            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
+                              result.divergenceTick(), result.divergenceField(),
+                              result.expected(), result.actual());
+        }
+    }
 
     @Test
     void earlyExitOnUnitMismatch() {
