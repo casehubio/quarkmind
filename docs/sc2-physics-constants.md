@@ -374,6 +374,20 @@ Key observations:
 - **Rate and balance optima conflict** — lower mining (10) improves rate accuracy but worsens balance; higher mining (15) improves balance but worsens rate. Mining=12 is a reasonable midpoint.
 - **Improvements are marginal** — 1.3% rate and 2.1% balance improvements do not justify changing the defaults. The lumped-constant architecture has reached its accuracy ceiling for rate fields.
 
+### Rate computation algorithm
+
+SC2 uses **exponential moving average (EMA)**, not a simple windowed average. Confirmed by RateAlgorithmAnalysisTest (#593), which computed income from delta(totalMined) across consecutive PlayerStatsEvents and fitted simple window vs EMA (11 alpha values) against SC2's reported rates:
+
+| Algorithm | Mineral MAPE | Gas MAPE |
+|-----------|-------------|----------|
+| Simple window | 39.2% | 36.1% |
+| **EMA α=0.25** | **15.8%** | 27.6% |
+| EMA α=0.30 | 16.1% | 26.7% |
+| **EMA α=0.35** | — | **~26.5%** |
+| EMA α=0.40 | 18.0% | 26.4% |
+
+EconomyTracker now uses EMA: `MINERAL_EMA_ALPHA=0.25`, `VESPENE_EMA_ALPHA=0.35`. First window seeds the EMA with the instantaneous rate to avoid cold-start suppression.
+
 ### Rate measurement cadence
 
 SC2 emits PlayerStatsEvents every 160 game loops (7.14 seconds) — confirmed empirically across 118 oracle replays (96.8% of 9183 intervals are exactly 160 loops). EconomyTracker aligns its rate window to 160 loops via `starcraft.economy.rate-interval-loops` (default 160). Due to the 22-loop tick granularity, the window fires every 8 ticks (176 loops >= 160), using actual elapsed loops in the rate denominator.
