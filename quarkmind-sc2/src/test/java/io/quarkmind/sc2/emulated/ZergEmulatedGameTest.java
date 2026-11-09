@@ -83,7 +83,9 @@ class ZergEmulatedGameTest {
             protossGame.tick();
         }
 
-        assertThat(game.snapshot().minerals()).isEqualTo(protossGame.snapshot().minerals());
+        assertThat(game.snapshot().minerals())
+                .as("Zerg income lower than Protoss (efficiency factor 0.984)")
+                .isLessThan(protossGame.snapshot().minerals());
     }
 
     // --- Larva regeneration ---
@@ -142,7 +144,8 @@ class ZergEmulatedGameTest {
 
         game.applyIntent(new TrainIntent(hatchTag, UnitType.ZERGLING));
 
-        final int buildTicks = SC2Data.trainTimeInTicks(UnitType.ZERGLING);
+        int buildLoops = SC2Data.trainTimeInLoops(UnitType.ZERGLING);
+        int buildTicks = (buildLoops + SC2Data.LOOPS_PER_TICK - 1) / SC2Data.LOOPS_PER_TICK;
         for (int i = 0; i < buildTicks; i++) game.tick();
 
         final long zerglings = game.snapshot().myUnits().stream()
@@ -188,7 +191,8 @@ class ZergEmulatedGameTest {
 
         game.applyIntent(new TrainIntent(hatchTag, UnitType.OVERLORD));
 
-        final int buildTicks = SC2Data.trainTimeInTicks(UnitType.OVERLORD);
+        int buildLoops = SC2Data.trainTimeInLoops(UnitType.OVERLORD);
+        int buildTicks = (buildLoops + SC2Data.LOOPS_PER_TICK - 1) / SC2Data.LOOPS_PER_TICK;
         for (int i = 0; i < buildTicks; i++) game.tick();
 
         assertThat(game.snapshot().supply()).isEqualTo(supplyBefore + 8);
@@ -204,7 +208,8 @@ class ZergEmulatedGameTest {
 
         // Train a Queen
         game.applyIntent(new TrainIntent(hatchTag, UnitType.QUEEN));
-        final int buildTicks = SC2Data.trainTimeInTicks(UnitType.QUEEN);
+        int buildLoops = SC2Data.trainTimeInLoops(UnitType.QUEEN);
+        int buildTicks = (buildLoops + SC2Data.LOOPS_PER_TICK - 1) / SC2Data.LOOPS_PER_TICK;
         for (int i = 0; i < buildTicks; i++) game.tick();
 
         // Find the queen
@@ -265,7 +270,8 @@ class ZergEmulatedGameTest {
 
         // Inject many times by ticking past energy threshold repeatedly
         game.applyIntent(new TrainIntent(hatchTag, UnitType.QUEEN));
-        final int buildTicks = SC2Data.trainTimeInTicks(UnitType.QUEEN);
+        int buildLoops = SC2Data.trainTimeInLoops(UnitType.QUEEN);
+        int buildTicks = (buildLoops + SC2Data.LOOPS_PER_TICK - 1) / SC2Data.LOOPS_PER_TICK;
         for (int i = 0; i < buildTicks; i++) game.tick();
 
         // Drain larva first
@@ -402,7 +408,8 @@ class ZergEmulatedGameTest {
         game.applyIntent(new TrainIntent(enemyHatchTag, UnitType.ZERGLING),
                          game.enemy, game.enemyPhysics);
 
-        final int buildTicks = SC2Data.trainTimeInTicks(UnitType.ZERGLING);
+        int buildLoops = SC2Data.trainTimeInLoops(UnitType.ZERGLING);
+        int buildTicks = (buildLoops + SC2Data.LOOPS_PER_TICK - 1) / SC2Data.LOOPS_PER_TICK;
         for (int i = 0; i < buildTicks; i++) {game.tick();}
 
         final long enemyZerglings = game.snapshot().enemyUnits().stream()
