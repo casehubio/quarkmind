@@ -36,6 +36,7 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
     private final String playbookName;
 
     private final List<CalibrationSnapshot> snapshots = new ArrayList<>();
+    private final java.util.Set<String> assignedGasBuildings = new java.util.HashSet<>();
     private int gameLoop = 0;
     private int tick = -1;
     private int buildIndex = 0;
@@ -98,6 +99,8 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
                     }
                 }
 
+                assignWorkersToGas(state, commands);
+
                 if (!commands.isEmpty()) {
                     transport.sendActions(commands);
                 }
@@ -156,12 +159,7 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
             BuildingType bt = BuildingType.valueOf((String) step.params().get("build"));
 
             if (bt == BuildingType.ASSIMILATOR || bt == BuildingType.REFINERY || bt == BuildingType.EXTRACTOR) {
-                Abilities ability = ActionTranslator.mapBuildAbility(bt);
-                if (ability == null) {return null;}
-                UnitType workerType = workerForRace(race);
-                Tag      workerTag  = findUnitTag(state, workerType);
-                if (workerTag == null) {return null;}
-                return translateGasBuilding(workerTag, ability, state);
+                return translateGasBuildingDebug(bt, state);
             }
 
             io.quarkmind.domain.Point2d basePos = findBasePosition(state);
@@ -204,6 +202,50 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
         return null;
     }
 
+    private ResolvedCommand translateGasBuildingDebug(BuildingType bt, GameState state) {
+        var geysers = state.geysers();
+        if (geysers == null || gasIndex >= geysers.size()) {
+            log.debugf("[Recorder] No geyser available at index %d", gasIndex);
+            return null;
+        }
+        io.quarkmind.domain.Point2d basePos = findBasePosition(state);
+        if (basePos == null) return null;
+        var sortedGeysers = geysers.stream()
+            .sorted(java.util.Comparator.comparingDouble(g ->
+                Math.pow(g.position().x() - basePos.x(), 2) + Math.pow(g.position().y() - basePos.y(), 2)))
+            .toList();
+        if (gasIndex >= sortedGeysers.size()) return null;
+        var geyser = sortedGeysers.get(gasIndex);
+        gasIndex++;
+        int sc2UnitType = mapToSC2UnitTypeId(bt);
+        if (sc2UnitType < 0) {
+            log.infof("[Recorder] No SC2 unit type ID for gas building %s", bt);
+            return null;
+        }
+        try {
+            SC2APIProtocol.Debug.DebugCreateUnit createUnit = SC2APIProtocol.Debug.DebugCreateUnit.newBuilder()
+                .setUnitType(sc2UnitType)
+                .setOwner(1)
+                .setPos(SC2APIProtocol.Common.Point2D.newBuilder()
+                    .setX(geyser.position().x())
+                    .setY(geyser.position().y())
+                    .build())
+                .setQuantity(1)
+                .build();
+            SC2APIProtocol.Sc2Api.RequestDebug debugReq = SC2APIProtocol.Sc2Api.RequestDebug.newBuilder()
+                .addDebug(SC2APIProtocol.Debug.DebugCommand.newBuilder()
+                    .setCreateUnit(createUnit)
+                    .build())
+                .build();
+            transport.sendDebug(debugReq);
+            log.infof("[Recorder] DEBUG CREATE %s at geyser (%.1f, %.1f) — base=(%.1f, %.1f)",
+                      bt, geyser.position().x(), geyser.position().y(), basePos.x(), basePos.y());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return null;
+    }
+
     private ResolvedCommand translateGasBuilding(Tag workerTag, Abilities ability, GameState state) {
         var geysers = state.geysers();
         if (geysers == null || gasIndex >= geysers.size()) {
@@ -224,6 +266,8 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
         var geyser = sortedGeysers.get(gasIndex);
         gasIndex++;
         long geyserTag = Long.parseLong(geyser.tag());
+        log.infof("[Recorder] Gas build: worker=%s ability=%s geyser=%s at (%.1f, %.1f)",
+                  workerTag, ability, geyserTag, geyser.position().x(), geyser.position().y());
         return ResolvedCommand.targetUnit(workerTag, ability, geyserTag);
     }
 
@@ -291,6 +335,32 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
     }
 
 
+    private void assignWorkersToGas(GameState state, List<ResolvedCommand> commands) {
+        Abilities harvestAbility = switch (race) {
+            case PROTOSS -> Abilities.HARVEST_GATHER_PROBE;
+            case TERRAN  -> Abilities.HARVEST_GATHER_SCV;
+            case ZERG    -> Abilities.HARVEST_GATHER_DRONE;
+        };
+        UnitType workerType = workerForRace(race);
+        for (Building b : state.myBuildings()) {
+            if (!b.isComplete()) continue;
+            if (!io.quarkmind.domain.SC2Data.isGasBuilding(b.type())) continue;
+            if (assignedGasBuildings.contains(b.tag())) continue;
+            assignedGasBuildings.add(b.tag());
+            long gasTag = Long.parseLong(b.tag());
+            int assigned = 0;
+            for (var u : state.myUnits()) {
+                if (u.type() != workerType) continue;
+                if (assigned >= 3) break;
+                Tag wTag = Tag.of(Long.parseLong(u.tag()));
+                commands.add(ResolvedCommand.targetUnit(wTag, harvestAbility, gasTag));
+                assigned++;
+            }
+            log.infof("[Recorder] tick %d: assigned %d workers to gas %s (tag=%s)",
+                      tick, assigned, b.type(), b.tag());
+        }
+    }
+
     private Tag findBuildingTag(GameState state, BuildingType type) {
         return state.myBuildings().stream()
             .filter(b -> b.type() == type && b.isComplete())
@@ -333,12 +403,15 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
             case GATEWAY -> 62;
             case CYBERNETICS_CORE -> 72;
             case FORGE -> 63;
+            case ASSIMILATOR -> 61;
             case SUPPLY_DEPOT -> 19;
             case COMMAND_CENTER -> 18;
             case BARRACKS -> 21;
             case ENGINEERING_BAY -> 22;
+            case REFINERY -> 20;
             case HATCHERY -> 86;
             case SPAWNING_POOL -> 89;
+            case EXTRACTOR -> 88;
             default -> -1;
         };
     }
