@@ -83,15 +83,32 @@ Each entry documents value, source, and confidence level.
 
 ## 6. Mining Efficiency Factors
 
-Per-race mineral mining efficiency (rate-MAPE-minimising factor at 5/7-min checkpoints). Applied in `EmulatedGame.tick()` via `playerRaceModel.miningEfficiencyFactor()`. Factors > 1.0 compensate for unmodeled per-cycle overhead that makes real SC2 workers more efficient per trip than the simulation:
+**Status: reverted to 1.0 for all races.** SC2 playbook calibration (#591) proved the oracle-derived factors (1.18/1.12/1.28) were compensating for worker allocation gaps, not physics deficits. Per-worker mining physics is within 1% of SC2 at real map distances.
 
-| Race | Factor | Rate MAPE | Source | Confidence |
-|------|--------|-----------|--------|------------|
-| Protoss | 1.18 | 13.1% | MiningEfficiencyCalibrationTest rate sweep | **Calibrated** — #591 |
-| Zerg | 1.12 | 12.2% | MiningEfficiencyCalibrationTest rate sweep | **Calibrated** — #591 |
-| Terran | 1.28 | 18.1% | MiningEfficiencyCalibrationTest rate sweep | **Calibrated** — #591 |
+| Race | Factor | Source | Confidence |
+|------|--------|--------|------------|
+| Protoss | 1.0 | SC2 playbook calibration | **Calibrated** — #591 |
+| Zerg | 1.0 | SC2 playbook calibration | **Calibrated** — #591 |
+| Terran | 1.0 | SC2 playbook calibration | **Calibrated** — #591 |
 
-Previous factors (0.92/0.95/1.0 from #566) were calibrated pre-sub-tick against balance MAPE and reverted. Current factors are rate-optimized (mineralsCollectionRate MAPE) post sub-tick fixes (#578/#583/#584/#586). Note: Terran factor 1.28 is large — may include compensation for MULE income under-modeling. Refine with controlled SC2 playbooks.
+### SC2 playbook calibration results (12 workers, no buildings, TorchesAIE_v4)
+
+| Race | SC2 real | EM model (6.0u) | EM at real distances | Delta |
+|------|----------|-----------------|---------------------|-------|
+| Protoss | 57.9/min/worker | 54.0 (dual-run) | ~57.8 (weighted avg) | <1% |
+| Terran | 57.2/min/worker | — | ~57.8 (weighted avg) | ~1% |
+| Zerg | 57.2/min/worker | — | ~57.8 (weighted avg) | ~1% |
+
+**Key insight:** EM at uniform 6.0u test distance under-produces by 7% vs SC2. At real map distances (4 close patches × 6.6u + 4 far patches × 7.6u), the weighted average matches SC2 within 1%. The 22% rate MAPE in oracle replays is entirely worker allocation — too many EM workers are productive (no building pauses, scouting, transfers).
+
+### Saturation curve (SC2 playbook, Protoss, TorchesAIE_v4)
+
+| Workers | Workers/patch | SC2 rate | SC2 efficiency | EM efficiency | Gap |
+|---------|---------------|----------|----------------|---------------|-----|
+| 12 | 1.5 | 57.9/min/worker | 100% (base) | ~95% | — |
+| 23 | 2.875 | 48.6/min/worker | 84% | ~90% | EM 6% too lenient |
+
+EM saturation is too flat — 3rd workers per patch add proportionally too much income. This is a worker contention model gap (#572), not a physics constant issue.
 
 ---
 
@@ -410,7 +427,7 @@ Standalone EmulatedGame accuracy at 7-min checkpoint (118 oracle replays, all GT
 
 | Field | MAPE | Confidence | Status |
 |-------|------|------------|--------|
-| mineralsCollectionRate | 14.5% | — | Active calibration — down from 22.1% (#591 factors) |
+| mineralsCollectionRate | 22.1% | — | Factors reverted to 1.0 — gap is worker allocation (#572), not physics |
 | vespeneCollectionRate | 29.1% | — | Active calibration — gas factors not yet applied |
 | mineralsCurrent | 126.1% | — | Worsened — factors increase income but spending unchanged |
 | vespeneCurrent | 65.4% | — | Cumulative drift |
