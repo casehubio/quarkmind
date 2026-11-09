@@ -36,6 +36,19 @@ class DualRunCalibrationTest {
     }
 
     @Test
+    void dualRunCalMineralBaseline12wAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-12w.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-baseline-12w.yaml", sc2Baseline);
+        System.out.println(result.report());
+        if (!result.passed()) {
+            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
+                              result.divergenceTick(), result.divergenceField(),
+                              result.expected(), result.actual());
+        }
+    }
+
+
+    @Test
     void earlyExitOnUnitMismatch() {
         CalibrationBaseline baseline = new CalibrationBaseline(
             "test", "PROTOSS", "fixture", "2026-10-30T00:00:00Z", 3,

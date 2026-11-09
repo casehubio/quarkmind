@@ -66,39 +66,47 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
 
     @Override
     public void onStep(Observation obs) throws InterruptedException {
-        int emTick = gameLoop / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
-        if (emTick >= durationTicks) {
-            transport.quit();
-            return;
-        }
+            int emTick = gameLoop / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+            if (emTick >= durationTicks) {
+                transport.quit();
+                return;
+            }
 
-        boolean newTick = emTick > tick;
-        if (newTick) {
-            tick = emTick;
-            GameState state = ObservationTranslator.translate(obs, null);
-            snapshots.add(CalibrationSnapshot.from(tick, state));
+            boolean newTick = emTick > tick;
+            if (newTick) {
+                tick = emTick;
+                GameState state = ObservationTranslator.translate(obs, null);
+                snapshots.add(CalibrationSnapshot.from(tick, state));
 
-            int                   supplyUsed = (int) state.supplyUsed();
-            List<ResolvedCommand> commands   = new ArrayList<>();
+                int                   supplyUsed = (int) state.supplyUsed();
+                List<ResolvedCommand> commands   = new ArrayList<>();
 
-            for (int i = 0; i < steps.size(); i++) {
-                SC2PlaybookRunner.PlaybookStep step = steps.get(i);
-                boolean canFire = step.shouldFire(tick, supplyUsed)
-                                  && (!fired[i] || step.loop());
-                if (canFire) {
-                    ResolvedCommand cmd = translateStep(step, state);
-                    if (cmd != null) {
-                        commands.add(cmd);
-                        fired[i] = true;
-                        log.debugf("[Recorder] tick %d (loop %d): %s", tick, gameLoop, step.action());
+                for (int i = 0; i < steps.size(); i++) {
+                    SC2PlaybookRunner.PlaybookStep step = steps.get(i);
+                    boolean canFire = step.shouldFire(tick, supplyUsed)
+                                      && (!fired[i] || step.loop());
+                    if (canFire) {
+                        if ("build".equals(step.action())) {
+                            translateStep(step, state);
+                            fired[i] = true;
+                            log.infof("[Recorder] tick %d (loop %d): %s supply=%d/%d",
+                                      tick, gameLoop, step.action(), supplyUsed, (int) state.supply());
+                        } else {
+                            ResolvedCommand cmd = translateStep(step, state);
+                            if (cmd != null) {
+                                commands.add(cmd);
+                                fired[i] = true;
+                                log.infof("[Recorder] tick %d (loop %d): %s supply=%d/%d",
+                                          tick, gameLoop, step.action(), supplyUsed, (int) state.supply());
+                            }
+                        }
                     }
                 }
-            }
 
-            if (!commands.isEmpty()) {
-                transport.sendActions(commands);
+                if (!commands.isEmpty()) {
+                    transport.sendActions(commands);
+                }
             }
-        }
         gameLoop++;
     }
 
@@ -150,36 +158,55 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
     }
 
     private ResolvedCommand translateBuild(SC2PlaybookRunner.PlaybookStep step, GameState state) {
-        BuildingType bt      = BuildingType.valueOf((String) step.params().get("build"));
-            Abilities    ability = ActionTranslator.mapBuildAbility(bt);
-            if (ability == null) {return null;}
-
-            UnitType workerType = workerForRace(race);
-            Tag      workerTag  = findUnitTag(state, workerType);
-            if (workerTag == null) {
-                log.debugf("[Recorder] No worker found for building %s", bt);
-                return null;
-            }
+            BuildingType bt = BuildingType.valueOf((String) step.params().get("build"));
 
             if (bt == BuildingType.ASSIMILATOR || bt == BuildingType.REFINERY || bt == BuildingType.EXTRACTOR) {
+                Abilities ability = ActionTranslator.mapBuildAbility(bt);
+                if (ability == null) {return null;}
+                UnitType workerType = workerForRace(race);
+                Tag      workerTag  = findUnitTag(state, workerType);
+                if (workerTag == null) {return null;}
                 return translateGasBuilding(workerTag, ability, state);
             }
 
             io.quarkmind.domain.Point2d basePos = findBasePosition(state);
             if (basePos == null) {
-                log.warnf("[Recorder] No base found for build placement");
+                log.infof("[Recorder] No base found for build placement");
                 return null;
             }
 
-            float offsetX = 5f + (buildIndex % 3) * 3f;
-            float offsetY = -3f + (buildIndex / 3) * 3f;
+            float offsetX = -8f - (buildIndex % 3) * 4f;
+            float offsetY = 8f + (buildIndex / 3) * 4f;
             buildIndex++;
 
-            com.github.ocraft.s2client.protocol.spatial.Point2d pos =
-                    com.github.ocraft.s2client.protocol.spatial.Point2d.of(
-                            basePos.x() + offsetX, basePos.y() + offsetY);
+            int sc2UnitType = mapToSC2UnitTypeId(bt);
+            if (sc2UnitType < 0) {
+                log.infof("[Recorder] No SC2 unit type ID for %s", bt);
+                return null;
+            }
 
-        return new ResolvedCommand(workerTag, ability, Optional.of(pos));
+            try {
+                SC2APIProtocol.Debug.DebugCreateUnit createUnit = SC2APIProtocol.Debug.DebugCreateUnit.newBuilder()
+                                                                                                      .setUnitType(sc2UnitType)
+                                                                                                      .setOwner(1)
+                                                                                                      .setPos(SC2APIProtocol.Common.Point2D.newBuilder()
+                                                                                                                                           .setX(basePos.x() + offsetX)
+                                                                                                                                           .setY(basePos.y() + offsetY)
+                                                                                                                                           .build())
+                                                                                                      .setQuantity(1)
+                                                                                                      .build();
+                SC2APIProtocol.Sc2Api.RequestDebug debugReq = SC2APIProtocol.Sc2Api.RequestDebug.newBuilder()
+                                                                                                .addDebug(SC2APIProtocol.Debug.DebugCommand.newBuilder()
+                                                                                                                                           .setCreateUnit(createUnit)
+                                                                                                                                           .build())
+                                                                                                .build();
+                transport.sendDebug(debugReq);
+                log.infof("[Recorder] DEBUG CREATE %s at (%.1f, %.1f) — base=(%.1f, %.1f)",
+                          bt, basePos.x() + offsetX, basePos.y() + offsetY, basePos.x(), basePos.y());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        return null;
     }
 
     private ResolvedCommand translateGasBuilding(Tag workerTag, Abilities ability, GameState state) {
@@ -303,4 +330,22 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
             default -> null;
         };
     }
+
+    private static int mapToSC2UnitTypeId(BuildingType bt) {
+        return switch (bt) {
+            case PYLON -> 60;
+            case NEXUS -> 59;
+            case GATEWAY -> 62;
+            case CYBERNETICS_CORE -> 72;
+            case FORGE -> 63;
+            case SUPPLY_DEPOT -> 19;
+            case COMMAND_CENTER -> 18;
+            case BARRACKS -> 21;
+            case ENGINEERING_BAY -> 22;
+            case HATCHERY -> 86;
+            case SPAWNING_POOL -> 89;
+            default -> -1;
+        };
+    }
+
 }
