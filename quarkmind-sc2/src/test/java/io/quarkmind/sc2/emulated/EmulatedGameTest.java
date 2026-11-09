@@ -347,8 +347,10 @@ class EmulatedGameTest {
         game.setMineralsForTesting(500);
         game.applyIntent(BuildIntent.of("probe-0", BuildingType.PYLON, new Point2d(15, 15)));
         int supplyBefore = game.snapshot().supply();
-        for (int i = 0; i < 18; i++) game.tick(); // Pylon = 18 ticks
-        assertThat(game.snapshot().supply()).isEqualTo(supplyBefore + 8); // +8 from Pylon
+        int buildTicks   = SC2Data.buildTimeInLoops(BuildingType.PYLON) / SC2Data.LOOPS_PER_TICK;
+        if (SC2Data.buildTimeInLoops(BuildingType.PYLON) % SC2Data.LOOPS_PER_TICK > 0) {buildTicks++;}
+        for (int i = 0; i < buildTicks; i++) {game.tick();}
+        assertThat(game.snapshot().supply()).isEqualTo(supplyBefore + 8);
     }
 
     // ---- E3: combat ----
@@ -1673,16 +1675,19 @@ class EmulatedGameTest {
     @Test
     void queueDrainsSequentially() {
         game.setMineralsForTesting(500);
-        // supply=15, used=12, free=3 — enough for 3 probes at 1 each
         int before = game.snapshot().myUnits().size();
 
-        game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE)); // starts (12 ticks)
-        game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE)); // queued
+        game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE));
+        game.applyIntent(new TrainIntent("nexus-0", UnitType.PROBE));
 
-        for (int i = 0; i < 12; i++) game.tick(); // first completes
+        for (int i = 0; i < 13; i++) {
+            game.tick(); // first completes at tick 13 (272 loops)
+        }
         assertThat(game.snapshot().myUnits()).hasSize(before + 1);
 
-        for (int i = 0; i < 12; i++) game.tick(); // second completes (started right after first)
+        for (int i = 0; i < 12; i++) {
+            game.tick(); // second completes (272 loops from loop 272 = tick 25)
+        }
         assertThat(game.snapshot().myUnits()).hasSize(before + 2);
     }
 
@@ -1891,28 +1896,30 @@ class EmulatedGameTest {
     }
 
     @Test
-    void nexusBuildCompletesOneLaterWithLateLoopOffset() {
-        // offset=6: (6 + 1600) / 22 = 1606 / 22 = 73.0 → floor 73
-        // completesAt = 1 + 73 = 74; fires at gameFrame=74, i.e., after 73 ticks
+    void nexusBuildCompletesOneLaterWithLateLoopOffset() {    // Loop precision: completesAtLoop = 6 + 1600 = 1606 = 73*22 exactly.
+        // Fires at gameFrame=73 (1606 > 1606 is false).
+        // Without offset: completesAtLoop = 1600, also fires at 73 (1600 > 1606 is false).
+        // Offset 6 no longer shifts the tick — loop precision absorbs intra-tick offsets.
         EmulatedGame game = new EmulatedGame();
         game.reset();
         game.tick(); // gameFrame = 1
         game.setMineralsForTesting(5000);
         long completesBefore = game.snapshot().myBuildings().stream()
-            .filter(Building::isComplete).count();
+                                   .filter(Building::isComplete).count();
 
         game.applyIntent(new TimedIntent(6L, BuildIntent.of("probe-0", BuildingType.NEXUS, new Point2d(30, 30))));
 
-        int buildTicks = SC2Data.buildTimeInTicks(BuildingType.NEXUS); // 72
-        for (int i = 0; i < buildTicks; i++) game.tick(); // ticks 2–73; gameFrame = 73
+        for (int i = 0; i < 71; i++) {
+            game.tick(); // gameFrame = 72
+        }
         assertThat(game.snapshot().myBuildings().stream().filter(Building::isComplete).count())
-            .as("Nexus should not complete after %d ticks — loop offset 6 pushes completion 1 tick later", buildTicks)
-            .isEqualTo(completesBefore);
+                .as("Nexus should not complete at gameFrame=72")
+                .isEqualTo(completesBefore);
 
-        game.tick(); // tick 74, gameFrame = 74 — completesAt = 74, fires here
+        game.tick(); // gameFrame = 73 — completesAtLoop 1606 <= 73*22=1606
         assertThat(game.snapshot().myBuildings().stream().filter(Building::isComplete).count())
-            .as("Nexus should complete after %d ticks with loop offset 6", buildTicks + 1)
-            .isEqualTo(completesBefore + 1);
+                .as("Nexus should complete at gameFrame=73 (loop 1606)")
+                .isEqualTo(completesBefore + 1);
     }
 
     // --- injectReplayBuildingWithCost ---
@@ -2007,11 +2014,10 @@ class EmulatedGameTest {
         // Build a second nexus at a distant location
         game.applyIntent(BuildIntent.of("probe-0", BuildingType.NEXUS, new Point2d(30, 30)));
 
-        // Tick through build time (NEXUS default = 40 ticks)
-        int buildTicks = SC2Data.buildTimeInTicks(BuildingType.NEXUS);
+        int buildLoops = SC2Data.buildTimeInLoops(BuildingType.NEXUS);
+        int buildTicks = (buildLoops + SC2Data.LOOPS_PER_TICK - 1) / SC2Data.LOOPS_PER_TICK;
         for (int i = 0; i < buildTicks; i++) game.tick();
 
-        // After completion, two nexuses should exist
         GameState state = game.snapshot();
         long nexusCount = state.myBuildings().stream()
             .filter(b -> b.type() == BuildingType.NEXUS && b.isComplete())
