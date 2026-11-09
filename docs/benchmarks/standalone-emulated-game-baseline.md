@@ -43,15 +43,15 @@ Accuracy: 100.0% (0/0)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 20630 | 30725 | 13187 | 63.9% |
+| mineralsCurrent | 20630 | 28107 | 11623 | 56.3% |
 | vespeneCurrent | 232 | 16 | 216 | 93.1% |
-| mineralsCollectionRate | 150658 | 155464 | 12880 | 8.5% |
-| vespeneCollectionRate | 1241 | 60 | 1181 | 95.2% |
-| foodMade | 4579 | 4627 | 48 | 1.0% |
+| mineralsCollectionRate | 150658 | 136574 | 16188 | 10.7% |
+| vespeneCollectionRate | 1241 | 0 | 1241 | 100.0% |
+| foodMade | 4579 | 4619 | 40 | 0.9% |
 | foodUsed | 3338 | 3473 | 137 | 4.1% |
-| workersActiveCount | 3162 | 3283 | 121 | 3.8% |
+| workersActiveCount | 3162 | 3267 | 105 | 3.3% |
 | mineralsUsedCurrentArmy | 0 | 0 | 0 | 0.0% |
-| mineralsUsedCurrentEconomy | 266325 | 269450 | 4325 | 1.6% |
+| mineralsUsedCurrentEconomy | 266325 | 268400 | 3275 | 1.2% |
 | mineralsUsedCurrentTechnology | 0 | 0 | 0 | 0.0% |
 | vespeneUsedCurrentArmy | 0 | 0 | 0 | 0.0% |
 | vespeneUsedCurrentEconomy | 0 | 0 | 0 | 0.0% |
@@ -129,19 +129,19 @@ Accuracy: 100.0% (4/4)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 46751 | 84890 | 39529 | 84.6% |
-| vespeneCurrent | 24254 | 9324 | 15466 | 63.8% |
-| mineralsCollectionRate | 171704 | 170516 | 23546 | 13.7% |
-| vespeneCollectionRate | 39512 | 28015 | 12471 | 31.6% |
-| foodMade | 7024 | 7073 | 117 | 1.7% |
+| mineralsCurrent | 46751 | 72341 | 30680 | 65.6% |
+| vespeneCurrent | 24254 | 9373 | 15505 | 63.9% |
+| mineralsCollectionRate | 171704 | 161529 | 21979 | 12.8% |
+| vespeneCollectionRate | 39512 | 25290 | 14738 | 37.3% |
+| foodMade | 7024 | 7034 | 78 | 1.1% |
 | foodUsed | 5153 | 5259 | 128 | 2.5% |
-| workersActiveCount | 4000 | 4065 | 67 | 1.7% |
-| mineralsUsedCurrentArmy | 36875 | 38200 | 1925 | 5.2% |
-| mineralsUsedCurrentEconomy | 385100 | 371725 | 17125 | 4.4% |
-| mineralsUsedCurrentTechnology | 63850 | 61250 | 5600 | 8.8% |
-| vespeneUsedCurrentArmy | 4450 | 4600 | 200 | 4.5% |
+| workersActiveCount | 4000 | 4055 | 57 | 1.4% |
+| mineralsUsedCurrentArmy | 36875 | 37525 | 1250 | 3.4% |
+| mineralsUsedCurrentEconomy | 385100 | 370525 | 17025 | 4.4% |
+| mineralsUsedCurrentTechnology | 63850 | 61050 | 5500 | 8.6% |
+| vespeneUsedCurrentArmy | 4450 | 4525 | 125 | 2.8% |
 | vespeneUsedCurrentEconomy | 0 | 0 | 0 | 0.0% |
-| vespeneUsedCurrentTechnology | 5100 | 6075 | 975 | 19.1% |
+| vespeneUsedCurrentTechnology | 5100 | 6025 | 925 | 18.1% |
 
 ## 5-minute checkpoint
 
@@ -161,7 +161,7 @@ Accuracy: 100.0% (4/4)
 | ORACLE | 9 | 9 | 100.0% |
 | WARP_PRISM | 3 | 3 | 100.0% |
 | WARP_PRISM_PHASING | 1 | 1 | 100.0% |
-| ZERGLING | 531 | 529 | 99.6% |
+| ZERGLING | 531 | 530 | 99.8% |
 | ROACH | 53 | 53 | 100.0% |
 | QUEEN | 145 | 145 | 100.0% |
 | RAVAGER | 12 | 12 | 100.0% |
@@ -183,7 +183,7 @@ Accuracy: 100.0% (4/4)
 | REAPER | 36 | 36 | 100.0% |
 | HELLION | 52 | 52 | 100.0% |
 | LIBERATOR_AG | 1 | 1 | 100.0% |
-| **TOTAL** | 6807 | 6805 | **100.0%** |
+| **TOTAL** | 6807 | 6806 | **100.0%** |
 
 ### Buildings — Per-Type
 
@@ -254,19 +254,19 @@ Accuracy: 100.0% (103/103)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 66699 | 127320 | 71505 | 107.2% |
-| vespeneCurrent | 43390 | 23755 | 23155 | 53.4% |
-| mineralsCollectionRate | 208770 | 203706 | 28992 | 13.9% |
-| vespeneCollectionRate | 50869 | 38557 | 13162 | 25.9% |
-| foodMade | 9520 | 9644 | 280 | 2.9% |
+| mineralsCurrent | 66699 | 100077 | 55834 | 83.7% |
+| vespeneCurrent | 43390 | 23607 | 23211 | 53.5% |
+| mineralsCollectionRate | 208770 | 186452 | 35400 | 17.0% |
+| vespeneCollectionRate | 50869 | 36688 | 14617 | 28.7% |
+| foodMade | 9520 | 9580 | 216 | 2.3% |
 | foodUsed | 7488 | 7798 | 454 | 6.1% |
-| workersActiveCount | 4907 | 5002 | 159 | 3.2% |
-| mineralsUsedCurrentArmy | 108250 | 111875 | 10625 | 9.8% |
-| mineralsUsedCurrentEconomy | 478750 | 461725 | 25175 | 5.3% |
-| mineralsUsedCurrentTechnology | 119150 | 122275 | 14575 | 12.2% |
-| vespeneUsedCurrentArmy | 24475 | 26550 | 3775 | 15.4% |
+| workersActiveCount | 4907 | 4995 | 152 | 3.1% |
+| mineralsUsedCurrentArmy | 108250 | 111075 | 9875 | 9.1% |
+| mineralsUsedCurrentEconomy | 478750 | 460325 | 25425 | 5.3% |
+| mineralsUsedCurrentTechnology | 119150 | 121725 | 14025 | 11.8% |
+| vespeneUsedCurrentArmy | 24475 | 26200 | 3425 | 14.0% |
 | vespeneUsedCurrentEconomy | 150 | 0 | 150 | 100.0% |
-| vespeneUsedCurrentTechnology | 25075 | 33150 | 9475 | 37.8% |
+| vespeneUsedCurrentTechnology | 25075 | 32950 | 9275 | 37.0% |
 
 ## 7-minute checkpoint
 
@@ -405,17 +405,17 @@ Accuracy: 100.0% (185/185)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 89788 | 126215 | 78895 | 87.9% |
-| vespeneCurrent | 52228 | 29131 | 34103 | 65.3% |
-| mineralsCollectionRate | 201496 | 147050 | 65378 | 32.4% |
-| vespeneCollectionRate | 61091 | 44194 | 17223 | 28.2% |
-| foodMade | 11184 | 11089 | 345 | 3.1% |
-| foodUsed | 9017 | 9195 | 335 | 3.7% |
-| workersActiveCount | 5004 | 5099 | 127 | 2.5% |
-| mineralsUsedCurrentArmy | 175225 | 175050 | 12475 | 7.1% |
-| mineralsUsedCurrentEconomy | 506875 | 483200 | 29475 | 5.8% |
-| mineralsUsedCurrentTechnology | 148600 | 152200 | 25200 | 17.0% |
-| vespeneUsedCurrentArmy | 57400 | 58050 | 4250 | 7.4% |
+| mineralsCurrent | 89788 | 95797 | 69703 | 77.6% |
+| vespeneCurrent | 52228 | 29046 | 34120 | 65.3% |
+| mineralsCollectionRate | 201496 | 151937 | 60901 | 30.2% |
+| vespeneCollectionRate | 61091 | 43030 | 18515 | 30.3% |
+| foodMade | 11184 | 11073 | 329 | 2.9% |
+| foodUsed | 9017 | 9193 | 337 | 3.7% |
+| workersActiveCount | 5004 | 5096 | 124 | 2.5% |
+| mineralsUsedCurrentArmy | 175225 | 174400 | 12175 | 6.9% |
+| mineralsUsedCurrentEconomy | 506875 | 482775 | 29350 | 5.8% |
+| mineralsUsedCurrentTechnology | 148600 | 151550 | 24850 | 16.7% |
+| vespeneUsedCurrentArmy | 57400 | 57900 | 4300 | 7.5% |
 | vespeneUsedCurrentEconomy | 50 | 0 | 50 | 100.0% |
-| vespeneUsedCurrentTechnology | 37950 | 52275 | 15925 | 42.0% |
+| vespeneUsedCurrentTechnology | 37950 | 51900 | 15550 | 41.0% |
 

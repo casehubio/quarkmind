@@ -103,7 +103,7 @@ Each entry documents value, source, and confidence level.
 | 12w Protoss (tick 304) | 3460 | 3460 | **0.0%** |
 | 12w Terran (tick 304) | 3415 | 3415 | **0.0%** |
 | 12w Zerg (tick 304) | 3415 | 3415 | **0.0%** |
-| 16w saturation (tick 304) | 4260 | 4555 | +6.9% |
+| 16w saturation (tick 304) | 4260 | 4539 | +6.6% |
 
 16w 6.6% gap (was 6.9%): sub-tick training resolution (#601) fixed Probe cadence. Protoss factor refined to 0.997. Root cause: the EM trains 23 Probes (not 16 — continuous to supply cap). The 0.3% per-worker over-production (before factor fix) compounded through 11 training cycles, each Probe arriving slightly earlier in the EM. Reducing per-worker error to 0.0% only closes 16 minerals of the 295-mineral gap, because the EM and SC2 have different Probe arrival timing even at identical per-worker rates. Investigation needed: per-tick Probe count comparison between EM and SC2 baseline.
 
@@ -392,7 +392,7 @@ EconomyTracker now uses EMA: `MINERAL_EMA_ALPHA=0.25`, `VESPENE_EMA_ALPHA=0.35`.
 
 SC2 emits PlayerStatsEvents every 160 game loops (7.14 seconds) — confirmed empirically across 118 oracle replays (96.8% of 9183 intervals are exactly 160 loops). EconomyTracker aligns its rate window to 160 loops via `starcraft.economy.rate-interval-loops` (default 160). Due to the 22-loop tick granularity, the window fires every 8 ticks (176 loops >= 160), using actual elapsed loops in the rate denominator.
 
-Diagnostic (#590) measured the cadence contribution by comparing MAPE at 154-loop (old 7-tick) vs 160-loop (new) windows. At 7-min: mineralsCollectionRate improved 0.7% (22.8% → 22.1%), vespeneCollectionRate regressed 2.4% (26.7% → 29.1%). Cadence alignment is not the dominant factor — income physics deficit (#591) drives rate MAPE.
+Diagnostic (#590) measured the cadence contribution (pre-EMA, simple window) by comparing MAPE at 154-loop (old 7-tick) vs 160-loop (new) windows. Cadence alignment is not the dominant factor — income physics deficit (#591) drives rate MAPE. The EMA switch (#593) supersedes these simple-window measurements.
 
 ### Worker management constants
 
@@ -402,6 +402,16 @@ Diagnostic (#590) measured the cadence contribution by comparing MAPE at 154-loo
 | `MIN_MINERAL_WORKERS_BEFORE_GAS` | 8 | Gas workers won't be assigned if mineral count drops below this |
 | `OPTIMAL_WORKERS_PER_BASE` | 8 | `PATCHES_PER_BASE × MAX_MINERS` — first saturation tier |
 | `PROBE_BUILD_ROUND_TRIP_TICKS` | 7 | Protoss worker returns to mining after 7 ticks when warping a building |
+| Builder pause (Terran) | ceil(buildDuration / LOOPS_PER_TICK) | SCV paused for full building construction time (#601) |
+| Builder pause (Zerg) | 0 | Drone consumed — no pause mechanic |
+
+### Race-specific production mechanics
+
+| Race | Mechanic | Value | Notes |
+|------|----------|-------|-------|
+| Zerg | Parallel production | true | Multiple hatcheries can train simultaneously |
+| Zerg | Zergling twin spawn | 2 per train | One train intent produces 2 Zerglings |
+| All | Gas efficiency factor | 1.0 (default) | `RaceModel.gasEfficiencyFactor()` seam — no race overrides yet |
 
 ### Known constant discrepancy
 
@@ -453,22 +463,39 @@ Newly produced workers spawn at the town hall position and walk to an assigned m
 
 ## 16. Economy Baseline
 
-Standalone EmulatedGame accuracy at 7-min checkpoint (118 oracle replays, all GT syncs disabled):
+Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA rate algorithm):
 
-| Field | MAPE | Confidence | Status |
-|-------|------|------------|--------|
-| mineralsCollectionRate | 22.1% | — | Factors reverted to 1.0 — gap is worker allocation (#572), not physics |
-| vespeneCollectionRate | 29.1% | — | Active calibration — gas factors not yet applied |
-| mineralsCurrent | 126.1% | — | Worsened — factors increase income but spending unchanged |
-| vespeneCurrent | 65.4% | — | Cumulative drift |
-| foodMade | 3.1% | — | At floor |
-| foodUsed | 3.7% | — | At floor |
-| workersActiveCount | 2.5% | — | At floor |
-| mineralsUsedCurrentArmy | 7.1% | — | At floor |
-| mineralsUsedCurrentEconomy | 5.8% | — | At floor |
-| mineralsUsedCurrentTechnology | 17.0% | — | Near floor |
-| vespeneUsedCurrentArmy | 7.4% | — | At floor |
-| vespeneUsedCurrentTechnology | 42.0% | — | Structural — InProgress/Current timing |
+### Rate MAPE by checkpoint
+
+| Checkpoint | mineralsCollectionRate | vespeneCollectionRate |
+|------------|----------------------|---------------------|
+| 1-min | 10.7% | 100.0% (no gas yet) |
+| 3-min | 12.8% | 37.3% |
+| 5-min | 17.0% | 28.7% |
+| 7-min | **30.2%** | **30.3%** |
+
+### Full economy at 7-min
+
+| Field | MAPE | Status |
+|-------|------|--------|
+| mineralsCollectionRate | 30.2% | Structural — worker allocation (#572), not physics |
+| vespeneCollectionRate | 30.3% | Gas worker count synced from GT; residual is rate computation |
+| mineralsCurrent | 77.6% | Cumulative drift from rate error |
+| vespeneCurrent | 65.3% | Cumulative drift |
+| foodMade | 2.9% | At floor |
+| foodUsed | 3.7% | At floor |
+| workersActiveCount | 2.5% | At floor |
+| mineralsUsedCurrentArmy | 6.9% | At floor |
+| mineralsUsedCurrentEconomy | 5.8% | At floor |
+| mineralsUsedCurrentTechnology | 16.7% | Near floor |
+| vespeneUsedCurrentArmy | 7.5% | At floor |
+| vespeneUsedCurrentTechnology | 41.0% | Structural — InProgress/Current timing |
+
+### Rate algorithm impact
+
+The EMA switch (#593) increased the reported mineralsCollectionRate MAPE from 22.1% (simple window) to 30.2% (EMA α=0.25). The physics haven't changed — the EMA measurement is more honest because it matches SC2's own rate algorithm. With simple windowed averaging, the algorithm mismatch between EM (window) and SC2 (EMA) partially cancelled the income mismatch, producing a deceptively lower MAPE. With EMA on both sides, the rate comparison is apples-to-apples.
+
+The mineralsCurrent MAPE improved from 126.1% to 77.6% — this reflects the per-race efficiency factors (#600, #601) reducing EM over-production.
 
 ---
 
