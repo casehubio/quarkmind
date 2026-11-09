@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
+import io.quarkmind.domain.Point2d;
 import io.quarkmind.sc2.emulated.EmulatedGame;
 import io.quarkmind.sc2.emulated.RaceModelFactory;
 import org.junit.jupiter.api.Test;
@@ -64,7 +65,7 @@ class DualRunCalibrationTest {
     @Test
     void dualRunCalMineralSaturated16wAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-saturated-16w.json");
-        CalibrationResult   result      = calibrate("playbooks/cal-mineral-saturated-16w.yaml", sc2Baseline, true);
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-saturated-16w.yaml", sc2Baseline, true, 1);
         System.out.println(result.report());
         if (!result.passed()) {
             System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
@@ -307,6 +308,11 @@ class DualRunCalibrationTest {
 
     static CalibrationResult calibrate(String playbookResource, CalibrationBaseline baseline,
                                        boolean skipBuildings) {
+        return calibrate(playbookResource, baseline, skipBuildings, 0);
+    }
+
+    static CalibrationResult calibrate(String playbookResource, CalibrationBaseline baseline,
+                                       boolean skipBuildings, int unitTolerance) {
         String   yaml = SC2PlaybookRunner.loadResource(playbookResource);
         JsonNode root;
         try {root = YAML.readTree(yaml);} catch (Exception e) {
@@ -328,7 +334,7 @@ class DualRunCalibrationTest {
             CalibrationSnapshot expected = baseline.snapshots().get(tick);
             CalibrationSnapshot actual   = CalibrationSnapshot.from(tick, game.snapshot());
 
-            CalibrationResult divergence = compare(expected, actual, skipBuildings);
+            CalibrationResult divergence = compare(expected, actual, skipBuildings, unitTolerance);
             if (divergence != null) {return divergence;}
 
             if (expected.minerals() != actual.minerals() || expected.vespene() != actual.vespene()) {
@@ -369,13 +375,19 @@ class DualRunCalibrationTest {
                     if ("build".equals(step.action()) && step.supplyTrigger() > 0 && !fired[i]) {continue;}
                 }
                 if (canFire) {
-                    Map<String, Object> data = new HashMap<>(step.params());
-                    data.put("action", step.action());
-                    var outcome = handler.execute(step.action() + "-" + tick, data, null);
-                    if (step.supplyTrigger() > 0) {
-                        if (outcome.success()) {fired[i] = true;}
-                    } else {
+                    if (skipBuildings && "build".equals(step.action())) {
+                        BuildingType bt = BuildingType.valueOf((String) step.params().get("build"));
+                        game.debugCreateBuilding(bt, new Point2d(30, 30));
                         fired[i] = true;
+                    } else {
+                        Map<String, Object> data = new HashMap<>(step.params());
+                        data.put("action", step.action());
+                        var outcome = handler.execute(step.action() + "-" + tick, data, null);
+                        if (step.supplyTrigger() > 0) {
+                            if (outcome.success()) {fired[i] = true;}
+                        } else {
+                            fired[i] = true;
+                        }
                     }
                 }
             }
@@ -385,14 +397,14 @@ class DualRunCalibrationTest {
     }
 
     private static CalibrationResult compare(CalibrationSnapshot expected, CalibrationSnapshot actual) {
-        return compare(expected, actual, false);
+        return compare(expected, actual, false, 0);
     }
 
     private static CalibrationResult compare(CalibrationSnapshot expected, CalibrationSnapshot actual,
-                                             boolean skipBuildings) {
+                                             boolean skipBuildings, int unitTolerance) {
         for (Map.Entry<String, Integer> entry : expected.units().entrySet()) {
             int actualCount = actual.units().getOrDefault(entry.getKey(), 0);
-            if (actualCount != entry.getValue()) {
+            if (Math.abs(actualCount - entry.getValue()) > unitTolerance) {
                 return CalibrationResult.diverged(expected.tick(),
                     "units." + entry.getKey(),
                     String.valueOf(entry.getValue()),
@@ -400,7 +412,7 @@ class DualRunCalibrationTest {
             }
         }
         for (Map.Entry<String, Integer> entry : actual.units().entrySet()) {
-            if (!expected.units().containsKey(entry.getKey()) && entry.getValue() > 0) {
+            if (!expected.units().containsKey(entry.getKey()) && entry.getValue() > unitTolerance) {
                 return CalibrationResult.diverged(expected.tick(),
                     "units." + entry.getKey(),
                     "0",

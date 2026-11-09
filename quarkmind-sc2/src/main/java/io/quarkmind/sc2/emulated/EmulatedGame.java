@@ -616,6 +616,13 @@ public class EmulatedGame {
     }
 
 
+    public void debugCreateBuilding(BuildingType bt, Point2d location) {
+        String tag = "debug-" + nextTag++;
+        friendly.addBuilding(new Building(tag, bt, location,
+                                          SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), true));
+        friendly.addSupply(SC2Data.supplyBonus(bt));
+    }
+
     private String nextTagString() {
         return "unit-" + nextTag++;
     }
