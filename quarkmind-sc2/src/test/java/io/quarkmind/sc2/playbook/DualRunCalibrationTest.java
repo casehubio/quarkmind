@@ -141,6 +141,51 @@ class DualRunCalibrationTest {
         assertSelfBaseline("playbooks/two-base-production.yaml", Race.PROTOSS);
     }
 
+    @Test
+    void selfBaselineCalMineralBaseline12w() {
+        assertSelfBaseline("playbooks/cal-mineral-baseline-12w.yaml", Race.PROTOSS);
+    }
+
+    @Test
+    void selfBaselineCalMineralSaturated16w() {
+        assertSelfBaseline("playbooks/cal-mineral-saturated-16w.yaml", Race.PROTOSS);
+    }
+
+    @Test
+    void selfBaselineCalMineralSaturated24w() {
+        assertSelfBaseline("playbooks/cal-mineral-saturated-24w.yaml", Race.PROTOSS);
+    }
+
+    @Test
+    void selfBaselineCalGasBaseline3w() {
+        assertSelfBaseline("playbooks/cal-gas-baseline-3w.yaml", Race.PROTOSS);
+    }
+
+    @Test
+    void selfBaselineCalGasDual6w() {
+        assertSelfBaseline("playbooks/cal-gas-dual-6w.yaml", Race.PROTOSS);
+    }
+
+    @Test
+    void selfBaselineCalMineralBaselineTerran() {
+        assertSelfBaseline("playbooks/cal-mineral-baseline-terran.yaml", Race.TERRAN);
+    }
+
+    @Test
+    void selfBaselineCalMuleIsolation() {
+        assertSelfBaseline("playbooks/cal-mule-isolation.yaml", Race.TERRAN);
+    }
+
+    @Test
+    void selfBaselineCalMineralBaselineZerg() {
+        assertSelfBaseline("playbooks/cal-mineral-baseline-zerg.yaml", Race.ZERG);
+    }
+
+    @Test
+    void selfBaselineCalExpansionTransfer() {
+        assertSelfBaseline("playbooks/cal-expansion-transfer.yaml", Race.PROTOSS);
+    }
+
 
     private static void assertSelfBaseline(String playbookResource, Race race) {
         String   yaml = SC2PlaybookRunner.loadResource(playbookResource);

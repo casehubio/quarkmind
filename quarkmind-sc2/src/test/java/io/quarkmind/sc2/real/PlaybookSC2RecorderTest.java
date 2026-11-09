@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @Tag("sc2")
@@ -50,4 +50,87 @@ class PlaybookSC2RecorderTest {
         System.out.printf("[Recorder] Baseline written to %s (%d bytes)%n",
             output, json.length());
     }
+
+    @Test
+    void recordCalMineralBaseline12w() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-mineral-baseline-12w.yaml", "calibration/cal-mineral-baseline-12w.json");
+    }
+
+    @Test
+    void recordCalMineralSaturated16w() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-mineral-saturated-16w.yaml", "calibration/cal-mineral-saturated-16w.json");
+    }
+
+    @Test
+    void recordCalMineralSaturated24w() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-mineral-saturated-24w.yaml", "calibration/cal-mineral-saturated-24w.json");
+    }
+
+    @Test
+    void recordCalGasBaseline3w() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-gas-baseline-3w.yaml", "calibration/cal-gas-baseline-3w.json");
+    }
+
+    @Test
+    void recordCalGasDual6w() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-gas-dual-6w.yaml", "calibration/cal-gas-dual-6w.json");
+    }
+
+    @Test
+    void recordCalMineralBaselineTerran() throws Exception {
+        recordPlaybook("TERRAN", "playbooks/cal-mineral-baseline-terran.yaml", "calibration/cal-mineral-baseline-terran.json");
+    }
+
+    @Test
+    void recordCalMuleIsolation() throws Exception {
+        recordPlaybook("TERRAN", "playbooks/cal-mule-isolation.yaml", "calibration/cal-mule-isolation.json");
+    }
+
+    @Test
+    void recordCalMineralBaselineZerg() throws Exception {
+        recordPlaybook("ZERG", "playbooks/cal-mineral-baseline-zerg.yaml", "calibration/cal-mineral-baseline-zerg.json");
+    }
+
+    @Test
+    void recordCalExpansionTransfer() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-expansion-transfer.yaml", "calibration/cal-expansion-transfer.json");
+    }
+
+    private void recordPlaybook(String race, String playbookResource, String outputPath) throws Exception {
+        assumeTrue(QuarkusSC2Transport.isSC2Available(),
+                   "StarCraft II not installed — skipping live SC2 test");
+        QuarkusSC2Transport transport = new QuarkusSC2Transport();
+        transport.sc2Port                = 8168;
+        transport.mapName                = "TorchesAIE_v4";
+        transport.difficultyStr          = "VERY_EASY";
+        transport.aiRaceStr              = "RANDOM";
+        transport.botRaceStr             = race;
+        transport.connectRetryCount      = 60;
+        transport.connectRetryIntervalMs = 5000;
+        transport.connect();
+        transport.createGame();
+        transport.joinGame();
+
+        PlaybookSC2Adapter adapter = new PlaybookSC2Adapter(
+                transport, playbookResource);
+
+        transport.runGameLoop(adapter);
+
+        while (transport.isRunning()) {
+            Thread.sleep(100);
+        }
+
+        assertFalse(adapter.snapshots().isEmpty(), "Should have recorded snapshots");
+        System.out.printf("[Recorder] %s: Captured %d snapshots%n", playbookResource, adapter.snapshots().size());
+
+        CalibrationBaseline baseline = adapter.buildBaseline("unknown");
+        String              json     = baseline.toJson();
+
+        Path output = Path.of("src/test/resources/" + outputPath);
+        Files.createDirectories(output.getParent());
+        Files.writeString(output, json);
+        System.out.printf("[Recorder] Baseline written to %s (%d bytes)%n",
+                          output, json.length());
+    }
+
 }

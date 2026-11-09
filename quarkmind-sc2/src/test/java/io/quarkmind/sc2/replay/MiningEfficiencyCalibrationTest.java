@@ -202,4 +202,105 @@ class MiningEfficiencyCalibrationTest {
             System.out.printf(">>> RATE OPTIMAL: %.2f (combined rate MAPE: %.1f%%)%n%n", bestRateFactor, bestRateMape);
         }
     }
+
+    @Test
+    @EnabledIf("oracleExists")
+    void calibrateGasEfficiency() throws IOException {
+        List<Path> replays;
+        try (var stream = Files.list(ORACLE_DIR)) {
+            replays = stream.filter(p -> p.toString().endsWith(".SC2Replay"))
+                            .sorted().toList();
+        }
+
+        record GasCheckpointData(Race race, int checkpoint,
+                                 double gtGasRate, double emGasRate) {}
+
+        List<GasCheckpointData> allData = new ArrayList<>();
+
+        for (Path replayPath : replays) {
+            Replay replay;
+            try {
+                replay = RepParserEngine.parseReplay(replayPath, EnumSet.of(RepContent.DETAILS));
+            } catch (Exception e) {continue;}
+            if (replay == null || replay.details == null) {continue;}
+            if (replay.details.getPlayerList().length < 2) {continue;}
+
+            for (int playerId = 1; playerId <= 2; playerId++) {
+                try {
+                    ReplaySimulatedGame groundTruth = new ReplaySimulatedGame(replayPath, playerId);
+                    List<TimedIntent>   intents     = TrackerIntentExtractor.extract(replayPath, playerId);
+                    Race                race        = TrackerIntentExtractor.resolvePlayerRace(replay, playerId);
+
+                    List<DivergenceReport.TickSnapshot> snapshots =
+                            StandaloneEmulatedGameBaselineTest.runStandalone(
+                                    groundTruth, intents, TICK_LIMIT, race);
+
+                    for (int cp : CHECKPOINTS_MIN) {
+                        int tickIndex = cp * TICKS_PER_MINUTE - 1;
+                        if (tickIndex >= snapshots.size()) {continue;}
+                        var snap = snapshots.get(tickIndex);
+                        if (snap.groundTruthEconomy() == null || snap.emulatedEconomy() == null) {continue;}
+
+                        double gtGasRate = snap.groundTruthEconomy().vespeneCollectionRate();
+                        double emGasRate = snap.emulatedEconomy().vespeneCollectionRate();
+
+                        allData.add(new GasCheckpointData(race, cp, gtGasRate, emGasRate));
+                    }
+                } catch (Exception e) { /* skip */ }
+            }
+        }
+
+        System.out.println("=== Gas Efficiency Calibration (Rate MAPE) ===\n");
+        System.out.printf("Total checkpoint samples: %d%n%n", allData.size());
+
+        for (Race race : Race.values()) {
+            List<GasCheckpointData> raceData = allData.stream()
+                                                      .filter(d -> d.race() == race).toList();
+            if (raceData.isEmpty()) {continue;}
+
+            System.out.printf("--- %s GAS RATE MAPE (%d samples) ---%n", race, raceData.size());
+            System.out.printf("%-8s", "Factor");
+            for (int cp : CHECKPOINTS_MIN) {
+                System.out.printf("  %d-min MAPE", cp);
+            }
+            System.out.printf("  Combined%n");
+
+            double bestRateMape   = Double.MAX_VALUE;
+            double bestRateFactor = 1.0;
+
+            for (double factor : CANDIDATE_FACTORS) {
+                System.out.printf("%-8.2f", factor);
+                double combinedAbsErr = 0;
+                double combinedGt     = 0;
+
+                for (int cp : CHECKPOINTS_MIN) {
+                    final int cpFinal = cp;
+                    List<GasCheckpointData> cpData = raceData.stream()
+                                                             .filter(d -> d.checkpoint() == cpFinal).toList();
+                    double absErrSum = 0;
+                    double gtSum     = 0;
+                    for (GasCheckpointData d : cpData) {
+                        double adjustedRate = d.emGasRate() * factor;
+                        absErrSum += Math.abs(d.gtGasRate() - adjustedRate);
+                        gtSum += Math.abs(d.gtGasRate());
+                    }
+                    double mape = gtSum > 0 ? absErrSum / gtSum * 100.0 : 0;
+                    System.out.printf("  %8.1f%%", mape);
+                    combinedAbsErr += absErrSum;
+                    combinedGt += gtSum;
+                }
+
+                double combinedMape = combinedGt > 0 ? combinedAbsErr / combinedGt * 100.0 : 0;
+                System.out.printf("  %8.1f%%%n", combinedMape);
+
+                if (combinedMape < bestRateMape) {
+                    bestRateMape   = combinedMape;
+                    bestRateFactor = factor;
+                }
+            }
+            System.out.printf(">>> GAS RATE OPTIMAL: %.2f (combined gas rate MAPE: %.1f%%)%n%n",
+                              bestRateFactor, bestRateMape);
+        }
+    }
+
 }

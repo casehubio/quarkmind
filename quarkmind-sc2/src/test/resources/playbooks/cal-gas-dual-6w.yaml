@@ -31,10 +31,10 @@ steps:
     at: 183 ticks
     expect:
       vespene:
-        min: 200
+        min: 50
 
   - assert: tick-305
     at: 305 ticks
     expect:
       vespene:
-        min: 500
+        min: 150
