@@ -75,6 +75,18 @@ class DualRunCalibrationTest {
     }
 
     @Test
+    void dualRunCalGasBaseline3wAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-gas-baseline-3w.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2Baseline, true, 1);
+        System.out.println(result.report());
+        if (!result.passed()) {
+            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
+                              result.divergenceTick(), result.divergenceField(),
+                              result.expected(), result.actual());
+        }
+    }
+
+    @Test
     void dualRunCalMineralSaturated24wAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-saturated-24w.json");
         CalibrationResult   result      = calibrate("playbooks/cal-mineral-saturated-24w.yaml", sc2Baseline, true, 1);
@@ -408,7 +420,8 @@ class DualRunCalibrationTest {
                 if (canFire) {
                     if (skipBuildings && "build".equals(step.action())) {
                         BuildingType bt = BuildingType.valueOf((String) step.params().get("build"));
-                        game.debugCreateBuilding(bt, new Point2d(30, 30));
+                        Point2d pos = SC2Data.isGasBuilding(bt) ? new Point2d(16, 12) : new Point2d(30, 30);
+                        game.debugCreateBuilding(bt, pos);
                         fired[i] = true;
                     } else {
                         Map<String, Object> data = new HashMap<>(step.params());

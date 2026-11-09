@@ -621,6 +621,11 @@ public class EmulatedGame {
         friendly.addBuilding(new Building(tag, bt, location,
                                           SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), true));
         friendly.addSupply(SC2Data.supplyBonus(bt));
+        if (playerRaceModel != null && playerRaceModel.townHallTypes().contains(bt)) {
+            registerTownHallWithPatches(tag, location);
+        } else if (SC2Data.isGasBuilding(bt)) {
+            workerSimulation.onGasBuildingCompleted(tag, location);
+        }
     }
 
     private String nextTagString() {
