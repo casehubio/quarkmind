@@ -337,7 +337,9 @@ Deposit was investigated in #587: explicit modeling (2-loop delay at base) shift
 
 ### Rate measurement cadence
 
-SC2 emits PlayerStatsEvents every ~160 game loops (~7.14 seconds). The simulation's `EconomyTracker` averages rates over `RATE_INTERVAL_TICKS=7` ticks (154 loops, 6.88 seconds). The ~6-loop cadence mismatch means the simulation and ground truth sample at slightly different intervals, creating a structural floor on rate field accuracy regardless of how correct the underlying physics is.
+SC2 emits PlayerStatsEvents every 160 game loops (7.14 seconds) — confirmed empirically across 118 oracle replays (96.8% of 9183 intervals are exactly 160 loops). EconomyTracker aligns its rate window to 160 loops via `starcraft.economy.rate-interval-loops` (default 160). Due to the 22-loop tick granularity, the window fires every 8 ticks (176 loops >= 160), using actual elapsed loops in the rate denominator.
+
+Diagnostic (#590) measured the cadence contribution by comparing MAPE at 154-loop (old 7-tick) vs 160-loop (new) windows. At 7-min: mineralsCollectionRate improved 0.7% (22.8% → 22.1%), vespeneCollectionRate regressed 2.4% (26.7% → 29.1%). Cadence alignment is not the dominant factor — income physics deficit (#591) drives rate MAPE.
 
 ### Worker management constants
 
@@ -406,8 +408,8 @@ Standalone EmulatedGame accuracy at 7-min checkpoint (118 oracle replays, all GT
 
 | Field | MAPE | Confidence | Status |
 |-------|------|------------|--------|
-| mineralsCollectionRate | 22.8% | — | Active calibration |
-| vespeneCollectionRate | 26.7% | — | Active calibration |
+| mineralsCollectionRate | 22.1% | — | Active calibration |
+| vespeneCollectionRate | 29.1% | — | Active calibration |
 | mineralsCurrent | 67.5% | — | Cumulative drift |
 | vespeneCurrent | 65.4% | — | Cumulative drift |
 | foodMade | 3.1% | — | At floor |
@@ -458,12 +460,13 @@ Standalone EmulatedGame accuracy at 7-min checkpoint (118 oracle replays, all GT
 | DualRunCalibrationTest | Tick-by-tick EmulatedGame vs SC2 baseline | default suite |
 | MiningEfficiencyCalibrationTest | Per-race mining factor sweep | `-Pdiagnostic` |
 | AutoSpawnCalibrationTest | Larva spawn interval, interceptor build time | `-Pdiagnostic` |
+| RateCadenceDiagnosticTest | PlayerStatsEvent cadence + rate MAPE at different windows | `-Pdiagnostic` |
 
 ---
 
 ## 19. Quarkus Config Properties
 
-Worker physics constants — override without recompiling:
+Worker physics and economy constants — override without recompiling:
 
 ```properties
 # application.properties or -D flags
@@ -472,4 +475,5 @@ starcraft.worker.gas-harvest-duration-loops=22.0
 starcraft.worker.deposit-duration-loops=0.0
 starcraft.worker.acceleration=3.5
 starcraft.worker.deceleration=3.5
+starcraft.economy.rate-interval-loops=160
 ```
