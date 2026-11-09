@@ -2240,6 +2240,34 @@ class EmulatedGameTest {
         assertThat(state.minerals()).isEqualTo(200);
     }
 
+
+    @Test
+    void perRaceMineralAccuracy_protoss() {
+        assertMineralAccuracy(Race.PROTOSS, 3460, 0.5);
+    }
+
+    @Test
+    void perRaceMineralAccuracy_terran() {
+        assertMineralAccuracy(Race.TERRAN, 3415, 0.5);
+    }
+
+    @Test
+    void perRaceMineralAccuracy_zerg() {
+        assertMineralAccuracy(Race.ZERG, 3415, 0.5);
+    }
+
+    private void assertMineralAccuracy(Race race, int sc2Target, double tolerancePct) {
+        EmulatedGame g = new EmulatedGame();
+        g.setPlayerRaceModel(RaceModelFactory.forRace(race));
+        g.reset();
+        for (int t = 0; t < 304; t++) {g.tick();}
+        int    emMinerals = g.snapshot().minerals();
+        double pctDiff    = Math.abs((emMinerals - sc2Target) / (double) sc2Target * 100);
+        assertThat(pctDiff)
+                .as("%s 12w mineral accuracy: EM=%d SC2=%d (%.1f%%)", race, emMinerals, sc2Target, pctDiff)
+                .isLessThanOrEqualTo(tolerancePct);
+    }
+
     private static Unit probe(String tag, float x, float y) {
         return new Unit(tag, UnitType.PROBE, new Point2d(x, y),
             SC2Data.maxHealth(UnitType.PROBE), SC2Data.maxHealth(UnitType.PROBE),

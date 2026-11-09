@@ -1,6 +1,7 @@
 package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -338,6 +339,35 @@ class MiningCycleDiagnosticTest {
             }
         } finally {
             SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS = savedDocking;
+        }
+    }
+
+    @Test
+    void miningEfficiencyFactorSweep() {
+        System.out.println("=== Mining Efficiency Factor Sweep: 12 workers, 304 ticks ===");
+        System.out.println("SC2 targets: Protoss=3460, Terran=3415, Zerg=3415");
+        System.out.printf("%-8s %-12s %-12s %-12s %-12s%n", "Factor", "Minerals", "vs P 3460", "vs T 3415", "vs Z 3415");
+        System.out.println("-".repeat(60));
+
+        for (double factor : new double[]{0.975, 0.980, 0.982, 0.983, 0.984, 0.985, 0.986, 0.988, 0.990, 0.995, 1.000}) {
+            EmulatedGame g = new EmulatedGame();
+            g.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));
+            g.reset();
+
+            double totalRaw = 0;
+            for (int t = 0; t < 304; t++) {
+                g.tick();
+            }
+            int    baselineMinerals = g.snapshot().minerals();
+            double minedIncome      = baselineMinerals - SC2Data.INITIAL_MINERALS;
+            double adjusted         = SC2Data.INITIAL_MINERALS + minedIncome * factor;
+
+            double vsProtoss = (adjusted - 3460) / 3460 * 100;
+            double vsTerran  = (adjusted - 3415) / 3415 * 100;
+            double vsZerg    = (adjusted - 3415) / 3415 * 100;
+
+            System.out.printf("%-8.3f %-12.0f %-12.1f%% %-12.1f%% %-12.1f%%%n",
+                              factor, adjusted, vsProtoss, vsTerran, vsZerg);
         }
     }
 

@@ -172,7 +172,7 @@ class ZergRaceModel implements RaceModel {
     @Override public UnitType workerType()             { return UnitType.DRONE; }
 
     @Override
-    public double miningEfficiencyFactor() {return 1.0;}
+    public double miningEfficiencyFactor() {return 0.984;}
 
     @Override public Set<BuildingType> townHallTypes() { return TOWN_HALLS; }
 
