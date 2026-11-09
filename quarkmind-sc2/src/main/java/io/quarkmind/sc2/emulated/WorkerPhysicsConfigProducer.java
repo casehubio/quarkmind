@@ -35,12 +35,17 @@ class WorkerPhysicsConfigProducer {
                     defaultValue = "7.0")
     double patchDistance;
 
+    @ConfigProperty(name = "starcraft.worker.initial-stagger-loops",
+                    defaultValue = "6.0")
+    double initialWorkerStaggerLoops;
+
     @Produces
     @ApplicationScoped
     WorkerPhysicsConfig produce() {
         WorkerPhysicsConfig config = new WorkerPhysicsConfig(
                 miningDurationLoops, gasHarvestDurationLoops, depositDurationLoops,
-                acceleration, deceleration, patchDockingOverheadLoops, (float) patchDistance);
+                acceleration, deceleration, patchDockingOverheadLoops, (float) patchDistance,
+                initialWorkerStaggerLoops);
         SimulatedWorker.configure(config);
         return config;
     }

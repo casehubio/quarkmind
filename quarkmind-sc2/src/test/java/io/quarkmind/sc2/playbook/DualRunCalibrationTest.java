@@ -83,6 +83,35 @@ class DualRunCalibrationTest {
 
 
     @Test
+    void earlyTickMineralDeliverySpread() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-12w.json");
+        EmulatedGame game = new EmulatedGame();
+        game.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));
+        if (sc2Baseline.basePosition() != null && sc2Baseline.mineralPatches() != null) {
+            float fx = 8f - sc2Baseline.basePosition()[0];
+            float fy = 8f - sc2Baseline.basePosition()[1];
+            game.setMineralPatchResources(sc2Baseline.mineralPatches().stream()
+                    .map(p -> new io.quarkmind.domain.Resource(
+                            "cal-" + sc2Baseline.mineralPatches().indexOf(p),
+                            new Point2d(p.x() + fx, p.y() + fy), p.amount(), p.rich()))
+                    .toList());
+        }
+        game.reset();
+
+        for (int t = 0; t < 6; t++) game.tick();
+        int emTick6 = game.snapshot().minerals();
+        int sc2Tick6 = sc2Baseline.snapshots().get(6).minerals();
+        assertTrue(Math.abs(emTick6 - sc2Tick6) <= 10,
+                "Tick 6 delta " + (emTick6 - sc2Tick6) + " exceeds ±10");
+
+        for (int t = 6; t < 20; t++) game.tick();
+        int emTick20 = game.snapshot().minerals();
+        int sc2Tick20 = sc2Baseline.snapshots().get(20).minerals();
+        assertTrue(Math.abs(emTick20 - sc2Tick20) <= 5,
+                "Tick 20 delta " + (emTick20 - sc2Tick20) + " exceeds ±5");
+    }
+
+    @Test
     void dualRunCalMineralBaselineTerranAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-terran.json");
         CalibrationResult   result      = calibrate("playbooks/cal-mineral-baseline-terran.yaml", sc2Baseline);

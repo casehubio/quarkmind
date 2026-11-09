@@ -104,9 +104,9 @@ Each entry documents value, source, and confidence level.
 
 | Baseline | SC2 minerals | EM minerals | Delta |
 |----------|-------------|------------|-------|
-| 12w Protoss (tick 304) | 3460 | 3460 | **0.0%** |
-| 12w Terran (tick 304) | 3415 | 3415 | **0.0%** |
-| 12w Zerg (tick 304) | 3415 | 3415 | **0.0%** |
+| 12w Protoss (tick 304) | 3460 | 3429 | **−0.9%** |
+| 12w Terran (tick 304) | 3460 | 3385 | **−2.2%** |
+| 12w Zerg (tick 304) | — | — | diverges tick 0 (LARVA) |
 | 16w saturation (tick 304) | 4260 | 4539 | +6.6% |
 
 16w 6.6% gap (was 6.9%): sub-tick training resolution (#601) fixed Probe cadence. Protoss factor refined to 0.997. Root cause: the EM trains 23 Probes (not 16 — continuous to supply cap). The 0.3% per-worker over-production (before factor fix) compounded through 11 training cycles, each Probe arriving slightly earlier in the EM. Reducing per-worker error to 0.0% only closes 16 minerals of the 295-mineral gap, because the EM and SC2 have different Probe arrival timing even at identical per-worker rates. Investigation needed: per-tick Probe count comparison between EM and SC2 baseline.
@@ -398,6 +398,24 @@ SC2 emits PlayerStatsEvents every 160 game loops (7.14 seconds) — confirmed em
 
 Diagnostic (#590) measured the cadence contribution (pre-EMA, simple window) by comparing MAPE at 154-loop (old 7-tick) vs 160-loop (new) windows. Cadence alignment is not the dominant factor — income physics deficit (#591) drives rate MAPE. The EMA switch (#593) supersedes these simple-window measurements.
 
+### Initial worker stagger
+
+| Constant | Value | Source | Confidence | Config property |
+|----------|-------|--------|------------|-----------------|
+| Initial stagger | 6.0 loops | Dual-run calibration sweep | **Calibrated** — #609 | `starcraft.worker.initial-stagger-loops` |
+
+In real SC2, the 12 starting workers desynchronize naturally through spawn stagger, mineral-line pathing, and worker–worker collisions. Without stagger, the EM delivers all first cargo in a single burst at tick 6 (7 workers × 5 minerals = +35 delta vs SC2's +10). With stagger=6, each worker's first walk starts `worker_index × 6` loops after tick 0, spreading deliveries across ticks 5–8 to match SC2's distribution.
+
+Calibration results (12w Protoss, TorchesAIE_v4 patch positions):
+
+| Tick | Without stagger | With stagger=6 | SC2 | Target |
+|------|----------------|----------------|-----|--------|
+| 6 (delta) | +29 | +4 | — | ±10 |
+| 20 (delta) | +4 | +4 | — | ±5 |
+| 304 (balance) | 3449 | 3429 | 3460 | within ±0.5% of no-stagger baseline |
+
+Stagger=4 and stagger=6 produce the same tick-304 balance (3429), because the ~44-loop maximum delay doesn't push any worker past a cycle boundary at tick 304. Stagger=6 gives better tick-6 accuracy (+4 vs +9).
+
 ### Worker management constants
 
 | Constant | Value | Effect |
@@ -561,5 +579,6 @@ starcraft.worker.acceleration=3.5
 starcraft.worker.deceleration=3.5
 starcraft.worker.patch-docking-overhead-loops=34.0
 starcraft.worker.patch-distance=7.0
+starcraft.worker.initial-stagger-loops=6.0
 starcraft.economy.rate-interval-loops=160
 ```

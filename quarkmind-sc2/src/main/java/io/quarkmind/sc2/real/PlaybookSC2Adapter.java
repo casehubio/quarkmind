@@ -41,6 +41,8 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
     private int tick = -1;
     private int buildIndex = 0;
     private int gasIndex = 0;
+    private int pendingMorphStepIndex = -1;
+    private BuildingType pendingMorphTargetType;
     private List<CalibrationBaseline.PatchPosition> capturedMineralPatches;
     private List<CalibrationBaseline.GeyserPosition> capturedGeyserPositions;
     private float[] capturedBasePosition;
@@ -104,20 +106,41 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
                 int                   supplyUsed = (int) state.supplyUsed();
                 List<ResolvedCommand> commands   = new ArrayList<>();
 
+                if (pendingMorphStepIndex >= 0) {
+                    if (findBuildingTag(state, pendingMorphTargetType) != null) {
+                        fired[pendingMorphStepIndex] = true;
+                        log.infof("[Recorder] tick %d: morph to %s confirmed", tick, pendingMorphTargetType);
+                        pendingMorphStepIndex = -1;
+                        pendingMorphTargetType = null;
+                    }
+                }
+
                 for (int i = 0; i < steps.size(); i++) {
                     SC2PlaybookRunner.PlaybookStep step = steps.get(i);
                     boolean canFire = step.shouldFire(tick, supplyUsed)
                                       && (!fired[i] || step.loop());
-                    if (canFire) {
-                        ResolvedCommand cmd = translateStep(step, state);
-                        if (cmd != null) {
-                            commands.add(cmd);
-                        }
-                        if (cmd != null || "build".equals(step.action())) {
-                            fired[i] = true;
-                            log.infof("[Recorder] tick %d (loop %d): %s supply=%d/%d",
-                                      tick, gameLoop, step.action(), supplyUsed, (int) state.supply());
-                        }
+                    if (!canFire) continue;
+
+                    if ("morph".equals(step.action())) {
+                        if (pendingMorphStepIndex >= 0) continue;
+                        translateMorphDebug(step, state);
+                        String morphTarget = (String) step.params().get("morph");
+                        String sourceStr = (String) step.params().get("source");
+                        pendingMorphStepIndex = i;
+                        pendingMorphTargetType = BuildingType.valueOf(morphTarget != null ? morphTarget : sourceStr);
+                        log.infof("[Recorder] tick %d (loop %d): morph %s via debug API supply=%d/%d",
+                                  tick, gameLoop, pendingMorphTargetType, supplyUsed, (int) state.supply());
+                        continue;
+                    }
+
+                    ResolvedCommand cmd = translateStep(step, state);
+                    if (cmd != null) {
+                        commands.add(cmd);
+                    }
+                    if (cmd != null || "build".equals(step.action())) {
+                        fired[i] = true;
+                        log.infof("[Recorder] tick %d (loop %d): %s supply=%d/%d",
+                                  tick, gameLoop, step.action(), supplyUsed, (int) state.supply());
                     }
                 }
 
@@ -154,7 +177,7 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
         return switch (step.action()) {
                 case "train" -> translateTrain(step, state);
                 case "build" -> translateBuild(step, state);
-                case "morph" -> translateMorph(step, state);
+                case "morph" -> null;
                 case "calldown" -> translateCalldown(step, state);
                 case "assert" -> null;
                 default -> {
@@ -296,26 +319,53 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
         return ResolvedCommand.targetUnit(workerTag, ability, geyserTag);
     }
 
-    private ResolvedCommand translateMorph(SC2PlaybookRunner.PlaybookStep step, GameState state) {
+    private void translateMorphDebug(SC2PlaybookRunner.PlaybookStep step, GameState state) {
         String sourceStr   = (String) step.params().get("source");
         String morphTarget = (String) step.params().get("morph");
         if (sourceStr == null) {
             log.warnf("[Recorder] morph step missing 'source' param");
-            return null;
+            return;
         }
         BuildingType sourceType = BuildingType.valueOf(sourceStr);
         BuildingType targetType = BuildingType.valueOf(morphTarget != null ? morphTarget : sourceStr);
-        Abilities    ability    = ActionTranslator.mapBuildAbility(targetType);
-        if (ability == null) {
-            log.warnf("[Recorder] No ability mapped for morph target %s", targetType);
-            return null;
-        }
-        Tag buildingTag = findBuildingTag(state, sourceType);
-        if (buildingTag == null) {
+
+        Building sourceBuilding = state.myBuildings().stream()
+            .filter(b -> b.type() == sourceType && b.isComplete())
+            .findFirst().orElse(null);
+        if (sourceBuilding == null) {
             log.debugf("[Recorder] No %s found for morph to %s", sourceType, targetType);
-            return null;
+            return;
         }
-        return new ResolvedCommand(buildingTag, ability, Optional.empty());
+
+        int sc2TargetType = mapToSC2UnitTypeId(targetType);
+        if (sc2TargetType < 0) {
+            log.warnf("[Recorder] No SC2 unit type ID for morph target %s", targetType);
+            return;
+        }
+
+        try {
+            long sourceTag = Long.parseLong(sourceBuilding.tag());
+            SC2APIProtocol.Debug.DebugKillUnit kill = SC2APIProtocol.Debug.DebugKillUnit.newBuilder()
+                .addTag(sourceTag).build();
+            SC2APIProtocol.Debug.DebugCreateUnit create = SC2APIProtocol.Debug.DebugCreateUnit.newBuilder()
+                .setUnitType(sc2TargetType)
+                .setOwner(1)
+                .setPos(SC2APIProtocol.Common.Point2D.newBuilder()
+                    .setX(sourceBuilding.position().x())
+                    .setY(sourceBuilding.position().y())
+                    .build())
+                .setQuantity(1)
+                .build();
+            SC2APIProtocol.Sc2Api.RequestDebug debugReq = SC2APIProtocol.Sc2Api.RequestDebug.newBuilder()
+                .addDebug(SC2APIProtocol.Debug.DebugCommand.newBuilder().setKillUnit(kill).build())
+                .addDebug(SC2APIProtocol.Debug.DebugCommand.newBuilder().setCreateUnit(create).build())
+                .build();
+            transport.sendDebug(debugReq);
+            log.infof("[Recorder] DEBUG MORPH %s -> %s at (%.1f, %.1f)",
+                      sourceType, targetType, sourceBuilding.position().x(), sourceBuilding.position().y());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private ResolvedCommand translateCalldown(SC2PlaybookRunner.PlaybookStep step, GameState state) {
@@ -440,6 +490,8 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
             case BARRACKS -> 21;
             case ENGINEERING_BAY -> 22;
             case REFINERY -> 20;
+            case ORBITAL_COMMAND -> 132;
+            case PLANETARY_FORTRESS -> 130;
             case HATCHERY -> 86;
             case SPAWNING_POOL -> 89;
             case EXTRACTOR -> 88;

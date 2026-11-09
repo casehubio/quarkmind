@@ -33,6 +33,7 @@ class SimulatedWorker {
     static double ACCELERATION            = WorkerPhysicsConfig.DEFAULT_ACCELERATION;
     static double DECELERATION            = WorkerPhysicsConfig.DEFAULT_DECELERATION;
     static double PATCH_DOCKING_OVERHEAD_LOOPS = WorkerPhysicsConfig.DEFAULT_PATCH_DOCKING_OVERHEAD;
+    static double INITIAL_WORKER_STAGGER_LOOPS = WorkerPhysicsConfig.DEFAULT_INITIAL_WORKER_STAGGER;
 
     static final double LOOP_DURATION     = 1.0 / io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND;
     static final int    LOOPS_PER_TICK    = io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
@@ -44,6 +45,7 @@ class SimulatedWorker {
         ACCELERATION                 = config.acceleration();
         DECELERATION                 = config.deceleration();
         PATCH_DOCKING_OVERHEAD_LOOPS = config.patchDockingOverheadLoops();
+        INITIAL_WORKER_STAGGER_LOOPS = config.initialWorkerStaggerLoops();
         MineralPatch.PATCH_DISTANCE = config.patchDistance();
     }
 
@@ -64,6 +66,7 @@ class SimulatedWorker {
     double phaseEndLoop;
     double scoutReturnLoop;
     double currentSpeed;
+    double walkStartLoop;
 
 
     SimulatedWorker(String tag, Point2d position, int baseIndex) {

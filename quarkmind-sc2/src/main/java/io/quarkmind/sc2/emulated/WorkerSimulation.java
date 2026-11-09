@@ -100,9 +100,10 @@ class WorkerSimulation {
 
     void onInitialWorkers(List<String> tags, Point2d basePosition, String baseTag) {
         int baseIdx = findBaseIndex(baseTag);
-        for (String workerTag : tags) {
-            SimulatedWorker w = new SimulatedWorker(workerTag, basePosition, baseIdx);
-            workers.put(workerTag, w);
+        for (int i = 0; i < tags.size(); i++) {
+            SimulatedWorker w = new SimulatedWorker(tags.get(i), basePosition, baseIdx);
+            w.walkStartLoop = i * SimulatedWorker.INITIAL_WORKER_STAGGER_LOOPS;
+            workers.put(tags.get(i), w);
             assignToNearestPatch(w);
         }
     }
@@ -273,6 +274,15 @@ class WorkerSimulation {
                 if (w.assignedPatch == null) {
                     w.task = WorkerTask.IDLE;
                     return income;
+                }
+                if (w.walkStartLoop > 0) {
+                    double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
+                    if (currentLoop < w.walkStartLoop) {
+                        int waitLoops = (int) Math.ceil(w.walkStartLoop - currentLoop);
+                        if (waitLoops >= loopsRemaining) return income;
+                        loopsRemaining -= waitLoops;
+                    }
+                    w.walkStartLoop = 0;
                 }
                 if (!w.isAtTarget()) {
                     int used = w.moveLoops(loopsRemaining);
