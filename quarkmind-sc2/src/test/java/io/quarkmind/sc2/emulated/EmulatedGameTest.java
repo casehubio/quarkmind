@@ -2260,7 +2260,7 @@ class EmulatedGameTest {
         int           initialWorkers  = 12;
         List<Integer> completionTicks = new ArrayList<>();
         int           lastCount       = initialWorkers;
-        for (int t = 1; t <= 70; t++) {
+        for (int t = 1; t <= 80; t++) {
             g.tick();
             int probeCount = (int) g.snapshot().myUnits().stream()
                                     .filter(u -> u.type() == UnitType.PROBE).count();
@@ -2277,13 +2277,13 @@ class EmulatedGameTest {
             intervals.add(completionTicks.get(i) - completionTicks.get(i - 1));
         }
         System.out.println("Probe training cadence: " + intervals);
-        int total3 = intervals.get(0) + intervals.get(1) + intervals.get(2);
-        assertThat(total3)
-                .as("3-Probe cycle must total 37 ticks (272*3/22 = 37.09)")
-                .isEqualTo(37);
         assertThat(intervals.get(0))
-                .as("First Probe must take 13 ticks (272 loops crosses tick boundary)")
+                .as("First Probe must take 13 ticks (272 loops crosses tick 12 boundary)")
                 .isEqualTo(13);
+        int period = completionTicks.get(3) - completionTicks.get(0);
+        assertThat(period)
+                .as("3-Probe period: completion[3] - completion[0] = 37 ticks (3×272=816 loops)")
+                .isEqualTo(37);
     }
 
     @Test

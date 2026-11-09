@@ -48,9 +48,9 @@ class PhysicsState {
     // In-flight completion callbacks
     final List<PendingCompletion> pendingCompletions = new ArrayList<>();
 
-    void fireCompletions(long currentTick) {
+    void fireCompletions(long currentLoop) {
         pendingCompletions.removeIf(item -> {
-            if (item.completesAtTick() > currentTick) return false;
+            if (item.completesAtLoop() > currentLoop) {return false;}
             item.action().run();
             return true;
         });
@@ -69,7 +69,7 @@ class PhysicsState {
         pendingCompletions.clear();
     }
 
-    record PendingCompletion(long completesAtTick, String entityTag, Runnable action) {}
+    record PendingCompletion(long completesAtLoop, String entityTag, Runnable action) {}
 
     void cancelCompletionsForEntity(String tag) {
         pendingCompletions.removeIf(pc -> tag.equals(pc.entityTag()));
