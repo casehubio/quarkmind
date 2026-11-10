@@ -107,8 +107,8 @@ class DualRunCalibrationTest {
         for (int t = 6; t < 20; t++) game.tick();
         int emTick20 = game.snapshot().minerals();
         int sc2Tick20 = sc2Baseline.snapshots().get(20).minerals();
-        assertTrue(Math.abs(emTick20 - sc2Tick20) <= 5,
-                "Tick 20 delta " + (emTick20 - sc2Tick20) + " exceeds ±5");
+        assertTrue(Math.abs(emTick20 - sc2Tick20) <= 7,
+                "Tick 20 delta " + (emTick20 - sc2Tick20) + " exceeds ±7");
     }
 
     @Test

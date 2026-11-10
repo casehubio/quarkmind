@@ -131,7 +131,7 @@ class TerranRaceModel implements RaceModel {
     public UnitType workerType()             {return UnitType.SCV;}
 
     @Override
-    public double miningEfficiencyFactor() {return 0.984;}
+    public double miningEfficiencyFactor() {return 1.006;}
 
 
     @Override
