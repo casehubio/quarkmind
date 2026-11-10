@@ -1,4 +1,4 @@
-# Standalone EmulatedGame Accuracy Baseline — 2026-11-09
+# Standalone EmulatedGame Accuracy Baseline — 2026-11-10
 
 **Dataset:** Oracle (118 replays, v4.9.3)
 **Processed:** 118 replays, 236 player runs
@@ -44,7 +44,7 @@ Accuracy: 100.0% (0/0)
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
 | mineralsCurrent | 20630 | 28107 | 11623 | 56.3% |
-| vespeneCurrent | 232 | 16 | 216 | 93.1% |
+| vespeneCurrent | 232 | 17 | 215 | 92.7% |
 | mineralsCollectionRate | 150658 | 136574 | 16188 | 10.7% |
 | vespeneCollectionRate | 1241 | 0 | 1241 | 100.0% |
 | foodMade | 4579 | 4619 | 40 | 0.9% |
@@ -130,9 +130,9 @@ Accuracy: 100.0% (4/4)
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
 | mineralsCurrent | 46751 | 72397 | 30742 | 65.8% |
-| vespeneCurrent | 24254 | 7173 | 17473 | 72.0% |
+| vespeneCurrent | 24254 | 11687 | 13365 | 55.1% |
 | mineralsCollectionRate | 171704 | 161644 | 21888 | 12.7% |
-| vespeneCollectionRate | 39512 | 22622 | 17424 | 44.1% |
+| vespeneCollectionRate | 39512 | 27174 | 13098 | 33.1% |
 | foodMade | 7024 | 7034 | 78 | 1.1% |
 | foodUsed | 5153 | 5259 | 128 | 2.5% |
 | workersActiveCount | 4000 | 4055 | 57 | 1.4% |
@@ -255,9 +255,9 @@ Accuracy: 100.0% (103/103)
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
 | mineralsCurrent | 66699 | 100080 | 55991 | 83.9% |
-| vespeneCurrent | 43390 | 16394 | 28452 | 65.6% |
+| vespeneCurrent | 43390 | 27480 | 20644 | 47.6% |
 | mineralsCollectionRate | 208770 | 186400 | 35390 | 17.0% |
-| vespeneCollectionRate | 50869 | 32117 | 18984 | 37.3% |
+| vespeneCollectionRate | 50869 | 38564 | 12773 | 25.1% |
 | foodMade | 9520 | 9580 | 216 | 2.3% |
 | foodUsed | 7488 | 7798 | 454 | 6.1% |
 | workersActiveCount | 4907 | 4995 | 152 | 3.1% |
@@ -406,9 +406,9 @@ Accuracy: 100.0% (185/185)
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
 | mineralsCurrent | 89788 | 95890 | 69530 | 77.4% |
-| vespeneCurrent | 52228 | 19072 | 39008 | 74.7% |
+| vespeneCurrent | 52228 | 35675 | 30269 | 58.0% |
 | mineralsCollectionRate | 201496 | 152176 | 60676 | 30.1% |
-| vespeneCollectionRate | 61091 | 38128 | 23287 | 38.1% |
+| vespeneCollectionRate | 61091 | 45772 | 15967 | 26.1% |
 | foodMade | 11184 | 11073 | 329 | 2.9% |
 | foodUsed | 9017 | 9193 | 337 | 3.7% |
 | workersActiveCount | 5004 | 5096 | 124 | 2.5% |

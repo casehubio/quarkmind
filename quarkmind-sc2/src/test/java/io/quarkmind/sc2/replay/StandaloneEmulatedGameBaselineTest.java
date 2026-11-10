@@ -50,6 +50,7 @@ class StandaloneEmulatedGameBaselineTest {
     private static final int TICK_LIMIT = TICKS_PER_MINUTE * 8;
     private static final Set<UnitType> EXCLUDED_TYPES = EnumSet.of(UnitType.EGG, UnitType.MULE);
     private static final float GAS_PER_WORKER_PER_MIN = 54.0f;
+    private static final double GAS_EFFICIENCY_OVERRIDE = 1.20;
 
     static boolean oracleExists() {
         if (!Files.isDirectory(ORACLE_DIR)) return false;
@@ -253,6 +254,7 @@ class StandaloneEmulatedGameBaselineTest {
 
         EmulatedGame emulated = new EmulatedGame();
         emulated.setPlayerRaceModel(RaceModelFactory.forRace(race));
+        emulated.setGasEfficiencyOverride(GAS_EFFICIENCY_OVERRIDE);
         groundTruth.reset();
         emulated.setMineralPatchResources(groundTruth.getMineralPatches());
         emulated.resetForHarness();

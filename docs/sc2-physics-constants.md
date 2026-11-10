@@ -427,13 +427,22 @@ Stagger=4 and stagger=6 produce the same tick-304 balance (3429), because the ~4
 | Builder pause (Terran) | ceil(buildDuration / LOOPS_PER_TICK) | SCV paused for full building construction time (#601) |
 | Builder pause (Zerg) | 0 | Drone consumed — no pause mechanic |
 
+### Gas efficiency override (standalone only)
+
+| Context | Factor | Source | Confidence |
+|---------|--------|--------|------------|
+| Standalone oracle baseline | 1.20 | Oracle MAPE sweep (#608) | **Calibrated** |
+| Dual-run / live | 1.0 (default) | Not applied | N/A |
+
+Compensates for worker allocation gap: the EM auto-assigns 3 workers per gas building, but real games have human-directed gas timing and variable worker counts. Applied via `EmulatedGame.setGasEfficiencyOverride(1.20)` only in `StandaloneEmulatedGameBaselineTest` — dual-run tests and live mode use the default 1.0 to preserve physics-correct per-worker gas rates.
+
 ### Race-specific production mechanics
 
 | Race | Mechanic | Value | Notes |
 |------|----------|-------|-------|
 | Zerg | Parallel production | true | Multiple hatcheries can train simultaneously |
 | Zerg | Zergling twin spawn | 2 per train | One train intent produces 2 Zerglings |
-| All | Gas efficiency factor | 1.0 (default) | `RaceModel.gasEfficiencyFactor()` seam — no race overrides yet |
+| All | Gas efficiency factor | 1.0 (default) | `RaceModel.gasEfficiencyFactor()` seam — no race overrides |
 
 ### Known constant discrepancy
 
@@ -501,9 +510,9 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA
 | Field | MAPE | Status |
 |-------|------|--------|
 | mineralsCollectionRate | 30.1% | Structural — worker allocation (#572), not physics |
-| vespeneCollectionRate | 38.1% | Regressed from gas harvest recalibration (#606→#608) |
+| vespeneCollectionRate | 26.1% | Recovered via gas efficiency override 1.20 (#608) |
 | mineralsCurrent | 77.4% | Cumulative drift from rate error |
-| vespeneCurrent | 74.7% | Regressed — gas harvest increase amplifies worker allocation gap (#608) |
+| vespeneCurrent | 58.0% | Recovered via gas efficiency override 1.20 (#608) |
 | foodMade | 2.9% | At floor |
 | foodUsed | 3.7% | At floor |
 | workersActiveCount | 2.5% | At floor |
@@ -519,9 +528,9 @@ The EMA switch (#593) increased the reported mineralsCollectionRate MAPE from 22
 
 The mineralsCurrent MAPE improved from 126.1% to 77.4% — this reflects the per-race efficiency factors (#600, #601) reducing EM over-production.
 
-### Gas harvest recalibration tradeoff (#606)
+### Gas harvest recalibration and efficiency override (#606, #608)
 
-Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3w: -2.2%, 6w: +4.0%). This regressed oracle MAPE: vespeneCollectionRate 29.1%→38.1%, vespeneCurrent 65.4%→74.7%. The regression is from amplifying the existing worker allocation gap — the EM has fewer gas workers than real games, and slower per-worker gas income widens that gap. Filed as #608 for gas efficiency factor calibration.
+Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3w: -2.2%, 6w: +4.0%). This initially regressed oracle MAPE (vespeneCollectionRate 29.1%→38.1%) because slower per-worker gas income amplified the existing worker allocation gap. Resolved in #608 with a standalone-only gas efficiency override (1.20×) applied via `EmulatedGame.setGasEfficiencyOverride()`. Final result: vespeneCollectionRate 26.1% (better than pre-recalibration 29.1%), vespeneCurrent 58.0% (improved from 65.4%). Dual-run accuracy unaffected (factor not applied).
 
 ---
 

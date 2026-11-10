@@ -100,6 +100,11 @@ public class EmulatedGame {
         this.economyTracker = new EconomyTracker(config.rateIntervalLoops());
     }
 
+    private double gasEfficiencyOverride = -1;
+    public void setGasEfficiencyOverride(double factor) {
+        this.gasEfficiencyOverride = factor;
+    }
+
 
     private static final double MINERAL_PATCH_SEARCH_RADIUS = 12.0;
 
@@ -212,7 +217,8 @@ public class EmulatedGame {
         workerSimulation.tickBuilderReturns(gameFrame);
         TickIncome workerIncome = workerSimulation.tick((gameFrame - 1) * (double) SC2Data.LOOPS_PER_TICK);
         double tickMineralIncome = workerIncome.mineralIncome() * playerRaceModel.miningEfficiencyFactor();
-        double tickGasIncome = workerIncome.vespeneIncome() * playerRaceModel.gasEfficiencyFactor();
+        double gasFactor = gasEfficiencyOverride > 0 ? gasEfficiencyOverride : playerRaceModel.gasEfficiencyFactor();
+        double tickGasIncome = workerIncome.vespeneIncome() * gasFactor;
         friendly.addMinerals(tickMineralIncome);
         friendly.addVespene(tickGasIncome);
         cumulativeGasIncome += tickGasIncome;
