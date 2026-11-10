@@ -24,6 +24,13 @@ class EconomyTracker {
     private int inProgressVespeneEconomy;
     private int inProgressMineralTechnology;
     private int inProgressVespeneTechnology;
+
+    private int reportedMineralsUsedArmy;
+    private int reportedVespeneUsedArmy;
+    private int reportedMineralsUsedEconomy;
+    private int reportedVespeneUsedEconomy;
+    private int reportedMineralsUsedTechnology;
+    private int reportedVespeneUsedTechnology;
     private final Map<BuildingType, int[]> techBuildSpending       = new EnumMap<>(BuildingType.class);
     private final Map<BuildingType, int[]> techMorphSpending       = new EnumMap<>(BuildingType.class);
     private final Map<BuildingType, int[]> techDestroySubtractions = new EnumMap<>(BuildingType.class);
@@ -273,6 +280,13 @@ class EconomyTracker {
             prevGrossMinerals    = grossMinerals;
             prevGrossVespene     = grossVespene;
             loopsSinceRateUpdate = 0;
+
+            reportedMineralsUsedArmy       = mineralsUsedArmy;
+            reportedVespeneUsedArmy        = vespeneUsedArmy;
+            reportedMineralsUsedEconomy    = mineralsUsedEconomy;
+            reportedVespeneUsedEconomy     = vespeneUsedEconomy;
+            reportedMineralsUsedTechnology = mineralsUsedTechnology;
+            reportedVespeneUsedTechnology  = vespeneUsedTechnology;
         }
     }
 
@@ -285,12 +299,12 @@ class EconomyTracker {
             mineralRate, vespeneRate,
             supply, supplyUsed,
             workerCount,
-            s != null ? s[0] : mineralsUsedArmy,
-            s != null ? s[1] : mineralsUsedEconomy,
-            s != null ? s[2] : mineralsUsedTechnology,
-            s != null ? s[3] : vespeneUsedArmy,
-            s != null ? s[4] : vespeneUsedEconomy,
-            s != null ? s[5] : vespeneUsedTechnology);
+            s != null ? s[0] : reportedMineralsUsedArmy,
+            s != null ? s[1] : reportedMineralsUsedEconomy,
+            s != null ? s[2] : reportedMineralsUsedTechnology,
+            s != null ? s[3] : reportedVespeneUsedArmy,
+            s != null ? s[4] : reportedVespeneUsedEconomy,
+            s != null ? s[5] : reportedVespeneUsedTechnology);
     }
 
     void reset() {
@@ -316,6 +330,12 @@ class EconomyTracker {
         emaVespeneRate         = 0;
         emaSeeded              = false;
         loopsSinceRateUpdate   = 0;
+        reportedMineralsUsedArmy       = 0;
+        reportedVespeneUsedArmy        = 0;
+        reportedMineralsUsedEconomy    = 0;
+        reportedVespeneUsedEconomy     = 0;
+        reportedMineralsUsedTechnology = 0;
+        reportedVespeneUsedTechnology  = 0;
         techBuildSpending.clear();
         techMorphSpending.clear();
         techDestroySubtractions.clear();

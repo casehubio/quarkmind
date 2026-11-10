@@ -384,6 +384,10 @@ SC2 uses **exponential moving average (EMA)**, not a simple windowed average. Co
 
 EconomyTracker now uses EMA: `MINERAL_EMA_ALPHA=0.25`, `VESPENE_EMA_ALPHA=0.35`. First window seeds the EMA with the instantaneous rate to avoid cold-start suppression.
 
+### Snapshot-aligned spending (#579)
+
+SC2 reports spending via PlayerStatsEvents every 160 game loops (~7 seconds). The EM now aligns spending snapshots to these boundaries: `EconomyTracker` maintains "reported" spending fields flushed at each 160-loop boundary. `currentStats()` returns reported values, matching SC2's reporting lag. Impact: mineralsUsedCurrentTechnology improved from 16.7% to 15.4% MAPE, vespeneUsedCurrentTechnology from 41.0% to 39.7% MAPE. Remaining gap is structural — EM production decisions differ from oracle replay build orders.
+
 ### Rate measurement cadence
 
 SC2 emits PlayerStatsEvents every 160 game loops (7.14 seconds) — confirmed empirically across 118 oracle replays (96.8% of 9183 intervals are exactly 160 loops). EconomyTracker aligns its rate window to 160 loops via `starcraft.economy.rate-interval-loops` (default 160). Due to the 22-loop tick granularity, the window fires every 8 ticks (176 loops >= 160), using actual elapsed loops in the rate denominator.
@@ -517,9 +521,9 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA
 | workersActiveCount | 2.5% | At floor |
 | mineralsUsedCurrentArmy | 6.9% | At floor |
 | mineralsUsedCurrentEconomy | 5.8% | At floor |
-| mineralsUsedCurrentTechnology | 16.7% | Near floor |
+| mineralsUsedCurrentTechnology | 15.4% | Improved via snapshot-aligned spending (#579) |
 | vespeneUsedCurrentArmy | 7.5% | At floor |
-| vespeneUsedCurrentTechnology | 41.0% | Structural — InProgress/Current timing |
+| vespeneUsedCurrentTechnology | 39.7% | Structural — EM over-invests in gas-heavy tech (#579) |
 
 ### Rate algorithm impact
 

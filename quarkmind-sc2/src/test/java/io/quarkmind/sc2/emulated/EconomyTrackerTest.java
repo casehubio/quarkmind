@@ -8,11 +8,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class EconomyTrackerTest {
 
+    private static void flushToReportBoundary(EconomyTracker tracker) {
+        for (int i = 0; i < 8; i++) tracker.tickUpdate(0, 0, 15, 6, 12);
+    }
+
     @Test
     void tracksTrainSpendingAsArmyCost() {
         var tracker = new EconomyTracker();
         tracker.recordTrainSpending(UnitType.MARINE, 50, 0);
         tracker.recordTrainSpending(UnitType.MARINE, 50, 0);
+        flushToReportBoundary(tracker);
 
         var stats = tracker.currentStats(100, 0, 23, 14, 12);
         assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(100);
@@ -23,6 +28,7 @@ class EconomyTrackerTest {
     void tracksWorkerTrainSpendingAsEconomy() {
         var tracker = new EconomyTracker();
         tracker.recordTrainSpending(UnitType.PROBE, 50, 0);
+        flushToReportBoundary(tracker);
 
         var stats = tracker.currentStats(200, 0, 15, 7, 13);
         assertThat(stats.mineralsUsedCurrentEconomy()).isEqualTo(50);
@@ -35,6 +41,7 @@ class EconomyTrackerTest {
         tracker.recordBuildSpending(BuildingType.NEXUS, 400);
         tracker.recordBuildSpending(BuildingType.GATEWAY, 150);
         tracker.recordBuildSpending(BuildingType.CYBERNETICS_CORE, 150);
+        flushToReportBoundary(tracker);
 
         var stats = tracker.currentStats(500, 200, 31, 14, 12);
         assertThat(stats.mineralsUsedCurrentEconomy()).isEqualTo(400);
@@ -99,6 +106,7 @@ class EconomyTrackerTest {
     void tracksBuildingMorphSpendingByCategory() {
         var tracker = new EconomyTracker();
         tracker.recordMorphSpending(BuildingType.GREATER_SPIRE, 100, 150);
+        flushToReportBoundary(tracker);
 
         var stats = tracker.currentStats(200, 100, 23, 14, 12);
         assertThat(stats.mineralsUsedCurrentTechnology()).isEqualTo(100);
@@ -110,6 +118,7 @@ class EconomyTrackerTest {
     void overlordTrainSpendingGoesToEconomy() {
         var tracker = new EconomyTracker();
         tracker.recordTrainSpending(UnitType.OVERLORD, 100, 0);
+        flushToReportBoundary(tracker);
 
         var stats = tracker.currentStats(0, 0, 22, 14, 12);
         assertThat(stats.mineralsUsedCurrentEconomy()).isEqualTo(100);
@@ -133,6 +142,7 @@ class EconomyTrackerTest {
     void tracksUnitMorphSpendingAsArmy() {
         var tracker = new EconomyTracker();
         tracker.recordMorphSpending(UnitType.BANELING, 25, 25);
+        flushToReportBoundary(tracker);
 
         var stats = tracker.currentStats(200, 100, 23, 14, 12);
         assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(25);
@@ -144,12 +154,14 @@ class EconomyTrackerTest {
         var tracker = new EconomyTracker();
         tracker.recordTrainSpending(UnitType.ZERGLING, 25, 0);
         tracker.recordMorphSpending(UnitType.BANELING, 25, 25);
+        flushToReportBoundary(tracker);
 
         var before = tracker.currentStats(0, 0, 15, 6, 12);
         assertThat(before.mineralsUsedCurrentArmy()).isEqualTo(50);
         assertThat(before.vespeneUsedCurrentArmy()).isEqualTo(25);
 
         tracker.recordUnitDeath(UnitType.BANELING);
+        flushToReportBoundary(tracker);
 
         var after = tracker.currentStats(0, 0, 15, 6, 12);
         assertThat(after.mineralsUsedCurrentArmy()).isEqualTo(0);
@@ -163,6 +175,7 @@ class EconomyTrackerTest {
         tracker.recordTrainSpending(UnitType.MARINE, 50, 0);
 
         tracker.recordUnitDeath(UnitType.MARINE);
+        flushToReportBoundary(tracker);
 
         var stats = tracker.currentStats(0, 0, 15, 6, 12);
         assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(50);
@@ -207,6 +220,7 @@ class EconomyTrackerTest {
         tracker.addInProgressArmy(150, 25);
         tracker.completeInProgressArmy(150, 25);
         tracker.recordTrainSpending(UnitType.STALKER, 125, 50);
+        flushToReportBoundary(tracker);
 
         var stats = tracker.currentStats(200, 100, 23, 14, 12);
         assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(125);
@@ -247,6 +261,7 @@ class EconomyTrackerTest {
         var tracker = new EconomyTracker();
         tracker.addInProgressArmy(100, 0);
         tracker.recordTrainSpending(UnitType.MARINE, 50, 0);
+        flushToReportBoundary(tracker);
 
         var stats = tracker.currentStats(200, 100, 23, 14, 12);
         assertThat(stats.mineralsUsedCurrentArmy()).isEqualTo(50);
