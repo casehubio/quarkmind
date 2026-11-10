@@ -150,7 +150,7 @@ Gas baselines: 3w gas at −2.9% (EM under-produces slightly), 6w gas at +3.6% (
 
 | Constant | Value | Source | Confidence |
 |----------|-------|--------|------------|
-| MULE lifetime | 1434 loops (64s) | Community | **Estimated** — pending #140 |
+| MULE lifetime | 1452 loops (64.8s) | SC2 dual-run MULE isolation | **Calibrated** — #613 |
 | MULE income | 277.8 minerals/min | Oracle replays (115 obs) | **Calibrated** |
 | MULE calldown energy | 50 | SC2 mechanics | **Published** |
 | OC starting energy | 50 | SC2 mechanics | **Published** |
@@ -485,9 +485,9 @@ Real SC2 workers path around the mineral line formation — the semicircular arr
 
 Larva spawn interval (246 loops) and inject larva count (4 per inject) are estimated from community sources. `AutoSpawnCalibrationTest` exists but hasn't been run against sufficient oracle data to calibrate. Impact: affects Zerg unit production timing, not mineral/gas income directly.
 
-### MULE lifetime
+### MULE lifetime — resolved
 
-MULE lifetime (1434 loops = 64 seconds) is estimated. MULE income rate (277.8 minerals/min) is calibrated from 115 oracle observations, but the lifetime determines when income stops. A wrong lifetime shifts cumulative Terran mineral income. Impact: proportional to MULE usage frequency — significant in macro-heavy Terran play.
+MULE lifetime calibrated to 1452 loops (64.8s) from SC2 dual-run MULE isolation baseline (#613). Previous estimate was 1434 loops (64.0s) — 1.3% short. MULE income rate (277.8 minerals/min) is calibrated from 115 oracle observations but not yet validated against a controlled baseline (the MULE isolation playbook confounds income with SCV training costs).
 
 ### Chrono Boost interaction model
 

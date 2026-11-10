@@ -36,6 +36,27 @@ This is an application, not a framework. If the capability requires SC2 game kno
 
 ---
 
+## Current Priority: Foundational Tick-Alignment (#617)
+
+**The EmulatedGame must match SC2 tick-for-tick.** Compensation constants (mining efficiency factor, gas efficiency override) are forbidden — they mask foundational timing differences and create a treadmill where every physics change requires re-sweeping constants.
+
+**Diagnostic findings (#618):** 242 of 304 ticks (80%) have per-tick mineral delivery mismatches between EM and SC2 in a controlled 12w economy-only scenario. The gap oscillates ±24 minerals. Workers deliver on different ticks (±1-2 from SC2). The 1.006 efficiency factor forces convergence at tick 304 but 80% of individual ticks are wrong.
+
+**The fix path:**
+1. Instrument SC2 observation for per-worker delivery events (orders, buffs, cargo)
+2. Record per-worker SC2 baseline (position + task at every tick)
+3. Fix EM delivery timing to match SC2 per-tick cadence
+4. Remove efficiency factor (revert to 1.0) — totals must converge naturally
+
+**Design rules for EmulatedGame physics:**
+- Never use compensation constants. If the EM doesn't match SC2, fix the root cause.
+- Always use `double` arithmetic. No integer truncation in the income path.
+- Calibrate from controlled SC2 dual-run baselines, not oracle replays. Oracle replays have event gaps and confound physics with player behavior.
+- Per-tick delivery deltas must be exact multiples of 5 (mineral cargo). Non-5-multiples indicate a compensation factor artifact.
+- Reference: `docs/sc2-physics-constants.md` — living reference for all simulation constants.
+
+---
+
 ## Platform Docs
 - [Platform Index](https://raw.githubusercontent.com/casehubio/parent/main/docs/INDEX.md) — discovery index (start here)
 - [Building Platform](https://raw.githubusercontent.com/casehubio/parent/main/docs/guides/building-platform.md) — platform contributor guide

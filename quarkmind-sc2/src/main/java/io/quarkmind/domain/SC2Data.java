@@ -58,10 +58,10 @@ public final class SC2Data {
 
 
     /**
-     * MULE lifetime in game loops. 64s × 22.4 loops/s = 1433.6 → ceiling = 1434.
-     * Uncalibrated — pending Terran replay data from #140.
+     * MULE lifetime in game loops. 66 ticks × 22 = 1452 loops (64.8s).
+     * Calibrated from SC2 dual-run MULE isolation baseline (#613).
      */
-    public static final int MULE_LIFETIME_LOOPS = 1434;
+    public static final int MULE_LIFETIME_LOOPS = 1452;
 
     /**
      * Larva auto-spawn interval in game loops.

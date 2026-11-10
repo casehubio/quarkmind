@@ -81,6 +81,73 @@ class DualRunCalibrationTest {
         }
     }
 
+    @org.junit.jupiter.api.Tag("diagnostic")
+    @Test
+    void deliveryCadenceDiagnostic() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-12w.json");
+        EmulatedGame game = new EmulatedGame();
+        game.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));
+        if (sc2Baseline.basePosition() != null && sc2Baseline.mineralPatches() != null) {
+            float fx = 8f - sc2Baseline.basePosition()[0];
+            float fy = 8f - sc2Baseline.basePosition()[1];
+            game.setMineralPatchResources(sc2Baseline.mineralPatches().stream()
+                .map(p -> new io.quarkmind.domain.Resource(
+                    "cal-" + sc2Baseline.mineralPatches().indexOf(p),
+                    new Point2d(p.x() + fx, p.y() + fy), p.amount(), p.rich()))
+                .toList());
+        }
+        game.reset();
+
+        int maxTick = Math.min(304, sc2Baseline.snapshots().size() - 1);
+        int prevSc2 = sc2Baseline.snapshots().get(0).minerals();
+        int prevEm = game.snapshot().minerals();
+
+        System.out.println("=== Delivery Cadence Diagnostic (12w Protoss, real patch positions) ===");
+        System.out.printf("%-6s | %10s | %10s | %9s | %9s | %12s%n",
+            "tick", "SC2 min", "EM min", "SC2 delta", "EM delta", "cumul gap");
+        System.out.println("-------|------------|------------|-----------|-----------|-------------");
+
+        int mismatchCount = 0;
+        int maxGap = 0;
+        int maxGapTick = 0;
+        int totalSc2Delta = 0;
+        int totalEmDelta = 0;
+
+        for (int tick = 1; tick <= maxTick; tick++) {
+            game.tick();
+            int sc2Min = sc2Baseline.snapshots().get(tick).minerals();
+            int emMin = game.snapshot().minerals();
+            int sc2Delta = sc2Min - prevSc2;
+            int emDelta = emMin - prevEm;
+            int gap = emMin - sc2Min;
+
+            totalSc2Delta += sc2Delta;
+            totalEmDelta += emDelta;
+
+            if (Math.abs(gap) > Math.abs(maxGap)) {
+                maxGap = gap;
+                maxGapTick = tick;
+            }
+
+            if (sc2Delta != emDelta) {
+                mismatchCount++;
+                System.out.printf("%-6d | %10d | %10d | %+9d | %+9d | %+12d%n",
+                    tick, sc2Min, emMin, sc2Delta, emDelta, gap);
+            }
+
+            prevSc2 = sc2Min;
+            prevEm = emMin;
+        }
+
+        System.out.println();
+        System.out.println("=== SUMMARY ===");
+        System.out.printf("Total SC2 mineral income:  %d  (approx %.1f deliveries)%n", totalSc2Delta, totalSc2Delta / 5.0);
+        System.out.printf("Total EM  mineral income:  %d  (approx %.1f deliveries)%n", totalEmDelta, totalEmDelta / 5.0);
+        System.out.printf("Mismatch ticks:            %d / %d  (%.1f%%)%n", mismatchCount, maxTick, mismatchCount * 100.0 / maxTick);
+        System.out.printf("Maximum cumulative gap:    %+d minerals at tick %d%n", maxGap, maxGapTick);
+        System.out.printf("Final gap (tick %d):       %+d minerals%n", maxTick,
+            game.snapshot().minerals() - sc2Baseline.snapshots().get(maxTick).minerals());
+    }
 
     @Test
     void earlyTickMineralDeliverySpread() {
