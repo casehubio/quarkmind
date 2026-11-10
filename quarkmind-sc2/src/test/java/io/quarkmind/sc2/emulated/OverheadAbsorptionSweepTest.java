@@ -34,7 +34,7 @@ class OverheadAbsorptionSweepTest {
             (int) (60 * SC2Data.GAME_LOOPS_PER_SECOND / SC2Data.LOOPS_PER_TICK);
     private static final int[] CHECKPOINTS_MIN = {5, 7};
     private static final int TICK_LIMIT = TICKS_PER_MINUTE_INT * 8;
-    private static final float GAS_PER_WORKER_PER_MIN = 54.0f;
+    private static final float GAS_PER_WORKER_PER_MIN = 38.0f;
 
     record SweepResult(double deposit, double mining, double gas,
                        double minBalMape5, double vesBalMape5,

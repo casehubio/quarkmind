@@ -442,14 +442,13 @@ Walk time scales linearly with main-to-expansion distance: 9 ticks at 31.1u, ~6 
 
 `countWorkersPerBase(Race, List<Building>, List<Unit>)` uses snapshot unit positions (from PlayerState) and does NOT reflect `SimulatedWorker` internal positions. To measure expansion worker distribution accurately, use `workerSnapshots()` with proximity calculation.
 
-### Gas efficiency override (standalone only)
+### Gas worker estimation (#615)
 
-| Context | Factor | Source | Confidence |
-|---------|--------|--------|------------|
-| Standalone oracle baseline | 1.20 | Oracle MAPE sweep (#608) | **Calibrated** |
-| Dual-run / live | 1.0 (default) | Not applied | N/A |
+| Constant | Value | Source | Confidence |
+|----------|-------|--------|------------|
+| GAS_PER_WORKER_PER_MIN | 38.0 | SC2 dual-run 6w measurement | **Calibrated** — #615 |
 
-Compensates for worker allocation gap: the EM auto-assigns 3 workers per gas building, but real games have human-directed gas timing and variable worker counts. Applied via `EmulatedGame.setGasEfficiencyOverride(1.20)` only in `StandaloneEmulatedGameBaselineTest` — dual-run tests and live mode use the default 1.0 to preserve physics-correct per-worker gas rates.
+Estimates gas worker count from GT vespeneCollectionRate: `round(gtRate / 38.0)`. Replaced the previous 54.0 constant and 1.20× gasEfficiencyOverride. The 38.0 value matches SC2's measured per-worker gas income (dual-run 6w/2g baseline). Gas sync skips when GT rate is 0 to preserve auto-assigned workers from gas building events. Rate MAPE is insensitive to this constant (34.7-35.2% across 30-41 range) — the remaining 35% is the structural floor for gas rate measurement.
 
 ### Race-specific production mechanics
 
@@ -513,9 +512,9 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA
 | Field | MAPE | Status |
 |-------|------|--------|
 | mineralsCollectionRate | 30.1% | Structural — worker allocation (#572), not physics |
-| vespeneCollectionRate | 26.1% | Recovered via gas efficiency override 1.20 (#608) |
+| vespeneCollectionRate | 35.2% | Structural floor — gas rate measurement model (#615) |
 | mineralsCurrent | 77.4% | Cumulative drift from rate error |
-| vespeneCurrent | 58.0% | Recovered via gas efficiency override 1.20 (#608) |
+| vespeneCurrent | 65.0% | Calibrated worker estimation replaces 1.20× override (#615) |
 | foodMade | 2.9% | At floor |
 | foodUsed | 3.7% | At floor |
 | workersActiveCount | 2.5% | At floor |

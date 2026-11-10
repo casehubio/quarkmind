@@ -41,7 +41,7 @@ class GasHarvestCalibrationTest {
             "../quarkmind-classifier/data/replay_packs/blizzard_ladder/4.9.3_oracle/restored");
     private static final int[]   CHECKPOINTS_MIN        = {1, 3, 5, 7};
     private static final int     TICK_LIMIT             = TICKS_PER_MINUTE_INT * 8;
-    private static final float   GAS_PER_WORKER_PER_MIN = 54.0f;
+    private static final float   GAS_PER_WORKER_PER_MIN = 38.0f;
 
     @Test
     void gasRateSweep() {

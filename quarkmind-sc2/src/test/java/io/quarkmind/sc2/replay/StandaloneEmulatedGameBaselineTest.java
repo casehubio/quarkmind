@@ -49,8 +49,7 @@ class StandaloneEmulatedGameBaselineTest {
     private static final int[] CHECKPOINTS_MIN = {1, 3, 5, 7};
     private static final int TICK_LIMIT = TICKS_PER_MINUTE * 8;
     private static final Set<UnitType> EXCLUDED_TYPES = EnumSet.of(UnitType.EGG, UnitType.MULE);
-    private static final float GAS_PER_WORKER_PER_MIN = 54.0f;
-    private static final double GAS_EFFICIENCY_OVERRIDE = 1.20;
+    private static final float GAS_PER_WORKER_PER_MIN = 38.0f;
 
     static boolean oracleExists() {
         if (!Files.isDirectory(ORACLE_DIR)) return false;
@@ -254,7 +253,6 @@ class StandaloneEmulatedGameBaselineTest {
 
         EmulatedGame emulated = new EmulatedGame();
         emulated.setPlayerRaceModel(RaceModelFactory.forRace(race));
-        emulated.setGasEfficiencyOverride(GAS_EFFICIENCY_OVERRIDE);
         groundTruth.reset();
         emulated.setMineralPatchResources(groundTruth.getMineralPatches());
         emulated.resetForHarness();
@@ -287,8 +285,10 @@ class StandaloneEmulatedGameBaselineTest {
             // Sync gas worker count from GT rate — EM auto-saturates but real
             // players vary gas worker count significantly (#564)
             int gtGasRate = gt.playerEconomy().vespeneCollectionRate();
-            int estimatedGasWorkers = gtGasRate > 0 ? Math.max(1, Math.round(gtGasRate / GAS_PER_WORKER_PER_MIN)) : 0;
-            emulated.syncTotalGasWorkers(estimatedGasWorkers);
+            if (gtGasRate > 0) {
+                int estimatedGasWorkers = Math.max(1, Math.round(gtGasRate / GAS_PER_WORKER_PER_MIN));
+                emulated.syncTotalGasWorkers(estimatedGasWorkers);
+            }
 
             // NO setMineralsForHarness (post-tick) — EmulatedGame uses own balance
             // NO setVespeneForHarness (post-tick) — EmulatedGame uses own balance
