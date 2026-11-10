@@ -471,9 +471,10 @@ class WorkerSimulation {
                 }
                 int used = w.moveLoops(loopsRemaining);
                 loopsRemaining -= used;
-                if (w.isAtTarget() && slot.canEnter()) {
-                    double arrivalLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
-                    slot.enterBuilding(w);
+                double currentLoopGas = tickStartLoop + (loopsPerTick - loopsRemaining);
+                if (w.isAtTarget() && slot.canEnter(currentLoopGas)) {
+                    double arrivalLoop = currentLoopGas;
+                    slot.enterBuilding(w, arrivalLoop);
                     w.phaseEndLoop = arrivalLoop + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
                     if (loopsRemaining <= 0) {return income;}
                     continue;

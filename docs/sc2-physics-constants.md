@@ -493,7 +493,7 @@ Whether multiple Chrono Boosts on the same building stack additively, refresh th
 
 ### Geyser entrance queuing
 
-The EM allows all 3 gas workers inside a geyser simultaneously (`GasSlot.canEnter()` has no queue). Real SC2 queues workers at the geyser entrance — only one enters at a time. This creates a per-worker gas rate difference: the EM's per-worker rate (49.8 gas/min) is higher than SC2's measured rate (38-41 gas/min). Impact: vespeneCollectionRate MAPE at 35.2% is the structural floor — insensitive to worker count estimation (34.7-35.2% across constant sweep). Fixing this requires modeling entrance queuing in `GasSlot`.
+GasSlot supports configurable entrance queuing via `ENTRY_LOCK_DURATION` (default 0 = concurrent, matching legacy behavior). When > 0, workers queue at the geyser entrance — only one enters per lock period. However, a 2D sweep (lock 0-20 × harvest 14-28) against 3w and 6w baselines (#639) showed **entrance queuing has no practical effect** — workers never arrive at the geyser simultaneously because walk cycle stagger keeps them apart. The 3w/6w gas gap is not from entrance contention but from per-geyser walk-distance rate interaction: no single gas harvest value satisfies both 3w (optimal at 16 loops) and 6w (optimal at 26 loops). Current harvest=26 is the best compromise (3w: -6.5%, 6w: -0.4%). Impact: vespeneCollectionRate MAPE at 35.0% is a structural floor — insensitive to both worker count estimation and entrance queuing.
 
 ### Rally point walk time
 

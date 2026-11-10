@@ -31,6 +31,7 @@ class ApproachDockingSweepTest {
     @AfterEach
     void resetDefaults() {
         SimulatedWorker.resetToDefaults();
+        GasSlot.ENTRY_LOCK_DURATION = 0;
     }
 
     @Test
@@ -101,6 +102,38 @@ class ApproachDockingSweepTest {
                 int emMinerals = run304Ticks(baseline);
                 int gap = emMinerals - sc2Final;
                 System.out.printf("%-8.1f %-8.1f | %-10d | %+8d%n", approach, deposit, emMinerals, gap);
+            }
+        }
+    }
+
+    @Test
+    void sweepGasEntryLock() {
+        CalibrationBaseline bl3w = loadBaseline("calibration/cal-gas-baseline-3w.json");
+        CalibrationBaseline bl6w = loadBaseline("calibration/cal-gas-dual-6w.json");
+        int sc2Ves3w = bl3w.snapshots().get(304).vespene();
+        int sc2Ves6w = bl6w.snapshots().get(304).vespene();
+
+        System.out.printf("=== 2D Sweep: entry lock x gas harvest (SC2: 3w ves=%d, 6w ves=%d) ===%n%n", sc2Ves3w, sc2Ves6w);
+        System.out.printf("%-8s %-8s | %-8s %-8s %-8s | %-8s %-8s %-8s%n",
+            "lock", "harvest", "3w ves", "3w gap", "3w pct", "6w ves", "6w gap", "6w pct");
+        System.out.println("-".repeat(75));
+
+        for (double lock = 0; lock <= 20; lock += 2) {
+            for (double harvest = 14; harvest <= 28; harvest += 2) {
+                SimulatedWorker.resetToDefaults();
+                GasSlot.ENTRY_LOCK_DURATION = lock;
+                SimulatedWorker.GAS_HARVEST_DURATION_LOOPS = harvest;
+
+                int[] r3w = runPlaybook("playbooks/cal-gas-baseline-3w.yaml", bl3w);
+                int[] r6w = runPlaybook("playbooks/cal-gas-dual-6w.yaml", bl6w);
+
+                int gap3w = r3w[1] - sc2Ves3w;
+                int gap6w = r6w[1] - sc2Ves6w;
+                double pct3w = 100.0 * gap3w / Math.max(1, sc2Ves3w);
+                double pct6w = 100.0 * gap6w / Math.max(1, sc2Ves6w);
+
+                System.out.printf("%-8.0f %-8.0f | %-8d %+8d %+7.1f%% | %-8d %+8d %+7.1f%%%n",
+                    lock, harvest, r3w[1], gap3w, pct3w, r6w[1], gap6w, pct6w);
             }
         }
     }

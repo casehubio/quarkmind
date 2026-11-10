@@ -9,12 +9,14 @@ import java.util.Set;
 
 class GasSlot {
     static final int MAX_WORKERS = 3;
+    static double ENTRY_LOCK_DURATION = 0;
 
     final String buildingTag;
     final Point2d position;
     final int baseIndex;
     final List<SimulatedWorker> assignedWorkers = new ArrayList<>(MAX_WORKERS);
     final Set<SimulatedWorker> insideWorkers = new HashSet<>(MAX_WORKERS);
+    double entryLockEndLoop;
 
     GasSlot(String buildingTag, Point2d position, int baseIndex) {
         this.buildingTag = buildingTag;
@@ -22,12 +24,16 @@ class GasSlot {
         this.baseIndex = baseIndex;
     }
 
-    boolean canEnter() {
-        return insideWorkers.size() < MAX_WORKERS;
+    boolean canEnter(double currentLoop) {
+        if (ENTRY_LOCK_DURATION <= 0) return insideWorkers.size() < MAX_WORKERS;
+        return currentLoop >= entryLockEndLoop;
     }
 
-    void enterBuilding(SimulatedWorker w) {
+    void enterBuilding(SimulatedWorker w, double currentLoop) {
         insideWorkers.add(w);
+        if (ENTRY_LOCK_DURATION > 0) {
+            entryLockEndLoop = currentLoop + ENTRY_LOCK_DURATION;
+        }
     }
 
     void exitBuilding(SimulatedWorker w) {
