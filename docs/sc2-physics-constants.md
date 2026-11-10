@@ -50,7 +50,7 @@ Each entry documents value, source, and confidence level.
 | Max miners per patch | 1 (active) | 1 | SC2 mechanics | **Published** | — |
 | Patches per base | 8 | 8 | SC2 map standard | **Published** | — |
 | Close patches per base | 4 | 4 | SC2 map standard | **Published** | — |
-| Mining start delay | 1 tick | — | Dual-run calibration #401 | **Calibrated** | — |
+| Mining start delay | 1 tick | — | Dual-run calibration #401 | **Historical** — superseded by initial walk delay (§14) | — |
 | Patch docking overhead | 34 loops | — | SC2 dual-run sweep (23w saturation) | **Calibrated** — #599 | `starcraft.worker.patch-docking-overhead-loops` |
 
 **Mining cycle decomposition (#620):** The previous lumped mining=14 constant has been decomposed into three explicit phases: mining animation (5 loops), deposit at base (3 loops), and approach/docking at patch (7 loops). The approach constant (7) absorbs the remaining per-cycle overhead beyond the measured animation (5) and deposit (3): deceleration near the patch, docking/turning, and residual path contention. Total per-cycle overhead: 5+3+7=15 (vs previous 14) — the extra loop compensates for the deposit phase delaying reassignment at the base rather than at the patch.
@@ -90,7 +90,7 @@ Each entry documents value, source, and confidence level.
 
 ## 6. Mining Efficiency Factors
 
-**Factor removed (#623→#620).** Edge-to-edge walk distances, worker collision, and decomposed mining phases (mine=5, approach=7, deposit=3) produce correct mineral totals without compensation. 12w dual-run: EM=3485 vs SC2=3460 (+0.7%) with factor=1.0.
+**Factor removed (#623→#620).** Edge-to-edge walk distances, worker collision, and decomposed mining phases (mine=5, approach=7, deposit=3) produce correct mineral totals without compensation. 12w dual-run: EM=3465 vs SC2=3460 (+0.1%) with factor=1.0.
 
 Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle replay MAPE sweep, which conflated worker allocation differences with physics. The dual-run isolates physics and shows no race-specific difference.
 
@@ -107,14 +107,14 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 | 12w Protoss (tick 304) | 3460 | 3465 | — | — | **+0.1%** | — |
 | 12w Terran (tick 304) | 3460 | 3465 | — | — | **+0.1%** | — |
 | 12w Zerg (tick 304) | — | — | — | — | diverges tick 0 | — |
-| 16w saturation (tick 304) | 4235 | 4519 | — | — | **+6.7%** | — |
-| 24w saturation (tick 304) | 3955 | 4190 | — | — | **+5.9%** | — |
-| 3w gas (tick 304) | 3885 | 4001 | 552 | 536 | +3.0% | **−2.9%** |
-| 6w gas (tick 304) | 3375 | 3551 | 1012 | 1048 | +5.2% | **+3.6%** |
+| 16w saturation (tick 304) | 4235 | 4420 | — | — | **+4.4%** | — |
+| 24w saturation (tick 304) | 3955 | 4115 | — | — | **+4.0%** | — |
+| 3w gas (tick 304) | 3885 | 3940 | 552 | 504 | +1.4% | **−8.7%** |
+| 6w gas (tick 304) | 3375 | 3455 | 1012 | 1004 | +2.4% | **−0.8%** |
 
-16w +6.7% gap: the EM trains 23 Probes (not 16 — continuous to supply cap). The compounding from 11 training cycles, each Probe arriving slightly earlier in the EM, accounts for most of the gap. 24w +5.9%: EM over-produces because patch docking overhead (34 loops) doesn't fully model 3-worker contention at saturation.
+16w +4.4% gap: the EM trains 23 Probes (not 16 — continuous to supply cap). The compounding from 11 training cycles, each Probe arriving slightly earlier in the EM, accounts for most of the gap. 24w +4.0%: EM over-produces because patch docking overhead (34 loops) doesn't fully model 3-worker contention at saturation.
 
-Gas baselines: 3w gas at −2.9% (EM under-produces slightly), 6w gas at +3.6% (EM over-produces). Both within ±5% target. The 6w positive delta may reflect the EM's concurrent geyser access (all 3 workers inside simultaneously) vs SC2's queuing behavior.
+Gas baselines: 3w gas at −8.7% (EM under-produces gas — concurrent geyser access vs SC2's queuing), 6w gas at −0.8% (near-zero). The EM's concurrent geyser model (all 3 workers inside simultaneously) diverges from SC2's entrance queuing.
 
 ### Saturation curve (SC2 dual-run, Protoss, TorchesAIE_v4)
 
@@ -347,13 +347,13 @@ Sub-tick chaining (implemented in #578 for movement, #583 for mining, #584 for g
 
 ### Cumulative drift
 
-Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 1-min is 11.4%, growing to 22.8% at 7-min. Each tick's income error accumulates in mineralsCurrent — a 12% per-tick over-production doesn't stay at 12%; it means the mineral *balance* diverges by roughly 12% × elapsed time. This is why mineralsCurrent MAPE (67.5%) is far higher than the rate MAPE (22.8%).
+Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 7-min is 30.1%. Each tick's income error accumulates in mineralsCurrent — the mineral *balance* diverges by roughly the rate error × elapsed time. This is why mineralsCurrent MAPE (77.4%) is far higher than the rate MAPE (30.1%).
 
 Fixing rate accuracy is the primary lever for reducing balance MAPE. The balance fields will converge automatically as rate accuracy improves.
 
 ### Per-race efficiency factors — removed
 
-Factor 1.006 was removed in #623/#624. With decomposed mining phases (mine=5, approach=7, deposit=3) and edge-to-edge walk distances, no compensation factor is needed. SC2 dual-run shows Protoss and Terran produce identical minerals (3460 at tick 304). The EM produces 3485 (+0.7%) with factor=1.0 for all races.
+Factor 1.006 was removed in #623/#624. With decomposed mining phases (mine=5, approach=7, deposit=3) and edge-to-edge walk distances, no compensation factor is needed. SC2 dual-run shows Protoss and Terran produce identical minerals (3460 at tick 304). The EM produces 3465 (+0.1%) with factor=1.0 for all races.
 
 ### The overhead gap — resolved (#620)
 
@@ -368,7 +368,7 @@ Mining animation is 5 loops (0.22s) in real SC2, measured via the SC2 API. The p
 
 The approach constant (7 loops) is higher than the measured 2-3 loops because it also absorbs residual path contention not captured by the collision model. The decomposition does not improve per-tick cadence matching (78.0% vs 78.7% mismatch).
 
-**Patch affinity (#620):** Workers now return to the same patch each trip (SC2 behavior) instead of reassigning after every deposit. Distance-first routing was tested but regressed saturation scenarios (-10% to -14%) because workers cluster at close patches. The 236/304 (77.6%) per-tick mismatch is unchanged by routing — the root cause is delivery timing within the mining cycle (initial stagger, collision timing, walk distance variance), not which patch a worker targets.
+**Patch affinity (#620):** Workers now return to the same patch each trip (SC2 behavior) instead of reassigning after every deposit. Distance-first routing was tested but regressed saturation scenarios (-10% to -14%) because workers cluster at close patches. The 246/304 (80.9%) per-tick mismatch is unchanged by routing — the root cause is delivery timing within the mining cycle (initial stagger, collision timing, walk distance variance), not which patch a worker targets.
 
 Historical context: a 3D sweep (#592) of deposit × mining × gas across 118 oracle replays found lumped constants near an accuracy ceiling. The decomposition enables future per-phase tuning (variable approach based on contention) that the lumped approach could not support.
 
@@ -411,9 +411,9 @@ Calibration results (12w Protoss, TorchesAIE_v4 patch positions):
 |------|----------------|----------------|-----|--------|
 | 6 (delta) | +29 | +4 | — | ±10 |
 | 20 (delta) | +4 | +6 | — | ±7 |
-| 304 (balance) | — | 3460 | 3460 | within ±0.3% of SC2 |
+| 304 (balance) | — | 3465 | 3460 | within ±0.1% of SC2 |
 
-Stagger=4 and stagger=6 produce the same raw income at tick 304. Stagger=6 gives better tick-6 accuracy (+4 vs +9). With decomposed mining phases (mine=5, approach=7, deposit=3), the stagger's balance offset is absorbed by the approach constant — no compensation factor needed.
+Stagger=6 with walk delay=40 produces 3465 minerals at tick 304 (+0.1% vs SC2's 3460). The walk delay (#619) shifted first deliveries from tick 3-4 to tick 5-6, matching SC2's observed first-delivery timing.
 
 ### Worker management constants
 
@@ -491,6 +491,10 @@ Larva spawn interval (246 loops) and inject larva count (4 per inject) are estim
 
 Whether multiple Chrono Boosts on the same building stack additively, refresh the timer, or are rejected. Currently modeled as a 50% speed multiplier for 448 loops (single application). Real SC2: a second Chrono Boost refreshes the timer (resets to 20 seconds). Impact: affects Protoss production timing for key units (early Stalkers, Immortals).
 
+### Geyser entrance queuing
+
+The EM allows all 3 gas workers inside a geyser simultaneously (`GasSlot.canEnter()` has no queue). Real SC2 queues workers at the geyser entrance — only one enters at a time. This creates a per-worker gas rate difference: the EM's per-worker rate (49.8 gas/min) is higher than SC2's measured rate (38-41 gas/min). Impact: vespeneCollectionRate MAPE at 35.2% is the structural floor — insensitive to worker count estimation (34.7-35.2% across constant sweep). Fixing this requires modeling entrance queuing in `GasSlot`.
+
 ### Rally point walk time
 
 Newly produced workers spawn at the town hall position and walk to an assigned mineral patch. Real SC2: workers auto-rally to a mineral patch if the rally is set there, beginning mining faster. Impact: small — the rally walk is a few seconds per worker, amortised over the worker's full game lifetime.
@@ -508,7 +512,7 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA
 | 1-min | 10.7% | 100.0% (no gas yet) |
 | 3-min | 12.8% | 37.3% |
 | 5-min | 17.0% | 28.7% |
-| 7-min | **30.1%** | **38.1%** |
+| 7-min | **30.1%** | **35.2%** |
 
 ### Full economy at 7-min
 
@@ -531,11 +535,11 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA
 
 The EMA switch (#593) increased the reported mineralsCollectionRate MAPE from 22.1% (simple window) to 30.1% (EMA α=0.25). The physics haven't changed — the EMA measurement is more honest because it matches SC2's own rate algorithm. With simple windowed averaging, the algorithm mismatch between EM (window) and SC2 (EMA) partially cancelled the income mismatch, producing a deceptively lower MAPE. With EMA on both sides, the rate comparison is apples-to-apples.
 
-The mineralsCurrent MAPE improved from 126.1% to 77.4% — this reflects the per-race efficiency factors (#600, #601) reducing EM over-production.
+mineralsCurrent MAPE is 77.4% — cumulative drift from the 30.1% rate error. This improved from 126.1% when per-race efficiency factors were still in use.
 
-### Gas harvest recalibration and efficiency override (#606, #608)
+### Gas harvest recalibration (#606, #615)
 
-Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3w: -2.2%, 6w: +4.0%). This initially regressed oracle MAPE (vespeneCollectionRate 29.1%→38.1%) because slower per-worker gas income amplified the existing worker allocation gap. Resolved in #608 with a standalone-only gas efficiency override (1.20×) applied via `EmulatedGame.setGasEfficiencyOverride()`. Final result: vespeneCollectionRate 26.1% (better than pre-recalibration 29.1%), vespeneCurrent 58.0% (improved from 65.4%). Dual-run accuracy unaffected (factor not applied).
+Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3w: -2.2%, 6w: +4.0%). A temporary gas efficiency override (1.20×, #608) was later removed in #615 and replaced with calibrated worker estimation (`GAS_PER_WORKER_PER_MIN=38.0`). Current standalone MAPE: vespeneCollectionRate 35.2% (structural floor — insensitive to worker count), vespeneCurrent 65.0%.
 
 ---
 
@@ -543,7 +547,7 @@ Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3
 
 | Category | Total | Calibrated | Published | Estimated | Placeholder |
 |----------|-------|------------|-----------|-----------|-------------|
-| Worker physics | 6 | 6 | — | — | — |
+| Worker physics | 7 | 7 | — | — | — |
 | Mining constants | 9 | 5 | 4 | — | — |
 | Gas constants | 4 | 2 | 2 | — | — |
 | Race mechanics | 17 | 1 | 12 | 4 | — |
@@ -556,7 +560,7 @@ Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3
 | Unit speeds | 28+ | — | 28 | — | — |
 | Building health | 53 | — | 53 | — | — |
 
-**Overall: 175 calibrated, 182 published, 25 estimated, 144 placeholder.**
+**Overall: 176 calibrated, 182 published, 25 estimated, 144 placeholder.**
 
 ---
 
@@ -577,6 +581,7 @@ Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3
 | MiningEfficiencyCalibrationTest | Per-race mining factor sweep | `-Pdiagnostic` |
 | AutoSpawnCalibrationTest | Larva spawn interval, interceptor build time | `-Pdiagnostic` |
 | RateCadenceDiagnosticTest | PlayerStatsEvent cadence + rate MAPE at different windows | `-Pdiagnostic` |
+| ExpansionTransferDiagnosticTest | Expansion transfer delay, worker distribution per base | `-Pdiagnostic` |
 
 ---
 

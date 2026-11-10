@@ -65,6 +65,10 @@ public class EmulatedGame {
 
     WorkerSimulation workerSimulation() {return workerSimulation;}
 
+    public int[] mineralWorkersPerBase() {
+        return workerSimulation.mineralWorkersPerBase();
+    }
+
     public void syncMineralWorkersFromGt(int[] mineralWorkersPerBase) {
         workerSimulation.syncMineralWorkersFromGt(mineralWorkersPerBase);
     }
