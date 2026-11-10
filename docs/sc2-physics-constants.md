@@ -43,7 +43,8 @@ Each entry documents value, source, and confidence level.
 
 | Constant | Code value | Real SC2 | Source | Confidence | Config property |
 |----------|-----------|----------|--------|------------|-----------------|
-| Mining duration | 14 loops (0.63s) | ~5 loops (0.22s) | Edge-to-edge calibration sweep (#623) | **Calibrated** — #623 | `starcraft.worker.mining-duration-loops` |
+| Mining duration | 5 loops (0.22s) | ~5 loops (0.22s) | SC2 API measurement — real animation time | **Calibrated** — #620 | `starcraft.worker.mining-duration-loops` |
+| Approach/docking delay | 7 loops (0.31s) | ~2-3 loops | Sweep to match SC2 12w tick-304 total with decomposed phases | **Calibrated** — #620 | `starcraft.worker.approach-docking-loops` |
 | Mineral cargo | 5 | 5 | Liquipedia | **Published** | — |
 | Rich mineral cargo | 7 | 7 | Liquipedia | **Published** | — |
 | Max miners per patch | 1 (active) | 1 | SC2 mechanics | **Published** | — |
@@ -52,10 +53,7 @@ Each entry documents value, source, and confidence level.
 | Mining start delay | 1 tick | — | Dual-run calibration #401 | **Calibrated** | — |
 | Patch docking overhead | 34 loops | — | SC2 dual-run sweep (23w saturation) | **Calibrated** — #599 | `starcraft.worker.patch-docking-overhead-loops` |
 
-**Why mining=14 when real animation is ~5:** With edge-to-edge walk distances (#623), workers walk 3.56u instead of 7.08u center-to-center. The reduced walk distance absorbs ~3 loops of the previous mining=12 overhead, but collision (#625) adds ~5 loops of contention delay, so the net mining constant is 14. The remaining overhead:
-- Deposit time at town hall: ~2-3 loops (measured via SC2 API)
-- Approach/docking delay: ~2-3 loops
-- Path contention: now partially modeled via collision (#625), ~3-4 loops residual
+**Mining cycle decomposition (#620):** The previous lumped mining=14 constant has been decomposed into three explicit phases: mining animation (5 loops), deposit at base (3 loops), and approach/docking at patch (7 loops). The approach constant (7) absorbs the remaining per-cycle overhead beyond the measured animation (5) and deposit (3): deceleration near the patch, docking/turning, and residual path contention. Total per-cycle overhead: 5+3+7=15 (vs previous 14) — the extra loop compensates for the deposit phase delaying reassignment at the base rather than at the patch.
 
 **Patch docking overhead:** After a miner departs a mineral patch, the patch remains locked for 34 loops to model the real SC2 docking animation. A waiting worker consumes this lock time within the same tick (sub-tick resolution). Calibrated from dual-run sweep against SC2 23-worker saturation baseline — matches SC2's 84% efficiency at 2.9 workers/patch.
 
@@ -304,25 +302,23 @@ At a close mineral patch (6.6 units from town hall):
 | Phase | Loops | Seconds | Notes |
 |-------|-------|---------|-------|
 | Walk to patch | 50 | 2.23 | Trapezoidal profile — accel 2.22u, cruise 2.16u, decel 2.22u |
-| Mine | 12 | 0.54 | Absorbs 7 loops of unmodeled overhead (deposit, docking, contention) |
+| Approach/dock | 7 | 0.31 | Deceleration, turning, positioning at patch (#620) |
+| Mine | 5 | 0.22 | Real SC2 animation time (#620) |
 | Walk home | 50 | 2.23 | Same distance, same profile |
-| **Total cycle** | **112** | **5.00** | 5 minerals per trip |
+| Deposit | 3 | 0.13 | Stationary at town hall (#620) |
+| **Total cycle** | **115** | **5.13** | 5 minerals per trip |
 
-**Per-worker income:** 5 minerals × (22.4 loops/sec × 60 sec / 112 loops) = **60.0 minerals/min** on a close patch.
+**Per-worker income:** 5 minerals × (22.4 loops/sec × 60 sec / 115 loops) = **58.4 minerals/min** on a close patch.
 
-At a far mineral patch (7.6 units): 57 loops per leg, 126-loop cycle, **53.3 minerals/min** per worker. At uniform 6.0 units (unit tests): 47 loops per leg, 106-loop cycle, **63.4 minerals/min** per worker.
+At a far mineral patch (7.6 units): 57 loops per leg, 129-loop cycle, **52.1 minerals/min** per worker. At uniform 6.0 units (unit tests): 47 loops per leg, 109-loop cycle, **61.7 minerals/min** per worker.
 
 A fully saturated base (16 workers on 8 patches — 2 per patch) at real distances: ~4 close workers × 60.0 + 4 far workers × 53.3 + 8 second-workers with contention ≈ **~900 minerals/min** (SC2 published: ~930).
 
 ### Saturation curve mechanics
 
-With `MAX_MINERS=1`, the mining duration controls patch occupancy. At mining=12, a patch is occupied 12/112 = **10.7%** of each cycle. Two workers per patch alternate efficiently — one mines while the other walks, and they rarely collide. The third worker on a patch must wait for the active miner to finish.
+With `MAX_MINERS=1`, the patch lock duration (approach+mining = 12 loops) controls patch occupancy. A patch is occupied 12/115 = **10.4%** of each cycle. Two workers per patch alternate efficiently — one mines while the other walks. The third worker must wait for the active miner to finish and the docking overhead (34 loops) to expire.
 
-Current model: **10.2%** per-worker rate drop from 16→24 workers. SC2 actual: **~20-25%**. The gap has two causes:
-
-1. **Uniform test distances.** Unit tests use 6.0 units for all 8 patches. Real maps have close patches (6.6u) and far patches (7.6u). Close patches produce more per-worker income, making the 3rd worker on a close patch more valuable than on a far patch. Uniform distance flattens this distinction. Oracle replays use real positions and show steeper saturation.
-
-2. **Instant deposit.** The model treats mineral deposit at the town hall as instantaneous. Real SC2: 2-3 loops stationary. This adds 2-3 loops to every cycle where workers are queued at the base, creating additional contention.
+Current model: **10.2%** per-worker rate drop from 16→24 workers. SC2 actual: **~20-25%**. The remaining gap is due to uniform test distances: unit tests use 6.0 units for all 8 patches. Real maps have close patches (6.6u) and far patches (7.6u). Oracle replays use real positions and show steeper saturation.
 
 ### Gas cycle breakdown
 
@@ -361,29 +357,20 @@ Unified factor 1.006 for all races (#611). SC2 dual-run shows Protoss and Terran
 
 ### The overhead gap
 
-Mining animation is 5 loops (0.22s) in real SC2, measured via the SC2 API by tracking Probe position frame-by-frame for 3000 game loops. The simulation uses 12 loops (0.54s). The 7-loop gap breaks down as:
+### The overhead gap — resolved (#620)
+
+Mining animation is 5 loops (0.22s) in real SC2, measured via the SC2 API. The previous lumped mining=14 absorbed three distinct phases. These are now decomposed:
 
 | Component | Loops | Source | Status |
 |-----------|-------|--------|--------|
-| Deposit at town hall | 2-3 | SC2 API measurement (stationary at Nexus) | Investigated #587 — lumped constant more accurate |
-| Approach/docking at patch | 2-3 | SC2 API measurement (deceleration near patch) | Not yet modeled |
-| Path contention | 1-2 | Average across worker interactions | Not yet modeled |
-| **Total overhead** | **~7** | | |
+| Mining animation | 5 | SC2 API measurement | **Modeled** — `mining-duration-loops=5` |
+| Deposit at town hall | 3 | SC2 API measurement | **Modeled** — `deposit-duration-loops=3` |
+| Approach/docking at patch | 7 | Sweep against SC2 12w baseline | **Modeled** — `approach-docking-loops=7` |
+| **Total per-cycle overhead** | **15** | | |
 
-Deposit was investigated in #587: explicit modeling (2-loop delay at base) shifted the MAPE minimum without reducing it.
+The approach constant (7 loops) is higher than the measured 2-3 loops because it also absorbs residual path contention not captured by the collision model. The decomposition does not improve per-tick cadence matching (78.0% vs 78.7% mismatch) — cadence variance is structural, requiring dynamic patch routing (#620 next phase).
 
-A full 3D sweep (#592) of deposit (0-5) × mining (8-15) × gas (16-26) across 118 oracle replays confirmed that the lumped constants are near the model's accuracy ceiling:
-
-| Metric | Current (0, 12, 22) | Best triple | Delta |
-|--------|-------------------|-------------|-------|
-| Combined rate MAPE (7-min) | 30.9% | (0, 10, 22) → 29.6% | -1.3% |
-| Combined balance MAPE (7-min) | 71.5% | (0, 15, 22) → 69.3% | -2.1% |
-
-Key observations:
-- **Gas=26 is optimal** — recalibrated from 22 via dual-run sweep (#606). The 3D sweep (#592) used gas=22 (pre-coordinate-translation); with working injection, 26 is the correct value.
-- **Deposit=0 dominates** — no deposit > 0 appears in any top-10. Confirms #587: explicit deposit modeling does not help.
-- **Rate and balance optima conflict** — lower mining (10) improves rate accuracy but worsens balance; higher mining (15) improves balance but worsens rate. Mining=12 is a reasonable midpoint.
-- **Improvements are marginal** — 1.3% rate and 2.1% balance improvements do not justify changing the defaults. The lumped-constant architecture has reached its accuracy ceiling for rate fields.
+Historical context: a 3D sweep (#592) of deposit × mining × gas across 118 oracle replays found lumped constants near an accuracy ceiling. The decomposition enables future per-phase tuning (variable approach based on contention) that the lumped approach could not support.
 
 ### Rate computation algorithm
 
@@ -461,13 +448,13 @@ Compensates for worker allocation gap: the EM auto-assigns 3 workers per gas bui
 
 Explicit gaps between the simulation and real SC2. Each gap's impact on economy accuracy is noted.
 
-### Deposit time — resolved, not modeled
+### Deposit time — modeled (#620)
 
-Workers spend 2-3 loops stationary at the town hall depositing resources. Infrastructure exists (`DEPOSITING_MINERALS`/`DEPOSITING_GAS` task states, configurable via `starcraft.worker.deposit-duration-loops`), but default is 0.0. Investigated twice: #587 (single sweep) and #592 (3D sweep across 288 deposit/mining/gas combinations). Both confirmed that deposit=0 is optimal — no deposit value > 0 appears in any top-10 ranking across either rate or balance MAPE.
+Workers spend 3 loops stationary at the town hall depositing resources. Activated via `starcraft.worker.deposit-duration-loops=3.0`. Previous sweeps (#587, #592) found deposit=0 optimal with lumped mining constants — with decomposed phases, deposit must be explicit to produce correct totals.
 
-### Approach/docking and path contention — resolved, not modeled
+### Approach/docking — modeled (#620)
 
-Approach/docking (2-3 loops) and path contention (1-2 loops) are absorbed into mining=12 and gas=26. The #592 3D sweep confirmed that these components interact non-linearly — the overhead is an emergent property of the lumped constant, not three additive components. Modeling them separately cannot improve on the lumped approach within the current fixed-duration-phase architecture.
+Worker docking at mineral patch before mining animation starts. Modeled as `APPROACH_DOCKING_LOOPS=7.0` added to the mining start timer. The constant absorbs deceleration, turning/positioning, and residual path contention overhead. Previously lumped into mining=14 alongside deposit and mining animation.
 
 ### Close/far patch income differential in unit tests
 
@@ -588,9 +575,10 @@ Worker physics and economy constants — override without recompiling:
 
 ```properties
 # application.properties or -D flags
-starcraft.worker.mining-duration-loops=12.0
+starcraft.worker.mining-duration-loops=5.0
 starcraft.worker.gas-harvest-duration-loops=26.0
-starcraft.worker.deposit-duration-loops=0.0
+starcraft.worker.deposit-duration-loops=3.0
+starcraft.worker.approach-docking-loops=7.0
 starcraft.worker.acceleration=3.5
 starcraft.worker.deceleration=3.5
 starcraft.worker.patch-docking-overhead-loops=34.0

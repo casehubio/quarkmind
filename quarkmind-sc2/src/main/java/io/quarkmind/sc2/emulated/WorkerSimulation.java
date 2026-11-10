@@ -283,7 +283,7 @@ class WorkerSimulation {
                 && w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
                 && tickEndLoop >= w.assignedPatch.lockEndLoop) {
                 w.assignedPatch.miners.add(w);
-                w.phaseEndLoop = tickEndLoop + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop = tickEndLoop + SimulatedWorker.APPROACH_DOCKING_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS;
             }
         }
 
@@ -433,7 +433,7 @@ class WorkerSimulation {
         if (w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
             && currentLoop >= w.assignedPatch.lockEndLoop) {
             w.assignedPatch.miners.add(w);
-            w.phaseEndLoop = currentLoop + SimulatedWorker.MINING_DURATION_LOOPS;
+            w.phaseEndLoop = currentLoop + SimulatedWorker.APPROACH_DOCKING_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS;
         }
     }
 
@@ -566,7 +566,7 @@ class WorkerSimulation {
         if (w.isAtTarget()) {
             if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
                 if (!nearest.miners.contains(w)) {nearest.miners.add(w);}
-                w.phaseEndLoop = currentTickStartLoop + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop = currentTickStartLoop + SimulatedWorker.APPROACH_DOCKING_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS;
             }
         }
     }

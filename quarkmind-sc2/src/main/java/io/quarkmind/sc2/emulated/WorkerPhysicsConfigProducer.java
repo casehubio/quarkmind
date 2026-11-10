@@ -8,7 +8,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 class WorkerPhysicsConfigProducer {
 
     @ConfigProperty(name = "starcraft.worker.mining-duration-loops",
-                    defaultValue = "12.0")
+                    defaultValue = "5.0")
     double miningDurationLoops;
 
     @ConfigProperty(name = "starcraft.worker.gas-harvest-duration-loops",
@@ -16,7 +16,7 @@ class WorkerPhysicsConfigProducer {
     double gasHarvestDurationLoops;
 
     @ConfigProperty(name = "starcraft.worker.deposit-duration-loops",
-                    defaultValue = "0.0")
+                    defaultValue = "3.0")
     double depositDurationLoops;
 
     @ConfigProperty(name = "starcraft.worker.acceleration",
@@ -43,13 +43,17 @@ class WorkerPhysicsConfigProducer {
                     defaultValue = "0.0")
     double collisionSpeedFactor;
 
+    @ConfigProperty(name = "starcraft.worker.approach-docking-loops",
+                    defaultValue = "6.0")
+    double approachDockingLoops;
+
     @Produces
     @ApplicationScoped
     WorkerPhysicsConfig produce() {
         WorkerPhysicsConfig config = new WorkerPhysicsConfig(
                 miningDurationLoops, gasHarvestDurationLoops, depositDurationLoops,
                 acceleration, deceleration, patchDockingOverheadLoops, (float) patchDistance,
-                initialWorkerStaggerLoops, collisionSpeedFactor);
+                initialWorkerStaggerLoops, collisionSpeedFactor, approachDockingLoops);
         SimulatedWorker.configure(config);
         return config;
     }
