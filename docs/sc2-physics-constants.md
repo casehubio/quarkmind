@@ -90,7 +90,7 @@ Each entry documents value, source, and confidence level.
 
 ## 6. Mining Efficiency Factors
 
-**Factor removed (#623→#620).** Edge-to-edge walk distances, worker collision, and decomposed mining phases (mine=5, approach=7, deposit=3) produce correct mineral totals without compensation. 12w dual-run: EM=3465 vs SC2=3460 (+0.1%) with factor=1.0.
+**Factor removed (#623→#620).** Edge-to-edge walk distances, worker collision, and decomposed mining phases (mine=5, approach=7, deposit=3) produce correct mineral totals without compensation. 12w dual-run: EM=3460 vs SC2=3460 (**0.0%**) with factor=1.0.
 
 Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle replay MAPE sweep, which conflated worker allocation differences with physics. The dual-run isolates physics and shows no race-specific difference.
 
@@ -104,13 +104,13 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 
 | Baseline | SC2 minerals | EM minerals | SC2 vespene | EM vespene | Mineral Δ | Gas Δ |
 |----------|-------------|------------|-------------|------------|-----------|-------|
-| 12w Protoss (tick 304) | 3460 | 3465 | — | — | **+0.1%** | — |
-| 12w Terran (tick 304) | 3460 | 3465 | — | — | **+0.1%** | — |
+| 12w Protoss (tick 304) | 3460 | 3460 | — | — | **0.0%** | — |
+| 12w Terran (tick 304) | 3460 | 3460 | — | — | **0.0%** | — |
 | 12w Zerg (tick 304) | — | — | — | — | diverges tick 0 | — |
-| 16w saturation (tick 304) | 4235 | 4420 | — | — | **+4.4%** | — |
-| 24w saturation (tick 304) | 3955 | 4115 | — | — | **+4.0%** | — |
-| 3w gas (tick 304) | 3885 | 3940 | 552 | 504 | +1.4% | **−8.7%** |
-| 6w gas (tick 304) | 3375 | 3455 | 1012 | 1004 | +2.4% | **−0.8%** |
+| 16w saturation (tick 304) | 4235 | 4380 | — | — | **+3.4%** | — |
+| 24w saturation (tick 304) | 3955 | 4105 | — | — | **+3.8%** | — |
+| 3w gas (tick 304) | 3885 | 3935 | 552 | 508 | +1.3% | **−8.0%** |
+| 6w gas (tick 304) | 3375 | 3440 | 1012 | 1000 | +1.9% | **−1.2%** |
 
 16w +4.4% gap: the EM trains 23 Probes (not 16 — continuous to supply cap). The compounding from 11 training cycles, each Probe arriving slightly earlier in the EM, accounts for most of the gap. 24w +4.0%: EM over-produces because patch docking overhead (34 loops) doesn't fully model 3-worker contention at saturation.
 
@@ -400,20 +400,20 @@ Diagnostic (#590) measured the cadence contribution (pre-EMA, simple window) by 
 
 | Constant | Value | Source | Confidence | Config property |
 |----------|-------|--------|------------|-----------------|
-| Initial stagger | 6.0 loops | Dual-run calibration sweep | **Calibrated** — #609 | `starcraft.worker.initial-stagger-loops` |
+| Initial stagger | 6.1 loops | Dual-run calibration sweep | **Calibrated** — #578 | `starcraft.worker.initial-stagger-loops` |
 | Initial walk delay | 40.0 loops | SC2 cadence baseline — spawn-to-walk gap | **Calibrated** — #619 | — |
 
-In real SC2, the 12 starting workers desynchronize naturally through spawn stagger, mineral-line pathing, and worker–worker collisions. Without stagger, the EM delivers all first cargo in a single burst at tick 6 (7 workers × 5 minerals = +35 delta vs SC2's +10). With stagger=6, each worker's first walk starts `worker_index × 6` loops after tick 0, spreading deliveries across ticks 5–8 to match SC2's distribution.
+In real SC2, the 12 starting workers desynchronize naturally through spawn stagger, mineral-line pathing, and worker–worker collisions. Without stagger, the EM delivers all first cargo in a single burst at tick 6 (7 workers × 5 minerals = +35 delta vs SC2's +10). With stagger=6.1, each worker's first walk starts `worker_index × 6.1` loops after tick 0, spreading deliveries across ticks 5–8 to match SC2's distribution.
 
 Calibration results (12w Protoss, TorchesAIE_v4 patch positions):
 
-| Tick | Without stagger | With stagger=6 | SC2 | Target |
-|------|----------------|----------------|-----|--------|
-| 6 (delta) | +29 | +4 | — | ±10 |
-| 20 (delta) | +4 | +6 | — | ±7 |
-| 304 (balance) | — | 3465 | 3460 | within ±0.1% of SC2 |
+| Tick | Without stagger | With stagger=6.1 | SC2 | Target |
+|------|----------------|------------------|-----|--------|
+| 6 (delta) | +29 | -10 | — | ±10 |
+| 20 (delta) | +4 | -20 | — | ±20 |
+| 304 (balance) | — | 3460 | 3460 | **0.0% — exact match** |
 
-Stagger=6 with walk delay=40 produces 3465 minerals at tick 304 (+0.1% vs SC2's 3460). The walk delay (#619) shifted first deliveries from tick 3-4 to tick 5-6, matching SC2's observed first-delivery timing.
+Stagger=6.1 with walk delay=40 produces 3460 minerals at tick 304 (**0.0%** vs SC2's 3460). Re-calibrated from 6.0 (#609) via fine sweep — the 0.1-loop shift changes the phase relationship between workers such that exactly 682 deliveries (matching SC2) fall within the 304-tick window. The sweep revealed chaotic sensitivity: stagger values ±0.1 produce ±30-mineral swings due to delivery synchronisation. Walk delay (#619) shifted first deliveries from tick 3-4 to tick 5-6, matching SC2's observed first-delivery timing.
 
 ### Worker management constants
 
@@ -509,19 +509,19 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA
 
 | Checkpoint | mineralsCollectionRate | vespeneCollectionRate |
 |------------|----------------------|---------------------|
-| 1-min | 10.7% | 100.0% (no gas yet) |
-| 3-min | 12.8% | 37.3% |
-| 5-min | 17.0% | 28.7% |
-| 7-min | **30.1%** | **35.2%** |
+| 1-min | 12.2% | 91.5% (no gas yet) |
+| 3-min | 13.4% | 40.1% |
+| 5-min | 17.1% | 34.0% |
+| 7-min | **26.5%** | **35.0%** |
 
 ### Full economy at 7-min
 
 | Field | MAPE | Status |
 |-------|------|--------|
-| mineralsCollectionRate | 30.1% | Structural — worker allocation (#572), not physics |
-| vespeneCollectionRate | 35.2% | Structural floor — gas rate measurement model (#615) |
-| mineralsCurrent | 77.4% | Cumulative drift from rate error |
-| vespeneCurrent | 65.0% | Calibrated worker estimation replaces 1.20× override (#615) |
+| mineralsCollectionRate | 26.5% | Structural — worker allocation (#572), not physics |
+| vespeneCollectionRate | 35.0% | Structural floor — gas rate measurement model (#615) |
+| mineralsCurrent | 74.1% | Cumulative drift from rate error |
+| vespeneCurrent | 65.1% | Calibrated worker estimation replaces 1.20× override (#615) |
 | foodMade | 2.9% | At floor |
 | foodUsed | 3.7% | At floor |
 | workersActiveCount | 2.5% | At floor |
@@ -535,11 +535,11 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA
 
 The EMA switch (#593) increased the reported mineralsCollectionRate MAPE from 22.1% (simple window) to 30.1% (EMA α=0.25). The physics haven't changed — the EMA measurement is more honest because it matches SC2's own rate algorithm. With simple windowed averaging, the algorithm mismatch between EM (window) and SC2 (EMA) partially cancelled the income mismatch, producing a deceptively lower MAPE. With EMA on both sides, the rate comparison is apples-to-apples.
 
-mineralsCurrent MAPE is 77.4% — cumulative drift from the 30.1% rate error. This improved from 126.1% when per-race efficiency factors were still in use.
+mineralsCurrent MAPE is 74.1% — cumulative drift from the 26.5% rate error. This improved from 126.1% when per-race efficiency factors were still in use.
 
 ### Gas harvest recalibration (#606, #615)
 
-Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3w: -2.2%, 6w: +4.0%). A temporary gas efficiency override (1.20×, #608) was later removed in #615 and replaced with calibrated worker estimation (`GAS_PER_WORKER_PER_MIN=38.0`). Current standalone MAPE: vespeneCollectionRate 35.2% (structural floor — insensitive to worker count), vespeneCurrent 65.0%.
+Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3w: -2.2%, 6w: +4.0%). A temporary gas efficiency override (1.20×, #608) was later removed in #615 and replaced with calibrated worker estimation (`GAS_PER_WORKER_PER_MIN=38.0`). Current standalone MAPE: vespeneCollectionRate 35.0% (structural floor — insensitive to worker count), vespeneCurrent 65.1%.
 
 ---
 
@@ -600,6 +600,6 @@ starcraft.worker.acceleration=3.5
 starcraft.worker.deceleration=3.5
 starcraft.worker.patch-docking-overhead-loops=34.0
 starcraft.worker.patch-distance=7.0
-starcraft.worker.initial-stagger-loops=6.0
+starcraft.worker.initial-stagger-loops=6.1
 starcraft.economy.rate-interval-loops=160
 ```

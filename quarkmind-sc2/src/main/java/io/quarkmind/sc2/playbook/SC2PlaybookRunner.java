@@ -100,8 +100,13 @@ public class SC2PlaybookRunner {
     }
 
     public record PlaybookStep(String action, Map<String, Object> params,
-                        int fireTick, int supplyTrigger, boolean loop) {
+                        int fireTick, int supplyTrigger, boolean loop, int stopAtSupply) {
+        public PlaybookStep(String action, Map<String, Object> params,
+                            int fireTick, int supplyTrigger, boolean loop) {
+            this(action, params, fireTick, supplyTrigger, loop, 0);
+        }
         public boolean shouldFire(int tick, int supplyUsed) {
+            if (stopAtSupply > 0 && supplyUsed >= stopAtSupply) return false;
             if (supplyTrigger > 0) return supplyUsed >= supplyTrigger;
             return loop ? tick >= fireTick : tick == fireTick;
         }
@@ -119,6 +124,7 @@ public class SC2PlaybookRunner {
             int fireTick = 0;
             int supplyTrigger = 0;
             boolean loop = false;
+            int stopAtSupply = 0;
 
             var fields = stepNode.fields();
             while (fields.hasNext()) {
@@ -137,6 +143,11 @@ public class SC2PlaybookRunner {
                     params.put("expect", YAML.convertValue(field.getValue(), Map.class));
                 } else if ("loop".equals(key)) {
                     loop = "continuous".equals(field.getValue().asText());
+                } else if ("stop_at".equals(key)) {
+                    String stopVal = field.getValue().asText();
+                    if (stopVal.endsWith("supply")) {
+                        stopAtSupply = Integer.parseInt(stopVal.replace("supply", "").trim());
+                    }
                 } else if (action == null) {
                     action = key;
                     params.put(key, field.getValue().asText());
@@ -144,7 +155,7 @@ public class SC2PlaybookRunner {
                     params.put(key, field.getValue().asText());
                 }
             }
-            if (action != null) steps.add(new PlaybookStep(action, params, fireTick, supplyTrigger, loop));
+            if (action != null) steps.add(new PlaybookStep(action, params, fireTick, supplyTrigger, loop, stopAtSupply));
         }
         return steps;
     }
