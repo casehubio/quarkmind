@@ -12,7 +12,7 @@ class EconomyConfigProducer {
     int rateIntervalLoops;
 
     @Produces
-    @ApplicationScoped
+    @jakarta.inject.Singleton
     EconomyConfig produce() {
         return new EconomyConfig(rateIntervalLoops);
     }

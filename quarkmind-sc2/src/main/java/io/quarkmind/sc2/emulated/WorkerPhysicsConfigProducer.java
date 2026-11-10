@@ -48,7 +48,7 @@ class WorkerPhysicsConfigProducer {
     double approachDockingLoops;
 
     @Produces
-    @ApplicationScoped
+    @jakarta.inject.Singleton
     WorkerPhysicsConfig produce() {
         WorkerPhysicsConfig config = new WorkerPhysicsConfig(
                 miningDurationLoops, gasHarvestDurationLoops, depositDurationLoops,
