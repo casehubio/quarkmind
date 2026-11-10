@@ -419,6 +419,25 @@ Stagger=4 and stagger=6 produce the same raw income at tick 304. Stagger=6 gives
 | Builder pause (Terran) | ceil(buildDuration / LOOPS_PER_TICK) | SCV paused for full building construction time (#601) |
 | Builder pause (Zerg) | 0 | Drone consumed — no pause mechanic |
 
+### Expansion transfer mechanics (#614)
+
+When a new town hall completes, `rebalanceMineralWorkersAcrossBases()` transfers up to `MAX_TRANSFER_PER_EXPANSION=4` workers from the most saturated existing base to the new base. Workers are set to `TRANSFERRING` state and physically walk to the new base using the standard acceleration model — they produce no income during transit.
+
+| Metric | Value | Source |
+|--------|-------|--------|
+| Workers transferred | 4 | Capped by `MAX_TRANSFER_PER_EXPANSION` |
+| Transfer walk time | 9 ticks (8.8s) | `ExpansionTransferDiagnosticTest` — 31.1u at 3.94 u/s |
+| First worker arrives | tick +7 | Workers arrive staggered over ticks +7 to +9 |
+| All workers arrived | tick +9 | 31.1u distance, trapezoidal velocity profile |
+
+Walk time scales linearly with main-to-expansion distance: 9 ticks at 31.1u, ~6 ticks at ~20u (close natural), ~12 ticks at ~40u (far third). Real SC2 natural expansions are typically 20-40 units from the main base.
+
+**New probes mine at their training Nexus.** After transfer, both Nexuses train probes continuously. Each new Probe mines at its training base. Over a 305-tick playbook run, this produced main=19, exp=43 (62 total) — heavy expansion saturation.
+
+**SC2 behavioral difference:** In the SC2 debug-API baseline, workers do NOT auto-transfer — all workers stay at the main base. The EM models real player behavior (transferring 3-5 workers on expansion). This causes expected income divergence: SC2=2550, EM=5825 at tick 305 in the cal-expansion-transfer playbook. The gap is from better worker distribution and faster supply cap, not a physics error.
+
+`countWorkersPerBase(Race, List<Building>, List<Unit>)` uses snapshot unit positions (from PlayerState) and does NOT reflect `SimulatedWorker` internal positions. To measure expansion worker distribution accurately, use `workerSnapshots()` with proximity calculation.
+
 ### Gas efficiency override (standalone only)
 
 | Context | Factor | Source | Confidence |

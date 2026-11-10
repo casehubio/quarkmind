@@ -389,6 +389,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - `UnmappedAbilCmdIndexDiagnosticTest` — scans 500 ladder replays for abilLink+abilCmdIndex combinations not in AbilityMapping; discovered Thor, Ghost, VoidRay, Tempest, Sentry, DarkTemplar, Disruptor, Viper mappings
 - `ZergSelectionDiagnosticTest` — counts Zerg Larva/Queen CmdEvents, Hatchery BuildCommands, and Probe production diagnostics across 118 oracle replays; validates selection-based multiplication
 - `TrackerCorruptionDiagnosticTest` — traces SelectionDelta events showing tracker state accumulation from `removeMask=None` + addSubgroups pattern
+- `ExpansionTransferDiagnosticTest` — expansion transfer mechanism analysis: isolation test (transfer delay=9 ticks at 31.1u), full playbook comparison EM vs SC2 baseline
 - `AbilityDiscoveryCalibrationTest.discoverMorphAbilLinks` — discovers morph abilLinks via UnitTypeChangeEvent correlation; found Baneling=73, Ravager=309, BroodLord=194, Lurker=522, Overseer=221
 - `AbilityDiscoveryCalibrationTest.discoverBuildingMorphAbilLinks` — tight-window building morph abilLink discovery (low confidence — bot replays don't emit building morph CmdEvents)
 - `AbilityDiscoveryCalibrationTest.discoverMorphSourceUnitLinks` — discovers unitLink values for morph source units from UnitBorn tracker events
