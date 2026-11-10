@@ -733,7 +733,7 @@ public class EmulatedGame {
             int slotsToFill = maxSlots - activeSlots;
             for (int s = 0; s < slotsToFill && !queue.isEmpty(); s++) {
                 UnitType next  = queue.peek();
-                double   sCost = SC2Data.supplyCost(next);
+                double   sCost = SC2Data.supplyCost(next) * SC2Data.trainCount(next);
                 if (!trackerDrivenBuildings.contains(buildingTag) && state.supplyUsed() + sCost > state.supply()) {break;}
                 queue.poll();
                 if (queue.isEmpty()) {physics.buildingQueues.remove(buildingTag);}
