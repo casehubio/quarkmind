@@ -110,7 +110,7 @@ class ProtossRaceModel implements RaceModel {
     public UnitType workerType()             {return UnitType.PROBE;}
 
     @Override
-    public double miningEfficiencyFactor() {return 1.006;}
+    public double miningEfficiencyFactor() {return 1.0;}
 
 
     @Override

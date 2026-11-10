@@ -40,12 +40,12 @@ This is an application, not a framework. If the capability requires SC2 game kno
 
 **The EmulatedGame must match SC2 tick-for-tick.** Compensation constants (mining efficiency factor, gas efficiency override) are forbidden — they mask foundational timing differences and create a treadmill where every physics change requires re-sweeping constants.
 
-**Diagnostic findings (#618):** 242 of 304 ticks (80%) have per-tick mineral delivery mismatches between EM and SC2 in a controlled 12w economy-only scenario. The gap oscillates ±24 minerals. Workers deliver on different ticks (±1-2 from SC2). The 1.006 efficiency factor forces convergence at tick 304 but 80% of individual ticks are wrong.
+**Diagnostic findings (#618→#632):** 240 of 305 ticks (78.7%) have per-tick mineral delivery mismatches between EM and SC2 in a controlled 12w economy-only scenario. Collision model changes (#623–#630) reduced mismatches by only 2 ticks — essentially unchanged from the original 242/304 (80%). The structural issue is cadence variance: EM cycles span 4–9 ticks (σ≈0.5) while SC2 cycles span 2–17 ticks (σ≈3+). The EM's fixed-assignment uniform-cycle model cannot reproduce SC2's dynamic worker routing.
 
 **The fix path:**
-1. Instrument SC2 observation for per-worker delivery events (orders, buffs, cargo)
-2. Record per-worker SC2 baseline (position + task at every tick)
-3. Fix EM delivery timing to match SC2 per-tick cadence
+1. ~~Instrument SC2 observation for per-worker delivery events (orders, buffs, cargo)~~ Done (#621)
+2. ~~Record per-worker SC2 baseline (position + task at every tick)~~ Done (#622)
+3. Fix EM delivery timing to match SC2 per-tick cadence — #620 (mining cycle decomposition) is the next step
 4. Remove efficiency factor (revert to 1.0) — totals must converge naturally
 
 **Design rules for EmulatedGame physics:**

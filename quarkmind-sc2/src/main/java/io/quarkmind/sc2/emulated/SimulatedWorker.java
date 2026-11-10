@@ -3,6 +3,9 @@ package io.quarkmind.sc2.emulated;
 import io.quarkmind.domain.Point2d;
 
 class SimulatedWorker {
+    static final double COLLISION_RADIUS   = 0.375;
+    static final double COLLISION_DIAMETER = COLLISION_RADIUS * 2;
+
     static final double MINERAL_CARGO = 5.0;
     static final double RICH_MINERAL_CARGO = 7.0;
 
@@ -34,6 +37,7 @@ class SimulatedWorker {
     static double DECELERATION            = WorkerPhysicsConfig.DEFAULT_DECELERATION;
     static double PATCH_DOCKING_OVERHEAD_LOOPS = WorkerPhysicsConfig.DEFAULT_PATCH_DOCKING_OVERHEAD;
     static double INITIAL_WORKER_STAGGER_LOOPS = WorkerPhysicsConfig.DEFAULT_INITIAL_WORKER_STAGGER;
+    static double COLLISION_SPEED_FACTOR       = WorkerPhysicsConfig.DEFAULT_COLLISION_SPEED_FACTOR;
 
     static final double LOOP_DURATION     = 1.0 / io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND;
     static final int    LOOPS_PER_TICK    = io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
@@ -46,6 +50,7 @@ class SimulatedWorker {
         DECELERATION                 = config.deceleration();
         PATCH_DOCKING_OVERHEAD_LOOPS = config.patchDockingOverheadLoops();
         INITIAL_WORKER_STAGGER_LOOPS = config.initialWorkerStaggerLoops();
+        COLLISION_SPEED_FACTOR       = config.collisionSpeedFactor();
         MineralPatch.PATCH_DISTANCE = config.patchDistance();
     }
 
@@ -114,6 +119,34 @@ class SimulatedWorker {
             );
         }
         return loops;
+    }
+
+    boolean moveOneLoop() {
+        if (targetPosition == null) {return false;}
+        double dist = position.distanceTo(targetPosition);
+        if (dist <= ARRIVAL_THRESHOLD) {
+            position     = targetPosition;
+            currentSpeed = 0;
+            return true;
+        }
+        double decelDist = currentSpeed * currentSpeed / (2.0 * DECELERATION);
+        if (dist <= decelDist) {
+            currentSpeed = Math.max(0, currentSpeed - DECELERATION * LOOP_DURATION);
+        } else if (currentSpeed < MAX_SPEED) {
+            currentSpeed = Math.min(MAX_SPEED, currentSpeed + ACCELERATION * LOOP_DURATION);
+        }
+        double stepDist = currentSpeed * LOOP_DURATION;
+        if (stepDist <= 0) {return false;}
+        if (stepDist >= dist) {
+            position     = targetPosition;
+            currentSpeed = 0;
+            return true;
+        }
+        float dx    = targetPosition.x() - position.x();
+        float dy    = targetPosition.y() - position.y();
+        float ratio = (float) (stepDist / dist);
+        position = new Point2d(position.x() + dx * ratio, position.y() + dy * ratio);
+        return false;
     }
 
 

@@ -43,7 +43,7 @@ Each entry documents value, source, and confidence level.
 
 | Constant | Code value | Real SC2 | Source | Confidence | Config property |
 |----------|-----------|----------|--------|------------|-----------------|
-| Mining duration | 12 loops (0.54s) | ~5 loops (0.22s) | Oracle MAPE sweep + SC2 API measurement | **Calibrated** — #583 | `starcraft.worker.mining-duration-loops` |
+| Mining duration | 14 loops (0.63s) | ~5 loops (0.22s) | Edge-to-edge calibration sweep (#623) | **Calibrated** — #623 | `starcraft.worker.mining-duration-loops` |
 | Mineral cargo | 5 | 5 | Liquipedia | **Published** | — |
 | Rich mineral cargo | 7 | 7 | Liquipedia | **Published** | — |
 | Max miners per patch | 1 (active) | 1 | SC2 mechanics | **Published** | — |
@@ -52,10 +52,10 @@ Each entry documents value, source, and confidence level.
 | Mining start delay | 1 tick | — | Dual-run calibration #401 | **Calibrated** | — |
 | Patch docking overhead | 34 loops | — | SC2 dual-run sweep (23w saturation) | **Calibrated** — #599 | `starcraft.worker.patch-docking-overhead-loops` |
 
-**Why mining=12 when real animation is ~5:** Absorbs unmodeled per-cycle overhead:
+**Why mining=14 when real animation is ~5:** With edge-to-edge walk distances (#623), workers walk 3.56u instead of 7.08u center-to-center. The reduced walk distance absorbs ~3 loops of the previous mining=12 overhead, but collision (#625) adds ~5 loops of contention delay, so the net mining constant is 14. The remaining overhead:
 - Deposit time at town hall: ~2-3 loops (measured via SC2 API)
 - Approach/docking delay: ~2-3 loops
-- Path contention: ~1-2 loops average
+- Path contention: now partially modeled via collision (#625), ~3-4 loops residual
 
 **Patch docking overhead:** After a miner departs a mineral patch, the patch remains locked for 34 loops to model the real SC2 docking animation. A waiting worker consumes this lock time within the same tick (sub-tick resolution). Calibrated from dual-run sweep against SC2 23-worker saturation baseline — matches SC2's 84% efficiency at 2.9 workers/patch.
 
@@ -92,15 +92,15 @@ Each entry documents value, source, and confidence level.
 
 ## 6. Mining Efficiency Factors
 
-**Unified factor 1.006 calibrated via SC2 dual-run (#611).** All three races produce identical minerals in dual-run (SC2=3460 at tick 304 for both Protoss and Terran). The EM uses identical worker physics for all races (same speed, acceleration, mining duration), so a single factor applies. Factor 1.006 compensates for the initial delivery delay introduced by worker stagger (#609) — the stagger spreads first deliveries across ticks 5-8 but creates a permanent ~30-mineral balance offset that the factor absorbs.
+**Factor removed (#623).** Edge-to-edge walk distances and worker collision produce correct mineral totals without compensation. Mining duration recalibrated from 12→14 loops at the shorter walk distances. Final gap: +5 minerals at tick 304 (3465 vs SC2's 3460) with factor=1.0.
 
 Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle replay MAPE sweep, which conflated worker allocation differences with physics. The dual-run isolates physics and shows no race-specific difference.
 
 | Race | Factor | Source | Confidence |
 |------|--------|--------|------------|
-| Protoss | 1.006 | SC2 dual-run (3460 at tick 304, exact match) | **Calibrated** — #611 |
-| Terran | 1.006 | SC2 dual-run (3460 at tick 304, exact match) | **Calibrated** — #611 |
-| Zerg | 1.006 | Same physics as Protoss/Terran (no clean baseline — LARVA divergence) | **Calibrated** — #611 |
+| Protoss | 1.0 | Edge-to-edge walk + collision produces correct total without compensation | **Removed** — #623 |
+| Terran | 1.0 | Same physics — no race-specific difference | **Removed** — #623 |
+| Zerg | 1.0 | Same physics | **Removed** — #623 |
 
 ### SC2 dual-run calibration results (TorchesAIE_v4)
 

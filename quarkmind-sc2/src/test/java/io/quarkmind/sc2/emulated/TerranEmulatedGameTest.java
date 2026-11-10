@@ -65,8 +65,8 @@ class TerranEmulatedGameTest {
         }
 
         assertThat(game.snapshot().minerals())
-                .as("Terran income lower than Protoss (efficiency factor 0.984)")
-                .isLessThan(protossGame.snapshot().minerals());
+                .as("Terran income equal to Protoss (efficiency factor 1.0)")
+                .isEqualTo(protossGame.snapshot().minerals());
     }
 
     // --- SCV training ---

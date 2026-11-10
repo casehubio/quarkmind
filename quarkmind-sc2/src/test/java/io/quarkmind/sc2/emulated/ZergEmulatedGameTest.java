@@ -84,8 +84,8 @@ class ZergEmulatedGameTest {
         }
 
         assertThat(game.snapshot().minerals())
-                .as("Zerg income lower than Protoss (efficiency factor 0.984)")
-                .isLessThan(protossGame.snapshot().minerals());
+                .as("Zerg income equal to Protoss (efficiency factor 1.0)")
+                .isEqualTo(protossGame.snapshot().minerals());
     }
 
     // --- Larva regeneration ---

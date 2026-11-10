@@ -26,13 +26,13 @@ class EdgeToEdgeCalibrationTest {
         CalibrationBaseline sc2    = loadBaseline("calibration/cal-mineral-baseline-12w.json");
         int                 target = sc2.snapshots().get(304).minerals();
 
-        System.out.println("=== Mining Duration Sweep (edge-to-edge walk) ===");
+        System.out.println("=== Mining Duration Fine Sweep (edge-to-edge + collision, factor=1.0) ===");
         System.out.printf("SC2 target at tick 304: %d minerals%n%n", target);
         System.out.printf("%-8s | %8s | %8s | %8s | %10s%n",
                           "mining", "EM t304", "delta", "mismatch", "max gap");
         System.out.println("---------|----------|----------|----------|----------");
 
-        for (double mining = 27; mining <= 31; mining += 0.5) {
+        for (double mining = 13.0; mining <= 16.0; mining += 0.5) {
             SimulatedWorker.setMiningDurationLoops(mining);
             WorkerSimulation.useEdgeToEdge = true;
 

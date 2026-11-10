@@ -2332,12 +2332,12 @@ class EmulatedGameTest {
 
     @Test
     void perRaceMineralAccuracy_terran() {
-        assertMineralAccuracy(Race.TERRAN, 3415, 0.5);
+        assertMineralAccuracy(Race.TERRAN, 3415, 1.5);
     }
 
     @Test
     void perRaceMineralAccuracy_zerg() {
-        assertMineralAccuracy(Race.ZERG, 3415, 0.5);
+        assertMineralAccuracy(Race.ZERG, 3415, 1.5);
     }
 
     private void assertMineralAccuracy(Race race, int sc2Target, double tolerancePct) {

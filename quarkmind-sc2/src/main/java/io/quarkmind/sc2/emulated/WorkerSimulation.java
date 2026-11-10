@@ -28,7 +28,7 @@ class WorkerSimulation {
         return edgePoint(basePos, patchPos, TOWN_HALL_RADIUS);
     }
 
-    static boolean useEdgeToEdge = false;
+    static boolean useEdgeToEdge = true;
 
     private Point2d miningTarget(MineralPatch patch, int baseIndex) {
         if (!useEdgeToEdge) {return patch.position;}
@@ -262,13 +262,21 @@ class WorkerSimulation {
         }
 
         double mineralIncome = 0;
-        for (SimulatedWorker w : workers.values()) {
-            if (w.assignedGasSlot == null) {
-                mineralIncome += tickMineralWorker(w, tickStartLoop, tickEndLoop);
+        for (int loop = 0; loop < SimulatedWorker.LOOPS_PER_TICK; loop++) {
+            double currentLoop = tickStartLoop + loop;
+            this.currentTickStartLoop = currentLoop;
+
+            for (SimulatedWorker w : workers.values()) {
+                if (w.assignedGasSlot == null) {
+                    mineralIncome += stepOneMineralLoop(w, currentLoop);
+                }
             }
+
+            resolveAllMineralCollisions();
         }
 
-// Wake-up pass: workers waiting at a patch that was freed during this tick
+        this.currentTickStartLoop = tickStartLoop;
+
         for (SimulatedWorker w : workers.values()) {
             if (w.task == WorkerTask.MINING_MINERALS && w.isAtTarget()
                 && w.assignedPatch != null && !w.assignedPatch.miners.contains(w)
@@ -288,53 +296,39 @@ class WorkerSimulation {
         return new TickIncome(mineralIncome, gasIncome);
     }
 
-    private double tickMineralWorker(SimulatedWorker w, double tickStartLoop, double tickEndLoop) {
+    private double stepOneMineralLoop(SimulatedWorker w, double currentLoop) {
         if (w.task == WorkerTask.BUILDING || w.task == WorkerTask.IDLE
             || w.task == WorkerTask.SCOUTING || w.task == WorkerTask.TRANSFERRING) {return 0;}
         if (w.task == WorkerTask.HARVESTING_GAS || w.task == WorkerTask.RETURNING_GAS
             || w.task == WorkerTask.DEPOSITING_GAS) {return 0;}
 
-        int    loopsPerTick   = SimulatedWorker.LOOPS_PER_TICK;
-        int    loopsRemaining = loopsPerTick;
-        double income         = 0;
+        double income = 0;
+        boolean loopConsumed = false;
 
-        while (loopsRemaining > 0) {
+        while (!loopConsumed) {
             if (w.task == WorkerTask.MINING_MINERALS) {
                 if (w.assignedPatch == null) {
                     w.task = WorkerTask.IDLE;
                     return income;
                 }
                 if (w.walkStartLoop > 0) {
-                    double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
-                    if (currentLoop < w.walkStartLoop) {
-                        int waitLoops = (int) Math.ceil(w.walkStartLoop - currentLoop);
-                        if (waitLoops >= loopsRemaining) return income;
-                        loopsRemaining -= waitLoops;
-                    }
+                    if (currentLoop < w.walkStartLoop) {return income;}
                     w.walkStartLoop = 0;
                 }
                 if (!w.isAtTarget()) {
-                    int used = w.moveLoops(loopsRemaining);
-                    loopsRemaining -= used;
+                    w.moveOneLoop();
+                    loopConsumed = true;
                     if (w.isAtTarget()) {
-                        tryStartMining(w, tickStartLoop + (loopsPerTick - loopsRemaining));
+                        tryStartMining(w, currentLoop);
                     }
-                    if (loopsRemaining <= 0) {return income;}
                     continue;
                 }
                 if (!w.assignedPatch.miners.contains(w)) {
-                    double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
-                    if (currentLoop < w.assignedPatch.lockEndLoop) {
-                        int waitLoops = (int) Math.ceil(w.assignedPatch.lockEndLoop - currentLoop);
-                        if (waitLoops >= loopsRemaining) return income;
-                        loopsRemaining -= waitLoops;
-                        currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
-                    }
+                    if (currentLoop < w.assignedPatch.lockEndLoop) {return income;}
                     tryStartMining(w, currentLoop);
-                    if (!w.assignedPatch.miners.contains(w)) return income;
+                    if (!w.assignedPatch.miners.contains(w)) {return income;}
                     continue;
                 }
-                double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
                 if (currentLoop >= w.phaseEndLoop) {
                     double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
                     w.cargo = w.assignedPatch.harvest(cargo);
@@ -344,53 +338,28 @@ class WorkerSimulation {
                     w.targetPosition = bases.get(w.baseIndex).position();
                     continue;
                 }
-                int loopsUntilDone = (int) Math.ceil(w.phaseEndLoop - currentLoop);
-                if (loopsUntilDone < loopsRemaining) {
-                    loopsRemaining -= loopsUntilDone;
-                    double doneLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
-                    double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
-                    w.cargo = w.assignedPatch.harvest(cargo);
-                    w.assignedPatch.miners.remove(w);
-                    w.assignedPatch.lockEndLoop = doneLoop + SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS;
-                    w.task           = WorkerTask.RETURNING_MINERALS;
-                    w.targetPosition = bases.get(w.baseIndex).position();
-                    continue;
-                }
                 return income;
             }
 
             if (w.task == WorkerTask.RETURNING_MINERALS) {
-                int used = w.moveLoops(loopsRemaining);
-                loopsRemaining -= used;
-                if (w.isAtTarget()) {
+                boolean arrived = w.moveOneLoop();
+                loopConsumed = true;
+                if (arrived) {
                     income += w.cargo;
                     w.cargo = 0;
                     if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
                         assignToNearestPatch(w);
-                        if (loopsRemaining <= 0) {return income;}
-                        continue;
+                        return income;
                     }
-                    double arrivalLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
                     w.task         = WorkerTask.DEPOSITING_MINERALS;
-                    w.phaseEndLoop = arrivalLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
-                    if (loopsRemaining <= 0) {return income;}
-                    continue;
+                    w.phaseEndLoop = currentLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
                 }
-                return income;
+                continue;
             }
 
             if (w.task == WorkerTask.DEPOSITING_MINERALS) {
-                double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
                 if (currentLoop >= w.phaseEndLoop) {
                     assignToNearestPatch(w);
-                    if (loopsRemaining <= 0) {return income;}
-                    continue;
-                }
-                int loopsUntilDone = (int) Math.ceil(w.phaseEndLoop - currentLoop);
-                if (loopsUntilDone < loopsRemaining) {
-                    loopsRemaining -= loopsUntilDone;
-                    assignToNearestPatch(w);
-                    if (loopsRemaining <= 0) {return income;}
                     continue;
                 }
                 return income;
@@ -399,6 +368,65 @@ class WorkerSimulation {
             return income;
         }
         return income;
+    }
+
+    private void resolveAllMineralCollisions() {
+        List<SimulatedWorker> walking = new ArrayList<>();
+        List<SimulatedWorker> stationary = new ArrayList<>();
+        for (SimulatedWorker w : workers.values()) {
+            if (w.assignedGasSlot != null) {continue;}
+            if (w.task != WorkerTask.MINING_MINERALS && w.task != WorkerTask.RETURNING_MINERALS) {continue;}
+            if (w.isAtTarget()) {
+                stationary.add(w);
+            } else {
+                walking.add(w);
+            }
+        }
+
+        for (int i = 0; i < walking.size(); i++) {
+            SimulatedWorker a = walking.get(i);
+            for (int j = i + 1; j < walking.size(); j++) {
+                SimulatedWorker b = walking.get(j);
+                double d = a.position.distanceTo(b.position);
+                if (d >= SimulatedWorker.COLLISION_DIAMETER || d < 0.001) {continue;}
+
+                float dx    = b.position.x() - a.position.x();
+                float dy    = b.position.y() - a.position.y();
+                float perpX = -dy / (float) d;
+                float perpY = dx / (float) d;
+                float dodge = (float) (SimulatedWorker.COLLISION_DIAMETER - d) * 0.5f;
+
+                if (a.tag.hashCode() < b.tag.hashCode()) {
+                    a.position = new Point2d(a.position.x() + perpX * dodge, a.position.y() + perpY * dodge);
+                    b.position = new Point2d(b.position.x() - perpX * dodge, b.position.y() - perpY * dodge);
+                } else {
+                    a.position = new Point2d(a.position.x() - perpX * dodge, a.position.y() - perpY * dodge);
+                    b.position = new Point2d(b.position.x() + perpX * dodge, b.position.y() + perpY * dodge);
+                }
+                a.currentSpeed *= SimulatedWorker.COLLISION_SPEED_FACTOR;
+                b.currentSpeed *= SimulatedWorker.COLLISION_SPEED_FACTOR;
+            }
+        }
+
+        for (SimulatedWorker w : walking) {
+            for (SimulatedWorker s : stationary) {
+                double d = w.position.distanceTo(s.position);
+                if (d >= SimulatedWorker.COLLISION_DIAMETER || d < 0.001) {continue;}
+
+                float dx    = s.position.x() - w.position.x();
+                float dy    = s.position.y() - w.position.y();
+                float perpX = -dy / (float) d;
+                float perpY = dx / (float) d;
+                float dodge = (float) (SimulatedWorker.COLLISION_DIAMETER - d) * 0.5f;
+
+                if (w.tag.hashCode() < s.tag.hashCode()) {
+                    w.position = new Point2d(w.position.x() + perpX * dodge, w.position.y() + perpY * dodge);
+                } else {
+                    w.position = new Point2d(w.position.x() - perpX * dodge, w.position.y() - perpY * dodge);
+                }
+                w.currentSpeed *= SimulatedWorker.COLLISION_SPEED_FACTOR;
+            }
+        }
     }
 
     private void tryStartMining(SimulatedWorker w, double currentLoop) {

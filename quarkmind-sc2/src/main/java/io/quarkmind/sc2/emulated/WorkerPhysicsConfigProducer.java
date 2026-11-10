@@ -39,13 +39,17 @@ class WorkerPhysicsConfigProducer {
                     defaultValue = "6.0")
     double initialWorkerStaggerLoops;
 
+    @ConfigProperty(name = "starcraft.worker.collision-speed-factor",
+                    defaultValue = "0.0")
+    double collisionSpeedFactor;
+
     @Produces
     @ApplicationScoped
     WorkerPhysicsConfig produce() {
         WorkerPhysicsConfig config = new WorkerPhysicsConfig(
                 miningDurationLoops, gasHarvestDurationLoops, depositDurationLoops,
                 acceleration, deceleration, patchDockingOverheadLoops, (float) patchDistance,
-                initialWorkerStaggerLoops);
+                initialWorkerStaggerLoops, collisionSpeedFactor);
         SimulatedWorker.configure(config);
         return config;
     }

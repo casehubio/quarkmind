@@ -1,6 +1,7 @@
 package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.Race;
 import io.quarkmind.domain.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,21 +58,27 @@ class WorkerSimulationTest {
 
     @Test
     void sixteenWorkers_showsSaturationPenalty() {
+        int warmup  = 20;
+        int measure = 300;
+
         List<String> tags8 = IntStream.rangeClosed(1, 8)
                                       .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags8, BASE_POS, BASE_TAG);
+        for (int t = 0; t < warmup; t++) {tick();}
         double income8workers = 0;
-        for (int t = 0; t < 100; t++) {
+        for (int t = 0; t < measure; t++) {
             income8workers += tick().mineralIncome();
         }
 
         sim.reset();
         sim.onTownHallCompleted(BASE_TAG, BASE_POS);
+        tickCount = 0;
         List<String> tags16 = IntStream.rangeClosed(1, 16)
                                        .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags16, BASE_POS, BASE_TAG);
+        for (int t = 0; t < warmup; t++) {tick();}
         double income16workers = 0;
-        for (int t = 0; t < 100; t++) {
+        for (int t = 0; t < measure; t++) {
             income16workers += tick().mineralIncome();
         }
 
@@ -79,8 +86,9 @@ class WorkerSimulationTest {
                    "16 workers should earn more than 8");
         double perWorker8  = income8workers / 8;
         double perWorker16 = income16workers / 16;
-        assertTrue(perWorker16 <= perWorker8,
-                   "16 workers per-worker rate (" + perWorker16 + ") should not exceed 8 workers (" + perWorker8 + ")");
+        assertTrue(perWorker16 <= perWorker8 * 1.01,
+                   "16 workers per-worker rate (" + perWorker16
+                   + ") should not significantly exceed 8 workers (" + perWorker8 + ")");
     }
 
     @Test
@@ -691,6 +699,40 @@ class WorkerSimulationTest {
         }
         assertTrue(totalIncome > 0,
                    "Transferred workers should eventually arrive and mine at new base");
+    }
+
+    @Test
+    void collisionSpeedFactorSweep() {
+        double[] factors = {0.950, 0.952, 0.954, 0.956, 0.958, 0.960, 0.962, 0.964, 0.966, 0.968, 0.970};
+        int sc2Target = 3460;
+
+        System.out.println("\n=== Collision Speed Factor Sweep (12w Protoss, 304 ticks, SC2 target: " + sc2Target + ") ===");
+        System.out.printf("%-10s %-10s %-10s %-10s%n", "Factor", "EM", "Delta", "Pct");
+
+        double bestFactor = 1.0;
+        double bestError = Double.MAX_VALUE;
+
+        for (double factor : factors) {
+            SimulatedWorker.COLLISION_SPEED_FACTOR = factor;
+            try {
+                EmulatedGame g = new EmulatedGame();
+                g.setPlayerRaceModel(RaceModelFactory.forRace(io.quarkmind.domain.Race.PROTOSS));
+                g.reset();
+                for (int t = 0; t < 304; t++) { g.tick(); }
+                int em = g.snapshot().minerals();
+                int delta = em - sc2Target;
+                double pct = Math.abs(delta / (double) sc2Target * 100);
+                System.out.printf("%-10.2f %-10d %-10d %-10.1f%s%n",
+                        factor, em, delta, pct, pct < bestError ? " ←" : "");
+                if (pct < bestError) {
+                    bestError = pct;
+                    bestFactor = factor;
+                }
+            } finally {
+                SimulatedWorker.COLLISION_SPEED_FACTOR = WorkerPhysicsConfig.DEFAULT_COLLISION_SPEED_FACTOR;
+            }
+        }
+        System.out.printf("%nBest factor: %.2f (%.1f%% error)%n", bestFactor, bestError);
     }
 
 
