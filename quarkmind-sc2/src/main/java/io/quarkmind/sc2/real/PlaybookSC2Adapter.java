@@ -438,10 +438,19 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
 
     private Tag findBuildingTag(GameState state, BuildingType type) {
         return state.myBuildings().stream()
-            .filter(b -> b.type() == type && b.isComplete())
+            .filter(b -> matchesBuildingType(b.type(), type) && b.isComplete())
             .findFirst()
             .map(b -> Tag.of(Long.parseLong(b.tag())))
             .orElse(null);
+    }
+
+    private static boolean matchesBuildingType(BuildingType actual, BuildingType requested) {
+        if (actual == requested) return true;
+        if (requested == BuildingType.COMMAND_CENTER
+            && (actual == BuildingType.ORBITAL_COMMAND || actual == BuildingType.PLANETARY_FORTRESS)) return true;
+        if (requested == BuildingType.HATCHERY
+            && (actual == BuildingType.LAIR || actual == BuildingType.HIVE)) return true;
+        return false;
     }
 
     private Tag findUnitTag(GameState state, UnitType type) {

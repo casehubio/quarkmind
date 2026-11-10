@@ -2,7 +2,7 @@
   "playbook" : "cal-mule-isolation",
   "race" : "TERRAN",
   "sc2Build" : "unknown",
-  "recordedAt" : "2026-11-10T00:07:45.449221Z",
+  "recordedAt" : "2026-11-10T00:10:00.503235Z",
   "tickCount" : 305,
   "snapshots" : [ {
     "tick" : 0,
@@ -1154,7 +1154,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 83,
-    "minerals" : 535,
+    "minerals" : 530,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 19,
@@ -1210,7 +1210,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 87,
-    "minerals" : 595,
+    "minerals" : 590,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1224,7 +1224,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 88,
-    "minerals" : 570,
+    "minerals" : 565,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1280,7 +1280,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 92,
-    "minerals" : 630,
+    "minerals" : 625,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1308,7 +1308,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 94,
-    "minerals" : 665,
+    "minerals" : 660,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1322,7 +1322,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 95,
-    "minerals" : 680,
+    "minerals" : 675,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1350,7 +1350,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 97,
-    "minerals" : 715,
+    "minerals" : 705,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 20,
@@ -1378,7 +1378,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 99,
-    "minerals" : 750,
+    "minerals" : 745,
     "vespene" : 0,
     "supply" : 23,
     "supplyUsed" : 21,
@@ -1392,7 +1392,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 100,
-    "minerals" : 705,
+    "minerals" : 700,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 21,
@@ -1406,7 +1406,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 101,
-    "minerals" : 740,
+    "minerals" : 725,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 21,
@@ -1420,7 +1420,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 102,
-    "minerals" : 740,
+    "minerals" : 735,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 21,
@@ -1434,7 +1434,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 103,
-    "minerals" : 760,
+    "minerals" : 755,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 21,
@@ -1448,7 +1448,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 104,
-    "minerals" : 780,
+    "minerals" : 770,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 21,
@@ -1462,7 +1462,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 105,
-    "minerals" : 795,
+    "minerals" : 785,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 21,
@@ -1476,7 +1476,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 106,
-    "minerals" : 815,
+    "minerals" : 805,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 21,
@@ -1490,7 +1490,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 107,
-    "minerals" : 825,
+    "minerals" : 820,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 21,
@@ -1504,7 +1504,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 108,
-    "minerals" : 850,
+    "minerals" : 835,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 21,
@@ -1518,7 +1518,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 109,
-    "minerals" : 865,
+    "minerals" : 855,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 21,
@@ -1532,7 +1532,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 110,
-    "minerals" : 885,
+    "minerals" : 870,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 21,
@@ -1546,7 +1546,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 111,
-    "minerals" : 895,
+    "minerals" : 890,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 22,
@@ -1560,7 +1560,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 112,
-    "minerals" : 1120,
+    "minerals" : 1105,
     "vespene" : 0,
     "supply" : 31,
     "supplyUsed" : 21,
@@ -1574,10 +1574,10 @@
     "upgrades" : [ ]
   }, {
     "tick" : 113,
-    "minerals" : 1135,
+    "minerals" : 1070,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 22,
     "units" : {
       "SCV" : 21
     },
@@ -1588,10 +1588,10 @@
     "upgrades" : [ ]
   }, {
     "tick" : 114,
-    "minerals" : 1155,
+    "minerals" : 1035,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 22,
     "units" : {
       "SCV" : 21
     },
@@ -1602,10 +1602,10 @@
     "upgrades" : [ ]
   }, {
     "tick" : 115,
-    "minerals" : 1175,
+    "minerals" : 1005,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 22,
     "units" : {
       "MULE" : 1,
       "SCV" : 21
@@ -1617,10 +1617,10 @@
     "upgrades" : [ ]
   }, {
     "tick" : 116,
-    "minerals" : 1190,
+    "minerals" : 975,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 22,
     "units" : {
       "MULE" : 1,
       "SCV" : 21
@@ -1632,10 +1632,10 @@
     "upgrades" : [ ]
   }, {
     "tick" : 117,
-    "minerals" : 1205,
+    "minerals" : 940,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 22,
     "units" : {
       "MULE" : 1,
       "SCV" : 21
@@ -1647,10 +1647,10 @@
     "upgrades" : [ ]
   }, {
     "tick" : 118,
-    "minerals" : 1230,
+    "minerals" : 965,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 22,
     "units" : {
       "MULE" : 1,
       "SCV" : 21
@@ -1662,10 +1662,10 @@
     "upgrades" : [ ]
   }, {
     "tick" : 119,
-    "minerals" : 1240,
+    "minerals" : 975,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 22,
     "units" : {
       "MULE" : 1,
       "SCV" : 21
@@ -1677,10 +1677,10 @@
     "upgrades" : [ ]
   }, {
     "tick" : 120,
-    "minerals" : 1270,
+    "minerals" : 995,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 22,
     "units" : {
       "MULE" : 1,
       "SCV" : 21
@@ -1692,10 +1692,10 @@
     "upgrades" : [ ]
   }, {
     "tick" : 121,
-    "minerals" : 1275,
+    "minerals" : 1015,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 22,
     "units" : {
       "MULE" : 1,
       "SCV" : 21
@@ -1707,10 +1707,10 @@
     "upgrades" : [ ]
   }, {
     "tick" : 122,
-    "minerals" : 1295,
+    "minerals" : 1030,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 22,
     "units" : {
       "MULE" : 1,
       "SCV" : 21
@@ -1722,10 +1722,10 @@
     "upgrades" : [ ]
   }, {
     "tick" : 123,
-    "minerals" : 1310,
+    "minerals" : 1050,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 22,
     "units" : {
       "MULE" : 1,
       "SCV" : 21
@@ -1737,10 +1737,10 @@
     "upgrades" : [ ]
   }, {
     "tick" : 124,
-    "minerals" : 1335,
+    "minerals" : 1065,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 22,
     "units" : {
       "MULE" : 1,
       "SCV" : 21
@@ -1752,13 +1752,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 125,
-    "minerals" : 1345,
+    "minerals" : 1080,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 23,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 22
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1767,13 +1767,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 126,
-    "minerals" : 1365,
+    "minerals" : 1055,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 23,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 22
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1782,13 +1782,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 127,
-    "minerals" : 1385,
+    "minerals" : 1060,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 23,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 22
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1797,13 +1797,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 128,
-    "minerals" : 1400,
+    "minerals" : 1095,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 23,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 22
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1812,13 +1812,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 129,
-    "minerals" : 1425,
+    "minerals" : 1095,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 23,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 22
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1827,13 +1827,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 130,
-    "minerals" : 1430,
+    "minerals" : 1120,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 23,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 22
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1842,13 +1842,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 131,
-    "minerals" : 1455,
+    "minerals" : 1135,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 23,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 22
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1857,13 +1857,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 132,
-    "minerals" : 1470,
+    "minerals" : 1155,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 23,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 22
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1872,13 +1872,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 133,
-    "minerals" : 1495,
+    "minerals" : 1170,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 23,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 22
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1887,13 +1887,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 134,
-    "minerals" : 1510,
+    "minerals" : 1190,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 23,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 22
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1902,13 +1902,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 135,
-    "minerals" : 1530,
+    "minerals" : 1210,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 23,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 22
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1917,13 +1917,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 136,
-    "minerals" : 1535,
+    "minerals" : 1220,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 23,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 22
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1932,13 +1932,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 137,
-    "minerals" : 1565,
+    "minerals" : 1245,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 24,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 23
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1947,13 +1947,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 138,
-    "minerals" : 1575,
+    "minerals" : 1210,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 24,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 23
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1962,13 +1962,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 139,
-    "minerals" : 1605,
+    "minerals" : 1230,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 24,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 23
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1977,13 +1977,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 140,
-    "minerals" : 1615,
+    "minerals" : 1250,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 24,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 23
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -1992,13 +1992,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 141,
-    "minerals" : 1635,
+    "minerals" : 1265,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 24,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 23
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2007,13 +2007,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 142,
-    "minerals" : 1650,
+    "minerals" : 1285,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 24,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 23
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2022,13 +2022,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 143,
-    "minerals" : 1675,
+    "minerals" : 1300,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 24,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 23
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2037,13 +2037,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 144,
-    "minerals" : 1690,
+    "minerals" : 1320,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 24,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 23
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2052,13 +2052,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 145,
-    "minerals" : 1710,
+    "minerals" : 1340,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 24,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 23
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2067,13 +2067,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 146,
-    "minerals" : 1725,
+    "minerals" : 1350,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 24,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 23
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2082,13 +2082,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 147,
-    "minerals" : 1745,
+    "minerals" : 1375,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 24,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 23
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2097,13 +2097,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 148,
-    "minerals" : 1760,
+    "minerals" : 1380,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 24,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 23
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2112,13 +2112,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 149,
-    "minerals" : 1780,
+    "minerals" : 1405,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2127,13 +2127,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 150,
-    "minerals" : 1790,
+    "minerals" : 1370,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2142,13 +2142,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 151,
-    "minerals" : 1820,
+    "minerals" : 1395,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2157,13 +2157,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 152,
-    "minerals" : 1825,
+    "minerals" : 1410,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2172,13 +2172,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 153,
-    "minerals" : 1850,
+    "minerals" : 1430,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2187,13 +2187,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 154,
-    "minerals" : 1865,
+    "minerals" : 1445,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2202,13 +2202,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 155,
-    "minerals" : 1885,
+    "minerals" : 1465,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2217,13 +2217,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 156,
-    "minerals" : 1905,
+    "minerals" : 1480,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2232,13 +2232,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 157,
-    "minerals" : 1915,
+    "minerals" : 1505,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2247,13 +2247,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 158,
-    "minerals" : 1945,
+    "minerals" : 1520,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2262,13 +2262,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 159,
-    "minerals" : 1955,
+    "minerals" : 1535,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2277,13 +2277,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 160,
-    "minerals" : 1980,
+    "minerals" : 1555,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2292,13 +2292,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 161,
-    "minerals" : 1995,
+    "minerals" : 1570,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 25,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 24
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2307,13 +2307,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 162,
-    "minerals" : 2015,
+    "minerals" : 1590,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 26,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 25
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2322,13 +2322,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 163,
-    "minerals" : 2035,
+    "minerals" : 1560,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 26,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 25
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2337,13 +2337,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 164,
-    "minerals" : 2050,
+    "minerals" : 1575,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 26,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 25
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2352,13 +2352,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 165,
-    "minerals" : 2075,
+    "minerals" : 1600,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 26,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 25
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2367,13 +2367,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 166,
-    "minerals" : 2090,
+    "minerals" : 1610,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 26,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 25
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2382,13 +2382,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 167,
-    "minerals" : 2105,
+    "minerals" : 1635,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 26,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 25
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2397,13 +2397,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 168,
-    "minerals" : 2130,
+    "minerals" : 1650,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 26,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 25
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2412,13 +2412,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 169,
-    "minerals" : 2140,
+    "minerals" : 1665,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 26,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 25
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2427,13 +2427,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 170,
-    "minerals" : 2170,
+    "minerals" : 1690,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 26,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 25
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2442,13 +2442,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 171,
-    "minerals" : 2175,
+    "minerals" : 1695,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 26,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 25
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2457,13 +2457,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 172,
-    "minerals" : 2195,
+    "minerals" : 1725,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 26,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 25
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2472,13 +2472,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 173,
-    "minerals" : 2210,
+    "minerals" : 1735,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 26,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 25
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2487,13 +2487,13 @@
     "upgrades" : [ ]
   }, {
     "tick" : 174,
-    "minerals" : 2235,
+    "minerals" : 1760,
     "vespene" : 0,
     "supply" : 31,
-    "supplyUsed" : 21,
+    "supplyUsed" : 27,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 26
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
@@ -2502,1983 +2502,1968 @@
     "upgrades" : [ ]
   }, {
     "tick" : 175,
-    "minerals" : 2250,
+    "minerals" : 1725,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 27,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 26
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 176,
-    "minerals" : 2265,
+    "minerals" : 1740,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 27,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 26
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 177,
-    "minerals" : 2285,
+    "minerals" : 1760,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 27,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 26
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 178,
-    "minerals" : 2300,
+    "minerals" : 1780,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 27,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 26
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 179,
-    "minerals" : 2320,
+    "minerals" : 1795,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 27,
     "units" : {
       "MULE" : 2,
-      "SCV" : 21
+      "SCV" : 26
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 180,
-    "minerals" : 2340,
+    "minerals" : 1820,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 27,
     "units" : {
       "MULE" : 2,
-      "SCV" : 21
+      "SCV" : 26
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 181,
-    "minerals" : 2360,
+    "minerals" : 1825,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 27,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 26
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 182,
-    "minerals" : 2375,
+    "minerals" : 1855,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 27,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 26
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 183,
-    "minerals" : 2395,
+    "minerals" : 1870,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 27,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 26
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 184,
-    "minerals" : 2410,
+    "minerals" : 1890,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 27,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 26
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 185,
-    "minerals" : 2435,
+    "minerals" : 1905,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 27,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 26
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 186,
-    "minerals" : 2450,
+    "minerals" : 1920,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 187,
-    "minerals" : 2475,
+    "minerals" : 1895,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 188,
-    "minerals" : 2490,
+    "minerals" : 1910,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 189,
-    "minerals" : 2510,
+    "minerals" : 1930,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 190,
-    "minerals" : 2530,
+    "minerals" : 1950,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 191,
-    "minerals" : 2550,
+    "minerals" : 1970,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 192,
-    "minerals" : 2560,
+    "minerals" : 1985,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 193,
-    "minerals" : 2585,
+    "minerals" : 2000,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 194,
-    "minerals" : 2595,
+    "minerals" : 2020,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 195,
-    "minerals" : 2620,
+    "minerals" : 2040,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 196,
-    "minerals" : 2630,
+    "minerals" : 2055,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 197,
-    "minerals" : 2650,
+    "minerals" : 2080,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 198,
-    "minerals" : 2665,
+    "minerals" : 2085,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 28,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 27
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 199,
-    "minerals" : 2680,
+    "minerals" : 2120,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 29,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 28
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 200,
-    "minerals" : 2705,
+    "minerals" : 2075,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 29,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 28
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 201,
-    "minerals" : 2720,
+    "minerals" : 2105,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 29,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 28
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 202,
-    "minerals" : 2745,
+    "minerals" : 2115,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 29,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 28
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 203,
-    "minerals" : 2755,
+    "minerals" : 2135,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 29,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 28
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 204,
-    "minerals" : 2780,
+    "minerals" : 2155,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 29,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 28
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 205,
-    "minerals" : 2795,
+    "minerals" : 2165,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 29,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 28
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 206,
-    "minerals" : 2815,
+    "minerals" : 2190,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 29,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 28
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 207,
-    "minerals" : 2835,
+    "minerals" : 2205,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 29,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 28
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 208,
-    "minerals" : 2855,
+    "minerals" : 2220,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 29,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 28
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 209,
-    "minerals" : 2870,
+    "minerals" : 2245,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 29,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 28
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 210,
-    "minerals" : 2890,
+    "minerals" : 2255,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 29,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 28
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 211,
-    "minerals" : 2905,
+    "minerals" : 2285,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 30,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 29
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 212,
-    "minerals" : 2930,
+    "minerals" : 2245,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 30,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 29
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 213,
-    "minerals" : 2945,
+    "minerals" : 2265,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 30,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 29
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 214,
-    "minerals" : 2965,
+    "minerals" : 2285,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 30,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 29
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 215,
-    "minerals" : 2980,
+    "minerals" : 2295,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 30,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 29
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 216,
-    "minerals" : 3005,
+    "minerals" : 2325,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 30,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 29
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 217,
-    "minerals" : 3015,
+    "minerals" : 2330,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 30,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 29
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 218,
-    "minerals" : 3040,
+    "minerals" : 2355,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 30,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 29
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 219,
-    "minerals" : 3045,
+    "minerals" : 2370,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 30,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 29
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 220,
-    "minerals" : 3075,
+    "minerals" : 2395,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 30,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 29
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 221,
-    "minerals" : 3085,
+    "minerals" : 2410,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 30,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 29
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 222,
-    "minerals" : 3100,
+    "minerals" : 2425,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 30,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 29
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 223,
-    "minerals" : 3125,
+    "minerals" : 2440,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 224,
-    "minerals" : 3135,
+    "minerals" : 2415,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 225,
-    "minerals" : 3160,
+    "minerals" : 2430,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 226,
-    "minerals" : 3175,
+    "minerals" : 2455,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 227,
-    "minerals" : 3195,
+    "minerals" : 2470,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 228,
-    "minerals" : 3215,
+    "minerals" : 2480,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 229,
-    "minerals" : 3230,
+    "minerals" : 2505,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 230,
-    "minerals" : 3255,
+    "minerals" : 2520,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 231,
-    "minerals" : 3270,
+    "minerals" : 2540,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 232,
-    "minerals" : 3295,
+    "minerals" : 2560,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 233,
-    "minerals" : 3310,
+    "minerals" : 2570,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 234,
-    "minerals" : 3325,
+    "minerals" : 2595,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 235,
-    "minerals" : 3350,
+    "minerals" : 2610,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 31,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 30
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 236,
-    "minerals" : 3360,
+    "minerals" : 2635,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 32,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 31
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 237,
-    "minerals" : 3390,
+    "minerals" : 2600,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 32,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 31
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 238,
-    "minerals" : 3395,
+    "minerals" : 2610,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 32,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 31
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 239,
-    "minerals" : 3420,
+    "minerals" : 2635,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 32,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 31
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 240,
-    "minerals" : 3435,
+    "minerals" : 2645,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 32,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 31
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 241,
-    "minerals" : 3445,
+    "minerals" : 2675,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 32,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 31
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 242,
-    "minerals" : 3470,
+    "minerals" : 2685,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 32,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 31
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 243,
-    "minerals" : 3490,
+    "minerals" : 2710,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 32,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 31
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 244,
-    "minerals" : 3505,
+    "minerals" : 2725,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 32,
     "units" : {
       "MULE" : 2,
-      "SCV" : 21
+      "SCV" : 31
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 245,
-    "minerals" : 3520,
+    "minerals" : 2750,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 32,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 31
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 246,
-    "minerals" : 3540,
+    "minerals" : 2765,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 32,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 31
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 247,
-    "minerals" : 3560,
+    "minerals" : 2780,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 32,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 31
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 248,
-    "minerals" : 3575,
+    "minerals" : 2795,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 39,
+    "supplyUsed" : 33,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 32
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 3
     },
     "upgrades" : [ ]
   }, {
     "tick" : 249,
-    "minerals" : 3595,
+    "minerals" : 2770,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 33,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 32
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 250,
-    "minerals" : 3615,
+    "minerals" : 2780,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 33,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 32
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 251,
-    "minerals" : 3635,
+    "minerals" : 2805,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 33,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 32
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 252,
-    "minerals" : 3655,
+    "minerals" : 2820,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 33,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 32
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 253,
-    "minerals" : 3665,
+    "minerals" : 2835,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 33,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 32
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 254,
-    "minerals" : 3695,
+    "minerals" : 2855,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 33,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 32
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 255,
-    "minerals" : 3705,
+    "minerals" : 2875,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 33,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 32
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 256,
-    "minerals" : 3730,
+    "minerals" : 2895,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 33,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 32
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 257,
-    "minerals" : 3745,
+    "minerals" : 2910,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 33,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 32
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 258,
-    "minerals" : 3770,
+    "minerals" : 2925,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 33,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 32
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 259,
-    "minerals" : 3785,
+    "minerals" : 2950,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 33,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 32
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 260,
-    "minerals" : 3800,
+    "minerals" : 2965,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 261,
-    "minerals" : 3815,
+    "minerals" : 2930,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 262,
-    "minerals" : 3840,
+    "minerals" : 2950,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 263,
-    "minerals" : 3855,
+    "minerals" : 2970,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 264,
-    "minerals" : 3875,
+    "minerals" : 2990,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 265,
-    "minerals" : 3885,
+    "minerals" : 3000,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 266,
-    "minerals" : 3905,
+    "minerals" : 3030,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 267,
-    "minerals" : 3920,
+    "minerals" : 3035,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 268,
-    "minerals" : 3940,
+    "minerals" : 3065,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 269,
-    "minerals" : 3960,
+    "minerals" : 3075,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 270,
-    "minerals" : 3980,
+    "minerals" : 3100,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 271,
-    "minerals" : 3995,
+    "minerals" : 3115,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 272,
-    "minerals" : 4015,
+    "minerals" : 3130,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 34,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 33
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 273,
-    "minerals" : 4035,
+    "minerals" : 3155,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 35,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 34
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 274,
-    "minerals" : 4050,
+    "minerals" : 3115,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 35,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 34
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 275,
-    "minerals" : 4075,
+    "minerals" : 3135,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 35,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 34
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 276,
-    "minerals" : 4085,
+    "minerals" : 3155,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 35,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 34
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 277,
-    "minerals" : 4115,
+    "minerals" : 3165,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 35,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 34
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 278,
-    "minerals" : 4125,
+    "minerals" : 3195,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 35,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 34
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 279,
-    "minerals" : 4150,
+    "minerals" : 3205,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 35,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 34
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 280,
-    "minerals" : 4165,
+    "minerals" : 3230,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 35,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 34
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 281,
-    "minerals" : 4180,
+    "minerals" : 3245,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 35,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 34
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 282,
-    "minerals" : 4205,
+    "minerals" : 3260,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 35,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 34
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 283,
-    "minerals" : 4220,
+    "minerals" : 3285,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 35,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 34
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 284,
-    "minerals" : 4235,
+    "minerals" : 3295,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 35,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 34
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 285,
-    "minerals" : 4255,
+    "minerals" : 3320,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 36,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 35
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 286,
-    "minerals" : 4265,
+    "minerals" : 3280,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 36,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 35
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 287,
-    "minerals" : 4295,
+    "minerals" : 3305,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 36,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 35
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 288,
-    "minerals" : 4300,
+    "minerals" : 3320,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 36,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 35
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 289,
-    "minerals" : 4330,
+    "minerals" : 3345,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 36,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 35
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 290,
-    "minerals" : 4340,
+    "minerals" : 3355,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 36,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 35
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 291,
-    "minerals" : 4355,
+    "minerals" : 3380,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 36,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 35
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 292,
-    "minerals" : 4380,
+    "minerals" : 3390,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 36,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 35
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 293,
-    "minerals" : 4395,
+    "minerals" : 3415,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 36,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 35
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 294,
-    "minerals" : 4420,
+    "minerals" : 3430,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 36,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 35
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 295,
-    "minerals" : 4430,
+    "minerals" : 3450,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 36,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 35
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 296,
-    "minerals" : 4460,
+    "minerals" : 3465,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 36,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 35
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 297,
-    "minerals" : 4470,
+    "minerals" : 3480,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 37,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 36
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 298,
-    "minerals" : 4490,
+    "minerals" : 3455,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 37,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 36
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 299,
-    "minerals" : 4510,
+    "minerals" : 3475,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 37,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 36
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 300,
-    "minerals" : 4525,
+    "minerals" : 3490,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 37,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 36
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 301,
-    "minerals" : 4550,
+    "minerals" : 3505,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 37,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 36
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 302,
-    "minerals" : 4565,
+    "minerals" : 3525,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 37,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 36
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 303,
-    "minerals" : 4580,
+    "minerals" : 3545,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 37,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 36
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   }, {
     "tick" : 304,
-    "minerals" : 4605,
+    "minerals" : 3565,
     "vespene" : 0,
-    "supply" : 31,
-    "supplyUsed" : 21,
+    "supply" : 47,
+    "supplyUsed" : 37,
     "units" : {
       "MULE" : 1,
-      "SCV" : 21
+      "SCV" : 36
     },
     "buildings" : {
       "ORBITAL_COMMAND" : 1,
-      "SUPPLY_DEPOT" : 2
+      "SUPPLY_DEPOT" : 4
     },
     "upgrades" : [ ]
   } ],
   "mineralPatches" : [ {
-    "x" : 105.0,
-    "y" : 135.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 132.0,
-    "y" : 132.5,
+    "x" : 126.0,
+    "y" : 138.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 129.0,
-    "y" : 70.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 121.0,
-    "y" : 104.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 56.0,
-    "y" : 44.5,
+    "x" : 130.0,
+    "y" : 136.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 131.0,
-    "y" : 44.5,
+    "x" : 98.0,
+    "y" : 163.5,
     "amount" : 750,
     "rich" : false
   }, {
@@ -4487,93 +4472,53 @@
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 125.0,
-    "y" : 137.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 111.0,
-    "y" : 70.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 34.0,
-    "y" : 80.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 57.0,
-    "y" : 164.5,
+    "x" : 30.0,
+    "y" : 127.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 107.0,
-    "y" : 72.5,
+    "x" : 28.0,
+    "y" : 133.5,
     "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 98.0,
-    "y" : 73.5,
-    "amount" : 750,
     "rich" : false
   }, {
-    "x" : 63.0,
-    "y" : 103.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 27.0,
-    "y" : 166.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 24.0,
-    "y" : 161.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 46.5,
+    "x" : 102.0,
+    "y" : 159.5,
     "amount" : 1500,
     "rich" : false
   }, {
     "x" : 96.0,
-    "y" : 70.5,
+    "y" : 137.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 129.0,
-    "y" : 137.5,
-    "amount" : 750,
+    "x" : 125.0,
+    "y" : 70.5,
+    "amount" : 1500,
     "rich" : false
-  }, {
-    "x" : 61.0,
-    "y" : 104.5,
-    "amount" : 750,
-    "rich" : true
   }, {
     "x" : 97.0,
     "y" : 72.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 125.0,
-    "y" : 70.5,
-    "amount" : 1500,
-    "rich" : false
+    "x" : 56.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
   }, {
-    "x" : 131.0,
-    "y" : 163.5,
+    "x" : 33.0,
+    "y" : 81.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 109.0,
-    "y" : 135.5,
+    "x" : 29.0,
+    "y" : 128.5,
     "amount" : 1500,
-    "rich" : true
+    "rich" : false
   }, {
-    "x" : 113.0,
-    "y" : 69.5,
+    "x" : 115.0,
+    "y" : 138.5,
     "amount" : 1500,
     "rich" : true
   }, {
@@ -4582,163 +4527,13 @@
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 102.0,
-    "y" : 50.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 128.0,
-    "y" : 103.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 115.0,
-    "y" : 138.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 107.0,
-    "y" : 134.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 102.0,
-    "y" : 159.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 97.0,
-    "y" : 76.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 69.0,
-    "y" : 44.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 30.0,
-    "y" : 127.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 25.0,
-    "y" : 47.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 109.0,
+    "x" : 129.0,
     "y" : 137.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 103.0,
-    "y" : 49.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 113.0,
-    "y" : 70.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 95.0,
-    "y" : 163.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 113.0,
-    "y" : 139.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 68.0,
-    "y" : 164.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 126.0,
-    "y" : 69.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 24.0,
-    "y" : 46.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 29.0,
-    "y" : 79.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 133.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 132.0,
-    "y" : 47.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 92.0,
-    "y" : 68.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 125.0,
-    "y" : 165.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 131.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 107.0,
-    "y" : 135.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 126.0,
-    "y" : 166.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 97.0,
-    "y" : 135.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 98.0,
-    "y" : 134.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 111.0,
-    "y" : 138.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 109.0,
-    "y" : 136.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 131.0,
-    "y" : 135.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 159.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 105.0,
-    "y" : 72.5,
+    "x" : 121.0,
+    "y" : 104.5,
     "amount" : 1500,
     "rich" : true
   }, {
@@ -4747,14 +4542,34 @@
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 103.0,
-    "y" : 158.5,
+    "x" : 92.0,
+    "y" : 139.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 91.0,
-    "y" : 138.5,
+    "x" : 27.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 135.5,
     "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 126.0,
+    "y" : 69.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 103.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 27.0,
+    "y" : 41.5,
+    "amount" : 750,
     "rich" : false
   }, {
     "x" : 95.0,
@@ -4762,27 +4577,122 @@
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 123.0,
+    "x" : 111.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 130.0,
+    "y" : 164.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 27.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 133.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 139.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 113.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 132.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 165.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 27.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 95.0,
+    "y" : 163.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 26.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 115.0,
+    "y" : 68.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 60.0,
     "y" : 103.5,
     "amount" : 750,
     "rich" : true
   }, {
-    "x" : 107.0,
+    "x" : 126.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 60.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 115.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 34.0,
+    "y" : 127.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 109.0,
     "y" : 71.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 33.0,
-    "y" : 126.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 95.0,
-    "y" : 44.5,
+    "x" : 25.0,
+    "y" : 160.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 96.0,
+    "x" : 34.0,
+    "y" : 80.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 68.0,
     "y" : 43.5,
     "amount" : 750,
     "rich" : false
@@ -4792,63 +4702,188 @@
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 97.0,
-    "y" : 131.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 113.0,
-    "y" : 138.5,
+    "x" : 107.0,
+    "y" : 73.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 131.0,
-    "y" : 76.5,
+    "x" : 113.0,
+    "y" : 70.5,
     "amount" : 1500,
-    "rich" : false
+    "rich" : true
   }, {
-    "x" : 129.0,
-    "y" : 165.5,
+    "x" : 98.0,
+    "y" : 73.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 125.0,
-    "y" : 42.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 102.0,
-    "y" : 157.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 60.0,
-    "y" : 42.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 102.0,
-    "y" : 48.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 28.0,
-    "y" : 133.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
     "x" : 131.0,
-    "y" : 74.5,
+    "y" : 161.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 111.0,
+    "x" : 107.0,
     "y" : 71.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 107.0,
+    "x" : 25.0,
+    "y" : 45.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 103.0,
+    "y" : 158.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 105.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 44.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 109.0,
     "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 128.0,
+    "y" : 103.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 107.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 72.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 56.0,
+    "y" : 163.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 91.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 24.0,
+    "y" : 46.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 61.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 48.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 24.0,
+    "y" : 161.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 63.0,
+    "y" : 103.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 69.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 46.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 57.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 61.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 43.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 134.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 103.0,
+    "y" : 49.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 91.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 163.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 53.0,
+    "y" : 104.5,
     "amount" : 1500,
     "rich" : true
   }, {
@@ -4857,44 +4892,244 @@
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 91.0,
-    "y" : 69.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 96.0,
-    "y" : 137.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 33.0,
-    "y" : 81.5,
+    "x" : 30.0,
+    "y" : 167.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 25.0,
-    "y" : 45.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 111.0,
-    "y" : 136.5,
+    "x" : 115.0,
+    "y" : 139.5,
     "amount" : 1500,
     "rich" : true
+  }, {
+    "x" : 130.0,
+    "y" : 104.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 68.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
   }, {
     "x" : 54.0,
     "y" : 103.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 30.0,
-    "y" : 167.5,
+    "x" : 105.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 135.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 102.0,
-    "y" : 46.5,
+    "x" : 129.0,
+    "y" : 70.5,
     "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 25.0,
+    "y" : 162.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 65.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 42.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 46.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 48.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 157.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 74.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 92.0,
+    "y" : 68.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 96.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 30.0,
+    "y" : 80.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 30.0,
+    "y" : 40.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 107.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 102.0,
+    "y" : 50.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 101.0,
+    "y" : 162.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 123.0,
+    "y" : 103.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 29.0,
+    "y" : 79.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 31.0,
+    "y" : 166.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 47.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 64.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 124.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 26.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 111.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 95.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 60.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 64.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 134.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 61.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 126.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 74.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 31.0,
+    "y" : 41.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 70.5,
+    "amount" : 1500,
     "rich" : false
   }, {
     "x" : 28.0,
@@ -4902,8 +5137,68 @@
     "amount" : 750,
     "rich" : false
   }, {
+    "x" : 96.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
     "x" : 98.0,
     "y" : 44.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 95.0,
+    "y" : 138.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 113.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 98.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 159.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 160.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 57.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 56.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 33.0,
+    "y" : 126.5,
     "amount" : 750,
     "rich" : false
   }, {
@@ -4913,358 +5208,31 @@
     "rich" : false
   }, {
     "x" : 25.0,
-    "y" : 164.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 96.0,
-    "y" : 164.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 27.0,
-    "y" : 132.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 72.5,
-    "amount" : 750,
+    "y" : 47.5,
+    "amount" : 1500,
     "rich" : false
   }, {
     "x" : 111.0,
-    "y" : 137.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 27.0,
-    "y" : 41.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 130.0,
-    "y" : 71.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 56.0,
-    "y" : 104.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 129.0,
-    "y" : 42.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 60.0,
-    "y" : 165.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 115.0,
-    "y" : 69.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 65.0,
-    "y" : 165.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 98.0,
-    "y" : 163.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 31.0,
-    "y" : 41.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 60.0,
-    "y" : 103.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 130.0,
-    "y" : 164.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 27.0,
-    "y" : 75.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 26.0,
-    "y" : 42.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 92.0,
-    "y" : 139.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 126.0,
-    "y" : 41.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 56.0,
-    "y" : 163.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 28.0,
-    "y" : 76.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 132.0,
-    "y" : 75.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 25.0,
-    "y" : 160.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 29.0,
-    "y" : 128.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 28.0,
-    "y" : 74.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 130.0,
-    "y" : 43.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 109.0,
-    "y" : 72.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 61.0,
-    "y" : 41.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 130.0,
-    "y" : 136.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 30.0,
-    "y" : 80.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 34.0,
-    "y" : 127.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 53.0,
-    "y" : 104.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 124.0,
-    "y" : 104.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 31.0,
-    "y" : 166.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 101.0,
-    "y" : 162.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 132.0,
-    "y" : 160.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 161.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 30.0,
-    "y" : 40.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 28.0,
-    "y" : 131.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 25.0,
-    "y" : 162.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 126.0,
-    "y" : 138.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 26.0,
-    "y" : 165.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 64.0,
-    "y" : 41.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 115.0,
-    "y" : 139.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 130.0,
-    "y" : 104.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 25.0,
-    "y" : 43.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 98.0,
-    "y" : 75.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 64.0,
-    "y" : 166.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 61.0,
-    "y" : 166.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 111.0,
-    "y" : 69.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 109.0,
     "y" : 71.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 107.0,
-    "y" : 73.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 68.0,
-    "y" : 43.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 103.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 95.0,
-    "y" : 138.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 48.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
     "x" : 109.0,
-    "y" : 70.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 115.0,
-    "y" : 68.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 98.0,
-    "y" : 132.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 57.0,
-    "y" : 43.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 113.0,
-    "y" : 137.5,
+    "y" : 135.5,
     "amount" : 1500,
     "rich" : true
   } ],
   "geyserPositions" : [ {
-    "x" : 97.5,
-    "y" : 79.5,
+    "x" : 50.5,
+    "y" : 99.5,
     "amount" : 2250
   }, {
-    "x" : 27.5,
-    "y" : 71.5,
+    "x" : 50.5,
+    "y" : 108.5,
     "amount" : 2250
   }, {
-    "x" : 69.5,
-    "y" : 47.5,
-    "amount" : 2250
-  }, {
-    "x" : 69.5,
-    "y" : 160.5,
-    "amount" : 2250
-  }, {
-    "x" : 88.5,
-    "y" : 139.5,
-    "amount" : 2250
-  }, {
-    "x" : 88.5,
-    "y" : 160.5,
-    "amount" : 2250
-  }, {
-    "x" : 55.5,
-    "y" : 47.5,
-    "amount" : 2250
-  }, {
-    "x" : 131.5,
-    "y" : 79.5,
-    "amount" : 2250
-  }, {
-    "x" : 88.5,
-    "y" : 68.5,
-    "amount" : 2250
-  }, {
-    "x" : 27.5,
-    "y" : 136.5,
-    "amount" : 2250
-  }, {
-    "x" : 34.5,
-    "y" : 40.5,
+    "x" : 121.5,
+    "y" : 69.5,
     "amount" : 2250
   }, {
     "x" : 55.5,
@@ -5272,30 +5240,70 @@
     "amount" : 2250
   }, {
     "x" : 121.5,
-    "y" : 69.5,
+    "y" : 166.5,
+    "amount" : 2250
+  }, {
+    "x" : 27.5,
+    "y" : 71.5,
     "amount" : 2250
   }, {
     "x" : 91.5,
     "y" : 164.5,
     "amount" : 2250
   }, {
-    "x" : 131.5,
-    "y" : 128.5,
+    "x" : 24.5,
+    "y" : 157.5,
     "amount" : 2250
   }, {
-    "x" : 121.5,
-    "y" : 41.5,
+    "x" : 131.5,
+    "y" : 51.5,
+    "amount" : 2250
+  }, {
+    "x" : 31.5,
+    "y" : 140.5,
     "amount" : 2250
   }, {
     "x" : 131.5,
     "y" : 156.5,
     "amount" : 2250
   }, {
-    "x" : 50.5,
-    "y" : 99.5,
+    "x" : 97.5,
+    "y" : 128.5,
+    "amount" : 2250
+  }, {
+    "x" : 69.5,
+    "y" : 160.5,
+    "amount" : 2250
+  }, {
+    "x" : 55.5,
+    "y" : 47.5,
+    "amount" : 2250
+  }, {
+    "x" : 31.5,
+    "y" : 67.5,
+    "amount" : 2250
+  }, {
+    "x" : 27.5,
+    "y" : 136.5,
     "amount" : 2250
   }, {
     "x" : 88.5,
+    "y" : 68.5,
+    "amount" : 2250
+  }, {
+    "x" : 88.5,
+    "y" : 160.5,
+    "amount" : 2250
+  }, {
+    "x" : 88.5,
+    "y" : 47.5,
+    "amount" : 2250
+  }, {
+    "x" : 132.5,
+    "y" : 99.5,
+    "amount" : 2250
+  }, {
+    "x" : 69.5,
     "y" : 47.5,
     "amount" : 2250
   }, {
@@ -5303,52 +5311,44 @@
     "y" : 50.5,
     "amount" : 2250
   }, {
-    "x" : 31.5,
-    "y" : 140.5,
-    "amount" : 2250
-  }, {
-    "x" : 132.5,
-    "y" : 108.5,
-    "amount" : 2250
-  }, {
-    "x" : 121.5,
-    "y" : 166.5,
-    "amount" : 2250
-  }, {
     "x" : 131.5,
-    "y" : 51.5,
+    "y" : 79.5,
+    "amount" : 2250
+  }, {
+    "x" : 88.5,
+    "y" : 139.5,
     "amount" : 2250
   }, {
     "x" : 121.5,
-    "y" : 138.5,
+    "y" : 41.5,
+    "amount" : 2250
+  }, {
+    "x" : 34.5,
+    "y" : 40.5,
     "amount" : 2250
   }, {
     "x" : 91.5,
     "y" : 43.5,
     "amount" : 2250
   }, {
-    "x" : 132.5,
-    "y" : 99.5,
-    "amount" : 2250
-  }, {
-    "x" : 24.5,
-    "y" : 157.5,
-    "amount" : 2250
-  }, {
-    "x" : 50.5,
-    "y" : 108.5,
-    "amount" : 2250
-  }, {
-    "x" : 97.5,
+    "x" : 131.5,
     "y" : 128.5,
-    "amount" : 2250
-  }, {
-    "x" : 31.5,
-    "y" : 67.5,
     "amount" : 2250
   }, {
     "x" : 34.5,
     "y" : 167.5,
+    "amount" : 2250
+  }, {
+    "x" : 97.5,
+    "y" : 79.5,
+    "amount" : 2250
+  }, {
+    "x" : 132.5,
+    "y" : 108.5,
+    "amount" : 2250
+  }, {
+    "x" : 121.5,
+    "y" : 138.5,
     "amount" : 2250
   } ],
   "basePosition" : [ 124.5, 159.5 ]
