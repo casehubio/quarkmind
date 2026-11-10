@@ -90,7 +90,7 @@ Each entry documents value, source, and confidence level.
 
 ## 6. Mining Efficiency Factors
 
-**Factor removed (#623).** Edge-to-edge walk distances and worker collision produce correct mineral totals without compensation. Mining duration recalibrated from 12→14 loops at the shorter walk distances. Final gap: +5 minerals at tick 304 (3465 vs SC2's 3460) with factor=1.0.
+**Factor removed (#623→#620).** Edge-to-edge walk distances, worker collision, and decomposed mining phases (mine=5, approach=7, deposit=3) produce correct mineral totals without compensation. 12w dual-run: EM=3485 vs SC2=3460 (+0.7%) with factor=1.0.
 
 Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle replay MAPE sweep, which conflated worker allocation differences with physics. The dual-run isolates physics and shows no race-specific difference.
 
@@ -104,8 +104,8 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 
 | Baseline | SC2 minerals | EM minerals | SC2 vespene | EM vespene | Mineral Δ | Gas Δ |
 |----------|-------------|------------|-------------|------------|-----------|-------|
-| 12w Protoss (tick 304) | 3460 | 3460 | — | — | **0.0%** | — |
-| 12w Terran (tick 304) | 3460 | 3460 | — | — | **0.0%** | — |
+| 12w Protoss (tick 304) | 3460 | 3485 | — | — | **+0.7%** | — |
+| 12w Terran (tick 304) | 3460 | 3485 | — | — | **+0.7%** | — |
 | 12w Zerg (tick 304) | — | — | — | — | diverges tick 0 | — |
 | 16w saturation (tick 304) | 4235 | 4519 | — | — | **+6.7%** | — |
 | 24w saturation (tick 304) | 3955 | 4190 | — | — | **+5.9%** | — |
@@ -312,7 +312,7 @@ At a close mineral patch (6.6 units from town hall):
 
 At a far mineral patch (7.6 units): 57 loops per leg, 129-loop cycle, **52.1 minerals/min** per worker. At uniform 6.0 units (unit tests): 47 loops per leg, 109-loop cycle, **61.7 minerals/min** per worker.
 
-A fully saturated base (16 workers on 8 patches — 2 per patch) at real distances: ~4 close workers × 60.0 + 4 far workers × 53.3 + 8 second-workers with contention ≈ **~900 minerals/min** (SC2 published: ~930).
+A fully saturated base (16 workers on 8 patches — 2 per patch) at real distances: ~4 close workers × 58.4 + 4 far workers × 52.1 + 8 second-workers with contention ≈ **~880 minerals/min** (SC2 published: ~930).
 
 ### Saturation curve mechanics
 
@@ -351,11 +351,9 @@ Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 1-m
 
 Fixing rate accuracy is the primary lever for reducing balance MAPE. The balance fields will converge automatically as rate accuracy improves.
 
-### Per-race efficiency factors
+### Per-race efficiency factors — removed
 
-Unified factor 1.006 for all races (#611). SC2 dual-run shows Protoss and Terran produce identical minerals (3460 at tick 304). The EM uses identical worker physics for all races, so a single factor applies. The factor compensates for the permanent balance offset from worker stagger (#609).
-
-### The overhead gap
+Factor 1.006 was removed in #623/#624. With decomposed mining phases (mine=5, approach=7, deposit=3) and edge-to-edge walk distances, no compensation factor is needed. SC2 dual-run shows Protoss and Terran produce identical minerals (3460 at tick 304). The EM produces 3485 (+0.7%) with factor=1.0 for all races.
 
 ### The overhead gap — resolved (#620)
 
@@ -408,7 +406,7 @@ Calibration results (12w Protoss, TorchesAIE_v4 patch positions):
 | 20 (delta) | +4 | +6 | — | ±7 |
 | 304 (balance) | — | 3460 | 3460 | within ±0.3% of SC2 |
 
-Stagger=4 and stagger=6 produce the same raw income at tick 304. Stagger=6 gives better tick-6 accuracy (+4 vs +9). The efficiency factor 1.006 (#611) absorbs the stagger's permanent balance offset, achieving exact SC2 match at tick 304.
+Stagger=4 and stagger=6 produce the same raw income at tick 304. Stagger=6 gives better tick-6 accuracy (+4 vs +9). With decomposed mining phases (mine=5, approach=7, deposit=3), the stagger's balance offset is absorbed by the approach constant — no compensation factor needed.
 
 ### Worker management constants
 
@@ -448,14 +446,6 @@ Compensates for worker allocation gap: the EM auto-assigns 3 workers per gas bui
 
 Explicit gaps between the simulation and real SC2. Each gap's impact on economy accuracy is noted.
 
-### Deposit time — modeled (#620)
-
-Workers spend 3 loops stationary at the town hall depositing resources. Activated via `starcraft.worker.deposit-duration-loops=3.0`. Previous sweeps (#587, #592) found deposit=0 optimal with lumped mining constants — with decomposed phases, deposit must be explicit to produce correct totals.
-
-### Approach/docking — modeled (#620)
-
-Worker docking at mineral patch before mining animation starts. Modeled as `APPROACH_DOCKING_LOOPS=7.0` added to the mining start timer. The constant absorbs deceleration, turning/positioning, and residual path contention overhead. Previously lumped into mining=14 alongside deposit and mining animation.
-
 ### Close/far patch income differential in unit tests
 
 Real SC2 close patches (4-6 units from town hall) yield ~40% more per-worker income than far patches (7-9 units) due to shorter round trips. The model uses per-map ground truth positions for replay mode (correctly variable distances), but unit tests use uniform 6.0 units for all 8 patches. This flattens the saturation curve in unit tests compared to real SC2. Oracle replay baselines are not affected.
@@ -471,10 +461,6 @@ Real SC2 workers path around the mineral line formation — the semicircular arr
 ### Larva spawn calibration
 
 Larva spawn interval (246 loops) and inject larva count (4 per inject) are estimated from community sources. `AutoSpawnCalibrationTest` exists but hasn't been run against sufficient oracle data to calibrate. Impact: affects Zerg unit production timing, not mineral/gas income directly.
-
-### MULE lifetime — resolved
-
-MULE lifetime calibrated to 1452 loops (64.8s) from SC2 dual-run MULE isolation baseline (#613). Previous estimate was 1434 loops (64.0s) — 1.3% short. MULE income rate (277.8 minerals/min) is calibrated from 115 oracle observations but not yet validated against a controlled baseline (the MULE isolation playbook confounds income with SCV training costs).
 
 ### Chrono Boost interaction model
 
@@ -532,8 +518,8 @@ Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3
 
 | Category | Total | Calibrated | Published | Estimated | Placeholder |
 |----------|-------|------------|-----------|-----------|-------------|
-| Worker physics | 4 | 4 | — | — | — |
-| Mining constants | 7 | 3 | 4 | — | — |
+| Worker physics | 6 | 6 | — | — | — |
+| Mining constants | 9 | 5 | 4 | — | — |
 | Gas constants | 4 | 2 | 2 | — | — |
 | Race mechanics | 17 | 1 | 12 | 4 | — |
 | Train times | 67 | 25 | 1 | 6 | 35 |
@@ -545,7 +531,7 @@ Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3
 | Unit speeds | 28+ | — | 28 | — | — |
 | Building health | 53 | — | 53 | — | — |
 
-**Overall: 171 calibrated, 182 published, 25 estimated, 144 placeholder.**
+**Overall: 175 calibrated, 182 published, 25 estimated, 144 placeholder.**
 
 ---
 
@@ -579,6 +565,7 @@ starcraft.worker.mining-duration-loops=5.0
 starcraft.worker.gas-harvest-duration-loops=26.0
 starcraft.worker.deposit-duration-loops=3.0
 starcraft.worker.approach-docking-loops=7.0
+starcraft.worker.collision-speed-factor=0.952
 starcraft.worker.acceleration=3.5
 starcraft.worker.deceleration=3.5
 starcraft.worker.patch-docking-overhead-loops=34.0

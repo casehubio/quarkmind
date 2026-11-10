@@ -40,11 +40,11 @@ class WorkerPhysicsConfigProducer {
     double initialWorkerStaggerLoops;
 
     @ConfigProperty(name = "starcraft.worker.collision-speed-factor",
-                    defaultValue = "0.0")
+                    defaultValue = "0.952")
     double collisionSpeedFactor;
 
     @ConfigProperty(name = "starcraft.worker.approach-docking-loops",
-                    defaultValue = "6.0")
+                    defaultValue = "7.0")
     double approachDockingLoops;
 
     @Produces
