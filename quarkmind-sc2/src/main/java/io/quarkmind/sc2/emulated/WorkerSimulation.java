@@ -127,11 +127,13 @@ class WorkerSimulation {
     }
 
 
+    static final double INITIAL_WALK_DELAY_LOOPS = 40.0;
+
     void onInitialWorkers(List<String> tags, Point2d basePosition, String baseTag) {
         int baseIdx = findBaseIndex(baseTag);
         for (int i = 0; i < tags.size(); i++) {
             SimulatedWorker w = new SimulatedWorker(tags.get(i), basePosition, baseIdx);
-            w.walkStartLoop = i * SimulatedWorker.INITIAL_WORKER_STAGGER_LOOPS;
+            w.walkStartLoop = INITIAL_WALK_DELAY_LOOPS + i * SimulatedWorker.INITIAL_WORKER_STAGGER_LOOPS;
             workers.put(tags.get(i), w);
             assignToNearestPatch(w);
         }

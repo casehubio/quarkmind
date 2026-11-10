@@ -104,8 +104,8 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 
 | Baseline | SC2 minerals | EM minerals | SC2 vespene | EM vespene | Mineral Δ | Gas Δ |
 |----------|-------------|------------|-------------|------------|-----------|-------|
-| 12w Protoss (tick 304) | 3460 | 3485 | — | — | **+0.7%** | — |
-| 12w Terran (tick 304) | 3460 | 3485 | — | — | **+0.7%** | — |
+| 12w Protoss (tick 304) | 3460 | 3465 | — | — | **+0.1%** | — |
+| 12w Terran (tick 304) | 3460 | 3465 | — | — | **+0.1%** | — |
 | 12w Zerg (tick 304) | — | — | — | — | diverges tick 0 | — |
 | 16w saturation (tick 304) | 4235 | 4519 | — | — | **+6.7%** | — |
 | 24w saturation (tick 304) | 3955 | 4190 | — | — | **+5.9%** | — |
@@ -401,6 +401,7 @@ Diagnostic (#590) measured the cadence contribution (pre-EMA, simple window) by 
 | Constant | Value | Source | Confidence | Config property |
 |----------|-------|--------|------------|-----------------|
 | Initial stagger | 6.0 loops | Dual-run calibration sweep | **Calibrated** — #609 | `starcraft.worker.initial-stagger-loops` |
+| Initial walk delay | 40.0 loops | SC2 cadence baseline — spawn-to-walk gap | **Calibrated** — #619 | — |
 
 In real SC2, the 12 starting workers desynchronize naturally through spawn stagger, mineral-line pathing, and worker–worker collisions. Without stagger, the EM delivers all first cargo in a single burst at tick 6 (7 workers × 5 minerals = +35 delta vs SC2's +10). With stagger=6, each worker's first walk starts `worker_index × 6` loops after tick 0, spreading deliveries across ticks 5–8 to match SC2's distribution.
 
