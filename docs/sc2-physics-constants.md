@@ -366,7 +366,9 @@ Mining animation is 5 loops (0.22s) in real SC2, measured via the SC2 API. The p
 | Approach/docking at patch | 7 | Sweep against SC2 12w baseline | **Modeled** — `approach-docking-loops=7` |
 | **Total per-cycle overhead** | **15** | | |
 
-The approach constant (7 loops) is higher than the measured 2-3 loops because it also absorbs residual path contention not captured by the collision model. The decomposition does not improve per-tick cadence matching (78.0% vs 78.7% mismatch) — cadence variance is structural, requiring dynamic patch routing (#620 next phase).
+The approach constant (7 loops) is higher than the measured 2-3 loops because it also absorbs residual path contention not captured by the collision model. The decomposition does not improve per-tick cadence matching (78.0% vs 78.7% mismatch).
+
+**Patch affinity (#620):** Workers now return to the same patch each trip (SC2 behavior) instead of reassigning after every deposit. Distance-first routing was tested but regressed saturation scenarios (-10% to -14%) because workers cluster at close patches. The 236/304 (77.6%) per-tick mismatch is unchanged by routing — the root cause is delivery timing within the mining cycle (initial stagger, collision timing, walk distance variance), not which patch a worker targets.
 
 Historical context: a 3D sweep (#592) of deposit × mining × gas across 118 oracle replays found lumped constants near an accuracy ceiling. The decomposition enables future per-phase tuning (variable approach based on contention) that the lumped approach could not support.
 

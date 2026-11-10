@@ -348,7 +348,7 @@ class WorkerSimulation {
                     income += w.cargo;
                     w.cargo = 0;
                     if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
-                        assignToNearestPatch(w);
+                        returnToPatchOrReassign(w);
                         return income;
                     }
                     w.task         = WorkerTask.DEPOSITING_MINERALS;
@@ -359,7 +359,7 @@ class WorkerSimulation {
 
             if (w.task == WorkerTask.DEPOSITING_MINERALS) {
                 if (currentLoop >= w.phaseEndLoop) {
-                    assignToNearestPatch(w);
+                    returnToPatchOrReassign(w);
                     continue;
                 }
                 return income;
@@ -531,6 +531,15 @@ class WorkerSimulation {
             if (other != exclude && other.assignedPatch == p) {count++;}
         }
         return count;
+    }
+
+    private void returnToPatchOrReassign(SimulatedWorker w) {
+        if (w.assignedPatch != null && !w.assignedPatch.isDepleted()) {
+            w.targetPosition = w.assignedPatch.position;
+            w.task           = WorkerTask.MINING_MINERALS;
+            return;
+        }
+        assignToNearestPatch(w);
     }
 
     private void assignToNearestPatch(SimulatedWorker w) {
