@@ -503,9 +503,9 @@ public class EmulatedGame {
             final int count = SC2Data.trainCount(t.unitType());
             final int mCost = SC2Data.mineralCost(t.unitType()) * count;
             final int gCost = SC2Data.gasCost(t.unitType()) * count;
-            final double sCost = SC2Data.supplyCost(t.unitType());
+            final double sCost = SC2Data.supplyCost(t.unitType()) * count;
             final double queuedSupply = physics.buildingQueues.values().stream()
-                                                              .flatMap(q -> q.stream()).mapToDouble(SC2Data::supplyCost).sum();
+                                                              .flatMap(q -> q.stream()).mapToDouble(ut -> SC2Data.supplyCost(ut) * SC2Data.trainCount(ut)).sum();
             if ((int) state.minerals() < mCost || state.vespene() < gCost
                 || state.supplyUsed() + queuedSupply + sCost > state.supply()) {
                 recordTrainDiagnostic(t, 4);
@@ -660,7 +660,8 @@ public class EmulatedGame {
                                final PlayerState state, final PhysicsState physics,
                                final long absLoop, final boolean warpedIn,
                                final long pinnedCompletionLoop, final String replayUnitTag) {
-        state.addSupplyUsed(SC2Data.supplyCost(unitType));
+        int effectiveTrainCount = (pinnedCompletionLoop >= 0) ? 1 : SC2Data.trainCount(unitType);
+        state.addSupplyUsed(SC2Data.supplyCost(unitType) * effectiveTrainCount);
         final boolean   isEnemy = (state == enemy);
         final RaceModel model   = (state == friendly) ? playerRaceModel : null;
         final double speedMult = (model != null)

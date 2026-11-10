@@ -456,7 +456,7 @@ Compensates for worker allocation gap: the EM auto-assigns 3 workers per gas bui
 | Race | Mechanic | Value | Notes |
 |------|----------|-------|-------|
 | Zerg | Parallel production | true | Multiple hatcheries can train simultaneously |
-| Zerg | Zergling twin spawn | 2 per train | One train intent produces 2 Zerglings |
+| Zerg | Zergling twin spawn | 2 per train | One train intent produces 2 Zerglings; supply cost is 1.0 per train (2 × 0.5) — fixed #580 |
 | All | Gas efficiency factor | 1.0 (default) | `RaceModel.gasEfficiencyFactor()` seam — no race overrides |
 
 ### Known constant discrepancy
@@ -519,10 +519,10 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA
 | foodMade | 2.9% | At floor |
 | foodUsed | 3.7% | At floor |
 | workersActiveCount | 2.5% | At floor |
-| mineralsUsedCurrentArmy | 6.9% | At floor |
-| mineralsUsedCurrentEconomy | 5.8% | At floor |
+| mineralsUsedCurrentArmy | 4.3% | Improved via snapshot-aligned spending (#579) |
+| mineralsUsedCurrentEconomy | 5.5% | Improved via snapshot-aligned spending (#579) |
 | mineralsUsedCurrentTechnology | 15.4% | Improved via snapshot-aligned spending (#579) |
-| vespeneUsedCurrentArmy | 7.5% | At floor |
+| vespeneUsedCurrentArmy | 3.9% | Improved via snapshot-aligned spending (#579) |
 | vespeneUsedCurrentTechnology | 39.7% | Structural — EM over-invests in gas-heavy tech (#579) |
 
 ### Rate algorithm impact
