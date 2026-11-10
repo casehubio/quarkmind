@@ -12,6 +12,8 @@ class MineralPatch {
     static final int    PATCHES_PER_BASE       = 8;
     static final int    CLOSE_PATCHES_PER_BASE = 4;
 
+    static double APPROACH_DISTANCE_SCALE = 0;
+
     final   Point2d position;
     final   int     baseIndex;
     private double  remainingMinerals;
@@ -19,6 +21,8 @@ class MineralPatch {
     final List<SimulatedWorker> miners = new ArrayList<>(MAX_MINERS);
     final boolean rich;
     double lockEndLoop;
+    double distanceToBase;
+    double approachDockingLoops = SimulatedWorker.APPROACH_DOCKING_LOOPS;
 
 
     MineralPatch(Point2d position, int baseIndex, double initialMinerals, boolean rich) {
@@ -45,6 +49,26 @@ class MineralPatch {
 
     double remainingMinerals() {
         return remainingMinerals;
+    }
+
+    static void computeApproachDocking(List<MineralPatch> patches, Point2d basePos) {
+        if (APPROACH_DISTANCE_SCALE == 0 || patches.isEmpty()) {
+            for (MineralPatch p : patches) {
+                p.distanceToBase = p.position.distanceTo(basePos);
+                p.approachDockingLoops = SimulatedWorker.APPROACH_DOCKING_LOOPS;
+            }
+            return;
+        }
+        double totalDist = 0;
+        for (MineralPatch p : patches) {
+            p.distanceToBase = p.position.distanceTo(basePos);
+            totalDist += p.distanceToBase;
+        }
+        double avgDist = totalDist / patches.size();
+        for (MineralPatch p : patches) {
+            p.approachDockingLoops = Math.max(1.0, SimulatedWorker.APPROACH_DOCKING_LOOPS
+                + APPROACH_DISTANCE_SCALE * (avgDist - p.distanceToBase));
+        }
     }
 
     static Point2d[] patchPositions(Point2d townHallPos) {

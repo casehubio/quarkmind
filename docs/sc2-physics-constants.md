@@ -53,7 +53,9 @@ Each entry documents value, source, and confidence level.
 | Mining start delay | 1 tick | — | Dual-run calibration #401 | **Historical** — superseded by initial walk delay (§14) | — |
 | Patch docking overhead | 34 loops | — | SC2 dual-run sweep (23w saturation) | **Calibrated** — #599 | `starcraft.worker.patch-docking-overhead-loops` |
 
-**Mining cycle decomposition (#620):** The previous lumped mining=14 constant has been decomposed into three explicit phases: mining animation (5 loops), deposit at base (3 loops), and approach/docking at patch (7 loops). The approach constant (7) absorbs the remaining per-cycle overhead beyond the measured animation (5) and deposit (3): deceleration near the patch, docking/turning, and residual path contention. Total per-cycle overhead: 5+3+7=15 (vs previous 14) — the extra loop compensates for the deposit phase delaying reassignment at the base rather than at the patch.
+**Mining cycle decomposition (#620):** The previous lumped mining=14 constant has been decomposed into three explicit phases: mining animation (5 loops), deposit at base (3 loops), and approach/docking at patch (7 loops base). The approach constant absorbs the remaining per-cycle overhead beyond the measured animation (5) and deposit (3): deceleration near the patch, docking/turning, and residual path contention. Total per-cycle overhead: 5+3+7=15 (vs previous 14) — the extra loop compensates for the deposit phase delaying reassignment at the base rather than at the patch.
+
+**Per-patch approach docking (#636) — disabled:** `MineralPatch` supports per-patch approach via `APPROACH_DISTANCE_SCALE`, but it is currently set to 0. All patches use the global approach constant (7.0 loops). The formula was tested (SCALE=2.5 improved cadence to 75.3%) but reverted — it was a compensation constant, not a physics simulation. The approach time should emerge from worker collision and path contention. See §14 "Per-patch approach docking" for details.
 
 **Patch docking overhead:** After a miner departs a mineral patch, the patch remains locked for 34 loops to model the real SC2 docking animation. A waiting worker consumes this lock time within the same tick (sub-tick resolution). Calibrated from dual-run sweep against SC2 23-worker saturation baseline — matches SC2's 84% efficiency at 2.9 workers/patch.
 
@@ -112,9 +114,9 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 | 3w gas (tick 304) | 3885 | 3935 | 552 | 508 | +1.3% | **−8.0%** |
 | 6w gas (tick 304) | 3375 | 3440 | 1012 | 1000 | +1.9% | **−1.2%** |
 
-16w +4.4% gap: the EM trains 23 Probes (not 16 — continuous to supply cap). The compounding from 11 training cycles, each Probe arriving slightly earlier in the EM, accounts for most of the gap. 24w +4.0%: EM over-produces because patch docking overhead (34 loops) doesn't fully model 3-worker contention at saturation.
+16w +3.4% gap: the EM trains 23 Probes (not 16 — continuous to supply cap). The compounding from 11 training cycles, each Probe arriving slightly earlier in the EM, accounts for most of the gap. 24w +3.8%: EM over-produces because patch docking overhead (34 loops) doesn't fully model 3-worker contention at saturation.
 
-Gas baselines: 3w gas at −8.7% (EM under-produces gas — concurrent geyser access vs SC2's queuing), 6w gas at −0.8% (near-zero). The EM's concurrent geyser model (all 3 workers inside simultaneously) diverges from SC2's entrance queuing.
+Gas baselines: 3w gas at −8.0% (EM under-produces gas — concurrent geyser access vs SC2's queuing), 6w gas at −1.2%. The EM's concurrent geyser model (all 3 workers inside simultaneously) diverges from SC2's entrance queuing.
 
 ### Saturation curve (SC2 dual-run, Protoss, TorchesAIE_v4)
 
@@ -322,7 +324,7 @@ Current model: **10.2%** per-worker rate drop from 16→24 workers. SC2 actual: 
 
 ### Gas cycle breakdown
 
-Three workers per geyser, concurrent access (`GasSlot.canEnter()` allows all 3 inside simultaneously).
+Three workers per geyser, concurrent access by default (`GasSlot.canEnter()` allows all 3 inside simultaneously when `ENTRY_LOCK_DURATION=0`). Entrance queuing is configurable via `GasSlot.ENTRY_LOCK_DURATION` — when > 0, workers queue at the entrance and enter one at a time. Default 0 preserves concurrent behaviour; a 2D sweep (#639) showed queuing has no practical effect because walk cycle stagger prevents simultaneous arrivals.
 
 | Phase | Loops | Seconds | Notes |
 |-------|-------|---------|-------|
@@ -347,13 +349,13 @@ Sub-tick chaining (implemented in #578 for movement, #583 for mining, #584 for g
 
 ### Cumulative drift
 
-Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 7-min is 30.1%. Each tick's income error accumulates in mineralsCurrent — the mineral *balance* diverges by roughly the rate error × elapsed time. This is why mineralsCurrent MAPE (77.4%) is far higher than the rate MAPE (30.1%).
+Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 7-min is 26.5%. Each tick's income error accumulates in mineralsCurrent — the mineral *balance* diverges by roughly the rate error × elapsed time. This is why mineralsCurrent MAPE (74.1%) is far higher than the rate MAPE (26.5%).
 
 Fixing rate accuracy is the primary lever for reducing balance MAPE. The balance fields will converge automatically as rate accuracy improves.
 
 ### Per-race efficiency factors — removed
 
-Factor 1.006 was removed in #623/#624. With decomposed mining phases (mine=5, approach=7, deposit=3) and edge-to-edge walk distances, no compensation factor is needed. SC2 dual-run shows Protoss and Terran produce identical minerals (3460 at tick 304). The EM produces 3465 (+0.1%) with factor=1.0 for all races.
+Factor 1.006 was removed in #623/#624. With decomposed mining phases (mine=5, approach=7, deposit=3) and edge-to-edge walk distances, no compensation factor is needed. SC2 dual-run shows Protoss and Terran produce identical minerals (3460 at tick 304). The EM produces 3460 (0.0%) with factor=1.0 for all races.
 
 ### The overhead gap — resolved (#620)
 
@@ -366,11 +368,21 @@ Mining animation is 5 loops (0.22s) in real SC2, measured via the SC2 API. The p
 | Approach/docking at patch | 7 | Sweep against SC2 12w baseline | **Modeled** — `approach-docking-loops=7` |
 | **Total per-cycle overhead** | **15** | | |
 
-The approach constant (7 loops) is higher than the measured 2-3 loops because it also absorbs residual path contention not captured by the collision model. The decomposition does not improve per-tick cadence matching (78.0% vs 78.7% mismatch).
+The approach constant (7 loops) is higher than the measured 2-3 loops because it also absorbs residual path contention not captured by the collision model. Per-tick cadence mismatch is 248/304 (81.6%) — limited by the straight-line movement model's inability to reproduce SC2's sustained path blocking.
 
-**Patch affinity (#620):** Workers now return to the same patch each trip (SC2 behavior) instead of reassigning after every deposit. Distance-first routing was tested but regressed saturation scenarios (-10% to -14%) because workers cluster at close patches. The 246/304 (80.9%) per-tick mismatch is unchanged by routing — the root cause is delivery timing within the mining cycle (initial stagger, collision timing, walk distance variance), not which patch a worker targets.
+**Patch affinity (#620):** Workers now return to the same patch each trip (SC2 behavior) instead of reassigning after every deposit. Distance-first routing was tested but regressed saturation scenarios (-10% to -14%) because workers cluster at close patches. The 248/304 (81.6%) per-tick mismatch is unchanged by routing — the root cause is per-trip variance within the mining cycle (collision timing, walk distance variance), not which patch a worker targets. The straight-line movement model is the ceiling; edge-to-edge walk targets (#631) is the next physics improvement.
 
 Historical context: a 3D sweep (#592) of deposit × mining × gas across 118 oracle replays found lumped constants near an accuracy ceiling. The decomposition enables future per-phase tuning (variable approach based on contention) that the lumped approach could not support.
+
+### Per-patch approach docking (#636) — infrastructure only
+
+`MineralPatch` supports per-patch approach docking via `APPROACH_DISTANCE_SCALE` and `computeApproachDocking()`. When `SCALE > 0`, each patch gets: `approach = BASE + SCALE × (avgDist − patchDist)`. **Currently disabled (`SCALE=0`)** — all patches use the global approach constant (7.0 loops).
+
+The formula was implemented and tested (SCALE=2.5 improved cadence from 81.6% to 75.3%) but reverted: it is a compensation constant, not a physics simulation. The approach time should emerge from worker collision and path contention at the mineral line, not from a distance-based formula.
+
+**Delivery quantization (finding):** Sweeping approach-docking from 6.5 to 9.0 yielded only three totals (3465, 3415, 3405) with no intermediate values. Uniform phase constants produce discrete delivery counts because workers synchronise — their cycle times are identical within each patch-distance group. The SC2 target (3460) sits between two quanta. Stagger (6.1) breaks the phase relationship to hit 3460, but the delivery count is still fundamentally quantised.
+
+**Same-lane collision experiments:** Strengthening collisions for workers on the same mineral patch (symmetric factor=0.75 and asymmetric yielding) either broke the mineral total or worsened cadence. The straight-line movement model is the ceiling — workers cross paths for 1-2 loops, insufficient for SC2's sustained blocking (cycle range 2-17 ticks, σ≈3+). Next physics improvement: edge-to-edge walk targets (#631).
 
 ### Rate computation algorithm
 
@@ -410,10 +422,10 @@ Calibration results (12w Protoss, TorchesAIE_v4 patch positions):
 | Tick | Without stagger | With stagger=6.1 | SC2 | Target |
 |------|----------------|------------------|-----|--------|
 | 6 (delta) | +29 | -10 | — | ±10 |
-| 20 (delta) | +4 | -20 | — | ±20 |
+| 20 (delta) | +4 | -20 | — | ±30 |
 | 304 (balance) | — | 3460 | 3460 | **0.0% — exact match** |
 
-Stagger=6.1 with walk delay=40 produces 3460 minerals at tick 304 (**0.0%** vs SC2's 3460). Re-calibrated from 6.0 (#609) via fine sweep — the 0.1-loop shift changes the phase relationship between workers such that exactly 682 deliveries (matching SC2) fall within the 304-tick window. The sweep revealed chaotic sensitivity: stagger values ±0.1 produce ±30-mineral swings due to delivery synchronisation. Walk delay (#619) shifted first deliveries from tick 3-4 to tick 5-6, matching SC2's observed first-delivery timing.
+Stagger=6.1 with walk delay=40 produces 3460 minerals at tick 304 (**0.0%** vs SC2's 3460). Re-calibrated from 6.0 (#609) via fine sweep. The 0.1-loop shift changes the phase relationship so exactly 682 deliveries match SC2. Walk delay (#619) shifted first deliveries from tick 3-4 to tick 5-6. Per-tick mismatch is 81.6% — the straight-line movement model is the current ceiling for cadence accuracy.
 
 ### Worker management constants
 
@@ -493,7 +505,7 @@ Whether multiple Chrono Boosts on the same building stack additively, refresh th
 
 ### Geyser entrance queuing
 
-GasSlot supports configurable entrance queuing via `ENTRY_LOCK_DURATION` (default 0 = concurrent, matching legacy behavior). When > 0, workers queue at the geyser entrance — only one enters per lock period. However, a 2D sweep (lock 0-20 × harvest 14-28) against 3w and 6w baselines (#639) showed **entrance queuing has no practical effect** — workers never arrive at the geyser simultaneously because walk cycle stagger keeps them apart. The 3w/6w gas gap is not from entrance contention but from per-geyser walk-distance rate interaction: no single gas harvest value satisfies both 3w (optimal at 16 loops) and 6w (optimal at 26 loops). Current harvest=26 is the best compromise (3w: -6.5%, 6w: -0.4%). Impact: vespeneCollectionRate MAPE at 35.0% is a structural floor — insensitive to both worker count estimation and entrance queuing.
+GasSlot supports configurable entrance queuing via `ENTRY_LOCK_DURATION` (default 0 = concurrent, matching legacy behavior). When > 0, workers queue at the geyser entrance — only one enters per lock period. However, a 2D sweep (lock 0-20 × harvest 14-28) against 3w and 6w baselines (#639) showed **entrance queuing has no practical effect** — workers never arrive at the geyser simultaneously because walk cycle stagger keeps them apart. The 3w/6w gas gap is not from entrance contention but from per-geyser walk-distance rate interaction: no single gas harvest value satisfies both 3w (optimal at 16 loops) and 6w (optimal at 26 loops). Current harvest=26 is the best compromise. Sweep-test gas-only gaps: 3w -6.5%, 6w -0.4%. Current dual-run gaps (with full playbook economy): 3w vespene -8.0%, 6w vespene -1.2%. Impact: vespeneCollectionRate MAPE at 35.0% is a structural floor — insensitive to both worker count estimation and entrance queuing.
 
 ### Rally point walk time
 
@@ -521,7 +533,7 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA
 | mineralsCollectionRate | 26.5% | Structural — worker allocation (#572), not physics |
 | vespeneCollectionRate | 35.0% | Structural floor — gas rate measurement model (#615) |
 | mineralsCurrent | 74.1% | Cumulative drift from rate error |
-| vespeneCurrent | 65.1% | Calibrated worker estimation replaces 1.20× override (#615) |
+| vespeneCurrent | 65.0% | Calibrated worker estimation replaces 1.20× override (#615) |
 | foodMade | 2.9% | At floor |
 | foodUsed | 3.7% | At floor |
 | workersActiveCount | 2.5% | At floor |
@@ -582,6 +594,7 @@ Gas harvest duration increased from 22→26 loops to match dual-run SC2 rates (3
 | AutoSpawnCalibrationTest | Larva spawn interval, interceptor build time | `-Pdiagnostic` |
 | RateCadenceDiagnosticTest | PlayerStatsEvent cadence + rate MAPE at different windows | `-Pdiagnostic` |
 | ExpansionTransferDiagnosticTest | Expansion transfer delay, worker distribution per base | `-Pdiagnostic` |
+| ApproachDockingSweepTest | Phase duration, stagger, distance scale, gas harvest, and docking overhead sweeps | `-Pdiagnostic` |
 
 ---
 
@@ -603,3 +616,7 @@ starcraft.worker.patch-distance=7.0
 starcraft.worker.initial-stagger-loops=6.1
 starcraft.economy.rate-interval-loops=160
 ```
+
+**Static-field constants (not Quarkus config — set in test code):**
+- `MineralPatch.APPROACH_DISTANCE_SCALE` (default 0, disabled) — per-patch approach docking scale factor; infrastructure only, reverted from 2.5
+- `GasSlot.ENTRY_LOCK_DURATION` (default 0) — gas entrance queuing lock duration in loops

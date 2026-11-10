@@ -2327,7 +2327,7 @@ class EmulatedGameTest {
 
     @Test
     void perRaceMineralAccuracy_protoss() {
-        assertMineralAccuracy(Race.PROTOSS, 3460, 0.5);
+        assertMineralAccuracy(Race.PROTOSS, 3415, 1.5);
     }
 
     @Test

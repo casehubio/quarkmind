@@ -66,6 +66,7 @@ class WorkerSimulation {
                             : MineralPatch.FAR_PATCH_MINERALS;
             patches.add(new MineralPatch(positions[i], baseIdx, amount));
         }
+        MineralPatch.computeApproachDocking(patches, position);
         bases.add(new BaseEntry(tag, position, patches));
         rebalanceMineralWorkersAcrossBases();
     }
@@ -76,6 +77,7 @@ class WorkerSimulation {
         for (Resource r : mineralResources) {
             patches.add(new MineralPatch(r.position(), baseIdx, r.remaining(), r.rich()));
         }
+        MineralPatch.computeApproachDocking(patches, position);
         bases.add(new BaseEntry(tag, position, patches));
         rebalanceMineralWorkersAcrossBases();
     }
@@ -285,7 +287,7 @@ class WorkerSimulation {
                 && w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
                 && tickEndLoop >= w.assignedPatch.lockEndLoop) {
                 w.assignedPatch.miners.add(w);
-                w.phaseEndLoop = tickEndLoop + SimulatedWorker.APPROACH_DOCKING_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop = tickEndLoop + w.assignedPatch.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
             }
         }
 
@@ -337,7 +339,7 @@ class WorkerSimulation {
                     w.assignedPatch.miners.remove(w);
                     w.assignedPatch.lockEndLoop = currentLoop + SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS;
                     w.task           = WorkerTask.RETURNING_MINERALS;
-                    w.targetPosition = bases.get(w.baseIndex).position();
+                    w.targetPosition = depositTarget(w);
                     continue;
                 }
                 return income;
@@ -405,6 +407,7 @@ class WorkerSimulation {
                     a.position = new Point2d(a.position.x() - perpX * dodge, a.position.y() - perpY * dodge);
                     b.position = new Point2d(b.position.x() + perpX * dodge, b.position.y() + perpY * dodge);
                 }
+
                 a.currentSpeed *= SimulatedWorker.COLLISION_SPEED_FACTOR;
                 b.currentSpeed *= SimulatedWorker.COLLISION_SPEED_FACTOR;
             }
@@ -435,7 +438,7 @@ class WorkerSimulation {
         if (w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
             && currentLoop >= w.assignedPatch.lockEndLoop) {
             w.assignedPatch.miners.add(w);
-            w.phaseEndLoop = currentLoop + SimulatedWorker.APPROACH_DOCKING_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS;
+            w.phaseEndLoop = currentLoop + w.assignedPatch.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
         }
     }
 
@@ -538,7 +541,7 @@ class WorkerSimulation {
 
     private void returnToPatchOrReassign(SimulatedWorker w) {
         if (w.assignedPatch != null && !w.assignedPatch.isDepleted()) {
-            w.targetPosition = w.assignedPatch.position;
+            w.targetPosition = miningTarget(w.assignedPatch, w.baseIndex);
             w.task           = WorkerTask.MINING_MINERALS;
             return;
         }
@@ -573,12 +576,12 @@ class WorkerSimulation {
         }
 
         w.assignedPatch  = nearest;
-        w.targetPosition = nearest.position;
+        w.targetPosition = miningTarget(nearest, w.baseIndex);
         w.task           = WorkerTask.MINING_MINERALS;
         if (w.isAtTarget()) {
             if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
                 if (!nearest.miners.contains(w)) {nearest.miners.add(w);}
-                w.phaseEndLoop = currentTickStartLoop + SimulatedWorker.APPROACH_DOCKING_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop = currentTickStartLoop + nearest.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
             }
         }
     }

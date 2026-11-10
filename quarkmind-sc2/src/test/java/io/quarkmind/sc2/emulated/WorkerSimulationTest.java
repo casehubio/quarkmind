@@ -1,7 +1,6 @@
 package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.Point2d;
-import io.quarkmind.domain.Race;
 import io.quarkmind.domain.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +12,7 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class WorkerSimulationTest {
 
@@ -699,6 +699,45 @@ class WorkerSimulationTest {
         }
         assertTrue(totalIncome > 0,
                    "Transferred workers should eventually arrive and mine at new base");
+    }
+
+
+    @Test
+    void edgeToEdge_returningTargetIsBaseEdge_notBaseCenter() {
+        sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
+        SimulatedWorker w = sim.worker("w-1");
+        for (int t = 0; t < 200; t++) {
+            tick();
+            if (w.task == WorkerTask.RETURNING_MINERALS) {
+                double distToBaseCenter = w.targetPosition.distanceTo(BASE_POS);
+                assertTrue(distToBaseCenter > 1.0,
+                           "RETURNING target should be base edge (~2.5 units from center), "
+                           + "not base center (0 units). Got " + distToBaseCenter);
+                return;
+            }
+        }
+        fail("Worker never reached RETURNING_MINERALS state");
+    }
+
+    @Test
+    void edgeToEdge_miningTargetIsPatchEdge_notPatchCenter() {
+        sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
+        SimulatedWorker w           = sim.worker("w-1");
+        boolean         hasReturned = false;
+        for (int t = 0; t < 200; t++) {
+            tick();
+            if (w.task == WorkerTask.RETURNING_MINERALS) {
+                hasReturned = true;
+            }
+            if (hasReturned && w.task == WorkerTask.MINING_MINERALS && w.assignedPatch != null) {
+                double distToPatchCenter = w.targetPosition.distanceTo(w.assignedPatch.position);
+                assertTrue(distToPatchCenter > 0.5,
+                           "MINING target should be patch edge (~1.0 unit from center), "
+                           + "not patch center (0 units). Got " + distToPatchCenter);
+                return;
+            }
+        }
+        fail("Worker never resumed mining after returning");
     }
 
     @Test

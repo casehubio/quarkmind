@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" font-family="'Segoe UI', system-ui, sans-serif">
+  <style>
+    text { font-size: 13px; fill: #333; }
+    .title { font-size: 15px; font-weight: 600; fill: #1a1a1a; }
+    .label { font-size: 11px; fill: #666; }
+    .axis { stroke: #999; stroke-width: 1; }
+    .target-line { stroke: #2563eb; stroke-width: 1.5; stroke-dasharray: 6,4; }
+    .bar-high { fill: #ef4444; }
+    .bar-low { fill: #3b82f6; }
+    .bar-zero { fill: #10b981; }
+    .quantum-zone { fill: #fef3c7; opacity: 0.5; }
+    .annotation { font-size: 11px; fill: #666; font-style: italic; }
+  </style>
+
+  <text x="360" y="24" text-anchor="middle" class="title">Delivery Count Quantization</text>
+  <text x="360" y="42" text-anchor="middle" class="label">Approach-docking sweep: no value between 3465 and 3415 exists</text>
+
+  <!-- Quantum zone -->
+  <rect x="80" y="55" width="580" height="55" class="quantum-zone" rx="4"/>
+  <text x="670" y="78" text-anchor="end" class="annotation">683 deliveries</text>
+  <rect x="80" y="160" width="580" height="55" class="quantum-zone" rx="4"/>
+  <text x="670" y="183" text-anchor="end" class="annotation">673 deliveries</text>
+
+  <!-- SC2 target line -->
+  <line x1="80" y1="130" x2="660" y2="130" class="target-line"/>
+  <text x="670" y="134" text-anchor="start" class="label" fill="#2563eb">SC2 = 3460</text>
+
+  <!-- Y-axis labels -->
+  <text x="75" y="85" text-anchor="end" class="label">3465</text>
+  <text x="75" y="130" text-anchor="end" class="label">3460</text>
+  <text x="75" y="190" text-anchor="end" class="label">3415</text>
+
+  <!-- Axis -->
+  <line x1="80" y1="240" x2="660" y2="240" class="axis"/>
+  <line x1="80" y1="55" x2="80" y2="240" class="axis"/>
+
+  <!-- Bars: approach values 6.5 to 8.5, step 0.5 -->
+  <!-- 6.5: 3465 -->
+  <rect x="100" y="70" width="44" height="170" class="bar-high" rx="2"/>
+  <text x="122" y="256" text-anchor="middle" class="label">6.5</text>
+
+  <!-- 7.0: 3465 -->
+  <rect x="160" y="70" width="44" height="170" class="bar-high" rx="2"/>
+  <text x="182" y="256" text-anchor="middle" class="label">7.0</text>
+
+  <!-- transition arrow -->
+  <text x="230" y="150" text-anchor="middle" class="annotation" font-size="22" fill="#dc2626">&#x2193;</text>
+  <text x="230" y="168" text-anchor="middle" class="annotation" fill="#dc2626">-50</text>
+
+  <!-- 7.1: 3415 -->
+  <rect x="248" y="170" width="44" height="70" class="bar-low" rx="2"/>
+  <text x="270" y="256" text-anchor="middle" class="label">7.1</text>
+
+  <!-- 7.5: 3415 -->
+  <rect x="308" y="170" width="44" height="70" class="bar-low" rx="2"/>
+  <text x="330" y="256" text-anchor="middle" class="label">7.5</text>
+
+  <!-- 8.0: 3415 -->
+  <rect x="368" y="170" width="44" height="70" class="bar-low" rx="2"/>
+  <text x="390" y="256" text-anchor="middle" class="label">8.0</text>
+
+  <!-- 8.5: 3405 -->
+  <rect x="428" y="195" width="44" height="45" class="bar-low" rx="2"/>
+  <text x="450" y="256" text-anchor="middle" class="label">8.5</text>
+
+  <!-- Solution: per-patch -->
+  <rect x="530" y="118" width="60" height="12" class="bar-zero" rx="2"/>
+  <text x="560" y="256" text-anchor="middle" class="label" font-weight="600">per-patch</text>
+  <text x="560" y="270" text-anchor="middle" class="label" font-weight="600">+ stagger</text>
+
+  <!-- X-axis label -->
+  <text x="370" y="295" text-anchor="middle" class="label">approach-docking loops</text>
+
+  <!-- Legend -->
+  <rect x="100" y="310" width="12" height="12" class="bar-high" rx="2"/>
+  <text x="118" y="321" class="label">Above SC2 (+5 to +15)</text>
+  <rect x="280" y="310" width="12" height="12" class="bar-low" rx="2"/>
+  <text x="298" y="321" class="label">Below SC2 (-45 to -55)</text>
+  <rect x="480" y="310" width="12" height="12" class="bar-zero" rx="2"/>
+  <text x="498" y="321" class="label">Exact match (0.0%)</text>
+</svg>
