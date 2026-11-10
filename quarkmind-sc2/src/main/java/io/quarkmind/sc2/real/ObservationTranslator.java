@@ -1,10 +1,13 @@
 package io.quarkmind.sc2.real;
 
+import com.github.ocraft.s2client.protocol.data.Abilities;
+import com.github.ocraft.s2client.protocol.data.Buffs;
 import com.github.ocraft.s2client.protocol.data.Units;
 import com.github.ocraft.s2client.protocol.observation.Observation;
 import com.github.ocraft.s2client.protocol.observation.PlayerCommon;
 import com.github.ocraft.s2client.protocol.observation.raw.ObservationRaw;
 import com.github.ocraft.s2client.protocol.unit.Alliance;
+import com.github.ocraft.s2client.protocol.unit.UnitOrder;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
@@ -15,6 +18,9 @@ import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Resource;
 import io.quarkmind.domain.Unit;
 import io.quarkmind.domain.UnitType;
+import io.quarkmind.domain.WorkerAction;
+import io.quarkmind.sc2.playbook.WorkerCadenceSnapshot;
+import io.quarkmind.sc2.playbook.WorkerSnapshot;
 
 import java.util.List;
 import java.util.Set;
@@ -365,6 +371,74 @@ public final class ObservationTranslator {
             0   // blinkCooldownTicks — not yet tracked in real SC2 mode
         );
     }
+
+    static WorkerSnapshot toWorkerSnapshot(com.github.ocraft.s2client.protocol.unit.Unit u) {
+        var     pos      = u.getPosition();
+        String  tag      = String.valueOf(u.getTag().getValue());
+        Point2d position = new Point2d(pos.getX(), pos.getY());
+
+        Set<com.github.ocraft.s2client.protocol.data.Buff> buffs = u.getBuffs();
+        boolean hasCarryMineralBuff = buffs.contains(Buffs.CARRY_MINERAL_FIELD_MINERALS)
+                                      || buffs.contains(Buffs.CARRY_HIGH_YIELD_MINERAL_FIELD_MINERALS);
+        boolean hasCarryGasBuff = buffs.contains(Buffs.CARRY_HARVESTABLE_VESPENE_GEYSER_GAS)
+                                  || buffs.contains(Buffs.CARRY_HARVESTABLE_VESPENE_GEYSER_GAS_PROTOSS)
+                                  || buffs.contains(Buffs.CARRY_HARVESTABLE_VESPENE_GEYSER_GAS_ZERG);
+        boolean carrying = hasCarryMineralBuff || hasCarryGasBuff;
+
+        List<UnitOrder> orders = u.getOrders();
+        if (orders.isEmpty()) {
+            return new WorkerSnapshot(tag, position, WorkerAction.IDLE, carrying);
+        }
+
+        com.github.ocraft.s2client.protocol.data.Ability ability  = orders.getFirst().getAbility();
+        boolean                                          isGather = isHarvestGather(ability);
+        boolean                                          isReturn = isHarvestReturn(ability);
+
+        WorkerAction action;
+        if (isGather && hasCarryGasBuff) {
+            action = WorkerAction.GATHERING_GAS;
+        } else if (isGather) {
+            action = WorkerAction.GATHERING_MINERALS;
+        } else if (isReturn && hasCarryGasBuff) {
+            action = WorkerAction.RETURNING_GAS;
+        } else if (isReturn) {
+            action = WorkerAction.RETURNING_MINERALS;
+        } else {
+            action = WorkerAction.OTHER;
+        }
+
+        return new WorkerSnapshot(tag, position, action, carrying);
+    }
+
+    private static boolean isHarvestGather(com.github.ocraft.s2client.protocol.data.Ability ability) {
+        return ability == Abilities.HARVEST_GATHER
+               || ability == Abilities.HARVEST_GATHER_PROBE
+               || ability == Abilities.HARVEST_GATHER_SCV
+               || ability == Abilities.HARVEST_GATHER_DRONE;
+    }
+
+    private static boolean isHarvestReturn(com.github.ocraft.s2client.protocol.data.Ability ability) {
+        return ability == Abilities.HARVEST_RETURN
+               || ability == Abilities.HARVEST_RETURN_PROBE
+               || ability == Abilities.HARVEST_RETURN_SCV
+               || ability == Abilities.HARVEST_RETURN_DRONE
+               || ability == Abilities.HARVEST_RETURN_MULE;
+    }
+
+    private static final Set<Units> WORKER_TYPES = Set.of(
+            Units.PROTOSS_PROBE, Units.TERRAN_SCV, Units.ZERG_DRONE, Units.TERRAN_MULE
+                                                         );
+
+    public static WorkerCadenceSnapshot extractWorkerCadence(
+            int tick, Set<com.github.ocraft.s2client.protocol.unit.Unit> allUnits) {
+        List<WorkerSnapshot> workers = allUnits.stream()
+                                               .filter(u -> u.getAlliance() == Alliance.SELF)
+                                               .filter(u -> WORKER_TYPES.contains(toUnitsEnum(u)))
+                                               .map(ObservationTranslator::toWorkerSnapshot)
+                                               .toList();
+        return new WorkerCadenceSnapshot(tick, workers);
+    }
+
 
     private static Building toBuilding(com.github.ocraft.s2client.protocol.unit.Unit u) {
         var pos = u.getPosition();

@@ -100,6 +100,55 @@ class PlaybookSC2RecorderTest {
         recordPlaybook("PROTOSS", "playbooks/cal-worker-speed-single.yaml", "calibration/cal-worker-speed-single.json");
     }
 
+    @Test
+    void recordCalWorkerCadence12w() throws Exception {
+        assumeTrue(QuarkusSC2Transport.isSC2Available(),
+                   "StarCraft II not installed — skipping live SC2 test");
+        QuarkusSC2Transport transport = new QuarkusSC2Transport();
+        transport.sc2Port                = 8168;
+        transport.mapName                = "TorchesAIE_v4";
+        transport.difficultyStr          = "VERY_EASY";
+        transport.aiRaceStr              = "RANDOM";
+        transport.botRaceStr             = "PROTOSS";
+        transport.connectRetryCount      = 60;
+        transport.connectRetryIntervalMs = 5000;
+        transport.connect();
+        transport.createGame();
+        transport.joinGame();
+
+        PlaybookSC2Adapter adapter = new PlaybookSC2Adapter(
+                transport, "playbooks/cal-mineral-baseline-12w.yaml");
+
+        transport.runGameLoop(adapter);
+
+        while (!transport.isRunning()) {Thread.sleep(50);}
+        while (transport.isRunning()) {Thread.sleep(100);}
+
+        assertFalse(adapter.workerCadenceSnapshots().isEmpty(),
+                    "Should have recorded worker cadence snapshots");
+        assertFalse(adapter.snapshots().isEmpty(),
+                    "Should have recorded calibration snapshots");
+
+        io.quarkmind.sc2.playbook.WorkerCadenceBaseline cadenceBaseline =
+                adapter.buildWorkerCadenceBaseline("unknown");
+        String cadenceJson   = cadenceBaseline.toJson();
+        Path   cadenceOutput = Path.of("src/test/resources/calibration/cal-worker-cadence-12w.json");
+        Files.createDirectories(cadenceOutput.getParent());
+        Files.writeString(cadenceOutput, cadenceJson);
+        System.out.printf("[Recorder] Worker cadence baseline written to %s (%d bytes)%n",
+                          cadenceOutput, cadenceJson.length());
+
+        CalibrationBaseline calBaseline = adapter.buildBaseline("unknown");
+        String              calJson     = calBaseline.toJson();
+        Path                calOutput   = Path.of("src/test/resources/calibration/cal-mineral-baseline-12w.json");
+        Files.writeString(calOutput, calJson);
+        System.out.printf("[Recorder] Calibration baseline written to %s (%d bytes)%n",
+                          calOutput, calJson.length());
+
+        System.out.printf("[Recorder] Both baselines from same game run — %d ticks%n",
+                          adapter.snapshots().size());
+    }
+
 
     private void recordPlaybook(String race, String playbookResource, String outputPath) throws Exception {
         assumeTrue(QuarkusSC2Transport.isSC2Available(),

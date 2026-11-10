@@ -1418,6 +1418,11 @@ public class EmulatedGame {
         return new GameState(reportedMinerals, reportedVespene, friendly.supply(), friendly.supplyUsed(), friendlyWithCooldown, List.copyOf(friendly.buildings()), List.copyOf(enemy.units()), List.copyOf(enemy.buildings()), List.copyOf(stagingArea), List.copyOf(geysers), List.of(), gameFrame, null, friendlyEconomy, PlayerEconomyStats.EMPTY, friendly.completedUpgradeNames(), Set.of());
     }
 
+    public java.util.List<io.quarkmind.sc2.playbook.WorkerSnapshot> workerSnapshots() {
+        return workerSimulation.workerSnapshots();
+    }
+
+
     private GameState snapshotForEnemy() {
         // Enemy sees friendly units as their "enemies"
         return new GameState(0, 0, 0, 0, List.of(), List.of(), List.copyOf(friendly.units()), List.of(), List.of(), List.of(), List.of(), gameFrame, null, PlayerEconomyStats.EMPTY, PlayerEconomyStats.EMPTY, Set.of(), Set.of());

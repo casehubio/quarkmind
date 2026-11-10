@@ -2,7 +2,7 @@
   "playbook" : "cal-mineral-baseline-12w",
   "race" : "PROTOSS",
   "sc2Build" : "unknown",
-  "recordedAt" : "2026-11-09T19:44:36.707803Z",
+  "recordedAt" : "2026-11-10T03:59:09.411445Z",
   "tickCount" : 305,
   "snapshots" : [ {
     "tick" : 0,
@@ -1657,7 +1657,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 127,
-    "minerals" : 1440,
+    "minerals" : 1445,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -1878,7 +1878,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 144,
-    "minerals" : 1640,
+    "minerals" : 1645,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -2099,7 +2099,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 161,
-    "minerals" : 1825,
+    "minerals" : 1830,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -2320,7 +2320,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 178,
-    "minerals" : 2020,
+    "minerals" : 2025,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -2463,7 +2463,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 189,
-    "minerals" : 2145,
+    "minerals" : 2150,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -2684,7 +2684,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 206,
-    "minerals" : 2335,
+    "minerals" : 2340,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -2905,7 +2905,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 223,
-    "minerals" : 2540,
+    "minerals" : 2545,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -3126,7 +3126,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 240,
-    "minerals" : 2725,
+    "minerals" : 2730,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -3269,7 +3269,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 251,
-    "minerals" : 2850,
+    "minerals" : 2855,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -3347,7 +3347,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 257,
-    "minerals" : 2920,
+    "minerals" : 2925,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -3490,7 +3490,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 268,
-    "minerals" : 3040,
+    "minerals" : 3045,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -3568,7 +3568,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 274,
-    "minerals" : 3115,
+    "minerals" : 3120,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -3711,7 +3711,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 285,
-    "minerals" : 3245,
+    "minerals" : 3250,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -3789,7 +3789,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 291,
-    "minerals" : 3305,
+    "minerals" : 3310,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -3854,7 +3854,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 296,
-    "minerals" : 3365,
+    "minerals" : 3370,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -3932,7 +3932,7 @@
     "upgrades" : [ ]
   }, {
     "tick" : 302,
-    "minerals" : 3430,
+    "minerals" : 3435,
     "vespene" : 0,
     "supply" : 15,
     "supplyUsed" : 12,
@@ -3971,54 +3971,44 @@
     "upgrades" : [ ]
   } ],
   "mineralPatches" : [ {
-    "x" : 61.0,
-    "y" : 41.5,
+    "x" : 131.0,
+    "y" : 163.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 121.0,
-    "y" : 104.5,
+    "x" : 107.0,
+    "y" : 71.5,
     "amount" : 1500,
     "rich" : true
+  }, {
+    "x" : 28.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 95.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
   }, {
     "x" : 131.0,
-    "y" : 48.5,
+    "y" : 133.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 130.0,
-    "y" : 164.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 63.0,
-    "y" : 103.5,
+    "x" : 113.0,
+    "y" : 139.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 91.0,
-    "y" : 138.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 31.0,
-    "y" : 41.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
     "x" : 25.0,
-    "y" : 160.5,
+    "y" : 162.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 69.0,
-    "y" : 163.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 65.0,
-    "y" : 42.5,
-    "amount" : 1500,
+    "x" : 61.0,
+    "y" : 166.5,
+    "amount" : 750,
     "rich" : false
   }, {
     "x" : 54.0,
@@ -4026,270 +4016,50 @@
     "amount" : 1500,
     "rich" : true
   }, {
+    "x" : 115.0,
+    "y" : 68.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 132.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 126.0,
+    "y" : 69.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 133.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 111.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 113.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
     "x" : 25.0,
     "y" : 164.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 95.0,
-    "y" : 163.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 124.0,
-    "y" : 104.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 29.0,
-    "y" : 79.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 161.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 25.0,
-    "y" : 43.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 102.0,
-    "y" : 157.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 27.0,
-    "y" : 132.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 28.0,
-    "y" : 78.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 30.0,
-    "y" : 127.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 135.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 107.0,
-    "y" : 71.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 60.0,
-    "y" : 42.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 107.0,
-    "y" : 136.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 92.0,
-    "y" : 68.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 97.0,
-    "y" : 72.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 113.0,
-    "y" : 68.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 113.0,
-    "y" : 139.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 53.0,
-    "y" : 104.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 97.0,
-    "y" : 76.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 28.0,
-    "y" : 129.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 109.0,
-    "y" : 136.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 132.0,
-    "y" : 160.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 111.0,
-    "y" : 69.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 31.0,
-    "y" : 166.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 61.0,
-    "y" : 104.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 34.0,
-    "y" : 127.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
     "x" : 96.0,
     "y" : 43.5,
     "amount" : 750,
     "rich" : false
-  }, {
-    "x" : 33.0,
-    "y" : 81.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 102.0,
-    "y" : 161.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 130.0,
-    "y" : 136.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 107.0,
-    "y" : 135.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 113.0,
-    "y" : 69.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 131.0,
-    "y" : 44.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 131.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 98.0,
-    "y" : 73.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 115.0,
-    "y" : 138.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 130.0,
-    "y" : 71.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 132.0,
-    "y" : 47.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 111.0,
-    "y" : 70.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 25.0,
-    "y" : 47.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 113.0,
-    "y" : 137.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 98.0,
-    "y" : 132.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 96.0,
-    "y" : 70.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 64.0,
-    "y" : 166.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 30.0,
-    "y" : 40.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 103.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 33.0,
-    "y" : 126.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 105.0,
-    "y" : 135.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 130.0,
-    "y" : 104.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 115.0,
-    "y" : 68.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 115.0,
-    "y" : 139.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 111.0,
-    "y" : 137.5,
-    "amount" : 1500,
-    "rich" : true
   }, {
     "x" : 27.0,
     "y" : 75.5,
@@ -4297,182 +4067,27 @@
     "rich" : false
   }, {
     "x" : 131.0,
-    "y" : 76.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 111.0,
-    "y" : 136.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 109.0,
-    "y" : 70.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 113.0,
-    "y" : 138.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 60.0,
-    "y" : 103.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 125.0,
-    "y" : 165.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 129.0,
-    "y" : 165.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 24.0,
-    "y" : 161.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 128.0,
-    "y" : 103.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 98.0,
-    "y" : 163.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 132.0,
-    "y" : 132.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 60.0,
-    "y" : 165.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 24.0,
-    "y" : 46.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 129.0,
-    "y" : 42.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 95.0,
     "y" : 44.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 109.0,
-    "y" : 135.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 69.0,
-    "y" : 44.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 125.0,
-    "y" : 42.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 65.0,
-    "y" : 165.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 57.0,
-    "y" : 164.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 64.0,
+    "x" : 61.0,
     "y" : 41.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 95.0,
-    "y" : 138.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 56.0,
-    "y" : 104.5,
-    "amount" : 750,
-    "rich" : true
-  }, {
-    "x" : 98.0,
-    "y" : 44.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 131.0,
-    "y" : 133.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 28.0,
-    "y" : 133.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 125.0,
-    "y" : 137.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 26.0,
-    "y" : 165.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 129.0,
-    "y" : 137.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 98.0,
-    "y" : 75.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 102.0,
-    "y" : 50.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 111.0,
-    "y" : 71.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 96.0,
-    "y" : 137.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 126.0,
+    "x" : 27.0,
     "y" : 166.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 131.0,
-    "y" : 46.5,
-    "amount" : 1500,
+    "x" : 24.0,
+    "y" : 161.5,
+    "amount" : 750,
     "rich" : false
   }, {
-    "x" : 125.0,
-    "y" : 70.5,
+    "x" : 130.0,
+    "y" : 43.5,
     "amount" : 1500,
     "rich" : false
   }, {
@@ -4481,93 +4096,8 @@
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 61.0,
-    "y" : 166.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 115.0,
-    "y" : 69.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 131.0,
-    "y" : 74.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 97.0,
-    "y" : 135.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 91.0,
-    "y" : 69.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 107.0,
-    "y" : 73.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 56.0,
-    "y" : 44.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 26.0,
+    "x" : 129.0,
     "y" : 42.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 27.0,
-    "y" : 41.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 126.0,
-    "y" : 41.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 103.0,
-    "y" : 158.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 109.0,
-    "y" : 72.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 126.0,
-    "y" : 138.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 111.0,
-    "y" : 138.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 131.0,
-    "y" : 72.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 130.0,
-    "y" : 43.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 95.0,
-    "y" : 69.5,
-    "amount" : 750,
-    "rich" : false
-  }, {
-    "x" : 68.0,
-    "y" : 43.5,
     "amount" : 750,
     "rich" : false
   }, {
@@ -4576,43 +4106,178 @@
     "amount" : 750,
     "rich" : true
   }, {
-    "x" : 92.0,
-    "y" : 139.5,
+    "x" : 26.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 159.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 69.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 161.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 105.0,
-    "y" : 72.5,
+    "x" : 101.0,
+    "y" : 162.5,
     "amount" : 1500,
-    "rich" : true
+    "rich" : false
+  }, {
+    "x" : 60.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
   }, {
     "x" : 98.0,
     "y" : 134.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 97.0,
-    "y" : 131.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 27.0,
-    "y" : 166.5,
+    "x" : 30.0,
+    "y" : 127.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 28.0,
+    "x" : 98.0,
+    "y" : 44.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 68.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 57.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
     "y" : 74.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 132.0,
-    "y" : 75.5,
+    "x" : 131.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 26.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 104.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 109.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 107.0,
+    "y" : 134.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 126.0,
+    "y" : 166.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 102.0,
-    "y" : 159.5,
+    "x" : 115.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 105.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 46.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 91.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 126.0,
+    "y" : 138.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 129.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 105.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 125.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 68.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 111.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 61.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 101.0,
+    "y" : 45.5,
     "amount" : 1500,
     "rich" : false
   }, {
@@ -4621,34 +4286,114 @@
     "amount" : 750,
     "rich" : false
   }, {
+    "x" : 102.0,
+    "y" : 157.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 60.0,
+    "y" : 103.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 109.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 103.0,
+    "y" : 158.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 29.0,
+    "y" : 128.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
     "x" : 126.0,
-    "y" : 69.5,
+    "y" : 41.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 28.0,
-    "y" : 131.5,
+    "x" : 34.0,
+    "y" : 127.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 101.0,
-    "y" : 45.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 30.0,
-    "y" : 80.5,
+    "x" : 27.0,
+    "y" : 41.5,
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 28.0,
-    "y" : 76.5,
+    "x" : 102.0,
+    "y" : 48.5,
     "amount" : 1500,
     "rich" : false
+  }, {
+    "x" : 31.0,
+    "y" : 166.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 121.0,
+    "y" : 104.5,
+    "amount" : 1500,
+    "rich" : true
   }, {
     "x" : 129.0,
-    "y" : 70.5,
+    "y" : 165.5,
     "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 69.0,
+    "y" : 163.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 159.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 163.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 92.0,
+    "y" : 139.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 65.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 95.0,
+    "y" : 138.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 33.0,
+    "y" : 126.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 91.0,
+    "y" : 138.5,
+    "amount" : 1500,
     "rich" : false
   }, {
     "x" : 56.0,
@@ -4656,23 +4401,223 @@
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 57.0,
+    "x" : 33.0,
+    "y" : 81.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 56.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 60.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 78.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 64.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 56.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 96.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 47.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 72.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 160.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 48.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 47.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 160.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 92.0,
+    "y" : 68.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 25.0,
     "y" : 43.5,
     "amount" : 750,
     "rich" : false
   }, {
+    "x" : 95.0,
+    "y" : 163.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
     "x" : 107.0,
-    "y" : 134.5,
+    "y" : 73.5,
     "amount" : 1500,
     "rich" : true
+  }, {
+    "x" : 132.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 45.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 53.0,
+    "y" : 104.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 135.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 65.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 57.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 64.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 29.0,
+    "y" : 79.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 50.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 130.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 30.0,
+    "y" : 40.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 70.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : false
   }, {
     "x" : 107.0,
     "y" : 72.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 68.0,
-    "y" : 164.5,
+    "x" : 24.0,
+    "y" : 46.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 63.0,
+    "y" : 103.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 95.0,
+    "y" : 69.5,
     "amount" : 750,
     "rich" : false
   }, {
@@ -4681,23 +4626,53 @@
     "amount" : 750,
     "rich" : false
   }, {
-    "x" : 25.0,
-    "y" : 162.5,
+    "x" : 28.0,
+    "y" : 74.5,
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 102.0,
-    "y" : 48.5,
-    "amount" : 1500,
+    "x" : 27.0,
+    "y" : 132.5,
+    "amount" : 750,
     "rich" : false
   }, {
-    "x" : 29.0,
-    "y" : 128.5,
+    "x" : 113.0,
+    "y" : 137.5,
     "amount" : 1500,
-    "rich" : false
+    "rich" : true
+  }, {
+    "x" : 111.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 128.0,
+    "y" : 103.5,
+    "amount" : 750,
+    "rich" : true
   }, {
     "x" : 131.0,
-    "y" : 159.5,
+    "y" : 103.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 98.0,
+    "y" : 73.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 130.0,
+    "y" : 164.5,
     "amount" : 1500,
     "rich" : false
   }, {
@@ -4706,88 +4681,89 @@
     "amount" : 1500,
     "rich" : false
   }, {
-    "x" : 109.0,
-    "y" : 137.5,
+    "x" : 115.0,
+    "y" : 139.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 96.0,
-    "y" : 164.5,
+    "x" : 115.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 124.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 98.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 137.5,
     "amount" : 750,
     "rich" : false
   }, {
     "x" : 131.0,
-    "y" : 163.5,
+    "y" : 161.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 31.0,
+    "y" : 41.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 30.0,
+    "y" : 80.5,
     "amount" : 750,
     "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
   }, {
     "x" : 109.0,
     "y" : 71.5,
     "amount" : 1500,
     "rich" : true
   }, {
-    "x" : 101.0,
-    "y" : 162.5,
-    "amount" : 1500,
-    "rich" : false
-  }, {
-    "x" : 113.0,
-    "y" : 70.5,
-    "amount" : 1500,
-    "rich" : true
-  }, {
-    "x" : 25.0,
-    "y" : 45.5,
-    "amount" : 1500,
+    "x" : 68.0,
+    "y" : 43.5,
+    "amount" : 750,
     "rich" : false
   } ],
   "geyserPositions" : [ {
-    "x" : 55.5,
-    "y" : 47.5,
+    "x" : 97.5,
+    "y" : 79.5,
+    "amount" : 2250
+  }, {
+    "x" : 27.5,
+    "y" : 136.5,
+    "amount" : 2250
+  }, {
+    "x" : 91.5,
+    "y" : 164.5,
     "amount" : 2250
   }, {
     "x" : 121.5,
     "y" : 41.5,
     "amount" : 2250
   }, {
-    "x" : 34.5,
-    "y" : 40.5,
-    "amount" : 2250
-  }, {
-    "x" : 91.5,
-    "y" : 43.5,
-    "amount" : 2250
-  }, {
-    "x" : 27.5,
-    "y" : 71.5,
-    "amount" : 2250
-  }, {
     "x" : 131.5,
     "y" : 156.5,
     "amount" : 2250
   }, {
-    "x" : 31.5,
-    "y" : 140.5,
-    "amount" : 2250
-  }, {
-    "x" : 88.5,
-    "y" : 160.5,
-    "amount" : 2250
-  }, {
-    "x" : 131.5,
-    "y" : 128.5,
-    "amount" : 2250
-  }, {
-    "x" : 24.5,
-    "y" : 50.5,
-    "amount" : 2250
-  }, {
-    "x" : 97.5,
-    "y" : 79.5,
-    "amount" : 2250
-  }, {
-    "x" : 97.5,
-    "y" : 128.5,
+    "x" : 132.5,
+    "y" : 108.5,
     "amount" : 2250
   }, {
     "x" : 50.5,
@@ -4798,44 +4774,36 @@
     "y" : 67.5,
     "amount" : 2250
   }, {
-    "x" : 69.5,
-    "y" : 160.5,
-    "amount" : 2250
-  }, {
-    "x" : 27.5,
-    "y" : 136.5,
-    "amount" : 2250
-  }, {
-    "x" : 69.5,
-    "y" : 47.5,
-    "amount" : 2250
-  }, {
     "x" : 88.5,
-    "y" : 47.5,
+    "y" : 68.5,
     "amount" : 2250
   }, {
-    "x" : 121.5,
-    "y" : 138.5,
+    "x" : 132.5,
+    "y" : 99.5,
     "amount" : 2250
   }, {
     "x" : 24.5,
     "y" : 157.5,
     "amount" : 2250
   }, {
-    "x" : 121.5,
-    "y" : 69.5,
+    "x" : 31.5,
+    "y" : 140.5,
     "amount" : 2250
   }, {
-    "x" : 132.5,
-    "y" : 108.5,
+    "x" : 88.5,
+    "y" : 160.5,
     "amount" : 2250
   }, {
-    "x" : 34.5,
-    "y" : 167.5,
+    "x" : 55.5,
+    "y" : 47.5,
     "amount" : 2250
   }, {
-    "x" : 131.5,
-    "y" : 79.5,
+    "x" : 88.5,
+    "y" : 139.5,
+    "amount" : 2250
+  }, {
+    "x" : 69.5,
+    "y" : 160.5,
     "amount" : 2250
   }, {
     "x" : 55.5,
@@ -4843,31 +4811,63 @@
     "amount" : 2250
   }, {
     "x" : 131.5,
+    "y" : 79.5,
+    "amount" : 2250
+  }, {
+    "x" : 131.5,
     "y" : 51.5,
     "amount" : 2250
   }, {
-    "x" : 88.5,
-    "y" : 139.5,
-    "amount" : 2250
-  }, {
-    "x" : 50.5,
-    "y" : 99.5,
-    "amount" : 2250
-  }, {
-    "x" : 132.5,
-    "y" : 99.5,
+    "x" : 34.5,
+    "y" : 167.5,
     "amount" : 2250
   }, {
     "x" : 121.5,
     "y" : 166.5,
     "amount" : 2250
   }, {
+    "x" : 121.5,
+    "y" : 69.5,
+    "amount" : 2250
+  }, {
     "x" : 88.5,
-    "y" : 68.5,
+    "y" : 47.5,
+    "amount" : 2250
+  }, {
+    "x" : 131.5,
+    "y" : 128.5,
+    "amount" : 2250
+  }, {
+    "x" : 121.5,
+    "y" : 138.5,
+    "amount" : 2250
+  }, {
+    "x" : 50.5,
+    "y" : 99.5,
+    "amount" : 2250
+  }, {
+    "x" : 24.5,
+    "y" : 50.5,
+    "amount" : 2250
+  }, {
+    "x" : 97.5,
+    "y" : 128.5,
+    "amount" : 2250
+  }, {
+    "x" : 34.5,
+    "y" : 40.5,
     "amount" : 2250
   }, {
     "x" : 91.5,
-    "y" : 164.5,
+    "y" : 43.5,
+    "amount" : 2250
+  }, {
+    "x" : 27.5,
+    "y" : 71.5,
+    "amount" : 2250
+  }, {
+    "x" : 69.5,
+    "y" : 47.5,
     "amount" : 2250
   } ],
   "basePosition" : [ 124.5, 159.5 ]

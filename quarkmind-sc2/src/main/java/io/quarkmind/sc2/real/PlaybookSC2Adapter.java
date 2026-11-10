@@ -37,6 +37,8 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
 
     private final List<CalibrationSnapshot> snapshots = new ArrayList<>();
     private final java.util.Set<String> assignedGasBuildings = new java.util.HashSet<>();
+    private final List<io.quarkmind.sc2.playbook.WorkerCadenceSnapshot> workerCadenceSnapshots = new ArrayList<>();
+
     private int gameLoop = 0;
     private int tick = -1;
     private int buildIndex = 0;
@@ -83,6 +85,8 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
                 tick = emTick;
                 GameState state = ObservationTranslator.translate(obs, null);
                 snapshots.add(CalibrationSnapshot.from(tick, state));
+                workerCadenceSnapshots.add(ObservationTranslator.extractWorkerCadence(
+                        tick, obs.getRaw().orElseThrow().getUnits()));
 
                 if (capturedMineralPatches == null && state.mineralPatches() != null) {
                     capturedMineralPatches = state.mineralPatches().stream()
@@ -172,6 +176,20 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
     public List<CalibrationSnapshot> snapshots() {
         return List.copyOf(snapshots);
     }
+
+    public List<io.quarkmind.sc2.playbook.WorkerCadenceSnapshot> workerCadenceSnapshots() {
+        return List.copyOf(workerCadenceSnapshots);
+    }
+
+    public io.quarkmind.sc2.playbook.WorkerCadenceBaseline buildWorkerCadenceBaseline(String sc2Build) {
+        return new io.quarkmind.sc2.playbook.WorkerCadenceBaseline(
+                playbookName, race.name(), sc2Build,
+                java.time.Instant.now().toString(),
+                workerCadenceSnapshots.size(),
+                List.copyOf(workerCadenceSnapshots)
+        );
+    }
+
 
     private ResolvedCommand translateStep(SC2PlaybookRunner.PlaybookStep step, GameState state) {
         return switch (step.action()) {

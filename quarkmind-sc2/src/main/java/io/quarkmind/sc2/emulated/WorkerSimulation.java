@@ -11,6 +11,35 @@ import java.util.List;
 import java.util.Map;
 
 class WorkerSimulation {
+    static final float TOWN_HALL_RADIUS     = 2.5f;
+    static final float MINERAL_PATCH_RADIUS = 1.0f;
+
+    static Point2d edgePoint(Point2d center, Point2d toward, float radius) {
+        float dx   = toward.x() - center.x();
+        float dy   = toward.y() - center.y();
+        float dist = (float) Math.sqrt(dx * dx + dy * dy);
+        if (dist < 0.01f) {return center;}
+        return new Point2d(center.x() + dx / dist * radius, center.y() + dy / dist * radius);
+    }
+
+    private Point2d returnTarget(SimulatedWorker w) {
+        Point2d basePos  = bases.get(w.baseIndex).position();
+        Point2d patchPos = w.assignedPatch != null ? w.assignedPatch.position : w.position;
+        return edgePoint(basePos, patchPos, TOWN_HALL_RADIUS);
+    }
+
+    static boolean useEdgeToEdge = false;
+
+    private Point2d miningTarget(MineralPatch patch, int baseIndex) {
+        if (!useEdgeToEdge) {return patch.position;}
+        return edgePoint(patch.position, bases.get(baseIndex).position(), MINERAL_PATCH_RADIUS);
+    }
+
+    private Point2d depositTarget(SimulatedWorker w) {
+        if (!useEdgeToEdge) {return bases.get(w.baseIndex).position();}
+        return returnTarget(w);
+    }
+
 
     record BaseEntry(String tag, Point2d position, List<MineralPatch> patches) {}
 
@@ -778,5 +807,29 @@ class WorkerSimulation {
             }
         }
         return nearest;
+    }
+
+    List<io.quarkmind.sc2.playbook.WorkerSnapshot> workerSnapshots() {
+        return workers.values().stream()
+                      .map(WorkerSimulation::toWorkerSnapshot)
+                      .toList();
+    }
+
+    void addWorkerForTest(SimulatedWorker w) {
+        workers.put(w.tag, w);
+    }
+
+
+    private static io.quarkmind.sc2.playbook.WorkerSnapshot toWorkerSnapshot(SimulatedWorker w) {
+        boolean carrying = w.cargo > 0;
+        io.quarkmind.domain.WorkerAction action = switch (w.task) {
+            case MINING_MINERALS -> io.quarkmind.domain.WorkerAction.GATHERING_MINERALS;
+            case RETURNING_MINERALS, DEPOSITING_MINERALS -> io.quarkmind.domain.WorkerAction.RETURNING_MINERALS;
+            case HARVESTING_GAS -> io.quarkmind.domain.WorkerAction.GATHERING_GAS;
+            case RETURNING_GAS, DEPOSITING_GAS -> io.quarkmind.domain.WorkerAction.RETURNING_GAS;
+            case IDLE -> io.quarkmind.domain.WorkerAction.IDLE;
+            case BUILDING, SCOUTING, TRANSFERRING -> io.quarkmind.domain.WorkerAction.OTHER;
+        };
+        return new io.quarkmind.sc2.playbook.WorkerSnapshot(w.tag, w.position, action, carrying);
     }
 }
