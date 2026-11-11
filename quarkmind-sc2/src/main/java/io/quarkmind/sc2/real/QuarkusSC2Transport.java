@@ -223,13 +223,11 @@ public class QuarkusSC2Transport {
             // visible to gameTick() by the time it observes !isConnected().
             if (gameStarted) callback.onGameEnd(gameResult);
             running = false;
-            if (quitting.get()) {
-                try {
-                    sendSync(Sc2Api.Request.newBuilder()
-                        .setQuit(Sc2Api.RequestQuit.getDefaultInstance()).build(),
-                        Duration.ofSeconds(5));
-                } catch (Exception ignored) {}
-            }
+            try {
+                sendSync(Sc2Api.Request.newBuilder()
+                    .setQuit(Sc2Api.RequestQuit.getDefaultInstance()).build(),
+                    Duration.ofSeconds(5));
+            } catch (Exception ignored) {}
             closeSocket();
             gameLoopThread = null;
         }
