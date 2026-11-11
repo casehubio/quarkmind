@@ -14,6 +14,9 @@ steps:
   - build: COMMAND_CENTER
     at: 20 supply
 
+  - build: BARRACKS
+    at: 16 supply
+
   - build: SUPPLY_DEPOT
     at: 21 supply
 

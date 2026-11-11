@@ -283,30 +283,54 @@ public class QuarkusSC2Transport {
     // ---------------------------------------------------------------------------
 
     public void sendActions(List<ResolvedCommand> commands) throws InterruptedException {
+        sendActionRaw(buildActionRequest(commands, false));
+    }
+
+    public List<SC2APIProtocol.Error.ActionResult> sendActionsWithResults(
+            List<ResolvedCommand> commands) throws InterruptedException {
+        return sendActionsWithResults(commands, false);
+    }
+
+    public List<SC2APIProtocol.Error.ActionResult> sendActionsWithResults(
+            List<ResolvedCommand> commands, boolean queueCommand) throws InterruptedException {
+        Sc2Api.Response response = sendActionRaw(buildActionRequest(commands, queueCommand));
+        if (response.hasAction()) {
+            return response.getAction().getResultList();
+        }
+        return List.of();
+    }
+
+    private Sc2Api.RequestAction buildActionRequest(
+            List<ResolvedCommand> commands, boolean queueCommand) {
         Sc2Api.RequestAction.Builder actionReq = Sc2Api.RequestAction.newBuilder();
-            for (ResolvedCommand cmd : commands) {
-                Raw.ActionRawUnitCommand.Builder unitCmd = Raw.ActionRawUnitCommand.newBuilder()
-                                                                                   .addUnitTags(cmd.tag().toSc2Api())
-                                                                                   .setAbilityId(cmd.ability().getAbilityId())
-                                                                                   .setQueueCommand(false);
-                cmd.targetUnitTag().ifPresentOrElse(
-                        unitCmd::setTargetUnitTag,
-                        () -> cmd.target().ifPresent(pos -> unitCmd.setTargetWorldSpacePos(pos.toSc2Api()))
-                                                   );
-                actionReq.addActions(Sc2Api.Action.newBuilder()
-                                                  .setActionRaw(Raw.ActionRaw.newBuilder().setUnitCommand(unitCmd.build()).build())
-                                                  .build());
-            }
-            try {
-                sendSync(Sc2Api.Request.newBuilder().setAction(actionReq.build()).build(),
-                         Duration.ofSeconds(5));
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw e;
-            } catch (Exception e) {
-                throw new RuntimeException("[SC2] sendActions() failed: " + e.getMessage(), e);
+        for (ResolvedCommand cmd : commands) {
+            Raw.ActionRawUnitCommand.Builder unitCmd = Raw.ActionRawUnitCommand.newBuilder()
+                                                                               .addUnitTags(cmd.tag().toSc2Api())
+                                                                               .setAbilityId(cmd.ability().getAbilityId())
+                                                                               .setQueueCommand(queueCommand);
+            cmd.targetUnitTag().ifPresentOrElse(
+                    unitCmd::setTargetUnitTag,
+                    () -> cmd.target().ifPresent(pos -> unitCmd.setTargetWorldSpacePos(pos.toSc2Api()))
+                                               );
+            actionReq.addActions(Sc2Api.Action.newBuilder()
+                                              .setActionRaw(Raw.ActionRaw.newBuilder().setUnitCommand(unitCmd.build()).build())
+                                              .build());
+        }
+        return actionReq.build();
+    }
+
+    Sc2Api.Response sendActionRaw(Sc2Api.RequestAction actionReq) throws InterruptedException {
+        try {
+            return sendSync(Sc2Api.Request.newBuilder().setAction(actionReq).build(),
+                            Duration.ofSeconds(5));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("[SC2] sendActions() failed: " + e.getMessage(), e);
         }
     }
+
 
     public void sendDebug(Sc2Api.RequestDebug req) throws InterruptedException {
         try {
@@ -318,6 +342,88 @@ public class QuarkusSC2Transport {
             throw new RuntimeException("[SC2] sendDebug() failed: " + e.getMessage(), e);
         }
     }
+
+    public Sc2Api.ResponseObservation requestObservation() throws InterruptedException {
+        try {
+            Sc2Api.Response resp = sendSync(
+                    Sc2Api.Request.newBuilder()
+                                  .setObservation(Sc2Api.RequestObservation.getDefaultInstance()).build(),
+                    Duration.ofSeconds(5));
+            return resp.getObservation();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("[SC2] requestObservation() failed: " + e.getMessage(), e);
+        }
+    }
+
+    public Sc2Api.Status requestStep() throws InterruptedException {
+        try {
+            Sc2Api.Response resp = sendSync(
+                    Sc2Api.Request.newBuilder()
+                                  .setStep(Sc2Api.RequestStep.newBuilder().setCount(1).build()).build(),
+                    Duration.ofSeconds(5));
+            return resp.getStatus();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("[SC2] requestStep() failed: " + e.getMessage(), e);
+        }
+    }
+
+    public Sc2Api.Status getGameStatus() throws InterruptedException {
+        try {
+            Sc2Api.Response resp = sendSync(
+                    Sc2Api.Request.newBuilder()
+                                  .setPing(Sc2Api.RequestPing.getDefaultInstance()).build(),
+                    Duration.ofSeconds(5));
+            return resp.getStatus();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("[SC2] getGameStatus() failed: " + e.getMessage(), e);
+        }
+    }
+
+    public SC2APIProtocol.Query.ResponseQuery queryAbilities(long unitTag) throws InterruptedException {
+        try {
+            Sc2Api.Request req = Sc2Api.Request.newBuilder()
+                                               .setQuery(SC2APIProtocol.Query.RequestQuery.newBuilder()
+                                                                                          .addAbilities(SC2APIProtocol.Query.RequestQueryAvailableAbilities.newBuilder()
+                                                                                                                                                           .setUnitTag(unitTag)
+                                                                                                                                                           .build())
+                                                                                          .build())
+                                               .build();
+            Sc2Api.Response resp = sendSync(req, Duration.ofSeconds(5));
+            return resp.getQuery();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("[SC2] queryAbilities() failed: " + e.getMessage(), e);
+        }
+    }
+
+    public Sc2Api.ResponseData requestAbilityData() throws InterruptedException {
+        try {
+            Sc2Api.Request req = Sc2Api.Request.newBuilder()
+                                               .setData(Sc2Api.RequestData.newBuilder()
+                                                                          .setAbilityId(true)
+                                                                          .build())
+                                               .build();
+            Sc2Api.Response resp = sendSync(req, Duration.ofSeconds(10));
+            return resp.getData();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("[SC2] requestAbilityData() failed: " + e.getMessage(), e);
+        }
+    }
+
 
     // ---------------------------------------------------------------------------
     // sendSync — core I/O primitive (game loop thread only)

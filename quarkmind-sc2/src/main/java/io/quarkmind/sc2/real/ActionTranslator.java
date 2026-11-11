@@ -51,7 +51,7 @@ public final class ActionTranslator {
                     case BlinkIntent        b -> blink(b);
                     case MuleCalldownIntent m -> muleCalldown(m);
                     case ResearchIntent    r -> research(r);
-                    case MorphIntent        m -> null;
+                    case MorphIntent        m -> morph(m);
                     case AbilityIntent      a -> null;
                     case UnitDiedIntent     d -> null;
                     case BuildingBornIntent b -> null;
@@ -123,6 +123,17 @@ public final class ActionTranslator {
         log.warnf("[ACTION] Research not yet wired to real SC2 ability — dropping intent for %s at building %s", intent.upgradeType(), intent.buildingTag());
         return null;
     }
+
+    private static ResolvedCommand morph(MorphIntent intent) {
+        BuildingType targetType = BuildingType.valueOf(intent.targetName());
+        Abilities    ability    = mapBuildAbility(targetType);
+        if (ability == null) {
+            log.warnf("[SC2] No morph ability for BuildingType.%s — intent skipped", targetType);
+            return null;
+        }
+        return new ResolvedCommand(toTag(intent.unitTag()), ability, Optional.empty());
+    }
+
 
     private static Tag toTag(String tagStr) {
         return Tag.of(Long.parseLong(tagStr));
