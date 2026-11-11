@@ -1,0 +1,31 @@
+playbook: cal-mineral-depletion
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 900 ticks
+  purpose: Observe mineral patch depletion — test volume-based transfer timing
+
+steps:
+  - assert: tick-100
+    at: 100 ticks
+    expect:
+      units:
+        PROBE: { min: 12, max: 12 }
+
+  - assert: tick-300
+    at: 300 ticks
+    expect:
+      units:
+        PROBE: { min: 12, max: 12 }
+
+  - assert: tick-600
+    at: 600 ticks
+    expect:
+      units:
+        PROBE: { min: 12, max: 12 }
+
+  - assert: tick-900
+    at: 900 ticks
+    expect:
+      units:
+        PROBE: { min: 12, max: 12 }

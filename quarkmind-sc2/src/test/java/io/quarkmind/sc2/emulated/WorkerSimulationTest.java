@@ -740,6 +740,40 @@ class WorkerSimulationTest {
         fail("Worker never resumed mining after returning");
     }
 
+
+    @Test
+    void edgeToEdgeMiningDurationSweep() {
+        int sc2Target = 3460;
+        System.out.println("\n=== Mining Duration Fine Sweep (12w Protoss, 304 ticks, SC2 target: " + sc2Target + ") ===");
+        System.out.printf("%-12s %-10s %-10s %-10s%n", "MiningDur", "EM", "Delta", "Pct");
+
+        double bestDuration = 25.0;
+        double bestError    = Double.MAX_VALUE;
+
+        for (double duration = 20; duration <= 35; duration += 1) {
+            SimulatedWorker.setMiningDurationLoops(duration);
+            try {
+                EmulatedGame g = new EmulatedGame();
+                g.setPlayerRaceModel(RaceModelFactory.forRace(io.quarkmind.domain.Race.PROTOSS));
+                g.reset();
+                for (int t = 0; t < 304; t++) {g.tick();}
+                int    em    = g.snapshot().minerals();
+                int    delta = em - sc2Target;
+                double pct   = Math.abs(delta / (double) sc2Target * 100);
+                System.out.printf("%-12.0f %-10d %-10d %-10.1f%s%n",
+                                  duration, em, delta, pct, pct < bestError ? " <-" : "");
+                if (pct < bestError) {
+                    bestError    = pct;
+                    bestDuration = duration;
+                }
+            } finally {
+                SimulatedWorker.resetMiningDuration();
+            }
+        }
+        System.out.printf("%nBest mining duration: %.0f loops (%.2f seconds)%n",
+                          bestDuration, bestDuration / io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND);
+    }
+
     @Test
     void collisionSpeedFactorSweep() {
         double[] factors = {0.950, 0.952, 0.954, 0.956, 0.958, 0.960, 0.962, 0.964, 0.966, 0.968, 0.970};

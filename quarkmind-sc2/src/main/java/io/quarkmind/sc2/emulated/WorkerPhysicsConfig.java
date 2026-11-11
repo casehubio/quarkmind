@@ -13,16 +13,16 @@ public record WorkerPhysicsConfig(
         double approachDockingLoops
 ) {
 
-    public static final double DEFAULT_MINING_DURATION_LOOPS      = 5.0;
+    public static final double DEFAULT_MINING_DURATION_LOOPS      = 22.0;
     public static final double DEFAULT_GAS_HARVEST_DURATION_LOOPS = 26.0;
-    public static final double DEFAULT_DEPOSIT_DURATION_LOOPS     = 3.0;
+    public static final double DEFAULT_DEPOSIT_DURATION_LOOPS     = 7.0;
     public static final double DEFAULT_ACCELERATION               = 3.5;
     public static final double DEFAULT_DECELERATION               = 3.5;
-    public static final double DEFAULT_PATCH_DOCKING_OVERHEAD     = 34.0;
+    public static final double DEFAULT_PATCH_DOCKING_OVERHEAD     = 22.0;
     public static final float  DEFAULT_PATCH_DISTANCE             = 7.0f;
     public static final double DEFAULT_INITIAL_WORKER_STAGGER     = 6.1;
     public static final double DEFAULT_COLLISION_SPEED_FACTOR     = 0.952;
-    public static final double DEFAULT_APPROACH_DOCKING_LOOPS     = 7.0;
+    public static final double DEFAULT_APPROACH_DOCKING_LOOPS     = 11.0;
 
     public WorkerPhysicsConfig(double miningDurationLoops, double gasHarvestDurationLoops,
                                double depositDurationLoops, double acceleration,

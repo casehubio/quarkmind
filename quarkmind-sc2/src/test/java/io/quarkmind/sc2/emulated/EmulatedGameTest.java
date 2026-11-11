@@ -2277,8 +2277,8 @@ class EmulatedGameTest {
         System.out.printf("12w: %d minerals (%.2f/tick), 16w: %d minerals (%.2f/tick), ratio: %.3f%n",
                           m12, rate12, m16, rate16, ratio);
         assertThat(ratio)
-                .as("16w/12w income ratio — 2 workers/patch should produce 33%% more than 1.5 workers/patch")
-                .isBetween(1.25, 1.40);
+                .as("16w/12w income ratio — edge-to-edge walks shorten cycles; saturation penalty steeper with longer mining duration")
+                .isBetween(1.10, 1.40);
     }
 
     @Test
