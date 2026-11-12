@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8f9fa"/>
+      <stop offset="100%" stop-color="#e9ecef"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#495057"/>
+    </marker>
+  </defs>
+
+  <rect width="760" height="340" rx="8" fill="url(#bg)"/>
+  <text x="380" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#212529">Calibration as Measurement Precision</text>
+  <text x="380" y="46" text-anchor="middle" font-size="11" fill="#868e96">Each level of measurement exposed what the previous level hid</text>
+
+  <rect x="40" y="70" width="160" height="90" rx="6" fill="#e7f5ff" stroke="#74c0fc" stroke-width="1.5"/>
+  <text x="120" y="92" text-anchor="middle" font-size="12" font-weight="600" fill="#1971c2">Replay Sweeps</text>
+  <text x="120" y="110" text-anchor="middle" font-size="10" fill="#495057">118 oracle replays</text>
+  <text x="120" y="124" text-anchor="middle" font-size="10" fill="#495057">Parameter MAPE grids</text>
+  <text x="120" y="142" text-anchor="middle" font-size="10" fill="#868e96">Found: lumped constants</text>
+  <text x="120" y="155" text-anchor="middle" font-size="10" fill="#868e96">hit a 22% rate ceiling</text>
+
+  <line x1="200" y1="115" x2="230" y2="115" stroke="#495057" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="230" y="70" width="160" height="90" rx="6" fill="#d3f9d8" stroke="#69db7c" stroke-width="1.5"/>
+  <text x="310" y="92" text-anchor="middle" font-size="12" font-weight="600" fill="#2b8a3e">SC2 Dual-Run</text>
+  <text x="310" y="110" text-anchor="middle" font-size="10" fill="#495057">Playbook vs real SC2</text>
+  <text x="310" y="124" text-anchor="middle" font-size="10" fill="#495057">Tick-by-tick comparison</text>
+  <text x="310" y="142" text-anchor="middle" font-size="10" fill="#868e96">Found: 12w exact match</text>
+  <text x="310" y="155" text-anchor="middle" font-size="10" fill="#868e96">16w 6.6% gap (cadence)</text>
+
+  <line x1="390" y1="115" x2="420" y2="115" stroke="#495057" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="420" y="70" width="160" height="90" rx="6" fill="#fff3bf" stroke="#ffd43b" stroke-width="1.5"/>
+  <text x="500" y="92" text-anchor="middle" font-size="12" font-weight="600" fill="#e67700">Per-Frame Observation</text>
+  <text x="500" y="110" text-anchor="middle" font-size="10" fill="#495057">SC2 API frame-by-frame</text>
+  <text x="500" y="124" text-anchor="middle" font-size="10" fill="#495057">Worker position tracking</text>
+  <text x="500" y="142" text-anchor="middle" font-size="10" fill="#868e96">Found: walk distance is</text>
+  <text x="500" y="155" text-anchor="middle" font-size="10" fill="#868e96">edge-to-edge, not centre</text>
+
+  <line x1="580" y1="115" x2="610" y2="115" stroke="#495057" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="610" y="70" width="130" height="90" rx="6" fill="#ffe0eb" stroke="#f783ac" stroke-width="1.5"/>
+  <text x="675" y="92" text-anchor="middle" font-size="12" font-weight="600" fill="#c2255c">Architecture</text>
+  <text x="675" y="110" text-anchor="middle" font-size="10" fill="#495057">Edge-to-edge walks</text>
+  <text x="675" y="124" text-anchor="middle" font-size="10" fill="#495057">Collision physics</text>
+  <text x="675" y="142" text-anchor="middle" font-size="10" fill="#868e96">Result: cadence gap</text>
+  <text x="675" y="155" text-anchor="middle" font-size="10" fill="#868e96">81.6% → 75.3%</text>
+
+  <line x1="60" y1="210" x2="720" y2="210" stroke="#adb5bd" stroke-width="1"/>
+  <text x="380" y="200" text-anchor="middle" font-size="10" fill="#868e96">12-worker mineral accuracy over the calibration arc</text>
+
+  <circle cx="100" cy="280" r="5" fill="#e03131"/>
+  <text x="100" y="300" text-anchor="middle" font-size="9" fill="#495057">Formula</text>
+  <text x="100" y="312" text-anchor="middle" font-size="11" font-weight="600" fill="#e03131">50%</text>
+
+  <circle cx="220" cy="260" r="5" fill="#f76707"/>
+  <text x="220" y="300" text-anchor="middle" font-size="9" fill="#495057">Replay sweep</text>
+  <text x="220" y="312" text-anchor="middle" font-size="11" font-weight="600" fill="#f76707">22%</text>
+
+  <circle cx="340" cy="248" r="5" fill="#e8590c"/>
+  <text x="340" y="300" text-anchor="middle" font-size="9" fill="#495057">Dual-run</text>
+  <text x="340" y="312" text-anchor="middle" font-size="11" font-weight="600" fill="#e8590c">7.2%</text>
+
+  <circle cx="460" cy="224" r="5" fill="#2b8a3e"/>
+  <text x="460" y="300" text-anchor="middle" font-size="9" fill="#495057">Edge-to-edge</text>
+  <text x="460" y="312" text-anchor="middle" font-size="11" font-weight="600" fill="#2b8a3e">0.03%</text>
+
+  <circle cx="580" cy="224" r="5" fill="#1971c2"/>
+  <text x="580" y="300" text-anchor="middle" font-size="9" fill="#495057">Gas decomp.</text>
+  <text x="580" y="312" text-anchor="middle" font-size="11" font-weight="600" fill="#1971c2">25%→25%</text>
+  <text x="580" y="324" text-anchor="middle" font-size="8" fill="#868e96">(structural floor)</text>
+
+  <polyline points="100,280 220,260 340,248 460,224 580,224" stroke="#495057" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+</svg>
