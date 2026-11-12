@@ -156,19 +156,6 @@ class PlaybookSC2RecorderTest {
         int runs = 5;
 
         for (int run = 1; run <= runs; run++) {
-            if (run > 1) {
-                System.out.printf("[Recorder] Waiting for SC2 to shut down before run %d...%n", run);
-                for (int i = 0; i < 30; i++) {
-                    try (java.net.Socket probe = new java.net.Socket()) {
-                        probe.connect(new java.net.InetSocketAddress("127.0.0.1", 8168), 500);
-                        Thread.sleep(1000);
-                    } catch (java.io.IOException e) {
-                        break;
-                    }
-                }
-                Thread.sleep(2000);
-            }
-
             QuarkusSC2Transport transport = new QuarkusSC2Transport();
             transport.sc2Port                = 8168;
             transport.mapName                = "TorchesAIE_v4";
@@ -199,6 +186,9 @@ class PlaybookSC2RecorderTest {
             Files.writeString(cadenceOutput, cadenceJson);
             System.out.printf("[Recorder] Run %d/%d: Worker cadence written to %s (%d bytes, %d ticks)%n",
                               run, runs, cadenceOutput, cadenceJson.length(), adapter.snapshots().size());
+
+            new ProcessBuilder("pkill", "-9", "-f", "SC2.app/Contents/MacOS/SC2").start().waitFor();
+            Thread.sleep(3000);
         }
     }
 
