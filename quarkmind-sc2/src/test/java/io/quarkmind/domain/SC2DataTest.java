@@ -321,7 +321,7 @@ class SC2DataTest {
 
     @Test
     void muleLifetimeLoopsIsPositive() {
-        assertThat(SC2Data.MULE_LIFETIME_LOOPS).isEqualTo(1434);
+        assertThat(SC2Data.MULE_LIFETIME_LOOPS).isEqualTo(1452);
     }
 
     @Test

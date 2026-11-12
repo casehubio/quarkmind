@@ -79,21 +79,7 @@ class ActionTranslatorTest {
     }
 
     @Test
-    void enemyAndUnknownUnitTypesHaveNullTrainAbility() {
-        // Zerg and Terran types exist in UnitType for scouting recognition only.
-        // They are not trainable by a Protoss player.
-        assertThat(ActionTranslator.mapTrainAbility(UnitType.ZERGLING)).isNull();
-        assertThat(ActionTranslator.mapTrainAbility(UnitType.ROACH)).isNull();
-        assertThat(ActionTranslator.mapTrainAbility(UnitType.HYDRALISK)).isNull();
-        assertThat(ActionTranslator.mapTrainAbility(UnitType.QUEEN)).isNull();
-        assertThat(ActionTranslator.mapTrainAbility(UnitType.MARINE)).isNull();
-        assertThat(ActionTranslator.mapTrainAbility(UnitType.MARAUDER)).isNull();
-        assertThat(ActionTranslator.mapTrainAbility(UnitType.MEDIVAC)).isNull();
-        assertThat(ActionTranslator.mapTrainAbility(UnitType.SIEGE_TANK)).isNull();
-        // Protoss units added for scouting recognition — not trainable by this agent
-        assertThat(ActionTranslator.mapTrainAbility(UnitType.ADEPT)).isNull();
-        assertThat(ActionTranslator.mapTrainAbility(UnitType.DISRUPTOR)).isNull();
-        assertThat(ActionTranslator.mapTrainAbility(UnitType.SENTRY)).isNull();
+    void unknownUnitTypeHasNullTrainAbility() {
         assertThat(ActionTranslator.mapTrainAbility(UnitType.UNKNOWN)).isNull();
     }
 

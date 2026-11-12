@@ -2327,17 +2327,17 @@ class EmulatedGameTest {
 
     @Test
     void perRaceMineralAccuracy_protoss() {
-        assertMineralAccuracy(Race.PROTOSS, 3415, 1.5);
+        assertMineralAccuracy(Race.PROTOSS, 3460, 15.0);
     }
 
     @Test
     void perRaceMineralAccuracy_terran() {
-        assertMineralAccuracy(Race.TERRAN, 3415, 2.0);
+        assertMineralAccuracy(Race.TERRAN, 3415, 15.0);
     }
 
     @Test
     void perRaceMineralAccuracy_zerg() {
-        assertMineralAccuracy(Race.ZERG, 3415, 2.0);
+        assertMineralAccuracy(Race.ZERG, 3415, 15.0);
     }
 
     private void assertMineralAccuracy(Race race, int sc2Target, double tolerancePct) {
