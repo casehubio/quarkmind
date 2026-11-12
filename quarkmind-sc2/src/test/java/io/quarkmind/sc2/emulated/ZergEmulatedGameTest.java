@@ -70,6 +70,14 @@ class ZergEmulatedGameTest {
         assertThat(model.larvaCount(hatcheryTag)).isEqualTo(3);
     }
 
+    @Test
+    void initialState_zerg_hasThreeLarvaUnitsInSnapshot() {
+        final long larva = game.snapshot().myUnits().stream()
+                               .filter(u -> u.type() == UnitType.LARVA).count();
+        assertThat(larva).isEqualTo(3);
+    }
+
+
     // --- Worker income ---
 
     @Test

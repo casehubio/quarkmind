@@ -26,17 +26,20 @@ class ZergRaceModel implements RaceModel {
     static final double INJECT_COST_ENERGY = 25.0;
     static final int    INJECT_LARVA_COUNT = 4;
 
-    private final Map<String, Integer> hatcheryLarvaCount    = new HashMap<>();
+    private final Map<String, Deque<String>> hatcheryLarvaTags = new HashMap<>();
     private final Map<String, Long>    hatcheryNextLarvaLoop = new HashMap<>();
     private final Map<String, Deque<String>> eggTagByBuilding = new HashMap<>();
     private final Map<String, Double>  queenEnergyMap        = new HashMap<>();
+    private       int                  larvaTagCounter;
+
 
     @Override
     public void seedInitialState(final PlayerState state, final List<Resource> geysers) {
-        hatcheryLarvaCount.clear();
+        hatcheryLarvaTags.clear();
         hatcheryNextLarvaLoop.clear();
         eggTagByBuilding.clear();
         queenEnergyMap.clear();
+        larvaTagCounter = 0;
 
         state.setMinerals(SC2Data.INITIAL_MINERALS);
         state.setVespene(SC2Data.INITIAL_VESPENE);
@@ -46,26 +49,20 @@ class ZergRaceModel implements RaceModel {
         for (int i = 0; i < INITIAL_WORKERS; i++) {
             final int hp = SC2Data.maxHealth(UnitType.DRONE);
             state.addUnit(new Unit("drone-" + i, UnitType.DRONE,
-                new Point2d(9 + i * 0.5f, 9), hp, hp, 0, 0, 0, 0));
+                                   new Point2d(9 + i * 0.5f, 9), hp, hp, 0, 0, 0, 0));
         }
 
         final String hatcheryTag = "hatchery-0";
         state.addBuilding(new Building(hatcheryTag, BuildingType.HATCHERY,
-            new Point2d(8, 8),
-            SC2Data.maxBuildingHealth(BuildingType.HATCHERY),
-            SC2Data.maxBuildingHealth(BuildingType.HATCHERY),
-            true));
-        hatcheryLarvaCount.put(hatcheryTag, MAX_LARVA);
-
-        for (int i = 0; i < MAX_LARVA; i++) {
-            final int larvaHp = SC2Data.maxHealth(UnitType.LARVA);
-            state.addUnit(new Unit("larva-" + i, UnitType.LARVA,
-                new Point2d(8 + i * 0.3f, 8.5f), larvaHp, larvaHp, 0, 0, 0, 0));
-        }
+                                       new Point2d(8, 8),
+                                       SC2Data.maxBuildingHealth(BuildingType.HATCHERY),
+                                       SC2Data.maxBuildingHealth(BuildingType.HATCHERY),
+                                       true));
+        seedLarvaForHatchery(state, hatcheryTag, MAX_LARVA);
 
         final int overlordHp = SC2Data.maxHealth(UnitType.OVERLORD);
         state.addUnit(new Unit("overlord-0", UnitType.OVERLORD,
-            new Point2d(14, 14), overlordHp, overlordHp, 0, 0, 0, 0));
+                               new Point2d(14, 14), overlordHp, overlordHp, 0, 0, 0, 0));
 
         geysers.add(new Resource("geyser-0", new Point2d(15, 11), 2250));
         geysers.add(new Resource("geyser-1", new Point2d(11, 15), 2250));
@@ -75,35 +72,57 @@ class ZergRaceModel implements RaceModel {
     public double tickPassive(final PlayerState state, final long gameLoop) {
         for (final Building b : state.buildings()) {
             if (!townHallTypes().contains(b.type()) || !b.isComplete()) {continue;}
-            final String tag   = b.tag();
-            final int    count = hatcheryLarvaCount.getOrDefault(tag, 0);
-            if (count >= MAX_LARVA) {continue;}
+            final String        tag  = b.tag();
+            final Deque<String> tags = hatcheryLarvaTags.getOrDefault(tag, new ArrayDeque<>());
+            if (tags.size() >= MAX_LARVA) {continue;}
             final long nextLoop = hatcheryNextLarvaLoop.getOrDefault(tag, 0L);
             if (gameLoop >= nextLoop) {
-                hatcheryLarvaCount.put(tag, count + 1);
+                seedLarvaForHatchery(state, tag, 1);
                 hatcheryNextLarvaLoop.put(tag, gameLoop + LARVA_REGEN_LOOPS);
             }
         }
 
-        for (final Unit u : state.units()) {
+        final List<Unit> unitsSnapshot = List.copyOf(state.units());
+
+        for (final Unit u : unitsSnapshot) {
             if (u.type() != UnitType.QUEEN) {continue;}
             final double energy = queenEnergyMap.getOrDefault(u.tag(), INJECT_COST_ENERGY);
             queenEnergyMap.put(u.tag(), Math.min(200.0,
                                                  energy + SC2Data.CASTER_ENERGY_REGEN_PER_LOOP * SC2Data.LOOPS_PER_TICK));
         }
 
-        for (final Unit queen : state.units()) {
+        for (final Unit queen : unitsSnapshot) {
             if (queen.type() != UnitType.QUEEN) {continue;}
             final double energy = queenEnergyMap.getOrDefault(queen.tag(), 0.0);
             if (energy < INJECT_COST_ENERGY) {continue;}
             final Building nearest = nearestTownHall(queen.position(), state.buildings());
             if (nearest == null) {continue;}
             final String tag     = nearest.tag();
-            final int    current = hatcheryLarvaCount.getOrDefault(tag, 0);
-            hatcheryLarvaCount.put(tag, Math.min(MAX_INJECT_LARVA, current + INJECT_LARVA_COUNT));
+            final int    current = hatcheryLarvaTags.getOrDefault(tag, new ArrayDeque<>()).size();
+            final int    toAdd   = Math.min(MAX_INJECT_LARVA, current + INJECT_LARVA_COUNT) - current;
+            if (toAdd > 0) {seedLarvaForHatchery(state, tag, toAdd);}
             queenEnergyMap.put(queen.tag(), energy - INJECT_COST_ENERGY);
         }
         return 0;
+    }
+
+
+    private void seedLarvaForHatchery(final PlayerState state, final String hatcheryTag, final int count) {
+        Building hatch = null;
+        for (final Building b : state.buildings()) {
+            if (b.tag().equals(hatcheryTag)) {
+                hatch = b;
+                break;
+            }
+        }
+        final Point2d       pos  = hatch != null ? hatch.position() : new Point2d(8, 8);
+        final Deque<String> tags = hatcheryLarvaTags.computeIfAbsent(hatcheryTag, k -> new ArrayDeque<>());
+        for (int i = 0; i < count; i++) {
+            final String tag = "larva-" + larvaTagCounter++;
+            final int    hp  = SC2Data.maxHealth(UnitType.LARVA);
+            state.addUnit(new Unit(tag, UnitType.LARVA, pos, hp, hp, 0, 0, 0, 0));
+            tags.add(tag);
+        }
     }
 
     private Building nearestTownHall(final Point2d pos, final List<Building> buildings) {
@@ -122,23 +141,27 @@ class ZergRaceModel implements RaceModel {
     @Override
     public ProductionDecision canProduce(final PlayerStateView view, final String buildingTag,
                                          final UnitType unitType) {
-        if (unitType == UnitType.QUEEN) return ProductionDecision.PROCEED;
-        if (hatcheryLarvaCount.getOrDefault(buildingTag, 0) > 0) return ProductionDecision.PROCEED;
+        if (unitType == UnitType.QUEEN) {return ProductionDecision.PROCEED;}
+        final Deque<String> tags = hatcheryLarvaTags.get(buildingTag);
+        if (tags != null && !tags.isEmpty()) {return ProductionDecision.PROCEED;}
         return ProductionDecision.BLOCKED;
     }
 
     @Override
     public void onProductionCommitted(final PlayerState state, final String buildingTag,
                                       final UnitType unitType, final Supplier<String> tagSupplier) {
-        if (unitType == UnitType.QUEEN) return;
-        hatcheryLarvaCount.merge(buildingTag, -1, Integer::sum);
+        if (unitType == UnitType.QUEEN) {return;}
+        final Deque<String> tags = hatcheryLarvaTags.get(buildingTag);
+        if (tags != null && !tags.isEmpty()) {
+            state.removeUnit(tags.poll());
+        }
 
         final Building hatchery = state.buildings().stream()
-            .filter(b -> b.tag().equals(buildingTag))
-            .findFirst().orElse(null);
+                                       .filter(b -> b.tag().equals(buildingTag))
+                                       .findFirst().orElse(null);
         final Point2d eggPos = (hatchery != null) ? hatchery.position() : new Point2d(9, 9);
-        final String eggTag = tagSupplier.get();
-        final int eggHp = SC2Data.maxHealth(UnitType.EGG);
+        final String  eggTag = tagSupplier.get();
+        final int     eggHp  = SC2Data.maxHealth(UnitType.EGG);
         state.addUnit(new Unit(eggTag, UnitType.EGG, eggPos, eggHp, eggHp, 0, 0, 0, 0));
         eggTagByBuilding.computeIfAbsent(buildingTag, k -> new ArrayDeque<>()).add(eggTag);
     }
@@ -159,7 +182,7 @@ class ZergRaceModel implements RaceModel {
     @Override
     public void onBuildingComplete(final PlayerState state, final BuildingType type, final String tag) {
         if (townHallTypes().contains(type)) {
-            hatcheryLarvaCount.put(tag, MAX_LARVA);
+            seedLarvaForHatchery(state, tag, MAX_LARVA);
             hatcheryNextLarvaLoop.remove(tag);
         }
     }
@@ -182,7 +205,10 @@ class ZergRaceModel implements RaceModel {
 
     @Override public Set<BuildingType> townHallTypes() { return TOWN_HALLS; }
 
-    int larvaCount(final String hatcheryTag)  { return hatcheryLarvaCount.getOrDefault(hatcheryTag, 0); }
+    int larvaCount(final String hatcheryTag) {
+        final Deque<String> tags = hatcheryLarvaTags.get(hatcheryTag);
+        return tags != null ? tags.size() : 0;
+    }
     double queenEnergy(final String queenTag) { return queenEnergyMap.getOrDefault(queenTag, 0.0); }
     void setQueenEnergyForTesting(final String queenTag, final double energy) { queenEnergyMap.put(queenTag, energy); }
     boolean eggPendingForBuilding(final String buildingTag) {
