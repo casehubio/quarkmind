@@ -3,7 +3,6 @@ package io.quarkmind.sc2.playbook;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.Race;
 import io.quarkmind.domain.Resource;
-import io.quarkmind.domain.WorkerAction;
 import io.quarkmind.sc2.emulated.EmulatedGame;
 import io.quarkmind.sc2.emulated.RaceModelFactory;
 import org.junit.jupiter.api.Tag;
@@ -148,6 +147,167 @@ class WorkerCadenceComparisonTest {
                     w, cycles.size(), avg, min, max);
         }
     }
+
+    @Test
+    void cycleLengthHistogram() {
+        WorkerCadenceBaseline sc2 = loadWorkerCadence("calibration/cal-worker-cadence-12w.json");
+        CalibrationBaseline   cal = loadCalibration("calibration/cal-mineral-baseline-12w.json");
+
+        Map<Integer, Integer> sc2Histogram = new TreeMap<>();
+        Map<Integer, Integer> emHistogram  = new TreeMap<>();
+
+        extractCycleLengths(sc2).values().stream()
+                                .flatMap(List::stream)
+                                .forEach(c -> sc2Histogram.merge(c, 1, Integer::sum));
+
+        EmulatedGame game = setupGame(cal);
+        extractEmCycleLengths(game, 304).values().stream()
+                                        .flatMap(List::stream)
+                                        .forEach(c -> emHistogram.merge(c, 1, Integer::sum));
+
+        int maxCycle = Math.max(
+                sc2Histogram.keySet().stream().mapToInt(Integer::intValue).max().orElse(0),
+                emHistogram.keySet().stream().mapToInt(Integer::intValue).max().orElse(0));
+        int sc2Total = sc2Histogram.values().stream().mapToInt(Integer::intValue).sum();
+        int emTotal  = emHistogram.values().stream().mapToInt(Integer::intValue).sum();
+
+        System.out.println("=== Cycle Length Histogram (single SC2 run) ===\n");
+        System.out.println("Cycle | SC2 cnt (%) | EM cnt (%)  | Bar (SC2=# EM=*)");
+        System.out.println("------|-------------|-------------|------------------");
+        for (int c = 2; c <= maxCycle; c++) {
+            int    sc2c   = sc2Histogram.getOrDefault(c, 0);
+            int    emc    = emHistogram.getOrDefault(c, 0);
+            double sc2pct = sc2Total > 0 ? 100.0 * sc2c / sc2Total : 0;
+            double empct  = emTotal > 0 ? 100.0 * emc / emTotal : 0;
+            String sc2Bar = "#".repeat(Math.min((int) (sc2pct / 2), 40));
+            String emBar  = "*".repeat(Math.min((int) (empct / 2), 40));
+            System.out.printf("  %3d | %4d (%4.1f%%) | %4d (%4.1f%%) | %s %s%n",
+                              c, sc2c, sc2pct, emc, empct, sc2Bar, emBar);
+        }
+        System.out.printf("%nSC2 total cycles: %d, EM total cycles: %d%n", sc2Total, emTotal);
+
+        double sc2Mean = sc2Histogram.entrySet().stream()
+                                     .mapToDouble(e -> e.getKey() * e.getValue()).sum() / sc2Total;
+        double emMean = emHistogram.entrySet().stream()
+                                   .mapToDouble(e -> e.getKey() * e.getValue()).sum() / emTotal;
+        double sc2Var = sc2Histogram.entrySet().stream()
+                                    .mapToDouble(e -> e.getValue() * Math.pow(e.getKey() - sc2Mean, 2)).sum() / sc2Total;
+        double emVar = emHistogram.entrySet().stream()
+                                  .mapToDouble(e -> e.getValue() * Math.pow(e.getKey() - emMean, 2)).sum() / emTotal;
+        System.out.printf("SC2: mean=%.2f, σ=%.2f  |  EM: mean=%.2f, σ=%.2f%n",
+                          sc2Mean, Math.sqrt(sc2Var), emMean, Math.sqrt(emVar));
+    }
+
+    @Test
+    void multiRunCycleLengthHistogram() {
+        Map<Integer, Integer> sc2Histogram = new TreeMap<>();
+        int                   runCount     = 0;
+        for (int run = 1; run <= 10; run++) {
+            try {
+                WorkerCadenceBaseline sc2 = loadWorkerCadence(
+                        "calibration/multi-run/cal-worker-cadence-12w-run-" + run + ".json");
+                extractCycleLengths(sc2).values().stream()
+                                        .flatMap(List::stream)
+                                        .forEach(c -> sc2Histogram.merge(c, 1, Integer::sum));
+                runCount++;
+            } catch (RuntimeException ignored) {}
+        }
+        if (runCount == 0) {
+            System.out.println("No multi-run data found. Run PlaybookSC2RecorderTest#recordMultiRunCadence12w first.");
+            return;
+        }
+
+        CalibrationBaseline   cal         = loadCalibration("calibration/cal-mineral-baseline-12w.json");
+        Map<Integer, Integer> emHistogram = new TreeMap<>();
+        EmulatedGame          game        = setupGame(cal);
+        extractEmCycleLengths(game, 304).values().stream()
+                                        .flatMap(List::stream)
+                                        .forEach(c -> emHistogram.merge(c, 1, Integer::sum));
+
+        int maxCycle = Math.max(
+                sc2Histogram.keySet().stream().mapToInt(Integer::intValue).max().orElse(0),
+                emHistogram.keySet().stream().mapToInt(Integer::intValue).max().orElse(0));
+        int sc2Total = sc2Histogram.values().stream().mapToInt(Integer::intValue).sum();
+        int emTotal  = emHistogram.values().stream().mapToInt(Integer::intValue).sum();
+
+        System.out.printf("=== Cycle Length Histogram (%d SC2 runs aggregated) ===%n%n", runCount);
+        System.out.println("Cycle | SC2 cnt (%) | EM cnt (%)  | Bar (SC2=# EM=*)");
+        System.out.println("------|-------------|-------------|------------------");
+        for (int c = 2; c <= maxCycle; c++) {
+            int    sc2c   = sc2Histogram.getOrDefault(c, 0);
+            int    emc    = emHistogram.getOrDefault(c, 0);
+            double sc2pct = sc2Total > 0 ? 100.0 * sc2c / sc2Total : 0;
+            double empct  = emTotal > 0 ? 100.0 * emc / emTotal : 0;
+            String sc2Bar = "#".repeat(Math.min((int) (sc2pct / 2), 40));
+            String emBar  = "*".repeat(Math.min((int) (empct / 2), 40));
+            System.out.printf("  %3d | %4d (%4.1f%%) | %4d (%4.1f%%) | %s %s%n",
+                              c, sc2c, sc2pct, emc, empct, sc2Bar, emBar);
+        }
+        System.out.printf("%nSC2 total cycles: %d (%d runs), EM total cycles: %d%n",
+                          sc2Total, runCount, emTotal);
+
+        double sc2Mean = sc2Histogram.entrySet().stream()
+                                     .mapToDouble(e -> e.getKey() * e.getValue()).sum() / sc2Total;
+        double emMean = emHistogram.entrySet().stream()
+                                   .mapToDouble(e -> e.getKey() * e.getValue()).sum() / emTotal;
+        double sc2Var = sc2Histogram.entrySet().stream()
+                                    .mapToDouble(e -> e.getValue() * Math.pow(e.getKey() - sc2Mean, 2)).sum() / sc2Total;
+        double emVar = emHistogram.entrySet().stream()
+                                  .mapToDouble(e -> e.getValue() * Math.pow(e.getKey() - emMean, 2)).sum() / emTotal;
+        System.out.printf("SC2: mean=%.2f, σ=%.2f  |  EM: mean=%.2f, σ=%.2f%n",
+                          sc2Mean, Math.sqrt(sc2Var), emMean, Math.sqrt(emVar));
+    }
+
+    private static Map<Integer, List<Integer>> extractCycleLengths(WorkerCadenceBaseline baseline) {
+        Map<Integer, List<Integer>> cycleLengths     = new HashMap<>();
+        int                         workerCount      = baseline.cadence().get(0).workers().size();
+        int[]                       prevDeliveryTick = new int[workerCount];
+        String[]                    prevAction       = new String[workerCount];
+        java.util.Arrays.fill(prevDeliveryTick, -1);
+
+        for (int tick = 0; tick < baseline.tickCount(); tick++) {
+            List<WorkerSnapshot> workers = baseline.cadence().get(tick).workers();
+            for (int w = 0; w < Math.min(workers.size(), workerCount); w++) {
+                String act = workers.get(w).action().name();
+                if (prevAction[w] != null && prevAction[w].equals("GATHERING_MINERALS")
+                    && act.equals("RETURNING_MINERALS")) {
+                    if (prevDeliveryTick[w] >= 0) {
+                        int cycle = tick - prevDeliveryTick[w];
+                        cycleLengths.computeIfAbsent(w, k -> new java.util.ArrayList<>()).add(cycle);
+                    }
+                    prevDeliveryTick[w] = tick;
+                }
+                prevAction[w] = act;
+            }
+        }
+        return cycleLengths;
+    }
+
+    private static Map<Integer, List<Integer>> extractEmCycleLengths(EmulatedGame game, int ticks) {
+        Map<Integer, List<Integer>> cycleLengths     = new HashMap<>();
+        int[]                       prevDeliveryTick = new int[12];
+        String[]                    prevAction       = new String[12];
+        java.util.Arrays.fill(prevDeliveryTick, -1);
+
+        for (int tick = 0; tick <= ticks; tick++) {
+            List<WorkerSnapshot> emw = game.workerSnapshots();
+            for (int w = 0; w < Math.min(emw.size(), 12); w++) {
+                String act = emw.get(w).action().name();
+                if (prevAction[w] != null && prevAction[w].equals("GATHERING_MINERALS")
+                    && act.equals("RETURNING_MINERALS")) {
+                    if (prevDeliveryTick[w] >= 0) {
+                        int cycle = tick - prevDeliveryTick[w];
+                        cycleLengths.computeIfAbsent(w, k -> new java.util.ArrayList<>()).add(cycle);
+                    }
+                    prevDeliveryTick[w] = tick;
+                }
+                prevAction[w] = act;
+            }
+            game.tick();
+        }
+        return cycleLengths;
+    }
+
 
     private static EmulatedGame setupGame(CalibrationBaseline cal) {
         EmulatedGame game = new EmulatedGame();

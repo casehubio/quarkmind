@@ -149,6 +149,45 @@ class PlaybookSC2RecorderTest {
                           adapter.snapshots().size());
     }
 
+    @Test
+    void recordMultiRunCadence12w() throws Exception {
+        assumeTrue(QuarkusSC2Transport.isSC2Available(),
+                   "StarCraft II not installed — skipping live SC2 test");
+        int runs = 5;
+        for (int run = 1; run <= runs; run++) {
+            QuarkusSC2Transport transport = new QuarkusSC2Transport();
+            transport.sc2Port                = 8168;
+            transport.mapName                = "TorchesAIE_v4";
+            transport.difficultyStr          = "VERY_EASY";
+            transport.aiRaceStr              = "RANDOM";
+            transport.botRaceStr             = "PROTOSS";
+            transport.connectRetryCount      = 60;
+            transport.connectRetryIntervalMs = 5000;
+            transport.connect();
+            transport.createGame();
+            transport.joinGame();
+
+            PlaybookSC2Adapter adapter = new PlaybookSC2Adapter(
+                    transport, "playbooks/cal-mineral-baseline-12w.yaml");
+
+            transport.runGameLoop(adapter);
+            while (!transport.isRunning()) {Thread.sleep(50);}
+            while (transport.isRunning()) {Thread.sleep(100);}
+
+            assertFalse(adapter.workerCadenceSnapshots().isEmpty(),
+                        "Run " + run + ": should have recorded worker cadence snapshots");
+
+            io.quarkmind.sc2.playbook.WorkerCadenceBaseline cadenceBaseline =
+                    adapter.buildWorkerCadenceBaseline("unknown");
+            String cadenceJson   = cadenceBaseline.toJson();
+            Path   cadenceOutput = Path.of("src/test/resources/calibration/multi-run/cal-worker-cadence-12w-run-" + run + ".json");
+            Files.createDirectories(cadenceOutput.getParent());
+            Files.writeString(cadenceOutput, cadenceJson);
+            System.out.printf("[Recorder] Run %d/%d: Worker cadence written to %s (%d bytes, %d ticks)%n",
+                              run, runs, cadenceOutput, cadenceJson.length(), adapter.snapshots().size());
+        }
+    }
+
 
     private void recordPlaybook(String race, String playbookResource, String outputPath) throws Exception {
         assumeTrue(QuarkusSC2Transport.isSC2Available(),
