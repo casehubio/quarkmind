@@ -154,7 +154,21 @@ class PlaybookSC2RecorderTest {
         assumeTrue(QuarkusSC2Transport.isSC2Available(),
                    "StarCraft II not installed — skipping live SC2 test");
         int runs = 5;
+
         for (int run = 1; run <= runs; run++) {
+            if (run > 1) {
+                System.out.printf("[Recorder] Waiting for SC2 to shut down before run %d...%n", run);
+                for (int i = 0; i < 30; i++) {
+                    try (java.net.Socket probe = new java.net.Socket()) {
+                        probe.connect(new java.net.InetSocketAddress("127.0.0.1", 8168), 500);
+                        Thread.sleep(1000);
+                    } catch (java.io.IOException e) {
+                        break;
+                    }
+                }
+                Thread.sleep(2000);
+            }
+
             QuarkusSC2Transport transport = new QuarkusSC2Transport();
             transport.sc2Port                = 8168;
             transport.mapName                = "TorchesAIE_v4";
