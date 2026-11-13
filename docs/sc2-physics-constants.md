@@ -24,14 +24,37 @@ Each entry documents value, source, and confidence level.
 
 ---
 
+## 1b. Determinism and Randomness
+
+SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 environment docs](https://github.com/google-deepmind/pysc2/blob/master/docs/environment.md#determinism-and-randomness)):
+
+| Source | Scope | Magnitude | Purpose |
+|--------|-------|-----------|---------|
+| **Update order** | Per game loop | Full event reordering | Cosmetic — makes groups of units look less robotic |
+| **Weapon speed** | Per shot | −1 to +2 game steps | Cosmetic — desynchronizes firing in groups |
+
+**Update order** randomizes the processing order of all events within a single game loop. For mining: which worker reaches a patch first, which deposits first, and collision resolution priority all vary randomly per loop. This is the structural source of per-cycle timing variance (SC2 σ=2.54 ticks across 5 controlled games, #634).
+
+**Weapon speed** adds −1 to +2 game steps to the cooldown between shots. A 1v1 mirror matchup (e.g. Marine vs Marine) produces a random outcome. Affects combat only, not economy.
+
+**Auto-targeting** is deterministic but complex — based on weapon scan distance, threat level, and assistance. Units prioritize enemies that can return fire, and healers raise their target's priority.
+
+**Replays** work by saving the random seed alongside the action list. Same seed + same actions = identical game. This confirms the randomness is real but seeded.
+
+**EM implementation status:** Worker processing order is currently deterministic (`LinkedHashMap` iteration). Shuffling worker order per loop is the correct fix (#634) — this matches what SC2 does and produces variance naturally from the physics. Weapon speed randomness is not yet modeled.
+
+---
+
 ## 2. Worker Movement
 
 | Constant | Value | Unit | Source | Confidence | Config property |
 |----------|-------|------|--------|------------|-----------------|
 | Worker max speed | 3.94 | u/s | Liquipedia | **Published** — already ×1.4 scaled | — |
-| Acceleration | 3.5 | u/s² | SC2Mapster (2.5) × 1.4 | **Calibrated** — #578 | `starcraft.worker.acceleration` |
-| Deceleration | 3.5 | u/s² | SC2Mapster (defaults to accel) × 1.4 | **Calibrated** — #578 | `starcraft.worker.deceleration` |
+| Acceleration | 10.0 | u/s² | Cycle variance calibration #634 | **Under validation — #634/#648** | `starcraft.worker.acceleration` |
+| Deceleration | 10.0 | u/s² | Cycle variance calibration #634 | **Under validation — #634/#648** | `starcraft.worker.deceleration` |
 | Arrival threshold | 0.5 | units | Engineering choice | N/A | — |
+
+**Acceleration note (#634):** Changed from 3.5 (SC2Mapster × 1.4, calibrated #578) to 10.0 to reduce walk time overhead and enable sub-4-tick mining cycles. The original 3.5 was calibrated for total mineral income accuracy; the new 10.0 is calibrated for cycle length distribution shape. Needs SC2 per-worker velocity observation to validate — #648.
 
 **Movement profile:** Workers reach max speed (3.94 u/s) after 2.22 units of acceleration. With edge-to-edge walk targets (#631), walk distances are center-to-center minus TOWN_HALL_RADIUS (2.5) minus MINERAL_PATCH_RADIUS (1.0) = center-to-center − 3.5. Default 7.0u center-to-center → 3.5u edge-to-edge. At 3.5u the profile is triangular (below 4.4u threshold) — the worker never reaches max speed. Trip at 3.5u: ~32 loops (1.43s). At 4.5u: ~37 loops. At 5.5u: ~44 loops.
 
@@ -43,8 +66,8 @@ Each entry documents value, source, and confidence level.
 
 | Constant | Code value | Real SC2 | Source | Confidence | Config property |
 |----------|-----------|----------|--------|------------|-----------------|
-| Mining duration | 22 loops (0.98s) | ~22 loops (1 tick) | SC2 per-worker observation: position stable at patch for 1 tick | **Calibrated** — #631 observation data | `starcraft.worker.mining-duration-loops` |
-| Approach/docking delay | 11 loops (0.49s) | ~11 loops | SC2 per-worker observation: uncontested cycle (66L) − walk (33L) − mine (22L) | **Calibrated** — #631 | `starcraft.worker.approach-docking-loops` |
+| Mining duration | 12 loops (0.54s) | ~22 loops (1 tick) | Cycle variance calibration #634 | **Under validation — #634/#648** | `starcraft.worker.mining-duration-loops` |
+| Approach/docking delay | 0 loops | ~11 loops | Eliminated — cycle variance calibration #634 | **Under validation — #634/#648** | `starcraft.worker.approach-docking-loops` |
 | Mineral cargo | 5 | 5 | Liquipedia | **Published** | — |
 | Rich mineral cargo | 7 | 7 | Liquipedia | **Published** | — |
 | Max miners per patch | 1 (active) | 1 | SC2 mechanics | **Published** | — |
@@ -52,11 +75,15 @@ Each entry documents value, source, and confidence level.
 | Close patches per base | 4 | 4 | SC2 map standard | **Published** | — |
 | Mining start delay | 1 tick | — | Dual-run calibration #401 | **Historical** — superseded by initial walk delay (§14) | — |
 | Patch docking overhead | 22 loops (1 tick) | 22 loops | SC2 per-worker cadence: contested − uncontested = 22 loops | **Calibrated** — #631 | `starcraft.worker.patch-docking-overhead-loops` |
-| Deposit duration | 7 loops (0.31s) | ~7 loops | SC2 per-worker observation: return phase (40L) − walk (33L) | **Calibrated** — #631 | `starcraft.worker.deposit-duration-loops` |
+| Deposit duration | 0 loops | ~7 loops | Eliminated — cycle variance calibration #634 | **Under validation — #634/#648** | `starcraft.worker.deposit-duration-loops` |
 | Initial worker stagger | 6.1 loops | — | Dual-run sweep to match SC2 12w delivery spread | **Calibrated** — #609/#578 | `starcraft.worker.initial-worker-stagger` |
-| Collision speed factor | 0.952 | — | Dual-run sweep against SC2 16w saturation | **Calibrated** — #630 | `starcraft.worker.collision-speed-factor` |
+| Collision speed factor (same-direction) | 0.99 | — | Cycle variance calibration #634 | **Under validation — #634/#648** | `starcraft.worker.collision-speed-factor` |
+| Collision speed factor (head-on) | 0.2 | — | Cycle variance calibration #634 — asymmetric, yielder only | **Under validation — #634/#648** | `HEAD_ON_SPEED_FACTOR` (compile-time) |
+| Collision radius | 0.75 | units | Cycle variance calibration #634 | **Under validation — #634/#648** | `COLLISION_RADIUS` (compile-time) |
 
-**Mining cycle decomposition (#620→#631):** Three explicit phases: mining animation (22 loops), deposit at base (7 loops), and approach/docking at patch (11 loops). Mining duration measured from SC2 per-worker observation data: position is stationary at the patch for exactly 1 tick (22 loops) before cargo flip. Deposit duration from the return phase (40L total) minus walk time (33L). Approach from uncontested cycle (66L) minus walk (33L) minus mine (22L). Total per-cycle overhead: 22+7+11=40 loops.
+**Mining cycle decomposition (#620→#631→#634):** Originally three explicit phases: mining animation (22 loops), deposit at base (7 loops), and approach/docking at patch (11 loops), totalling 40 loops overhead per cycle. Calibrated from SC2 per-worker observation data (#631).
+
+**#634 revision:** Deposit and approach/docking eliminated (set to 0), mining reduced to 12 loops. These fixed overheads were absorbing variance — every worker paid the same 40 loops regardless of collisions. With direction-dependent collision severity (#634) and randomized processing order (§1b), the per-cycle timing variance emerges from the physics instead. Current total overhead: 12 loops (mining only). **Under validation — #648** needs SC2 per-phase re-validation to confirm these phases can be eliminated vs shortened.
 
 **SC2 observed cycle phases (#631, 12w cadence data, 1366 transitions):**
 
@@ -70,7 +97,16 @@ Each entry documents value, source, and confidence level.
 
 Uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66 loops. EM matches SC2 exactly. Contested cycles add exactly 1 tick (22 loops) in both SC2 and EM — docking overhead correctly calibrated.
 
-**Per-patch approach docking (#636) — disabled:** `MineralPatch` supports per-patch approach via `APPROACH_DISTANCE_SCALE`, but it is currently set to 0. All patches use the global approach constant (11.0 loops). The formula was tested (SCALE=2.5 improved cadence to 75.3%) but reverted — it was a compensation constant, not a physics simulation. The approach time should emerge from worker collision and path contention.
+**Direction-dependent collision model (#634):** Collision severity now depends on worker travel direction. For each colliding pair, the dot product of travel directions determines the penalty:
+- **Head-on** (dot < −0.3): yielding worker gets speed × 0.2 (near-stop); passing worker gets speed × 0.99 (transparent). Yielder chosen deterministically by tag hashCode.
+- **Same-direction** (dot ≥ −0.3): both workers get speed × 0.99 (base factor — nearly transparent).
+- **Walking-into-stationary**: always head-on severity (0.2) — stationary workers at patches are physical obstacles.
+
+The asymmetric penalty is key: penalising only the yielder halves the mean impact while keeping the same maximum delay for unlucky workers. Variance comes from some workers getting stuck while others sail through.
+
+**Collision radius (#634):** Increased from 0.375 to 0.75 (diameter 1.5). PySC2 docs confirm SC2 unit size is ~0.75 game units — validates the collision diameter. The larger interaction zone creates more collision events, which combined with direction-dependent severity produces the right-skewed cycle length distribution.
+
+**Per-patch approach docking (#636) — disabled:** `MineralPatch` supports per-patch approach via `APPROACH_DISTANCE_SCALE`, but it is currently set to 0. All patches use the global approach constant (now 0 loops after #634). The formula was tested (SCALE=2.5 improved cadence to 75.3%) but reverted — it was a compensation constant, not a physics simulation.
 
 **Patch docking overhead:** After a miner departs a mineral patch, the patch is locked for 22 loops (1 tick) before the next worker can start. Measured from SC2 per-worker cadence data: contested cycles (deposit→pickup) take exactly 1 tick longer than uncontested cycles (88 vs 66 loops).
 
@@ -608,19 +644,21 @@ Worker physics and economy constants — override without recompiling:
 
 ```properties
 # application.properties or -D flags
-starcraft.worker.mining-duration-loops=22.0
+starcraft.worker.mining-duration-loops=12.0       # was 22.0, under validation #634/#648
 starcraft.worker.gas-harvest-duration-loops=26.0
-starcraft.worker.deposit-duration-loops=7.0
-starcraft.worker.approach-docking-loops=11.0
-starcraft.worker.collision-speed-factor=0.952
-starcraft.worker.acceleration=3.5
-starcraft.worker.deceleration=3.5
+starcraft.worker.deposit-duration-loops=0.0        # was 7.0, under validation #634/#648
+starcraft.worker.approach-docking-loops=0.0        # was 11.0, under validation #634/#648
+starcraft.worker.collision-speed-factor=0.99       # was 0.952, under validation #634/#648
+starcraft.worker.acceleration=10.0                 # was 3.5, under validation #634/#648
+starcraft.worker.deceleration=10.0                 # was 3.5, under validation #634/#648
 starcraft.worker.patch-docking-overhead-loops=22.0
 starcraft.worker.patch-distance=7.0
 starcraft.worker.initial-stagger-loops=6.1
 starcraft.economy.rate-interval-loops=160
 ```
 
-**Static-field constants (not Quarkus config — set in test code):**
-- `MineralPatch.APPROACH_DISTANCE_SCALE` (default 0, disabled) — per-patch approach docking scale factor; infrastructure only, reverted from 2.5
+**Static-field constants (not Quarkus config — set in code):**
+- `SimulatedWorker.COLLISION_RADIUS` (0.75, was 0.375) — worker collision detection radius; under validation #634/#648
+- `WorkerSimulation.HEAD_ON_SPEED_FACTOR` (0.2) — speed multiplier for yielding worker in head-on collision; new in #634
+- `MineralPatch.APPROACH_DISTANCE_SCALE` (default 0, disabled) — per-patch approach docking scale factor; infrastructure only
 - `GasSlot.ENTRY_LOCK_DURATION` (default 0) — gas entrance queuing lock duration in loops

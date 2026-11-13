@@ -53,6 +53,7 @@ This is an application, not a framework. If the capability requires SC2 game kno
 - Always use `double` arithmetic. No integer truncation in the income path.
 - Calibrate from controlled SC2 dual-run baselines, not oracle replays. Oracle replays have event gaps and confound physics with player behavior.
 - Per-tick delivery deltas must be exact multiples of 5 (mineral cargo). Non-5-multiples indicate a compensation factor artifact.
+- SC2 randomises event processing order per game loop ([PySC2 docs](https://github.com/google-deepmind/pysc2/blob/master/docs/environment.md#determinism-and-randomness)). The EM must shuffle worker processing order per loop — deterministic iteration order suppresses cycle variance. See `docs/sc2-physics-constants.md` §1b.
 - Reference: `docs/sc2-physics-constants.md` — living reference for all simulation constants.
 
 ---
