@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320">
+  <style>
+    text { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .title { font-size: 15px; font-weight: 600; fill: #1a1a2e; }
+    .subtitle { font-size: 11px; fill: #666; }
+    .label { font-size: 11px; fill: #333; }
+    .small-label { font-size: 10px; fill: #555; }
+    .worker { fill: #4a90d9; stroke: #2a70b9; stroke-width: 1.5; }
+    .worker-yield { fill: #d94a4a; stroke: #b92a2a; stroke-width: 1.5; }
+    .worker-pass { fill: #4ad97a; stroke: #2ab95a; stroke-width: 1.5; }
+    .arrow { fill: none; stroke: #444; stroke-width: 1.5; marker-end: url(#arrowhead); }
+    .arrow-slow { fill: none; stroke: #d94a4a; stroke-width: 2; stroke-dasharray: 4,3; marker-end: url(#arrowhead-red); }
+    .arrow-fast { fill: none; stroke: #4ad97a; stroke-width: 2; marker-end: url(#arrowhead-green); }
+    .patch { fill: #5bc0de; stroke: #3aa0be; stroke-width: 1; rx: 3; }
+    .nexus { fill: #e8c94a; stroke: #c8a92a; stroke-width: 1.5; rx: 4; }
+    .zone { fill: none; stroke: #d94a4a; stroke-width: 1; stroke-dasharray: 3,3; opacity: 0.6; }
+    .divider { stroke: #ccc; stroke-width: 1; stroke-dasharray: 8,4; }
+    .panel-label { font-size: 13px; font-weight: 600; fill: #1a1a2e; }
+    .factor { font-size: 12px; font-weight: 600; }
+    .factor-red { fill: #d94a4a; }
+    .factor-green { fill: #4ad97a; }
+    .factor-grey { fill: #999; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#444"/>
+    </marker>
+    <marker id="arrowhead-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#d94a4a"/>
+    </marker>
+    <marker id="arrowhead-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#4ad97a"/>
+    </marker>
+  </defs>
+
+  <text x="360" y="25" text-anchor="middle" class="title">Direction-Dependent Collision Resolution</text>
+
+  <!-- Divider -->
+  <line x1="360" y1="40" x2="360" y2="310" class="divider"/>
+
+  <!-- Left panel: Head-on -->
+  <text x="180" y="55" text-anchor="middle" class="panel-label">Head-on collision</text>
+  <text x="180" y="70" text-anchor="middle" class="subtitle">Workers walking toward each other</text>
+
+  <!-- Nexus (left) -->
+  <rect x="40" y="135" width="40" height="30" class="nexus"/>
+  <text x="60" y="155" text-anchor="middle" class="small-label">Base</text>
+
+  <!-- Patch (right) -->
+  <rect x="270" y="135" width="30" height="25" class="patch"/>
+  <text x="285" y="152" text-anchor="middle" class="small-label">Patch</text>
+
+  <!-- Workers approaching each other -->
+  <circle cx="140" cy="148" r="10" class="worker-pass"/>
+  <text x="140" y="152" text-anchor="middle" class="small-label" style="fill:white; font-weight:600">→</text>
+  <circle cx="210" cy="148" r="10" class="worker-yield"/>
+  <text x="210" y="152" text-anchor="middle" class="small-label" style="fill:white; font-weight:600">←</text>
+
+  <!-- Collision zone -->
+  <circle cx="175" cy="148" r="30" class="zone"/>
+
+  <!-- Arrows showing outcome -->
+  <path d="M 140 175 L 140 200 L 205 200" class="arrow-fast"/>
+  <text x="175" y="215" text-anchor="middle" class="small-label">passes through</text>
+
+  <path d="M 210 175 L 210 240 L 210 250" class="arrow-slow"/>
+  <text x="210" y="265" text-anchor="middle" class="small-label">nearly stops</text>
+
+  <text x="140" y="290" text-anchor="middle" class="factor factor-green">speed × 0.99</text>
+  <text x="240" y="290" text-anchor="middle" class="factor factor-red">speed × 0.2</text>
+  <text x="180" y="305" text-anchor="middle" class="subtitle">Yielder must re-accelerate → +10–30 loops</text>
+
+  <!-- Right panel: Same-direction -->
+  <text x="540" y="55" text-anchor="middle" class="panel-label">Same-direction collision</text>
+  <text x="540" y="70" text-anchor="middle" class="subtitle">Workers walking the same way</text>
+
+  <!-- Nexus (left) -->
+  <rect x="400" y="135" width="40" height="30" class="nexus"/>
+  <text x="420" y="155" text-anchor="middle" class="small-label">Base</text>
+
+  <!-- Patch (right) -->
+  <rect x="630" y="135" width="30" height="25" class="patch"/>
+  <text x="645" y="152" text-anchor="middle" class="small-label">Patch</text>
+
+  <!-- Workers going same direction -->
+  <circle cx="510" cy="148" r="10" class="worker"/>
+  <text x="510" y="152" text-anchor="middle" class="small-label" style="fill:white; font-weight:600">→</text>
+  <circle cx="545" cy="148" r="10" class="worker"/>
+  <text x="545" y="152" text-anchor="middle" class="small-label" style="fill:white; font-weight:600">→</text>
+
+  <!-- Both continue -->
+  <path d="M 510 175 L 510 200 L 570 200" class="arrow-fast"/>
+  <path d="M 545 175 L 545 210 L 590 210" class="arrow-fast"/>
+  <text x="540" y="240" text-anchor="middle" class="small-label">both continue, barely affected</text>
+
+  <text x="540" y="290" text-anchor="middle" class="factor factor-grey">speed × 0.99</text>
+  <text x="540" y="305" text-anchor="middle" class="subtitle">Lateral nudge only → no meaningful delay</text>
+</svg>

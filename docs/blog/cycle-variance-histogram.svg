@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400">
+  <style>
+    text { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .title { font-size: 15px; font-weight: 600; fill: #1a1a2e; }
+    .label { font-size: 11px; fill: #444; }
+    .axis-label { font-size: 12px; fill: #333; font-weight: 500; }
+    .tick-label { font-size: 10px; fill: #666; }
+    .legend { font-size: 11px; fill: #333; }
+    .bar-sc2 { fill: #4a90d9; opacity: 0.85; }
+    .bar-em-before { fill: #d94a4a; opacity: 0.7; }
+    .bar-em-after { fill: #4ad97a; opacity: 0.75; }
+    .grid { stroke: #e8e8e8; stroke-width: 0.5; }
+    .axis { stroke: #999; stroke-width: 1; }
+    .annotation { font-size: 10px; fill: #666; font-style: italic; }
+  </style>
+
+  <text x="360" y="25" text-anchor="middle" class="title">Worker Mining Cycle Length Distribution</text>
+  <text x="360" y="42" text-anchor="middle" class="annotation">SC2 aggregate (5 games) vs EmulatedGame before/after collision model changes</text>
+
+  <!-- Grid lines -->
+  <line x1="80" y1="70" x2="80" y2="340" class="axis"/>
+  <line x1="80" y1="340" x2="700" y2="340" class="axis"/>
+
+  <!-- Y-axis gridlines and labels -->
+  <line x1="80" y1="286" x2="700" y2="286" class="grid"/>
+  <line x1="80" y1="232" x2="700" y2="232" class="grid"/>
+  <line x1="80" y1="178" x2="700" y2="178" class="grid"/>
+  <line x1="80" y1="124" x2="700" y2="124" class="grid"/>
+  <line x1="80" y1="70" x2="700" y2="70" class="grid"/>
+
+  <text x="75" y="344" text-anchor="end" class="tick-label">0%</text>
+  <text x="75" y="290" text-anchor="end" class="tick-label">10%</text>
+  <text x="75" y="236" text-anchor="end" class="tick-label">20%</text>
+  <text x="75" y="182" text-anchor="end" class="tick-label">30%</text>
+  <text x="75" y="128" text-anchor="end" class="tick-label">40%</text>
+  <text x="75" y="74" text-anchor="end" class="tick-label">50%</text>
+
+  <text x="30" y="210" text-anchor="middle" class="axis-label" transform="rotate(-90,30,210)">Percentage of cycles</text>
+  <text x="390" y="375" text-anchor="middle" class="axis-label">Cycle length (ticks)</text>
+
+  <!-- X-axis labels -->
+  <text x="118" y="357" text-anchor="middle" class="tick-label">2</text>
+  <text x="157" y="357" text-anchor="middle" class="tick-label">3</text>
+  <text x="196" y="357" text-anchor="middle" class="tick-label">4</text>
+  <text x="235" y="357" text-anchor="middle" class="tick-label">5</text>
+  <text x="274" y="357" text-anchor="middle" class="tick-label">6</text>
+  <text x="313" y="357" text-anchor="middle" class="tick-label">7</text>
+  <text x="352" y="357" text-anchor="middle" class="tick-label">8</text>
+  <text x="391" y="357" text-anchor="middle" class="tick-label">9</text>
+  <text x="430" y="357" text-anchor="middle" class="tick-label">10</text>
+  <text x="469" y="357" text-anchor="middle" class="tick-label">11</text>
+  <text x="508" y="357" text-anchor="middle" class="tick-label">12</text>
+  <text x="547" y="357" text-anchor="middle" class="tick-label">13+</text>
+
+  <!-- SC2 bars (blue) -->
+  <rect x="100" y="278" width="11" height="62" class="bar-sc2"/>
+  <rect x="139" y="286" width="11" height="54" class="bar-sc2"/>
+  <rect x="178" y="295" width="11" height="45" class="bar-sc2"/>
+  <rect x="217" y="298" width="11" height="42" class="bar-sc2"/>
+  <rect x="256" y="314" width="11" height="26" class="bar-sc2"/>
+  <rect x="295" y="325" width="11" height="15" class="bar-sc2"/>
+  <rect x="334" y="331" width="11" height="9" class="bar-sc2"/>
+  <rect x="373" y="334" width="11" height="6" class="bar-sc2"/>
+  <rect x="412" y="336" width="11" height="4" class="bar-sc2"/>
+  <rect x="451" y="337" width="11" height="3" class="bar-sc2"/>
+  <rect x="490" y="338" width="11" height="2" class="bar-sc2"/>
+  <rect x="529" y="336" width="11" height="4" class="bar-sc2"/>
+
+  <!-- EM Before bars (red) - 87% at 5, 12% at 4 -->
+  <rect x="112" y="340" width="11" height="0" class="bar-em-before"/>
+  <rect x="151" y="340" width="11" height="0" class="bar-em-before"/>
+  <rect x="190" y="307" width="11" height="33" class="bar-em-before"/>
+  <rect x="229" y="104" width="11" height="236" class="bar-em-before"/>
+  <rect x="268" y="338" width="11" height="2" class="bar-em-before"/>
+
+  <!-- EM After bars (green) -->
+  <rect x="124" y="324" width="11" height="16" class="bar-em-after"/>
+  <rect x="163" y="280" width="11" height="60" class="bar-em-after"/>
+  <rect x="202" y="288" width="11" height="52" class="bar-em-after"/>
+  <rect x="241" y="282" width="11" height="58" class="bar-em-after"/>
+  <rect x="280" y="314" width="11" height="26" class="bar-em-after"/>
+  <rect x="319" y="320" width="11" height="20" class="bar-em-after"/>
+  <rect x="358" y="328" width="11" height="12" class="bar-em-after"/>
+  <rect x="397" y="333" width="11" height="7" class="bar-em-after"/>
+  <rect x="436" y="336" width="11" height="4" class="bar-em-after"/>
+  <rect x="475" y="338" width="11" height="2" class="bar-em-after"/>
+  <rect x="514" y="339" width="11" height="1" class="bar-em-after"/>
+  <rect x="553" y="338" width="11" height="2" class="bar-em-after"/>
+
+  <!-- Legend -->
+  <rect x="590" y="70" width="12" height="12" class="bar-sc2"/>
+  <text x="607" y="81" class="legend">SC2 (5 games)</text>
+  <rect x="590" y="88" width="12" height="12" class="bar-em-before"/>
+  <text x="607" y="99" class="legend">EM before (σ=0.34)</text>
+  <rect x="590" y="106" width="12" height="12" class="bar-em-after"/>
+  <text x="607" y="117" class="legend">EM after (σ=2.02)</text>
+</svg>
