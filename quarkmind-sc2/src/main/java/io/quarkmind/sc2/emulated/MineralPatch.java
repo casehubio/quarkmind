@@ -54,6 +54,11 @@ class MineralPatch {
         return remainingMinerals;
     }
 
+    boolean isIdle(double currentLoop) {
+        return miners.isEmpty() && currentLoop >= lockEndLoop;
+    }
+
+
     static void computeApproachDocking(List<MineralPatch> patches, Point2d basePos) {
         if (APPROACH_DISTANCE_SCALE == 0 || patches.isEmpty()) {
             for (MineralPatch p : patches) {

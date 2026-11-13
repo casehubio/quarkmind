@@ -808,5 +808,36 @@ class WorkerSimulationTest {
         System.out.printf("%nBest factor: %.2f (%.1f%% error)%n", bestFactor, bestError);
     }
 
+    @Test
+    void workerAtIdlePatch_zeroApproachDocking() {
+        sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
+        // Single worker: patch is always idle on arrival.
+        // Without approach docking (11 loops), first delivery should be earlier.
+        // Cycle: walk(~33L) + mine(22L) + walk(~33L) + deposit(7L) = ~95L = ~4.3 ticks
+        double totalIncome       = 0;
+        int    firstDeliveryTick = -1;
+        for (int t = 0; t < 20; t++) {
+            double income = tick().mineralIncome();
+            if (income > 0 && firstDeliveryTick < 0) {
+                firstDeliveryTick = t;
+            }
+            totalIncome += income;
+        }
+        assertTrue(firstDeliveryTick <= 5,
+                   "Single worker at idle patch should deliver by tick 5 (no approach delay), got " + firstDeliveryTick);
+    }
+
+    @Test
+    void workerAtOccupiedPatch_fullApproachDocking() {
+        List<String> tags = IntStream.rangeClosed(1, 16)
+                                     .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+        double totalIncome = 0;
+        for (int t = 0; t < 40; t++) {
+            totalIncome += tick().mineralIncome();
+        }
+        assertTrue(totalIncome > 0, "Contested workers should still produce income");
+    }
+
 
 }

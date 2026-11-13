@@ -74,6 +74,7 @@ class SimulatedWorker {
     double scoutReturnLoop;
     double currentSpeed;
     double walkStartLoop;
+    double waitingSinceLoop;
 
 
     SimulatedWorker(String tag, Point2d position, int baseIndex) {

@@ -297,8 +297,11 @@ class WorkerSimulation {
                 && w.assignedPatch != null && !w.assignedPatch.miners.contains(w)
                 && w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
                 && tickEndLoop >= w.assignedPatch.lockEndLoop) {
+                boolean wasWaiting = w.waitingSinceLoop > 0;
                 w.assignedPatch.miners.add(w);
-                w.phaseEndLoop = tickEndLoop + w.assignedPatch.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
+                double approach = wasWaiting ? w.assignedPatch.approachDockingLoops : 0;
+                w.phaseEndLoop = tickEndLoop + approach + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.waitingSinceLoop = 0;
             }
         }
 
@@ -339,6 +342,9 @@ class WorkerSimulation {
                     continue;
                 }
                 if (!w.assignedPatch.miners.contains(w)) {
+                    if (w.waitingSinceLoop <= 0) {
+                        w.waitingSinceLoop = currentLoop;
+                    }
                     if (currentLoop < w.assignedPatch.lockEndLoop) {return income;}
                     tryStartMining(w, currentLoop);
                     if (!w.assignedPatch.miners.contains(w)) {return income;}
@@ -451,8 +457,11 @@ class WorkerSimulation {
     private void tryStartMining(SimulatedWorker w, double currentLoop) {
         if (w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
             && currentLoop >= w.assignedPatch.lockEndLoop) {
+            boolean wasWaiting = w.waitingSinceLoop > 0;
             w.assignedPatch.miners.add(w);
-            w.phaseEndLoop = currentLoop + w.assignedPatch.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
+            double approach = wasWaiting ? w.assignedPatch.approachDockingLoops : 0;
+            w.phaseEndLoop     = currentLoop + approach + SimulatedWorker.MINING_DURATION_LOOPS;
+            w.waitingSinceLoop = 0;
         }
     }
 
@@ -595,7 +604,10 @@ class WorkerSimulation {
         if (w.isAtTarget()) {
             if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
                 if (!nearest.miners.contains(w)) {nearest.miners.add(w);}
-                w.phaseEndLoop = currentTickStartLoop + nearest.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
+                boolean wasWaiting = w.waitingSinceLoop > 0;
+                double approach = wasWaiting ? nearest.approachDockingLoops : 0;
+                w.phaseEndLoop = currentTickStartLoop + approach + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.waitingSinceLoop = 0;
             }
         }
     }
