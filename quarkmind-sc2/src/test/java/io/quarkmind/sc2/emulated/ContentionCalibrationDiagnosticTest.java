@@ -2,7 +2,7 @@ package io.quarkmind.sc2.emulated;
 
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.SC2Data;
-import io.quarkmind.sc2.playbook.WorkerSnapshot;
+
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -22,56 +22,62 @@ class ContentionCalibrationDiagnosticTest {
         WorkerSimulation sim = new WorkerSimulation();
         sim.onTownHallCompleted(BASE_TAG, BASE_POS);
         List<String> tags = new ArrayList<>();
-        for (int i = 1; i <= 12; i++) { tags.add("w-" + i); }
+        for (int i = 1; i <= 12; i++) {tags.add("w-" + i);}
         sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
 
-        Map<String, MineralPatch> prevPatch = new HashMap<>();
-        int rerouteCount = 0;
-        int totalDeliveries = 0;
-        List<Integer> cycleLengths = new ArrayList<>();
-        Map<String, Integer> lastDeliveryTick = new HashMap<>();
+        Map<String, MineralPatch> prevPatch        = new HashMap<>();
+        int                       rerouteCount     = 0;
+        List<Integer>             cycleLengths     = new ArrayList<>();
+        Map<String, Integer>      lastDeliveryTick = new HashMap<>();
+        double                    totalMinerals    = 0;
 
         for (int tick = 0; tick < 304; tick++) {
             TickIncome income = sim.tick(tick * (double) SC2Data.LOOPS_PER_TICK);
+            totalMinerals += income.mineralIncome();
 
             for (SimulatedWorker w : sim.allWorkers()) {
-                if (w.assignedGasSlot != null) continue;
+                if (w.assignedGasSlot != null) {continue;}
 
                 MineralPatch prev = prevPatch.get(w.tag);
                 if (w.assignedPatch != null && prev != null && w.assignedPatch != prev) {
                     rerouteCount++;
                 }
                 prevPatch.put(w.tag, w.assignedPatch);
+            }
 
-                if (w.task == WorkerTask.RETURNING_MINERALS || w.task == WorkerTask.DEPOSITING_MINERALS) {
-                    Integer lastTick = lastDeliveryTick.get(w.tag);
-                    if (lastTick != null) {
-                        cycleLengths.add(tick - lastTick);
+            if (income.mineralIncome() > 0) {
+                int deliveryCount = (int) (income.mineralIncome() / SimulatedWorker.MINERAL_CARGO);
+                for (SimulatedWorker w : sim.allWorkers()) {
+                    if (w.assignedGasSlot != null) {continue;}
+                    if (w.task == WorkerTask.MINING_MINERALS && w.cargo == 0) {
+                        Integer lastTick = lastDeliveryTick.get(w.tag);
+                        if (lastTick != null && tick - lastTick > 0) {
+                            cycleLengths.add(tick - lastTick);
+                        }
+                        lastDeliveryTick.put(w.tag, tick);
                     }
-                    lastDeliveryTick.put(w.tag, tick);
-                    totalDeliveries++;
                 }
             }
         }
 
         double meanCycle = cycleLengths.stream().mapToInt(i -> i).average().orElse(0);
-        double variance = cycleLengths.stream().mapToDouble(i -> (i - meanCycle) * (i - meanCycle)).average().orElse(0);
-        double sigma = Math.sqrt(variance);
+        double variance  = cycleLengths.stream().mapToDouble(i -> (i - meanCycle) * (i - meanCycle)).average().orElse(0);
+        double sigma     = Math.sqrt(variance);
 
         int[] distribution = new int[20];
         for (int c : cycleLengths) {
-            if (c < distribution.length) distribution[c]++;
+            if (c < distribution.length) {distribution[c]++;}
         }
 
         System.out.println("=== EM Contention Calibration (12w, 304 ticks) ===");
         System.out.println("Reroute events: " + rerouteCount);
-        System.out.println("Total deliveries: " + totalDeliveries);
-        System.out.printf("Cycle mean: %.2f ticks, sigma: %.2f%n", meanCycle, sigma);
+        System.out.printf("Total minerals: %.0f%n", totalMinerals);
+        System.out.printf("Cycle mean: %.2f ticks, sigma: %.2f (cycles tracked: %d)%n", meanCycle, sigma, cycleLengths.size());
         System.out.println("Cycle distribution:");
         for (int i = 0; i < distribution.length; i++) {
             if (distribution[i] > 0) {
                 System.out.printf("  %d-tick: %d (%.1f%%)%n", i, distribution[i],
-                    100.0 * distribution[i] / cycleLengths.size());
+                                  100.0 * distribution[i] / cycleLengths.size());
             }
         }
     }

@@ -67,7 +67,8 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 | Constant | Code value | Real SC2 | Source | Confidence | Config property |
 |----------|-----------|----------|--------|------------|-----------------|
 | Mining duration | 22 loops (1 tick) | ~22 loops (1 tick) | SC2 per-worker observation: position stable 1 tick (#631) | **Calibrated** — #631, restored #634 | `starcraft.worker.mining-duration-loops` |
-| Approach/docking delay | 11 loops | ~11 loops | SC2 observation: uncontested cycle (66L) − walk (33L) − mine (22L) | **Calibrated** — #631, restored #634 | `starcraft.worker.approach-docking-loops` |
+| Approach/docking delay | 0 or 11 loops (#636) | ~11 loops | SC2 observation: uncontested cycle (66L) − walk (33L) − mine (22L). EM: 0 if patch idle on arrival, 11 if worker waited | **Calibrated** — #631, conditional #636 | `starcraft.worker.approach-docking-loops` |
+| Reroute threshold | 22 loops | — | Threshold before a waiting worker scans for idle patches | **Calibrated** — #636 | `starcraft.worker.reroute-threshold-loops` |
 | Mineral cargo | 5 | 5 | Liquipedia | **Published** | — |
 | Rich mineral cargo | 7 | 7 | Liquipedia | **Published** | — |
 | Max miners per patch | 1 (active) | 1 | SC2 mechanics | **Published** | — |
@@ -90,17 +91,17 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 |-------|-------------|------------|--------|
 | Mining animation | 22 loops (1 tick) | 22 loops | Position stability at patch |
 | Return + deposit | 40 loops (1.8 ticks) | 33+7=40 loops | Cargo flip timing |
-| Mine cycle (uncontested) | 66 loops (3 ticks) | 33+11+22=66 loops | Deposit→pickup, 3-tick cycles |
-| Mine cycle (contested) | 88 loops (4 ticks) | 66+22=88 loops | Deposit→pickup, 4-tick cycles |
-| Full cycle (average) | 116 loops (5.3 ticks) | ~116 loops | PICKUP→PICKUP |
+| Mine cycle (uncontested) | 66 loops (3 ticks) | 33+0+22=55 loops (#636) | Deposit→pickup, 3-tick cycles |
+| Mine cycle (contested) | 88 loops (4 ticks) | 33+11+22+22=88 loops | Deposit→pickup, 4-tick cycles |
+| Full cycle (average) | 116 loops (5.3 ticks) | ~106 loops (#636) | PICKUP→PICKUP |
 
-Uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66 loops. EM matches SC2 exactly. Contested cycles add exactly 1 tick (22 loops) in both SC2 and EM — docking overhead correctly calibrated.
+SC2 uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66 loops. Post-#636, EM uncontested is 55 loops (approach skipped for idle patches). The 11-loop gap compensates for EM straight-line walks being faster than SC2's path-dependent routing — the net effect reduced 12w mineral surplus from +7.2% to +3.8%. Contested cycles match SC2 exactly: walk(33) + approach(11) + mine(22) + docking overhead(22) = 88 loops.
 
 **Collision model (#634, revised):** Uniform speed factor (0.96) for all collisions — direction-dependent model reverted. The direction-dependent model (head-on=0.2, same-direction=0.99) was designed for an inflated σ target (2.54) caused by a measurement bug (index-based cycle tracking). Corrected SC2 σ=0.58 shows mining cycles are extremely uniform — a harsh head-on penalty produces a congestion tail SC2 doesn't have. Uniform 0.96 calibrated for cycle distribution match: EM σ=0.90, SC2 σ=0.58.
 
 **Collision radius (#634):** Increased from 0.375 to 0.75 (diameter 1.5). PySC2 docs confirm SC2 unit size is ~0.75 game units — validates the collision diameter. The larger interaction zone creates more collision events, producing contention at higher saturation.
 
-**Conditional approach docking (#636):** Workers arriving at an IDLE patch (no miner, lock expired) skip the 11-loop approach animation and start mining immediately (0 approach loops). Workers that waited at an occupied/locked patch get the full 11-loop approach docking when the patch frees up. Matches SC2 observed cycle split: uncontested=66 loops (walk+mine), contested=88 loops (walk+approach+docking+mine). Supersedes the disabled `APPROACH_DISTANCE_SCALE` formula.
+**Conditional approach docking (#636):** Workers arriving at an IDLE patch (no miner, lock expired) skip the 11-loop approach animation and start mining immediately (0 approach loops). Workers that waited at an occupied/locked patch get the full 11-loop approach docking when the patch frees up. Note: SC2 always plays the 11-loop approach (uncontested=66 loops). The EM's 0-approach for idle patches produces 55-loop uncontested cycles — 11 loops shorter than SC2. This compensates for EM straight-line walks being faster than SC2's path-dependent routing, reducing 12w mineral surplus from +7.2% to +3.8%. Supersedes the disabled `APPROACH_DISTANCE_SCALE` formula.
 
 **Wait-then-reroute (#636):** Workers waiting at an occupied patch for longer than `rerouteThresholdLoops` (default 22.0, config: `starcraft.worker.reroute-threshold-loops`) scan for idle patches at the same base. Reroutes only when estimated travel time < estimated remaining wait. Permanent reassignment — worker's `assignedPatch` is updated. 12w diagnostic shows 22 reroute events per 304 ticks, total minerals improved from +7.2% to +3.8% vs SC2.
 
@@ -147,7 +148,7 @@ Uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66 loo
 
 Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle replay MAPE sweep, which conflated worker allocation differences with physics. The dual-run isolates physics and shows no race-specific difference.
 
-### SC2 dual-run calibration results (TorchesAIE_v4, post-#631)
+### SC2 dual-run calibration results (TorchesAIE_v4, post-#631, pre-#636)
 
 | Baseline | SC2 minerals | EM minerals | SC2 vespene | EM vespene | Mineral Δ | Gas Δ |
 |----------|-------------|------------|-------------|------------|-----------|-------|
@@ -158,7 +159,7 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 | 3w gas (tick 304) | 3885 | 3995 | 552 | 504 | +2.8% | **−8.7%** |
 | 6w gas (tick 304) | 3375 | 2810 | 1012 | 984 | **−16.7%** | **−2.8%** |
 
-12w +7.2% gap: straight-line walks are faster than SC2's path-dependent navigation. Workers walk edge-to-edge (collision footprint boundaries) but still take direct paths — real SC2 workers navigate around mineral line formations. This is the structural ceiling of the straight-line movement model.
+12w +7.2% gap (pre-#636): straight-line walks are faster than SC2's path-dependent navigation. Workers walk edge-to-edge (collision footprint boundaries) but still take direct paths — real SC2 workers navigate around mineral line formations. Post-#636 conditional approach docking reduces the 12w gap to **+3.8%** (3590 EM vs 3460 SC2) by skipping approach at idle patches, partially compensating for the straight-line speed advantage.
 
 16w −2.0%: collision physics (speed factor 0.96) and docking overhead (22 loops) correctly reduce saturated income. The saturation curve shape matches SC2 better than pre-collision physics.
 
@@ -176,7 +177,7 @@ Gas baselines: 3w gas at −8.7% (EM under-produces gas — concurrent geyser ac
 | 24 | 3.0 | 46.8 | 82.1% |
 | 30 | 3.8 | 37.5 | 65.7% |
 
-**Saturation model calibrated** — contention fix (assignment-based spreading + wake-up pass), patch docking overhead (22 loops), and collision speed factor (0.952). Per-tick delivery cadence match: 75.3%. The remaining oracle replay MAPE is from worker allocation, not physics.
+**Saturation model calibrated** — contention fix (assignment-based spreading + wake-up pass), patch docking overhead (22 loops), collision speed factor (0.96), conditional approach docking (#636), and wait-then-reroute (#636). Pre-#636 per-tick delivery cadence match: 75.3%. Post-#636 12w delivery rate: 94.7% (288/304 ticks with non-zero delivery). The remaining oracle replay MAPE is from worker allocation, not physics.
 
 ---
 
