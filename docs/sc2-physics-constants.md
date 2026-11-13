@@ -100,7 +100,9 @@ Uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66 loo
 
 **Collision radius (#634):** Increased from 0.375 to 0.75 (diameter 1.5). PySC2 docs confirm SC2 unit size is ~0.75 game units — validates the collision diameter. The larger interaction zone creates more collision events, producing contention at higher saturation.
 
-**Per-patch approach docking (#636) — disabled:** `MineralPatch` supports per-patch approach via `APPROACH_DISTANCE_SCALE`, but it is currently set to 0. All patches use the global approach constant (11.0 loops — restored in #634). The formula was tested (SCALE=2.5 improved cadence to 75.3%) but reverted — it was a compensation constant, not a physics simulation.
+**Conditional approach docking (#636):** Workers arriving at an IDLE patch (no miner, lock expired) skip the 11-loop approach animation and start mining immediately (0 approach loops). Workers that waited at an occupied/locked patch get the full 11-loop approach docking when the patch frees up. Matches SC2 observed cycle split: uncontested=66 loops (walk+mine), contested=88 loops (walk+approach+docking+mine). Supersedes the disabled `APPROACH_DISTANCE_SCALE` formula.
+
+**Wait-then-reroute (#636):** Workers waiting at an occupied patch for longer than `rerouteThresholdLoops` (default 22.0, config: `starcraft.worker.reroute-threshold-loops`) scan for idle patches at the same base. Reroutes only when estimated travel time < estimated remaining wait. Permanent reassignment — worker's `assignedPatch` is updated. 12w diagnostic shows 22 reroute events per 304 ticks, total minerals improved from +7.2% to +3.8% vs SC2.
 
 **Patch docking overhead:** After a miner departs a mineral patch, the patch is locked for 22 loops (1 tick) before the next worker can start. Measured from SC2 per-worker cadence data: contested cycles (deposit→pickup) take exactly 1 tick longer than uncontested cycles (88 vs 66 loops).
 
