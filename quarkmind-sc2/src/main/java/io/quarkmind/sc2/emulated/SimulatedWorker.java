@@ -3,7 +3,7 @@ package io.quarkmind.sc2.emulated;
 import io.quarkmind.domain.Point2d;
 
 class SimulatedWorker {
-    static final double COLLISION_RADIUS   = 0.375;
+    static final double COLLISION_RADIUS   = 0.75;
     static final double COLLISION_DIAMETER = COLLISION_RADIUS * 2;
 
     static final double MINERAL_CARGO = 5.0;

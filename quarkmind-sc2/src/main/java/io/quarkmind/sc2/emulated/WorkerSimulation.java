@@ -375,7 +375,7 @@ class WorkerSimulation {
     }
 
     private void resolveAllMineralCollisions() {
-        List<SimulatedWorker> walking = new ArrayList<>();
+        List<SimulatedWorker> walking    = new ArrayList<>();
         List<SimulatedWorker> stationary = new ArrayList<>();
         for (SimulatedWorker w : workers.values()) {
             if (w.assignedGasSlot != null) {continue;}
@@ -391,7 +391,7 @@ class WorkerSimulation {
             SimulatedWorker a = walking.get(i);
             for (int j = i + 1; j < walking.size(); j++) {
                 SimulatedWorker b = walking.get(j);
-                double d = a.position.distanceTo(b.position);
+                double          d = a.position.distanceTo(b.position);
                 if (d >= SimulatedWorker.COLLISION_DIAMETER || d < 0.001) {continue;}
 
                 float dx    = b.position.x() - a.position.x();
@@ -408,8 +408,17 @@ class WorkerSimulation {
                     b.position = new Point2d(b.position.x() + perpX * dodge, b.position.y() + perpY * dodge);
                 }
 
-                a.currentSpeed *= SimulatedWorker.COLLISION_SPEED_FACTOR;
-                b.currentSpeed *= SimulatedWorker.COLLISION_SPEED_FACTOR;
+                double severity = directionSeverity(a, b);
+                if (severity < SimulatedWorker.COLLISION_SPEED_FACTOR) {
+                    if (a.tag.hashCode() < b.tag.hashCode()) {
+                        a.currentSpeed *= severity;
+                    } else {
+                        b.currentSpeed *= severity;
+                    }
+                } else {
+                    a.currentSpeed *= severity;
+                    b.currentSpeed *= severity;
+                }
             }
         }
 
@@ -429,10 +438,29 @@ class WorkerSimulation {
                 } else {
                     w.position = new Point2d(w.position.x() - perpX * dodge, w.position.y() - perpY * dodge);
                 }
-                w.currentSpeed *= SimulatedWorker.COLLISION_SPEED_FACTOR;
+                w.currentSpeed *= HEAD_ON_SPEED_FACTOR;
             }
         }
     }
+
+    static final double HEAD_ON_SPEED_FACTOR = 0.2;
+
+    private static double directionSeverity(SimulatedWorker a, SimulatedWorker b) {
+        if (a.targetPosition == null || b.targetPosition == null) {
+            return SimulatedWorker.COLLISION_SPEED_FACTOR;
+        }
+        float  adx  = a.targetPosition.x() - a.position.x();
+        float  ady  = a.targetPosition.y() - a.position.y();
+        float  bdx  = b.targetPosition.x() - b.position.x();
+        float  bdy  = b.targetPosition.y() - b.position.y();
+        double aMag = Math.sqrt(adx * adx + ady * ady);
+        double bMag = Math.sqrt(bdx * bdx + bdy * bdy);
+        if (aMag < 0.001 || bMag < 0.001) {return SimulatedWorker.COLLISION_SPEED_FACTOR;}
+        double dot = (adx * bdx + ady * bdy) / (aMag * bMag);
+        if (dot < -0.3) {return HEAD_ON_SPEED_FACTOR;}
+        return SimulatedWorker.COLLISION_SPEED_FACTOR;
+    }
+
 
     private void tryStartMining(SimulatedWorker w, double currentLoop) {
         if (w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
