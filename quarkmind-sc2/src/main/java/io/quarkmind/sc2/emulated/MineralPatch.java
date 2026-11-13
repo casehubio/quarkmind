@@ -11,6 +11,9 @@ class MineralPatch {
     static float  PATCH_DISTANCE         = WorkerPhysicsConfig.DEFAULT_PATCH_DISTANCE;
     static final int    PATCHES_PER_BASE       = 8;
     static final int    CLOSE_PATCHES_PER_BASE = 4;
+    static final float  CLOSE_PATCH_DISTANCE   = 5.5f;
+    static final float  FAR_PATCH_DISTANCE     = 8.5f;
+
 
     static double APPROACH_DISTANCE_SCALE = 0;
 
@@ -75,8 +78,9 @@ class MineralPatch {
         Point2d[] positions = new Point2d[PATCHES_PER_BASE];
         for (int i = 0; i < PATCHES_PER_BASE; i++) {
             double angle = Math.PI * (0.2 + 0.6 * i / (PATCHES_PER_BASE - 1));
-            float  px    = townHallPos.x() + (float) (PATCH_DISTANCE * Math.cos(angle));
-            float  py    = townHallPos.y() + (float) (PATCH_DISTANCE * Math.sin(angle));
+            float  dist  = i < CLOSE_PATCHES_PER_BASE ? CLOSE_PATCH_DISTANCE : FAR_PATCH_DISTANCE;
+            float  px    = townHallPos.x() + (float) (dist * Math.cos(angle));
+            float  py    = townHallPos.y() + (float) (dist * Math.sin(angle));
             positions[i] = new Point2d(px, py);
         }
         return positions;
