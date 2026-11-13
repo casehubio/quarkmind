@@ -128,8 +128,8 @@ Uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66 loo
 |----------|-------|--------|------------|
 | Close patch distance | avg 6.6 units | Oracle replay mineral positions | **Calibrated** — #567 |
 | Far patch distance | avg 7.6 units | Oracle replay mineral positions | **Calibrated** — #567 |
-| Default close patch distance | 5.5 units | Variable close/far model #634 | **Estimated** | `MineralPatch.CLOSE_PATCH_DISTANCE` |
-| Default far patch distance | 8.5 units | Variable close/far model #634 | **Estimated** | `MineralPatch.FAR_PATCH_DISTANCE` |
+| Default close patch distance | 6.7 units | SC2 API positions (TorchesAIE_v4 mean of 4 close patches) | **Calibrated** — #651 | `MineralPatch.CLOSE_PATCH_DISTANCE` |
+| Default far patch distance | 7.5 units | SC2 API positions (TorchesAIE_v4 mean of 4 far patches) | **Calibrated** — #651 | `MineralPatch.FAR_PATCH_DISTANCE` |
 | Patch distance (config) | 7.0 units | SC2 dual-run calibration sweep — used by explicit `setMineralPatchResources()` | **Calibrated** — #599 | `starcraft.worker.patch-distance` |
 | SC2 API distances (TorchesAIE_v4) | 3.0–5.9u (center-to-center) | SC2 observation API | **Calibrated** — #605 |
 | Close patch minerals | 1500 | SC2 standard | **Published** |
@@ -523,7 +523,7 @@ Explicit gaps between the simulation and real SC2. Each gap's impact on economy 
 
 ### Close/far patch income differential in unit tests
 
-Real SC2 close patches (4-6 units from town hall) yield ~40% more per-worker income than far patches (7-9 units) due to shorter round trips. The model uses per-map ground truth positions for replay mode (correctly variable distances), but unit tests use variable distances (close=5.5u, far=8.5u, #634) which are estimated, not calibrated (#651). Oracle replay baselines are not affected.
+Real SC2 close patches (4-6 units from town hall) yield ~40% more per-worker income than far patches (7-9 units) due to shorter round trips. The model uses per-map ground truth positions for replay mode (correctly variable distances), but unit tests use variable distances (close=6.7u, far=7.5u) calibrated from SC2 API positions (#651). Oracle replay baselines are not affected.
 
 ### Building morph unavailability
 
@@ -655,7 +655,7 @@ starcraft.economy.rate-interval-loops=160
 
 **Static-field constants (not Quarkus config — set in code):**
 - `SimulatedWorker.COLLISION_RADIUS` (0.75, was 0.375) — worker collision detection radius; calibrated #634
-- `MineralPatch.CLOSE_PATCH_DISTANCE` (5.5f) — default close patch distance for first 4 patches; estimated #634, calibration pending #651
-- `MineralPatch.FAR_PATCH_DISTANCE` (8.5f) — default far patch distance for last 4 patches; estimated #634, calibration pending #651
+- `MineralPatch.CLOSE_PATCH_DISTANCE` (6.7f) — default close patch distance for first 4 patches; calibrated #651 from SC2 API positions
+- `MineralPatch.FAR_PATCH_DISTANCE` (7.5f) — default far patch distance for last 4 patches; calibrated #651 from SC2 API positions
 - `MineralPatch.APPROACH_DISTANCE_SCALE` (default 0, disabled) — per-patch approach docking scale factor; infrastructure only
 - `GasSlot.ENTRY_LOCK_DURATION` (default 0) — gas entrance queuing lock duration in loops

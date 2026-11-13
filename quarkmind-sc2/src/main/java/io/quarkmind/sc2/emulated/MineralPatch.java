@@ -11,8 +11,8 @@ class MineralPatch {
     static float  PATCH_DISTANCE         = WorkerPhysicsConfig.DEFAULT_PATCH_DISTANCE;
     static final int    PATCHES_PER_BASE       = 8;
     static final int    CLOSE_PATCHES_PER_BASE = 4;
-    static final float  CLOSE_PATCH_DISTANCE   = 5.5f;
-    static final float  FAR_PATCH_DISTANCE     = 8.5f;
+    static final float  CLOSE_PATCH_DISTANCE   = 6.7f;
+    static final float  FAR_PATCH_DISTANCE     = 7.5f;
 
 
     static double APPROACH_DISTANCE_SCALE = 0;
