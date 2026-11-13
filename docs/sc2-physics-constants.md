@@ -100,7 +100,7 @@ Uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66 loo
 
 **Collision radius (#634):** Increased from 0.375 to 0.75 (diameter 1.5). PySC2 docs confirm SC2 unit size is ~0.75 game units — validates the collision diameter. The larger interaction zone creates more collision events, producing contention at higher saturation.
 
-**Per-patch approach docking (#636) — disabled:** `MineralPatch` supports per-patch approach via `APPROACH_DISTANCE_SCALE`, but it is currently set to 0. All patches use the global approach constant (now 0 loops after #634). The formula was tested (SCALE=2.5 improved cadence to 75.3%) but reverted — it was a compensation constant, not a physics simulation.
+**Per-patch approach docking (#636) — disabled:** `MineralPatch` supports per-patch approach via `APPROACH_DISTANCE_SCALE`, but it is currently set to 0. All patches use the global approach constant (11.0 loops — restored in #634). The formula was tested (SCALE=2.5 improved cadence to 75.3%) but reverted — it was a compensation constant, not a physics simulation.
 
 **Patch docking overhead:** After a miner departs a mineral patch, the patch is locked for 22 loops (1 tick) before the next worker can start. Measured from SC2 per-worker cadence data: contested cycles (deposit→pickup) take exactly 1 tick longer than uncontested cycles (88 vs 66 loops).
 
@@ -412,7 +412,7 @@ The previous lumped mining constant absorbed three distinct phases. These are no
 | Approach/docking at patch | 11 | SC2 observation: uncontested cycle (66L) − walk (33L) − mine (22L) | **Modeled** — `approach-docking-loops=11` |
 | **Total per-cycle overhead** | **40** | | |
 
-Per-tick cadence mismatch: 75.3% (229/304 ticks match) — the remaining gap is from straight-line vs path-dependent routing.
+Per-tick cadence mismatch: 75.3% (229/304 ticks match, pre-shuffle measurement) — the remaining gap is from straight-line vs path-dependent routing. Needs re-measurement with shuffle + collision_factor=0.96.
 
 **Patch affinity (#620):** Workers return to the same patch each trip (SC2 behaviour). Routing is not the cadence bottleneck — the root cause is per-trip variance from collision timing and walk distance variance that straight-line movement cannot reproduce.
 
@@ -463,7 +463,7 @@ Calibration results (12w Protoss, TorchesAIE_v4 patch positions):
 | 20 (delta) | +4 | -20 | — | ±30 |
 | 304 (balance) | — | 3460 | 3460 | **0.0% — exact match** |
 
-Stagger=6.1 with walk delay=40 produces 3460 minerals at tick 304 (**0.0%** vs SC2's 3460). Re-calibrated from 6.0 (#609) via fine sweep. The 0.1-loop shift changes the phase relationship so exactly 682 deliveries match SC2. Walk delay (#619) shifted first deliveries from tick 3-4 to tick 5-6. Per-tick mismatch is 81.6% — the straight-line movement model is the current ceiling for cadence accuracy.
+Stagger=6.1 with walk delay=40 produced 3460 minerals at tick 304 (**0.0%** vs SC2's 3460) pre-shuffle with collision_factor=0.952. Re-calibrated from 6.0 (#609) via fine sweep. The 0.1-loop shift changes the phase relationship so exactly 682 deliveries match SC2. Walk delay (#619) shifted first deliveries from tick 3-4 to tick 5-6. Per-tick mismatch was 81.6% pre-shuffle — needs re-measurement with shuffle + collision_factor=0.96 (#634).
 
 ### Worker management constants
 
@@ -523,7 +523,7 @@ Explicit gaps between the simulation and real SC2. Each gap's impact on economy 
 
 ### Close/far patch income differential in unit tests
 
-Real SC2 close patches (4-6 units from town hall) yield ~40% more per-worker income than far patches (7-9 units) due to shorter round trips. The model uses per-map ground truth positions for replay mode (correctly variable distances), but unit tests use uniform 6.0 units for all 8 patches. This flattens the saturation curve in unit tests compared to real SC2. Oracle replay baselines are not affected.
+Real SC2 close patches (4-6 units from town hall) yield ~40% more per-worker income than far patches (7-9 units) due to shorter round trips. The model uses per-map ground truth positions for replay mode (correctly variable distances), but unit tests use variable distances (close=5.5u, far=8.5u, #634) which are estimated, not calibrated (#651). Oracle replay baselines are not affected.
 
 ### Building morph unavailability
 
@@ -655,5 +655,7 @@ starcraft.economy.rate-interval-loops=160
 
 **Static-field constants (not Quarkus config — set in code):**
 - `SimulatedWorker.COLLISION_RADIUS` (0.75, was 0.375) — worker collision detection radius; calibrated #634
+- `MineralPatch.CLOSE_PATCH_DISTANCE` (5.5f) — default close patch distance for first 4 patches; estimated #634, calibration pending #651
+- `MineralPatch.FAR_PATCH_DISTANCE` (8.5f) — default far patch distance for last 4 patches; estimated #634, calibration pending #651
 - `MineralPatch.APPROACH_DISTANCE_SCALE` (default 0, disabled) — per-patch approach docking scale factor; infrastructure only
 - `GasSlot.ENTRY_LOCK_DURATION` (default 0) — gas entrance queuing lock duration in loops
