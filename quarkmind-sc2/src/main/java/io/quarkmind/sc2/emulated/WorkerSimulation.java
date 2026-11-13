@@ -447,24 +447,6 @@ class WorkerSimulation {
         }
     }
 
-    static final double HEAD_ON_SPEED_FACTOR = 0.2;
-
-    private static double directionSeverity(SimulatedWorker a, SimulatedWorker b) {
-        if (a.targetPosition == null || b.targetPosition == null) {
-            return SimulatedWorker.COLLISION_SPEED_FACTOR;
-        }
-        float  adx  = a.targetPosition.x() - a.position.x();
-        float  ady  = a.targetPosition.y() - a.position.y();
-        float  bdx  = b.targetPosition.x() - b.position.x();
-        float  bdy  = b.targetPosition.y() - b.position.y();
-        double aMag = Math.sqrt(adx * adx + ady * ady);
-        double bMag = Math.sqrt(bdx * bdx + bdy * bdy);
-        if (aMag < 0.001 || bMag < 0.001) {return SimulatedWorker.COLLISION_SPEED_FACTOR;}
-        double dot = (adx * bdx + ady * bdy) / (aMag * bMag);
-        if (dot < -0.3) {return HEAD_ON_SPEED_FACTOR;}
-        return SimulatedWorker.COLLISION_SPEED_FACTOR;
-    }
-
 
     private void tryStartMining(SimulatedWorker w, double currentLoop) {
         if (w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
