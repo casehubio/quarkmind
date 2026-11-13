@@ -154,7 +154,7 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 | 12w Zerg (tick 304) | 3415 | — | — | — | diverges tick 0 | — |
 | 16w saturation (tick 304) | 4235 | 4150 | — | — | **−2.0%** | — |
 | 3w gas (tick 304) | 3885 | 3995 | 552 | 504 | +2.8% | **−8.7%** |
-| 6w gas (tick 304) | 3375 | — | 1012 | — | — | — |
+| 6w gas (tick 304) | 3375 | 2810 | 1012 | 984 | **−16.7%** | **−2.8%** |
 
 12w +7.2% gap: straight-line walks are faster than SC2's path-dependent navigation. Workers walk edge-to-edge (collision footprint boundaries) but still take direct paths — real SC2 workers navigate around mineral line formations. This is the structural ceiling of the straight-line movement model.
 
@@ -162,7 +162,7 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 
 Zerg diverges at tick 0: unit count mismatch in the Zerg playbook baseline — Zerg worker production timing differs from Protoss/Terran due to larva mechanics.
 
-Gas baselines: 3w gas at −8.0% (EM under-produces gas — concurrent geyser access vs SC2's queuing), 6w gas at −1.2%. The EM's concurrent geyser model (all 3 workers inside simultaneously) diverges from SC2's entrance queuing.
+Gas baselines: 3w gas at −8.7% (EM under-produces gas — concurrent geyser access vs SC2's queuing), 6w gas at −2.8%. The EM's concurrent geyser model (all 3 workers inside simultaneously) diverges from SC2's entrance queuing.
 
 ### Saturation curve (SC2 dual-run, Protoss, TorchesAIE_v4)
 
@@ -543,7 +543,7 @@ Whether multiple Chrono Boosts on the same building stack additively, refresh th
 
 ### Geyser entrance queuing
 
-GasSlot supports configurable entrance queuing via `ENTRY_LOCK_DURATION` (default 0 = concurrent, matching legacy behavior). When > 0, workers queue at the geyser entrance — only one enters per lock period. However, a 2D sweep (lock 0-20 × harvest 14-28) against 3w and 6w baselines (#639) showed **entrance queuing has no practical effect** — workers never arrive at the geyser simultaneously because walk cycle stagger keeps them apart. The 3w/6w gas gap is not from entrance contention but from per-geyser walk-distance rate interaction: no single gas harvest value satisfies both 3w (optimal at 16 loops) and 6w (optimal at 26 loops). Current harvest=26 is the best compromise. Sweep-test gas-only gaps: 3w -6.5%, 6w -0.4%. Current dual-run gaps (with full playbook economy): 3w vespene -8.0%, 6w vespene -1.2%. Impact: vespeneCollectionRate MAPE at 25.1% is a structural floor (#639 decomposition) — from per-worker gas harvest physics, integer worker count rounding, and PlayerStatsEvent cadence mismatch.
+GasSlot supports configurable entrance queuing via `ENTRY_LOCK_DURATION` (default 0 = concurrent, matching legacy behavior). When > 0, workers queue at the geyser entrance — only one enters per lock period. However, a 2D sweep (lock 0-20 × harvest 14-28) against 3w and 6w baselines (#639) showed **entrance queuing has no practical effect** — workers never arrive at the geyser simultaneously because walk cycle stagger keeps them apart. The 3w/6w gas gap is not from entrance contention but from per-geyser walk-distance rate interaction: no single gas harvest value satisfies both 3w (optimal at 16 loops) and 6w (optimal at 26 loops). Current harvest=26 is the best compromise. Sweep-test gas-only gaps: 3w -6.5%, 6w -0.4%. Current dual-run gaps (with full playbook economy): 3w vespene -8.7%, 6w vespene -2.8%. Impact: vespeneCollectionRate MAPE at 25.1% is a structural floor (#639 decomposition) — from per-worker gas harvest physics, integer worker count rounding, and PlayerStatsEvent cadence mismatch.
 
 ### Rally point walk time
 
