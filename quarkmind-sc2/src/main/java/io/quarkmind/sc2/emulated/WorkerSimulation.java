@@ -6,9 +6,11 @@ import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 class WorkerSimulation {
     static final float TOWN_HALL_RADIUS     = 2.5f;
@@ -48,6 +50,8 @@ class WorkerSimulation {
     private final Map<String, SimulatedWorker> workers = new LinkedHashMap<>();
     private final double workerDistancePerTick;
     private double currentTickStartLoop;
+    private final Random rng = new Random(42);
+
 
     WorkerSimulation() {
         double speed = SC2Data.unitSpeed(UnitType.PROBE);
@@ -265,15 +269,21 @@ class WorkerSimulation {
             }
         }
 
+        List<SimulatedWorker> mineralWorkers = new ArrayList<>();
+        for (SimulatedWorker w : workers.values()) {
+            if (w.assignedGasSlot == null) {
+                mineralWorkers.add(w);
+            }
+        }
+
         double mineralIncome = 0;
         for (int loop = 0; loop < SimulatedWorker.LOOPS_PER_TICK; loop++) {
             double currentLoop = tickStartLoop + loop;
             this.currentTickStartLoop = currentLoop;
 
-            for (SimulatedWorker w : workers.values()) {
-                if (w.assignedGasSlot == null) {
-                    mineralIncome += stepOneMineralLoop(w, currentLoop);
-                }
+            Collections.shuffle(mineralWorkers, rng);
+            for (SimulatedWorker w : mineralWorkers) {
+                mineralIncome += stepOneMineralLoop(w, currentLoop);
             }
 
             resolveAllMineralCollisions();
@@ -281,7 +291,8 @@ class WorkerSimulation {
 
         this.currentTickStartLoop = tickStartLoop;
 
-        for (SimulatedWorker w : workers.values()) {
+        Collections.shuffle(mineralWorkers, rng);
+        for (SimulatedWorker w : mineralWorkers) {
             if (w.task == WorkerTask.MINING_MINERALS && w.isAtTarget()
                 && w.assignedPatch != null && !w.assignedPatch.miners.contains(w)
                 && w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
@@ -386,6 +397,8 @@ class WorkerSimulation {
                 walking.add(w);
             }
         }
+
+        Collections.shuffle(walking, rng);
 
         for (int i = 0; i < walking.size(); i++) {
             SimulatedWorker a = walking.get(i);
@@ -857,7 +870,13 @@ class WorkerSimulation {
         gasSlots.clear();
         workers.clear();
         pendingBuilderReturns.clear();
+        rng.setSeed(42);
     }
+
+    void setSeed(long seed) {
+        rng.setSeed(seed);
+    }
+
 
     private int findBaseIndex(String baseTag) {
         for (int i = 0; i < bases.size(); i++) {

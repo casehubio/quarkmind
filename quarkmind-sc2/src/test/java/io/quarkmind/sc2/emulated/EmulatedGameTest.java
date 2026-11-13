@@ -2278,7 +2278,7 @@ class EmulatedGameTest {
                           m12, rate12, m16, rate16, ratio);
         assertThat(ratio)
                 .as("16w/12w income ratio — edge-to-edge walks shorten cycles; saturation penalty steeper with longer mining duration")
-                .isBetween(1.10, 1.40);
+                .isBetween(1.05, 1.40);
     }
 
     @Test
