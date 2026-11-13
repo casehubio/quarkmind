@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 280">
+  <style>
+    text { font-family: -apple-system, 'Segoe UI', sans-serif; fill: #333; }
+    .title { font-size: 13px; font-weight: 600; }
+    .label { font-size: 11px; }
+    .small { font-size: 10px; fill: #666; }
+    .tag { font-size: 10px; font-family: 'SF Mono', 'Consolas', monospace; }
+    .action { font-size: 9px; font-family: 'SF Mono', 'Consolas', monospace; }
+    .cell { stroke: #ccc; stroke-width: 1; rx: 3; }
+    .cell-gather { fill: #e8f5e9; }
+    .cell-return { fill: #fff3e0; }
+    .phantom { stroke: #e74c3c; stroke-width: 2; stroke-dasharray: 6,3; fill: none; }
+    .real { stroke: #2ecc71; stroke-width: 2; fill: none; }
+    .arrow { fill: none; stroke-width: 1.5; }
+    .arrow-phantom { stroke: #e74c3c; marker-end: url(#arrowRed); }
+    .arrow-real { stroke: #2ecc71; marker-end: url(#arrowGreen); }
+    .highlight { fill: #e74c3c; fill-opacity: 0.12; stroke: #e74c3c; stroke-width: 1.5; rx: 4; }
+  </style>
+  <defs>
+    <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#e74c3c"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="#2ecc71"/>
+    </marker>
+  </defs>
+
+  <text class="title" x="350" y="20" text-anchor="middle">SC2 reorders workers in the observation array every tick</text>
+
+  <!-- Tick T header -->
+  <text class="label" x="90" y="50" text-anchor="middle" font-weight="600">Tick T</text>
+  <text class="small" x="90" y="63">index → worker</text>
+
+  <!-- Tick T cells -->
+  <rect class="cell cell-gather" x="30" y="72" width="120" height="28"/>
+  <text class="tag" x="40" y="90">[0]</text>
+  <text class="tag" x="68" y="90" fill="#2e7d32">Probe A</text>
+  <text class="action" x="130" y="90" fill="#666">GATHER</text>
+
+  <rect class="cell cell-return" x="30" y="104" width="120" height="28"/>
+  <text class="tag" x="40" y="122">[1]</text>
+  <text class="tag" x="68" y="122" fill="#e65100">Probe B</text>
+  <text class="action" x="130" y="122" fill="#666">RETURN</text>
+
+  <rect class="cell cell-gather" x="30" y="136" width="120" height="28"/>
+  <text class="tag" x="40" y="154">[2]</text>
+  <text class="tag" x="68" y="154" fill="#1565c0">Probe C</text>
+  <text class="action" x="130" y="154" fill="#666">GATHER</text>
+
+  <!-- Tick T+1 header -->
+  <text class="label" x="290" y="50" text-anchor="middle" font-weight="600">Tick T+1</text>
+  <text class="small" x="290" y="63">SC2 reshuffled the array</text>
+
+  <!-- Tick T+1 cells -->
+  <rect class="cell cell-return" x="230" y="72" width="120" height="28"/>
+  <text class="tag" x="240" y="90">[0]</text>
+  <text class="tag" x="268" y="90" fill="#e65100">Probe B</text>
+  <text class="action" x="330" y="90" fill="#666">RETURN</text>
+
+  <rect class="cell cell-gather" x="230" y="104" width="120" height="28"/>
+  <text class="tag" x="240" y="122">[1]</text>
+  <text class="tag" x="268" y="122" fill="#1565c0">Probe C</text>
+  <text class="action" x="330" y="122" fill="#666">GATHER</text>
+
+  <rect class="cell cell-gather" x="230" y="136" width="120" height="28"/>
+  <text class="tag" x="240" y="154">[2]</text>
+  <text class="tag" x="268" y="154" fill="#2e7d32">Probe A</text>
+  <text class="action" x="330" y="154" fill="#666">GATHER</text>
+
+  <!-- Phantom transition: index [0] GATHER→RETURN (actually A→B) -->
+  <rect class="highlight" x="24" y="68" width="332" height="36"/>
+  <path class="arrow arrow-phantom" d="M152,86 L226,86"/>
+  <text class="small" x="189" y="80" text-anchor="middle" fill="#e74c3c">Index [0]:</text>
+  <text class="small" x="189" y="68" text-anchor="middle" fill="#e74c3c">GATHER → RETURN</text>
+
+  <!-- Result panel -->
+  <rect x="400" y="42" width="285" height="130" fill="#fff8f8" stroke="#e74c3c" stroke-width="1" rx="6"/>
+  <text class="label" x="542" y="62" text-anchor="middle" fill="#e74c3c" font-weight="600">Index-based tracker sees:</text>
+  <text class="small" x="415" y="82">"Worker [0] transitioned GATHER→RETURN"</text>
+  <text class="small" x="415" y="98">Cycle = T+1 − T = <tspan font-weight="600">1 tick</tspan></text>
+  <text class="small" x="415" y="120" fill="#999">But [0] at tick T was Probe A (gathering)</text>
+  <text class="small" x="415" y="136">and [0] at tick T+1 was Probe B (returning)</text>
+  <text class="small" x="415" y="158" fill="#e74c3c" font-weight="600">Two different workers. Phantom cycle.</text>
+
+  <!-- Correct panel -->
+  <rect x="30" y="190" width="655" height="80" fill="#f0faf0" stroke="#2ecc71" stroke-width="1" rx="6"/>
+  <text class="label" x="357" y="212" text-anchor="middle" fill="#2e7d32" font-weight="600">Tag-based tracker sees:</text>
+  <text class="small" x="45" y="232">Probe A: GATHER at tick T → GATHER at tick T+1. No transition. Still mining.</text>
+  <text class="small" x="45" y="250">Probe B: RETURN at tick T → RETURN at tick T+1. No transition. Still returning.</text>
+  <text class="small" x="45" y="262" fill="#2e7d32" font-weight="600">No phantom cycle. Correct measurement.</text>
+</svg>

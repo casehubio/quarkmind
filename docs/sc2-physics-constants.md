@@ -98,7 +98,7 @@ Uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66 loo
 
 **Collision model (#634, revised):** Uniform speed factor (0.96) for all collisions — direction-dependent model reverted. The direction-dependent model (head-on=0.2, same-direction=0.99) was designed for an inflated σ target (2.54) caused by a measurement bug (index-based cycle tracking). Corrected SC2 σ=0.58 shows mining cycles are extremely uniform — a harsh head-on penalty produces a congestion tail SC2 doesn't have. Uniform 0.96 calibrated for cycle distribution match: EM σ=0.90, SC2 σ=0.58.
 
-**Collision radius (#634):** Increased from 0.375 to 0.75 (diameter 1.5). PySC2 docs confirm SC2 unit size is ~0.75 game units — validates the collision diameter. The larger interaction zone creates more collision events, which combined with direction-dependent severity produces the right-skewed cycle length distribution.
+**Collision radius (#634):** Increased from 0.375 to 0.75 (diameter 1.5). PySC2 docs confirm SC2 unit size is ~0.75 game units — validates the collision diameter. The larger interaction zone creates more collision events, producing contention at higher saturation.
 
 **Per-patch approach docking (#636) — disabled:** `MineralPatch` supports per-patch approach via `APPROACH_DISTANCE_SCALE`, but it is currently set to 0. All patches use the global approach constant (now 0 loops after #634). The formula was tested (SCALE=2.5 improved cadence to 75.3%) but reverted — it was a compensation constant, not a physics simulation.
 
@@ -141,7 +141,7 @@ Uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66 loo
 
 ## 6. Mining Efficiency Factors
 
-**Factor removed (#623).** Edge-to-edge walk distances, worker collision (speed factor 0.952), decomposed mining phases (mine=22, deposit=7, approach=11), and worker stagger (6.1 loops) produce correct mineral totals without compensation. All races use factor 1.0.
+**Factor removed (#623).** Edge-to-edge walk distances, worker collision (speed factor 0.96), decomposed mining phases (mine=22, deposit=7, approach=11), and worker stagger (6.1 loops) produce correct mineral totals without compensation. All races use factor 1.0.
 
 Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle replay MAPE sweep, which conflated worker allocation differences with physics. The dual-run isolates physics and shows no race-specific difference.
 
@@ -158,7 +158,7 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 
 12w +7.2% gap: straight-line walks are faster than SC2's path-dependent navigation. Workers walk edge-to-edge (collision footprint boundaries) but still take direct paths — real SC2 workers navigate around mineral line formations. This is the structural ceiling of the straight-line movement model.
 
-16w −2.0%: collision physics (speed factor 0.952) and docking overhead (22 loops) correctly reduce saturated income. The saturation curve shape matches SC2 better than pre-collision physics.
+16w −2.0%: collision physics (speed factor 0.96) and docking overhead (22 loops) correctly reduce saturated income. The saturation curve shape matches SC2 better than pre-collision physics.
 
 Zerg diverges at tick 0: unit count mismatch in the Zerg playbook baseline — Zerg worker production timing differs from Protoss/Terran due to larva mechanics.
 
@@ -364,7 +364,7 @@ At a far mineral patch (7.6 units): ~40 loops per leg, 121-loop cycle, **55.7 mi
 
 With `MAX_MINERS=1`, the approach+mining duration (11+22=33 loops) controls patch occupancy. A patch is occupied 33/106 = **31.1%** of each cycle. Two workers per patch alternate efficiently — one mines while the other walks. The third worker must wait for the docking overhead (22 loops) to expire before approaching.
 
-Collision physics (speed factor 0.952, #630) reduces worker speed when collision circles overlap, creating natural cadence variance at higher saturation. 16w dual-run: EM=4150 vs SC2=4235 (−2.0%). The remaining gap is from path-dependent routing in real SC2 that straight-line walks cannot replicate.
+Collision physics (speed factor 0.96, #630) reduces worker speed when collision circles overlap, creating natural cadence variance at higher saturation. 16w dual-run: EM=4150 vs SC2=4235 (−2.0%). The remaining gap is from path-dependent routing in real SC2 that straight-line walks cannot replicate.
 
 ### Gas cycle breakdown
 
@@ -399,7 +399,7 @@ Fixing rate accuracy is the primary lever for reducing balance MAPE. The balance
 
 ### Per-race efficiency factors — removed
 
-Factor removed in #623. With decomposed mining phases (mine=22, approach=11, deposit=7), edge-to-edge walk distances, and worker collision (speed factor 0.952), no compensation factor is needed. SC2 dual-run shows Protoss and Terran produce identical minerals (3460 at tick 304). The EM produces 3710 (+7.2%) with factor=1.0 — the gap is from straight-line vs path-dependent routing, not missing compensation.
+Factor removed in #623. With decomposed mining phases (mine=22, approach=11, deposit=7), edge-to-edge walk distances, and worker collision (speed factor 0.96), no compensation factor is needed. SC2 dual-run shows Protoss and Terran produce identical minerals (3460 at tick 304). The EM produces 3710 (+7.2%) with factor=1.0 — the gap is from straight-line vs path-dependent routing, not missing compensation.
 
 ### The overhead gap — decomposed (#620→#631)
 
