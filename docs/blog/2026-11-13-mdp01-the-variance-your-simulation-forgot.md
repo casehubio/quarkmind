@@ -46,19 +46,29 @@ Walking-into-stationary collisions — a worker hitting someone mining at a patc
 
 The asymmetry matters. Penalising both workers in a head-on collision doubles the mean impact without doubling the variance. Penalising only the yielder halves the mean shift while keeping the same maximum delay for the unlucky worker. The variance comes from some workers getting stuck while others sail through — not from everyone being equally slowed.
 
+## Processing order — the missing randomness
+
+Direction-dependent collisions got the variance halfway there. σ jumped from 0.34 to 2.02 — but SC2's 2.54 was still out of reach.
+
+The remaining gap was in the processing order. SC2 randomises the order in which events are processed every game loop. Which worker reaches a patch first, which deposits first, which collision gets resolved first — all shuffled, every loop. The PySC2 docs call this "cosmetic," intended to make groups of units look less robotic. But for mining, it's structural.
+
+With deterministic iteration (Java's `LinkedHashMap`), the same workers always win the same races. Worker 0 always reaches its patch before Worker 5. The collision penalty always falls on the same yielder. The result is a narrow distribution because the same workers are consistently lucky and the same are consistently unlucky.
+
+Shuffling the processing order per loop — mineral worker steps, patch acquisition priority, and collision resolution order — breaks this. Now Worker 0 sometimes yields instead of Worker 5. The head-on collision penalty falls on different workers in different loops. The variance emerges naturally.
+
+With the shuffle in place, the overhead phases that were removed to make room for collision-driven variance could be restored to their SC2-observed values (mining 22 loops, deposit 7 loops, approach/docking 11 loops). The variance now comes from the shuffle + collision physics, not from zeroing physical overheads.
+
 ## What matched, what didn't
 
-After tuning collision radius (from 0.375 to 0.75), acceleration (3.5 to 10.0), and removing fixed overhead timers that were absorbing variance:
+| Metric | Original | Collision only | + Shuffle | SC2 |
+|---|---|---|---|---|
+| σ | 0.34 | 2.02 | 2.25 | 2.54 |
+| Mean | 4.89 | 4.69 | 6.24 | 4.47 |
+| Range | 4–6 | 2–19 | 3–20 | 2–23 |
 
-| Metric | Before | After | SC2 |
-|---|---|---|---|
-| σ | 0.34 | 2.02 | 2.54 |
-| Mean | 4.89 | 4.69 | 4.47 |
-| Range | 4–6 | 2–19 | 2–23 |
+The distribution is right-skewed with a long congestion tail. The tail extends past 15 ticks where it was previously capped at 6.
 
-The distribution now has the right shape — right-skewed with a long congestion tail. The 3-tick bucket matches SC2 within a percentage point. The tail extends past 15 ticks where it was previously capped at 6.
-
-The remaining gap is in the 2-tick bucket: 5.8% versus SC2's 21.4%. Producing sub-3-tick cycles requires either faster walks (higher acceleration), less mining overhead, or workers maintaining momentum between trips — all of which interact with the collision model in ways that need more SC2 observation data to validate.
+The remaining σ gap (2.25 vs 2.54) is from uniform mineral patch distances. The diagnostic uses 6–8 unit patches; real SC2 has patches from 3 to 6 units centre-to-centre. Close patches enable 2-tick cycles (21.4% of SC2 cycles) that uniform distances cannot reproduce. This is a patch geometry issue, not a collision or shuffle issue.
 
 ## Why this matters
 
