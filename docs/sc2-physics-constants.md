@@ -134,7 +134,9 @@ The asymmetric penalty is key: penalising only the yielder halves the mean impac
 |----------|-------|--------|------------|
 | Close patch distance | avg 6.6 units | Oracle replay mineral positions | **Calibrated** — #567 |
 | Far patch distance | avg 7.6 units | Oracle replay mineral positions | **Calibrated** — #567 |
-| Default patch distance | 7.0 units (uniform) | SC2 dual-run calibration sweep | **Calibrated** — #599 | `starcraft.worker.patch-distance` |
+| Default close patch distance | 5.5 units | Variable close/far model #634 | **Estimated** | `MineralPatch.CLOSE_PATCH_DISTANCE` |
+| Default far patch distance | 8.5 units | Variable close/far model #634 | **Estimated** | `MineralPatch.FAR_PATCH_DISTANCE` |
+| Patch distance (config) | 7.0 units | SC2 dual-run calibration sweep — used by explicit `setMineralPatchResources()` | **Calibrated** — #599 | `starcraft.worker.patch-distance` |
 | SC2 API distances (TorchesAIE_v4) | 3.0–5.9u (center-to-center) | SC2 observation API | **Calibrated** — #605 |
 | Close patch minerals | 1500 | SC2 standard | **Published** |
 | Far patch minerals | 750 | SC2 standard | **Published** |
