@@ -95,6 +95,8 @@ public class QuarkusSC2Transport {
 
     /** Background reader thread that pulls frames off the socket. */
     private Thread readerThread;
+    private Process sc2Process;
+
 
     // ---------------------------------------------------------------------------
     // Public lifecycle
@@ -229,6 +231,7 @@ public class QuarkusSC2Transport {
                     Duration.ofSeconds(5));
             } catch (Exception ignored) {}
             closeSocket();
+            terminateSC2Process();
             gameLoopThread = null;
         }
     }
@@ -499,6 +502,23 @@ public class QuarkusSC2Transport {
         }
     }
 
+    private void terminateSC2Process() {
+        Process p = sc2Process;
+        sc2Process = null;
+        if (p == null || !p.isAlive()) {return;}
+        log.info("[SC2] Process still alive after RequestQuit — destroying");
+        p.destroy();
+        try {
+            if (!p.waitFor(5, TimeUnit.SECONDS)) {
+                log.warn("[SC2] Graceful destroy timed out — force killing");
+                p.destroyForcibly();
+            }
+        } catch (InterruptedException e) {
+            p.destroyForcibly();
+        }
+    }
+
+
     // ---------------------------------------------------------------------------
     // SC2 process launch and port polling
     // ---------------------------------------------------------------------------
@@ -510,8 +530,8 @@ public class QuarkusSC2Transport {
         }
         SC2Executable sc2 = resolveSC2Executable();
         log.infof("[SC2] Launching: %s", sc2.path());
-        new ProcessBuilder(sc2.path().toString(),
-            "-listen", "127.0.0.1", "-port", String.valueOf(sc2Port), "-displayMode", "0").start();
+        sc2Process = new ProcessBuilder(sc2.path().toString(),
+                                        "-listen", "127.0.0.1", "-port", String.valueOf(sc2Port), "-displayMode", "0").start();
     }
 
     private static boolean isPortOpen(int port) {
