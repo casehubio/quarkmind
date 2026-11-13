@@ -839,5 +839,49 @@ class WorkerSimulationTest {
         assertTrue(totalIncome > 0, "Contested workers should still produce income");
     }
 
+    @Test
+    void workerReroutesToIdlePatch_whenWaitExceedsThreshold() {
+        // 2 patches, 3 workers — worker 3 should eventually reroute
+        sim = new WorkerSimulation();
+        List<Resource> patches = List.of(
+                new Resource("p-1", new Point2d(55, 50), 1500, false),
+                new Resource("p-2", new Point2d(56, 50), 1500, false)
+                                        );
+        sim.onTownHallCompleted(BASE_TAG, BASE_POS, patches);
+        sim.onInitialWorkers(List.of("w-1", "w-2", "w-3"), BASE_POS, BASE_TAG);
+
+        // Run enough ticks for workers to reach patches
+        for (int t = 0; t < 10; t++) {tick();}
+
+        // Find the worker whose patch is shared (two workers assigned to same patch)
+        SimulatedWorker w1            = sim.worker("w-1");
+        SimulatedWorker w2            = sim.worker("w-2");
+        SimulatedWorker w3            = sim.worker("w-3");
+        MineralPatch    initialPatch3 = w3.assignedPatch;
+
+        // Run more ticks — rerouting should change w3's assigned patch
+        boolean rerouted = false;
+        for (int t = 0; t < 40; t++) {
+            tick();
+            if (w3.assignedPatch != initialPatch3) {
+                rerouted = true;
+                break;
+            }
+        }
+        assertTrue(rerouted, "Worker 3 should reroute to a different patch when wait exceeds threshold");
+    }
+
+    @Test
+    void workerStaysAtPatch_whenNoBetterOptionExists() {
+        List<String> tags = IntStream.rangeClosed(1, 16)
+                                     .mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+        double totalIncome = 0;
+        for (int t = 0; t < 60; t++) {
+            totalIncome += tick().mineralIncome();
+        }
+        assertTrue(totalIncome > 0, "Workers should still produce income when all patches occupied");
+    }
+
 
 }

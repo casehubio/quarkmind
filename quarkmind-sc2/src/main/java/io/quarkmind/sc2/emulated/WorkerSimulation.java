@@ -345,6 +345,16 @@ class WorkerSimulation {
                     if (w.waitingSinceLoop <= 0) {
                         w.waitingSinceLoop = currentLoop;
                     }
+                    if (w.waitingSinceLoop > 0
+                        && currentLoop - w.waitingSinceLoop > SimulatedWorker.REROUTE_THRESHOLD_LOOPS) {
+                        MineralPatch better = findBetterPatch(w, currentLoop);
+                        if (better != null) {
+                            w.assignedPatch = better;
+                            w.targetPosition = miningTarget(better, w.baseIndex);
+                            w.waitingSinceLoop = 0;
+                            continue;
+                        }
+                    }
                     if (currentLoop < w.assignedPatch.lockEndLoop) {return income;}
                     tryStartMining(w, currentLoop);
                     if (!w.assignedPatch.miners.contains(w)) {return income;}
@@ -464,6 +474,34 @@ class WorkerSimulation {
             w.waitingSinceLoop = 0;
         }
     }
+
+    private MineralPatch findBetterPatch(SimulatedWorker w, double currentLoop) {
+        BaseEntry    base           = bases.get(w.baseIndex);
+        double       currentWait    = estimatedWait(w.assignedPatch, currentLoop);
+        MineralPatch best           = null;
+        double       bestTravelTime = currentWait;
+        for (MineralPatch p : base.patches()) {
+            if (p == w.assignedPatch || p.isDepleted()) {continue;}
+            if (!p.isIdle(currentLoop)) {continue;}
+            double dist        = w.position.distanceTo(miningTarget(p, w.baseIndex));
+            double travelLoops = dist / (SimulatedWorker.MAX_SPEED * SimulatedWorker.LOOP_DURATION);
+            if (travelLoops < bestTravelTime) {
+                bestTravelTime = travelLoops;
+                best           = p;
+            }
+        }
+        return best;
+    }
+
+    private double estimatedWait(MineralPatch patch, double currentLoop) {
+        if (!patch.miners.isEmpty()) {
+            SimulatedWorker activeMiner = patch.miners.get(0);
+            return Math.max(0, activeMiner.phaseEndLoop - currentLoop)
+                   + SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS;
+        }
+        return Math.max(0, patch.lockEndLoop - currentLoop);
+    }
+
 
     private double tickGasWorker(SimulatedWorker w, double tickStartLoop, double tickEndLoop) {
         GasSlot slot = w.assignedGasSlot;

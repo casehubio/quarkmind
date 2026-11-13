@@ -10,7 +10,8 @@ public record WorkerPhysicsConfig(
         float  patchDistance,
         double initialWorkerStaggerLoops,
         double collisionSpeedFactor,
-        double approachDockingLoops
+        double approachDockingLoops,
+        double rerouteThresholdLoops
 ) {
 
     public static final double DEFAULT_MINING_DURATION_LOOPS = 22.0;
@@ -23,13 +24,15 @@ public record WorkerPhysicsConfig(
     public static final double DEFAULT_INITIAL_WORKER_STAGGER     = 6.1;
     public static final double DEFAULT_COLLISION_SPEED_FACTOR = 0.96;
     public static final double DEFAULT_APPROACH_DOCKING_LOOPS = 11.0;
+    public static final double DEFAULT_REROUTE_THRESHOLD_LOOPS = 22.0;
 
     public WorkerPhysicsConfig(double miningDurationLoops, double gasHarvestDurationLoops,
                                double depositDurationLoops, double acceleration,
                                double deceleration, double patchDockingOverheadLoops) {
         this(miningDurationLoops, gasHarvestDurationLoops, depositDurationLoops,
              acceleration, deceleration, patchDockingOverheadLoops, DEFAULT_PATCH_DISTANCE,
-             DEFAULT_INITIAL_WORKER_STAGGER, DEFAULT_COLLISION_SPEED_FACTOR, DEFAULT_APPROACH_DOCKING_LOOPS);
+             DEFAULT_INITIAL_WORKER_STAGGER, DEFAULT_COLLISION_SPEED_FACTOR,
+             DEFAULT_APPROACH_DOCKING_LOOPS, DEFAULT_REROUTE_THRESHOLD_LOOPS);
     }
 
     public WorkerPhysicsConfig(double miningDurationLoops, double gasHarvestDurationLoops,
@@ -38,7 +41,8 @@ public record WorkerPhysicsConfig(
                                float patchDistance) {
         this(miningDurationLoops, gasHarvestDurationLoops, depositDurationLoops,
              acceleration, deceleration, patchDockingOverheadLoops, patchDistance,
-             DEFAULT_INITIAL_WORKER_STAGGER, DEFAULT_COLLISION_SPEED_FACTOR, DEFAULT_APPROACH_DOCKING_LOOPS);
+             DEFAULT_INITIAL_WORKER_STAGGER, DEFAULT_COLLISION_SPEED_FACTOR,
+             DEFAULT_APPROACH_DOCKING_LOOPS, DEFAULT_REROUTE_THRESHOLD_LOOPS);
     }
 
     public static WorkerPhysicsConfig defaults() {
@@ -52,7 +56,8 @@ public record WorkerPhysicsConfig(
                 DEFAULT_PATCH_DISTANCE,
                 DEFAULT_INITIAL_WORKER_STAGGER,
                 DEFAULT_COLLISION_SPEED_FACTOR,
-                DEFAULT_APPROACH_DOCKING_LOOPS
+                DEFAULT_APPROACH_DOCKING_LOOPS,
+                DEFAULT_REROUTE_THRESHOLD_LOOPS
         );
     }
 }

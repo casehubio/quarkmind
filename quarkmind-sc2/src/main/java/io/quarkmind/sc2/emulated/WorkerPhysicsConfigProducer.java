@@ -46,6 +46,10 @@ class WorkerPhysicsConfigProducer {
     @ConfigProperty(name = "starcraft.worker.approach-docking-loops",
                     defaultValue = "7.0")
     double approachDockingLoops;
+    @ConfigProperty(name = "starcraft.worker.reroute-threshold-loops",
+                    defaultValue = "22.0")
+    double rerouteThresholdLoops;
+
 
     @Produces
     @jakarta.inject.Singleton
@@ -53,7 +57,8 @@ class WorkerPhysicsConfigProducer {
         WorkerPhysicsConfig config = new WorkerPhysicsConfig(
                 miningDurationLoops, gasHarvestDurationLoops, depositDurationLoops,
                 acceleration, deceleration, patchDockingOverheadLoops, (float) patchDistance,
-                initialWorkerStaggerLoops, collisionSpeedFactor, approachDockingLoops);
+                initialWorkerStaggerLoops, collisionSpeedFactor, approachDockingLoops,
+                rerouteThresholdLoops);
         SimulatedWorker.configure(config);
         return config;
     }
