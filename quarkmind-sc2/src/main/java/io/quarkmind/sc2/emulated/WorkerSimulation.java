@@ -421,17 +421,8 @@ class WorkerSimulation {
                     b.position = new Point2d(b.position.x() + perpX * dodge, b.position.y() + perpY * dodge);
                 }
 
-                double severity = directionSeverity(a, b);
-                if (severity < SimulatedWorker.COLLISION_SPEED_FACTOR) {
-                    if (a.tag.hashCode() < b.tag.hashCode()) {
-                        a.currentSpeed *= severity;
-                    } else {
-                        b.currentSpeed *= severity;
-                    }
-                } else {
-                    a.currentSpeed *= severity;
-                    b.currentSpeed *= severity;
-                }
+                a.currentSpeed *= SimulatedWorker.COLLISION_SPEED_FACTOR;
+                b.currentSpeed *= SimulatedWorker.COLLISION_SPEED_FACTOR;
             }
         }
 
@@ -451,7 +442,7 @@ class WorkerSimulation {
                 } else {
                     w.position = new Point2d(w.position.x() - perpX * dodge, w.position.y() - perpY * dodge);
                 }
-                w.currentSpeed *= HEAD_ON_SPEED_FACTOR;
+                w.currentSpeed *= SimulatedWorker.COLLISION_SPEED_FACTOR;
             }
         }
     }

@@ -20,40 +20,39 @@ class WorkerCadenceComparisonTest {
 
     @Test
     void compareDeliveryCadence() {
-        WorkerCadenceBaseline sc2 = loadWorkerCadence("calibration/cal-worker-cadence-12w.json");
-        CalibrationBaseline cal = loadCalibration("calibration/cal-mineral-baseline-12w.json");
-        EmulatedGame game = setupGame(cal);
+        WorkerCadenceBaseline sc2  = loadWorkerCadence("calibration/cal-worker-cadence-12w.json");
+        CalibrationBaseline   cal  = loadCalibration("calibration/cal-mineral-baseline-12w.json");
+        EmulatedGame          game = setupGame(cal);
 
         System.out.println("=== EM vs SC2 Per-Worker Delivery Cadence ===\n");
 
         Map<Integer, Integer> sc2DeliveriesPerTick = new TreeMap<>();
-        Map<Integer, Integer> emDeliveriesPerTick = new TreeMap<>();
+        Map<Integer, Integer> emDeliveriesPerTick  = new TreeMap<>();
 
-        String[] prevSc2Action = new String[12];
-        String[] prevEmAction = new String[12];
+        Map<String, String> prevSc2Action = new HashMap<>();
+        String[]            prevEmAction  = new String[12];
 
         for (int tick = 0; tick < sc2.tickCount() && tick <= 304; tick++) {
             List<WorkerSnapshot> sc2Workers = sc2.cadence().get(tick).workers();
-            List<WorkerSnapshot> emWorkers = game.workerSnapshots();
+            List<WorkerSnapshot> emWorkers  = game.workerSnapshots();
 
             int sc2Deliveries = 0;
-            int emDeliveries = 0;
+            int emDeliveries  = 0;
 
-            for (int w = 0; w < Math.min(sc2Workers.size(), 12); w++) {
-                String sc2Act = sc2Workers.get(w).action().name();
-                if (prevSc2Action[w] != null
-                        && prevSc2Action[w].equals("GATHERING_MINERALS")
-                        && sc2Act.equals("RETURNING_MINERALS")) {
+            for (WorkerSnapshot sw : sc2Workers) {
+                String prev = prevSc2Action.get(sw.tag());
+                if (prev != null && prev.equals("GATHERING_MINERALS")
+                    && sw.action().name().equals("RETURNING_MINERALS")) {
                     sc2Deliveries++;
                 }
-                prevSc2Action[w] = sc2Act;
+                prevSc2Action.put(sw.tag(), sw.action().name());
             }
 
             for (int w = 0; w < Math.min(emWorkers.size(), 12); w++) {
                 String emAct = emWorkers.get(w).action().name();
                 if (prevEmAction[w] != null
-                        && prevEmAction[w].equals("GATHERING_MINERALS")
-                        && emAct.equals("RETURNING_MINERALS")) {
+                    && prevEmAction[w].equals("GATHERING_MINERALS")
+                    && emAct.equals("RETURNING_MINERALS")) {
                     emDeliveries++;
                 }
                 prevEmAction[w] = emAct;
@@ -68,26 +67,26 @@ class WorkerCadenceComparisonTest {
         System.out.println("-----|---------|--------|------");
         int matchCount = 0;
         for (int tick = 0; tick <= 50; tick++) {
-            int sc2d = sc2DeliveriesPerTick.getOrDefault(tick, 0);
-            int emd = emDeliveriesPerTick.getOrDefault(tick, 0);
+            int    sc2d  = sc2DeliveriesPerTick.getOrDefault(tick, 0);
+            int    emd   = emDeliveriesPerTick.getOrDefault(tick, 0);
             String match = sc2d == emd ? "  ==" : String.format(" %+d", emd - sc2d);
-            if (sc2d == emd) matchCount++;
+            if (sc2d == emd) {matchCount++;}
             System.out.printf(" %3d |    %4d |   %4d | %s%n", tick, sc2d, emd, match);
         }
 
         System.out.println("\n=== EM Worker Cycle Lengths ===");
-        Map<Integer, List<Integer>> emCycleLengths = new HashMap<>();
-        int[] emPrevDeliveryTick = new int[12];
+        Map<Integer, List<Integer>> emCycleLengths     = new HashMap<>();
+        int[]                       emPrevDeliveryTick = new int[12];
         java.util.Arrays.fill(emPrevDeliveryTick, -1);
 
         EmulatedGame game2 = setupGame(cal);
-        String[] prev2 = new String[12];
+        String[]     prev2 = new String[12];
         for (int tick = 0; tick <= 304; tick++) {
             List<WorkerSnapshot> emw = game2.workerSnapshots();
             for (int w = 0; w < Math.min(emw.size(), 12); w++) {
                 String act = emw.get(w).action().name();
                 if (prev2[w] != null && prev2[w].equals("GATHERING_MINERALS")
-                        && act.equals("RETURNING_MINERALS")) {
+                    && act.equals("RETURNING_MINERALS")) {
                     if (emPrevDeliveryTick[w] >= 0) {
                         int cycle = tick - emPrevDeliveryTick[w];
                         emCycleLengths.computeIfAbsent(w, k -> new java.util.ArrayList<>()).add(cycle);
@@ -106,45 +105,44 @@ class WorkerCadenceComparisonTest {
                 continue;
             }
             double avg = cycles.stream().mapToInt(Integer::intValue).average().orElse(0);
-            int min = cycles.stream().mapToInt(Integer::intValue).min().orElse(0);
-            int max = cycles.stream().mapToInt(Integer::intValue).max().orElse(0);
+            int    min = cycles.stream().mapToInt(Integer::intValue).min().orElse(0);
+            int    max = cycles.stream().mapToInt(Integer::intValue).max().orElse(0);
             System.out.printf("W%02d: %d deliveries, cycle avg=%.1f min=%d max=%d%n",
-                    w, cycles.size(), avg, min, max);
+                              w, cycles.size(), avg, min, max);
         }
 
-        System.out.println("\n=== SC2 Worker Cycle Lengths ===");
-        Map<Integer, List<Integer>> sc2CycleLengths = new HashMap<>();
-        int[] sc2PrevDeliveryTick = new int[12];
-        java.util.Arrays.fill(sc2PrevDeliveryTick, -1);
-        String[] prevSc2_2 = new String[12];
+        System.out.println("\n=== SC2 Worker Cycle Lengths (tag-based) ===");
+        Map<String, List<Integer>> sc2CycleLengths     = new HashMap<>();
+        Map<String, Integer>       sc2PrevDeliveryTick = new HashMap<>();
+        Map<String, String>        prevSc2_2           = new HashMap<>();
 
         for (int tick = 0; tick < sc2.tickCount(); tick++) {
             List<WorkerSnapshot> sc2w = sc2.cadence().get(tick).workers();
-            for (int w = 0; w < Math.min(sc2w.size(), 12); w++) {
-                String act = sc2w.get(w).action().name();
-                if (prevSc2_2[w] != null && prevSc2_2[w].equals("GATHERING_MINERALS")
-                        && act.equals("RETURNING_MINERALS")) {
-                    if (sc2PrevDeliveryTick[w] >= 0) {
-                        int cycle = tick - sc2PrevDeliveryTick[w];
-                        sc2CycleLengths.computeIfAbsent(w, k -> new java.util.ArrayList<>()).add(cycle);
+            for (WorkerSnapshot sw : sc2w) {
+                String tag  = sw.tag();
+                String act  = sw.action().name();
+                String prev = prevSc2_2.get(tag);
+                if (prev != null && prev.equals("GATHERING_MINERALS")
+                    && act.equals("RETURNING_MINERALS")) {
+                    Integer prevTick = sc2PrevDeliveryTick.get(tag);
+                    if (prevTick != null) {
+                        int cycle = tick - prevTick;
+                        sc2CycleLengths.computeIfAbsent(tag, k -> new java.util.ArrayList<>()).add(cycle);
                     }
-                    sc2PrevDeliveryTick[w] = tick;
+                    sc2PrevDeliveryTick.put(tag, tick);
                 }
-                prevSc2_2[w] = act;
+                prevSc2_2.put(tag, act);
             }
         }
 
-        for (int w = 0; w < 12; w++) {
-            List<Integer> cycles = sc2CycleLengths.get(w);
-            if (cycles == null || cycles.isEmpty()) {
-                System.out.printf("W%02d: no deliveries%n", w);
-                continue;
-            }
-            double avg = cycles.stream().mapToInt(Integer::intValue).average().orElse(0);
-            int min = cycles.stream().mapToInt(Integer::intValue).min().orElse(0);
-            int max = cycles.stream().mapToInt(Integer::intValue).max().orElse(0);
+        int idx = 0;
+        for (var entry : sc2CycleLengths.entrySet()) {
+            List<Integer> cycles = entry.getValue();
+            double        avg    = cycles.stream().mapToInt(Integer::intValue).average().orElse(0);
+            int           min    = cycles.stream().mapToInt(Integer::intValue).min().orElse(0);
+            int           max    = cycles.stream().mapToInt(Integer::intValue).max().orElse(0);
             System.out.printf("W%02d: %d deliveries, cycle avg=%.1f min=%d max=%d%n",
-                    w, cycles.size(), avg, min, max);
+                              idx++, cycles.size(), avg, min, max);
         }
     }
 
@@ -259,28 +257,34 @@ class WorkerCadenceComparisonTest {
     }
 
     private static Map<Integer, List<Integer>> extractCycleLengths(WorkerCadenceBaseline baseline) {
-        Map<Integer, List<Integer>> cycleLengths     = new HashMap<>();
-        int                         workerCount      = baseline.cadence().get(0).workers().size();
-        int[]                       prevDeliveryTick = new int[workerCount];
-        String[]                    prevAction       = new String[workerCount];
-        java.util.Arrays.fill(prevDeliveryTick, -1);
+        Map<String, List<Integer>> cycleLengths     = new HashMap<>();
+        Map<String, Integer>       prevDeliveryTick = new HashMap<>();
+        Map<String, String>        prevAction       = new HashMap<>();
 
         for (int tick = 0; tick < baseline.tickCount(); tick++) {
             List<WorkerSnapshot> workers = baseline.cadence().get(tick).workers();
-            for (int w = 0; w < Math.min(workers.size(), workerCount); w++) {
-                String act = workers.get(w).action().name();
-                if (prevAction[w] != null && prevAction[w].equals("GATHERING_MINERALS")
+            for (WorkerSnapshot w : workers) {
+                String tag  = w.tag();
+                String act  = w.action().name();
+                String prev = prevAction.get(tag);
+                if (prev != null && prev.equals("GATHERING_MINERALS")
                     && act.equals("RETURNING_MINERALS")) {
-                    if (prevDeliveryTick[w] >= 0) {
-                        int cycle = tick - prevDeliveryTick[w];
-                        cycleLengths.computeIfAbsent(w, k -> new java.util.ArrayList<>()).add(cycle);
+                    Integer prevTick = prevDeliveryTick.get(tag);
+                    if (prevTick != null) {
+                        int cycle = tick - prevTick;
+                        cycleLengths.computeIfAbsent(tag, k -> new java.util.ArrayList<>()).add(cycle);
                     }
-                    prevDeliveryTick[w] = tick;
+                    prevDeliveryTick.put(tag, tick);
                 }
-                prevAction[w] = act;
+                prevAction.put(tag, act);
             }
         }
-        return cycleLengths;
+        Map<Integer, List<Integer>> result = new HashMap<>();
+        int                         idx    = 0;
+        for (var entry : cycleLengths.entrySet()) {
+            result.put(idx++, entry.getValue());
+        }
+        return result;
     }
 
     private static Map<Integer, List<Integer>> extractEmCycleLengths(EmulatedGame game, int ticks) {
