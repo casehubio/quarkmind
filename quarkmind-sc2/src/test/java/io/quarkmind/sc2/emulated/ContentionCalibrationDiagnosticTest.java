@@ -26,6 +26,7 @@ class ContentionCalibrationDiagnosticTest {
         sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
 
         Map<String, MineralPatch> prevPatch        = new HashMap<>();
+        Map<String, WorkerTask>   prevTask         = new HashMap<>();
         int                       rerouteCount     = 0;
         List<Integer>             cycleLengths     = new ArrayList<>();
         Map<String, Integer>      lastDeliveryTick = new HashMap<>();
@@ -45,18 +46,17 @@ class ContentionCalibrationDiagnosticTest {
                 prevPatch.put(w.tag, w.assignedPatch);
             }
 
-            if (income.mineralIncome() > 0) {
-                int deliveryCount = (int) (income.mineralIncome() / SimulatedWorker.MINERAL_CARGO);
-                for (SimulatedWorker w : sim.allWorkers()) {
-                    if (w.assignedGasSlot != null) {continue;}
-                    if (w.task == WorkerTask.MINING_MINERALS && w.cargo == 0) {
-                        Integer lastTick = lastDeliveryTick.get(w.tag);
-                        if (lastTick != null && tick - lastTick > 0) {
-                            cycleLengths.add(tick - lastTick);
-                        }
-                        lastDeliveryTick.put(w.tag, tick);
+            for (SimulatedWorker w : sim.allWorkers()) {
+                if (w.assignedGasSlot != null) {continue;}
+                WorkerTask prev = prevTask.get(w.tag);
+                if (prev == WorkerTask.MINING_MINERALS && w.task == WorkerTask.RETURNING_MINERALS) {
+                    Integer lastTick = lastDeliveryTick.get(w.tag);
+                    if (lastTick != null && tick - lastTick > 0) {
+                        cycleLengths.add(tick - lastTick);
                     }
+                    lastDeliveryTick.put(w.tag, tick);
                 }
+                prevTask.put(w.tag, w.task);
             }
         }
 
