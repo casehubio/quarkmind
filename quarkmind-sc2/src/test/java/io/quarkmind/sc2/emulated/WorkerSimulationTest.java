@@ -809,6 +809,40 @@ class WorkerSimulationTest {
     }
 
     @Test
+    void collisionSpeedCap_limitsCompoundPenalty() {
+        int warmup = 20;
+        int measure = 200;
+        double ticksPerMinute = 60.0 * io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND
+                                / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+
+        sim.reset();
+        sim.onTownHallCompleted(BASE_TAG, BASE_POS);
+        tickCount = 0;
+        List<String> initial24 = IntStream.rangeClosed(1, 12).mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(initial24, BASE_POS, BASE_TAG);
+        for (int i = 12; i < 24; i++) {sim.onWorkerProduced("w-" + (i + 1), BASE_POS);}
+        for (int t = 0; t < warmup; t++) {tick();}
+        double income24 = 0;
+        for (int t = 0; t < measure; t++) {income24 += tick().mineralIncome();}
+        double rate24 = income24 / measure * ticksPerMinute;
+
+        sim.reset();
+        sim.onTownHallCompleted(BASE_TAG, BASE_POS);
+        tickCount = 0;
+        sim.onInitialWorkers(IntStream.rangeClosed(1, 8).mapToObj(i -> "w-" + i).toList(), BASE_POS, BASE_TAG);
+        for (int t = 0; t < warmup; t++) {tick();}
+        double income8 = 0;
+        for (int t = 0; t < measure; t++) {income8 += tick().mineralIncome();}
+        double rate8 = income8 / measure * ticksPerMinute;
+
+        double efficiency24 = rate24 / (rate8 / 8 * 24);
+        assertTrue(efficiency24 > 0.45,
+                   "24w efficiency should be >45% (collision cap prevents over-penalizing). " +
+                   "Got " + String.format("%.1f%%", efficiency24 * 100));
+    }
+
+
+    @Test
     void workerAtIdlePatch_approachDockingApplied() {
         sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
         // Approach docking is unconditional — applied to all mining starts.
