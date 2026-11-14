@@ -123,10 +123,11 @@ class WorkerSimulation {
             if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
                 w.assignedPatch.miners.remove(w);
             }
-            w.assignedPatch  = null;
-            w.baseIndex      = toBase;
-            w.task           = WorkerTask.TRANSFERRING;
-            w.targetPosition = targetPos;
+            w.assignedPatch    = null;
+            w.baseIndex        = toBase;
+            w.task             = WorkerTask.TRANSFERRING;
+            w.targetPosition   = targetPos;
+            w.waitingSinceLoop = 0;
             transferred++;
         }
         return transferred;
