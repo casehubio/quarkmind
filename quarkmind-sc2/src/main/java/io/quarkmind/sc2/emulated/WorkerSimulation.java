@@ -735,10 +735,11 @@ class WorkerSimulation {
                         if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
                             w.assignedPatch.miners.remove(w);
                         }
-                        w.assignedPatch = null;
-                        w.assignedGasSlot = slot;
-                        w.task = WorkerTask.HARVESTING_GAS;
-                        w.targetPosition = slot.position;
+                        w.assignedPatch    = null;
+                        w.assignedGasSlot  = slot;
+                        w.task             = WorkerTask.HARVESTING_GAS;
+                        w.targetPosition   = slot.position;
+                        w.waitingSinceLoop = 0;
                         slot.assignedWorkers.add(w);
                         needed--;
                     }
@@ -780,10 +781,11 @@ class WorkerSimulation {
                     if (best.assignedPatch != null && best.assignedPatch.miners.contains(best)) {
                         best.assignedPatch.miners.remove(best);
                     }
-                    best.assignedPatch   = null;
-                    best.assignedGasSlot = slot;
-                    best.task            = WorkerTask.HARVESTING_GAS;
-                    best.targetPosition  = slot.position;
+                    best.assignedPatch    = null;
+                    best.assignedGasSlot  = slot;
+                    best.task             = WorkerTask.HARVESTING_GAS;
+                    best.targetPosition   = slot.position;
+                    best.waitingSinceLoop = 0;
                     slot.assignedWorkers.add(best);
                     needed--;
                 }
