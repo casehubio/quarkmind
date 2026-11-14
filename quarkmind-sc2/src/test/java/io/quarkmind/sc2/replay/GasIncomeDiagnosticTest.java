@@ -56,7 +56,9 @@ class GasIncomeDiagnosticTest {
             double[] cumulativeGasIncome,
             int[] gtTownHallCounts, int[] emTownHallCounts,
             int firstGtGasTick, int firstEmGasTick,
-            double[] avgGeyserDistances) {}
+            double[] avgGeyserDistances,
+            int[] gtGasBuildingCounts, int[] gtGasWorkerCounts,
+            int firstGtGasBuildingTick, int firstEmGasBuildingTick) {}
 
     @Test
     @EnabledIf("oracleExists")
@@ -64,7 +66,7 @@ class GasIncomeDiagnosticTest {
         List<Path> replays;
         try (var stream = Files.list(ORACLE_DIR)) {
             replays = stream.filter(p -> p.toString().endsWith(".SC2Replay"))
-                    .sorted().toList();
+                            .sorted().toList();
         }
 
         List<PerReplayGas> results = new ArrayList<>();
@@ -73,16 +75,16 @@ class GasIncomeDiagnosticTest {
             Replay replay;
             try {
                 replay = RepParserEngine.parseReplay(replayPath,
-                        EnumSet.of(RepContent.TRACKER_EVENTS, RepContent.DETAILS));
-            } catch (Exception e) { continue; }
-            if (replay == null || replay.details == null || replay.trackerEvents == null) continue;
-            if (replay.details.getPlayerList().length < 2) continue;
+                                                     EnumSet.of(RepContent.TRACKER_EVENTS, RepContent.DETAILS));
+            } catch (Exception e) {continue;}
+            if (replay == null || replay.details == null || replay.trackerEvents == null) {continue;}
+            if (replay.details.getPlayerList().length < 2) {continue;}
 
             for (int playerId = 1; playerId <= 2; playerId++) {
                 try {
                     ReplaySimulatedGame groundTruth = new ReplaySimulatedGame(replayPath, playerId);
-                    List<TimedIntent> intents = TrackerIntentExtractor.extract(replayPath, playerId);
-                    Race race = TrackerIntentExtractor.resolvePlayerRace(replay, playerId);
+                    List<TimedIntent>   intents     = TrackerIntentExtractor.extract(replayPath, playerId);
+                    Race                race        = TrackerIntentExtractor.resolvePlayerRace(replay, playerId);
 
                     EmulatedGame emulated = new EmulatedGame();
                     emulated.setPlayerRaceModel(RaceModelFactory.forRace(race));
@@ -90,19 +92,23 @@ class GasIncomeDiagnosticTest {
                     emulated.setMineralPatchResources(groundTruth.getMineralPatches());
                     emulated.resetForHarness();
 
-                    int cursor = 0;
-                    int[] gtVesRate = new int[CHECKPOINTS_MIN.length];
-                    int[] emVesRate = new int[CHECKPOINTS_MIN.length];
-                    int[] gtVesCurrent = new int[CHECKPOINTS_MIN.length];
-                    int[] emVesCurrent = new int[CHECKPOINTS_MIN.length];
-                    int[] gasSlotCounts = new int[CHECKPOINTS_MIN.length];
-                    int[] gasWorkerCounts = new int[CHECKPOINTS_MIN.length];
-                    double[] cumulativeGasIncome = new double[CHECKPOINTS_MIN.length];
-                    int[] gtTownHallCounts = new int[CHECKPOINTS_MIN.length];
-                    int[] emTownHallCounts = new int[CHECKPOINTS_MIN.length];
-                    double[] avgGeyserDistances = new double[CHECKPOINTS_MIN.length];
-                    int firstGtGasTick = -1;
-                    int firstEmGasTick = -1;
+                    int      cursor                 = 0;
+                    int[]    gtVesRate              = new int[CHECKPOINTS_MIN.length];
+                    int[]    emVesRate              = new int[CHECKPOINTS_MIN.length];
+                    int[]    gtVesCurrent           = new int[CHECKPOINTS_MIN.length];
+                    int[]    emVesCurrent           = new int[CHECKPOINTS_MIN.length];
+                    int[]    gasSlotCounts          = new int[CHECKPOINTS_MIN.length];
+                    int[]    gasWorkerCounts        = new int[CHECKPOINTS_MIN.length];
+                    double[] cumulativeGasIncome    = new double[CHECKPOINTS_MIN.length];
+                    int[]    gtTownHallCounts       = new int[CHECKPOINTS_MIN.length];
+                    int[]    emTownHallCounts       = new int[CHECKPOINTS_MIN.length];
+                    double[] avgGeyserDistances     = new double[CHECKPOINTS_MIN.length];
+                    int[]    gtGasBuildingCounts    = new int[CHECKPOINTS_MIN.length];
+                    int[]    gtGasWorkerCounts      = new int[CHECKPOINTS_MIN.length];
+                    int      firstGtGasTick         = -1;
+                    int      firstEmGasTick         = -1;
+                    int      firstGtGasBuildingTick = -1;
+                    int      firstEmGasBuildingTick = -1;
 
                     for (int tick = 0; tick < TICK_LIMIT && !groundTruth.isComplete(); tick++) {
                         long windowEnd = (long) (tick + 1) * SC2Data.LOOPS_PER_TICK;
@@ -127,20 +133,35 @@ class GasIncomeDiagnosticTest {
                             firstEmGasTick = tick;
                         }
 
+                        if (firstGtGasBuildingTick < 0) {
+                            GameState gtSnap = groundTruth.snapshot();
+                            long gtGasCount = gtSnap.myBuildings().stream()
+                                                    .filter(b -> SC2Data.isGasBuilding(b.type()) && b.isComplete()).count();
+                            if (gtGasCount > 0) {firstGtGasBuildingTick = tick;}
+                        }
+                        if (firstEmGasBuildingTick < 0 && emulated.gasSlotCount() > 0) {
+                            firstEmGasBuildingTick = tick;
+                        }
+
                         for (int i = 0; i < CHECKPOINTS_MIN.length; i++) {
                             if (tick == CHECKPOINTS_MIN[i] * TICKS_PER_MINUTE - 1) {
                                 GameState gt = groundTruth.snapshot();
                                 GameState em = emulated.snapshot();
-                                gtVesRate[i] = gt.playerEconomy().vespeneCollectionRate();
-                                emVesRate[i] = em.playerEconomy().vespeneCollectionRate();
-                                gtVesCurrent[i] = gt.playerEconomy().vespeneCurrent();
-                                emVesCurrent[i] = em.playerEconomy().vespeneCurrent();
-                                gasSlotCounts[i] = emulated.gasSlotCount();
-                                gasWorkerCounts[i] = emulated.totalGasWorkers();
+                                gtVesRate[i]           = gt.playerEconomy().vespeneCollectionRate();
+                                emVesRate[i]           = em.playerEconomy().vespeneCollectionRate();
+                                gtVesCurrent[i]        = gt.playerEconomy().vespeneCurrent();
+                                emVesCurrent[i]        = em.playerEconomy().vespeneCurrent();
+                                gasSlotCounts[i]       = emulated.gasSlotCount();
+                                gasWorkerCounts[i]     = emulated.totalGasWorkers();
                                 cumulativeGasIncome[i] = emulated.cumulativeGasIncome();
-                                gtTownHallCounts[i] = countTownHalls(gt);
-                                emTownHallCounts[i] = countTownHalls(em);
-                                avgGeyserDistances[i] = avgGeyserDistance(gt);
+                                gtTownHallCounts[i]    = countTownHalls(gt);
+                                emTownHallCounts[i]    = countTownHalls(em);
+                                avgGeyserDistances[i]  = avgGeyserDistance(gt);
+
+                                gtGasBuildingCounts[i] = (int) gt.myBuildings().stream()
+                                                                 .filter(b -> SC2Data.isGasBuilding(b.type()) && b.isComplete()).count();
+                                var gtGasMap = EmulatedGame.countGasWorkersPerBuilding(race, gt);
+                                gtGasWorkerCounts[i] = gtGasMap.values().stream().mapToInt(Integer::intValue).sum();
                             }
                         }
                     }
@@ -151,7 +172,9 @@ class GasIncomeDiagnosticTest {
                             gasSlotCounts, gasWorkerCounts, cumulativeGasIncome,
                             gtTownHallCounts, emTownHallCounts,
                             firstGtGasTick, firstEmGasTick,
-                            avgGeyserDistances));
+                            avgGeyserDistances,
+                            gtGasBuildingCounts, gtGasWorkerCounts,
+                            firstGtGasBuildingTick, firstEmGasBuildingTick));
 
                 } catch (Exception e) { /* skip */ }
             }
@@ -166,6 +189,7 @@ class GasIncomeDiagnosticTest {
 
         printDirectionBreakdown(results);
         printGasTimingAnalysis(results);
+        printGasWorkerCountFidelity(results);
         printExpansionCorrelation(results);
         printPerWorkerEfficiency(results);
         printDistanceCorrelation(results);
@@ -375,6 +399,99 @@ class GasIncomeDiagnosticTest {
         }
         System.out.println();
     }
+
+    private void printGasWorkerCountFidelity(List<PerReplayGas> results) {
+        System.out.println("=== GAS WORKER COUNT FIDELITY — EM vs GT at each checkpoint ===");
+        System.out.printf("%-5s %8s %10s %10s %10s %10s %10s %10s%n",
+                          "CP", "Count", "AvgEMSlot", "AvgGTSlot", "AvgEMGasW", "AvgGTGasW", "EM>GT", "EM<GT");
+
+        for (int i = 0; i < CHECKPOINTS_MIN.length; i++) {
+            final int cpIdx = i;
+            List<PerReplayGas> withGas = results.stream()
+                                                .filter(r -> r.gasSlotCounts[cpIdx] > 0 || r.gtGasBuildingCounts[cpIdx] > 0)
+                                                .toList();
+            if (withGas.isEmpty()) {
+                System.out.printf("%-5d (no gas data)%n", CHECKPOINTS_MIN[i]);
+                continue;
+            }
+
+            double avgEmSlots = withGas.stream().mapToInt(r -> r.gasSlotCounts[cpIdx]).average().orElse(0);
+            double avgGtSlots = withGas.stream().mapToInt(r -> r.gtGasBuildingCounts[cpIdx]).average().orElse(0);
+            double avgEmGasW  = withGas.stream().mapToInt(r -> r.gasWorkerCounts[cpIdx]).average().orElse(0);
+            double avgGtGasW  = withGas.stream().mapToInt(r -> r.gtGasWorkerCounts[cpIdx]).average().orElse(0);
+            long   emMore     = withGas.stream().filter(r -> r.gasWorkerCounts[cpIdx] > r.gtGasWorkerCounts[cpIdx]).count();
+            long   emFewer    = withGas.stream().filter(r -> r.gasWorkerCounts[cpIdx] < r.gtGasWorkerCounts[cpIdx]).count();
+
+            System.out.printf("%-5d %8d %10.1f %10.1f %10.1f %10.1f %10d %10d%n",
+                              CHECKPOINTS_MIN[cpIdx], withGas.size(), avgEmSlots, avgGtSlots,
+                              avgEmGasW, avgGtGasW, emMore, emFewer);
+        }
+
+        System.out.println();
+        System.out.println("--- Gas building count accuracy at each checkpoint ---");
+        System.out.printf("%-5s %8s %8s %8s %8s%n", "CP", "Match", "EM>GT", "EM<GT", "Total");
+        for (int i = 0; i < CHECKPOINTS_MIN.length; i++) {
+            final int cpIdx = i;
+            List<PerReplayGas> withGas = results.stream()
+                                                .filter(r -> r.gasSlotCounts[cpIdx] > 0 || r.gtGasBuildingCounts[cpIdx] > 0)
+                                                .toList();
+            if (withGas.isEmpty()) {continue;}
+            long match   = withGas.stream().filter(r -> r.gasSlotCounts[cpIdx] == r.gtGasBuildingCounts[cpIdx]).count();
+            long emMore  = withGas.stream().filter(r -> r.gasSlotCounts[cpIdx] > r.gtGasBuildingCounts[cpIdx]).count();
+            long emFewer = withGas.stream().filter(r -> r.gasSlotCounts[cpIdx] < r.gtGasBuildingCounts[cpIdx]).count();
+            System.out.printf("%-5d %8d %8d %8d %8d%n", CHECKPOINTS_MIN[cpIdx], match, emMore, emFewer, withGas.size());
+        }
+
+        System.out.println();
+        System.out.println("--- Gas building timing — first completion tick ---");
+        List<PerReplayGas> withBoth = results.stream()
+                                             .filter(r -> r.firstGtGasBuildingTick >= 0 && r.firstEmGasBuildingTick >= 0)
+                                             .toList();
+        if (!withBoth.isEmpty()) {
+            double ticksPerSec = SC2Data.GAME_LOOPS_PER_SECOND / SC2Data.LOOPS_PER_TICK;
+            double avgGt       = withBoth.stream().mapToInt(r -> r.firstGtGasBuildingTick).average().orElse(0);
+            double avgEm       = withBoth.stream().mapToInt(r -> r.firstEmGasBuildingTick).average().orElse(0);
+            double avgDelta = withBoth.stream()
+                                      .mapToInt(r -> r.firstEmGasBuildingTick - r.firstGtGasBuildingTick).average().orElse(0);
+            long emEarlier = withBoth.stream().filter(r -> r.firstEmGasBuildingTick < r.firstGtGasBuildingTick).count();
+            long gtEarlier = withBoth.stream().filter(r -> r.firstGtGasBuildingTick < r.firstEmGasBuildingTick).count();
+            long same      = withBoth.stream().filter(r -> r.firstGtGasBuildingTick == r.firstEmGasBuildingTick).count();
+
+            System.out.printf("Replays with both: %d%n", withBoth.size());
+            System.out.printf("Avg GT first gas building tick: %.0f (%.0fs)  Avg EM: %.0f (%.0fs)%n",
+                              avgGt, avgGt / ticksPerSec, avgEm, avgEm / ticksPerSec);
+            System.out.printf("Avg delta (EM - GT): %+.1f ticks (%+.1fs)%n", avgDelta, avgDelta / ticksPerSec);
+            System.out.printf("EM earlier: %d  GT earlier: %d  Same: %d%n", emEarlier, gtEarlier, same);
+        } else {
+            System.out.println("No replays with both GT and EM gas buildings detected.");
+        }
+
+        System.out.println();
+        System.out.println("--- Per-race gas worker delta at 5-min ---");
+        int cpIdx = 2;
+        System.out.printf("%-10s %8s %10s %10s %10s %8s %8s%n",
+                          "Race", "Count", "AvgEMGasW", "AvgGTGasW", "AvgDelta", "EM>GT", "EM<GT");
+        String[] raceNames = {"PROTOSS", "TERRAN", "ZERG"};
+        Race[]   races     = {Race.PROTOSS, Race.TERRAN, Race.ZERG};
+        for (int ri = 0; ri < 3; ri++) {
+            Race race = races[ri];
+            List<PerReplayGas> raceResults = results.stream()
+                                                    .filter(r -> r.race == race && (r.gasSlotCounts[cpIdx] > 0 || r.gtGasBuildingCounts[cpIdx] > 0))
+                                                    .toList();
+            if (raceResults.isEmpty()) {continue;}
+            double avgEm = raceResults.stream().mapToInt(r -> r.gasWorkerCounts[cpIdx]).average().orElse(0);
+            double avgGt = raceResults.stream().mapToInt(r -> r.gtGasWorkerCounts[cpIdx]).average().orElse(0);
+            double avgDelta = raceResults.stream()
+                                         .mapToInt(r -> r.gasWorkerCounts[cpIdx] - r.gtGasWorkerCounts[cpIdx]).average().orElse(0);
+            long emMore  = raceResults.stream().filter(r -> r.gasWorkerCounts[cpIdx] > r.gtGasWorkerCounts[cpIdx]).count();
+            long emFewer = raceResults.stream().filter(r -> r.gasWorkerCounts[cpIdx] < r.gtGasWorkerCounts[cpIdx]).count();
+
+            System.out.printf("%-10s %8d %10.1f %10.1f %+10.1f %8d %8d%n",
+                              raceNames[ri], raceResults.size(), avgEm, avgGt, avgDelta, emMore, emFewer);
+        }
+        System.out.println();
+    }
+
 
     private void printExpansionCorrelation(List<PerReplayGas> results) {
         System.out.println("=== EXPANSION CORRELATION — Error by town hall count at 5-min ===");
