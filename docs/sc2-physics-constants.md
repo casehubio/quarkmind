@@ -417,9 +417,9 @@ Per-tick cadence mismatch: 75.3% (229/304 ticks match, pre-shuffle measurement) 
 
 **Patch affinity (#620):** Workers return to the same patch each trip (SC2 behaviour). Routing is not the cadence bottleneck — the root cause is per-trip variance from collision timing and walk distance variance that straight-line movement cannot reproduce.
 
-### Per-patch approach docking (#636) — infrastructure only
+### Per-patch approach docking (#636)
 
-`MineralPatch` supports per-patch approach docking via `APPROACH_DISTANCE_SCALE`. **Currently disabled (`SCALE=0`)** — all patches use the global approach constant (11.0 loops). The formula was tested (SCALE=2.5 improved cadence from 81.6% to 75.3%) but reverted — it is a compensation constant, not a physics simulation.
+`APPROACH_DISTANCE_SCALE` removed (#653) — it was a compensation constant, not a physics simulation. All patches use the global approach constant (11.0 loops). The per-distance formula was tested (SCALE=2.5 improved cadence from 81.6% to 75.3%) but reverted because it masked the real cadence variance from collision timing and walk distance.
 
 **Delivery quantisation (finding):** Uniform phase constants produce discrete delivery counts because workers synchronise. Worker stagger (6.1 loops) breaks the phase relationship to hit the SC2 target.
 

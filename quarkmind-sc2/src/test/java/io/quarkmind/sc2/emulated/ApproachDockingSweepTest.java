@@ -32,7 +32,6 @@ class ApproachDockingSweepTest {
     void resetDefaults() {
         SimulatedWorker.resetToDefaults();
         GasSlot.ENTRY_LOCK_DURATION = 0;
-        MineralPatch.APPROACH_DISTANCE_SCALE = 0;
     }
 
     @Test
@@ -108,86 +107,6 @@ class ApproachDockingSweepTest {
     }
 
     @Test
-    void cadenceWithDistanceScale12w() {
-        CalibrationBaseline baseline = loadBaseline("calibration/cal-mineral-baseline-12w.json");
-
-        double[][] configs = {
-            {0.0, 6.1},    // current
-            {0.5, 5.6},
-            {0.5, 6.9},
-            {1.0, 6.9},
-            {1.0, 7.0},
-            {1.5, 6.9},
-            {1.5, 7.0},
-            {2.5, 7.0},
-            {2.5, 7.5},
-        };
-
-        for (double[] cfg : configs) {
-            double scale = cfg[0], stagger = cfg[1];
-            MineralPatch.APPROACH_DISTANCE_SCALE = scale;
-            SimulatedWorker.INITIAL_WORKER_STAGGER_LOOPS = stagger;
-
-            EmulatedGame game = new EmulatedGame();
-            game.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));
-            if (baseline.basePosition() != null && baseline.mineralPatches() != null) {
-                float fx = 8f - baseline.basePosition()[0];
-                float fy = 8f - baseline.basePosition()[1];
-                game.setMineralPatchResources(baseline.mineralPatches().stream()
-                    .map(p -> new Resource("cal-" + baseline.mineralPatches().indexOf(p),
-                        new Point2d(p.x() + fx, p.y() + fy), p.amount(), p.rich()))
-                    .toList());
-            }
-            game.reset();
-
-            int maxTick = Math.min(304, baseline.snapshots().size() - 1);
-            int prevSc2 = baseline.snapshots().get(0).minerals();
-            int prevEm = game.snapshot().minerals();
-            int mismatchCount = 0;
-
-            for (int tick = 1; tick <= maxTick; tick++) {
-                game.tick();
-                int sc2Delta = baseline.snapshots().get(tick).minerals() - prevSc2;
-                int emDelta = game.snapshot().minerals() - prevEm;
-                if (sc2Delta != emDelta) mismatchCount++;
-                prevSc2 = baseline.snapshots().get(tick).minerals();
-                prevEm = game.snapshot().minerals();
-            }
-
-            int emFinal = game.snapshot().minerals();
-            int sc2Final = baseline.snapshots().get(maxTick).minerals();
-
-            int emTick6 = 0, sc2Tick6 = 0, emTick20 = 0, sc2Tick20 = 0;
-            {
-                MineralPatch.APPROACH_DISTANCE_SCALE = scale;
-                SimulatedWorker.INITIAL_WORKER_STAGGER_LOOPS = stagger;
-                EmulatedGame g2 = new EmulatedGame();
-                g2.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));
-                if (baseline.basePosition() != null && baseline.mineralPatches() != null) {
-                    float fx2 = 8f - baseline.basePosition()[0];
-                    float fy2 = 8f - baseline.basePosition()[1];
-                    g2.setMineralPatchResources(baseline.mineralPatches().stream()
-                        .map(p -> new Resource("t-" + baseline.mineralPatches().indexOf(p),
-                            new Point2d(p.x() + fx2, p.y() + fy2), p.amount(), p.rich()))
-                        .toList());
-                }
-                g2.reset();
-                for (int t = 0; t < 6; t++) g2.tick();
-                emTick6 = g2.snapshot().minerals();
-                sc2Tick6 = baseline.snapshots().get(6).minerals();
-                for (int t = 6; t < 20; t++) g2.tick();
-                emTick20 = g2.snapshot().minerals();
-                sc2Tick20 = baseline.snapshots().get(20).minerals();
-            }
-
-            System.out.printf("scale=%.1f stagger=%.1f | gap=%+d | mismatch=%d/%d (%.1f%%) | t6=%+d t20=%+d%n",
-                scale, stagger, emFinal - sc2Final,
-                mismatchCount, maxTick, mismatchCount * 100.0 / maxTick,
-                emTick6 - sc2Tick6, emTick20 - sc2Tick20);
-        }
-    }
-
-    @Test
     void sweepDockingOverhead() {
         CalibrationBaseline bl12w = loadBaseline("calibration/cal-mineral-baseline-12w.json");
         CalibrationBaseline bl16w = loadBaseline("calibration/cal-mineral-saturated-16w.json");
@@ -210,28 +129,6 @@ class ApproachDockingSweepTest {
                 int gap16w = r16w[0] - sc2_16w;
                 System.out.printf("%-10.0f %-10.1f | %-10d %+10d | %-10d %+10d%n",
                     docking, stagger, em12w, gap12w, r16w[0], gap16w);
-            }
-        }
-    }
-
-    @Test
-    void sweepApproachDistanceScale12w() {
-        CalibrationBaseline baseline = loadBaseline("calibration/cal-mineral-baseline-12w.json");
-        int sc2Final = baseline.snapshots().get(304).minerals();
-
-        System.out.printf("=== 2D Sweep: distance scale x stagger (12w, SC2 target: %d) ===%n%n", sc2Final);
-        System.out.printf("%-8s %-8s | %-10s | %-8s%n", "scale", "stagger", "EM minerals", "gap");
-        System.out.println("-".repeat(45));
-
-        for (double scale = 0.0; scale <= 3.0; scale += 0.5) {
-            for (double stagger = 5.5; stagger <= 7.5; stagger += 0.1) {
-                MineralPatch.APPROACH_DISTANCE_SCALE = scale;
-                SimulatedWorker.INITIAL_WORKER_STAGGER_LOOPS = stagger;
-                int emMinerals = run304Ticks(baseline);
-                int gap = emMinerals - sc2Final;
-                if (Math.abs(gap) <= 5) {
-                    System.out.printf("%-8.1f %-8.1f | %-10d | %+8d%n", scale, stagger, emMinerals, gap);
-                }
             }
         }
     }
@@ -295,7 +192,6 @@ class ApproachDockingSweepTest {
         int sc2Min3w = bl3w.snapshots().get(304).minerals();
         int sc2Ves3w = bl3w.snapshots().get(304).vespene();
         int sc2Min6w = bl6w.snapshots().get(304).minerals();
-        int sc2Ves6w = bl6w.snapshots().get(304).vespene();
 
         System.out.printf("=== Gas Harvest Duration Sweep ===%n");
         System.out.printf("SC2 targets — 3w: min=%d ves=%d, 6w: min=%d ves=%d%n%n", sc2Min3w, sc2Ves3w, sc2Min6w, sc2Ves6w);

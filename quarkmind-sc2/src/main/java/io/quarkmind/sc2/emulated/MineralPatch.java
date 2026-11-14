@@ -14,9 +14,6 @@ class MineralPatch {
     static final float  CLOSE_PATCH_DISTANCE   = 6.7f;
     static final float  FAR_PATCH_DISTANCE     = 7.5f;
 
-
-    static double APPROACH_DISTANCE_SCALE = 0;
-
     final   Point2d position;
     final   int     baseIndex;
     private double  remainingMinerals;
@@ -60,22 +57,9 @@ class MineralPatch {
 
 
     static void computeApproachDocking(List<MineralPatch> patches, Point2d basePos) {
-        if (APPROACH_DISTANCE_SCALE == 0 || patches.isEmpty()) {
-            for (MineralPatch p : patches) {
-                p.distanceToBase = p.position.distanceTo(basePos);
-                p.approachDockingLoops = SimulatedWorker.APPROACH_DOCKING_LOOPS;
-            }
-            return;
-        }
-        double totalDist = 0;
         for (MineralPatch p : patches) {
-            p.distanceToBase = p.position.distanceTo(basePos);
-            totalDist += p.distanceToBase;
-        }
-        double avgDist = totalDist / patches.size();
-        for (MineralPatch p : patches) {
-            p.approachDockingLoops = Math.max(1.0, SimulatedWorker.APPROACH_DOCKING_LOOPS
-                + APPROACH_DISTANCE_SCALE * (avgDist - p.distanceToBase));
+            p.distanceToBase       = p.position.distanceTo(basePos);
+            p.approachDockingLoops = SimulatedWorker.APPROACH_DOCKING_LOOPS;
         }
     }
 
