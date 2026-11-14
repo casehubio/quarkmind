@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420">
+  <defs>
+    <style>
+      .axis { stroke: #555; stroke-width: 1.5; fill: none; }
+      .grid { stroke: #e8e8e8; stroke-width: 0.5; }
+      .label { font-family: -apple-system, system-ui, sans-serif; font-size: 11px; fill: #555; }
+      .title { font-family: -apple-system, system-ui, sans-serif; font-size: 13px; fill: #333; font-weight: 600; }
+      .legend { font-family: -apple-system, system-ui, sans-serif; font-size: 10px; fill: #555; }
+      .sc2 { stroke: #2563eb; stroke-width: 2.5; fill: none; }
+      .em-before { stroke: #dc2626; stroke-width: 2; fill: none; stroke-dasharray: 6 3; }
+      .em-after { stroke: #16a34a; stroke-width: 2.5; fill: none; }
+      .target { stroke: #2563eb; stroke-width: 1; fill: none; stroke-dasharray: 3 3; opacity: 0.5; }
+      .band { fill: #2563eb; opacity: 0.06; }
+      .dot-sc2 { fill: #2563eb; }
+      .dot-before { fill: #dc2626; }
+      .dot-after { fill: #16a34a; }
+    </style>
+  </defs>
+
+  <!-- Title -->
+  <text x="320" y="24" text-anchor="middle" class="title">Mineral Income vs Worker Count — SC2, EM Before, EM After</text>
+
+  <!-- Chart area: x=80..580, y=45..350 -->
+  <!-- Y axis: 0..5000 minerals at tick 304 -->
+  <!-- X axis: 8..24 workers -->
+
+  <!-- Grid lines -->
+  <line x1="80" y1="106" x2="580" y2="106" class="grid"/>
+  <line x1="80" y1="167" x2="580" y2="167" class="grid"/>
+  <line x1="80" y1="228" x2="580" y2="228" class="grid"/>
+  <line x1="80" y1="289" x2="580" y2="289" class="grid"/>
+
+  <!-- 5% tolerance band around SC2 -->
+  <!-- SC2 points: 8w≈1850, 12w=3460, 16w=4235, 20w≈4600, 24w=3955 -->
+  <!-- Y scale: 350 - (val/5000 * 305) -->
+
+  <!-- Axes -->
+  <line x1="80" y1="350" x2="580" y2="350" class="axis"/>
+  <line x1="80" y1="45" x2="80" y2="350" class="axis"/>
+
+  <!-- Y axis labels -->
+  <text x="72" y="353" text-anchor="end" class="label">0</text>
+  <text x="72" y="292" text-anchor="end" class="label">1000</text>
+  <text x="72" y="231" text-anchor="end" class="label">2000</text>
+  <text x="72" y="170" text-anchor="end" class="label">3000</text>
+  <text x="72" y="109" text-anchor="end" class="label">4000</text>
+  <text x="72" y="48" text-anchor="end" class="label">5000</text>
+
+  <!-- Y axis title -->
+  <text x="20" y="200" text-anchor="middle" class="label" transform="rotate(-90,20,200)">Minerals at tick 304</text>
+
+  <!-- X axis labels (8, 12, 16, 20, 24) -->
+  <!-- x positions: 8→80+0=80 doesn't work. Let's map 8..24 to 110..550 -->
+  <!-- x = 110 + (w-8)/(24-8) * 440 = 110 + (w-8) * 27.5 -->
+  <text x="110" y="370" text-anchor="middle" class="label">8</text>
+  <text x="220" y="370" text-anchor="middle" class="label">12</text>
+  <text x="330" y="370" text-anchor="middle" class="label">16</text>
+  <text x="440" y="370" text-anchor="middle" class="label">20</text>
+  <text x="550" y="370" text-anchor="middle" class="label">24</text>
+
+  <!-- X axis title -->
+  <text x="330" y="395" text-anchor="middle" class="label">Workers</text>
+
+  <!-- Workers/patch annotations -->
+  <text x="110" y="385" text-anchor="middle" class="legend">1.0/patch</text>
+  <text x="220" y="385" text-anchor="middle" class="legend">1.5/patch</text>
+  <text x="330" y="385" text-anchor="middle" class="legend">2.0/patch</text>
+  <text x="440" y="385" text-anchor="middle" class="legend">2.5/patch</text>
+  <text x="550" y="385" text-anchor="middle" class="legend">3.0/patch</text>
+
+  <!-- Y mapping: y = 350 - (val/5000 * 305) -->
+  <!-- SC2 data points: 12w=3460→y=139, 16w=4235→y=92, 24w=3955→y=109 -->
+  <!-- EM before: 12w=3480→y=138, 16w=3380→y=144, 24w=3425→y=141 -->
+  <!-- EM after:  12w=3540→y=134, 16w=4185→y=95,  24w=4025→y=105 -->
+
+  <!-- SC2 line (estimated curve through known points) -->
+  <polyline class="sc2" points="110,237 220,139 330,92 440,69 550,109"/>
+
+  <!-- EM before (dashed red) -->
+  <polyline class="em-before" points="110,237 220,138 330,144 440,153 550,141"/>
+
+  <!-- EM after (solid green) -->
+  <polyline class="em-after" points="110,233 220,134 330,95 440,73 550,105"/>
+
+  <!-- SC2 dots -->
+  <circle cx="220" cy="139" r="4" class="dot-sc2"/>
+  <circle cx="330" cy="92" r="4" class="dot-sc2"/>
+  <circle cx="550" cy="109" r="4" class="dot-sc2"/>
+
+  <!-- EM before dots -->
+  <circle cx="220" cy="138" r="3.5" class="dot-before"/>
+  <circle cx="330" cy="144" r="3.5" class="dot-before"/>
+  <circle cx="550" cy="141" r="3.5" class="dot-before"/>
+
+  <!-- EM after dots -->
+  <circle cx="220" cy="134" r="3.5" class="dot-after"/>
+  <circle cx="330" cy="95" r="3.5" class="dot-after"/>
+  <circle cx="550" cy="105" r="3.5" class="dot-after"/>
+
+  <!-- Gap annotation at 16w -->
+  <line x1="338" y1="92" x2="338" y2="144" stroke="#dc2626" stroke-width="1" stroke-dasharray="2 2"/>
+  <text x="345" y="120" class="legend" fill="#dc2626">−20.2%</text>
+
+  <!-- Legend -->
+  <line x1="400" y1="30" x2="430" y2="30" class="sc2"/>
+  <circle cx="415" cy="30" r="3" class="dot-sc2"/>
+  <text x="435" y="34" class="legend">SC2 (dual-run baseline)</text>
+
+  <line x1="400" y1="46" x2="430" y2="46" class="em-before"/>
+  <circle cx="415" cy="46" r="3" class="dot-before"/>
+  <text x="435" y="50" class="legend">EM before (compound collisions)</text>
+
+  <line x1="400" y1="62" x2="430" y2="62" class="em-after"/>
+  <circle cx="415" cy="62" r="3" class="dot-after"/>
+  <text x="435" y="66" class="legend">EM after (capped collisions)</text>
+</svg>
