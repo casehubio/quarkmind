@@ -83,7 +83,7 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 
 **Mining cycle decomposition (#620→#631→#634):** Originally three explicit phases: mining animation (22 loops), deposit at base (7 loops), and approach/docking at patch (11 loops), totalling 40 loops overhead per cycle. Calibrated from SC2 per-worker observation data (#631).
 
-**#634 revision:** Per-loop worker processing order shuffling (§1b) produces small cycle variance matching SC2's tight distribution (σ=0.58). Direction-dependent collision model (head-on=0.2, same-direction=0.99) was designed for an inflated σ target (2.54, measurement bug) and reverted to uniform factor (0.96). SC2-observed phase durations (mining=22, deposit=7, approach=11) and original acceleration (3.5) restored. EM σ=0.90, mean=5.32 (exact SC2 match).
+**#634 revision:** Per-loop worker processing order shuffling (§1b) produces small cycle variance matching SC2's tight distribution (σ=0.56). Direction-dependent collision model (head-on=0.2, same-direction=0.99) was designed for an inflated σ target (2.54, measurement bug) and reverted to uniform factor (0.96). SC2-observed phase durations (mining=22, deposit=7, approach=11) and original acceleration (3.5) restored. EM σ=1.56, mean=5.37 (post-#655).
 
 **SC2 observed cycle phases (#631, 12w cadence data, 1366 transitions):**
 
@@ -95,15 +95,15 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 | Mine cycle (contested) | 88 loops (4 ticks) | 33+11+22+22=88 loops | Deposit→pickup, 4-tick cycles |
 | Full cycle (average) | 116 loops (5.3 ticks) | ~106 loops (#636) | PICKUP→PICKUP |
 
-SC2 uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66 loops. Post-#636, EM uncontested is 55 loops (approach skipped for idle patches). The 11-loop gap compensates for EM straight-line walks being faster than SC2's path-dependent routing — the net effect reduced 12w mineral surplus from +7.2% to +3.8%. Contested cycles match SC2 exactly: walk(33) + approach(11) + mine(22) + docking overhead(22) = 88 loops.
+SC2 uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66 loops. Post-#655, EM unconditional approach is 11.5 loops for all mining starts. The net effect is 12w +2.3% mineral surplus. Contested cycles match SC2 exactly: walk(33) + approach(11) + mine(22) + docking overhead(22) = 88 loops.
 
-**Collision model (#634, revised):** Uniform speed factor (0.96) for all collisions — direction-dependent model reverted. The direction-dependent model (head-on=0.2, same-direction=0.99) was designed for an inflated σ target (2.54) caused by a measurement bug (index-based cycle tracking). Corrected SC2 σ=0.58 shows mining cycles are extremely uniform — a harsh head-on penalty produces a congestion tail SC2 doesn't have. Uniform 0.96 calibrated for cycle distribution match: EM σ=0.90, SC2 σ=0.58.
+**Collision model (#634, revised):** Uniform speed factor (0.96) for all collisions — direction-dependent model reverted. The direction-dependent model (head-on=0.2, same-direction=0.99) was designed for an inflated σ target (2.54) caused by a measurement bug (index-based cycle tracking). Corrected SC2 σ=0.56 shows mining cycles are extremely uniform — a harsh head-on penalty produces a congestion tail SC2 doesn't have. Uniform 0.96 calibrated for cycle distribution match: EM σ=1.56, SC2 σ=0.56 (post-#655).
 
 **Collision radius (#634):** Increased from 0.375 to 0.75 (diameter 1.5). PySC2 docs confirm SC2 unit size is ~0.75 game units — validates the collision diameter. The larger interaction zone creates more collision events, producing contention at higher saturation.
 
 **Unconditional approach docking (#655, replaces conditional #636):** All mining starts pay 11.5 loops approach — no conditional skip for idle patches. SC2 always plays the approach animation (uncontested=66 loops), and the EM now matches this uniformly. The unconditional approach models the positioning overhead that EM straight-line walks omit. Combined with lockout bypass for waiting workers and a 2-collision speed cap, this produces 12w +2.3%, 16w −1.2%, 24w +1.8%. The previous conditional model (#636) achieved 12w +0.6% but severely under-produced at 16w (−20.2%) because lockout + approach penalties compounded on all contested patches.
 
-**Wait-then-reroute (#636):** Workers waiting at an occupied patch for longer than `rerouteThresholdLoops` (default 22.0, config: `starcraft.worker.reroute-threshold-loops`) scan for idle patches at the same base. Reroutes only when estimated travel time < estimated remaining wait. Permanent reassignment — worker's `assignedPatch` is updated. 12w diagnostic shows 22 reroute events per 304 ticks, total minerals improved from +7.2% to +3.8% vs SC2.
+**Wait-then-reroute (#636):** Workers waiting at an occupied patch for longer than `rerouteThresholdLoops` (default 22.0, config: `starcraft.worker.reroute-threshold-loops`) scan for idle patches at the same base. Reroutes only when estimated travel time < estimated remaining wait. Permanent reassignment — worker's `assignedPatch` is updated. 12w diagnostic shows 31 reroute events per 304 ticks (post-#655).
 
 **Patch docking overhead:** After a miner departs a mineral patch, the patch is locked for 22 loops (1 tick) before the next worker can start. Measured from SC2 per-worker cadence data: contested cycles (deposit→pickup) take exactly 1 tick longer than uncontested cycles (88 vs 66 loops).
 
