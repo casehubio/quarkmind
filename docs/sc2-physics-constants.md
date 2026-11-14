@@ -113,13 +113,28 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66
 
 ## 4. Gas Harvesting
 
-| Constant | Code value | Source | Confidence | Config property |
-|----------|-----------|--------|------------|-----------------|
-| Gas harvest duration | 26.0 loops (1.16s) | Dual-run sweep (3w/6w ±5% target) | **Calibrated** — #606 | `starcraft.worker.gas-harvest-duration-loops` |
-| Gas cargo | 4 | Liquipedia | **Published** | — |
-| Max workers per geyser | 3 | SC2 mechanics | **Published** | — |
-| Gas geyser distance (seeded) | ~7.6u from town hall | SC2 dual-run (TorchesAIE_v4) | **Calibrated** — #597 | — |
-| Gas geyser distance (SC2 API) | 5.7u and 8.5u | SC2 observation API | **Calibrated** — #602 | — |
+| Constant | Code value | Real SC2 | Source | Confidence | Config property |
+|----------|-----------|----------|--------|------------|-----------------|
+| Gas harvest duration | 66.0 loops (2.95s) | 32 loops (1.43s) inside geyser | Dual-run sweep + SC2 profiler (#665) | **Calibrated** — #665 | `starcraft.worker.gas-harvest-duration-loops` |
+| Gas building radius | 1.75u | 1.69u (Assimilator) | SC2 API `Unit.getRadius()` (#665) | **Calibrated** — #665 | `GAS_BUILDING_RADIUS` (compile-time) |
+| Gas cargo | 4 | 4 | Liquipedia | **Published** | — |
+| Max workers per geyser | 3 | 3 | SC2 mechanics | **Published** | — |
+| Gas geyser distance (seeded) | ~7.6u from town hall | — | SC2 dual-run (TorchesAIE_v4) | **Calibrated** — #597 | — |
+| Gas geyser distance (SC2 API) | 5.7u and 8.5u | — | SC2 observation API | **Calibrated** — #602 | — |
+
+**Edge-to-edge gas walks (#665):** Gas workers walk to building edge points (not centers), using `GAS_BUILDING_RADIUS=1.75` and `TOWN_HALL_RADIUS=2.75`. SC2 API confirms Assimilator radius=1.69, Nexus radius=2.75. Workers enter the geyser at 1.84–1.87u from gas center (just outside the building radius).
+
+**Gas harvest duration decomposition (#665):** SC2 profiler (per-game-loop tracking, `GasCycleProfilerTest`) confirms the time inside the geyser is exactly 32 loops (1.43s), range=32-32 across 50 cycles. The EM's `GAS_HARVEST_DURATION_LOOPS=66` is a composite: 32 loops actual harvest + ~34 loops compensating for the 0.5u arrival threshold shortening gas walks. The arrival threshold makes the EM walk ~9 loops/leg shorter than SC2, and the inflated harvest absorbs the difference. Dual-run results: 3w 0%, 6w +6.7%.
+
+**SC2 gas cycle decomposition (#665, TorchesAIE_v4, 3w on 1 geyser):**
+
+| Phase | SC2 observed | EM current |
+|-------|-------------|------------|
+| Walk to geyser | 45 loops (2.0 ticks) | ~36 loops (edge-to-edge walk) |
+| Inside geyser (harvest) | 32 loops (1.5 ticks) | 66 loops (harvest + walk compensation) |
+| Walk to base | 45 loops (2.0 ticks) | ~36 loops (edge-to-edge walk) |
+| Deposit | included in walk | 7 loops |
+| **Full cycle** | **122 loops (5.5 ticks)** | **~145 loops (6.6 ticks)** |
 
 **Seeded geyser positions (all races):** (15,11) and (11,15) relative to town hall at (8,8) = 7.6u symmetric. **SC2 API positions (#602):** real geysers on TorchesAIE_v4 are asymmetric — 5.7u and 8.5u from Nexus center (avg 7.1u). All 10 calibration baselines now include 32 geyser positions (full map); `DualRunCalibrationTest` filters to the 2 within 12u of the town hall.
 
