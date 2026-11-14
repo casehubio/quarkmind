@@ -13,8 +13,10 @@ import java.util.Map;
 import java.util.Random;
 
 class WorkerSimulation {
-    static final float TOWN_HALL_RADIUS     = 2.5f;
+    static final float TOWN_HALL_RADIUS     = 2.75f;
     static final float MINERAL_PATCH_RADIUS = 1.0f;
+    static final float GAS_BUILDING_RADIUS  = 1.75f;
+
 
     static Point2d edgePoint(Point2d center, Point2d toward, float radius) {
         float dx   = toward.x() - center.x();
@@ -40,6 +42,16 @@ class WorkerSimulation {
     private Point2d depositTarget(SimulatedWorker w) {
         if (!useEdgeToEdge) {return bases.get(w.baseIndex).position();}
         return returnTarget(w);
+    }
+
+    private Point2d gasTarget(GasSlot slot) {
+        if (!useEdgeToEdge) {return slot.position;}
+        return edgePoint(slot.position, bases.get(slot.baseIndex).position(), GAS_BUILDING_RADIUS);
+    }
+
+    private Point2d gasReturnTarget(GasSlot slot) {
+        if (!useEdgeToEdge) {return bases.get(slot.baseIndex).position();}
+        return edgePoint(bases.get(slot.baseIndex).position(), slot.position, TOWN_HALL_RADIUS);
     }
 
 
@@ -183,7 +195,7 @@ class WorkerSimulation {
             w.assignedPatch    = null;
             w.assignedGasSlot  = slot;
             w.task             = WorkerTask.HARVESTING_GAS;
-            w.targetPosition   = slot.position;
+            w.targetPosition   = gasTarget(slot);
             w.waitingSinceLoop = 0;
             slot.assignedWorkers.add(w);
             transferred++;
@@ -212,7 +224,7 @@ class WorkerSimulation {
                 w.assignedPatch    = null;
                 w.assignedGasSlot  = slot;
                 w.task             = WorkerTask.HARVESTING_GAS;
-                w.targetPosition   = slot.position;
+                w.targetPosition   = gasTarget(slot);
                 w.waitingSinceLoop = 0;
                 slot.assignedWorkers.add(w);
                 toTransfer--;
@@ -528,7 +540,7 @@ class WorkerSimulation {
                         w.cargo = SimulatedWorker.GAS_CARGO;
                         slot.exitBuilding(w);
                         w.task           = WorkerTask.RETURNING_GAS;
-                        w.targetPosition = bases.get(w.baseIndex).position();
+                        w.targetPosition = gasReturnTarget(slot);
                         continue;
                     }
                     int loopsUntilDone = (int) Math.ceil(w.phaseEndLoop - currentLoop);
@@ -537,7 +549,7 @@ class WorkerSimulation {
                         w.cargo = SimulatedWorker.GAS_CARGO;
                         slot.exitBuilding(w);
                         w.task           = WorkerTask.RETURNING_GAS;
-                        w.targetPosition = bases.get(w.baseIndex).position();
+                        w.targetPosition = gasReturnTarget(slot);
                         continue;
                     }
                     return income;
@@ -563,7 +575,7 @@ class WorkerSimulation {
                     w.cargo = 0;
                     if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
                         w.task           = WorkerTask.HARVESTING_GAS;
-                        w.targetPosition = slot.position;
+                        w.targetPosition = gasTarget(slot);
                         if (loopsRemaining <= 0) {return income;}
                         continue;
                     }
@@ -580,7 +592,7 @@ class WorkerSimulation {
                 double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
                 if (currentLoop >= w.phaseEndLoop) {
                     w.task           = WorkerTask.HARVESTING_GAS;
-                    w.targetPosition = slot.position;
+                    w.targetPosition = gasTarget(slot);
                     if (loopsRemaining <= 0) {return income;}
                     continue;
                 }
@@ -588,7 +600,7 @@ class WorkerSimulation {
                 if (loopsUntilDone < loopsRemaining) {
                     loopsRemaining -= loopsUntilDone;
                     w.task           = WorkerTask.HARVESTING_GAS;
-                    w.targetPosition = slot.position;
+                    w.targetPosition = gasTarget(slot);
                     if (loopsRemaining <= 0) {return income;}
                     continue;
                 }
@@ -738,7 +750,7 @@ class WorkerSimulation {
                         w.assignedPatch    = null;
                         w.assignedGasSlot  = slot;
                         w.task             = WorkerTask.HARVESTING_GAS;
-                        w.targetPosition   = slot.position;
+                        w.targetPosition   = gasTarget(slot);
                         w.waitingSinceLoop = 0;
                         slot.assignedWorkers.add(w);
                         needed--;
@@ -784,7 +796,7 @@ class WorkerSimulation {
                     best.assignedPatch    = null;
                     best.assignedGasSlot  = slot;
                     best.task             = WorkerTask.HARVESTING_GAS;
-                    best.targetPosition   = slot.position;
+                    best.targetPosition   = gasTarget(slot);
                     best.waitingSinceLoop = 0;
                     slot.assignedWorkers.add(best);
                     needed--;

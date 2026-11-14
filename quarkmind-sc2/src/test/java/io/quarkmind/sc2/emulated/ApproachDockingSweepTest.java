@@ -187,20 +187,20 @@ class ApproachDockingSweepTest {
 
     @Test
     void sweepGasHarvestDuration() {
-        CalibrationBaseline bl3w = loadBaseline("calibration/cal-gas-baseline-3w.json");
-        CalibrationBaseline bl6w = loadBaseline("calibration/cal-gas-dual-6w.json");
-        int sc2Min3w = bl3w.snapshots().get(304).minerals();
-        int sc2Ves3w = bl3w.snapshots().get(304).vespene();
-        int sc2Min6w = bl6w.snapshots().get(304).minerals();
-        int sc2Ves6w = bl6w.snapshots().get(304).vespene();
+        CalibrationBaseline bl3w     = loadBaseline("calibration/cal-gas-baseline-3w.json");
+        CalibrationBaseline bl6w     = loadBaseline("calibration/cal-gas-dual-6w.json");
+        int                 sc2Min3w = bl3w.snapshots().get(304).minerals();
+        int                 sc2Ves3w = bl3w.snapshots().get(304).vespene();
+        int                 sc2Min6w = bl6w.snapshots().get(304).minerals();
+        int                 sc2Ves6w = bl6w.snapshots().get(304).vespene();
 
         System.out.printf("=== Gas Harvest Duration Sweep ===%n");
         System.out.printf("SC2 targets — 3w: min=%d ves=%d, 6w: min=%d ves=%d%n%n", sc2Min3w, sc2Ves3w, sc2Min6w, sc2Ves6w);
         System.out.printf("%-8s | %-8s %-8s %-8s %-8s | %-8s %-8s %-8s %-8s%n",
-            "harvest", "3w min", "3w ves", "minGap", "vesGap", "6w min", "6w ves", "minGap", "vesGap");
+                          "harvest", "3w min", "3w ves", "minGap", "vesGap", "6w min", "6w ves", "minGap", "vesGap");
         System.out.println("-".repeat(90));
 
-        for (double harvest = 18.0; harvest <= 30.0; harvest += 1.0) {
+        for (double harvest = 18.0; harvest <= 90.0; harvest += 2.0) {
             SimulatedWorker.resetToDefaults();
             SimulatedWorker.GAS_HARVEST_DURATION_LOOPS = harvest;
 
@@ -208,9 +208,9 @@ class ApproachDockingSweepTest {
             int[] r6w = runPlaybook("playbooks/cal-gas-dual-6w.yaml", bl6w);
 
             System.out.printf("%-8.0f | %-8d %-8d %+8d %+8d | %-8d %-8d %+8d %+8d%n",
-                harvest,
-                r3w[0], r3w[1], r3w[0] - sc2Min3w, r3w[1] - sc2Ves3w,
-                r6w[0], r6w[1], r6w[0] - sc2Min6w, r6w[1] - sc2Ves6w);
+                              harvest,
+                              r3w[0], r3w[1], r3w[0] - sc2Min3w, r3w[1] - sc2Ves3w,
+                              r6w[0], r6w[1], r6w[0] - sc2Min6w, r6w[1] - sc2Ves6w);
         }
     }
 
