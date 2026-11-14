@@ -192,6 +192,7 @@ class ApproachDockingSweepTest {
         int sc2Min3w = bl3w.snapshots().get(304).minerals();
         int sc2Ves3w = bl3w.snapshots().get(304).vespene();
         int sc2Min6w = bl6w.snapshots().get(304).minerals();
+        int sc2Ves6w = bl6w.snapshots().get(304).vespene();
 
         System.out.printf("=== Gas Harvest Duration Sweep ===%n");
         System.out.printf("SC2 targets — 3w: min=%d ves=%d, 6w: min=%d ves=%d%n%n", sc2Min3w, sc2Ves3w, sc2Min6w, sc2Ves6w);

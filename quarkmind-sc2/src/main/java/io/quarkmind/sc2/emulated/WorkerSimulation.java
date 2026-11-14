@@ -179,10 +179,11 @@ class WorkerSimulation {
             if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
                 w.assignedPatch.miners.remove(w);
             }
-            w.assignedPatch = null;
-            w.assignedGasSlot = slot;
-            w.task = WorkerTask.HARVESTING_GAS;
-            w.targetPosition = slot.position;
+            w.assignedPatch    = null;
+            w.assignedGasSlot  = slot;
+            w.task             = WorkerTask.HARVESTING_GAS;
+            w.targetPosition   = slot.position;
+            w.waitingSinceLoop = 0;
             slot.assignedWorkers.add(w);
             transferred++;
         }
@@ -207,10 +208,11 @@ class WorkerSimulation {
                 if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
                     w.assignedPatch.miners.remove(w);
                 }
-                w.assignedPatch = null;
-                w.assignedGasSlot = slot;
-                w.task = WorkerTask.HARVESTING_GAS;
-                w.targetPosition = slot.position;
+                w.assignedPatch    = null;
+                w.assignedGasSlot  = slot;
+                w.task             = WorkerTask.HARVESTING_GAS;
+                w.targetPosition   = slot.position;
+                w.waitingSinceLoop = 0;
                 slot.assignedWorkers.add(w);
                 toTransfer--;
             }
@@ -835,8 +837,9 @@ class WorkerSimulation {
         if (nearest.assignedPatch != null && nearest.assignedPatch.miners.contains(nearest)) {
             nearest.assignedPatch.miners.remove(nearest);
         }
-        nearest.assignedPatch = null;
-        nearest.task          = WorkerTask.BUILDING;
+        nearest.assignedPatch    = null;
+        nearest.task             = WorkerTask.BUILDING;
+        nearest.waitingSinceLoop = 0;
         pendingBuilderReturns.add(new BuildingWorkerReturn(nearest.tag, returnAtTick));
     }
 
@@ -865,8 +868,9 @@ class WorkerSimulation {
             w.assignedGasSlot.removeWorker(w);
             w.assignedGasSlot = null;
         }
-        w.task            = WorkerTask.SCOUTING;
-        w.scoutReturnLoop = returnAtLoop;
+        w.task             = WorkerTask.SCOUTING;
+        w.scoutReturnLoop  = returnAtLoop;
+        w.waitingSinceLoop = 0;
     }
 
     void onWorkerReturnFromScout(String tag) {
