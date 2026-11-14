@@ -419,7 +419,7 @@ Per-tick cadence mismatch: 75.3% (229/304 ticks match, pre-shuffle measurement) 
 
 ### Per-patch approach docking (#636)
 
-`APPROACH_DISTANCE_SCALE` removed (#653) — it was a compensation constant, not a physics simulation. All patches use the global approach constant (11.0 loops). The per-distance formula was tested (SCALE=2.5 improved cadence from 81.6% to 75.3%) but reverted because it masked the real cadence variance from collision timing and walk distance.
+`APPROACH_DISTANCE_SCALE` removed (#653) — it was a compensation constant, not a physics simulation. All patches use the global approach constant (11.5 loops). The per-distance formula was tested (SCALE=2.5 improved cadence from 81.6% to 75.3%) but reverted because it masked the real cadence variance from collision timing and walk distance.
 
 **Delivery quantisation (finding):** Uniform phase constants produce discrete delivery counts because workers synchronise. Worker stagger (6.1 loops) breaks the phase relationship to hit the SC2 target.
 
