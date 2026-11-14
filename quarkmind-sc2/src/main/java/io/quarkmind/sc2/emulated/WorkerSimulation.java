@@ -295,12 +295,11 @@ class WorkerSimulation {
         for (SimulatedWorker w : mineralWorkers) {
             if (w.task == WorkerTask.MINING_MINERALS && w.isAtTarget()
                 && w.assignedPatch != null && !w.assignedPatch.miners.contains(w)
-                && w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
-                && tickEndLoop >= w.assignedPatch.lockEndLoop) {
+                && w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS) {
                 boolean wasWaiting = w.waitingSinceLoop > 0;
+                if (!wasWaiting && tickEndLoop < w.assignedPatch.lockEndLoop) {continue;}
                 w.assignedPatch.miners.add(w);
-                double approach = wasWaiting ? w.assignedPatch.approachDockingLoops : 0;
-                w.phaseEndLoop = tickEndLoop + approach + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop = tickEndLoop + w.assignedPatch.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
                 w.waitingSinceLoop = 0;
             }
         }
@@ -355,7 +354,7 @@ class WorkerSimulation {
                             continue;
                         }
                     }
-                    if (currentLoop < w.assignedPatch.lockEndLoop) {return income;}
+                    if (w.waitingSinceLoop <= 0 && currentLoop < w.assignedPatch.lockEndLoop) {return income;}
                     tryStartMining(w, currentLoop);
                     if (!w.assignedPatch.miners.contains(w)) {return income;}
                     continue;
@@ -416,6 +415,9 @@ class WorkerSimulation {
 
         Collections.shuffle(walking, rng);
 
+        double[] preSpeed = new double[walking.size()];
+        for (int i = 0; i < walking.size(); i++) {preSpeed[i] = walking.get(i).currentSpeed;}
+
         for (int i = 0; i < walking.size(); i++) {
             SimulatedWorker a = walking.get(i);
             for (int j = i + 1; j < walking.size(); j++) {
@@ -461,18 +463,22 @@ class WorkerSimulation {
                 w.currentSpeed *= SimulatedWorker.COLLISION_SPEED_FACTOR;
             }
         }
+
+        for (int i = 0; i < walking.size(); i++) {
+            SimulatedWorker w = walking.get(i);
+            double minSpeed = preSpeed[i] * SimulatedWorker.COLLISION_SPEED_FACTOR * SimulatedWorker.COLLISION_SPEED_FACTOR;
+            if (w.currentSpeed < minSpeed) {w.currentSpeed = minSpeed;}
+        }
     }
 
 
     private void tryStartMining(SimulatedWorker w, double currentLoop) {
-        if (w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS
-            && currentLoop >= w.assignedPatch.lockEndLoop) {
-            boolean wasWaiting = w.waitingSinceLoop > 0;
-            w.assignedPatch.miners.add(w);
-            double approach = wasWaiting ? w.assignedPatch.approachDockingLoops : 0;
-            w.phaseEndLoop     = currentLoop + approach + SimulatedWorker.MINING_DURATION_LOOPS;
-            w.waitingSinceLoop = 0;
-        }
+        if (w.assignedPatch.miners.size() >= MineralPatch.MAX_MINERS) {return;}
+        boolean wasWaiting = w.waitingSinceLoop > 0;
+        if (!wasWaiting && currentLoop < w.assignedPatch.lockEndLoop) {return;}
+        w.assignedPatch.miners.add(w);
+        w.phaseEndLoop     = currentLoop + w.assignedPatch.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
+        w.waitingSinceLoop = 0;
     }
 
     private MineralPatch findBetterPatch(SimulatedWorker w, double currentLoop) {
@@ -642,9 +648,7 @@ class WorkerSimulation {
         if (w.isAtTarget()) {
             if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
                 if (!nearest.miners.contains(w)) {nearest.miners.add(w);}
-                boolean wasWaiting = w.waitingSinceLoop > 0;
-                double approach = wasWaiting ? nearest.approachDockingLoops : 0;
-                w.phaseEndLoop = currentTickStartLoop + approach + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop = currentTickStartLoop + nearest.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
                 w.waitingSinceLoop = 0;
             }
         }

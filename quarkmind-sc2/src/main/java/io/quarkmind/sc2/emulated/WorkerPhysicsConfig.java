@@ -23,7 +23,7 @@ public record WorkerPhysicsConfig(
     public static final float  DEFAULT_PATCH_DISTANCE             = 7.0f;
     public static final double DEFAULT_INITIAL_WORKER_STAGGER     = 6.1;
     public static final double DEFAULT_COLLISION_SPEED_FACTOR = 0.96;
-    public static final double DEFAULT_APPROACH_DOCKING_LOOPS = 11.0;
+    public static final double DEFAULT_APPROACH_DOCKING_LOOPS = 11.5;
     public static final double DEFAULT_REROUTE_THRESHOLD_LOOPS = 22.0;
 
     public WorkerPhysicsConfig(double miningDurationLoops, double gasHarvestDurationLoops,

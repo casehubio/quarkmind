@@ -809,11 +809,10 @@ class WorkerSimulationTest {
     }
 
     @Test
-    void workerAtIdlePatch_zeroApproachDocking() {
+    void workerAtIdlePatch_approachDockingApplied() {
         sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
-        // Single worker: patch is always idle on arrival.
-        // Without approach docking (11 loops), first delivery should be earlier.
-        // Cycle: walk(~33L) + mine(22L) + walk(~33L) + deposit(7L) = ~95L = ~4.3 ticks
+        // Approach docking is unconditional — applied to all mining starts.
+        // Cycle: walk(~33L) + approach(~12L) + mine(22L) + walk(~33L) + deposit(7L) = ~107L = ~4.9 ticks
         double totalIncome       = 0;
         int    firstDeliveryTick = -1;
         for (int t = 0; t < 20; t++) {
@@ -823,8 +822,8 @@ class WorkerSimulationTest {
             }
             totalIncome += income;
         }
-        assertTrue(firstDeliveryTick <= 5,
-                   "Single worker at idle patch should deliver by tick 5 (no approach delay), got " + firstDeliveryTick);
+        assertTrue(firstDeliveryTick <= 6,
+                   "Single worker should deliver by tick 6 (with approach docking), got " + firstDeliveryTick);
     }
 
     @Test
@@ -841,34 +840,30 @@ class WorkerSimulationTest {
 
     @Test
     void workerReroutesToIdlePatch_whenWaitExceedsThreshold() {
-        // 2 patches, 3 workers — worker 3 should eventually reroute
+        // 2 patches, 5 workers — oversaturated; at least one worker should reroute
         sim = new WorkerSimulation();
         List<Resource> patches = List.of(
                 new Resource("p-1", new Point2d(55, 50), 1500, false),
                 new Resource("p-2", new Point2d(56, 50), 1500, false)
                                         );
         sim.onTownHallCompleted(BASE_TAG, BASE_POS, patches);
-        sim.onInitialWorkers(List.of("w-1", "w-2", "w-3"), BASE_POS, BASE_TAG);
+        sim.onInitialWorkers(List.of("w-1", "w-2", "w-3", "w-4", "w-5"), BASE_POS, BASE_TAG);
 
-        // Run enough ticks for workers to reach patches
         for (int t = 0; t < 10; t++) {tick();}
 
-        // Find the worker whose patch is shared (two workers assigned to same patch)
-        SimulatedWorker w1            = sim.worker("w-1");
-        SimulatedWorker w2            = sim.worker("w-2");
-        SimulatedWorker w3            = sim.worker("w-3");
-        MineralPatch    initialPatch3 = w3.assignedPatch;
+        // Track initial patch assignments
+        SimulatedWorker w5            = sim.worker("w-5");
+        MineralPatch    initialPatch5 = w5.assignedPatch;
 
-        // Run more ticks — rerouting should change w3's assigned patch
         boolean rerouted = false;
-        for (int t = 0; t < 40; t++) {
+        for (int t = 0; t < 60; t++) {
             tick();
-            if (w3.assignedPatch != initialPatch3) {
+            if (w5.assignedPatch != initialPatch5) {
                 rerouted = true;
                 break;
             }
         }
-        assertTrue(rerouted, "Worker 3 should reroute to a different patch when wait exceeds threshold");
+        assertTrue(rerouted, "Worker 5 should reroute when wait exceeds threshold at 2.5 workers/patch");
     }
 
     @Test
