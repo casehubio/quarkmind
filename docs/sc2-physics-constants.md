@@ -155,7 +155,7 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 | 12w Protoss (tick 304) | 3460 | 3540 | — | — | **+2.3%** | — |
 | 16w saturation (tick 304) | 4235 | 4185 | — | — | **−1.2%** | — |
 | 24w saturation (tick 304) | 3955 | 4025 | — | — | **+1.8%** | — |
-| Terran (tick 304) | 3885 | 3865 | 552 | 504 | −0.5% | **−8.7%** |
+| 3w gas (tick 304) | 3885 | 3865 | 552 | 504 | −0.5% | **−8.7%** |
 | 6w gas (tick 304) | 3375 | 3350 | 1012 | 984 | −0.7% | **−2.8%** |
 
 **#655 saturation curve fix** — three changes:
