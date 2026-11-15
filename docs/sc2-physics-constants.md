@@ -121,6 +121,7 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66
 | Max workers per geyser | 3 | 3 | SC2 mechanics | **Published** | — |
 | Gas geyser distance (seeded) | ~7.6u from town hall | — | SC2 dual-run (TorchesAIE_v4) | **Calibrated** — #597 | — |
 | Gas geyser distance (SC2 API) | 5.7u and 8.5u | — | SC2 observation API | **Calibrated** — #602 | — |
+| Inter-geyser distance (same base) | 4.0u (some maps) | — | Oracle replay analysis (451 pairs, 118 replays) | **Measured** — #671 | — |
 
 **Edge-to-edge gas walks (#665):** Gas workers walk to building edge points (not centers), using `GAS_BUILDING_RADIUS=1.75` and `TOWN_HALL_RADIUS=2.75`. SC2 API confirms Assimilator radius=1.69, Nexus radius=2.75. Workers enter the geyser at 1.84–1.87u from gas center (just outside the building radius).
 
@@ -137,6 +138,8 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66
 | **Full cycle** | **122 loops (5.5 ticks)** | **~145 loops (6.6 ticks)** |
 
 **Seeded geyser positions (all races):** (15,11) and (11,15) relative to town hall at (8,8) = 7.6u symmetric. **SC2 API positions (#602):** real geysers on TorchesAIE_v4 are asymmetric — 5.7u and 8.5u from Nexus center (avg 7.1u). All 10 calibration baselines now include 32 geyser positions (full map); `DualRunCalibrationTest` filters to the 2 within 12u of the town hall.
+
+**Inter-geyser distances (#671):** Across 118 oracle replays (451 geyser pairs), 8.9% of pairs are less than 5.0u apart. The dominant cluster is at exactly 4.0u — two geysers on the same axis separated by 4 tiles. Min=0.0 (rebuilt geysers), P5=4.0, median=14.9, max=164.8. The old position-based gas slot dedup (`distance < 5.0`) rejected the second geyser at these bases, causing 14% gas building under-count at 5-min. Fixed by tag-based dedup in #671.
 
 ---
 
