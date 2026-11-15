@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#555"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#c0392b"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#27ae60"/>
+    </marker>
+  </defs>
+
+  <style>
+    text { font-family: -apple-system, 'Segoe UI', sans-serif; }
+    .title { font-size: 14px; font-weight: 600; fill: #2c3e50; }
+    .label { font-size: 11px; fill: #555; }
+    .label-bold { font-size: 11px; fill: #2c3e50; font-weight: 600; }
+    .dim { font-size: 10px; fill: #888; }
+    .dim-red { font-size: 10px; fill: #c0392b; font-weight: 600; }
+    .dim-green { font-size: 10px; fill: #27ae60; font-weight: 600; }
+    .radius-label { font-size: 9px; fill: #888; font-style: italic; }
+  </style>
+
+  <!-- Title -->
+  <text x="360" y="24" text-anchor="middle" class="title">Gas Worker Walk Targets — Center vs Edge</text>
+
+  <!-- === TOP ROW: Center-to-center (before) === -->
+  <text x="20" y="60" class="label-bold">Before: center-to-center</text>
+
+  <!-- Town Hall -->
+  <circle cx="140" cy="120" r="44" fill="#e8f4fd" stroke="#3498db" stroke-width="2"/>
+  <text x="140" y="116" text-anchor="middle" class="label-bold">Nexus</text>
+  <text x="140" y="130" text-anchor="middle" class="radius-label">r = 2.75</text>
+
+  <!-- Geyser -->
+  <circle cx="520" cy="120" r="27" fill="#fdf2e9" stroke="#e67e22" stroke-width="2"/>
+  <text x="520" y="116" text-anchor="middle" class="label-bold">Geyser</text>
+  <text x="520" y="130" text-anchor="middle" class="radius-label">r = 1.69</text>
+
+  <!-- Center-to-center walk arrow (red — too long) -->
+  <line x1="140" y1="120" x2="512" y2="120" stroke="#c0392b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-red)"/>
+
+  <!-- Worker dot at center of geyser -->
+  <circle cx="520" cy="120" r="5" fill="#c0392b"/>
+
+  <!-- Distance label -->
+  <text x="330" y="108" text-anchor="middle" class="dim-red">walks to center: ~9 units</text>
+  <text x="330" y="152" text-anchor="middle" class="dim">EM walk: ~36 loops/leg → cycle too fast, harvest inflated to 66 to compensate</text>
+
+  <!-- === BOTTOM ROW: Edge-to-edge (after) === -->
+  <text x="20" y="210" class="label-bold">After: edge-to-edge</text>
+
+  <!-- Town Hall -->
+  <circle cx="140" cy="270" r="44" fill="#e8f4fd" stroke="#3498db" stroke-width="2"/>
+  <text x="140" y="266" text-anchor="middle" class="label-bold">Nexus</text>
+  <text x="140" y="280" text-anchor="middle" class="radius-label">r = 2.75</text>
+
+  <!-- Geyser -->
+  <circle cx="520" cy="270" r="27" fill="#fdf2e9" stroke="#e67e22" stroke-width="2"/>
+  <text x="520" y="266" text-anchor="middle" class="label-bold">Geyser</text>
+  <text x="520" y="280" text-anchor="middle" class="radius-label">r = 1.69</text>
+
+  <!-- Edge-to-edge walk arrow (green — correct) -->
+  <line x1="184" y1="270" x2="485" y2="270" stroke="#27ae60" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+  <!-- Edge dots -->
+  <circle cx="184" cy="270" r="5" fill="#27ae60"/>
+  <circle cx="493" cy="270" r="5" fill="#27ae60"/>
+
+  <!-- Distance label -->
+  <text x="340" y="258" text-anchor="middle" class="dim-green">walks edge-to-edge: ~5.6 units</text>
+  <text x="340" y="302" text-anchor="middle" class="dim">SC2 walk: ~45 loops/leg → matches real worker path</text>
+
+  <!-- Radius annotations -->
+  <line x1="140" y1="270" x2="184" y2="270" stroke="#3498db" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="493" y1="270" x2="520" y2="270" stroke="#e67e22" stroke-width="1" stroke-dasharray="3,3"/>
+</svg>
