@@ -191,7 +191,7 @@ class WorkerSimulationTest {
         sim.onTownHallCompleted("base-2", base2Pos);
 
         int[] counts = sim.mineralWorkersPerBase();
-        assertTrue(counts[0] >= 8,
+        assertTrue(counts[0] >= 4,
                 "Should not transfer below MIN_MINERAL_WORKERS_BEFORE_GAS, got " + counts[0]);
         assertEquals(10, counts[0] + counts[1],
                 "Total mineral workers should be preserved");
@@ -277,7 +277,7 @@ class WorkerSimulationTest {
 
         sim.reset();
         sim.onTownHallCompleted(BASE_TAG, BASE_POS);
-        List<String> tags2 = IntStream.rangeClosed(1, 11)
+        List<String> tags2 = IntStream.rangeClosed(1, 7)
                                       .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags2, BASE_POS, BASE_TAG);
         sim.onGasBuildingCompleted("gas-2w", new Point2d(45, 50));
@@ -327,17 +327,17 @@ class WorkerSimulationTest {
 
     @Test
     void gasWorkerDied_notReplacedWhenTooFewMineralWorkers() {
-        List<String> tags = IntStream.rangeClosed(1, 10)
+        List<String> tags = IntStream.rangeClosed(1, 7)
                                      .mapToObj(i -> "w-" + i).toList();
         sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
         sim.onGasBuildingCompleted("gas-1", new Point2d(45, 50));
 
         assertEquals(3, sim.totalGasWorkers());
-        assertEquals(7, sim.mineralWorkersPerBase()[0]);
+        assertEquals(4, sim.mineralWorkersPerBase()[0]);
 
         sim.onWorkerDied("w-1");
-        assertEquals(2, sim.totalGasWorkers(), "No replacement when mineral workers below threshold");
-        assertEquals(7, sim.mineralWorkersPerBase()[0], "Mineral pool should not lose workers");
+        assertEquals(2, sim.totalGasWorkers(), "No replacement when mineral workers at threshold");
+        assertEquals(4, sim.mineralWorkersPerBase()[0], "Mineral pool should not lose workers");
     }
 
     @Test

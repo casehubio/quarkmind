@@ -232,7 +232,7 @@ class WorkerSimulation {
         }
     }
 
-    private static final int MIN_MINERAL_WORKERS_BEFORE_GAS = 8;
+    private static final int MIN_MINERAL_WORKERS_BEFORE_GAS = 4;
 
     void onGasBuildingDestroyed(String tag) {
         GasSlot slot = null;
@@ -721,6 +721,7 @@ class WorkerSimulation {
                 }
             }
         }
+        rebalanceGasWorkers();
     }
 
     void syncGasWorkersFromGt(java.util.Map<String, Integer> gasWorkersPerBuilding) {
