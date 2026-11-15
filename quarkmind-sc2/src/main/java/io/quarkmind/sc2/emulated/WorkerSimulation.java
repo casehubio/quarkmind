@@ -176,19 +176,19 @@ class WorkerSimulation {
     }
 
     void onGasBuildingCompleted(String tag, Point2d position) {
-        if (gasSlots.stream().anyMatch(s -> s.position.distanceTo(position) < 5.0)) return;
+        if (gasSlots.stream().anyMatch(s -> s.buildingTag.equals(tag))) {return;}
         int baseIdx = findNearestBaseIndex(position);
-        if (baseIdx < 0) return;
+        if (baseIdx < 0) {return;}
         GasSlot slot = new GasSlot(tag, position, baseIdx);
         gasSlots.add(slot);
         int transferred = 0;
         for (SimulatedWorker w : new ArrayList<>(workers.values())) {
-            if (transferred >= GasSlot.MAX_WORKERS) break;
-            if (w.baseIndex != baseIdx) continue;
+            if (transferred >= GasSlot.MAX_WORKERS) {break;}
+            if (w.baseIndex != baseIdx) {continue;}
             if (w.task != WorkerTask.MINING_MINERALS
-                    && w.task != WorkerTask.RETURNING_MINERALS
-                    && w.task != WorkerTask.DEPOSITING_MINERALS
-                    && w.task != WorkerTask.IDLE) continue;
+                && w.task != WorkerTask.RETURNING_MINERALS
+                && w.task != WorkerTask.DEPOSITING_MINERALS
+                && w.task != WorkerTask.IDLE) {continue;}
             if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
                 w.assignedPatch.miners.remove(w);
             }
