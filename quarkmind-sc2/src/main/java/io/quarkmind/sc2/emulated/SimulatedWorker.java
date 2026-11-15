@@ -22,6 +22,7 @@ class SimulatedWorker {
     static final double GAS_CARGO_DEFAULT = 4.0;
     static double GAS_CARGO = GAS_CARGO_DEFAULT;
     static double GAS_HARVEST_DURATION_LOOPS = WorkerPhysicsConfig.DEFAULT_GAS_HARVEST_DURATION_LOOPS;
+    static double GAS_APPROACH_DOCKING_LOOPS = WorkerPhysicsConfig.DEFAULT_GAS_APPROACH_DOCKING_LOOPS;
 
     static void setGasHarvestDurationLoops(double loops) {
         GAS_HARVEST_DURATION_LOOPS = loops;
@@ -48,6 +49,7 @@ class SimulatedWorker {
     static void configure(WorkerPhysicsConfig config) {
         MINING_DURATION_LOOPS        = config.miningDurationLoops();
         GAS_HARVEST_DURATION_LOOPS   = config.gasHarvestDurationLoops();
+        GAS_APPROACH_DOCKING_LOOPS   = config.gasApproachDockingLoops();
         DEPOSIT_DURATION_LOOPS       = config.depositDurationLoops();
         ACCELERATION                 = config.acceleration();
         DECELERATION                 = config.deceleration();

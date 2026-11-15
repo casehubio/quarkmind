@@ -12,8 +12,12 @@ class WorkerPhysicsConfigProducer {
     double miningDurationLoops;
 
     @ConfigProperty(name = "starcraft.worker.gas-harvest-duration-loops",
-                    defaultValue = "26.0")
+                    defaultValue = "32.0")
     double gasHarvestDurationLoops;
+
+    @ConfigProperty(name = "starcraft.worker.gas-approach-docking-loops",
+                    defaultValue = "11.0")
+    double gasApproachDockingLoops;
 
     @ConfigProperty(name = "starcraft.worker.deposit-duration-loops",
                     defaultValue = "3.0")
@@ -55,7 +59,8 @@ class WorkerPhysicsConfigProducer {
     @jakarta.inject.Singleton
     WorkerPhysicsConfig produce() {
         WorkerPhysicsConfig config = new WorkerPhysicsConfig(
-                miningDurationLoops, gasHarvestDurationLoops, depositDurationLoops,
+                miningDurationLoops, gasHarvestDurationLoops, gasApproachDockingLoops,
+                depositDurationLoops,
                 acceleration, deceleration, patchDockingOverheadLoops, (float) patchDistance,
                 initialWorkerStaggerLoops, collisionSpeedFactor, approachDockingLoops,
                 rerouteThresholdLoops);

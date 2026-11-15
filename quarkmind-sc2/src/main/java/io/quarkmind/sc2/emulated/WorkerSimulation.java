@@ -560,7 +560,7 @@ class WorkerSimulation {
                 if (w.isAtTarget() && slot.canEnter(currentLoopGas)) {
                     double arrivalLoop = currentLoopGas;
                     slot.enterBuilding(w, arrivalLoop);
-                    w.phaseEndLoop = arrivalLoop + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
+                    w.phaseEndLoop = arrivalLoop + SimulatedWorker.GAS_APPROACH_DOCKING_LOOPS + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
                     if (loopsRemaining <= 0) {return income;}
                     continue;
                 }

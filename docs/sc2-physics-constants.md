@@ -125,17 +125,20 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66
 
 **Edge-to-edge gas walks (#665):** Gas workers walk to building edge points (not centers), using `GAS_BUILDING_RADIUS=1.75` and `TOWN_HALL_RADIUS=2.75`. SC2 API confirms Assimilator radius=1.69, Nexus radius=2.75. Workers enter the geyser at 1.84–1.87u from gas center (just outside the building radius).
 
-**Gas harvest duration decomposition (#665):** SC2 profiler (per-game-loop tracking, `GasCycleProfilerTest`) confirms the time inside the geyser is exactly 32 loops (1.43s), range=32-32 across 50 cycles. The EM's `GAS_HARVEST_DURATION_LOOPS=66` is a composite: 32 loops actual harvest + ~34 loops compensating for the 0.5u arrival threshold shortening gas walks. The arrival threshold makes the EM walk ~9 loops/leg shorter than SC2, and the inflated harvest absorbs the difference. Dual-run results: 3w 0%, 6w +6.7%.
+**Gas harvest duration decomposition (#665, #675):** SC2 profiler (per-game-loop tracking, `GasCycleProfilerTest`) confirms the time inside the geyser is exactly 32 loops (1.43s), range=32-32 across 50 cycles. The EM now uses `GAS_HARVEST_DURATION_LOOPS=32` (measured) + `GAS_APPROACH_DOCKING_LOOPS=11.5` (calibrated geyser entry overhead), matching the mineral approach docking pattern. Previous `GAS_HARVEST_DURATION_LOOPS=66` was a composite that over-compensated for walk shortening by ~23 loops/cycle.
 
 **SC2 gas cycle decomposition (#665, TorchesAIE_v4, 3w on 1 geyser):**
 
-| Phase | SC2 observed | EM current |
-|-------|-------------|------------|
-| Walk to geyser | 45 loops (2.0 ticks) | ~36 loops (edge-to-edge walk) |
-| Inside geyser (harvest) | 32 loops (1.5 ticks) | 66 loops (harvest + walk compensation) |
-| Walk to base | 45 loops (2.0 ticks) | ~36 loops (edge-to-edge walk) |
-| Deposit | included in walk | 7 loops |
-| **Full cycle** | **122 loops (5.5 ticks)** | **~145 loops (6.6 ticks)** |
+| Phase | SC2 observed | EM (#675) | EM (pre-#675) |
+|-------|-------------|-----------|---------------|
+| Walk to geyser | 45 loops (2.0 ticks) | ~36 loops | ~36 loops |
+| Approach/dock at geyser | (included in walk) | 11.5 loops | 0 |
+| Inside geyser (harvest) | 32 loops (1.5 ticks) | 32 loops | 66 loops |
+| Walk to base | 45 loops (2.0 ticks) | ~36 loops | ~36 loops |
+| Deposit | (included in walk) | 7 loops | 7 loops |
+| **Full cycle** | **122 loops (5.5 ticks)** | **~122.5 loops (5.6 ticks)** | ~145 loops (6.6 ticks) |
+
+**Gas rate MAPE improvement (#675):** vespeneCollectionRate MAPE at 5-min dropped from 29.9% to 15.3% (aggregate, 236 player runs). Per-race: Protoss 16.1→15.2%, Terran 24.0→13.2%, Zerg 31.8→25.4%. Zerg residual is variance-driven (per-replay cycle differences), not systematic bias.
 
 **Seeded geyser positions (all races):** (15,11) and (11,15) relative to town hall at (8,8) = 7.6u symmetric. **SC2 API positions (#602):** real geysers on TorchesAIE_v4 are asymmetric — 5.7u and 8.5u from Nexus center (avg 7.1u). All 10 calibration baselines now include 32 geyser positions (full map); `DualRunCalibrationTest` filters to the 2 within 12u of the town hall.
 
