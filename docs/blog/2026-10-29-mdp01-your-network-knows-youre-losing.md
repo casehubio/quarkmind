@@ -2,7 +2,7 @@
 layout: post
 title: "Your Network Knows You're Losing"
 date: 2026-10-29
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [bayesian-networks, cpt, smoothing, scouting, game-state]

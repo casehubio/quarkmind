@@ -2,7 +2,7 @@
 layout: post
 title: "Two Event Streams, One Truth"
 date: 2026-10-25
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [replay-reconstruction, emulated-game, sc2, selection-tracking]

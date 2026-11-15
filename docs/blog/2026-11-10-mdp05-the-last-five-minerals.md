@@ -2,7 +2,7 @@
 layout: post
 title: "The Last Five Minerals"
 date: 2026-11-10
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [simulation, digital-twin, sc2-physics, calibration, emulated-game, economy]

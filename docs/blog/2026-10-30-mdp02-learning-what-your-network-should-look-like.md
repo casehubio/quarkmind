@@ -2,7 +2,7 @@
 layout: post
 title: "Learning What Your Network Should Look Like"
 date: 2026-10-30
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [bayesian-networks, structure-learning, scouting, detector, onnx, game-ai]

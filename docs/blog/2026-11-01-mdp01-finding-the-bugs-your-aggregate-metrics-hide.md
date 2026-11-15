@@ -2,7 +2,7 @@
 layout: post
 title: "Finding the Bugs Your Aggregate Metrics Hide"
 date: 2026-11-01
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [emulator, calibration, diagnostics, simulation-validation]

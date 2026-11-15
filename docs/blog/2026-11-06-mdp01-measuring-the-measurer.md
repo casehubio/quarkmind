@@ -2,7 +2,7 @@
 layout: post
 title: "Measuring the Measurer"
 date: 2026-11-06
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [calibration, ground-truth, accuracy-metrics, starcraft2, simulation, measurement]

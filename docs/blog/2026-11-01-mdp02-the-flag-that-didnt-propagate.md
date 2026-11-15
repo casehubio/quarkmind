@@ -2,7 +2,7 @@
 layout: post
 title: "The Flag That Didn't Propagate"
 date: 2026-11-01
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [emulator, calibration, flag-propagation, diagnostics, software-patterns]

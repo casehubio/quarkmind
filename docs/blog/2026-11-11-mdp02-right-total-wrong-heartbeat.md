@@ -2,7 +2,7 @@
 layout: post
 title: "Right Total, Wrong Heartbeat"
 date: 2026-11-11
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [simulation, digital-twin, sc2-physics, calibration, emulated-game, economy, fidelity]

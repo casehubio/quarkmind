@@ -2,7 +2,7 @@
 layout: post
 title: "Tearing Away the Scaffolding"
 date: 2026-11-04
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [simulation, accuracy, ground-truth, standalone-emulator, starcraft2, agent-training]

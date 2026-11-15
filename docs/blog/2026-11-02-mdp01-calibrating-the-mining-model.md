@@ -2,7 +2,7 @@
 layout: post
 title: "Calibrating the Mining Model"
 date: 2026-11-02
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [emulated-game, economy, calibration, replay-validation, mule]

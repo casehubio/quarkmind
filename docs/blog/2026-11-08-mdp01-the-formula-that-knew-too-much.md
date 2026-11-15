@@ -2,7 +2,7 @@
 layout: post
 title: "The Formula That Knew Too Much"
 date: 2026-11-08
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [emulated-game, economy, gas-income, simulation-vs-formula, calibration, sc2-physics]

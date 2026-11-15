@@ -2,7 +2,7 @@
 layout: post
 title: "When One Character Isn't Enough — Multi-Agent Chat Architecture"
 date: 2026-08-25
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [multi-character, blocks, inner-life, drives, discord, architecture]

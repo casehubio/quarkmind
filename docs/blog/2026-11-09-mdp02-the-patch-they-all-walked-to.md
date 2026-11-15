@@ -2,7 +2,7 @@
 layout: post
 title: "The Patch They All Walked To"
 date: 2026-11-09
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [simulation, mineral-mining, sc2-physics, digital-twin, emulated-game, calibration, worker-distribution]

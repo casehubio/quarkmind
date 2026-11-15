@@ -2,7 +2,7 @@
 layout: post
 title: "Stop Rebuilding Your Classifier Every Time the World Changes"
 date: 2026-10-29
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [bayesian-inference, temporal-modelling, strategy-classification, game-ai]

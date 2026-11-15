@@ -2,7 +2,7 @@
 layout: post
 title: "When Physics Isn't the Answer"
 date: 2026-11-07
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [calibration, accuracy, simulation, starcraft2, economy, digital-twin]

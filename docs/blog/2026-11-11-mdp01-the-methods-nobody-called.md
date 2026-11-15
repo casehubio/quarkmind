@@ -2,7 +2,7 @@
 layout: post
 title: "The Methods Nobody Called"
 date: 2026-11-11
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [simulation, sc2-physics, digital-twin, calibration, emulated-game, economy, measurement]

@@ -2,7 +2,7 @@
 layout: post
 title: "The Constant That Couldn't Be Wrong"
 date: 2026-11-08
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [simulation, calibration, tick-quantisation, sc2-physics, digital-twin, emulated-game, measurement]

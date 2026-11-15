@@ -2,7 +2,7 @@
 layout: post
 title: "The Regression Test That Caught Nothing"
 date: 2026-11-02
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [testing, regression, metrics, emulator, calibration]

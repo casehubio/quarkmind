@@ -2,7 +2,7 @@
 layout: post
 title: "The Physics That Was Always There"
 date: 2026-11-08
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [simulation, acceleration, mineral-mining, sc2-physics, digital-twin, emulated-game]

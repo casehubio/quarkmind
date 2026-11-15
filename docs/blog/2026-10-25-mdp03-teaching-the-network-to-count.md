@@ -2,7 +2,7 @@
 layout: post
 title: "Teaching the Network to Count"
 date: 2026-10-25
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [bayesian, parameter-learning, cpt, detector, mle]

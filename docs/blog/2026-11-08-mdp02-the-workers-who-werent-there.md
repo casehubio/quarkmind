@@ -2,7 +2,7 @@
 layout: post
 title: "The Workers Who Weren't There"
 date: 2026-11-08
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [emulated-game, economy, mineral-income, simulation-vs-formula, sc2-physics]

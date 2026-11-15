@@ -2,7 +2,7 @@
 layout: post
 title: "When 100% Accuracy Lies to You"
 date: 2026-11-04
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [calibration, accuracy-metrics, ground-truth, economy-model, starcraft2]

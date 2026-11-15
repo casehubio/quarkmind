@@ -2,7 +2,7 @@
 layout: post
 title: "When Marginals Lie"
 date: 2026-10-25
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [bayesian, bjt, map-inference, coaching, strategy-classification]

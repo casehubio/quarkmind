@@ -2,7 +2,7 @@
 layout: post
 title: "Show Your Working"
 date: 2026-10-29
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [bayesian-inference, explainability, game-ai, response-selection, coaching]

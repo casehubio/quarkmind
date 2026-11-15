@@ -2,7 +2,7 @@
 layout: post
 title: "Per-Mechanic Calibration: Why Your Simulation Needs Isolated Smoke Tests"
 date: 2026-10-31
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [emulation, calibration, testing, sc2, playbooks]

@@ -2,7 +2,7 @@
 layout: post
 title: "The Eight Minerals That Broke Everything"
 date: 2026-10-30
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [calibration, emulated-game, sc2, physics, economy, dual-run, simulation]

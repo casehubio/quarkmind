@@ -2,7 +2,7 @@
 layout: post
 title: "When Types Flatten, Costs Don't"
 date: 2026-11-07
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [calibration, accuracy, simulation, starcraft2, domain-modelling, type-systems, digital-twin]

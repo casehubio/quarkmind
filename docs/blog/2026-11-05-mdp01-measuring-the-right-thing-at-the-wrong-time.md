@@ -2,7 +2,7 @@
 layout: post
 title: "Measuring the Right Thing at the Wrong Time"
 date: 2026-11-05
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [calibration, ground-truth, spending-model, timing, starcraft2]

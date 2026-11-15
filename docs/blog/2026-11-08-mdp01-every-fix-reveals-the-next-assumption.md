@@ -2,7 +2,7 @@
 layout: post
 title: "Every Fix Reveals the Next Assumption"
 date: 2026-11-08
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [calibration, spending-model, economy, ground-truth, starcraft2, digital-twin]

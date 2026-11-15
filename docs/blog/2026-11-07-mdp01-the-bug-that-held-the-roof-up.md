@@ -2,7 +2,7 @@
 layout: post
 title: "The Bug That Held the Roof Up"
 date: 2026-11-07
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [emulated-game, economy, calibration, simulation-engineering, load-bearing-bug]

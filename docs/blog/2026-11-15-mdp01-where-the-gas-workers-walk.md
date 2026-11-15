@@ -2,7 +2,7 @@
 layout: post
 title: "Where the Gas Workers Walk"
 date: 2026-11-15
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [emulated-game, economy, gas-income, sc2-physics, edge-to-edge, profiling]

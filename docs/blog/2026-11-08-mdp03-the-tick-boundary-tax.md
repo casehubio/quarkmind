@@ -2,7 +2,7 @@
 layout: post
 title: "The Tick Boundary Tax"
 date: 2026-11-08
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [emulated-game, economy, gas-income, tick-quantisation, sc2-physics, simulation, time-model]

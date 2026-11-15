@@ -2,7 +2,7 @@
 layout: post
 title: "Teaching the Emulator About Death"
 date: 2026-11-02
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [emulator, calibration, economy, replay-validation, starcraft2]

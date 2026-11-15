@@ -2,7 +2,7 @@
 layout: post
 title: "The Gas That Never Came Back"
 date: 2026-11-07
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [calibration, accuracy, simulation, starcraft2, economy, discrete-time, digital-twin]

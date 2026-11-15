@@ -2,7 +2,7 @@
 layout: post
 title: "The Model You Trust Is the One You Calibrate"
 date: 2026-11-04
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [calibration, simulation, economy-model, dual-model, starcraft2]

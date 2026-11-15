@@ -2,7 +2,7 @@
 layout: post
 title: "The Workers Were Right, the Mine Was Wrong"
 date: 2026-11-06
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [emulated-game, economy, worker-simulation, calibration, sc2-physics, mining-model]

@@ -2,7 +2,7 @@
 layout: post
 title: "The Gate That Was Never Written"
 date: 2026-10-30
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [calibration, emulated-game, sc2, economy, simulation, agent-systems]

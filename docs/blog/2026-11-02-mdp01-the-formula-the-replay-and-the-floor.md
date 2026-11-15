@@ -2,7 +2,7 @@
 layout: post
 title: "The Formula, the Replay, and the False Floor"
 date: 2026-11-02
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [emulator, calibration, empirical-measurement, first-principles, starcraft2]

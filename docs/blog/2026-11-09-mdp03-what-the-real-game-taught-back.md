@@ -2,7 +2,7 @@
 layout: post
 title: "What the Real Game Taught Back"
 date: 2026-11-09
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [calibration, accuracy, simulation, starcraft2, economy, digital-twin, controlled-experiments, bugs, gas, training]

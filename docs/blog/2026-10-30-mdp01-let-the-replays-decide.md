@@ -2,7 +2,7 @@
 layout: post
 title: "Let the Replays Decide Your Network Topology"
 date: 2026-10-30
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [bayesian-networks, structure-learning, scouting, pc-algorithm, starcraft]

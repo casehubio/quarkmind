@@ -2,7 +2,7 @@
 layout: post
 title: "The Last Five Percent"
 date: 2026-11-06
-entry_type: article
+entry_type: note
 subtype: diary
 projects: [casehubio/quarkmind]
 tags: [calibration, accuracy, simulation, starcraft2, event-mapping, digital-twin]
