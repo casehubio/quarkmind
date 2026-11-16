@@ -926,6 +926,9 @@ class WorkerSimulation {
         rng.setSeed(42);
     }
 
+    List<BaseEntry> bases() {return bases;}
+
+
     void setSeed(long seed) {
         rng.setSeed(seed);
     }
