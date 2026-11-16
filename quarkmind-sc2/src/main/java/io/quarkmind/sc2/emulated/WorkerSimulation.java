@@ -16,6 +16,7 @@ class WorkerSimulation {
     static final float TOWN_HALL_RADIUS     = 2.75f;
     static final float MINERAL_PATCH_RADIUS = 1.0f;
     static final float GAS_BUILDING_RADIUS  = 1.75f;
+    static       float LOW_SATURATION_DODGE_SCALE = 0.25f;
 
 
     static Point2d edgePoint(Point2d center, Point2d toward, float radius) {
@@ -451,7 +452,7 @@ class WorkerSimulation {
                 int aContention = a.assignedPatch != null ? countAssignedWorkers(a.assignedPatch, a) + 1 : 1;
                 int bContention = b.assignedPatch != null ? countAssignedWorkers(b.assignedPatch, b) + 1 : 1;
                 if (aContention <= 2 && bContention <= 2) {
-                    dodge *= 0.25f;
+                    dodge *= LOW_SATURATION_DODGE_SCALE;
                 }
 
                 if (a.tag.hashCode() < b.tag.hashCode()) {
@@ -481,7 +482,7 @@ class WorkerSimulation {
                 int wContention = w.assignedPatch != null ? countAssignedWorkers(w.assignedPatch, w) + 1 : 1;
                 int sContention = s.assignedPatch != null ? countAssignedWorkers(s.assignedPatch, s) + 1 : 1;
                 if (wContention <= 2 && sContention <= 2) {
-                    dodge *= 0.25f;
+                    dodge *= LOW_SATURATION_DODGE_SCALE;
                 }
 
                 if (w.tag.hashCode() < s.tag.hashCode()) {

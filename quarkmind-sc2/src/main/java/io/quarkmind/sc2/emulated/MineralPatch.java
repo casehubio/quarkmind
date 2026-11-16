@@ -23,6 +23,7 @@ class MineralPatch {
     double lockEndLoop;
     double distanceToBase;
     double approachDockingLoops = SimulatedWorker.APPROACH_DOCKING_LOOPS;
+    static double APPROACH_EQUALIZATION_SCALE = 0.4;
 
 
     MineralPatch(Point2d position, int baseIndex, double initialMinerals, boolean rich) {
@@ -77,7 +78,7 @@ class MineralPatch {
 
         double baseApproach = SimulatedWorker.APPROACH_DOCKING_LOOPS;
         for (int i = 0; i < patches.size(); i++) {
-            double adjustment = (medianE2E - e2eDistances[i]) * loopsPerUnit;
+            double adjustment = (medianE2E - e2eDistances[i]) * loopsPerUnit * APPROACH_EQUALIZATION_SCALE;
             patches.get(i).approachDockingLoops = Math.max(0, baseApproach + adjustment);
         }
     }

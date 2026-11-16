@@ -67,7 +67,7 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 | Constant | Code value | Real SC2 | Source | Confidence | Config property |
 |----------|-----------|----------|--------|------------|-----------------|
 | Mining duration | 22 loops (1 tick) | ~22 loops (1 tick) | SC2 per-worker observation: position stable 1 tick (#631) | **Calibrated** — #631, restored #634 | `starcraft.worker.mining-duration-loops` |
-| Approach/docking delay | Per-patch: base 24.5 + (median_E2E − E2E[i]) × 5.69 | ~20–31 loops | Base from 8w cadence (#661). Per-patch scaling from E2E distance (#656): close patches get more approach (navigate around line), far patches less. | **Calibrated** — #661 base, #656 per-patch | `starcraft.worker.approach-docking-loops` (base) |
+| Approach/docking delay | Per-patch: base 24.5 + (median_E2E − E2E[i]) × 5.69 × 0.4 | ~22–27 loops | Base from 8w cadence (#661). Per-patch scaling from E2E distance (#656) with 40% equalization: SC2 path deviation compensates ~40% of walk distance differences, leaving 60% as structural cycle variance. | **Calibrated** — #661 base, #656 per-patch + equalization sweep | `starcraft.worker.approach-docking-loops` (base) |
 | Reroute threshold | 22 loops | — | Threshold before a waiting worker scans for idle patches | **Calibrated** — #636 | `starcraft.worker.reroute-threshold-loops` |
 | Mineral cargo | 5 | 5 | Liquipedia | **Published** | — |
 | Rich mineral cargo | 7 | 7 | Liquipedia | **Published** | — |
@@ -561,7 +561,7 @@ Building morphs (Hatchery→Lair→Hive, CC→OC/PF) are tracked via tracker eve
 
 ### Worker pathing around mineral line — MODELED (#656)
 
-Real SC2 workers path around the mineral line formation. The model accounts for this via per-patch approach docking (#656): `approach[i] = base_approach + (median_E2E − E2E[i]) × LOOPS_PER_UNIT`. Close patches get more approach (longer navigation path around central patches), far patches get less (direct paths to edge patches). Combined with contention-aware collision scaling (25% dodge at ≤2 workers/patch), cycle distribution σ reduced from 0.92 to 0.50 (SC2: 0.56, target: ≤0.70). 7+ tick cycles reduced from 6.6% to 0.6% (target: ≤2%). Mean cycle 5.29 ticks (SC2: 5.28).
+Real SC2 workers path around the mineral line formation. The model accounts for this via per-patch approach docking (#656): `approach[i] = base_approach + (median_E2E − E2E[i]) × LOOPS_PER_UNIT`. Close patches get more approach (longer navigation path around central patches), far patches get less (direct paths to edge patches). Combined with contention-aware collision scaling (25% dodge at ≤2 workers/patch), With 40% equalization scale, cycle distribution σ=0.57 (SC2: 0.56), 7+ tick 0.6% (SC2: 0%), mean 5.29 (SC2: 5.28). The 4/5/6-tick percentages match SC2 within 1%.
 
 ### Larva spawn calibration
 
