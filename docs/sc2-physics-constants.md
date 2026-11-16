@@ -115,7 +115,8 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66
 
 | Constant | Code value | Real SC2 | Source | Confidence | Config property |
 |----------|-----------|----------|--------|------------|-----------------|
-| Gas harvest duration | 66.0 loops (2.95s) | 32 loops (1.43s) inside geyser | Dual-run sweep + SC2 profiler (#665) | **Calibrated** — #665 | `starcraft.worker.gas-harvest-duration-loops` |
+| Gas harvest duration (measured) | 32.0 loops (1.43s) | 32 loops (1.43s) inside geyser | SC2 profiler, GasCycleProfilerTest (#665) | **Calibrated** — #665 | `starcraft.worker.gas-harvest-duration-loops` |
+| Gas approach docking | 11.5 loops (0.51s) | (included in walk, entry animation) | Calibrated against oracle MAPE (#675) | **Calibrated** — #675 | `starcraft.worker.gas-approach-docking-loops` |
 | Gas building radius | 1.75u | 1.69u (Assimilator) | SC2 API `Unit.getRadius()` (#665) | **Calibrated** — #665 | `GAS_BUILDING_RADIUS` (compile-time) |
 | Gas cargo | 4 | 4 | Liquipedia | **Published** | — |
 | Max workers per geyser | 3 | 3 | SC2 mechanics | **Published** | — |
@@ -446,7 +447,9 @@ Per-tick cadence mismatch: 75.3% (229/304 ticks match, pre-shuffle measurement) 
 
 ### Rate computation algorithm
 
-SC2 uses **exponential moving average (EMA)**, not a simple windowed average. Confirmed by RateAlgorithmAnalysisTest (#593), which computed income from delta(totalMined) across consecutive PlayerStatsEvents and fitted simple window vs EMA (11 alpha values) against SC2's reported rates:
+SC2 uses **exponential moving average (EMA)**, not a simple windowed average. Confirmed by RateAlgorithmAnalysisTest (#593), which computed income from delta(totalMined) across consecutive PlayerStatsEvents and fitted simple window vs EMA (11 alpha values) against SC2's reported rates.
+
+**Quantisation discovery (#676):** SC2 mineral rates are quantised at exactly 28 minerals/min. Across 118 oracle replays, every reported `mineralsCollectionRate` (after the first interval) satisfies `rate ≡ 27 (mod 28)`, i.e. `rate = 28N - 1`. This implies SC2 counts discrete deliveries in a 240-loop window: `deliveries × MINERAL_CARGO / 240 × LOOPS_PER_MINUTE = deliveries × 28`. The -1 offset is likely integer truncation. However, implementing a 240-loop sliding window in the EM's EconomyTracker increased gas rate MAPE (18.8% vs 15.3% EMA) because the EM's delivery timing doesn't match SC2's closely enough — the EMA's smoothing compensates for per-delivery timing errors. The window approach becomes viable only after tighter physics alignment.
 
 | Algorithm | Mineral MAPE | Gas MAPE |
 |-----------|-------------|----------|
@@ -492,7 +495,7 @@ Stagger=6.1 with walk delay=40 produced 3460 minerals at tick 304 (**0.0%** vs S
 | Constant | Value | Effect |
 |----------|-------|--------|
 | `MAX_TRANSFER_PER_EXPANSION` | 4 | Workers auto-transferred when a new base completes |
-| `MIN_MINERAL_WORKERS_BEFORE_GAS` | 8 | Gas workers won't be assigned if mineral count drops below this |
+| `MIN_MINERAL_WORKERS_BEFORE_GAS` | 4 | Gas workers won't be assigned if mineral count drops below this — lowered from 8 to 4 (#675); players assign gas at expansions with 7+ workers |
 | `OPTIMAL_WORKERS_PER_BASE` | 8 | `PATCHES_PER_BASE × MAX_MINERS` — first saturation tier |
 | `PROBE_BUILD_ROUND_TRIP_TICKS` | 7 | Protoss worker returns to mining after 7 ticks when warping a building |
 | Builder pause (Terran) | ceil(buildDuration / LOOPS_PER_TICK) | SCV paused for full building construction time (#601) |
@@ -516,6 +519,8 @@ Walk time scales linearly with main-to-expansion distance: 9 ticks at 31.1u, ~6 
 **SC2 behavioral difference:** In the SC2 debug-API baseline, workers do NOT auto-transfer — all workers stay at the main base. The EM models real player behavior (transferring 3-5 workers on expansion). This causes expected income divergence: SC2=2550, EM=5825 at tick 305 in the cal-expansion-transfer playbook. The gap is from better worker distribution and faster supply cap, not a physics error.
 
 `countWorkersPerBase(Race, List<Building>, List<Unit>)` uses snapshot unit positions (from PlayerState) and does NOT reflect `SimulatedWorker` internal positions. To measure expansion worker distribution accurately, use `workerSnapshots()` with proximity calculation.
+
+**Gas rebalancing on mineral sync (#675):** `syncMineralWorkersFromGt()` redistributes mineral workers between bases each tick, but previously never checked if expansion gas slots needed workers. Added `rebalanceGasWorkers()` call at the end of `syncMineralWorkersFromGt()` so that undersaturated gas slots at any base are filled whenever the mineral worker count allows (respects `MIN_MINERAL_WORKERS_BEFORE_GAS=4` guard).
 
 ### Gas worker estimation (#615)
 

@@ -32,6 +32,14 @@ class SimulatedWorker {
         GAS_HARVEST_DURATION_LOOPS = WorkerPhysicsConfig.DEFAULT_GAS_HARVEST_DURATION_LOOPS;
     }
 
+    static void setGasApproachDockingLoops(double loops) {
+        GAS_APPROACH_DOCKING_LOOPS = loops;
+    }
+
+    static void resetGasApproachDocking() {
+        GAS_APPROACH_DOCKING_LOOPS = WorkerPhysicsConfig.DEFAULT_GAS_APPROACH_DOCKING_LOOPS;
+    }
+
     static final double ARRIVAL_THRESHOLD = 0.5;
     static final double MAX_SPEED         = io.quarkmind.domain.SC2Data.unitSpeed(io.quarkmind.domain.UnitType.PROBE);
     static double ACCELERATION            = WorkerPhysicsConfig.DEFAULT_ACCELERATION;
