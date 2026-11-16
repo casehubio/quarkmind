@@ -137,6 +137,30 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
                         continue;
                     }
 
+                    if ("kill".equals(step.action())) {
+                        int count = Integer.parseInt((String) step.params().get("kill"));
+                        UnitType workerType = workerForRace(race);
+                        List<io.quarkmind.domain.Unit> workers = state.myUnits().stream()
+                            .filter(u -> u.type() == workerType)
+                            .limit(count)
+                            .toList();
+                        if (!workers.isEmpty()) {
+                            var debugReq = SC2APIProtocol.Debug.DebugKillUnit.newBuilder();
+                            workers.forEach(w -> debugReq.addTag(Long.parseLong(w.tag())));
+                            try {
+                                transport.sendDebug(SC2APIProtocol.Sc2Api.RequestDebug.newBuilder()
+                                    .addDebug(SC2APIProtocol.Debug.DebugCommand.newBuilder()
+                                        .setKillUnit(debugReq.build()).build())
+                                    .build());
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                            fired[i] = true;
+                            log.infof("[Recorder] tick %d: killed %d workers via debug API", tick, workers.size());
+                        }
+                        continue;
+                    }
+
                     ResolvedCommand cmd = translateStep(step, state);
                     if (cmd != null) {
                         commands.add(cmd);

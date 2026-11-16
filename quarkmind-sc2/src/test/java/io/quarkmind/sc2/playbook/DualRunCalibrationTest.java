@@ -48,6 +48,19 @@ class DualRunCalibrationTest {
         }
     }
 
+    @Test
+    void dualRunCalMineralBaseline8wAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-8w.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-baseline-8w.yaml", sc2Baseline);
+        System.out.println(result.report());
+        if (!result.passed()) {
+            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
+                              result.divergenceTick(), result.divergenceField(),
+                              result.expected(), result.actual());
+        }
+    }
+
+
     @org.junit.jupiter.api.Tag("diagnostic")
     @Test
     void diagnosticEarlyTickMineralTrace() {
@@ -384,6 +397,12 @@ class DualRunCalibrationTest {
     void selfBaselineCalMineralBaseline12w() {
         assertSelfBaseline("playbooks/cal-mineral-baseline-12w.yaml", Race.PROTOSS);
     }
+
+    @Test
+    void selfBaselineCalMineralBaseline8w() {
+        assertSelfBaseline("playbooks/cal-mineral-baseline-8w.yaml", Race.PROTOSS);
+    }
+
 
     @Test
     void selfBaselineCalMineralSaturated16w() {

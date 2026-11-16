@@ -56,6 +56,26 @@ class WorkerSimulationTest {
         assertTrue(totalIncome > 0);
     }
 
+    @org.junit.jupiter.api.Tag("diagnostic")
+    @Test
+    void mineralIncomeRate_8workers_uncontested() {
+        List<String> tags = IntStream.rangeClosed(1, 8).mapToObj(i -> "w-" + i).toList();
+        sim.onInitialWorkers(tags, BASE_POS, BASE_TAG);
+        int warmupTicks = 20;
+        for (int t = 0; t < warmupTicks; t++) {tick();}
+        double income       = 0;
+        int    measureTicks = 200;
+        for (int t = 0; t < measureTicks; t++) {
+            income += tick().mineralIncome();
+        }
+        double ticksPerMinute = 60.0 * io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND / io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+        double perMinute      = income / measureTicks * ticksPerMinute;
+        System.out.printf("8 workers: %.1f minerals/min total%n", perMinute);
+        System.out.printf("Per worker: %.1f minerals/min  (SC2 target: ~63.4/w uncontested)%n", perMinute / 8);
+        System.out.printf("Total in %d ticks: %.1f minerals%n", measureTicks, income);
+    }
+
+
     @Test
     void sixteenWorkers_showsSaturationPenalty() {
         int warmup  = 20;

@@ -1,0 +1,22 @@
+playbook: cal-mineral-baseline-8w
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 305 ticks
+  purpose: Uncontested per-worker mineral rate — 8 workers (1 per patch), no gas, no training
+
+steps:
+  - kill: 4
+    at: 0 ticks
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        PROBE: { min: 8, max: 8 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        PROBE: { min: 8, max: 8 }

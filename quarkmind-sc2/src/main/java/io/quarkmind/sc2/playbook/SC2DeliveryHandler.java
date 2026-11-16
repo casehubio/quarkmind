@@ -58,6 +58,7 @@ public class SC2DeliveryHandler implements DeliveryHandler {
             case "morph" -> doMorph(stepName, data);
             case "ability" -> doAbility(stepName, data);
             case "calldown" -> doCalldown(stepName, data);
+            case "kill" -> doKill(stepName, data);
             case "assert" -> doAssert(stepName, data);
             default -> StepOutcome.fail(stepName, "Unknown SC2 action: " + action);
         };
@@ -146,6 +147,18 @@ public class SC2DeliveryHandler implements DeliveryHandler {
             return StepOutcome.fail(stepName, "calldown rejected: " + calldownType);
         }
         return StepOutcome.ok(stepName, Map.of("calldown", calldownType));
+    }
+
+    private StepOutcome doKill(String stepName, Map<String, Object> data) {
+        int count = Integer.parseInt((String) data.get("kill"));
+        java.util.List<io.quarkmind.domain.Unit> workers = game.snapshot().myUnits().stream()
+                                                               .filter(u -> io.quarkmind.domain.SC2Data.isWorker(u.type()))
+                                                               .limit(count)
+                                                               .toList();
+        for (io.quarkmind.domain.Unit w : workers) {
+            game.debugKillUnit(w.tag());
+        }
+        return StepOutcome.ok(stepName, Map.of("killed", workers.size()));
     }
 
 

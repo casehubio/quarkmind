@@ -644,6 +644,14 @@ public class EmulatedGame {
         }
     }
 
+    public void debugKillUnit(String tag) {
+        Unit unit = friendly.units().stream()
+                            .filter(u -> u.tag().equals(tag)).findFirst().orElse(null);
+        if (unit == null) {return;}
+        handleUnitDied(new UnitDiedIntent(tag, unit.type()), friendly, friendlyPhysics);
+    }
+
+
     private String nextTagString() {
         return "unit-" + nextTag++;
     }
