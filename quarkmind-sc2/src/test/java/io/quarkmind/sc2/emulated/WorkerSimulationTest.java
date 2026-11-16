@@ -75,6 +75,107 @@ class WorkerSimulationTest {
         System.out.printf("Total in %d ticks: %.1f minerals%n", measureTicks, income);
     }
 
+    @org.junit.jupiter.api.Tag("diagnostic")
+    @Test
+    void singleWorkerCycleTimingDiagnostic() {
+        double origApproach = SimulatedWorker.APPROACH_DOCKING_LOOPS;
+        double origDeposit  = SimulatedWorker.DEPOSIT_DURATION_LOOPS;
+        try {
+            SimulatedWorker.APPROACH_DOCKING_LOOPS = 24.0;
+            SimulatedWorker.DEPOSIT_DURATION_LOOPS = 10.0;
+
+            sim = new WorkerSimulation();
+            sim.onTownHallCompleted(BASE_TAG, BASE_POS);
+            tickCount = 0;
+
+            sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
+
+            SimulatedWorker w = sim.worker("w-1");
+            System.out.printf("Worker w-1: patch approach=%.1f, patch pos=%s%n",
+                              w.assignedPatch.approachDockingLoops, w.assignedPatch.position);
+            double e2e = w.assignedPatch.position.distanceTo(BASE_POS) - WorkerSimulation.TOWN_HALL_RADIUS - WorkerSimulation.MINERAL_PATCH_RADIUS;
+            System.out.printf("Edge-to-edge distance: %.3f%n", e2e);
+            System.out.printf("APPROACH_DOCKING_LOOPS: %.1f%n", SimulatedWorker.APPROACH_DOCKING_LOOPS);
+            System.out.printf("DEPOSIT_DURATION_LOOPS: %.1f%n", SimulatedWorker.DEPOSIT_DURATION_LOOPS);
+            System.out.printf("MINING_DURATION_LOOPS: %.1f%n", SimulatedWorker.MINING_DURATION_LOOPS);
+
+            System.out.println("\ntick | income | total | task               | atTarget | phaseEnd | pos");
+            System.out.println("-".repeat(100));
+
+            double totalIncome = 0;
+            for (int t = 0; t < 200; t++) {
+                TickIncome income = tick();
+                totalIncome += income.mineralIncome();
+
+                if (t < 25 || income.mineralIncome() > 0) {
+                    double loopStart = (t) * (double) io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
+                    System.out.printf("%4d | %6.1f | %6.1f | %-18s | %-8s | %8.1f | (%.2f, %.2f)%n",
+                                      t, income.mineralIncome(), totalIncome,
+                                      w.task, w.isAtTarget(), w.phaseEndLoop - loopStart,
+                                      w.position.x(), w.position.y());
+                }
+            }
+
+            int    deliveries  = (int) (totalIncome / 5.0);
+            double actualCycle = 200.0 * 22 / deliveries;
+            System.out.printf("%nTotal income: %.1f minerals = %d deliveries%n", totalIncome, deliveries);
+            System.out.printf("Actual cycle: %.1f loops (%.2f ticks)%n", actualCycle, actualCycle / 22.0);
+            System.out.printf("Theoretical: 2×walk + 24 + 22 + 10 = ?  (walk for e2e=%.3f)%n", e2e);
+        } finally {
+            SimulatedWorker.APPROACH_DOCKING_LOOPS = origApproach;
+            SimulatedWorker.DEPOSIT_DURATION_LOOPS = origDeposit;
+        }
+    }
+
+    @org.junit.jupiter.api.Tag("diagnostic")
+    @Test
+    void singleWorkerPerLoopTrace() {
+        double origApproach = SimulatedWorker.APPROACH_DOCKING_LOOPS;
+        double origDeposit  = SimulatedWorker.DEPOSIT_DURATION_LOOPS;
+        try {
+            SimulatedWorker.APPROACH_DOCKING_LOOPS = 24.0;
+            SimulatedWorker.DEPOSIT_DURATION_LOOPS = 10.0;
+
+            sim = new WorkerSimulation();
+            sim.onTownHallCompleted(BASE_TAG, BASE_POS);
+            tickCount = 0;
+            sim.onInitialWorkers(List.of("w-1"), BASE_POS, BASE_TAG);
+            SimulatedWorker w = sim.worker("w-1");
+
+            System.out.println("loop | task               | speed  | dist2tgt | phaseEnd | income");
+            System.out.println("-".repeat(80));
+
+            int deliveryCount = 0;
+            for (int t = 0; t < 25; t++) {
+                double tickStart = t * 22.0;
+                for (int loop = 0; loop < 22; loop++) {
+                    double absLoop      = tickStart + loop;
+                    double distToTarget = w.targetPosition != null ? w.position.distanceTo(w.targetPosition) : -1;
+                    String phaseInfo = w.assignedPatch != null && w.assignedPatch.miners.contains(w)
+                                       ? String.format("%.1f (mining)", w.phaseEndLoop - absLoop)
+                                       : String.format("%.1f", w.phaseEndLoop - absLoop);
+                    double  prevCargo    = w.cargo;
+                    boolean prevCarrying = w.cargo > 0;
+
+                    // Just before the tick processes this loop
+                    if (absLoop >= 40) { // skip initial walk delay
+                        System.out.printf("%4.0f | %-18s | %6.3f | %8.3f | %8s | %n",
+                                          absLoop, w.task, w.currentSpeed, distToTarget, phaseInfo);
+                    }
+                }
+                TickIncome income = tick();
+                if (income.mineralIncome() > 0) {
+                    deliveryCount++;
+                    System.out.printf("  >>> DELIVERY #%d at tick %d (loop %.0f): +%.1f minerals%n",
+                                      deliveryCount, t, t * 22.0 + 22, income.mineralIncome());
+                }
+            }
+        } finally {
+            SimulatedWorker.APPROACH_DOCKING_LOOPS = origApproach;
+            SimulatedWorker.DEPOSIT_DURATION_LOOPS = origDeposit;
+        }
+    }
+
 
     @Test
     void sixteenWorkers_showsSaturationPenalty() {
