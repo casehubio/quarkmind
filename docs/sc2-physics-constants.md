@@ -56,7 +56,7 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 
 **Acceleration note (#634):** Restored to 3.5 (SC2Mapster × 1.4, calibrated #578). Temporarily changed to 10.0 during #634 when the calibration target was σ=2.54 (inflated by measurement bug). With the correct target (σ=0.58) and uniform collision model, 3.5 produces mean=5.32 (exact SC2 match) and minimum 5-tick cycles matching SC2's 4-6 range.
 
-**Movement profile:** Workers reach max speed (3.94 u/s) after 2.22 units of acceleration. With edge-to-edge walk targets (#631), walk distances are center-to-center minus TOWN_HALL_RADIUS (2.5) minus MINERAL_PATCH_RADIUS (1.0) = center-to-center − 3.5. Default 7.0u center-to-center → 3.5u edge-to-edge. At 3.5u the profile is triangular (below 4.4u threshold) — the worker never reaches max speed. Trip at 3.5u: ~32 loops (1.43s). At 4.5u: ~37 loops. At 5.5u: ~44 loops.
+**Movement profile:** Workers reach max speed (3.94 u/s) after 2.22 units of acceleration. With edge-to-edge walk targets (#631), walk distances are center-to-center minus TOWN_HALL_RADIUS (2.75) minus MINERAL_PATCH_RADIUS (1.0) = center-to-center − 3.75. Default 7.0u center-to-center → 3.25u edge-to-edge. At 3.25u the profile is triangular (below 4.4u threshold) — the worker never reaches max speed. Trip at 3.5u: ~32 loops (1.43s). At 4.5u: ~37 loops. At 5.5u: ~44 loops.
 
 **Unit speeds (28 types mapped):** Source: Liquipedia (Faster speed). Unmapped types use default 3.0 u/s.
 
@@ -67,7 +67,7 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 | Constant | Code value | Real SC2 | Source | Confidence | Config property |
 |----------|-----------|----------|--------|------------|-----------------|
 | Mining duration | 22 loops (1 tick) | ~22 loops (1 tick) | SC2 per-worker observation: position stable 1 tick (#631) | **Calibrated** — #631, restored #634 | `starcraft.worker.mining-duration-loops` |
-| Approach/docking delay | 11.5 loops (unconditional) | ~11 loops | SC2 observation: uncontested cycle (66L) − walk (33L) − mine (22L). EM: unconditional for all mining starts (#655, was conditional #636) | **Calibrated** — #631, unconditional #655 | `starcraft.worker.approach-docking-loops` |
+| Approach/docking delay | 24.5 loops (unconditional) | ~24.5 loops | SC2 8w cadence data: outbound half-cycle gap = +12 loops vs EM (#661). Models approach animation + transition overhead. | **Calibrated** — #661 (8w cadence measurement) | `starcraft.worker.approach-docking-loops` |
 | Reroute threshold | 22 loops | — | Threshold before a waiting worker scans for idle patches | **Calibrated** — #636 | `starcraft.worker.reroute-threshold-loops` |
 | Mineral cargo | 5 | 5 | Liquipedia | **Published** | — |
 | Rich mineral cargo | 7 | 7 | Liquipedia | **Published** | — |
@@ -76,32 +76,31 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 | Close patches per base | 4 | 4 | SC2 map standard | **Published** | — |
 | Mining start delay | 1 tick | — | Dual-run calibration #401 | **Historical** — superseded by initial walk delay (§14) | — |
 | Patch docking overhead | 22 loops (1 tick) | 22 loops | SC2 per-worker cadence: contested − uncontested = 22 loops | **Calibrated** — #631 | `starcraft.worker.patch-docking-overhead-loops` |
-| Deposit duration | 7 loops | ~7 loops | SC2 observation: return phase (40L) − walk (33L) (#631) | **Calibrated** — #631, restored #634 | `starcraft.worker.deposit-duration-loops` |
+| Deposit duration | 12 loops | ~12 loops | SC2 8w cadence data: return half-cycle gap = +2.6 loops vs EM, rounded to 12 (#661) | **Calibrated** — #661 (8w cadence measurement) | `starcraft.worker.deposit-duration-loops` |
 | Initial worker stagger | 6.1 loops | — | Dual-run sweep to match SC2 12w delivery spread | **Calibrated** — #609/#578 | `starcraft.worker.initial-worker-stagger` |
-| Collision speed factor | 0.96 | — | Uniform — reverted from direction-dependent model (#634) | **Calibrated** — #634 (cycle distribution match) | `starcraft.worker.collision-speed-factor` |
+| Collision speed factor | 1.0 | — | Disabled — transition loop cost (#661) provides correct cycle timing; collision-based compensation no longer needed | **Calibrated** — #661 | `starcraft.worker.collision-speed-factor` |
 | Collision radius | 0.75 | units | PySC2 unit size ~0.75, #634 | **Calibrated** — #634 | `COLLISION_RADIUS` (compile-time) |
 
-**Mining cycle decomposition (#620→#631→#634):** Originally three explicit phases: mining animation (22 loops), deposit at base (7 loops), and approach/docking at patch (11 loops), totalling 40 loops overhead per cycle. Calibrated from SC2 per-worker observation data (#631).
+**Mining cycle decomposition (#620→#631→#634→#661):** Originally three explicit phases: mining animation (22 loops), deposit at base (12 loops), and approach/docking at patch (24.5 loops), totalling 58.5 loops overhead per cycle. Deposit and approach recalibrated from 8w SC2 cadence data (#661). Phase transitions consume 1 game loop each (#661).
 
-**#634 revision:** Per-loop worker processing order shuffling (§1b) produces small cycle variance matching SC2's tight distribution (σ=0.56). Direction-dependent collision model (head-on=0.2, same-direction=0.99) was designed for an inflated σ target (2.54, measurement bug) and reverted to uniform factor (0.96). SC2-observed phase durations (mining=22, deposit=7, approach=11) and original acceleration (3.5) restored. EM σ=1.56, mean=5.37 (post-#655).
+**#634 revision:** Per-loop worker processing order shuffling (§1b) produces small cycle variance matching SC2's tight distribution (σ=0.56). Direction-dependent collision model reverted. SC2-observed phase durations (mining=22) and original acceleration (3.5) restored. Approach and deposit recalibrated in #661 from 8w cadence data (approach=24.5, deposit=12). Collision speed factor disabled in #661 (1.0) — transition loop cost provides correct timing.
 
 **SC2 observed cycle phases (#631, 12w cadence data, 1366 transitions):**
 
-| Phase | SC2 observed | EM current | Source |
-|-------|-------------|------------|--------|
+| Phase | SC2 observed | EM current (#661) | Source |
+|-------|-------------|-------------------|--------|
 | Mining animation | 22 loops (1 tick) | 22 loops | Position stability at patch |
-| Return + deposit | 40 loops (1.8 ticks) | 33+7=40 loops | Cargo flip timing |
-| Mine cycle (uncontested) | 66 loops (3 ticks) | 33+0+22=55 loops (#636) | Deposit→pickup, 3-tick cycles |
-| Mine cycle (contested) | 88 loops (4 ticks) | 33+11+22+22=88 loops | Deposit→pickup, 4-tick cycles |
-| Full cycle (average) | 116 loops (5.3 ticks) | ~106 loops (#636) | PICKUP→PICKUP |
+| Return + deposit | 40 loops (1.8 ticks) | 33+12=45 loops | Cargo flip timing; deposit recalibrated #661 |
+| Mine cycle (uncontested) | 66 loops (3 ticks) | 33+24.5+22=79.5 loops | Deposit→pickup |
+| Full cycle (average) | 117 loops (5.3 ticks) | ~117 loops (#661) | PICKUP→PICKUP |
 
-SC2 uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66 loops. Post-#655, EM unconditional approach is 11.5 loops for all mining starts. The net effect is 12w +2.3% mineral surplus. Contested cycles match SC2 exactly: walk(33) + approach(11) + mine(22) + docking overhead(22) = 88 loops.
+SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) = ~79.5 loops. Post-#661, EM unconditional approach is 24.5 loops for all mining starts. Phase transitions consume 1 game loop each (transition loop cost, #661). The net effect at 12w is −1.9% vs SC2. At 8w (uncontested): +4.3%.
 
-**Collision model (#634, revised):** Uniform speed factor (0.96) for all collisions — direction-dependent model reverted. The direction-dependent model (head-on=0.2, same-direction=0.99) was designed for an inflated σ target (2.54) caused by a measurement bug (index-based cycle tracking). Corrected SC2 σ=0.56 shows mining cycles are extremely uniform — a harsh head-on penalty produces a congestion tail SC2 doesn't have. Uniform 0.96 calibrated for cycle distribution match: EM σ=1.56, SC2 σ=0.56 (post-#655).
+**Collision model (#634→#661):** Collision speed factor disabled (1.0) in #661. The previous uniform 0.96 factor was accidentally compensating for zero-cost phase transitions in the sub-tick loop — once the transition loop cost was fixed, collision-based compensation was no longer needed. SC2 workers don't slow down from overlapping — they pathfind around each other, which is modeled by the increased approach_docking (24.5 loops).
 
 **Collision radius (#634):** Increased from 0.375 to 0.75 (diameter 1.5). PySC2 docs confirm SC2 unit size is ~0.75 game units — validates the collision diameter. The larger interaction zone creates more collision events, producing contention at higher saturation.
 
-**Unconditional approach docking (#655, replaces conditional #636):** All mining starts pay 11.5 loops approach — no conditional skip for idle patches. SC2 always plays the approach animation (uncontested=66 loops), and the EM now matches this uniformly. The unconditional approach models the positioning overhead that EM straight-line walks omit. Combined with lockout bypass for waiting workers and a 2-collision speed cap, this produces 12w +2.3%, 16w −1.2%, 24w +1.8%. The previous conditional model (#636) achieved 12w +0.6% but severely under-produced at 16w (−20.2%) because lockout + approach penalties compounded on all contested patches.
+**Unconditional approach docking (#655→#661):** All mining starts pay 24.5 loops approach — no conditional skip for idle patches. Recalibrated in #661 from 8w SC2 cadence data (was 11.5 in #655). The approach models the positioning overhead, approach animation, and path deviation that EM straight-line walks don't capture. Combined with transition loop cost (#661) and lockout bypass for waiting workers (#655), this produces 8w +4.3%, 12w −1.9%, 16w −1.7%.
 
 **Wait-then-reroute (#636):** Workers waiting at an occupied patch for longer than `rerouteThresholdLoops` (default 22.0, config: `starcraft.worker.reroute-threshold-loops`) scan for idle patches at the same base. Reroutes only when estimated travel time < estimated remaining wait. Permanent reassignment — worker's `assignedPatch` is updated. 12w diagnostic shows 31 reroute events per 304 ticks (post-#655). At 2 workers/patch (16w optimal saturation), the lockout bypass (#655) means waiting workers start mining immediately when the active miner departs — wait time ≈ 22 loops, equal to but not exceeding the threshold, so no rerouting triggers. This is correct: SC2 workers at 2/patch alternate efficiently without rerouting (#662).
 
@@ -136,8 +135,8 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66
 | Approach/dock at geyser | (included in walk) | 11.5 loops | 0 |
 | Inside geyser (harvest) | 32 loops (1.5 ticks) | 32 loops | 66 loops |
 | Walk to base | 45 loops (2.0 ticks) | ~36 loops | ~36 loops |
-| Deposit | (included in walk) | 7 loops | 7 loops |
-| **Full cycle** | **122 loops (5.5 ticks)** | **~122.5 loops (5.6 ticks)** | ~145 loops (6.6 ticks) |
+| Deposit | (included in walk) | 12 loops (#661) | 7 loops |
+| **Full cycle** | **122 loops (5.5 ticks)** | **~127.5 loops (5.8 ticks)** | ~145 loops (6.6 ticks) |
 
 **Gas rate MAPE improvement (#675):** vespeneCollectionRate MAPE at 5-min dropped from 29.9% to 15.3% (aggregate, 236 player runs). Per-race: Protoss 16.1→15.2%, Terran 24.0→13.2%, Zerg 31.8→25.4%. Zerg residual is variance-driven (per-replay cycle differences), not systematic bias.
 
@@ -166,24 +165,26 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(11) + mine(22) = 66
 
 ## 6. Mining Efficiency Factors
 
-**Factor removed (#623).** Edge-to-edge walk distances, worker collision (speed factor 0.96), decomposed mining phases (mine=22, deposit=7, approach=11), and worker stagger (6.1 loops) produce correct mineral totals without compensation. All races use factor 1.0.
+**Factor removed (#623).** Edge-to-edge walk distances, decomposed mining phases (mine=22, deposit=12, approach=24.5), transition loop cost (#661), and worker stagger (6.1 loops) produce correct mineral totals without compensation. Collision speed factor disabled (1.0) since #661. All races use factor 1.0.
 
 Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle replay MAPE sweep, which conflated worker allocation differences with physics. The dual-run isolates physics and shows no race-specific difference.
 
-### SC2 dual-run calibration results (TorchesAIE_v4, post-#655)
+### SC2 dual-run calibration results (TorchesAIE_v4, post-#661)
 
 | Baseline | SC2 minerals | EM minerals | SC2 vespene | EM vespene | Mineral Δ | Gas Δ |
 |----------|-------------|------------|-------------|------------|-----------|-------|
-| 12w Protoss (tick 304) | 3460 | 3540 | — | — | **+2.3%** | — |
-| 16w saturation (tick 304) | 4235 | 4185 | — | — | **−1.2%** | — |
-| 24w saturation (tick 304) | 3955 | 4025 | — | — | **+1.8%** | — |
-| 3w gas (tick 304) | 3885 | 3865 | 552 | 504 | −0.5% | **−8.7%** |
-| 6w gas (tick 304) | 3375 | 3350 | 1012 | 984 | −0.7% | **−2.8%** |
+| 8w Protoss (tick 304) | 2330 | 2445 | — | — | **+4.9%** | — |
+| 12w Protoss (tick 304) | 3460 | 3395 | — | — | **−1.9%** | — |
+| 16w saturation (tick 304) | 4235 | 4165 | — | — | **−1.7%** | — |
+| 24w saturation (tick 304) | 3955 | 3850 | — | — | **−2.7%** | — |
+| 3w gas (tick 304) | 3885 | 3780 | 552 | 652 | −2.7% | **+18.1%** |
+| 6w gas (tick 304) | 3375 | 3500 | 1012 | 1248 | +3.7% | **+23.3%** |
 
-**#655 saturation curve fix** — three changes:
-1. **Lockout bypass for waiting workers**: workers already at a patch bypass the 22-loop lockout when the active miner departs, matching SC2's near-zero handoff time.
-2. **Unconditional approach docking**: all mining starts pay 11.5 loops (was conditional — 0 for idle, 11 for contested). Models SC2's positioning overhead that straight-line walks don't capture.
-3. **Collision speed floor**: caps collision penalty to at most 2 effective collisions per worker per loop (0.96²), preventing compound penalty at high density from over-penalizing 16w+.
+**#661 base cycle speed fix** — three changes:
+1. **Transition loop cost**: mining→returning and depositing→mining transitions in `stepOneMineralLoop` now consume 1 game loop each (previously zero-cost via `while(!loopConsumed)` chaining). Matches SC2's per-loop transition processing.
+2. **Approach docking recalibrated**: 11.5→24.5 loops. Measured from 8w SC2 cadence data: outbound half-cycle is +12 loops slower than EM. The increased approach absorbs the positioning overhead that straight-line walks don't capture.
+3. **Deposit duration recalibrated**: 7→12 loops. Measured from 8w cadence: return half-cycle gap = +2.6 loops.
+4. **Collision speed factor disabled**: 0.96→1.0. The transition loop cost provides correct cycle timing across all saturation levels; the collision-based compensation that previously masked the fast base cycle is no longer needed.
 
 Previously (pre-#655): 12w +0.6%, 16w −20.2%, 24w −13.4%. The compound collision model penalised 16w workers with 5+ overlapping neighbours per loop, reducing throughput far beyond SC2's actual contention.
 
@@ -197,7 +198,7 @@ Previously (pre-#655): 12w +0.6%, 16w −20.2%, 24w −13.4%. The compound colli
 | 24 | 3.0 | 46.8 | 82.1% |
 | 30 | 3.8 | 37.5 | 65.7% |
 
-**Saturation model calibrated** — contention fix (assignment-based spreading + wake-up pass), patch docking overhead (22 loops), collision speed factor (0.96 with 2-collision cap per loop), unconditional approach docking (11.5 loops), lockout bypass for waiting workers (#655), and wait-then-reroute (#636).
+**Saturation model calibrated** — contention fix (assignment-based spreading + wake-up pass), patch docking overhead (22 loops), transition loop cost (#661), unconditional approach docking (24.5 loops, #661), deposit duration (12 loops, #661), lockout bypass for waiting workers (#655), and wait-then-reroute (#636). Collision speed factor disabled (1.0) since #661.
 
 ---
 
@@ -373,21 +374,22 @@ At a close mineral patch (6.6 units from town hall), edge-to-edge walk:
 | Phase | Loops | Seconds | Notes |
 |-------|-------|---------|-------|
 | Walk to patch (edge-to-edge) | 33 | 1.47 | Trapezoidal profile, collision footprint boundary |
-| Approach/dock | 11 | 0.49 | SC2 per-worker observation: cycle − walk − mine (#631) |
+| Approach/dock | 24.5 | 1.09 | 8w SC2 cadence: outbound half-cycle gap (#661) |
 | Mine | 22 | 0.98 | SC2 per-worker observation: position stable 1 tick (#631) |
 | Walk home (edge-to-edge) | 33 | 1.47 | Same distance, same profile |
-| Deposit | 7 | 0.31 | SC2 per-worker observation: return phase − walk (#631) |
-| **Total cycle** | **106** | **4.73** | 5 minerals per trip |
+| Deposit | 12 | 0.54 | 8w SC2 cadence: return half-cycle gap (#661) |
+| Transition costs | 2 | 0.09 | 1 loop per phase transition × 2 transitions (#661) |
+| **Total cycle** | **126.5** | **5.65** | 5 minerals per trip |
 
-**Per-worker income:** 5 minerals × (22.4 loops/sec × 60 sec / 106 loops) = **63.4 minerals/min** on a close patch.
+**Per-worker income:** 5 minerals × (22.4 loops/sec × 60 sec / 126.5 loops) = **53.2 minerals/min** on a close patch. SC2 8w measured: 57.0 deliveries/worker in 304 ticks = ~53.7 min/worker (within 5%).
 
-At a far mineral patch (7.6 units): ~40 loops per leg, 121-loop cycle, **55.7 minerals/min** per worker. At uniform 7.0 units (unit tests): ~37 loops per leg, 115-loop cycle, **58.4 minerals/min** per worker.
+At a far mineral patch (7.6 units): ~40 loops per leg, 141.5-loop cycle, **47.6 minerals/min** per worker. At uniform 7.0 units (unit tests): ~37 loops per leg, 135.5-loop cycle, **49.7 minerals/min** per worker.
 
 ### Saturation curve mechanics
 
-With `MAX_MINERS=1`, the approach+mining duration (11+22=33 loops) controls patch occupancy. A patch is occupied 33/106 = **31.1%** of each cycle. Two workers per patch alternate efficiently — one mines while the other walks. The third worker must wait for the docking overhead (22 loops) to expire before approaching.
+With `MAX_MINERS=1`, the approach+mining duration (24.5+22=46.5 loops) controls patch occupancy. A patch is occupied 46.5/126.5 = **36.8%** of each cycle. Two workers per patch alternate efficiently — one mines while the other walks. The approach+mine phase (46.5 loops) approximately fills the time the other worker spends walking+depositing (~45 loops), producing near-zero contention at 2 workers/patch. SC2 8w and 12w per-worker rates are nearly identical (57.0 vs 56.8 deliveries/worker), confirming near-zero contention at ≤2 workers/patch.
 
-Collision physics (speed factor 0.96, #630) reduces worker speed when collision circles overlap, creating natural cadence variance at higher saturation. 16w dual-run: EM=4150 vs SC2=4235 (−2.0%). The remaining gap is from path-dependent routing in real SC2 that straight-line walks cannot replicate.
+16w dual-run (#661): EM=4165 vs SC2=4235 (−1.7%). Collision speed factor disabled (1.0) since #661 — transition loop cost provides correct timing without collision-based compensation.
 
 ### Gas cycle breakdown
 
@@ -422,7 +424,7 @@ Fixing rate accuracy is the primary lever for reducing balance MAPE. The balance
 
 ### Per-race efficiency factors — removed
 
-Factor removed in #623. With decomposed mining phases (mine=22, approach=11, deposit=7), edge-to-edge walk distances, and worker collision (speed factor 0.96), no compensation factor is needed. SC2 dual-run shows Protoss and Terran produce identical minerals (3460 at tick 304). The EM produces 3710 (+7.2%) with factor=1.0 — the gap is from straight-line vs path-dependent routing, not missing compensation.
+Factor removed in #623. With decomposed mining phases (mine=22, approach=24.5, deposit=12), edge-to-edge walk distances, and transition loop cost (#661), no compensation factor is needed. SC2 dual-run shows 12w EM within −1.9% of SC2 at tick 304.
 
 ### The overhead gap — decomposed (#620→#631)
 
@@ -431,17 +433,18 @@ The previous lumped mining constant absorbed three distinct phases. These are no
 | Component | Loops | Source | Status |
 |-----------|-------|--------|--------|
 | Mining animation | 22 | SC2 per-worker observation: position stable 1 tick | **Modeled** — `mining-duration-loops=22` |
-| Deposit at town hall | 7 | SC2 observation: return phase (40L) − walk (33L) | **Modeled** — `deposit-duration-loops=7` |
-| Approach/docking at patch | 11 | SC2 observation: uncontested cycle (66L) − walk (33L) − mine (22L) | **Modeled** — `approach-docking-loops=11` |
-| **Total per-cycle overhead** | **40** | | |
+| Deposit at town hall | 12 | 8w SC2 cadence: return half-cycle gap (#661) | **Modeled** — `deposit-duration-loops=12` |
+| Approach/docking at patch | 24.5 | 8w SC2 cadence: outbound half-cycle gap (#661) | **Modeled** — `approach-docking-loops=24.5` |
+| Transition costs | 2 | 1 loop per phase transition × 2 (#661) | **Modeled** — `loopConsumed=true` |
+| **Total per-cycle overhead** | **60.5** | | |
 
-Per-tick cadence mismatch: 75.3% (229/304 ticks match, pre-shuffle measurement) — the remaining gap is from straight-line vs path-dependent routing. Needs re-measurement with shuffle + collision_factor=0.96.
+8w dual-run: EM +4.3% vs SC2 (post-#661). 12w: −1.9%. 16w: −1.7%.
 
 **Patch affinity (#620):** Workers return to the same patch each trip (SC2 behaviour). Routing is not the cadence bottleneck — the root cause is per-trip variance from collision timing and walk distance variance that straight-line movement cannot reproduce.
 
 ### Per-patch approach docking (#636)
 
-`APPROACH_DISTANCE_SCALE` removed (#653) — it was a compensation constant, not a physics simulation. All patches use the global approach constant (11.5 loops). The per-distance formula was tested (SCALE=2.5 improved cadence from 81.6% to 75.3%) but reverted because it masked the real cadence variance from collision timing and walk distance.
+`APPROACH_DISTANCE_SCALE` removed (#653) — it was a compensation constant, not a physics simulation. All patches use the global approach constant (24.5 loops, recalibrated #661). The per-distance formula was tested (SCALE=2.5 improved cadence from 81.6% to 75.3%) but reverted because it masked the real cadence variance from collision timing and walk distance.
 
 **Delivery quantisation (finding):** Uniform phase constants produce discrete delivery counts because workers synchronise. Worker stagger (6.1 loops) breaks the phase relationship to hit the SC2 target.
 
@@ -488,7 +491,7 @@ Calibration results (12w Protoss, TorchesAIE_v4 patch positions):
 | 20 (delta) | +4 | -20 | — | ±30 |
 | 304 (balance) | — | 3460 | 3460 | **0.0% — exact match** |
 
-Stagger=6.1 with walk delay=40 produced 3460 minerals at tick 304 (**0.0%** vs SC2's 3460) pre-shuffle with collision_factor=0.952. Re-calibrated from 6.0 (#609) via fine sweep. The 0.1-loop shift changes the phase relationship so exactly 682 deliveries match SC2. Walk delay (#619) shifted first deliveries from tick 3-4 to tick 5-6. Per-tick mismatch was 81.6% pre-shuffle — needs re-measurement with shuffle + collision_factor=0.96 (#634).
+Stagger=6.1 with walk delay=40 produced 3460 minerals at tick 304 (**0.0%** vs SC2's 3460) pre-shuffle with the previous collision/approach constants. Re-calibrated from 6.0 (#609) via fine sweep. Post-#661 (approach=24.5, deposit=12, collision=1.0, transition cost): 12w EM=3365 vs SC2=3460 (−2.7%). Walk delay (#619) shifted first deliveries from tick 3-4 to tick 5-6.
 
 ### Worker management constants
 
@@ -558,7 +561,7 @@ Building morphs (Hatchery→Lair→Hive, CC→OC/PF) are tracked via tracker eve
 
 ### Worker pathing around mineral line
 
-Real SC2 workers path around the mineral line formation — the semicircular arrangement creates choke points. The model uses direct-line movement with acceleration between the town hall and the assigned patch. Impact: small — mineral patches are arranged in a semicircle centred on one side of the town hall, so workers approach from the centre and rarely need to path around other patches.
+Real SC2 workers path around the mineral line formation — the semicircular arrangement creates choke points. The model uses direct-line movement with acceleration between the town hall and the assigned patch. Impact: **moderate** — 8w SC2 cadence data (#661) shows SC2 workers take +12 loops per outbound half-cycle vs the EM's straight-line model. This gap is absorbed by the increased approach_docking constant (24.5 loops) and the transition loop cost fix. The approach docking now models both the mineral patch approach animation AND the path deviation overhead that straight-line walks omit.
 
 ### Larva spawn calibration
 
@@ -668,15 +671,17 @@ Worker physics and economy constants — override without recompiling:
 ```properties
 # application.properties or -D flags
 starcraft.worker.mining-duration-loops=22.0        # SC2 observed — restored in #634
-starcraft.worker.gas-harvest-duration-loops=26.0
-starcraft.worker.deposit-duration-loops=7.0        # SC2 observed — restored in #634
-starcraft.worker.approach-docking-loops=11.0       # SC2 observed — restored in #634
-starcraft.worker.collision-speed-factor=0.96       # uniform — direction-dependent model reverted (#634)
+starcraft.worker.gas-harvest-duration-loops=32.0   # SC2 profiler — calibrated #665
+starcraft.worker.gas-approach-docking-loops=11.5   # gas geyser entry overhead — calibrated #675
+starcraft.worker.deposit-duration-loops=12.0       # 8w SC2 cadence — calibrated #661
+starcraft.worker.approach-docking-loops=24.5       # 8w SC2 cadence — calibrated #661
+starcraft.worker.collision-speed-factor=1.0        # disabled — transition loop cost replaces (#661)
 starcraft.worker.acceleration=3.5                  # SC2Mapster × 1.4 — restored from 10.0 (#634)
 starcraft.worker.deceleration=3.5                  # SC2Mapster × 1.4 — restored from 10.0 (#634)
 starcraft.worker.patch-docking-overhead-loops=22.0
 starcraft.worker.patch-distance=7.0
 starcraft.worker.initial-stagger-loops=6.1
+starcraft.worker.reroute-threshold-loops=22.0
 starcraft.economy.rate-interval-loops=160
 ```
 
