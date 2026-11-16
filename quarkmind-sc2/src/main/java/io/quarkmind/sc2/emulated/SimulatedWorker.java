@@ -71,6 +71,8 @@ class SimulatedWorker {
 
     static void resetToDefaults() {
         configure(WorkerPhysicsConfig.defaults());
+        MineralPatch.APPROACH_EQUALIZATION_SCALE    = 0.4;
+        WorkerSimulation.LOW_SATURATION_DODGE_SCALE = 0.25f;
     }
 
 

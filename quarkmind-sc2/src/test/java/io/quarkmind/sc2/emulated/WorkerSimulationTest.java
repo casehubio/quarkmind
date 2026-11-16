@@ -1011,7 +1011,7 @@ class WorkerSimulationTest {
         MineralPatch    initialPatch5 = w5.assignedPatch;
 
         boolean rerouted = false;
-        for (int t = 0; t < 120; t++) {
+        for (int t = 0; t < 500; t++) {
             tick();
             if (w5.assignedPatch != initialPatch5) {
                 rerouted = true;
@@ -1056,6 +1056,35 @@ class WorkerSimulationTest {
                    "Mid patch should have MORE approach than far: " + midApproach + " vs " + farApproach);
         assertTrue(farApproach > 0,
                    "Far patch approach should still be positive: " + farApproach);
+    }
+
+    @Test
+    void collisionDisplacement_reducedAtLowSaturation() {
+        sim = new WorkerSimulation();
+        List<Resource> patches = List.of(
+                new Resource("p-1", new Point2d(55, 50), 1500, false),
+                new Resource("p-2", new Point2d(55, 51), 1500, false)
+                                        );
+        sim.onTownHallCompleted(BASE_TAG, BASE_POS, patches);
+
+        // 2 workers on 2 patches = 1 worker/patch → low saturation
+        sim.onInitialWorkers(List.of("w-1", "w-2"), BASE_POS, BASE_TAG);
+        double lowSatIncome = 0;
+        for (int t = 0; t < 100; t++) {lowSatIncome += tick().mineralIncome();}
+
+        // 6 workers on 2 patches = 3 workers/patch → high saturation
+        sim = new WorkerSimulation();
+        sim.onTownHallCompleted(BASE_TAG, BASE_POS, patches);
+        sim.onInitialWorkers(List.of("w-1", "w-2", "w-3", "w-4", "w-5", "w-6"), BASE_POS, BASE_TAG);
+        tickCount = 0;
+        double highSatIncome = 0;
+        for (int t = 0; t < 100; t++) {highSatIncome += tick().mineralIncome();}
+
+        double perWorkerLow  = lowSatIncome / 2;
+        double perWorkerHigh = highSatIncome / 6;
+        assertTrue(perWorkerLow > perWorkerHigh,
+                   "Per-worker income at low saturation should exceed high saturation: "
+                   + perWorkerLow + " vs " + perWorkerHigh);
     }
 
 

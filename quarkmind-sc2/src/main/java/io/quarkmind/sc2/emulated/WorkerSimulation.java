@@ -448,6 +448,12 @@ class WorkerSimulation {
                 float perpY = dx / (float) d;
                 float dodge = (float) (SimulatedWorker.COLLISION_DIAMETER - d) * 0.5f;
 
+                int aContention = a.assignedPatch != null ? countAssignedWorkers(a.assignedPatch, a) + 1 : 1;
+                int bContention = b.assignedPatch != null ? countAssignedWorkers(b.assignedPatch, b) + 1 : 1;
+                if (aContention <= 2 && bContention <= 2) {
+                    dodge *= 0.25f;
+                }
+
                 if (a.tag.hashCode() < b.tag.hashCode()) {
                     a.position = new Point2d(a.position.x() + perpX * dodge, a.position.y() + perpY * dodge);
                     b.position = new Point2d(b.position.x() - perpX * dodge, b.position.y() - perpY * dodge);
@@ -472,6 +478,12 @@ class WorkerSimulation {
                 float perpY = dx / (float) d;
                 float dodge = (float) (SimulatedWorker.COLLISION_DIAMETER - d) * 0.5f;
 
+                int wContention = w.assignedPatch != null ? countAssignedWorkers(w.assignedPatch, w) + 1 : 1;
+                int sContention = s.assignedPatch != null ? countAssignedWorkers(s.assignedPatch, s) + 1 : 1;
+                if (wContention <= 2 && sContention <= 2) {
+                    dodge *= 0.25f;
+                }
+
                 if (w.tag.hashCode() < s.tag.hashCode()) {
                     w.position = new Point2d(w.position.x() + perpX * dodge, w.position.y() + perpY * dodge);
                 } else {
@@ -482,8 +494,8 @@ class WorkerSimulation {
         }
 
         for (int i = 0; i < walking.size(); i++) {
-            SimulatedWorker w = walking.get(i);
-            double minSpeed = preSpeed[i] * SimulatedWorker.COLLISION_SPEED_FACTOR * SimulatedWorker.COLLISION_SPEED_FACTOR;
+            SimulatedWorker w        = walking.get(i);
+            double          minSpeed = preSpeed[i] * SimulatedWorker.COLLISION_SPEED_FACTOR * SimulatedWorker.COLLISION_SPEED_FACTOR;
             if (w.currentSpeed < minSpeed) {w.currentSpeed = minSpeed;}
         }
     }
@@ -926,7 +938,7 @@ class WorkerSimulation {
         rng.setSeed(42);
     }
 
-    List<BaseEntry> bases() {return bases;}
+    List<BaseEntry> bases() {return java.util.Collections.unmodifiableList(bases);}
 
 
     void setSeed(long seed) {
