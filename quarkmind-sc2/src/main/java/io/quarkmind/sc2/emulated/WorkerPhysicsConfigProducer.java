@@ -8,7 +8,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 class WorkerPhysicsConfigProducer {
 
     @ConfigProperty(name = "starcraft.worker.mining-duration-loops",
-                    defaultValue = "5.0")
+                    defaultValue = "22.0")
     double miningDurationLoops;
 
     @ConfigProperty(name = "starcraft.worker.gas-harvest-duration-loops",
@@ -20,7 +20,7 @@ class WorkerPhysicsConfigProducer {
     double gasApproachDockingLoops;
 
     @ConfigProperty(name = "starcraft.worker.deposit-duration-loops",
-                    defaultValue = "3.0")
+                    defaultValue = "12.0")
     double depositDurationLoops;
 
     @ConfigProperty(name = "starcraft.worker.acceleration",
@@ -32,7 +32,7 @@ class WorkerPhysicsConfigProducer {
     double deceleration;
 
     @ConfigProperty(name = "starcraft.worker.patch-docking-overhead-loops",
-                    defaultValue = "34.0")
+                    defaultValue = "22.0")
     double patchDockingOverheadLoops;
 
     @ConfigProperty(name = "starcraft.worker.patch-distance",
@@ -40,15 +40,15 @@ class WorkerPhysicsConfigProducer {
     double patchDistance;
 
     @ConfigProperty(name = "starcraft.worker.initial-stagger-loops",
-                    defaultValue = "6.0")
+                    defaultValue = "6.1")
     double initialWorkerStaggerLoops;
 
     @ConfigProperty(name = "starcraft.worker.collision-speed-factor",
-                    defaultValue = "0.952")
+                    defaultValue = "1.0")
     double collisionSpeedFactor;
 
     @ConfigProperty(name = "starcraft.worker.approach-docking-loops",
-                    defaultValue = "7.0")
+                    defaultValue = "24.5")
     double approachDockingLoops;
     @ConfigProperty(name = "starcraft.worker.reroute-threshold-loops",
                     defaultValue = "22.0")

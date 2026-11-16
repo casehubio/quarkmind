@@ -651,7 +651,6 @@ public class EmulatedGame {
         handleUnitDied(new UnitDiedIntent(tag, unit.type()), friendly, friendlyPhysics);
     }
 
-
     private String nextTagString() {
         return "unit-" + nextTag++;
     }

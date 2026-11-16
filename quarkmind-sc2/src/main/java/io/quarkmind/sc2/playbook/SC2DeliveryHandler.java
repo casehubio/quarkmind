@@ -151,11 +151,11 @@ public class SC2DeliveryHandler implements DeliveryHandler {
 
     private StepOutcome doKill(String stepName, Map<String, Object> data) {
         int count = Integer.parseInt((String) data.get("kill"));
-        java.util.List<io.quarkmind.domain.Unit> workers = game.snapshot().myUnits().stream()
-                                                               .filter(u -> io.quarkmind.domain.SC2Data.isWorker(u.type()))
-                                                               .limit(count)
-                                                               .toList();
-        for (io.quarkmind.domain.Unit w : workers) {
+        var workers = game.snapshot().myUnits().stream()
+                          .filter(u -> SC2Data.isWorker(u.type()))
+                          .limit(count)
+                          .toList();
+        for (var w : workers) {
             game.debugKillUnit(w.tag());
         }
         return StepOutcome.ok(stepName, Map.of("killed", workers.size()));

@@ -381,6 +381,7 @@ class WorkerSimulation {
                     w.assignedPatch.lockEndLoop = currentLoop + SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS;
                     w.task           = WorkerTask.RETURNING_MINERALS;
                     w.targetPosition = depositTarget(w);
+                    loopConsumed = true;
                     continue;
                 }
                 return income;
@@ -405,6 +406,7 @@ class WorkerSimulation {
             if (w.task == WorkerTask.DEPOSITING_MINERALS) {
                 if (currentLoop >= w.phaseEndLoop) {
                     returnToPatchOrReassign(w);
+                    loopConsumed = true;
                     continue;
                 }
                 return income;
@@ -541,6 +543,7 @@ class WorkerSimulation {
                         slot.exitBuilding(w);
                         w.task           = WorkerTask.RETURNING_GAS;
                         w.targetPosition = gasReturnTarget(slot);
+                        loopsRemaining--;
                         continue;
                     }
                     int loopsUntilDone = (int) Math.ceil(w.phaseEndLoop - currentLoop);
@@ -550,6 +553,7 @@ class WorkerSimulation {
                         slot.exitBuilding(w);
                         w.task           = WorkerTask.RETURNING_GAS;
                         w.targetPosition = gasReturnTarget(slot);
+                        loopsRemaining--;
                         continue;
                     }
                     return income;
@@ -593,6 +597,7 @@ class WorkerSimulation {
                 if (currentLoop >= w.phaseEndLoop) {
                     w.task           = WorkerTask.HARVESTING_GAS;
                     w.targetPosition = gasTarget(slot);
+                    loopsRemaining--;
                     if (loopsRemaining <= 0) {return income;}
                     continue;
                 }
@@ -601,6 +606,7 @@ class WorkerSimulation {
                     loopsRemaining -= loopsUntilDone;
                     w.task           = WorkerTask.HARVESTING_GAS;
                     w.targetPosition = gasTarget(slot);
+                    loopsRemaining--;
                     if (loopsRemaining <= 0) {return income;}
                     continue;
                 }

@@ -1011,7 +1011,7 @@ class WorkerSimulationTest {
         MineralPatch    initialPatch5 = w5.assignedPatch;
 
         boolean rerouted = false;
-        for (int t = 0; t < 60; t++) {
+        for (int t = 0; t < 120; t++) {
             tick();
             if (w5.assignedPatch != initialPatch5) {
                 rerouted = true;
