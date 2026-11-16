@@ -1033,5 +1033,30 @@ class WorkerSimulationTest {
         assertTrue(totalIncome > 0, "Workers should still produce income when all patches occupied");
     }
 
+    @Test
+    void perPatchApproachDocking_variesByDistance() {
+        sim = new WorkerSimulation();
+        List<Resource> patches = List.of(
+                new Resource("close", new Point2d(53.0f, 50.0f), 1500, false),
+                new Resource("mid", new Point2d(57.0f, 50.0f), 1500, false),
+                new Resource("far", new Point2d(60.0f, 50.0f), 750, false)
+                                        );
+        sim.onTownHallCompleted(BASE_TAG, BASE_POS, patches);
+
+        List<WorkerSimulation.BaseEntry> bases = sim.bases();
+        List<MineralPatch>               mp    = bases.get(0).patches();
+
+        double closeApproach = mp.get(0).approachDockingLoops;
+        double midApproach   = mp.get(1).approachDockingLoops;
+        double farApproach   = mp.get(2).approachDockingLoops;
+
+        assertTrue(closeApproach > midApproach,
+                   "Close patch should have MORE approach than mid: " + closeApproach + " vs " + midApproach);
+        assertTrue(midApproach > farApproach,
+                   "Mid patch should have MORE approach than far: " + midApproach + " vs " + farApproach);
+        assertTrue(farApproach > 0,
+                   "Far patch approach should still be positive: " + farApproach);
+    }
+
 
 }

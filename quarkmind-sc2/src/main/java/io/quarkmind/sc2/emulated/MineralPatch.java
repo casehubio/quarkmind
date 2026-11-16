@@ -57,9 +57,28 @@ class MineralPatch {
 
 
     static void computeApproachDocking(List<MineralPatch> patches, Point2d basePos) {
-        for (MineralPatch p : patches) {
-            p.distanceToBase       = p.position.distanceTo(basePos);
-            p.approachDockingLoops = SimulatedWorker.APPROACH_DOCKING_LOOPS;
+        double townHallRadius = WorkerSimulation.TOWN_HALL_RADIUS;
+        double patchRadius    = WorkerSimulation.MINERAL_PATCH_RADIUS;
+        double loopsPerUnit = io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND
+                              / io.quarkmind.domain.SC2Data.unitSpeed(io.quarkmind.domain.UnitType.PROBE);
+
+        double[] e2eDistances = new double[patches.size()];
+        for (int i = 0; i < patches.size(); i++) {
+            MineralPatch p = patches.get(i);
+            p.distanceToBase = p.position.distanceTo(basePos);
+            e2eDistances[i]  = Math.max(0, p.distanceToBase - townHallRadius - patchRadius);
+        }
+
+        double[] sorted = e2eDistances.clone();
+        java.util.Arrays.sort(sorted);
+        double medianE2E = sorted.length % 2 == 0
+                           ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2.0
+                           : sorted[sorted.length / 2];
+
+        double baseApproach = SimulatedWorker.APPROACH_DOCKING_LOOPS;
+        for (int i = 0; i < patches.size(); i++) {
+            double adjustment = (medianE2E - e2eDistances[i]) * loopsPerUnit;
+            patches.get(i).approachDockingLoops = Math.max(0, baseApproach + adjustment);
         }
     }
 
