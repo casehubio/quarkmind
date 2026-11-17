@@ -63,6 +63,10 @@ class WorkerPhysicsConfigProducer {
                     defaultValue = "0.25")
     double lowSaturationDodgeScale;
 
+    @ConfigProperty(name = "starcraft.worker.approach-animation-loops",
+                    defaultValue = "20.0")
+    double approachAnimationLoops;
+
 
     @Produces
     @jakarta.inject.Singleton
@@ -72,7 +76,8 @@ class WorkerPhysicsConfigProducer {
                 depositDurationLoops,
                 acceleration, deceleration, patchDockingOverheadLoops, (float) patchDistance,
                 initialWorkerStaggerLoops, collisionSpeedFactor, approachDockingLoops,
-                rerouteThresholdLoops, approachEqualizationScale, (float) lowSaturationDodgeScale);
+                rerouteThresholdLoops, approachEqualizationScale, (float) lowSaturationDodgeScale,
+                approachAnimationLoops);
         SimulatedWorker.configure(config);
         return config;
     }

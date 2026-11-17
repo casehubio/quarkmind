@@ -67,7 +67,9 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 | Constant | Code value | Real SC2 | Source | Confidence | Config property |
 |----------|-----------|----------|--------|------------|-----------------|
 | Mining duration | 22 loops (1 tick) | ~22 loops (1 tick) | SC2 per-worker observation: position stable 1 tick (#631) | **Calibrated** — #631, restored #634 | `starcraft.worker.mining-duration-loops` |
-| Approach/docking delay | Per-patch: base 24.5 + (median_E2E − E2E[i]) × 5.69 × 0.4 | ~22–27 loops | Base from 8w cadence (#661). Per-patch scaling from E2E distance (#656) with 40% equalization: SC2 path deviation compensates ~40% of walk distance differences, leaving 60% as structural cycle variance. | **Calibrated** — #661 base, #656 per-patch + equalization sweep | `starcraft.worker.approach-docking-loops` (base) |
+| Approach animation | 20.0 loops | ~20–22 loops | Docking/positioning overhead at the mineral patch — constant for all patches at a base. Decomposed from approach docking (#679): the animation-only component, excluding path deviation. | **Calibrated** — #679 decomposition from #661 base | `starcraft.worker.approach-animation-loops` |
+| Outbound path delay | Per-patch: max(0, (median_E2E − E2E[i]) × 5.69 × 0.4 + 4.5) | 0–5 loops | Extra outbound time for navigating around mineral line. Close patches get more delay (longer path around central patches), far patches less (direct edge paths). Decomposed from approach docking (#679). | **Calibrated** — #679 cadence data, #656 equalization sweep | — (compile-time: `PATH_DEVIATION_SCALE`, `PATH_DEVIATION_BASE`) |
+| Approach docking (total) | Per-patch: animation + pathDelay = 20.0 + max(0, ...) | ~22–27 loops | Sum of approach animation and outbound path delay. Equivalent to previous formula: base 24.5 + (median_E2E − E2E[i]) × 5.69 × 0.4. Maintained as `approachDockingLoops` on `MineralPatch` for backward compatibility. | **Calibrated** — #679 | `starcraft.worker.approach-docking-loops` (legacy base) |
 | Reroute threshold | 22 loops | — | Threshold before a waiting worker scans for idle patches | **Calibrated** — #636 | `starcraft.worker.reroute-threshold-loops` |
 | Mineral cargo | 5 | 5 | Liquipedia | **Published** | — |
 | Rich mineral cargo | 7 | 7 | Liquipedia | **Published** | — |
@@ -398,7 +400,8 @@ At a close mineral patch (6.6 units from town hall), edge-to-edge walk:
 | Phase | Loops | Seconds | Notes |
 |-------|-------|---------|-------|
 | Walk to patch (edge-to-edge) | 33 | 1.47 | Trapezoidal profile, collision footprint boundary |
-| Approach/dock | ~27 (per-patch) | ~1.20 | Base 24.5 (#661) × 40% equalization scale (#656); close patch gets more approach |
+| Approach animation | 20 | 0.89 | Fixed docking/positioning overhead at the patch (#679) |
+| Outbound path delay | ~7 (per-patch) | ~0.31 | Path deviation around mineral line; close patches get more (#679) |
 | Mine | 22 | 0.98 | SC2 per-worker observation: position stable 1 tick (#631) |
 | Walk home (edge-to-edge) | 33 | 1.47 | Same distance, same profile |
 | Deposit | 12 | 0.54 | 8w SC2 cadence: return half-cycle gap (#661) |
@@ -701,7 +704,8 @@ starcraft.worker.mining-duration-loops=22.0        # SC2 observed — restored i
 starcraft.worker.gas-harvest-duration-loops=32.0   # SC2 profiler — calibrated #665
 starcraft.worker.gas-approach-docking-loops=11.5   # gas geyser entry overhead — calibrated #675
 starcraft.worker.deposit-duration-loops=12.0       # 8w SC2 cadence — calibrated #661
-starcraft.worker.approach-docking-loops=24.5       # base value for per-patch formula — calibrated #661, per-patch #656
+starcraft.worker.approach-docking-loops=24.5       # legacy base value — sum of animation + mean path delay (#679)
+starcraft.worker.approach-animation-loops=20.0     # approach animation only — decomposed from approach docking (#679)
 starcraft.worker.collision-speed-factor=1.0        # disabled — transition loop cost replaces (#661)
 starcraft.worker.acceleration=3.5                  # SC2Mapster × 1.4 — restored from 10.0 (#634)
 starcraft.worker.deceleration=3.5                  # SC2Mapster × 1.4 — restored from 10.0 (#634)
@@ -716,7 +720,9 @@ starcraft.economy.rate-interval-loops=160
 - `SimulatedWorker.COLLISION_RADIUS` (0.75, was 0.375) — worker collision detection radius; calibrated #634
 - `MineralPatch.CLOSE_PATCH_DISTANCE` (6.7f) — default close patch distance for first 4 patches; calibrated #651 from SC2 API positions
 - `MineralPatch.FAR_PATCH_DISTANCE` (7.5f) — default far patch distance for last 4 patches; calibrated #651 from SC2 API positions
-- `MineralPatch.APPROACH_EQUALIZATION_SCALE` (0.4) — per-patch approach docking equalization: 40% of walk distance difference compensated by approach; calibrated #656 from distribution sweep
+- `MineralPatch.APPROACH_EQUALIZATION_SCALE` (0.4) — legacy per-patch approach docking equalization; superseded by PATH_DEVIATION_SCALE (#679) but retained for backward compatibility
+- `MineralPatch.PATH_DEVIATION_SCALE` (0.4) — outbound path delay scaling factor: fraction of E2E distance difference converted to loop delay; calibrated #679 from 8w cadence data
+- `MineralPatch.PATH_DEVIATION_BASE` (4.5) — outbound path delay base offset in loops; at median E2E, pathDelay = PATH_DEVIATION_BASE; calibrated #679
 - `WorkerSimulation.LOW_SATURATION_DODGE_SCALE` (0.25f) — collision dodge reduction at ≤2 workers/patch; calibrated #656 from dodge sweep
 - `GasSlot.MAX_INSIDE` (1) — max workers inside gas building simultaneously; Liquipedia: "Only one worker can be inside the building collecting at any one time" (#682)
 - `GasSlot.ENTRY_LOCK_DURATION` (default 0) — gas entrance queuing lock duration in loops

@@ -23,7 +23,11 @@ class MineralPatch {
     double lockEndLoop;
     double distanceToBase;
     double approachDockingLoops = SimulatedWorker.APPROACH_DOCKING_LOOPS;
+    double outboundPathDelay;
+
     static double APPROACH_EQUALIZATION_SCALE = 0.4;
+    static double PATH_DEVIATION_SCALE        = 0.4;
+    static double PATH_DEVIATION_BASE         = 4.5;
 
 
     MineralPatch(Point2d position, int baseIndex, double initialMinerals, boolean rich) {
@@ -76,10 +80,12 @@ class MineralPatch {
                            ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2.0
                            : sorted[sorted.length / 2];
 
-        double baseApproach = SimulatedWorker.APPROACH_DOCKING_LOOPS;
+        double approachAnimation = SimulatedWorker.APPROACH_ANIMATION_LOOPS;
         for (int i = 0; i < patches.size(); i++) {
-            double adjustment = (medianE2E - e2eDistances[i]) * loopsPerUnit * APPROACH_EQUALIZATION_SCALE;
-            patches.get(i).approachDockingLoops = Math.max(0, baseApproach + adjustment);
+            double rawPathDelay = (medianE2E - e2eDistances[i]) * loopsPerUnit * PATH_DEVIATION_SCALE
+                    + PATH_DEVIATION_BASE;
+            patches.get(i).outboundPathDelay = Math.max(0, rawPathDelay);
+            patches.get(i).approachDockingLoops = Math.max(0, approachAnimation + rawPathDelay);
         }
     }
 

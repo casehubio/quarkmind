@@ -1060,6 +1060,43 @@ class WorkerSimulationTest {
     }
 
     @Test
+    void approachDockingDecomposition_preservesTotalAndSplitsComponents() {
+        sim = new WorkerSimulation();
+        List<Resource> patches = List.of(
+                new Resource("close", new Point2d(56.0f, 50.0f), 1500, false),
+                new Resource("mid", new Point2d(57.0f, 50.0f), 1500, false),
+                new Resource("far", new Point2d(58.0f, 50.0f), 750, false)
+                                        );
+        sim.onTownHallCompleted(BASE_TAG, BASE_POS, patches);
+
+        List<MineralPatch> mp = sim.bases().get(0).patches();
+
+        for (MineralPatch p : mp) {
+            assertTrue(p.outboundPathDelay >= 0,
+                       "outboundPathDelay must be non-negative: " + p.outboundPathDelay);
+            assertTrue(p.approachDockingLoops >= 0,
+                       "approachDockingLoops must be non-negative: " + p.approachDockingLoops);
+        }
+
+        double animation = SimulatedWorker.APPROACH_ANIMATION_LOOPS;
+        for (MineralPatch p : mp) {
+            if (p.outboundPathDelay > 0) {
+                assertEquals(animation + p.outboundPathDelay, p.approachDockingLoops, 0.001,
+                             "approachDockingLoops should equal animation + pathDelay when pathDelay > 0");
+            } else {
+                assertTrue(p.approachDockingLoops <= animation,
+                           "when pathDelay clipped to 0, total should be <= animation");
+            }
+        }
+
+        assertTrue(mp.get(0).outboundPathDelay > mp.get(1).outboundPathDelay,
+                   "Close patch path delay should exceed mid");
+        assertTrue(mp.get(1).outboundPathDelay > mp.get(2).outboundPathDelay,
+                   "Mid patch path delay should exceed far");
+    }
+
+
+    @Test
     void collisionDisplacement_reducedAtLowSaturation() {
         sim = new WorkerSimulation();
         List<Resource> patches = List.of(
