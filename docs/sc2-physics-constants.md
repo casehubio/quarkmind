@@ -115,7 +115,7 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 | Constant | Code value | Real SC2 | Source | Confidence | Config property |
 |----------|-----------|----------|--------|------------|-----------------|
 | Gas harvest duration | 31.7 loops (1.415s) | 32 loops (1.43s) inside geyser | Liquipedia 1.415s; SC2 profiler confirms 32 loops inside (#665) | **Published** — Liquipedia + #665 | `starcraft.worker.gas-harvest-duration-loops` |
-| Gas approach docking | 0 loops | (absorbed into serial access wait) | Set to 0 after #682 serial geyser model; rotation wait replaces explicit docking | **Calibrated** — #682 | `starcraft.worker.gas-approach-docking-loops` |
+| Gas approach docking | 12.5 loops (0.56s) | (entry animation + path deviation) | Dual-run sweep against 3w/6w baselines (#677) | **Calibrated** — #677 | `starcraft.worker.gas-approach-docking-loops` |
 | Gas building radius | 1.75u | 1.69u (Assimilator) | SC2 API `Unit.getRadius()` (#665) | **Calibrated** — #665 | `GAS_BUILDING_RADIUS` (compile-time) |
 | Gas cargo | 4 | 4 | Liquipedia | **Published** | — |
 | Max workers per geyser | 3 | 3 | SC2 mechanics | **Published** | — |
@@ -125,20 +125,20 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 
 **Edge-to-edge gas walks (#665, #672):** Gas workers walk to building edge points using reduced radii: `GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD = 1.25` and `TOWN_HALL_RADIUS - ARRIVAL_THRESHOLD = 2.25`. This compensates for the 0.5u ARRIVAL_THRESHOLD stopping distance, so the worker physically stops at the actual building edge. SC2 API confirms Assimilator radius=1.69, Nexus radius=2.75. Workers enter the geyser at 1.84–1.87u from gas center (just outside the building radius).
 
-**Gas harvest duration decomposition (#665, #682):** SC2 profiler (per-game-loop tracking, `GasCycleProfilerTest`) confirms the time inside the geyser is exactly 32 loops (1.43s), range=32-32 across 50 cycles. The EM uses `GAS_HARVEST_DURATION_LOOPS=31.7` (Liquipedia's 1.415s) with `GAS_APPROACH_DOCKING_LOOPS=0` — approach overhead is absorbed by the serial access rotation wait (#682). Gas walk targets use reduced building radius (`GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD`) so the ARRIVAL_THRESHOLD stopping distance lands the worker at the actual building edge (#672).
+**Gas harvest duration decomposition (#665, #677):** SC2 profiler (per-game-loop tracking, `GasCycleProfilerTest`) confirms the time inside the geyser is exactly 32 loops (1.43s), range=32-32 across 50 cycles. The EM uses `GAS_HARVEST_DURATION_LOOPS=31.7` (Liquipedia's 1.415s) with `GAS_APPROACH_DOCKING_LOOPS=12.5` (calibrated against 3w/6w dual-run baselines, #677). The docking constant absorbs entry animation and path deviation overhead not captured by the straight-line walk model. Gas walk targets use reduced building radius (`GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD`) so the ARRIVAL_THRESHOLD stopping distance lands the worker at the actual building edge (#672).
 
 **SC2 gas cycle decomposition (#665, #682, #684 — TorchesAIE_v4, 3w on 1 geyser):**
 
-| Phase | SC2 observed | EM (#682, current) | EM (#672) | EM (pre-#672) |
-|-------|-------------|-------------------|-----------|---------------|
-| Walk to geyser | 45 loops (2.0 ticks) | 34 loops (1.5 ticks) | ~42 loops (est.) | ~36 loops |
-| Wait at entry | (implicit in walk) | 2 loops (0.1 ticks) | 0 | 0 |
-| Inside geyser (harvest) | 32 loops (1.5 ticks) | 32 loops (1.5 ticks) | 32 loops | 32 loops |
-| Walk to base | 45 loops (2.0 ticks) | 36 loops (1.6 ticks) | ~42 loops (est.) | ~36 loops |
+| Phase | SC2 observed | EM (#677, current) | EM (#682) | EM (#672) |
+|-------|-------------|-------------------|-----------|-----------|
+| Walk to geyser | 45 loops (2.0 ticks) | 34 loops (1.5 ticks) | 34 loops | ~42 loops (est.) |
+| Wait at entry | (implicit in walk) | 8 loops (0.4 ticks) | 2 loops | 0 |
+| Inside geyser (harvest+dock) | 32 loops (1.5 ticks) | 45 loops (2.1 ticks) | 32 loops | 32+15.8 loops |
+| Walk to base | 45 loops (2.0 ticks) | 36 loops (1.6 ticks) | 36 loops | ~42 loops (est.) |
 | Deposit | (included in walk) | 12 loops (0.5 ticks) | 12 loops | 12 loops |
-| **Full cycle** | **122 loops (5.5 ticks)** | **116 loops (5.3 ticks)** | ~122 loops | ~116 loops |
+| **Full cycle** | **122 loops (5.5 ticks)** | **136 loops (6.2 ticks)** | 116 loops | ~122 loops |
 
-**EM (#682) cycle note:** Per-phase values measured by `GasWorkerCycleDiagnosticTest` (#684) using tick-resolution state observation. Walk durations are shorter than SC2 because the EM uses straight-line movement (no path deviation or collision avoidance on gas walks). The serial access model (`MAX_INSIDE=1`) adds occasional wait-at-entry time (2 loops avg) that partially compensates. Rate: 45.6 gas/min/worker vs SC2 target 44.3 — 3% over.
+**EM (#677) cycle note:** Per-phase values measured by `GasWorkerCycleDiagnosticTest` (#684). With `GAS_APPROACH_DOCKING_LOOPS=12.5` (#677), the inside time (harvest+docking) is 44.2 loops and the cycle is rotation-limited: actual 136 loops ≈ theoretical 3×45 = 135 loops. Wait-at-entry increases from 2 to 8 loops because the longer inside time creates more serial access queuing. Dual-run accuracy: 3w vespene -2.9%, 6w vespene +2.0%.
 
 **Gas walk ARRIVAL_THRESHOLD compensation (#672):** Gas walk targets use reduced building radius (`GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD` and `TOWN_HALL_RADIUS - ARRIVAL_THRESHOLD`) so the ARRIVAL_THRESHOLD stopping distance lands the worker at the actual building edge.
 
@@ -422,15 +422,15 @@ Three workers per geyser, serial access (`GasSlot.MAX_INSIDE=1`, #682). Workers 
 | Phase | Loops | Ticks | Notes |
 |-------|-------|-------|-------|
 | Walk to geyser | 34 | 1.5 | Edge-to-edge, straight-line |
-| Wait at entry | 2 | 0.1 | Serial access queue (avg, 3w) |
-| Harvest inside | 32 | 1.5 | GAS_HARVEST_DURATION=31.7 |
+| Wait at entry | 8 | 0.4 | Serial access queue (avg, 3w) |
+| Harvest + docking | 45 | 2.1 | GAS_HARVEST=31.7 + APPROACH_DOCKING=12.5 |
 | Walk to base | 36 | 1.6 | Edge-to-edge, straight-line |
 | Deposit | 12 | 0.5 | DEPOSIT_DURATION=12 |
-| **Total cycle** | **116** | **5.3** | 4 gas per trip |
+| **Total cycle** | **136** | **6.2** | 4 gas per trip |
 
-**Per-worker income:** 45.6 gas/min (SC2 target: 44.3, Liquipedia 3w: 54.3). The 3% over-production is from straight-line walk (no path deviation). **Per-geyser (3 workers):** 136.8 gas/min. Dual-geyser (6w): same per-worker rate — no throughput penalty confirmed by #682 (#673 disproved geyser asymmetry).
+**Rotation-limited cycle:** At 3 workers, the theoretical minimum cycle is 3×inside = 3×45 = 135 loops. Actual 136 loops is 100.7% of theoretical — the cycle is fully rotation-limited. Walk time and deposit are shorter than inside time, so they fit within the gaps.
 
-**Rotation-limited cycle:** At 3 workers, the theoretical minimum cycle is 3×inside = 96 loops (each worker enters immediately after the previous exits). Actual 116 loops is 121% of theoretical — the 20% overhead comes from walk time and deposit exceeding the inside-geyser duration.
+**Dual-run accuracy (#677):** 3w vespene -2.9% (EM=536 vs SC2=552), 6w vespene +2.0% (EM=1032 vs SC2=1012). The 3w/6w asymmetry (3w under, 6w over) points to multi-geyser assignment timing, not the docking constant. Mineral accuracy unaffected: 3w minerals -1.3%, 6w minerals +2.8%.
 
 ### Tick-boundary quantisation
 

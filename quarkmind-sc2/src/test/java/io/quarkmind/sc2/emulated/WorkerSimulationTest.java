@@ -412,8 +412,9 @@ class WorkerSimulationTest {
                    "Total gas from 3 workers (" + totalGas3
                    + ") should exceed 2 workers (" + totalGas2 + ")");
         double ratio = totalGas3 / totalGas2;
-        assertTrue(ratio > 1.2 && ratio < 1.7,
-                   "3-worker/2-worker gas ratio should be ~1.5 (concurrent), got " + ratio);
+        // Serial access (MAX_INSIDE=1): 3rd worker adds marginal throughput — geyser is the bottleneck
+        assertTrue(ratio > 1.0 && ratio < 1.7,
+                   "3-worker/2-worker gas ratio should be > 1.0 (serial access), got " + ratio);
     }
 
     @Test

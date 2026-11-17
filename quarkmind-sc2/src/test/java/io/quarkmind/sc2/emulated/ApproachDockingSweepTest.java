@@ -387,6 +387,59 @@ class ApproachDockingSweepTest {
     }
 
 
+    @Test
+    void sweepGasApproachDocking() throws IOException {
+        CalibrationBaseline sc2_3wg = loadBaseline("calibration/cal-gas-baseline-3w.json");
+        CalibrationBaseline sc2_6wg = loadBaseline("calibration/cal-gas-dual-6w.json");
+
+        int s3v = sc2_3wg.snapshots().get(sc2_3wg.snapshots().size() - 1).vespene();
+        int s6v = sc2_6wg.snapshots().get(sc2_6wg.snapshots().size() - 1).vespene();
+        int s3m = sc2_3wg.snapshots().get(sc2_3wg.snapshots().size() - 1).minerals();
+        int s6m = sc2_6wg.snapshots().get(sc2_6wg.snapshots().size() - 1).minerals();
+
+        System.out.println("=== Gas Approach Docking Sweep — 3w and 6w dual-run baselines ===");
+        System.out.printf("SC2 targets: 3w vespene=%d minerals=%d, 6w vespene=%d minerals=%d%n", s3v, s3m, s6v, s6m);
+        System.out.printf("%-8s | %6s %6s %7s | %6s %6s %7s | %6s %6s %7s | %5s%n",
+                          "gasDock", "EM3v", "SC3v", "gap3v%", "EM6v", "SC6v", "gap6v%", "EM3m", "SC3m", "gap3m%", "comb");
+        System.out.println("-".repeat(95));
+
+        double bestCombined = Double.MAX_VALUE;
+        double bestDocking  = 0;
+
+        for (double docking = 0; docking <= 25.0; docking += 0.5) {
+            SimulatedWorker.setGasApproachDockingLoops(docking);
+
+            int em3v = runPlaybookVespene("playbooks/cal-gas-baseline-3w.yaml", Race.PROTOSS, sc2_3wg);
+            int em6v = runPlaybookVespene("playbooks/cal-gas-dual-6w.yaml", Race.PROTOSS, sc2_6wg);
+            int em3m = runPlaybook("playbooks/cal-gas-baseline-3w.yaml", Race.PROTOSS, sc2_3wg);
+
+            double gap3v    = (em3v - s3v) * 100.0 / s3v;
+            double gap6v    = (em6v - s6v) * 100.0 / s6v;
+            double gap3m    = (em3m - s3m) * 100.0 / s3m;
+            double combined = Math.abs(gap3v) + Math.abs(gap6v);
+
+            if (combined < bestCombined) {
+                bestCombined = combined;
+                bestDocking  = docking;
+            }
+
+            System.out.printf("%-8.1f | %6d %6d %+6.1f%% | %6d %6d %+6.1f%% | %6d %6d %+6.1f%% | %5.1f%n",
+                              docking, em3v, s3v, gap3v, em6v, s6v, gap6v, em3m, s3m, gap3m, combined);
+        }
+
+        System.out.printf("%nBest combined (3w+6w vespene): GAS_APPROACH_DOCKING=%.1f (combined=%.1f%%)%n", bestDocking, bestCombined);
+
+        SimulatedWorker.setGasApproachDockingLoops(bestDocking);
+        int best3v = runPlaybookVespene("playbooks/cal-gas-baseline-3w.yaml", Race.PROTOSS, sc2_3wg);
+        int best6v = runPlaybookVespene("playbooks/cal-gas-dual-6w.yaml", Race.PROTOSS, sc2_6wg);
+        int best3m = runPlaybook("playbooks/cal-gas-baseline-3w.yaml", Race.PROTOSS, sc2_3wg);
+        int best6m = runPlaybook("playbooks/cal-gas-dual-6w.yaml", Race.PROTOSS, sc2_6wg);
+        System.out.printf("  3w: vespene EM=%d SC2=%d gap=%+.1f%%  minerals EM=%d SC2=%d gap=%+.1f%%%n",
+                          best3v, s3v, (best3v - s3v) * 100.0 / s3v, best3m, s3m, (best3m - s3m) * 100.0 / s3m);
+        System.out.printf("  6w: vespene EM=%d SC2=%d gap=%+.1f%%  minerals EM=%d SC2=%d gap=%+.1f%%%n",
+                          best6v, s6v, (best6v - s6v) * 100.0 / s6v, best6m, s6m, (best6m - s6m) * 100.0 / s6m);
+    }
+
     private CalibrationBaseline loadBaseline(String resource) throws IOException {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(resource)) {
             if (is == null) {throw new IOException("Resource not found: " + resource);}
