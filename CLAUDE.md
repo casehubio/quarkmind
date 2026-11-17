@@ -418,6 +418,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - `MiningEfficiencyCalibrationTest` — sweeps per-race mineral mining efficiency factors (0.85–1.00) against 118 oracle replays; uses linear approximation from cumulative mineral income to find MAPE-minimising factor at 5/7-min checkpoints; calibrated values: Protoss=0.92, Zerg=0.95, Terran=1.0
 - `OverheadAbsorptionSweepTest` — 3D sweep of deposit × mining × gas duration constants against oracle replays; measures mineral/vespene balance and rate MAPE at 5/7-min checkpoints; ranks top-10 triples and compares with current defaults (0, 12, 22)
 - `RateAlgorithmAnalysisTest` — reverse-engineers SC2's rate computation algorithm from oracle replay PlayerStatsEvents; computes income from delta(totalMined), tests simple window vs EMA (11 alpha values) fit against reported mineralsCollectionRate/vespeneCollectionRate; includes per-interval trace for first 3 replays
+- `GasWorkerCycleDiagnosticTest` — instruments gas workers through full harvest cycles measuring actual loop counts per phase (walk-to-geyser, wait-at-entry, inside-geyser, walk-to-TH, deposit); runs 3w single-geyser and 6w dual-geyser configurations; includes per-tick state trace
 - Run with: `mvn test -pl quarkmind-sc2 -Pdiagnostic`
 
 **Never use `@QuarkusTest` for tests that can be plain JUnit** — boot cost is significant.
