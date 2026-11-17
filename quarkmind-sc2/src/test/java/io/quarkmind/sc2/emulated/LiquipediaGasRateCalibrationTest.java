@@ -27,9 +27,7 @@ class LiquipediaGasRateCalibrationTest {
     private static final double LIQUIPEDIA_3W        = 163.0;
     private static final double LIQUIPEDIA_DUAL_3W   = 325.0;
     private static final double TOLERANCE_WALK_LIMITED = 0.10;
-    private static final double EM_3W_RATE             = 121.0;
-    private static final double EM_DUAL_RATE           = 242.0;
-    private static final double TOLERANCE_ROTATION     = 0.10;
+    private static final double TOLERANCE_ROTATION     = 0.05;
 
     @Test
     void oneWorkerGasRate() {
@@ -53,9 +51,7 @@ class LiquipediaGasRateCalibrationTest {
         double liquipediaDelta = (rate - LIQUIPEDIA_3W) / LIQUIPEDIA_3W * 100;
         System.out.printf("[Liquipedia] 3w gas rate: %.1f gas/min (Liquipedia: %.1f, delta: %+.1f%%)%n",
                           rate, LIQUIPEDIA_3W, liquipediaDelta);
-        System.out.printf("[Structural] 3w is rotation-limited: cycle = 3 × inside_time (harvest %.1f + docking %.1f)%n",
-                          31.7, 11.5);
-        assertWithinTolerance(rate, EM_3W_RATE, TOLERANCE_ROTATION, "3w gas rate regression anchor");
+        assertWithinTolerance(rate, LIQUIPEDIA_3W, TOLERANCE_ROTATION, "3w gas rate vs Liquipedia");
     }
 
     @Test
@@ -66,7 +62,7 @@ class LiquipediaGasRateCalibrationTest {
         System.out.printf("[Liquipedia] 2×3w gas rate: %.1f gas/min (Liquipedia: %.1f, delta: %+.1f%%)%n",
                           rateDual, LIQUIPEDIA_DUAL_3W, (rateDual - LIQUIPEDIA_DUAL_3W) / LIQUIPEDIA_DUAL_3W * 100);
         System.out.printf("[Throughput] Dual-geyser loss vs 2×single: %.1f%% (Liquipedia: 0%%)%n", throughputLoss);
-        assertWithinTolerance(rateDual, EM_DUAL_RATE, TOLERANCE_ROTATION, "2×3w gas rate regression anchor");
+        assertWithinTolerance(rateDual, LIQUIPEDIA_DUAL_3W, TOLERANCE_ROTATION, "2×3w gas rate vs Liquipedia");
         assertTrue(Math.abs(throughputLoss) < 2.0,
                    String.format("Dual-geyser throughput loss %.1f%% exceeds 2%% at 5u distance", throughputLoss));
     }

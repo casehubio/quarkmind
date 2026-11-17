@@ -564,7 +564,11 @@ class WorkerSimulation {
             boolean arrived = w.moveOneLoop();
             if (arrived && slot.canEnter(currentLoop)) {
                 slot.enterBuilding(w, currentLoop);
-                w.phaseEndLoop = currentLoop + SimulatedWorker.GAS_APPROACH_DOCKING_LOOPS + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
+                double docking = w.waitingAtGeyser ? 0 : SimulatedWorker.GAS_APPROACH_DOCKING_LOOPS;
+                w.phaseEndLoop = currentLoop + docking + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
+                w.waitingAtGeyser = false;
+            } else if (arrived) {
+                w.waitingAtGeyser = true;
             }
             return 0;
         }
