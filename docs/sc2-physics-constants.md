@@ -217,7 +217,7 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 
 Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle replay MAPE sweep, which conflated worker allocation differences with physics. The dual-run isolates physics and shows no race-specific difference.
 
-### SC2 dual-run calibration results (TorchesAIE_v4, post-#689)
+### SC2 dual-run calibration results (TorchesAIE_v4, post-#695)
 
 | Baseline | SC2 minerals | EM minerals | SC2 vespene | EM vespene | Mineral Δ | Gas Δ |
 |----------|-------------|------------|-------------|------------|-----------|-------|
@@ -226,10 +226,10 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 | 16w saturation (tick 304) | 4235 | 4165 | — | — | **−1.7%** | — |
 | 24w saturation (tick 304) | 3955 | 3850 | — | — | **−2.7%** | — |
 | 3w gas (tick 304) | 3885 | 3805 | 552 | 544 | −2.1% | **−1.4%** |
-| 6w gas (tick 304) | 3375 | 3280 | 1012 | 1016 | −2.8% | **+0.4%** |
+| 6w gas (tick 304, run-2) | 3260 | 3280 | 1204 | 1016 | +0.6% | **−15.6%** |
 | 6w gas (5-run mean) | — | — | 1140 | 1016 | — | **−10.9%** |
 
-**6w gas multi-run variance (#688):** 5 SC2 runs produce bimodal vespene at tick 304: {1044, 1204, 1204, 1044, 1204}. Mean=1140, σ=78.4, CV=6.88%. The original single-run baseline (1012) was an outlier below both modes. SC2's random worker-to-geyser assignment creates two distinct outcomes per game. EM should target the mean (1140), not any single recording. Baselines in `calibration/multi-run/cal-gas-dual-6w-run-{1..5}.json`.
+**6w gas multi-run variance (#688, #696):** 5 SC2 runs produce bimodal vespene at tick 304: {1044, 1204, 1204, 1044, 1204}. Mean=1140, σ=78.4, CV=6.88%. Baseline updated from outlier (1012) to run-2 (1204, dominant mode) in #696. SC2's random worker-to-geyser assignment creates two distinct outcomes per game — the EM tracks the lower mode (1044), suggesting its worker-to-geyser routing matches the less-efficient SC2 pattern. Baselines in `calibration/multi-run/cal-gas-dual-6w-run-{1..5}.json`.
 
 **#661 base cycle speed fix** — three changes:
 1. **Transition loop cost**: mining→returning and depositing→mining transitions in `stepOneMineralLoop` now consume 1 game loop each (previously zero-cost via `while(!loopConsumed)` chaining). Matches SC2's per-loop transition processing.
