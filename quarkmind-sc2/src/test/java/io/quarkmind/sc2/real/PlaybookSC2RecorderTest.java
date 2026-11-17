@@ -242,6 +242,72 @@ class PlaybookSC2RecorderTest {
         }
     }
 
+    @Test
+    void recordMultiRunGasDual6w() throws Exception {
+        assumeTrue(QuarkusSC2Transport.isSC2Available(),
+                   "StarCraft II not installed — skipping live SC2 test");
+        int   runs         = 5;
+        int[] vespeneAtEnd = new int[runs];
+
+        for (int run = 1; run <= runs; run++) {
+            QuarkusSC2Transport transport = new QuarkusSC2Transport();
+            transport.sc2Port                = 8168;
+            transport.mapName                = "TorchesAIE_v4";
+            transport.difficultyStr          = "VERY_EASY";
+            transport.aiRaceStr              = "RANDOM";
+            transport.botRaceStr             = "PROTOSS";
+            transport.connectRetryCount      = 60;
+            transport.connectRetryIntervalMs = 5000;
+            transport.connect();
+            transport.createGame();
+            transport.joinGame();
+
+            PlaybookSC2Adapter adapter = new PlaybookSC2Adapter(
+                    transport, "playbooks/cal-gas-dual-6w.yaml");
+
+            transport.runGameLoop(adapter);
+            while (!transport.isRunning()) {Thread.sleep(50);}
+            while (transport.isRunning()) {Thread.sleep(100);}
+
+            assertFalse(adapter.snapshots().isEmpty(),
+                        "Run " + run + ": should have recorded snapshots");
+
+            CalibrationBaseline baseline = adapter.buildBaseline("unknown");
+            String              json     = baseline.toJson();
+            Path                output   = Path.of("src/test/resources/calibration/multi-run/cal-gas-dual-6w-run-" + run + ".json");
+            Files.createDirectories(output.getParent());
+            Files.writeString(output, json);
+
+            var lastSnapshot = adapter.snapshots().get(adapter.snapshots().size() - 1);
+            vespeneAtEnd[run - 1] = lastSnapshot.vespene();
+            System.out.printf("[Recorder] Run %d/%d: vespene=%d, minerals=%d (%d ticks, %d bytes)%n",
+                              run, runs, lastSnapshot.vespene(), lastSnapshot.minerals(),
+                              adapter.snapshots().size(), json.length());
+
+            new ProcessBuilder("pkill", "-9", "-f", "SC2.app/Contents/MacOS/SC2").start().waitFor();
+            Thread.sleep(3000);
+        }
+
+        double sum = 0;
+        for (int v : vespeneAtEnd) {sum += v;}
+        double mean     = sum / runs;
+        double variance = 0;
+        for (int v : vespeneAtEnd) {variance += (v - mean) * (v - mean);}
+        double stddev   = Math.sqrt(variance / runs);
+        double coeffVar = (stddev / mean) * 100.0;
+
+        System.out.println("\n=== Multi-Run Gas Dual 6w Summary ===");
+        System.out.printf("Runs: %d%n", runs);
+        for (int i = 0; i < runs; i++) {
+            System.out.printf("  Run %d: vespene=%d%n", i + 1, vespeneAtEnd[i]);
+        }
+        System.out.printf("Mean vespene: %.1f%n", mean);
+        System.out.printf("Std dev: %.1f%n", stddev);
+        System.out.printf("CV: %.2f%%%n", coeffVar);
+        System.out.printf("Verdict: %s%n",
+                          coeffVar > 1.0 ? "VARIANCE — target the mean" : "CONSISTENT — map-specific floor");
+    }
+
 
     private void recordPlaybook(String race, String playbookResource, String outputPath) throws Exception {
         assumeTrue(QuarkusSC2Transport.isSC2Available(),

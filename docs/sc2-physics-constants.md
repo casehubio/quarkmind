@@ -207,7 +207,9 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 | 16w saturation (tick 304) | 4235 | 4165 | — | — | **−1.7%** | — |
 | 24w saturation (tick 304) | 3955 | 3850 | — | — | **−2.7%** | — |
 | 3w gas (tick 304) | 3885 | 3780 | 552 | 652 | −2.7% | **+18.1%** |
-| 6w gas (tick 304) | 3375 | 3500 | 1012 | 1248 | +3.7% | **+23.3%** |
+| 6w gas (tick 304) | 3375 | 3500 | 1140 (mean, 5-run) | 1248 | +3.7% | **+9.5%** |
+
+**6w gas multi-run variance (#688):** 5 SC2 runs produce bimodal vespene at tick 304: {1044, 1204, 1204, 1044, 1204}. Mean=1140, σ=78.4, CV=6.88%. The original single-run baseline (1012) was an outlier below both modes. SC2's random worker-to-geyser assignment creates two distinct outcomes per game. EM should target the mean (1140), not any single recording. Baselines in `calibration/multi-run/cal-gas-dual-6w-run-{1..5}.json`.
 
 **#661 base cycle speed fix** — three changes:
 1. **Transition loop cost**: mining→returning and depositing→mining transitions in `stepOneMineralLoop` now consume 1 game loop each (previously zero-cost via `while(!loopConsumed)` chaining). Matches SC2's per-loop transition processing.
@@ -436,7 +438,7 @@ Three workers per geyser, serial access (`GasSlot.MAX_INSIDE=1`, #682). Workers 
 
 **Rotation-limited cycle:** At 3 workers, the theoretical minimum cycle is 3×inside = 3×45 = 135 loops. Actual 136 loops is 100.7% of theoretical — the cycle is fully rotation-limited. Walk time and deposit are shorter than inside time, so they fit within the gaps.
 
-**Dual-run accuracy (#677):** 3w vespene -2.9% (EM=536 vs SC2=552), 6w vespene +2.0% (EM=1032 vs SC2=1012). The 3w/6w asymmetry (3w under, 6w over) points to multi-geyser assignment timing, not the docking constant. Mineral accuracy unaffected: 3w minerals -1.3%, 6w minerals +2.8%.
+**Dual-run accuracy (#677, updated #688):** 3w vespene -2.9% (EM=536 vs SC2=552), 6w vespene +9.5% (EM=1248 vs SC2 mean=1140, 5-run). SC2 6w gas is bimodal: {1044, 1204}, CV=6.88% (#688). The original single-run baseline (1012) was an outlier. Mineral accuracy unaffected: 3w minerals -1.3%, 6w minerals +2.8%.
 
 ### Tick-boundary quantisation
 
