@@ -149,23 +149,42 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 
 **#689 dual-geyser asymmetry — TH deposit congestion:** SC2 empirical data (dual-run calibration) shows ~6% less gas income for dual-geyser than 2× the single-geyser rate, after accounting for second-assimilator build stagger. Liquipedia reports 2×3w = 325 gas/min (no theoretical penalty), but the SC2 engine applies real-world contention at the TH: more gas workers sharing a base means more approach-path congestion at the deposit point. Diagnostic investigation (#689) confirmed the existing deposit lock mechanism is structurally ineffective — the EM's geyser-limited cycle (inside time > walk time/2) absorbs contention via phase-shift stabilization, where initial lock delays cause the two geyser streams to interleave permanently, preventing ongoing contention. Fix: per-base gas deposit congestion model — each deposit extends by `GAS_DEPOSIT_CONGESTION_PER_WORKER` × max(0, gas_workers_at_base − 3) loops. This adds a constant per-cycle delay for dual-geyser workers that is not absorbable by geyser wait time.
 
-**Liquipedia reference rates (https://liquipedia.net/starcraft2/Resources):**
-| Parameter | Value | Loops | Source |
-|-----------|-------|-------|--------|
-| Gas inside time | 1.415 real seconds | 31.7 | Liquipedia |
-| Gas cargo | 4 (6 rich) | — | Liquipedia |
-| Max gas rate | 169.61 gas/min | 31.7 loops/delivery | Liquipedia (60/1.415×4) |
-| 1w gas rate | 61 gas/min | 88.1 loops/delivery | Liquipedia |
-| 2w gas rate | 123 gas/min | 43.7 loops/delivery | Liquipedia |
-| 3w gas rate | 163 gas/min | 33.0 loops/delivery | Liquipedia |
-| 2 geysers × 3w | 325 gas/min | 16.5 loops/delivery | Liquipedia |
-| Mineral occupy time | 1.99 seconds | 44.6 | Liquipedia |
-| Mineral pause | 0.3571 seconds | 8.0 | Liquipedia |
-| Mineral cargo | 5 (7 rich) | — | Liquipedia |
-| Max mineral rate/8 fields | 1206.03 min/min | — | Liquipedia |
-| MULE cargo | 25/trip | — | Liquipedia |
-| MULE total yield | 225 minerals | — | Liquipedia |
-| MULE rate multiplier | 3.45× near, 3.94× far | — | Liquipedia |
+**Liquipedia reconciliation (https://liquipedia.net/starcraft2/Resources):**
+
+**Speed conversion:** Liquipedia times are real seconds at Faster speed (22.4 game loops/s). Convert: `loops = seconds * 22.4`. All EM constants are in game loops.
+
+#### Gas — Liquipedia vs EM
+
+| Parameter | Liquipedia | Loops | EM value | Delta | Rationale |
+|-----------|-----------|-------|----------|-------|-----------|
+| Inside geyser time | 1.415s | 31.7 | 31.7 (`GAS_HARVEST_DURATION_LOOPS`) | 0% | Direct match. SC2 profiler confirms 32 loops inside (#665) |
+| Gas cargo | 4 | — | 4 (`GAS_CARGO`) | 0% | Direct match |
+| Serial access | 1 at a time | — | 1 (`GasSlot.MAX_INSIDE`) | 0% | Direct match (#682) |
+| Max gas rate | 169.61/min | 31.7/delivery | — | — | Theoretical (zero walk time) |
+| 1w gas rate | 61/min | 88.1/delivery | 58.0 at 5u | -4.9% | Walk-limited; matches at close distance (#685) |
+| 2w gas rate | 123/min | 43.7/delivery | 116.7 at 5u | -5.1% | Walk-limited; matches at close distance (#685) |
+| 3w gas rate | 163/min | 33.0/delivery | 121.0 | -25.8% | Rotation-limited: cycle=3*(31.7+11.5)=129.6 > Liquipedia's implied 99 loops. EM calibrated to SC2 baselines (#685) |
+| 2x3w gas rate | 325/min | 16.5/delivery | 241.9 at 5u | -25.6% | Follows from 3w gap. 0% throughput loss at 5u (#685) |
+
+#### Minerals — Liquipedia vs EM
+
+| Parameter | Liquipedia | Loops | EM value | Delta | Rationale |
+|-----------|-----------|-------|----------|-------|-----------|
+| Occupy time | 1.99s | 44.6 | mining(22)+approach(20-25)=42-47 | ~0% | Liquipedia measures total time at patch; EM decomposes into mining animation + approach docking |
+| Pause before return | 0.3571s | 8.0 | deposit=12 loops | +50% | Different measurement points: Liquipedia=patch pause, EM=TH deposit. Deposit calibrated from SC2 8w cadence (#661) |
+| Mineral cargo | 5 (7 rich) | — | 5 (`MINERAL_CARGO`) | 0% | Direct match |
+| Max rate / 8 fields | 1206/min | — | — | — | Theoretical (zero walk time) |
+| 16w rate | ~925/min | — | ~912 at tick 304 | -1.4% | Dual-run calibration (#661) |
+| 24w rate | ~1140/min | — | ~1108 at tick 304 | -2.8% | Dual-run calibration (#661) |
+
+#### MULE — Liquipedia vs EM
+
+| Parameter | Liquipedia | EM value | Delta | Rationale |
+|-----------|-----------|----------|-------|-----------|
+| Cargo per trip | 25 | 25 (`MULE_CARGO`) | 0% | Direct match |
+| Total yield | 225 minerals | ~300 (277.8/min * 1.08min) | +33% | EM from oracle replays (115 obs, #613). Liquipedia assumes 9 trips; EM lifetime allows more |
+| Rate multiplier | 3.45-3.94x | ~4.6x (277.8/60) | +17-33% | EM MULE rate from dual-run isolation (#613) |
+| Lifetime | 64s | 1452 loops (64.8s) | +1.3% | Near match; calibrated from SC2 (#613) |
 
 **Gas rate MAPE improvement (#675):** vespeneCollectionRate MAPE at 5-min dropped from 29.9% to 15.3% (aggregate, 236 player runs). Per-race: Protoss 16.1→15.2%, Terran 24.0→13.2%, Zerg 31.8→25.4%. Zerg residual is variance-driven (per-replay cycle differences), not systematic bias.
 
