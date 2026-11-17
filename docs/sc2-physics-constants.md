@@ -181,9 +181,9 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 
 | Parameter | Liquipedia | EM value | Delta | Rationale |
 |-----------|-----------|----------|-------|-----------|
-| Cargo per trip | 25 | 25 (`MULE_CARGO`) | 0% | Direct match |
-| Total yield | 225 minerals | ~300 (277.8/min * 1.08min) | +33% | EM from oracle replays (115 obs, #613). Liquipedia assumes 9 trips; EM lifetime allows more |
-| Rate multiplier | 3.45-3.94x | ~4.6x (277.8/60) | +17-33% | EM MULE rate from dual-run isolation (#613) |
+| Cargo per trip | 25 | — (flat rate) | — | EM uses flat rate, not trip simulation |
+| Total yield | 225 minerals | 225 (208.3/min × 64.8/60) | 0% | Recalibrated to Liquipedia total yield (#697). Previous: 300 (277.8/min from oracle replay isolation, #613) |
+| Rate | 210.9/min | 208.3/min | -1.2% | 225 minerals / (1452 loops / 22.4 loops/s) × 60 |
 | Lifetime | 64s | 1452 loops (64.8s) | +1.3% | Near match; calibrated from SC2 (#613) |
 
 **Gas rate MAPE improvement (#675):** vespeneCollectionRate MAPE at 5-min dropped from 29.9% to 15.3% (aggregate, 236 player runs). Per-race: Protoss 16.1→15.2%, Terran 24.0→13.2%, Zerg 31.8→25.4%. Zerg residual is variance-driven (per-replay cycle differences), not systematic bias.
@@ -272,7 +272,7 @@ Previously (pre-#655): 12w +0.6%, 16w −20.2%, 24w −13.4%. The compound colli
 | Constant | Value | Source | Confidence |
 |----------|-------|--------|------------|
 | MULE lifetime | 1452 loops (64.8s) | SC2 dual-run MULE isolation | **Calibrated** — #613 |
-| MULE income | 277.8 minerals/min | Oracle replays (115 obs) | **Calibrated** |
+| MULE income | 208.3 minerals/min | Liquipedia 225 total yield / MULE lifetime (#697) | **Published** — Liquipedia |
 | MULE calldown energy | 50 | SC2 mechanics | **Published** |
 | OC starting energy | 50 | SC2 mechanics | **Published** |
 | Addon mineral cost | 50 | SC2 mechanics | **Published** |
