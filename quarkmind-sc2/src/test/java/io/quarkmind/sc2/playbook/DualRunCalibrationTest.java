@@ -379,6 +379,55 @@ class DualRunCalibrationTest {
                 io.quarkmind.sc2.emulated.WorkerPhysicsConfig.DEFAULT_GAS_APPROACH_DOCKING_LOOPS);
     }
 
+    @org.junit.jupiter.api.Tag("diagnostic")
+    @Test
+    void gasDockingCongestionSweep() {
+        CalibrationBaseline sc2_3w   = loadBaseline("calibration/cal-gas-baseline-3w.json");
+        CalibrationBaseline sc2_6w   = loadBaseline("calibration/cal-gas-dual-6w.json");
+        int                 target3w = sc2_3w.snapshots().get(sc2_3w.snapshots().size() - 1).vespene();
+        int                 target6w = sc2_6w.snapshots().get(sc2_6w.snapshots().size() - 1).vespene();
+
+        System.out.println("=== Gas docking × congestion sweep ===");
+        System.out.printf("SC2 targets: 3w=%d, 6w=%d%n%n", target3w, target6w);
+
+        java.io.PrintStream           origOut = System.out;
+        java.io.ByteArrayOutputStream buf     = new java.io.ByteArrayOutputStream();
+        java.io.PrintStream           capture = new java.io.PrintStream(buf);
+
+        for (double docking : new double[]{11.0, 11.5, 12.0, 12.5}) {
+            System.out.printf("--- docking=%.1f ---%n", docking);
+            System.out.printf("%-10s | %-6s %-8s | %-6s %-8s | %-9s%n",
+                              "congestion", "3w", "err%", "6w", "err%", "combined");
+            for (double cong : new double[]{0, 1, 2, 2.5, 3, 3.5, 4, 4.5, 5}) {
+                io.quarkmind.sc2.emulated.EmulatedGame.setGasApproachDockingLoops(docking);
+                io.quarkmind.sc2.emulated.EmulatedGame.setGasDepositCongestionPerWorker(cong);
+
+                buf.reset();
+                System.setOut(capture);
+                calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2_3w, true, 1);
+                int em3w = parseLastVespene(buf.toString());
+
+                buf.reset();
+                calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, true, 3);
+                int em6w = parseLastVespene(buf.toString());
+                System.setOut(origOut);
+
+                double err3w    = (em3w - target3w) * 100.0 / target3w;
+                double err6w    = (em6w - target6w) * 100.0 / target6w;
+                double combined = Math.abs(err3w) + Math.abs(err6w);
+                String mark     = combined <= 3.0 ? " ✓" : "";
+                System.out.printf("%-10.1f | %-6d %-+7.1f%% | %-6d %-+7.1f%% | %-7.1f%s%n",
+                                  cong, em3w, err3w, em6w, err6w, combined, mark);
+            }
+            System.out.println();
+        }
+
+        io.quarkmind.sc2.emulated.EmulatedGame.setGasApproachDockingLoops(
+                io.quarkmind.sc2.emulated.WorkerPhysicsConfig.DEFAULT_GAS_APPROACH_DOCKING_LOOPS);
+        io.quarkmind.sc2.emulated.EmulatedGame.setGasDepositCongestionPerWorker(4.0);
+    }
+
+
     private static int parseLastVespene(String output) {
         int result = -1;
         for (String line : output.split("\n")) {

@@ -1938,5 +1938,9 @@ public class EmulatedGame {
         SimulatedWorker.setGasApproachDockingLoops(loops);
     }
 
+    public static void setGasDepositCongestionPerWorker(double loops) {
+        WorkerSimulation.GAS_DEPOSIT_CONGESTION_PER_WORKER = loops;
+    }
+
 
 }

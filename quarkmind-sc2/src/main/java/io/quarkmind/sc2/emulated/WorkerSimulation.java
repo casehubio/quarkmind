@@ -68,6 +68,7 @@ class WorkerSimulation {
     private final Random rng = new Random(42);
     private final java.util.Map<Integer, Double> gasDepositLockEndLoop = new java.util.HashMap<>();
     static double GAS_DEPOSIT_LOCK_LOOPS = 8.0;
+    static double GAS_DEPOSIT_CONGESTION_PER_WORKER = 4.0;
 
 
     WorkerSimulation() {
@@ -583,7 +584,8 @@ class WorkerSimulation {
                     w.targetPosition = gasTarget(slot);
                 } else {
                     w.task         = WorkerTask.DEPOSITING_GAS;
-                    w.phaseEndLoop = currentLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
+                    int extraGasWorkers = Math.max(0, totalGasWorkersAtBase(w.baseIndex) - GasSlot.MAX_WORKERS);
+                    w.phaseEndLoop = currentLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS + extraGasWorkers * GAS_DEPOSIT_CONGESTION_PER_WORKER;
                 }
                 return income;
             }
@@ -664,6 +666,14 @@ class WorkerSimulation {
 
     int totalGasWorkers() {
         return gasSlots.stream().mapToInt(s -> s.assignedWorkers.size()).sum();
+    }
+
+    private int totalGasWorkersAtBase(int baseIndex) {
+        int count = 0;
+        for (GasSlot slot : gasSlots) {
+            if (slot.baseIndex == baseIndex) {count += slot.assignedWorkers.size();}
+        }
+        return count;
     }
 
 
