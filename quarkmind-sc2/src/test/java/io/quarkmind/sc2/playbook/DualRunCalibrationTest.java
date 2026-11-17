@@ -251,6 +251,91 @@ class DualRunCalibrationTest {
         }
     }
 
+    @org.junit.jupiter.api.Tag("diagnostic")
+    @Test
+    void gasDeliveryTimingComparison() {
+        CalibrationBaseline           sc2     = loadBaseline("calibration/cal-gas-dual-6w.json");
+        java.io.ByteArrayOutputStream buf     = new java.io.ByteArrayOutputStream();
+        java.io.PrintStream           capture = new java.io.PrintStream(buf);
+        java.io.PrintStream           origOut = System.out;
+        System.setOut(capture);
+        calibrate("playbooks/cal-gas-dual-6w.yaml", sc2, true, 3);
+        System.setOut(origOut);
+
+        int prevSc2           = 0, prevEm = 0;
+        int extraEmDeliveries = 0, missedEmDeliveries = 0;
+        int cumDelta          = 0;
+
+        System.out.println("=== Gas delivery timing: SC2 vs EM (6w dual-geyser) ===");
+        System.out.printf("%-6s | %-6s | %-6s | %-7s | %-7s | %-6s%n", "tick", "SC2 Δ", "EM Δ", "SC2 tot", "EM tot", "gap");
+
+        for (String line : buf.toString().split("\n")) {
+            if (!line.contains("[econ]") || !line.contains("vespene")) {continue;}
+            // Parse: [econ] tick N: minerals X vs Y, vespene A vs B
+            String stripped = line.trim().replaceAll("\\s+", " ");
+            java.util.regex.Matcher m = java.util.regex.Pattern.compile(
+                    "tick (\\d+).*vespene (\\d+) vs (\\d+)").matcher(stripped);
+            if (!m.find()) {continue;}
+            int tick = Integer.parseInt(m.group(1));
+            int sc2v = Integer.parseInt(m.group(2));
+            int emv  = Integer.parseInt(m.group(3));
+            int sc2d = sc2v - prevSc2;
+            int emd  = emv - prevEm;
+
+            if (emd > sc2d) {extraEmDeliveries += (emd - sc2d) / 4;}
+            if (sc2d > emd) {missedEmDeliveries += (sc2d - emd) / 4;}
+
+            if (sc2d != emd) {
+                cumDelta = emv - sc2v;
+                System.out.printf("%-6d | %-+6d | %-+6d | %-7d | %-7d | %-+6d%n",
+                                  tick, sc2d, emd, sc2v, emv, cumDelta);
+            }
+            prevSc2 = sc2v;
+            prevEm  = emv;
+        }
+        System.out.printf("\nExtra EM deliveries: %d, Missed EM deliveries: %d, Net: +%d%n",
+                          extraEmDeliveries, missedEmDeliveries, extraEmDeliveries - missedEmDeliveries);
+    }
+
+
+    @org.junit.jupiter.api.Tag("diagnostic")
+    @Test
+    void gasDepositLockSweep() {
+        CalibrationBaseline sc2_6w = loadBaseline("calibration/cal-gas-dual-6w.json");
+        int                 sc2Gas = sc2_6w.snapshots().get(sc2_6w.snapshots().size() - 1).vespene();
+
+        System.out.println("=== Gas deposit lock sweep (SC2 6w vespene=" + sc2Gas + ") ===");
+        System.out.printf("%-8s | %-8s | %-8s%n", "lock", "delta", "error%");
+
+        java.io.PrintStream           origOut = System.out;
+        java.io.ByteArrayOutputStream buf     = new java.io.ByteArrayOutputStream();
+        java.io.PrintStream           capture = new java.io.PrintStream(buf);
+
+        for (double lock : new double[]{0, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16}) {
+            io.quarkmind.sc2.emulated.EmulatedGame.setGasDepositLockLoops(lock);
+            buf.reset();
+            System.setOut(capture);
+            calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, true, 3);
+            System.setOut(origOut);
+
+            int emGas = -1;
+            for (String line : buf.toString().split("\n")) {
+                if (line.contains("tick 304") && line.contains("vespene")) {
+                    int idx = line.lastIndexOf("vs ");
+                    if (idx >= 0) {
+                        String val = line.substring(idx + 3).trim();
+                        try {emGas = Integer.parseInt(val);} catch (NumberFormatException ignored) {}
+                    }
+                }
+            }
+            int    d   = emGas - sc2Gas;
+            double pct = d * 100.0 / sc2Gas;
+            System.out.printf("%-8.0f | %-+8d | %-+7.1f%%%n", lock, d, pct);
+        }
+
+        io.quarkmind.sc2.emulated.EmulatedGame.setGasDepositLockLoops(8.0);
+    }
+
 
     @Test
     void dualRunCalMineralSaturated24wAgainstSC2() {

@@ -1929,4 +1929,14 @@ public class EmulatedGame {
     public void setMinerals(int amount) {
         friendly.setMinerals(amount);
     }
+
+    public static void setGasDepositLockLoops(double loops) {
+        WorkerSimulation.GAS_DEPOSIT_LOCK_LOOPS = loops;
+    }
+
+    public static void setGasApproachDockingLoops(double loops) {
+        SimulatedWorker.setGasApproachDockingLoops(loops);
+    }
+
+
 }

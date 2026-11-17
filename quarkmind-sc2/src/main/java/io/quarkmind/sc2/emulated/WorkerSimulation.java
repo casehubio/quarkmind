@@ -66,6 +66,8 @@ class WorkerSimulation {
     private final double workerDistancePerTick;
     private double currentTickStartLoop;
     private final Random rng = new Random(42);
+    private final java.util.Map<Integer, Double> gasDepositLockEndLoop = new java.util.HashMap<>();
+    static double GAS_DEPOSIT_LOCK_LOOPS = 8.0;
 
 
     WorkerSimulation() {
@@ -288,13 +290,17 @@ class WorkerSimulation {
         }
 
         List<SimulatedWorker> mineralWorkers = new ArrayList<>();
+        List<SimulatedWorker> gasWorkers     = new ArrayList<>();
         for (SimulatedWorker w : workers.values()) {
-            if (w.assignedGasSlot == null) {
+            if (w.assignedGasSlot != null) {
+                gasWorkers.add(w);
+            } else {
                 mineralWorkers.add(w);
             }
         }
 
         double mineralIncome = 0;
+        double gasIncome     = 0;
         for (int loop = 0; loop < SimulatedWorker.LOOPS_PER_TICK; loop++) {
             double currentLoop = tickStartLoop + loop;
             this.currentTickStartLoop = currentLoop;
@@ -302,6 +308,11 @@ class WorkerSimulation {
             Collections.shuffle(mineralWorkers, rng);
             for (SimulatedWorker w : mineralWorkers) {
                 mineralIncome += stepOneMineralLoop(w, currentLoop);
+            }
+
+            Collections.shuffle(gasWorkers, rng);
+            for (SimulatedWorker w : gasWorkers) {
+                gasIncome += stepOneGasLoop(w, currentLoop);
             }
 
             resolveAllMineralCollisions();
@@ -317,17 +328,11 @@ class WorkerSimulation {
                 boolean wasWaiting = w.waitingSinceLoop > 0;
                 if (!wasWaiting && tickEndLoop < w.assignedPatch.lockEndLoop) {continue;}
                 w.assignedPatch.miners.add(w);
-                w.phaseEndLoop = tickEndLoop + w.assignedPatch.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop     = tickEndLoop + w.assignedPatch.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
                 w.waitingSinceLoop = 0;
             }
         }
 
-        double gasIncome = 0;
-        for (SimulatedWorker w : workers.values()) {
-            if (w.assignedGasSlot != null) {
-                gasIncome += tickGasWorker(w, tickStartLoop, tickEndLoop);
-            }
-        }
         return new TickIncome(mineralIncome, gasIncome);
     }
 
@@ -541,96 +546,59 @@ class WorkerSimulation {
     }
 
 
-    private double tickGasWorker(SimulatedWorker w, double tickStartLoop, double tickEndLoop) {
+    private double stepOneGasLoop(SimulatedWorker w, double currentLoop) {
         GasSlot slot = w.assignedGasSlot;
         if (slot == null) {return 0;}
 
-        int    loopsPerTick   = SimulatedWorker.LOOPS_PER_TICK;
-        int    loopsRemaining = loopsPerTick;
-        double income         = 0;
-
-        while (loopsRemaining > 0) {
-            if (w.task == WorkerTask.HARVESTING_GAS) {
-                if (slot.insideWorkers.contains(w)) {
-                    double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
-                    if (currentLoop >= w.phaseEndLoop) {
-                        w.cargo = SimulatedWorker.GAS_CARGO;
-                        slot.exitBuilding(w);
-                        w.task           = WorkerTask.RETURNING_GAS;
-                        w.targetPosition = gasReturnTarget(slot);
-                        loopsRemaining--;
-                        continue;
-                    }
-                    int loopsUntilDone = (int) Math.ceil(w.phaseEndLoop - currentLoop);
-                    if (loopsUntilDone < loopsRemaining) {
-                        loopsRemaining -= loopsUntilDone;
-                        w.cargo = SimulatedWorker.GAS_CARGO;
-                        slot.exitBuilding(w);
-                        w.task           = WorkerTask.RETURNING_GAS;
-                        w.targetPosition = gasReturnTarget(slot);
-                        loopsRemaining--;
-                        continue;
-                    }
-                    return income;
-                }
-                int used = w.moveLoops(loopsRemaining);
-                loopsRemaining -= used;
-                double currentLoopGas = tickStartLoop + (loopsPerTick - loopsRemaining);
-                if (w.isAtTarget() && slot.canEnter(currentLoopGas)) {
-                    double arrivalLoop = currentLoopGas;
-                    slot.enterBuilding(w, arrivalLoop);
-                    w.phaseEndLoop = arrivalLoop + SimulatedWorker.GAS_APPROACH_DOCKING_LOOPS + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
-                    if (loopsRemaining <= 0) {return income;}
-                    continue;
-                }
-                return income;
-            }
-
-            if (w.task == WorkerTask.RETURNING_GAS) {
-                int used = w.moveLoops(loopsRemaining);
-                loopsRemaining -= used;
-                if (w.isAtTarget()) {
-                    income += w.cargo;
-                    w.cargo = 0;
-                    if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
-                        w.task           = WorkerTask.HARVESTING_GAS;
-                        w.targetPosition = gasTarget(slot);
-                        if (loopsRemaining <= 0) {return income;}
-                        continue;
-                    }
-                    double arrivalLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
-                    w.task         = WorkerTask.DEPOSITING_GAS;
-                    w.phaseEndLoop = arrivalLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
-                    if (loopsRemaining <= 0) {return income;}
-                    continue;
-                }
-                return income;
-            }
-
-            if (w.task == WorkerTask.DEPOSITING_GAS) {
-                double currentLoop = tickStartLoop + (loopsPerTick - loopsRemaining);
+        if (w.task == WorkerTask.HARVESTING_GAS) {
+            if (slot.insideWorkers.contains(w)) {
                 if (currentLoop >= w.phaseEndLoop) {
-                    w.task           = WorkerTask.HARVESTING_GAS;
-                    w.targetPosition = gasTarget(slot);
-                    loopsRemaining--;
-                    if (loopsRemaining <= 0) {return income;}
-                    continue;
+                    w.cargo = SimulatedWorker.GAS_CARGO;
+                    slot.exitBuilding(w);
+                    w.task           = WorkerTask.RETURNING_GAS;
+                    w.targetPosition = gasReturnTarget(slot);
                 }
-                int loopsUntilDone = (int) Math.ceil(w.phaseEndLoop - currentLoop);
-                if (loopsUntilDone < loopsRemaining) {
-                    loopsRemaining -= loopsUntilDone;
+                return 0;
+            }
+            boolean arrived = w.moveOneLoop();
+            if (arrived && slot.canEnter(currentLoop)) {
+                slot.enterBuilding(w, currentLoop);
+                w.phaseEndLoop = currentLoop + SimulatedWorker.GAS_APPROACH_DOCKING_LOOPS + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
+            }
+            return 0;
+        }
+
+        if (w.task == WorkerTask.RETURNING_GAS) {
+            boolean arrived = w.moveOneLoop();
+            if (arrived) {
+                double lockEnd = gasDepositLockEndLoop.getOrDefault(w.baseIndex, 0.0);
+                if (currentLoop < lockEnd) {
+                    return 0;
+                }
+                double income = w.cargo;
+                w.cargo = 0;
+                gasDepositLockEndLoop.put(w.baseIndex, currentLoop + GAS_DEPOSIT_LOCK_LOOPS);
+                if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
                     w.task           = WorkerTask.HARVESTING_GAS;
                     w.targetPosition = gasTarget(slot);
-                    loopsRemaining--;
-                    if (loopsRemaining <= 0) {return income;}
-                    continue;
+                } else {
+                    w.task         = WorkerTask.DEPOSITING_GAS;
+                    w.phaseEndLoop = currentLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
                 }
                 return income;
             }
-
-            return income;
+            return 0;
         }
-        return income;
+
+        if (w.task == WorkerTask.DEPOSITING_GAS) {
+            if (currentLoop >= w.phaseEndLoop) {
+                w.task           = WorkerTask.HARVESTING_GAS;
+                w.targetPosition = gasTarget(slot);
+            }
+            return 0;
+        }
+
+        return 0;
     }
 
 
@@ -938,6 +906,7 @@ class WorkerSimulation {
         gasSlots.clear();
         workers.clear();
         pendingBuilderReturns.clear();
+        gasDepositLockEndLoop.clear();
         rng.setSeed(42);
     }
 

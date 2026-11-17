@@ -9,6 +9,7 @@ import java.util.Set;
 
 class GasSlot {
     static final int MAX_WORKERS = 3;
+    static final int MAX_INSIDE = 1;
     static double ENTRY_LOCK_DURATION = 0;
 
     final String buildingTag;
@@ -25,7 +26,7 @@ class GasSlot {
     }
 
     boolean canEnter(double currentLoop) {
-        if (ENTRY_LOCK_DURATION <= 0) return insideWorkers.size() < MAX_WORKERS;
+        if (ENTRY_LOCK_DURATION <= 0) return insideWorkers.size() < MAX_INSIDE;
         return currentLoop >= entryLockEndLoop;
     }
 

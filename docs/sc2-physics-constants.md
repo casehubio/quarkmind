@@ -140,7 +140,27 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 
 **EM (#672) cycle note:** Per-phase walk estimates (~42 loops) are analytical — continuous-time kinematics. The EM's discrete per-loop stepping and sub-tick phase chaining (gas workers transition between walk/harvest/deposit within a single tick) produce a shorter effective cycle. The measured cycle is ~122 loops (confirmed by 0.0% error on 3w dual-run). The per-phase sum overestimates because it ignores sub-tick savings at each phase transition.
 
-**#672 gas walk ARRIVAL_THRESHOLD compensation:** Gas walk targets now use reduced building radius (`GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD` and `TOWN_HALL_RADIUS - ARRIVAL_THRESHOLD`) so the ARRIVAL_THRESHOLD stopping distance lands the worker at the actual building edge, adding ~6 loops per round trip. Combined with approach docking recalibrated from 11.5→15.8, the 3w dual-run is **0.0% error** (exact match at tick 304). The 6w dual-run is +6.7% — a multi-geyser surplus tracked in #682.
+**#672 gas walk ARRIVAL_THRESHOLD compensation:** Gas walk targets now use reduced building radius (`GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD` and `TOWN_HALL_RADIUS - ARRIVAL_THRESHOLD`) so the ARRIVAL_THRESHOLD stopping distance lands the worker at the actual building edge, adding ~6 loops per round trip. Combined with approach docking recalibrated from 11.5→15.8, the 3w dual-run is **0.0% error** (exact match at tick 304).
+
+**#682 dual-geyser gas surplus — serial geyser access:** The root cause of the 6w surplus was the EM allowing all 3 workers inside the geyser simultaneously (`MAX_WORKERS=3` in `canEnter`). Liquipedia confirms: "Only one worker can be inside the building collecting at any one time, but multiple workers can be queued up to mine from it." Fix: `GasSlot.MAX_INSIDE=1` serialises geyser access — workers queue outside and enter one at a time. Combined with per-loop gas worker processing (matching SC2's unified per-loop model), gas worker shuffle, and per-base deposit lock (8 loops). Calibration in progress: the serial model with Liquipedia's 1.415s inside time (31.7 loops) needs walk-time and rotation-timing measurement against the Liquipedia target rates (1w=61, 2w=123, 3w=163 gas/min). Liquipedia reports 2×3w = 325 gas/min for dual-geyser (no inherent throughput loss), so the SC2 baseline's 1012 gas (vs expected ~1033 at Liquipedia rate) is 2% below the community standard — map-specific variance, not a physics error.
+
+**Liquipedia reference rates (https://liquipedia.net/starcraft2/Resources):**
+| Parameter | Value | Loops | Source |
+|-----------|-------|-------|--------|
+| Gas inside time | 1.415 real seconds | 31.7 | Liquipedia |
+| Gas cargo | 4 (6 rich) | — | Liquipedia |
+| Max gas rate | 169.61 gas/min | 31.7 loops/delivery | Liquipedia (60/1.415×4) |
+| 1w gas rate | 61 gas/min | 88.1 loops/delivery | Liquipedia |
+| 2w gas rate | 123 gas/min | 43.7 loops/delivery | Liquipedia |
+| 3w gas rate | 163 gas/min | 33.0 loops/delivery | Liquipedia |
+| 2 geysers × 3w | 325 gas/min | 16.5 loops/delivery | Liquipedia |
+| Mineral occupy time | 1.99 seconds | 44.6 | Liquipedia |
+| Mineral pause | 0.3571 seconds | 8.0 | Liquipedia |
+| Mineral cargo | 5 (7 rich) | — | Liquipedia |
+| Max mineral rate/8 fields | 1206.03 min/min | — | Liquipedia |
+| MULE cargo | 25/trip | — | Liquipedia |
+| MULE total yield | 225 minerals | — | Liquipedia |
+| MULE rate multiplier | 3.45× near, 3.94× far | — | Liquipedia |
 
 **Gas rate MAPE improvement (#675):** vespeneCollectionRate MAPE at 5-min dropped from 29.9% to 15.3% (aggregate, 236 player runs). Per-race: Protoss 16.1→15.2%, Terran 24.0→13.2%, Zerg 31.8→25.4%. Zerg residual is variance-driven (per-replay cycle differences), not systematic bias.
 
@@ -695,4 +715,8 @@ starcraft.economy.rate-interval-loops=160
 - `MineralPatch.FAR_PATCH_DISTANCE` (7.5f) — default far patch distance for last 4 patches; calibrated #651 from SC2 API positions
 - `MineralPatch.APPROACH_EQUALIZATION_SCALE` (0.4) — per-patch approach docking equalization: 40% of walk distance difference compensated by approach; calibrated #656 from distribution sweep
 - `WorkerSimulation.LOW_SATURATION_DODGE_SCALE` (0.25f) — collision dodge reduction at ≤2 workers/patch; calibrated #656 from dodge sweep
+- `GasSlot.MAX_INSIDE` (1) — max workers inside gas building simultaneously; Liquipedia: "Only one worker can be inside the building collecting at any one time" (#682)
 - `GasSlot.ENTRY_LOCK_DURATION` (default 0) — gas entrance queuing lock duration in loops
+- `WorkerSimulation.GAS_DEPOSIT_LOCK_LOOPS` (8.0) — per-base gas deposit serialisation lock in loops; prevents simultaneous gas deposits at the same town hall; calibrated #682 by sweep against 6w dual-geyser baseline (lock 6–9 optimal, cliff at 13+)
+- `WorkerSimulation.GAS_COLLISION_SPEED_FACTOR` (0.99) — speed reduction for gas workers on collision with other workers; gas workers now included in unified collision resolution (#682)
+- `WorkerSimulation.GAS_ENTRY_STAGGER_LOOPS` (8.0) — per-worker harvest offset when entering geyser; models SC2's sequential entry (#682, may be removed after serial access calibration)

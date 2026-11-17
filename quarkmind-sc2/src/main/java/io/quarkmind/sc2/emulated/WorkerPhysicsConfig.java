@@ -18,8 +18,8 @@ public record WorkerPhysicsConfig(
 ) {
 
     public static final double DEFAULT_MINING_DURATION_LOOPS       = 22.0;
-    public static final double DEFAULT_GAS_HARVEST_DURATION_LOOPS  = 32.0;
-    public static final double DEFAULT_GAS_APPROACH_DOCKING_LOOPS  = 15.8;
+    public static final double DEFAULT_GAS_HARVEST_DURATION_LOOPS  = 31.7;
+    public static final double DEFAULT_GAS_APPROACH_DOCKING_LOOPS  = 0;
     public static final double DEFAULT_DEPOSIT_DURATION_LOOPS      = 12.0;
     public static final double DEFAULT_ACCELERATION                = 3.5;
     public static final double DEFAULT_DECELERATION                = 3.5;
