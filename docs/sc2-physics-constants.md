@@ -217,7 +217,7 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 
 Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle replay MAPE sweep, which conflated worker allocation differences with physics. The dual-run isolates physics and shows no race-specific difference.
 
-### SC2 dual-run calibration results (TorchesAIE_v4, post-#661)
+### SC2 dual-run calibration results (TorchesAIE_v4, post-#689)
 
 | Baseline | SC2 minerals | EM minerals | SC2 vespene | EM vespene | Mineral Δ | Gas Δ |
 |----------|-------------|------------|-------------|------------|-----------|-------|
@@ -225,8 +225,9 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 | 12w Protoss (tick 304) | 3460 | 3395 | — | — | **−1.9%** | — |
 | 16w saturation (tick 304) | 4235 | 4165 | — | — | **−1.7%** | — |
 | 24w saturation (tick 304) | 3955 | 3850 | — | — | **−2.7%** | — |
-| 3w gas (tick 304) | 3885 | 3780 | 552 | 652 | −2.7% | **+18.1%** |
-| 6w gas (tick 304) | 3375 | 3500 | 1140 (mean, 5-run) | 1248 | +3.7% | **+9.5%** |
+| 3w gas (tick 304) | 3885 | 3805 | 552 | 544 | −2.1% | **−1.4%** |
+| 6w gas (tick 304) | 3375 | 3280 | 1012 | 1016 | −2.8% | **+0.4%** |
+| 6w gas (5-run mean) | — | — | 1140 | 1016 | — | **−10.9%** |
 
 **6w gas multi-run variance (#688):** 5 SC2 runs produce bimodal vespene at tick 304: {1044, 1204, 1204, 1044, 1204}. Mean=1140, σ=78.4, CV=6.88%. The original single-run baseline (1012) was an outlier below both modes. SC2's random worker-to-geyser assignment creates two distinct outcomes per game. EM should target the mean (1140), not any single recording. Baselines in `calibration/multi-run/cal-gas-dual-6w-run-{1..5}.json`.
 
@@ -450,14 +451,14 @@ Three workers per geyser, serial access (`GasSlot.MAX_INSIDE=1`, #682). Workers 
 |-------|-------|-------|-------|
 | Walk to geyser | 34 | 1.5 | Edge-to-edge, straight-line |
 | Wait at entry | 8 | 0.4 | Serial access queue (avg, 3w) |
-| Harvest + docking | 45 | 2.1 | GAS_HARVEST=31.7 + APPROACH_DOCKING=12.5 |
+| Harvest + docking | 43.2 | 2.0 | GAS_HARVEST=31.7 + APPROACH_DOCKING=11.5 (#689) |
 | Walk to base | 36 | 1.6 | Edge-to-edge, straight-line |
 | Deposit | 12 | 0.5 | DEPOSIT_DURATION=12 |
-| **Total cycle** | **136** | **6.2** | 4 gas per trip |
+| **Total cycle** | **~130** | **~5.9** | 4 gas per trip |
 
-**Rotation-limited cycle:** At 3 workers, the theoretical minimum cycle is 3×inside = 3×45 = 135 loops. Actual 136 loops is 100.7% of theoretical — the cycle is fully rotation-limited. Walk time and deposit are shorter than inside time, so they fit within the gaps.
+**Rotation-limited cycle:** At 3 workers, the theoretical minimum cycle is 3×inside = 3×43.2 = 129.6 loops. Actual ~130 loops is 100.3% of theoretical — the cycle is fully rotation-limited. Walk time and deposit are shorter than inside time, so they fit within the gaps.
 
-**Dual-run accuracy (#677, updated #688):** 3w vespene -2.9% (EM=536 vs SC2=552), 6w vespene +9.5% (EM=1248 vs SC2 mean=1140, 5-run). SC2 6w gas is bimodal: {1044, 1204}, CV=6.88% (#688). The original single-run baseline (1012) was an outlier. Mineral accuracy unaffected: 3w minerals -1.3%, 6w minerals +2.8%.
+**Dual-run accuracy (post-#689):** 3w vespene -1.4% (EM=544 vs SC2=552), 6w vespene +0.4% (EM=1016 vs SC2=1012 single-run). Against 5-run mean (1140, #688): -10.9%. SC2 6w gas is bimodal: {1044, 1204}, CV=6.88% (#688). Mineral accuracy: 3w -2.1%, 6w -2.8%.
 
 ### Tick-boundary quantisation
 
@@ -626,7 +627,7 @@ Whether multiple Chrono Boosts on the same building stack additively, refresh th
 
 ### Geyser entrance queuing
 
-GasSlot supports configurable entrance queuing via `ENTRY_LOCK_DURATION` (default 0 = concurrent, matching legacy behavior). When > 0, workers queue at the geyser entrance — only one enters per lock period. However, a 2D sweep (lock 0-20 × harvest 14-28) against 3w and 6w baselines (#639) showed **entrance queuing has no practical effect** — workers never arrive at the geyser simultaneously because walk cycle stagger keeps them apart. The 3w/6w gas gap is not from entrance contention but from per-geyser walk-distance rate interaction: no single gas harvest value satisfies both 3w (optimal at 16 loops) and 6w (optimal at 26 loops). Current harvest=26 is the best compromise. Sweep-test gas-only gaps: 3w -6.5%, 6w -0.4%. Current dual-run gaps (with full playbook economy): 3w vespene -8.7%, 6w vespene -2.8%. Impact: vespeneCollectionRate MAPE at 25.1% is a structural floor (#639 decomposition) — from per-worker gas harvest physics, integer worker count rounding, and PlayerStatsEvent cadence mismatch.
+GasSlot supports configurable entrance queuing via `ENTRY_LOCK_DURATION` (default 0 = concurrent, matching legacy behavior). When > 0, workers queue at the geyser entrance — only one enters per lock period. However, a 2D sweep (lock 0-20 × harvest 14-28) against 3w and 6w baselines (#639) showed **entrance queuing has no practical effect** — workers never arrive at the geyser simultaneously because walk cycle stagger keeps them apart. The 3w/6w gas gap is not from entrance contention but from per-geyser walk-distance rate interaction: no single gas harvest value satisfies both 3w (optimal at 16 loops) and 6w (optimal at 26 loops). Current harvest=26 is the best compromise. Sweep-test gas-only gaps: 3w -6.5%, 6w -0.4%. Current dual-run gaps (with full playbook economy, post-#689): 3w vespene -1.4%, 6w vespene +0.4%. Impact: vespeneCollectionRate MAPE at 25.1% is a structural floor (#639 decomposition) — from per-worker gas harvest physics, integer worker count rounding, and PlayerStatsEvent cadence mismatch.
 
 ### Rally point walk time
 
@@ -726,7 +727,7 @@ Worker physics and economy constants — override without recompiling:
 # application.properties or -D flags
 starcraft.worker.mining-duration-loops=22.0        # SC2 observed — restored in #634
 starcraft.worker.gas-harvest-duration-loops=32.0   # SC2 profiler — calibrated #665
-starcraft.worker.gas-approach-docking-loops=12.5   # gas geyser entry overhead — calibrated #677
+starcraft.worker.gas-approach-docking-loops=11.5   # gas geyser entry overhead — calibrated #689
 starcraft.worker.deposit-duration-loops=12.0       # 8w SC2 cadence — calibrated #661
 starcraft.worker.approach-docking-loops=24.5       # legacy base value — sum of animation + mean path delay (#679)
 starcraft.worker.approach-animation-loops=20.0     # approach animation only — decomposed from approach docking (#679)

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Refs #685 — validate EM gas rates against Liquipedia community-verified values.
- * Map-independent: uses standard 7.6u geyser distance (seeded default).
+ * Map-independent: uses 5u geyser distance (closest match to Liquipedia rates).
  */
 class LiquipediaGasRateCalibrationTest {
 
