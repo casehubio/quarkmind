@@ -336,6 +336,63 @@ class DualRunCalibrationTest {
         io.quarkmind.sc2.emulated.EmulatedGame.setGasDepositLockLoops(8.0);
     }
 
+    @org.junit.jupiter.api.Tag("diagnostic")
+    @Test
+    void gasApproachDockingSweep() {
+        CalibrationBaseline sc2_3w   = loadBaseline("calibration/cal-gas-baseline-3w.json");
+        CalibrationBaseline sc2_6w   = loadBaseline("calibration/cal-gas-dual-6w.json");
+        int                 target3w = sc2_3w.snapshots().get(sc2_3w.snapshots().size() - 1).vespene();
+        int                 target6w = sc2_6w.snapshots().get(sc2_6w.snapshots().size() - 1).vespene();
+
+        System.out.println("=== Gas approach docking sweep ===");
+        System.out.printf("SC2 targets: 3w=%d, 6w=%d%n", target3w, target6w);
+        System.out.printf("%-8s | %-6s %-8s | %-6s %-8s | %-9s%n",
+                          "docking", "3w", "err%", "6w", "err%", "combined");
+
+        java.io.PrintStream           origOut = System.out;
+        java.io.ByteArrayOutputStream buf     = new java.io.ByteArrayOutputStream();
+        java.io.PrintStream           capture = new java.io.PrintStream(buf);
+
+        for (double docking : new double[]{8, 9, 10, 11, 11.5, 12, 12.5, 13, 13.5, 14, 15, 16}) {
+            io.quarkmind.sc2.emulated.EmulatedGame.setGasApproachDockingLoops(docking);
+
+            buf.reset();
+            System.setOut(capture);
+            calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2_3w, true, 1);
+            String out3w = buf.toString();
+            int    em3w  = parseLastVespene(out3w);
+
+            buf.reset();
+            calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, true, 3);
+            String out6w = buf.toString();
+            int    em6w  = parseLastVespene(out6w);
+            System.setOut(origOut);
+
+            double err3w    = (em3w - target3w) * 100.0 / target3w;
+            double err6w    = (em6w - target6w) * 100.0 / target6w;
+            double combined = Math.abs(err3w) + Math.abs(err6w);
+            System.out.printf("%-8.1f | %-6d %-+7.1f%% | %-6d %-+7.1f%% | %-9.1f%n",
+                              docking, em3w, err3w, em6w, err6w, combined);
+        }
+
+        io.quarkmind.sc2.emulated.EmulatedGame.setGasApproachDockingLoops(
+                io.quarkmind.sc2.emulated.WorkerPhysicsConfig.DEFAULT_GAS_APPROACH_DOCKING_LOOPS);
+    }
+
+    private static int parseLastVespene(String output) {
+        int result = -1;
+        for (String line : output.split("\n")) {
+            if (line.contains("tick 304") && line.contains("vespene")) {
+                int idx = line.lastIndexOf("vs ");
+                if (idx >= 0) {
+                    String val = line.substring(idx + 3).trim();
+                    try {result = Integer.parseInt(val);} catch (NumberFormatException ignored) {}
+                }
+            }
+        }
+        return result;
+    }
+
 
     @Test
     void dualRunCalMineralSaturated24wAgainstSC2() {
