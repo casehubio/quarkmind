@@ -41,7 +41,7 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 
 **Replays** work by saving the random seed alongside the action list. Same seed + same actions = identical game. This confirms the randomness is real but seeded.
 
-**EM implementation status:** Worker processing order is shuffled per loop via `Random(42)` in `WorkerSimulation` (#634). Three shuffle points: mineral worker step order, patch acquisition priority, and collision resolution walking-list order. Fixed seed ensures test determinism; `setSeed()` allows per-game variation. EM σ=0.90 (SC2: 0.58), mean=5.32 (exact match). Weapon speed randomness is not yet modeled.
+**EM implementation status:** Worker processing order is shuffled per loop via `Random(42)` in `WorkerSimulation` (#634). Three shuffle points: mineral worker step order, patch acquisition priority, and collision resolution walking-list order. Fixed seed ensures test determinism; `setSeed()` allows per-game variation. EM σ=0.57 (SC2: 0.56, #656), mean=5.29 (SC2: 5.28). Weapon speed randomness is not yet modeled.
 
 ---
 
@@ -702,7 +702,7 @@ Worker physics and economy constants — override without recompiling:
 # application.properties or -D flags
 starcraft.worker.mining-duration-loops=22.0        # SC2 observed — restored in #634
 starcraft.worker.gas-harvest-duration-loops=32.0   # SC2 profiler — calibrated #665
-starcraft.worker.gas-approach-docking-loops=11.5   # gas geyser entry overhead — calibrated #675
+starcraft.worker.gas-approach-docking-loops=12.5   # gas geyser entry overhead — calibrated #677
 starcraft.worker.deposit-duration-loops=12.0       # 8w SC2 cadence — calibrated #661
 starcraft.worker.approach-docking-loops=24.5       # legacy base value — sum of animation + mean path delay (#679)
 starcraft.worker.approach-animation-loops=20.0     # approach animation only — decomposed from approach docking (#679)
@@ -727,5 +727,3 @@ starcraft.economy.rate-interval-loops=160
 - `GasSlot.MAX_INSIDE` (1) — max workers inside gas building simultaneously; Liquipedia: "Only one worker can be inside the building collecting at any one time" (#682)
 - `GasSlot.ENTRY_LOCK_DURATION` (default 0) — gas entrance queuing lock duration in loops
 - `WorkerSimulation.GAS_DEPOSIT_LOCK_LOOPS` (8.0) — per-base gas deposit serialisation lock in loops; prevents simultaneous gas deposits at the same town hall; calibrated #682 by sweep against 6w dual-geyser baseline (lock 6–9 optimal, cliff at 13+)
-- `WorkerSimulation.GAS_COLLISION_SPEED_FACTOR` (0.99) — speed reduction for gas workers on collision with other workers; gas workers now included in unified collision resolution (#682)
-- `WorkerSimulation.GAS_ENTRY_STAGGER_LOOPS` (8.0) — per-worker harvest offset when entering geyser; models SC2's sequential entry (#682, may be removed after serial access calibration)

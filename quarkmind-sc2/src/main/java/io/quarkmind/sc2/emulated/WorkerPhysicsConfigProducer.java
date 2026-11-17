@@ -12,11 +12,11 @@ class WorkerPhysicsConfigProducer {
     double miningDurationLoops;
 
     @ConfigProperty(name = "starcraft.worker.gas-harvest-duration-loops",
-                    defaultValue = "32.0")
+                    defaultValue = "31.7")
     double gasHarvestDurationLoops;
 
     @ConfigProperty(name = "starcraft.worker.gas-approach-docking-loops",
-                    defaultValue = "15.8")
+                    defaultValue = "12.5")
     double gasApproachDockingLoops;
 
     @ConfigProperty(name = "starcraft.worker.deposit-duration-loops",
