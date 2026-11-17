@@ -77,7 +77,7 @@ class ApproachEqualizationSweepTest {
                     scale, mean, sigma, pct7Plus, total, hist);
         }
 
-        MineralPatch.APPROACH_EQUALIZATION_SCALE = 1.0;
+        SimulatedWorker.resetToDefaults();
 
         System.out.println("\nSC2 reference: mean=5.28, sigma=0.56, 7+ tick=0.0%");
         System.out.println("Scale=1.0 = full equalization (current). Scale=0.0 = no equalization (flat approach).");

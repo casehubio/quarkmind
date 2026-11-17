@@ -12,21 +12,25 @@ public record WorkerPhysicsConfig(
         double initialWorkerStaggerLoops,
         double collisionSpeedFactor,
         double approachDockingLoops,
-        double rerouteThresholdLoops
+        double rerouteThresholdLoops,
+        double approachEqualizationScale,
+        float lowSaturationDodgeScale
 ) {
 
-    public static final double DEFAULT_MINING_DURATION_LOOPS      = 22.0;
-    public static final double DEFAULT_GAS_HARVEST_DURATION_LOOPS = 32.0;
-    public static final double DEFAULT_GAS_APPROACH_DOCKING_LOOPS = 11.5;
-    public static final double DEFAULT_DEPOSIT_DURATION_LOOPS     = 12.0;
-    public static final double DEFAULT_ACCELERATION               = 3.5;
-    public static final double DEFAULT_DECELERATION               = 3.5;
-    public static final double DEFAULT_PATCH_DOCKING_OVERHEAD     = 22.0;
-    public static final float  DEFAULT_PATCH_DISTANCE             = 7.0f;
-    public static final double DEFAULT_INITIAL_WORKER_STAGGER     = 6.1;
-    public static final double DEFAULT_COLLISION_SPEED_FACTOR     = 1.0;
-    public static final double DEFAULT_APPROACH_DOCKING_LOOPS     = 24.5;
-    public static final double DEFAULT_REROUTE_THRESHOLD_LOOPS    = 22.0;
+    public static final double DEFAULT_MINING_DURATION_LOOPS       = 22.0;
+    public static final double DEFAULT_GAS_HARVEST_DURATION_LOOPS  = 32.0;
+    public static final double DEFAULT_GAS_APPROACH_DOCKING_LOOPS  = 11.5;
+    public static final double DEFAULT_DEPOSIT_DURATION_LOOPS      = 12.0;
+    public static final double DEFAULT_ACCELERATION                = 3.5;
+    public static final double DEFAULT_DECELERATION                = 3.5;
+    public static final double DEFAULT_PATCH_DOCKING_OVERHEAD      = 22.0;
+    public static final float  DEFAULT_PATCH_DISTANCE              = 7.0f;
+    public static final double DEFAULT_INITIAL_WORKER_STAGGER      = 6.1;
+    public static final double DEFAULT_COLLISION_SPEED_FACTOR      = 1.0;
+    public static final double DEFAULT_APPROACH_DOCKING_LOOPS      = 24.5;
+    public static final double DEFAULT_REROUTE_THRESHOLD_LOOPS     = 22.0;
+    public static final double DEFAULT_APPROACH_EQUALIZATION_SCALE = 0.4;
+    public static final float  DEFAULT_LOW_SATURATION_DODGE_SCALE  = 0.25f;
 
     public WorkerPhysicsConfig(double miningDurationLoops, double gasHarvestDurationLoops,
                                double depositDurationLoops, double acceleration,
@@ -35,7 +39,8 @@ public record WorkerPhysicsConfig(
              depositDurationLoops,
              acceleration, deceleration, patchDockingOverheadLoops, DEFAULT_PATCH_DISTANCE,
              DEFAULT_INITIAL_WORKER_STAGGER, DEFAULT_COLLISION_SPEED_FACTOR,
-             DEFAULT_APPROACH_DOCKING_LOOPS, DEFAULT_REROUTE_THRESHOLD_LOOPS);
+             DEFAULT_APPROACH_DOCKING_LOOPS, DEFAULT_REROUTE_THRESHOLD_LOOPS,
+             DEFAULT_APPROACH_EQUALIZATION_SCALE, DEFAULT_LOW_SATURATION_DODGE_SCALE);
     }
 
     public WorkerPhysicsConfig(double miningDurationLoops, double gasHarvestDurationLoops,
@@ -46,7 +51,8 @@ public record WorkerPhysicsConfig(
              depositDurationLoops,
              acceleration, deceleration, patchDockingOverheadLoops, patchDistance,
              DEFAULT_INITIAL_WORKER_STAGGER, DEFAULT_COLLISION_SPEED_FACTOR,
-             DEFAULT_APPROACH_DOCKING_LOOPS, DEFAULT_REROUTE_THRESHOLD_LOOPS);
+             DEFAULT_APPROACH_DOCKING_LOOPS, DEFAULT_REROUTE_THRESHOLD_LOOPS,
+             DEFAULT_APPROACH_EQUALIZATION_SCALE, DEFAULT_LOW_SATURATION_DODGE_SCALE);
     }
 
     public static WorkerPhysicsConfig defaults() {
@@ -62,7 +68,9 @@ public record WorkerPhysicsConfig(
                 DEFAULT_INITIAL_WORKER_STAGGER,
                 DEFAULT_COLLISION_SPEED_FACTOR,
                 DEFAULT_APPROACH_DOCKING_LOOPS,
-                DEFAULT_REROUTE_THRESHOLD_LOOPS
+                DEFAULT_REROUTE_THRESHOLD_LOOPS,
+                DEFAULT_APPROACH_EQUALIZATION_SCALE,
+                DEFAULT_LOW_SATURATION_DODGE_SCALE
         );
     }
 }

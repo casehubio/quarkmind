@@ -50,9 +50,18 @@ class WorkerPhysicsConfigProducer {
     @ConfigProperty(name = "starcraft.worker.approach-docking-loops",
                     defaultValue = "24.5")
     double approachDockingLoops;
+
     @ConfigProperty(name = "starcraft.worker.reroute-threshold-loops",
                     defaultValue = "22.0")
     double rerouteThresholdLoops;
+
+    @ConfigProperty(name = "starcraft.worker.approach-equalization-scale",
+                    defaultValue = "0.4")
+    double approachEqualizationScale;
+
+    @ConfigProperty(name = "starcraft.worker.low-saturation-dodge-scale",
+                    defaultValue = "0.25")
+    double lowSaturationDodgeScale;
 
 
     @Produces
@@ -63,7 +72,7 @@ class WorkerPhysicsConfigProducer {
                 depositDurationLoops,
                 acceleration, deceleration, patchDockingOverheadLoops, (float) patchDistance,
                 initialWorkerStaggerLoops, collisionSpeedFactor, approachDockingLoops,
-                rerouteThresholdLoops);
+                rerouteThresholdLoops, approachEqualizationScale, (float) lowSaturationDodgeScale);
         SimulatedWorker.configure(config);
         return config;
     }

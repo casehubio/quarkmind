@@ -55,24 +55,24 @@ class SimulatedWorker {
     static final int    LOOPS_PER_TICK    = io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
 
     static void configure(WorkerPhysicsConfig config) {
-        MINING_DURATION_LOOPS        = config.miningDurationLoops();
-        GAS_HARVEST_DURATION_LOOPS   = config.gasHarvestDurationLoops();
-        GAS_APPROACH_DOCKING_LOOPS   = config.gasApproachDockingLoops();
-        DEPOSIT_DURATION_LOOPS       = config.depositDurationLoops();
-        ACCELERATION                 = config.acceleration();
-        DECELERATION                 = config.deceleration();
-        PATCH_DOCKING_OVERHEAD_LOOPS = config.patchDockingOverheadLoops();
-        INITIAL_WORKER_STAGGER_LOOPS = config.initialWorkerStaggerLoops();
-        COLLISION_SPEED_FACTOR       = config.collisionSpeedFactor();
-        APPROACH_DOCKING_LOOPS        = config.approachDockingLoops();
-        REROUTE_THRESHOLD_LOOPS       = config.rerouteThresholdLoops();
-        MineralPatch.PATCH_DISTANCE = config.patchDistance();
+        MINING_DURATION_LOOPS                       = config.miningDurationLoops();
+        GAS_HARVEST_DURATION_LOOPS                  = config.gasHarvestDurationLoops();
+        GAS_APPROACH_DOCKING_LOOPS                  = config.gasApproachDockingLoops();
+        DEPOSIT_DURATION_LOOPS                      = config.depositDurationLoops();
+        ACCELERATION                                = config.acceleration();
+        DECELERATION                                = config.deceleration();
+        PATCH_DOCKING_OVERHEAD_LOOPS                = config.patchDockingOverheadLoops();
+        INITIAL_WORKER_STAGGER_LOOPS                = config.initialWorkerStaggerLoops();
+        COLLISION_SPEED_FACTOR                      = config.collisionSpeedFactor();
+        APPROACH_DOCKING_LOOPS                      = config.approachDockingLoops();
+        REROUTE_THRESHOLD_LOOPS                     = config.rerouteThresholdLoops();
+        MineralPatch.PATCH_DISTANCE                 = config.patchDistance();
+        MineralPatch.APPROACH_EQUALIZATION_SCALE    = config.approachEqualizationScale();
+        WorkerSimulation.LOW_SATURATION_DODGE_SCALE = config.lowSaturationDodgeScale();
     }
 
     static void resetToDefaults() {
         configure(WorkerPhysicsConfig.defaults());
-        MineralPatch.APPROACH_EQUALIZATION_SCALE    = 0.4;
-        WorkerSimulation.LOW_SATURATION_DODGE_SCALE = 0.25f;
     }
 
 

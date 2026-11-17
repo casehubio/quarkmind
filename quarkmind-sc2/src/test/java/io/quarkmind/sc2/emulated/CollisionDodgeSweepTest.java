@@ -22,7 +22,7 @@ class CollisionDodgeSweepTest {
 
     @AfterEach
     void restoreDefault() {
-        WorkerSimulation.LOW_SATURATION_DODGE_SCALE = 0.25f;
+        SimulatedWorker.resetToDefaults();
     }
 
     @Test
