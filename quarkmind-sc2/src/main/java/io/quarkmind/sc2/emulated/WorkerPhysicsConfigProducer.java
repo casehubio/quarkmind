@@ -16,7 +16,7 @@ class WorkerPhysicsConfigProducer {
     double gasHarvestDurationLoops;
 
     @ConfigProperty(name = "starcraft.worker.gas-approach-docking-loops",
-                    defaultValue = "11.5")
+                    defaultValue = "15.8")
     double gasApproachDockingLoops;
 
     @ConfigProperty(name = "starcraft.worker.deposit-duration-loops",

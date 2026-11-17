@@ -47,12 +47,14 @@ class WorkerSimulation {
 
     private Point2d gasTarget(GasSlot slot) {
         if (!useEdgeToEdge) {return slot.position;}
-        return edgePoint(slot.position, bases.get(slot.baseIndex).position(), GAS_BUILDING_RADIUS);
+        // Walk to the actual building edge — use reduced radius so ARRIVAL_THRESHOLD lands the worker at the true edge
+        return edgePoint(slot.position, bases.get(slot.baseIndex).position(), GAS_BUILDING_RADIUS - (float) SimulatedWorker.ARRIVAL_THRESHOLD);
     }
 
     private Point2d gasReturnTarget(GasSlot slot) {
         if (!useEdgeToEdge) {return bases.get(slot.baseIndex).position();}
-        return edgePoint(bases.get(slot.baseIndex).position(), slot.position, TOWN_HALL_RADIUS);
+        // Walk to the actual TH edge — use reduced radius so ARRIVAL_THRESHOLD lands the worker at the true edge
+        return edgePoint(bases.get(slot.baseIndex).position(), slot.position, TOWN_HALL_RADIUS - (float) SimulatedWorker.ARRIVAL_THRESHOLD);
     }
 
 

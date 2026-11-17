@@ -115,7 +115,7 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 | Constant | Code value | Real SC2 | Source | Confidence | Config property |
 |----------|-----------|----------|--------|------------|-----------------|
 | Gas harvest duration (measured) | 32.0 loops (1.43s) | 32 loops (1.43s) inside geyser | SC2 profiler, GasCycleProfilerTest (#665) | **Calibrated** — #665 | `starcraft.worker.gas-harvest-duration-loops` |
-| Gas approach docking | 11.5 loops (0.51s) | (included in walk, entry animation) | Calibrated against oracle MAPE (#675) | **Calibrated** — #675 | `starcraft.worker.gas-approach-docking-loops` |
+| Gas approach docking | 15.8 loops (0.71s) | (included in walk, entry animation) | Calibrated against 3w dual-run baseline (#672) | **Calibrated** — #672 | `starcraft.worker.gas-approach-docking-loops` |
 | Gas building radius | 1.75u | 1.69u (Assimilator) | SC2 API `Unit.getRadius()` (#665) | **Calibrated** — #665 | `GAS_BUILDING_RADIUS` (compile-time) |
 | Gas cargo | 4 | 4 | Liquipedia | **Published** | — |
 | Max workers per geyser | 3 | 3 | SC2 mechanics | **Published** | — |
@@ -123,20 +123,24 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 | Gas geyser distance (SC2 API) | 5.7u and 8.5u | — | SC2 observation API | **Calibrated** — #602 | — |
 | Inter-geyser distance (same base) | 4.0u (some maps) | — | Oracle replay analysis (451 pairs, 118 replays) | **Measured** — #671 | — |
 
-**Edge-to-edge gas walks (#665):** Gas workers walk to building edge points (not centers), using `GAS_BUILDING_RADIUS=1.75` and `TOWN_HALL_RADIUS=2.75`. SC2 API confirms Assimilator radius=1.69, Nexus radius=2.75. Workers enter the geyser at 1.84–1.87u from gas center (just outside the building radius).
+**Edge-to-edge gas walks (#665, #672):** Gas workers walk to building edge points using reduced radii: `GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD = 1.25` and `TOWN_HALL_RADIUS - ARRIVAL_THRESHOLD = 2.25`. This compensates for the 0.5u ARRIVAL_THRESHOLD stopping distance, so the worker physically stops at the actual building edge. SC2 API confirms Assimilator radius=1.69, Nexus radius=2.75. Workers enter the geyser at 1.84–1.87u from gas center (just outside the building radius).
 
-**Gas harvest duration decomposition (#665, #675):** SC2 profiler (per-game-loop tracking, `GasCycleProfilerTest`) confirms the time inside the geyser is exactly 32 loops (1.43s), range=32-32 across 50 cycles. The EM now uses `GAS_HARVEST_DURATION_LOOPS=32` (measured) + `GAS_APPROACH_DOCKING_LOOPS=11.5` (calibrated geyser entry overhead), matching the mineral approach docking pattern. Previous `GAS_HARVEST_DURATION_LOOPS=66` was a composite that over-compensated for walk shortening by ~23 loops/cycle.
+**Gas harvest duration decomposition (#665, #675, #672):** SC2 profiler (per-game-loop tracking, `GasCycleProfilerTest`) confirms the time inside the geyser is exactly 32 loops (1.43s), range=32-32 across 50 cycles. The EM now uses `GAS_HARVEST_DURATION_LOOPS=32` (measured) + `GAS_APPROACH_DOCKING_LOOPS=15.8` (calibrated geyser entry overhead + path deviation, #672), matching the mineral approach docking pattern. Gas walk targets use reduced building radius (`GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD`) so the ARRIVAL_THRESHOLD stopping distance lands the worker at the actual building edge (#672). Previous `GAS_HARVEST_DURATION_LOOPS=66` was a composite that over-compensated for walk shortening by ~23 loops/cycle.
 
 **SC2 gas cycle decomposition (#665, TorchesAIE_v4, 3w on 1 geyser):**
 
-| Phase | SC2 observed | EM (#675) | EM (pre-#675) |
-|-------|-------------|-----------|---------------|
-| Walk to geyser | 45 loops (2.0 ticks) | ~36 loops | ~36 loops |
-| Approach/dock at geyser | (included in walk) | 11.5 loops | 0 |
-| Inside geyser (harvest) | 32 loops (1.5 ticks) | 32 loops | 66 loops |
-| Walk to base | 45 loops (2.0 ticks) | ~36 loops | ~36 loops |
-| Deposit | (included in walk) | 12 loops (#661) | 7 loops |
-| **Full cycle** | **122 loops (5.5 ticks)** | **~127.5 loops (5.8 ticks)** | ~145 loops (6.6 ticks) |
+| Phase | SC2 observed | EM (#672) | EM (#675) | EM (pre-#675) |
+|-------|-------------|-----------|-----------|---------------|
+| Walk to geyser | 45 loops (2.0 ticks) | ~42 loops (est.) | ~36 loops | ~36 loops |
+| Approach/dock at geyser | (included in walk) | 15.8 loops | 11.5 loops | 0 |
+| Inside geyser (harvest) | 32 loops (1.5 ticks) | 32 loops | 32 loops | 66 loops |
+| Walk to base | 45 loops (2.0 ticks) | ~42 loops (est.) | ~36 loops | ~36 loops |
+| Deposit | (included in walk) | 12 loops (#661) | 12 loops (#661) | 7 loops |
+| **Full cycle** | **122 loops (5.5 ticks)** | **~122 loops (measured)** | ~127.5 loops (5.8 ticks) | ~145 loops (6.6 ticks) |
+
+**EM (#672) cycle note:** Per-phase walk estimates (~42 loops) are analytical — continuous-time kinematics. The EM's discrete per-loop stepping and sub-tick phase chaining (gas workers transition between walk/harvest/deposit within a single tick) produce a shorter effective cycle. The measured cycle is ~122 loops (confirmed by 0.0% error on 3w dual-run). The per-phase sum overestimates because it ignores sub-tick savings at each phase transition.
+
+**#672 gas walk ARRIVAL_THRESHOLD compensation:** Gas walk targets now use reduced building radius (`GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD` and `TOWN_HALL_RADIUS - ARRIVAL_THRESHOLD`) so the ARRIVAL_THRESHOLD stopping distance lands the worker at the actual building edge, adding ~6 loops per round trip. Combined with approach docking recalibrated from 11.5→15.8, the 3w dual-run is **0.0% error** (exact match at tick 304). The 6w dual-run is +6.7% — a multi-geyser surplus tracked in #682.
 
 **Gas rate MAPE improvement (#675):** vespeneCollectionRate MAPE at 5-min dropped from 29.9% to 15.3% (aggregate, 236 player runs). Per-race: Protoss 16.1→15.2%, Terran 24.0→13.2%, Zerg 31.8→25.4%. Zerg residual is variance-driven (per-replay cycle differences), not systematic bias.
 
