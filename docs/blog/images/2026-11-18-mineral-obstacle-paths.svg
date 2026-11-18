@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arrowR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#e74c3c" stroke-width="1.2"/>
+    </marker>
+    <marker id="arrowB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#3498db" stroke-width="1.2"/>
+    </marker>
+    <marker id="arrowG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#888" stroke-width="1.2"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="720" height="420" fill="#1a1a2e" rx="8"/>
+
+  <!-- Title -->
+  <text x="360" y="32" text-anchor="middle" fill="#e0e0e0" font-size="15" font-weight="600">Mineral walk paths: SC2 vs emulated game</text>
+
+  <!-- === TOP: SC2 reality === -->
+  <text x="30" y="68" fill="#aaa" font-size="12" font-weight="500">SC2 — obstacle-aware pathfinding</text>
+
+  <!-- Town Hall -->
+  <circle cx="120" cy="140" r="32" fill="none" stroke="#4a90d9" stroke-width="1.5" opacity="0.6"/>
+  <rect x="100" y="120" width="40" height="40" fill="#2d5a8e" rx="4" opacity="0.9"/>
+  <text x="120" y="145" text-anchor="middle" fill="#c0d8f0" font-size="10">Nexus</text>
+
+  <!-- Mineral patches (arc) -->
+  <rect x="410" y="82" width="24" height="12" fill="#38a169" rx="3" opacity="0.85"/>
+  <rect x="420" y="102" width="24" height="12" fill="#38a169" rx="3" opacity="0.85"/>
+  <rect x="425" y="122" width="24" height="12" fill="#38a169" rx="3" opacity="0.85"/>
+  <rect x="425" y="142" width="24" height="12" fill="#38a169" rx="3" opacity="0.85"/>
+  <rect x="420" y="162" width="24" height="12" fill="#38a169" rx="3" opacity="0.85"/>
+  <rect x="410" y="182" width="24" height="12" fill="#38a169" rx="3" opacity="0.85"/>
+
+  <!-- Target patch highlighted -->
+  <rect x="410" y="182" width="24" height="12" fill="#2ecc71" rx="3" stroke="#5dde9e" stroke-width="1"/>
+  <text x="446" y="192" fill="#5dde9e" font-size="9">target</text>
+
+  <!-- SC2 outbound path (curved around mineral line) -->
+  <path d="M152,140 C220,140 320,80 380,76 Q400,74 410,82"
+        fill="none" stroke="#e74c3c" stroke-width="2" stroke-dasharray="6,3"
+        marker-end="url(#arrowR)" opacity="0.9"/>
+  <text x="260" y="78" fill="#e74c3c" font-size="10" opacity="0.9">outbound: curved path</text>
+  <text x="260" y="92" fill="#e74c3c" font-size="10" opacity="0.7">around mineral line (+6%)</text>
+
+  <!-- SC2 return path (direct) -->
+  <path d="M410,192 L155,148"
+        fill="none" stroke="#3498db" stroke-width="2"
+        marker-end="url(#arrowB)" opacity="0.9"/>
+  <text x="240" y="186" fill="#3498db" font-size="10" opacity="0.9">return: direct path (-35%)</text>
+
+  <!-- Stopping positions -->
+  <circle cx="152" cy="140" r="3" fill="#f39c12"/>
+  <text x="158" y="136" fill="#f39c12" font-size="9">3.755u</text>
+  <circle cx="410" cy="190" r="3" fill="#f39c12"/>
+  <text x="395" y="208" fill="#f39c12" font-size="9">1.215u</text>
+
+  <!-- === BOTTOM: EM straight lines === -->
+  <text x="30" y="268" fill="#aaa" font-size="12" font-weight="500">EM — straight-line walks (no obstacles)</text>
+
+  <!-- Town Hall -->
+  <circle cx="120" cy="340" r="32" fill="none" stroke="#4a90d9" stroke-width="1.5" opacity="0.6"/>
+  <rect x="100" y="320" width="40" height="40" fill="#2d5a8e" rx="4" opacity="0.9"/>
+  <text x="120" y="345" text-anchor="middle" fill="#c0d8f0" font-size="10">Nexus</text>
+
+  <!-- Mineral patches (arc) -->
+  <rect x="410" y="282" width="24" height="12" fill="#38a169" rx="3" opacity="0.85"/>
+  <rect x="420" y="302" width="24" height="12" fill="#38a169" rx="3" opacity="0.85"/>
+  <rect x="425" y="322" width="24" height="12" fill="#38a169" rx="3" opacity="0.85"/>
+  <rect x="425" y="342" width="24" height="12" fill="#38a169" rx="3" opacity="0.85"/>
+  <rect x="420" y="362" width="24" height="12" fill="#38a169" rx="3" opacity="0.85"/>
+  <rect x="410" y="382" width="24" height="12" fill="#38a169" rx="3" opacity="0.85"/>
+
+  <!-- Target patch -->
+  <rect x="410" y="382" width="24" height="12" fill="#2ecc71" rx="3" stroke="#5dde9e" stroke-width="1"/>
+  <text x="446" y="392" fill="#5dde9e" font-size="9">target</text>
+
+  <!-- EM outbound path (straight through minerals) -->
+  <path d="M152,340 L410,388"
+        fill="none" stroke="#888" stroke-width="2" stroke-dasharray="6,3"
+        marker-end="url(#arrowG)" opacity="0.7"/>
+
+  <!-- EM return path (same straight line) -->
+  <path d="M410,386 L155,342"
+        fill="none" stroke="#888" stroke-width="2"
+        marker-end="url(#arrowG)" opacity="0.7"/>
+
+  <!-- Ghost walk through patches -->
+  <text x="300" y="340" fill="#888" font-size="10" transform="rotate(-12,300,340)" opacity="0.7">walks through patches</text>
+
+  <!-- Approach docking compensation label -->
+  <rect x="490" y="310" width="200" height="60" fill="#2a2a40" rx="6" stroke="#555" stroke-width="0.5"/>
+  <text x="590" y="330" text-anchor="middle" fill="#f39c12" font-size="10" font-weight="500">approach docking = 24.5 loops</text>
+  <text x="590" y="346" text-anchor="middle" fill="#aaa" font-size="9">animation (20) + path deviation (4.5)</text>
+  <text x="590" y="362" text-anchor="middle" fill="#aaa" font-size="9">compensates for the missing curve</text>
+
+  <!-- Legend -->
+  <line x1="500" y1="90" x2="540" y2="90" stroke="#e74c3c" stroke-width="2" stroke-dasharray="6,3"/>
+  <text x="548" y="94" fill="#e0e0e0" font-size="10">outbound (base → patch)</text>
+  <line x1="500" y1="110" x2="540" y2="110" stroke="#3498db" stroke-width="2"/>
+  <text x="548" y="114" fill="#e0e0e0" font-size="10">return (patch → base)</text>
+  <circle cx="520" cy="130" r="3" fill="#f39c12"/>
+  <text x="548" y="134" fill="#e0e0e0" font-size="10">effective stopping distance</text>
+</svg>
