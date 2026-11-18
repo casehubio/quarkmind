@@ -8,7 +8,7 @@ date: 2026-04-06
 **Date:** 2026-04-06
 **Type:** phase-update
 
-![Protoss Stalker](/quarkmind/blog/assets/sc2-stalker.jpg)
+![Protoss Stalker](assets/sc2-stalker.jpg)
 
 ---
 

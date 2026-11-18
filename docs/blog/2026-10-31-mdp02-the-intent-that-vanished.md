@@ -15,7 +15,6 @@ The upgrade-research playbook kept failing. 310 ticks of simulation, 413 vespene
 
 The problem was in how EmulatedGame handles research that can't start immediately. If the Forge isn't finished building or resources are short at the exact tick the intent arrives, `handleResearch()` calls `deferResearchIntent()` — adding it to an internal retry list. The game engine's main loop (`EmulatedEngine`) calls `processDeferredResearchIntents()` every tick to drain that list. But the playbook runner isn't the game engine. It has its own tick loop, and it never called the drain method.
 
-![Deferred research intent lifecycle](images/deferred-intent-lifecycle.svg)
 
 The research intent entered the deferred list and stayed there forever. The handler returned success (the intent was accepted), so the playbook marked the step as fired and never retried it. From the runner's perspective, the research was happening. From the game's perspective, it was sitting in a list nobody read.
 

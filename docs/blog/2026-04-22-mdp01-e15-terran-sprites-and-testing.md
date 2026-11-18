@@ -34,7 +34,7 @@ interesting: it's a flying unit, so it floats above the ground plane. A
 `FLYING_UNITS = new Set(['MEDIVAC'])` constant drives the height offset; adding
 future air units is one line.
 
-[![E15 showcase — Terran and Protoss sprites in the isometric visualizer](/quarkmind/blog/assets/e15-showcase-sprites.png)](/quarkmind/blog/assets/e15-showcase-sprites.png)
+[![E15 showcase — Terran and Protoss sprites in the isometric visualizer](assets/e15-showcase-sprites.png)](assets/e15-showcase-sprites.png)
 
 Then the debugging session. I wanted to see all the sprites together in the
 visualizer, so we built a `ShowcaseResource` endpoint that seeds one of every

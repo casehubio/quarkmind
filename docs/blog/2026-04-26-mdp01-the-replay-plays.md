@@ -79,7 +79,7 @@ move now.
 
 ## The result
 
-![Torches AIE replay at 7 minutes — both armies visible on real terrain](/quarkmind/blog/assets/replay-terrain-units.png)
+![Torches AIE replay at 7 minutes — both armies visible on real terrain](assets/replay-terrain-units.png)
 
 At 7 minutes in: 106 units, 141 supply, both armies manoeuvring across real Torches AIE terrain. The stepped high ground is visible, the cliff walls cut across the map the way they do in the actual game, and the replay scrub bar at the bottom lets you jump to any moment.
 

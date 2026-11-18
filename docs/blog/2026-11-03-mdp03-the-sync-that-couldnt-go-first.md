@@ -30,7 +30,6 @@ The insight: vespene sync is an *affordability gate* — it makes the right inte
 
 The fix was to move the mineral sync to *after* intents fire, right before the snapshot. Intents still use the emulated mineral pool (inflated, permissive) for their affordability checks. Then the sync resets minerals to the real player's post-tick value. The snapshot captures accurate minerals without interfering with intent processing.
 
-![Harness tick flow showing where vespene and mineral syncs occur](images/mineral-sync-timing.svg)
 
 Vespene syncs before intents — for affordability. Minerals sync after intents — for accuracy. Same pattern, different positions, for different reasons.
 

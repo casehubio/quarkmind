@@ -61,7 +61,7 @@ profile. Both fixed before the next task began.
 
 ## The map now looks like something
 
-[![Visualizer showing high ground (warm brown, top) separated from low ground (dark navy, bottom) by a wall line with a ramp gap](/quarkmind/blog/assets/e8-high-ground.png)](/quarkmind/blog/assets/e8-high-ground.png)
+[![Visualizer showing high ground (warm brown, top) separated from low ground (dark navy, bottom) by a wall line with a ramp gap](assets/e8-high-ground.png)](assets/e8-high-ground.png)
 
 Warm tan/brown above the wall line — HIGH ground. Dark canvas below — LOW ground.
 The wall stripe with the ramp gap visible through it. It looks like a proper

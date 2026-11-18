@@ -34,7 +34,6 @@ The first version reserved for any pending build. This broke Zerg immediately �
 
 The insight: cheap builds don't need help. Supply blocks — the natural pauses when you're at 23/23 supply waiting for the next Pylon — create savings windows where minerals accumulate. A 100-mineral Pylon or 150-mineral Gateway fires during these windows without intervention. Only truly expensive builds (400-mineral Nexus, 400-mineral Command Center) need the runner to actively suppress spending.
 
-![Mineral reservation mechanism](images/mineral-reservation-mechanism.svg)
 
 The threshold landed at 350 minerals. Below that, the natural supply block mechanism handles it. Above it, the runner suppresses both continuous training and deferred supply-triggered builds until the expensive build fires.
 

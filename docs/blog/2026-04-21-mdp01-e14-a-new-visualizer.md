@@ -27,7 +27,7 @@ The 3D sphere models with cartoon eyes were surprisingly good. The directional
 the depth and camera feel of a real RTS, with hand-drawn characters readable
 from any angle.
 
-[![E14 visualizer — isometric view with directional cartoon sprites](/quarkmind/blog/assets/e14-3d-visualizer-iso.png)](/quarkmind/blog/assets/e14-3d-visualizer-iso.png)
+[![E14 visualizer — isometric view with directional cartoon sprites](assets/e14-3d-visualizer-iso.png)](assets/e14-3d-visualizer-iso.png)
 
 ## The directional sprite mechanism
 
@@ -71,7 +71,7 @@ The final code review flagged a hardcoded `64` in the fog decode loop:
 everything worked. If the terrain endpoint ever returns a different width, the
 fog decodes silently against the wrong stride. Changed to `gz * GRID_W + gx`.
 
-[![Low-angle view showing 3D terrain and fog of war](/quarkmind/blog/assets/e14-3d-visualizer-low.png)](/quarkmind/blog/assets/e14-3d-visualizer-low.png)
+[![Low-angle view showing 3D terrain and fog of war](assets/e14-3d-visualizer-low.png)](assets/e14-3d-visualizer-low.png)
 
 ## What shipped
 

@@ -8,7 +8,7 @@ date: 2026-04-06
 **Date:** 2026-04-06
 **Type:** phase-update
 
-![SC2 Zealot](/quarkmind/blog/assets/sc2-zealot.jpg)
+![SC2 Zealot](assets/sc2-zealot.jpg)
 
 ---
 

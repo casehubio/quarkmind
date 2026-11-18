@@ -25,7 +25,6 @@ I carried this mental model to gas. A gas building holds 2250 vespene. Workers e
 
 ## What one-at-a-time costs
 
-![Queue vs concurrent gas harvesting — worker timelines over 20 ticks](images/queue-vs-concurrent-gas.svg)
 
 The diagram makes the cost visible. With a 2-tick harvest time and 2-tick walk each way, a single worker completes a full cycle in 6 ticks. With the queue model, worker 2 waits 2 ticks before entering (while worker 1 finishes), and worker 3 waits 4 ticks. Over 20 ticks: 6 deposits with the queue, 9 with concurrent entry. That's 50% more gas income from the same three workers, same building, same cycle time — the only difference is whether the building door admits one worker or three.
 
