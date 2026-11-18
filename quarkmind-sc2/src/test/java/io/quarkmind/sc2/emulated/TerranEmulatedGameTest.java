@@ -511,5 +511,29 @@ class TerranEmulatedGameTest {
         assertThat(accepted).isFalse();
     }
 
+    @Test
+    void muleCalldown_afterMorphFromCC_createsMule() {
+        game.setMineralsForTesting(500);
+        final Building cc = game.snapshot().myBuildings().stream()
+                                .filter(b -> b.type() == BuildingType.COMMAND_CENTER)
+                                .findFirst().orElseThrow();
+
+        game.applyIntent(MorphIntent.of(cc.tag(), "COMMAND_CENTER", "ORBITAL_COMMAND"));
+
+        int morphTicks = SC2Data.buildTimeInTicks(BuildingType.ORBITAL_COMMAND);
+        for (int i = 0; i <= morphTicks; i++) {game.tick();}
+
+        boolean hasOC = game.snapshot().myBuildings().stream()
+                            .anyMatch(b -> b.type() == BuildingType.ORBITAL_COMMAND && b.isComplete());
+        assertThat(hasOC).as("OC should be complete after morph").isTrue();
+
+        boolean accepted = game.applyAbility(new AbilityIntent("pb-orbital_command", "MULE_CALLDOWN", null));
+        assertThat(accepted).as("MULE calldown should be accepted").isTrue();
+
+        long muleCount = game.snapshot().myUnits().stream()
+                             .filter(u -> u.type() == UnitType.MULE).count();
+        assertThat(muleCount).as("MULE should exist after calldown").isEqualTo(1);
+    }
+
 
 }

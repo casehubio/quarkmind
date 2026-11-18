@@ -1226,6 +1226,9 @@ public class EmulatedGame {
 
     private void handleMorph(MorphIntent m, PlayerState state, PhysicsState physics, long absLoop) {
         BuildingType targetBt = MORPH_BUILDING_TARGETS.get(m.targetName());
+        if (targetBt == null) {
+            try {targetBt = BuildingType.valueOf(m.targetName());} catch (IllegalArgumentException ignored) {}
+        }
         if (targetBt != null) {
             String buildingTag = m.unitTag();
             if (isAutoResolvable(buildingTag)) {
@@ -1237,8 +1240,9 @@ public class EmulatedGame {
                     if (resolved != null) {buildingTag = resolved.tag();}
                 } catch (IllegalArgumentException ignored) {}
             }
-            final String resolvedTag = buildingTag;
-            boolean trackerDriven = m.unitTag() != null && m.unitTag().startsWith("r-");
+            final String       resolvedTag   = buildingTag;
+            final BuildingType finalTargetBt = targetBt;
+            boolean            trackerDriven = m.unitTag() != null && m.unitTag().startsWith("r-");
             Building source = state.buildings().stream()
                                    .filter(b -> b.tag().equals(resolvedTag) && (b.isComplete() || trackerDriven))
                                    .findFirst().orElse(null);
@@ -1247,13 +1251,10 @@ public class EmulatedGame {
                 return;
             }
             if (trackerDriven) {
-                // Tracker-driven morphs are instant type swaps — matches GT behavior.
-                // GT (ReplaySimulatedGame) applies UnitTypeChange as an instant swap,
-                // so the building stays complete throughout the morph.
                 state.replaceAllBuildings(b -> b.tag().equals(resolvedTag)
-                    ? new Building(b.tag(), targetBt, b.position(), b.health(), b.maxHealth(), b.isComplete())
-                    : b);
-                log.debugf("[EMULATED] Tracker-driven building morph — %s → %s (tag=%s)", m.sourceName(), targetBt, resolvedTag);
+                                               ? new Building(b.tag(), finalTargetBt, b.position(), b.health(), b.maxHealth(), b.isComplete())
+                                               : b);
+                log.debugf("[EMULATED] Tracker-driven building morph — %s → %s (tag=%s)", m.sourceName(), finalTargetBt, resolvedTag);
                 return;
             }
             int mCost = SC2Data.mineralCost(targetBt);
@@ -1265,38 +1266,38 @@ public class EmulatedGame {
             }
             state.deductMinerals(mCost);
             state.deductVespene(gCost);
-            final int morphMCost = (state == friendly) ? SC2Data.mineralCost(targetBt) : 0;
-            final int morphGCost = (state == friendly) ? SC2Data.gasCost(targetBt) : 0;
+            final int morphMCost = (state == friendly) ? SC2Data.mineralCost(finalTargetBt) : 0;
+            final int morphGCost = (state == friendly) ? SC2Data.gasCost(finalTargetBt) : 0;
             state.replaceAllBuildings(b -> b.tag().equals(resolvedTag)
-                                           ? new Building(b.tag(), targetBt, b.position(), b.health(), b.maxHealth(), false)
+                                           ? new Building(b.tag(), finalTargetBt, b.position(), b.health(), b.maxHealth(), false)
                                            : b);
-            final RaceModel model       = (state == friendly) ? playerRaceModel : null;
+            final RaceModel model = (state == friendly) ? playerRaceModel : null;
             long completesAtLoop = (m.completionLoop() >= 0)
-                ? m.completionLoop()
-                : gameFrame * (long) SC2Data.LOOPS_PER_TICK + SC2Data.buildTimeInLoops(targetBt);
+                                   ? m.completionLoop()
+                                   : gameFrame * (long) SC2Data.LOOPS_PER_TICK + SC2Data.buildTimeInLoops(finalTargetBt);
             physics.pendingCompletions.add(new PhysicsState.PendingCompletion(completesAtLoop, resolvedTag, () -> {
                 markBuildingComplete(resolvedTag, state);
                 if (state == friendly) {
-                    economyTracker.recordMorphSpending(targetBt, morphMCost, morphGCost);
+                    economyTracker.recordMorphSpending(finalTargetBt, morphMCost, morphGCost);
                 }
-                if (model != null) {model.onBuildingComplete(state, targetBt, resolvedTag);}
-                log.debugf("[EMULATED] Building morph complete — %s → %s", m.sourceName(), targetBt);
+                if (model != null) {model.onBuildingComplete(state, finalTargetBt, resolvedTag);}
+                log.debugf("[EMULATED] Building morph complete — %s → %s", m.sourceName(), finalTargetBt);
             }));
             return;
         }
         BuildingType addonTarget = ADDON_SWAP_TARGETS.get(m.targetName());
         if (addonTarget != null) {
             state.replaceAllBuildings(b -> b.tag().equals(m.unitTag())
-                ? new Building(b.tag(), addonTarget, b.position(), b.health(), b.maxHealth(), b.isComplete())
-                : b);
+                                           ? new Building(b.tag(), addonTarget, b.position(), b.health(), b.maxHealth(), b.isComplete())
+                                           : b);
             log.debugf("[EMULATED] Add-on swap — %s → %s (tag=%s)", m.sourceName(), addonTarget, m.unitTag());
             return;
         }
         UnitType modeTarget = MODE_SWITCH_TARGETS.get(m.targetName());
         if (modeTarget != null) {
             state.replaceAllUnits(u -> u.tag().equals(m.unitTag())
-                ? new Unit(u.tag(), modeTarget, u.position(), u.health(), u.maxHealth(), u.shields(), u.maxShields(), u.weaponCooldownTicks(), u.blinkCooldownTicks())
-                : u);
+                                       ? new Unit(u.tag(), modeTarget, u.position(), u.health(), u.maxHealth(), u.shields(), u.maxShields(), u.weaponCooldownTicks(), u.blinkCooldownTicks())
+                                       : u);
             return;
         }
         UnitType targetUnit = MORPH_UNIT_TARGETS.get(m.targetName());

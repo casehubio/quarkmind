@@ -470,8 +470,7 @@ class DualRunCalibrationTest {
     @Test
     void dualRunCalMuleIsolationAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mule-isolation.json");
-        // unitTolerance=3: EM doesn't create MULE units from calldown
-        CalibrationResult   result      = calibrate("playbooks/cal-mule-isolation.yaml", sc2Baseline, true, 3);
+        CalibrationResult   result      = calibrate("playbooks/cal-mule-isolation.yaml", sc2Baseline, true, 1);
         System.out.println(result.report());
         if (!result.passed()) {
             System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",

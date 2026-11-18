@@ -96,9 +96,12 @@ public class SC2DeliveryHandler implements DeliveryHandler {
     }
 
     private StepOutcome doMorph(String stepName, Map<String, Object> data) {
-        String target = (String) data.get("morph");
-        String source = (String) data.get("source");
-        BuildingType bt = MORPH_BUILDING_TARGETS.get(target);
+        String       target = (String) data.get("morph");
+        String       source = (String) data.get("source");
+        BuildingType bt     = MORPH_BUILDING_TARGETS.get(target);
+        if (bt == null) {
+            try {bt = BuildingType.valueOf(target);} catch (IllegalArgumentException ignored) {}
+        }
         if (bt != null) {
             int mCost = SC2Data.mineralCost(bt);
             int gCost = SC2Data.gasCost(bt);
