@@ -75,6 +75,7 @@ class SimulatedWorker {
 
     static void resetToDefaults() {
         configure(WorkerPhysicsConfig.defaults());
+        WorkerSimulation.resetToDefaults();
     }
 
 

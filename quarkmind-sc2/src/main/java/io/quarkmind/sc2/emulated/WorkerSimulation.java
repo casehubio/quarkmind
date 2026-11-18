@@ -70,6 +70,12 @@ class WorkerSimulation {
     static double GAS_DEPOSIT_LOCK_LOOPS = 8.0;
     static double GAS_DEPOSIT_CONGESTION_PER_WORKER = 0.0;
 
+    static void resetToDefaults() {
+        LOW_SATURATION_DODGE_SCALE = WorkerPhysicsConfig.DEFAULT_LOW_SATURATION_DODGE_SCALE;
+        GAS_DEPOSIT_LOCK_LOOPS = 8.0;
+        GAS_DEPOSIT_CONGESTION_PER_WORKER = 0.0;
+    }
+
 
     WorkerSimulation() {
         double speed = SC2Data.unitSpeed(UnitType.PROBE);

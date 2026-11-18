@@ -748,7 +748,6 @@ starcraft.economy.rate-interval-loops=160
 - `SimulatedWorker.COLLISION_RADIUS` (0.75, was 0.375) — worker collision detection radius; calibrated #634
 - `MineralPatch.CLOSE_PATCH_DISTANCE` (6.7f) — default close patch distance for first 4 patches; calibrated #651 from SC2 API positions
 - `MineralPatch.FAR_PATCH_DISTANCE` (7.5f) — default far patch distance for last 4 patches; calibrated #651 from SC2 API positions
-- `MineralPatch.APPROACH_EQUALIZATION_SCALE` (0.4) — legacy per-patch approach docking equalization; superseded by PATH_DEVIATION_SCALE (#679) but retained for backward compatibility
 - `MineralPatch.PATH_DEVIATION_SCALE` (0.4) — outbound path delay scaling factor: fraction of E2E distance difference converted to loop delay; calibrated #679 from 8w cadence data
 - `MineralPatch.PATH_DEVIATION_BASE` (4.5) — outbound path delay base offset in loops; at median E2E, pathDelay = PATH_DEVIATION_BASE; calibrated #679
 - `WorkerSimulation.LOW_SATURATION_DODGE_SCALE` (0.25f) — collision dodge reduction at ≤2 workers/patch; calibrated #656 from dodge sweep
