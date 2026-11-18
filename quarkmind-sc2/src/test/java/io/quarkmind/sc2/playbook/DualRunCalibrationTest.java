@@ -836,10 +836,9 @@ class DualRunCalibrationTest {
                 if (canFire) {
                     if (skipBuildings && "build".equals(step.action())) {
                         BuildingType bt = BuildingType.valueOf((String) step.params().get("build"));
-                        if (deductBuildingCosts) {
-                            int mCost = SC2Data.mineralCost(bt);
-                            if (game.snapshot().minerals() < mCost) { continue; }
-                        }
+                        int mCost = SC2Data.mineralCost(bt);
+                        int gCost = SC2Data.gasCost(bt);
+                        if (deductBuildingCosts && game.snapshot().minerals() < mCost) { continue; }
                         Point2d pos;
                         if (SC2Data.isGasBuilding(bt)) {
                             var geysers = game.snapshot().geysers();
@@ -851,7 +850,7 @@ class DualRunCalibrationTest {
                         }
                         game.debugCreateBuilding(bt, pos);
                         if (deductBuildingCosts) {
-                            game.debugDeductResources(SC2Data.mineralCost(bt), SC2Data.gasCost(bt));
+                            game.debugDeductResources(mCost, gCost);
                         }
                         fired[i] = true;
                     } else {

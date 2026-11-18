@@ -649,7 +649,6 @@ public class EmulatedGame {
         friendly.deductVespene(vespene);
     }
 
-
     public void debugKillUnit(String tag) {
         Unit unit = friendly.units().stream()
                             .filter(u -> u.tag().equals(tag)).findFirst().orElse(null);

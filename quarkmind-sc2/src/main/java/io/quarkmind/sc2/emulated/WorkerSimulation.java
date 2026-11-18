@@ -278,6 +278,32 @@ class WorkerSimulation {
         }
         if (wasGasWorker) {
             rebalanceGasWorkers();
+        } else if (w.baseIndex >= 0 && w.baseIndex < bases.size()) {
+            redistributeMineralWorkersAtBase(w.baseIndex);
+        }
+    }
+
+    private void redistributeMineralWorkersAtBase(int baseIndex) {
+        BaseEntry base = bases.get(baseIndex);
+        List<MineralPatch> emptyPatches = new ArrayList<>();
+        for (MineralPatch p : base.patches()) {
+            if (!p.isDepleted() && p.miners.isEmpty()) { emptyPatches.add(p); }
+        }
+        if (emptyPatches.isEmpty()) {return;}
+
+        for (MineralPatch empty : emptyPatches) {
+            MineralPatch crowded = null;
+            int maxMiners = 1;
+            for (MineralPatch p : base.patches()) {
+                if (p.miners.size() > maxMiners) {
+                    maxMiners = p.miners.size();
+                    crowded = p;
+                }
+            }
+            if (crowded == null) {break;}
+            SimulatedWorker donor = crowded.miners.remove(crowded.miners.size() - 1);
+            donor.assignedPatch = empty;
+            empty.miners.add(donor);
         }
     }
 
