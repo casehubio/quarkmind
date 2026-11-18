@@ -15,14 +15,14 @@
 | `cal-mineral-baseline-12w` | cal-mineral-baseline-12w | Protoss | 305 | 3460 min | 3430 min | -0.9% | #605, #609 |
 | `cal-mineral-baseline-8w` | cal-mineral-baseline-8w | Protoss | 305 | 2330 min | 2430 min | +4.3% | #661 |
 | `cal-mineral-baseline-terran` | cal-mineral-baseline-terran | Terran | 305 | 3460 min | 3430 min | -0.9% | #604, #600 |
-| `cal-mineral-baseline-zerg` | cal-mineral-baseline-zerg | Zerg | 305 | 3415 min | — | — | #604, #600 |
+| `cal-mineral-baseline-zerg` | cal-mineral-baseline-zerg | Zerg | 305 | 3415 min | 3425 min | +0.3% | #604, #600 |
 | `cal-mineral-saturated-16w` | cal-mineral-saturated-16w | Protoss | 305 | 4235 min | 4090 min | -3.4% | #655 |
 | `cal-mineral-saturated-24w` | cal-mineral-saturated-24w | Protoss | 305 | 3955 min | 3850 min | -2.7% | #604 |
 | `cal-gas-baseline-3w` | cal-gas-baseline-3w | Protoss | 305 | 552 gas | 568 gas | +2.9% | #695, #677 |
 | `cal-gas-dual-6w` | cal-gas-dual-6w | Protoss | 305 | 1204 gas | 1108 gas | -8.0% | #696, #688 |
-| `cal-mule-isolation` | cal-mule-isolation | Terran | 305 | 3565 min | — | — | #604, #598 |
-| `cal-expansion-transfer` | cal-expansion-transfer | Protoss | 305 | 2625 min | — | — | #554, #614 |
-| `cal-worker-speed-single` | cal-worker-speed-single | Protoss | 122 | 1370 min | — | — | #574 |
+| `cal-mule-isolation` | cal-mule-isolation | Terran | 305 | 3565 min | 3300 min | -7.4%† | #604, #598 |
+| `cal-expansion-transfer` | cal-expansion-transfer | Protoss | 305 | 2625 min | —‡ | —‡ | #554, #614 |
+| `cal-worker-speed-single` | cal-worker-speed-single | Protoss | 122 | 1370 min | 1355 min | -1.1% | #574 |
 | `cal-worker-cadence-12w` | (cadence data for 12w) | Protoss | 305 | — | — | — | #622, #634 |
 | `cal-worker-cadence-8w` | (cadence data for 8w) | Protoss | 305 | — | — | — | #661 |
 | `protoss-probe-economy-fixture` | (test fixture) | Protoss | 5 | 98 min | — | — | — |
@@ -72,6 +72,14 @@
 | `test-expansion-no-chrono` | Protoss | 310 | Expansion without Chrono Boost | Test-only |
 | `test-expansion-reservation` | Protoss | 183 | Expansion mineral reservation | Test-only |
 | `test-train-probes` | Protoss | 60 | Simple Probe training checkpoint | Test-only |
+
+---
+
+## Footnotes
+
+**†** EM lacks MULE calldown — EM value reflects SCV-only income without MULE contribution. Delta measures the MULE income gap.
+
+**‡** Expansion-transfer EM comparison is not valid: `skipBuildings` creates buildings without deducting minerals, which inflates Probe training and distorts economy. Without `skipBuildings`, building placement fails (EM lacks SC2 map positions). Requires `calibrate()` to deduct mineral costs when injecting buildings.
 
 ---
 
