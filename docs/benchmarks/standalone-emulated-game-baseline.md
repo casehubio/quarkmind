@@ -7,6 +7,15 @@
 
 **Disabled GT syncs:** syncMineralWorkersFromGt, setMineralsForHarness, setVespeneForHarness, syncGasRateFromGt, syncMineralRateFromGt, syncVespeneRateFromGt, setSupplyCapForHarness, setSupplyUsedForHarness, setWorkerCountForHarness, syncSpendingFromGt
 
+**Delta from pre-#695 baseline** (proportional docking fix + congestion removal):
+
+| Checkpoint | vespeneCollectionRate MAPE | vespeneCurrent MAPE |
+|---|---|---|
+| 1-min | 96.5% → 96.5% (—) | 87.9% → 87.9% (—) |
+| 3-min | 35.6% → 33.0% (−2.6pp) | 53.4% → 49.3% (−4.1pp) |
+| 5-min | 30.1% → 25.7% (−4.4pp) | 50.9% → 46.0% (−4.9pp) |
+| 7-min | 29.7% → 24.9% (−4.8pp) | 59.0% → 55.3% (−3.7pp) |
+
 ---
 
 ## 1-minute checkpoint
@@ -43,7 +52,7 @@ Accuracy: 100.0% (0/0)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 20630 | 29550 | 12630 | 61.2% |
+| mineralsCurrent | 20630 | 29545 | 12625 | 61.2% |
 | vespeneCurrent | 232 | 372 | 204 | 87.9% |
 | mineralsCollectionRate | 150658 | 137921 | 15501 | 10.3% |
 | vespeneCollectionRate | 1241 | 336 | 1197 | 96.5% |
@@ -129,10 +138,10 @@ Accuracy: 100.0% (4/4)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 46751 | 61840 | 25733 | 55.0% |
-| vespeneCurrent | 24254 | 14135 | 12959 | 53.4% |
-| mineralsCollectionRate | 171704 | 156616 | 23318 | 13.6% |
-| vespeneCollectionRate | 39512 | 27506 | 14050 | 35.6% |
+| mineralsCurrent | 46751 | 61900 | 25763 | 55.1% |
+| vespeneCurrent | 24254 | 15236 | 11962 | 49.3% |
+| mineralsCollectionRate | 171704 | 156650 | 23524 | 13.7% |
+| vespeneCollectionRate | 39512 | 28752 | 13044 | 33.0% |
 | foodMade | 7024 | 7034 | 78 | 1.1% |
 | foodUsed | 5153 | 5259 | 128 | 2.5% |
 | workersActiveCount | 4000 | 4055 | 57 | 1.4% |
@@ -254,10 +263,10 @@ Accuracy: 100.0% (103/103)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 66699 | 85120 | 49271 | 73.9% |
-| vespeneCurrent | 43390 | 26180 | 22076 | 50.9% |
-| mineralsCollectionRate | 208770 | 181946 | 39056 | 18.7% |
-| vespeneCollectionRate | 50869 | 36505 | 15318 | 30.1% |
+| mineralsCurrent | 66699 | 84970 | 48961 | 73.4% |
+| vespeneCurrent | 43390 | 29825 | 19981 | 46.0% |
+| mineralsCollectionRate | 208770 | 181761 | 39391 | 18.9% |
+| vespeneCollectionRate | 50869 | 38865 | 13062 | 25.7% |
 | foodMade | 9520 | 9580 | 216 | 2.3% |
 | foodUsed | 7488 | 7798 | 454 | 6.1% |
 | workersActiveCount | 4907 | 4995 | 152 | 3.1% |
@@ -405,10 +414,10 @@ Accuracy: 100.0% (185/185)
 
 | Field | GT (sum) | EM (sum) | Abs Error (sum) | MAPE |
 |---|---|---|---|---|
-| mineralsCurrent | 89788 | 81255 | 67005 | 74.6% |
-| vespeneCurrent | 52228 | 33629 | 30795 | 59.0% |
-| mineralsCollectionRate | 201496 | 149530 | 61308 | 30.4% |
-| vespeneCollectionRate | 61091 | 44117 | 18132 | 29.7% |
+| mineralsCurrent | 89788 | 80965 | 67365 | 75.0% |
+| vespeneCurrent | 52228 | 40628 | 28908 | 55.3% |
+| mineralsCollectionRate | 201496 | 149841 | 61439 | 30.5% |
+| vespeneCollectionRate | 61091 | 47364 | 15237 | 24.9% |
 | foodMade | 11184 | 11073 | 329 | 2.9% |
 | foodUsed | 9017 | 9193 | 337 | 3.7% |
 | workersActiveCount | 5004 | 5096 | 124 | 2.5% |
