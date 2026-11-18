@@ -21,11 +21,14 @@ class TerranRaceModel implements RaceModel {
 
     private final Map<String, Long>   muleExpiresAtLoop = new HashMap<>();
     private final Map<String, Double> ocEnergyMap       = new HashMap<>();
+    private final List<String>        pendingExpiredMules = new ArrayList<>();
+
 
     @Override
     public void seedInitialState(final PlayerState state, final List<Resource> geysers) {
         muleExpiresAtLoop.clear();
         ocEnergyMap.clear();
+        pendingExpiredMules.clear();
 
         state.setMinerals(SC2Data.INITIAL_MINERALS);
         state.setVespene(SC2Data.INITIAL_VESPENE);
@@ -49,6 +52,7 @@ class TerranRaceModel implements RaceModel {
 
     @Override
     public double tickPassive(final PlayerState state, final long gameLoop) {
+        pendingExpiredMules.clear();
         final List<String> expired = new ArrayList<>();
         muleExpiresAtLoop.forEach((tag, expiresAt) -> {
             if (gameLoop >= expiresAt) {expired.add(tag);}
@@ -56,13 +60,8 @@ class TerranRaceModel implements RaceModel {
         expired.forEach(tag -> {
             muleExpiresAtLoop.remove(tag);
             state.removeUnit(tag);
+            pendingExpiredMules.add(tag);
         });
-
-        double muleIncome = 0;
-        if (!muleExpiresAtLoop.isEmpty()) {
-            muleIncome = muleExpiresAtLoop.size() * SC2Data.muleIncomePerTick();
-            state.addMinerals(muleIncome);
-        }
 
         for (final Building b : state.buildings()) {
             if (b.type() != BuildingType.ORBITAL_COMMAND || !b.isComplete()) {continue;}
@@ -70,7 +69,7 @@ class TerranRaceModel implements RaceModel {
             ocEnergyMap.put(b.tag(), Math.min(SC2Data.MAX_CASTER_ENERGY,
                                               energy + SC2Data.CASTER_ENERGY_REGEN_PER_LOOP * SC2Data.LOOPS_PER_TICK));
         }
-        return muleIncome;
+        return 0;
     }
 
     @Override
@@ -111,17 +110,23 @@ class TerranRaceModel implements RaceModel {
                               final String unitTag, final String buildingTag) {}
 
     @Override
-    public void onCalldown(final PlayerState state, final String buildingTag, final long absLoop) {
+    public String onCalldown(final PlayerState state, final String buildingTag, final long absLoop) {
         final Building oc = state.buildings().stream()
                                  .filter(b -> b.tag().equals(buildingTag) && b.isComplete()
                                               && b.type() == BuildingType.ORBITAL_COMMAND)
                                  .findFirst().orElse(null);
-        if (oc == null) {return;}
-        final String muleTag = "mule-" + buildingTag + "-" + absLoop;
+        if (oc == null) {return null;}
+        final String muleTag = muleTag(buildingTag, absLoop);
         final int    hp      = SC2Data.maxHealth(UnitType.MULE);
         state.addUnit(new Unit(muleTag, UnitType.MULE, oc.position(), hp, hp, 0, 0, 0, 0));
         muleExpiresAtLoop.put(muleTag, absLoop + SC2Data.MULE_LIFETIME_LOOPS);
+        return muleTag;
     }
+
+    static String muleTag(String buildingTag, long absLoop) {
+        return "mule-" + buildingTag + "-" + absLoop;
+    }
+
 
     private static final Set<BuildingType> TOWN_HALLS =
             Set.of(BuildingType.COMMAND_CENTER, BuildingType.ORBITAL_COMMAND,
@@ -138,6 +143,15 @@ class TerranRaceModel implements RaceModel {
     public Set<BuildingType> townHallTypes() {return TOWN_HALLS;}
 
     int activeMuleCount()                    {return muleExpiresAtLoop.size();}
+
+    @Override
+    public List<String> drainExpiredMuleTags() {
+        if (pendingExpiredMules.isEmpty()) {return List.of();}
+        List<String> result = List.copyOf(pendingExpiredMules);
+        pendingExpiredMules.clear();
+        return result;
+    }
+
 
     @Override
     public long buildWorkerPauseTicks(BuildingType type, long buildDurationTicks) {

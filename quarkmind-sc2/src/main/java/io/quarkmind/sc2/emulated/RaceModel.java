@@ -84,11 +84,15 @@ public interface RaceModel {
      * Must NOT manipulate resource fields (minerals, vespene, supply, supplyUsed).
      * Default: no-op.
      *
-     * @param state     the per-player mutable game state — may call addUnit/removeUnit, must NOT touch resource fields
+     * @param state       the per-player mutable game state — may call addUnit/removeUnit, must NOT touch resource fields
      * @param buildingTag the tag of the Orbital Command (or equivalent calldown building)
-     * @param absLoop   absolute game loop (gameFrame × LOOPS_PER_TICK) when calldown was issued
+     * @param absLoop     absolute game loop (gameFrame × LOOPS_PER_TICK) when calldown was issued
+     * @return the tag of the created unit (e.g. MULE tag), or null if no unit was created
      */
-    default void onCalldown(PlayerState state, String buildingTag, long absLoop) {}
+    default String onCalldown(PlayerState state, String buildingTag, long absLoop) {return null;}
+
+    default List<String> drainExpiredMuleTags() {return List.of();}
+
 
     default void onBuildingComplete(PlayerState state, BuildingType type, String buildingTag) {}
 

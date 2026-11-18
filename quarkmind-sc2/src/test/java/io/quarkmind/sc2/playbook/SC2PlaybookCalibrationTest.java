@@ -41,6 +41,23 @@ class SC2PlaybookCalibrationTest {
     }
 
     @Test
+    void muleIsolation() {
+        var game    = new EmulatedGame();
+        var handler = new SC2DeliveryHandler(game);
+        var r       = new SC2PlaybookRunner(handler, game);
+        r.execute("playbooks/cal-mule-isolation.yaml");
+        var    snapshot    = game.snapshot();
+        int    sc2Baseline = 3565;
+        double delta       = Math.abs(snapshot.minerals() - sc2Baseline) / (double) sc2Baseline;
+        System.out.printf("[MULE-ISOLATION] minerals=%d, SC2 baseline=%d, delta=%.1f%%%n",
+                          snapshot.minerals(), sc2Baseline, delta * 100.0);
+        org.assertj.core.api.Assertions.assertThat(delta)
+                                       .as("MULE isolation delta vs SC2 baseline")
+                                       .isLessThanOrEqualTo(0.02);
+    }
+
+
+    @Test
     void injectLarva() {
         runner.execute("playbooks/inject-larva.yaml");
     }

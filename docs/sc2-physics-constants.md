@@ -190,15 +190,16 @@ Mining radius increases with saturation (contention effect — workers compete f
 | 16w rate | ~925/min | — | ~912 at tick 304 | -1.4% | Dual-run calibration (#661) |
 | 24w rate | ~1140/min | — | ~1108 at tick 304 | -2.8% | Dual-run calibration (#661) |
 
-#### MULE — Liquipedia vs EM (empirical)
+#### MULE — Liquipedia vs EM (trip-based)
 
-| Parameter | Liquipedia | EM (empirical) | Delta | Source |
-|-----------|-----------|----------------|-------|--------|
-| Cargo per trip | 25 | — (flat rate) | — | EM uses flat rate, not trip simulation |
-| Total yield | 225 minerals | ~300 (277.8/min × 64.8/60) | **+33%** | EM from 115 oracle replay observations (#613) |
-| Rate | 210.9/min | 277.8/min | **+32%** | Oracle replay isolation; Liquipedia under-measures at standard distances |
-| Rate multiplier | 3.45-3.94× | 3.57× (vs 77.7 SCV) | within range | Multiplier consistent; absolute gap from higher empirical SCV rate |
+| Parameter | Liquipedia | EM (trip-based) | Delta | Source |
+|-----------|-----------|-----------------|-------|--------|
+| Cargo per trip | 25 | 25 (`MULE_MINERAL_CARGO`) | 0% | Direct match (#717) |
+| Mining overhead | — | 20 loops (`MULE_MINING_OVERHEAD_LOOPS`) | — | Calibrated from SC2 dual-run MULE isolation baseline (#717) |
+| Total yield | 225 minerals | ~263 (3615-3352 worker baseline at tick 305) | **+17%** | EM trip-based at standard distances; Liquipedia assumes ideal short distance |
+| Isolation delta | — | +1.4% (EM=3615 vs SC2=3565) | — | MULE isolation playbook (#717) |
 | Lifetime | 64s | 1452 loops (64.8s) | +1.3% | SC2 dual-run calibration (#613) |
+| Mining model | trip-based | trip-based (walk→mine→deposit→repeat) | — | Replaced flat rate (#717); uses WorkerSimulation movement physics |
 
 **Gas rate MAPE improvement (#675):** vespeneCollectionRate MAPE at 5-min dropped from 29.9% to 15.3% (aggregate, 236 player runs). Per-race: Protoss 16.1→15.2%, Terran 24.0→13.2%, Zerg 31.8→25.4%. Zerg residual is variance-driven (per-replay cycle differences), not systematic bias.
 
@@ -245,9 +246,9 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 | 12w Zerg (tick 304) | 3415 | 3425 | — | — | **+0.3%** | — |
 | 12w Terran (tick 304) | 3460 | 3450 | — | — | **−0.3%** | — |
 | 1w speed (tick 121) | 1370 | 1355 | — | — | **−1.1%** | — |
-| MULE isolation (tick 304) | 3565 | 3686 | — | — | **+3.4%** | — |
+| MULE isolation (tick 305) | 3565 | 3615 | — | — | **+1.4%** | — |
 
-**MULE calldown operational (#711).** The morph naming mismatch (playbook YAML uses UPPER_SNAKE_CASE `ORBITAL_COMMAND`, but `MORPH_BUILDING_TARGETS` mapped CamelCase `OrbitalCommand`) silently dropped the OC morph. `BuildingType.valueOf()` fallback added in `EmulatedGame.handleMorph()` and `SC2DeliveryHandler.doMorph()`. EM MULE income uses a flat rate (277.8 min/min) rather than SC2's trip-based mining, explaining the +3.4% over-production.
+**MULE trip-based mining (#717).** Replaced flat-rate MULE income (277.8 min/min) with trip-based mining: MULEs walk to nearest mineral patch, harvest 25 minerals per trip (`MULE_MINERAL_CARGO`), walk back to town hall, deposit, repeat until expiry. Uses WorkerSimulation movement physics but doesn't claim patches or participate in collision resolution. Mining overhead calibrated at 20 loops (`MULE_MINING_OVERHEAD_LOOPS`) to match SC2 baseline. Delta reduced from +3.4% to +1.4%.
 
 **6w gas multi-run variance (#688, #696):** 5 SC2 runs produce bimodal vespene at tick 304: {1044, 1204, 1204, 1044, 1204}. Mean=1140, σ=78.4, CV=6.88%. Baseline updated from outlier (1012) to run-2 (1204, dominant mode) in #696. SC2's random worker-to-geyser assignment creates two distinct outcomes per game — the EM tracks the lower mode (1044), suggesting its worker-to-geyser routing matches the less-efficient SC2 pattern. Baselines in `calibration/multi-run/cal-gas-dual-6w-run-{1..5}.json`.
 
@@ -292,7 +293,8 @@ Previously (pre-#655): 12w +0.6%, 16w −20.2%, 24w −13.4%. The compound colli
 | Constant | Value | Source | Confidence |
 |----------|-------|--------|------------|
 | MULE lifetime | 1452 loops (64.8s) | SC2 dual-run MULE isolation | **Calibrated** — #613 |
-| MULE income | 277.8 minerals/min | Oracle replays (115 obs, #613) | **Calibrated** — empirical |
+| MULE cargo | 25 minerals/trip | Liquipedia consensus | **Published** — #717 |
+| MULE mining overhead | 20 loops | Calibrated from SC2 dual-run MULE isolation | **Calibrated** — #717 |
 | MULE calldown energy | 50 | SC2 mechanics | **Published** |
 | OC starting energy | 50 | SC2 mechanics | **Published** |
 | Addon mineral cost | 50 | SC2 mechanics | **Published** |

@@ -227,6 +227,9 @@ public class EmulatedGame {
         friendly.addVespene(tickGasIncome);
         cumulativeGasIncome += tickGasIncome;
         double passiveMineralIncome = playerRaceModel.tickPassive(friendly, gameFrame * (long) SC2Data.LOOPS_PER_TICK);
+        for (String expiredMule : playerRaceModel.drainExpiredMuleTags()) {
+            workerSimulation.removeMule(expiredMule);
+        }
         economyTracker.recordIncome(tickMineralIncome + passiveMineralIncome, tickGasIncome);
         moveFriendlyUnits();
         // Recompute after movement, before combat: a unit that dies this tick still
@@ -981,22 +984,22 @@ public class EmulatedGame {
     }
 
     private void handleMuleCalldown(final MuleCalldownIntent m, final PlayerState state,
-                                     final PhysicsState physics, final long absLoop) {
+                                    final PhysicsState physics, final long absLoop) {
         final String inputTag = m.buildingTag();
-        boolean ocPresent = state.buildings().stream()
-            .anyMatch(b -> b.tag().equals(inputTag) && b.isComplete()
-                      && b.type() == BuildingType.ORBITAL_COMMAND);
+        Building oc = state.buildings().stream()
+                           .filter(b -> b.tag().equals(inputTag) && b.isComplete()
+                                        && b.type() == BuildingType.ORBITAL_COMMAND)
+                           .findFirst().orElse(null);
         String calldownTag = inputTag;
-        if (!ocPresent && inputTag != null && inputTag.startsWith("r-")) {
-            final Building oc = state.buildings().stream()
-                .filter(b -> b.isComplete() && b.type() == BuildingType.ORBITAL_COMMAND)
-                .findFirst().orElse(null);
+        if (oc == null && inputTag != null && inputTag.startsWith("r-")) {
+            oc = state.buildings().stream()
+                      .filter(b -> b.isComplete() && b.type() == BuildingType.ORBITAL_COMMAND)
+                      .findFirst().orElse(null);
             if (oc != null) {
-                ocPresent = true;
                 calldownTag = oc.tag();
             }
         }
-        if (!ocPresent) {
+        if (oc == null) {
             log.debugf("[EMULATED] MULE calldown rejected — OC %s not ready", inputTag);
             return;
         }
@@ -1005,7 +1008,10 @@ public class EmulatedGame {
             log.debugf("[EMULATED] MULE calldown skipped — no race model for non-friendly state");
             return;
         }
-        model.onCalldown(state, calldownTag, absLoop);
+        String muleTag = model.onCalldown(state, calldownTag, absLoop);
+        if (muleTag != null && state == friendly) {
+            workerSimulation.addMule(muleTag, oc.position());
+        }
     }
 
     private void handleUnitDied(UnitDiedIntent d, PlayerState state, PhysicsState physics) {
@@ -1046,24 +1052,36 @@ public class EmulatedGame {
             if (targetTag == null) {return false;}
         }
 
-        boolean handled;
+        String resolvedCaster = null;
         if (isAutoResolvable(casterTag)) {
             List<String> candidates = resolveBuildingAll(casterTag, state);
-            handled = false;
             for (String candidate : candidates) {
                 if (model.forceAbility(state, candidate, a.ability(), targetTag, absLoop)) {
-                    handled = true;
+                    resolvedCaster = candidate;
                     break;
                 }
             }
         } else {
-            handled = model.handleAbility(state, casterTag, a.ability(), targetTag, absLoop);
+            if (model.handleAbility(state, casterTag, a.ability(), targetTag, absLoop)) {
+                resolvedCaster = casterTag;
+            }
         }
-        if (!handled) {return false;}
+        if (resolvedCaster == null) {return false;}
+
+        if ("MULE_CALLDOWN".equals(a.ability()) && state == friendly) {
+            final String ocTag = resolvedCaster;
+            Building ocBuilding = state.buildings().stream()
+                                       .filter(b -> b.tag().equals(ocTag) && b.type() == BuildingType.ORBITAL_COMMAND)
+                                       .findFirst().orElse(null);
+            if (ocBuilding != null) {
+                String muleTag = TerranRaceModel.muleTag(ocTag, absLoop);
+                workerSimulation.addMule(muleTag, ocBuilding.position());
+            }
+        }
 
         if (targetTag != null && model.trainingSpeedMultiplier(targetTag, absLoop) < 1.0) {
             final String resolvedTarget = targetTag;
-            final long currentLoop = absLoop;
+            final long   currentLoop    = absLoop;
             physics.pendingCompletions.replaceAll(pc -> {
                 Long trainingUntil = physics.buildingTrainingUntil.get(resolvedTarget);
                 if (trainingUntil == null || pc.completesAtLoop() != trainingUntil) {return pc;}

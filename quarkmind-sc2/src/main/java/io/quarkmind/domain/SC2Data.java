@@ -62,6 +62,9 @@ public final class SC2Data {
      * Calibrated from SC2 dual-run MULE isolation baseline (#613).
      */
     public static final int MULE_LIFETIME_LOOPS = 1452;
+    public static final double MULE_MINERAL_CARGO = 25.0;
+    public static final double MULE_MINING_OVERHEAD_LOOPS = 20.0;
+
 
     /**
      * Larva auto-spawn interval in game loops.

@@ -65,6 +65,8 @@ class WorkerSimulation {
     private final List<BaseEntry> bases = new ArrayList<>();
     private final List<GasSlot> gasSlots = new ArrayList<>();
     private final Map<String, SimulatedWorker> workers = new LinkedHashMap<>();
+    private final Map<String, SimulatedWorker> mules   = new LinkedHashMap<>();
+
     private final double workerDistancePerTick;
     private double currentTickStartLoop;
     private final Random rng = new Random(42);
@@ -349,6 +351,8 @@ class WorkerSimulation {
             }
         }
 
+        List<SimulatedWorker> muleList = new ArrayList<>(mules.values());
+
         double mineralIncome = 0;
         double gasIncome     = 0;
         for (int loop = 0; loop < SimulatedWorker.LOOPS_PER_TICK; loop++) {
@@ -358,6 +362,10 @@ class WorkerSimulation {
             Collections.shuffle(mineralWorkers, rng);
             for (SimulatedWorker w : mineralWorkers) {
                 mineralIncome += stepOneMineralLoop(w, currentLoop);
+            }
+
+            for (SimulatedWorker w : muleList) {
+                mineralIncome += stepOneMuleLoop(w, currentLoop);
             }
 
             Collections.shuffle(gasWorkers, rng);
@@ -960,6 +968,107 @@ class WorkerSimulation {
         assignToNearestPatch(w);
     }
 
+    void addMule(String tag, Point2d position) {
+        int baseIndex = findNearestBaseIndex(position);
+        if (baseIndex < 0) {return;}
+        SimulatedWorker w = new SimulatedWorker(tag, position, baseIndex);
+        w.phaseEndLoop = -1;
+        mules.put(tag, w);
+        assignMuleToNearestPatch(w);
+    }
+
+    void removeMule(String tag) {
+        mules.remove(tag);
+    }
+
+    private void assignMuleToNearestPatch(SimulatedWorker w) {
+        if (w.baseIndex < 0 || w.baseIndex >= bases.size()) {
+            w.task = WorkerTask.IDLE;
+            return;
+        }
+        BaseEntry    base        = bases.get(w.baseIndex);
+        MineralPatch nearest     = null;
+        double       nearestDist = Double.MAX_VALUE;
+        for (MineralPatch p : base.patches()) {
+            if (p.isDepleted()) {continue;}
+            double d = w.position.distanceTo(p.position);
+            if (d < nearestDist) {
+                nearestDist = d;
+                nearest     = p;
+            }
+        }
+        if (nearest == null) {
+            w.task = WorkerTask.IDLE;
+            return;
+        }
+        w.assignedPatch  = nearest;
+        w.targetPosition = miningTarget(nearest, w.baseIndex);
+        w.task           = WorkerTask.MINING_MINERALS;
+        w.phaseEndLoop   = -1;
+    }
+
+    private double stepOneMuleLoop(SimulatedWorker w, double currentLoop) {
+        if (w.task == WorkerTask.MINING_MINERALS) {
+            if (w.assignedPatch == null) {
+                w.task = WorkerTask.IDLE;
+                return 0;
+            }
+            if (!w.isAtTarget()) {
+                w.moveOneLoop();
+                if (w.isAtTarget()) {
+                    w.phaseEndLoop = currentLoop + SimulatedWorker.APPROACH_ANIMATION_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS + SC2Data.MULE_MINING_OVERHEAD_LOOPS;
+                }
+                return 0;
+            }
+            if (w.phaseEndLoop < 0) {
+                w.phaseEndLoop = currentLoop + SimulatedWorker.APPROACH_ANIMATION_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS + SC2Data.MULE_MINING_OVERHEAD_LOOPS;
+                return 0;
+            }
+            if (currentLoop >= w.phaseEndLoop) {
+                w.cargo          = w.assignedPatch.harvest(SC2Data.MULE_MINERAL_CARGO);
+                w.task           = WorkerTask.RETURNING_MINERALS;
+                w.targetPosition = depositTarget(w);
+            }
+            return 0;
+        }
+
+        if (w.task == WorkerTask.RETURNING_MINERALS) {
+            boolean arrived = w.moveOneLoop();
+            if (arrived) {
+                double income = w.cargo;
+                w.cargo = 0;
+                if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
+                    returnMuleToPath(w);
+                    return income;
+                }
+                w.task         = WorkerTask.DEPOSITING_MINERALS;
+                w.phaseEndLoop = currentLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
+                return income;
+            }
+            return 0;
+        }
+
+        if (w.task == WorkerTask.DEPOSITING_MINERALS) {
+            if (currentLoop >= w.phaseEndLoop) {
+                returnMuleToPath(w);
+            }
+            return 0;
+        }
+
+        return 0;
+    }
+
+    private void returnMuleToPath(SimulatedWorker w) {
+        if (w.assignedPatch != null && !w.assignedPatch.isDepleted()) {
+            w.targetPosition = miningTarget(w.assignedPatch, w.baseIndex);
+            w.task           = WorkerTask.MINING_MINERALS;
+            w.phaseEndLoop   = -1;
+        } else {
+            assignMuleToNearestPatch(w);
+        }
+    }
+
+
     private void tickTransferringWorker(SimulatedWorker w) {
         w.moveToward();
         if (w.isAtTarget()) {
@@ -980,6 +1089,7 @@ class WorkerSimulation {
         bases.clear();
         gasSlots.clear();
         workers.clear();
+        mules.clear();
         pendingBuilderReturns.clear();
         gasDepositLockEndLoop.clear();
         rng.setSeed(42);

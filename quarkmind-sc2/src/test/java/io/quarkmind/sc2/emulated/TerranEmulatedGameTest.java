@@ -143,21 +143,17 @@ class TerranEmulatedGameTest {
 
     @Test
     void muleSpawn_appearsInSnapshot_andAddsIncomePerTick() {
-        // Build an Orbital Command
         final Building oc = game.spawnBuildingForTesting(BuildingType.ORBITAL_COMMAND, new Point2d(12, 8));
 
-        final int mineralsBefore = game.snapshot().minerals();
         game.applyIntent(new MuleCalldownIntent(oc.tag()));
 
-        // MULE appears immediately (no queue)
         final long muleCount = game.snapshot().myUnits().stream()
-            .filter(u -> u.type() == UnitType.MULE).count();
+                                   .filter(u -> u.type() == UnitType.MULE).count();
         assertThat(muleCount).isEqualTo(1);
 
-        // Tick adds MULE income on top of SCV income
         final int mineralsAfterMule = game.snapshot().minerals();
-        game.workerSimulation().pauseAllWorkers(); // suppress SCV income to isolate MULE
-        game.tick();
+        game.workerSimulation().pauseAllWorkers();
+        for (int i = 0; i < 20; i++) {game.tick();}
         assertThat(game.snapshot().minerals()).isGreaterThan(mineralsAfterMule);
     }
 
@@ -191,13 +187,12 @@ class TerranEmulatedGameTest {
         game.applyIntent(new MuleCalldownIntent(oc.tag()));
 
         final long muleCount = game.snapshot().myUnits().stream()
-            .filter(u -> u.type() == UnitType.MULE).count();
+                                   .filter(u -> u.type() == UnitType.MULE).count();
         assertThat(muleCount).isEqualTo(1);
 
-        // Verify MULE is registered for income — tick with workers suppressed to isolate MULE income
         final int mineralsAfterSpawn = game.snapshot().minerals();
         game.workerSimulation().pauseAllWorkers();
-        game.tick();
+        for (int i = 0; i < 20; i++) {game.tick();}
         assertThat(game.snapshot().minerals()).isGreaterThan(mineralsAfterSpawn);
     }
 
