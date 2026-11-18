@@ -68,7 +68,7 @@ class WorkerSimulation {
     private final Random rng = new Random(42);
     private final java.util.Map<Integer, Double> gasDepositLockEndLoop = new java.util.HashMap<>();
     static double GAS_DEPOSIT_LOCK_LOOPS = 8.0;
-    static double GAS_DEPOSIT_CONGESTION_PER_WORKER = 4.0;
+    static double GAS_DEPOSIT_CONGESTION_PER_WORKER = 0.0;
 
 
     WorkerSimulation() {
