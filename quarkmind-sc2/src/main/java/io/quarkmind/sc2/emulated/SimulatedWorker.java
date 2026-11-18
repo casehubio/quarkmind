@@ -93,7 +93,7 @@ class SimulatedWorker {
     double currentSpeed;
     double walkStartLoop;
     double waitingSinceLoop;
-    boolean waitingAtGeyser;
+    double geyserWaitStartLoop = -1;
 
 
     SimulatedWorker(String tag, Point2d position, int baseIndex) {

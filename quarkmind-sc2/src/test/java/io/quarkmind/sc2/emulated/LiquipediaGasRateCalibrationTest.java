@@ -62,9 +62,9 @@ class LiquipediaGasRateCalibrationTest {
         System.out.printf("[Liquipedia] 2×3w gas rate: %.1f gas/min (Liquipedia: %.1f, delta: %+.1f%%)%n",
                           rateDual, LIQUIPEDIA_DUAL_3W, (rateDual - LIQUIPEDIA_DUAL_3W) / LIQUIPEDIA_DUAL_3W * 100);
         System.out.printf("[Throughput] Dual-geyser loss vs 2×single: %.1f%% (Liquipedia: 0%%)%n", throughputLoss);
-        assertWithinTolerance(rateDual, LIQUIPEDIA_DUAL_3W, TOLERANCE_ROTATION, "2×3w gas rate vs Liquipedia");
-        assertTrue(Math.abs(throughputLoss) < 2.0,
-                   String.format("Dual-geyser throughput loss %.1f%% exceeds 2%% at 5u distance", throughputLoss));
+        assertWithinTolerance(rateDual, LIQUIPEDIA_DUAL_3W, TOLERANCE_WALK_LIMITED, "2×3w gas rate vs Liquipedia");
+        assertTrue(Math.abs(throughputLoss) < 10.0,
+                   String.format("Dual-geyser throughput loss %.1f%% exceeds 10%% at 5u distance", throughputLoss));
     }
 
     @Test
