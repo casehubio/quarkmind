@@ -1126,4 +1126,79 @@ class WorkerSimulationTest {
     }
 
 
+    @org.junit.jupiter.api.Tag("diagnostic")
+    @Test
+    void measureCycleTimes8w() throws Exception {
+        var game = new EmulatedGame();
+        game.setPlayerRaceModel(new ProtossRaceModel());
+
+        var node = new com.fasterxml.jackson.databind.ObjectMapper()
+                .readTree(getClass().getClassLoader().getResourceAsStream("calibration/cal-mineral-baseline-8w.json"));
+        var   basePos = node.get("basePosition");
+        float offX    = 8f - (float) basePos.get(0).asDouble();
+        float offY    = 8f - (float) basePos.get(1).asDouble();
+        var   patches = new java.util.ArrayList<io.quarkmind.domain.Resource>();
+        for (var p : node.get("mineralPatches")) {
+            patches.add(new io.quarkmind.domain.Resource(
+                    "cal-" + patches.size(),
+                    new io.quarkmind.domain.Point2d((float) (p.get("x").asDouble() + offX), (float) (p.get("y").asDouble() + offY)),
+                    p.has("amount") ? p.get("amount").asInt() : 1800,
+                    p.has("rich") && p.get("rich").asBoolean()));
+        }
+        game.setMineralPatchResources(patches);
+        game.reset();
+
+        var workers = game.snapshot().myUnits().stream()
+                          .filter(u -> u.type() == io.quarkmind.domain.UnitType.PROBE)
+                          .limit(4).toList();
+        for (var w : workers) {game.debugKillUnit(w.tag());}
+
+        // Track per-tick mineral deltas to find delivery pattern
+        double                  prevMinerals    = game.snapshot().minerals();
+        int                     totalDeliveries = 0;
+        java.util.List<Integer> deliveryTicks   = new java.util.ArrayList<>();
+
+        for (int tick = 1; tick <= 304; tick++) {
+            game.tick();
+            double curr  = game.snapshot().minerals();
+            double delta = curr - prevMinerals;
+            if (delta >= 4.5) {
+                int delivs = (int) Math.round(delta / 5.0);
+                totalDeliveries += delivs;
+                deliveryTicks.add(tick);
+            }
+            prevMinerals = curr;
+        }
+
+        // Also dump per-worker state from WorkerSimulation
+        var ws = game.workerSimulation();
+        System.out.println("=== Worker assignments ===");
+        for (var w : ws.allWorkers()) {
+            var patch = w.assignedPatch;
+            if (patch != null) {
+                double patchDist = patch.position.distanceTo(ws.bases().get(w.baseIndex).position());
+                double e2e       = patchDist - 2.75 - 1.0;
+                System.out.printf("  Worker %s: patch=(%.1f,%.1f) center_dist=%.2f e2e=%.2f approachDocking=%.1f%n",
+                                  w.tag, patch.position.x(), patch.position.y(), patchDist, e2e, patch.approachDockingLoops);
+            }
+        }
+
+        int    finalMinerals = (int) game.snapshot().minerals();
+        double avgCycle      = totalDeliveries > 0 ? 304.0 / (totalDeliveries / 8.0) : 0;
+        System.out.printf("%nEM minerals: %d, deliveries: %d%n", finalMinerals, totalDeliveries);
+        System.out.printf("Avg cycle: %.2f ticks (%.1f loops)%n", avgCycle, avgCycle * 22);
+        System.out.printf("SC2: 2330 minerals, 5.25 ticks/cycle%n");
+
+        // Show base info
+        System.out.println("\n=== Base patches ===");
+        for (var base : ws.bases()) {
+            System.out.printf("Base '%s' at (%.1f,%.1f), patches: %d%n",
+                              base.tag(), base.position().x(), base.position().y(), base.patches().size());
+            for (var p : base.patches()) {
+                double dist = p.position.distanceTo(base.position());
+                System.out.printf("  (%.1f,%.1f) dist=%.2f e2e=%.2f approachDocking=%.1f%n",
+                                  p.position.x(), p.position.y(), dist, dist - 2.75 - 1.0, p.approachDockingLoops);
+            }
+        }
+    }
 }

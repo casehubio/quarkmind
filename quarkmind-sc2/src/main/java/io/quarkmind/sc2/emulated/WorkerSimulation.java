@@ -17,6 +17,8 @@ class WorkerSimulation {
     static final float MINERAL_PATCH_RADIUS = 1.0f;
     static final float GAS_BUILDING_RADIUS  = 1.75f;
     static       float LOW_SATURATION_DODGE_SCALE = 0.25f;
+    static final double DEFAULT_LOW_SATURATION_APPROACH_BONUS = 4.5;
+    static       double LOW_SATURATION_APPROACH_BONUS = DEFAULT_LOW_SATURATION_APPROACH_BONUS;
 
 
     static Point2d edgePoint(Point2d center, Point2d toward, float radius) {
@@ -72,8 +74,22 @@ class WorkerSimulation {
 
     static void resetToDefaults() {
         LOW_SATURATION_DODGE_SCALE = WorkerPhysicsConfig.DEFAULT_LOW_SATURATION_DODGE_SCALE;
+        LOW_SATURATION_APPROACH_BONUS = DEFAULT_LOW_SATURATION_APPROACH_BONUS;
         GAS_DEPOSIT_LOCK_LOOPS = 8.0;
         GAS_DEPOSIT_CONGESTION_PER_WORKER = 0.0;
+    }
+
+    private double effectiveApproachDocking(MineralPatch patch, int baseIndex) {
+        double docking = patch.approachDockingLoops;
+        int workers = countMineralWorkersAtBase(baseIndex);
+        int activePatchCount = 0;
+        for (MineralPatch p : bases.get(baseIndex).patches()) {
+            if (!p.isDepleted()) activePatchCount++;
+        }
+        if (activePatchCount > 0 && workers <= activePatchCount) {
+            docking += LOW_SATURATION_APPROACH_BONUS;
+        }
+        return docking;
     }
 
 
@@ -362,7 +378,7 @@ class WorkerSimulation {
                 boolean wasWaiting = w.waitingSinceLoop > 0;
                 if (!wasWaiting && tickEndLoop < w.assignedPatch.lockEndLoop) {continue;}
                 w.assignedPatch.miners.add(w);
-                w.phaseEndLoop     = tickEndLoop + w.assignedPatch.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop     = tickEndLoop + effectiveApproachDocking(w.assignedPatch, w.baseIndex) + SimulatedWorker.MINING_DURATION_LOOPS;
                 w.waitingSinceLoop = 0;
             }
         }
@@ -548,7 +564,7 @@ class WorkerSimulation {
         boolean wasWaiting = w.waitingSinceLoop > 0;
         if (!wasWaiting && currentLoop < w.assignedPatch.lockEndLoop) {return;}
         w.assignedPatch.miners.add(w);
-        double approachDocking = w.assignedPatch.approachDockingLoops;
+        double approachDocking = effectiveApproachDocking(w.assignedPatch, w.baseIndex);
         if (wasWaiting) {
             double waited = currentLoop - w.waitingSinceLoop;
             approachDocking = Math.max(SimulatedWorker.APPROACH_ANIMATION_LOOPS, approachDocking - waited);
@@ -699,7 +715,7 @@ class WorkerSimulation {
         if (w.isAtTarget()) {
             if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
                 if (!nearest.miners.contains(w)) {nearest.miners.add(w);}
-                w.phaseEndLoop = currentTickStartLoop + nearest.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop = currentTickStartLoop + effectiveApproachDocking(nearest, w.baseIndex) + SimulatedWorker.MINING_DURATION_LOOPS;
                 w.waitingSinceLoop = 0;
             }
         }
