@@ -20,7 +20,7 @@
 | `cal-mineral-saturated-24w` | cal-mineral-saturated-24w | Protoss | 305 | 3955 min | 3985 min | +0.8% | #604 |
 | `cal-gas-baseline-3w` | cal-gas-baseline-3w | Protoss | 305 | 552 gas | 568 gas | +2.9% | #695, #677 |
 | `cal-gas-dual-6w` | cal-gas-dual-6w | Protoss | 305 | 1204 gas | 1108 gas | -8.0% | #696, #688 |
-| `cal-mule-isolation` | cal-mule-isolation | Terran | 305 | 3565 min | 3300 min | -7.4%† | #604, #598 |
+| `cal-mule-isolation` | cal-mule-isolation | Terran | 305 | 3565 min | 3686 min | +3.4% | #711, #604, #598 |
 | `cal-expansion-transfer` | cal-expansion-transfer | Protoss | 305 | 2625 min | —‡ | —‡ | #554, #614 |
 | `cal-worker-speed-single` | cal-worker-speed-single | Protoss | 122 | 1370 min | 1355 min | -1.1% | #574 |
 | `cal-worker-cadence-12w` | (cadence data for 12w) | Protoss | 305 | — | — | — | #622, #634 |
@@ -77,7 +77,7 @@
 
 ## Footnotes
 
-**†** EM lacks MULE calldown — EM value reflects SCV-only income without MULE contribution. Delta measures the MULE income gap.
+**†** (Resolved #711) EM MULE calldown is now operational. The morph naming mismatch that prevented OC creation from playbooks has been fixed. EM now slightly over-produces minerals (+3.4%) due to the flat MULE income model vs SC2's trip-based mining.
 
 **‡** Expansion-transfer EM comparison is not valid: `skipBuildings` creates buildings instantly (zero construction time). Mineral costs are now deducted (#710) but instant construction gives supply early, snowballing Probe count (+30 extra by tick 304). Without `skipBuildings`, building placement fails (EM lacks SC2 map positions). Requires construction time delay in the skipBuildings path.
 
