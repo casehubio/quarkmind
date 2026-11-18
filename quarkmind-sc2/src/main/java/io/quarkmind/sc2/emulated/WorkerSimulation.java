@@ -252,6 +252,7 @@ class WorkerSimulation {
         for (SimulatedWorker w : new ArrayList<>(slot.assignedWorkers)) {
             slot.removeWorker(w);
             w.assignedGasSlot = null;
+            w.geyserWaitStartLoop = -1;
             w.task            = WorkerTask.IDLE;
             assignToNearestPatch(w);
         }
@@ -740,6 +741,7 @@ class WorkerSimulation {
                     SimulatedWorker w = slot.assignedWorkers.remove(slot.assignedWorkers.size() - 1);
                     slot.removeWorker(w);
                     w.assignedGasSlot = null;
+                    w.geyserWaitStartLoop = -1;
                     w.task = WorkerTask.IDLE;
                     assignToNearestPatch(w);
                 }
@@ -777,6 +779,7 @@ class WorkerSimulation {
                     SimulatedWorker w = slot.assignedWorkers.remove(slot.assignedWorkers.size() - 1);
                     slot.removeWorker(w);
                     w.assignedGasSlot = null;
+                    w.geyserWaitStartLoop = -1;
                     w.task            = WorkerTask.IDLE;
                     assignToNearestPatch(w);
                     excess--;
@@ -834,6 +837,7 @@ class WorkerSimulation {
             if (w.assignedGasSlot != null) {
                 w.assignedGasSlot.removeWorker(w);
                 w.assignedGasSlot = null;
+                w.geyserWaitStartLoop = -1;
             }
             w.task = WorkerTask.IDLE;
         }
@@ -889,6 +893,7 @@ class WorkerSimulation {
         if (w.assignedGasSlot != null) {
             w.assignedGasSlot.removeWorker(w);
             w.assignedGasSlot = null;
+            w.geyserWaitStartLoop = -1;
         }
         w.task             = WorkerTask.SCOUTING;
         w.scoutReturnLoop  = returnAtLoop;
