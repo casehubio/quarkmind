@@ -522,7 +522,12 @@ class WorkerSimulation {
         boolean wasWaiting = w.waitingSinceLoop > 0;
         if (!wasWaiting && currentLoop < w.assignedPatch.lockEndLoop) {return;}
         w.assignedPatch.miners.add(w);
-        w.phaseEndLoop     = currentLoop + w.assignedPatch.approachDockingLoops + SimulatedWorker.MINING_DURATION_LOOPS;
+        double approachDocking = w.assignedPatch.approachDockingLoops;
+        if (wasWaiting) {
+            double waited = currentLoop - w.waitingSinceLoop;
+            approachDocking = Math.max(SimulatedWorker.APPROACH_ANIMATION_LOOPS, approachDocking - waited);
+        }
+        w.phaseEndLoop     = currentLoop + approachDocking + SimulatedWorker.MINING_DURATION_LOOPS;
         w.waitingSinceLoop = 0;
     }
 

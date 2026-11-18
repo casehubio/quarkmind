@@ -102,7 +102,17 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 
 **Collision radius (#634):** Increased from 0.375 to 0.75 (diameter 1.5). PySC2 docs confirm SC2 unit size is ~0.75 game units — validates the collision diameter. The larger interaction zone creates more collision events, producing contention at higher saturation.
 
-**Unconditional approach docking (#655→#661):** All mining starts pay 24.5 loops approach — no conditional skip for idle patches. Recalibrated in #661 from 8w SC2 cadence data (was 11.5 in #655). The approach models the positioning overhead, approach animation, and path deviation that EM straight-line walks don't capture. Combined with transition loop cost (#661) and lockout bypass for waiting workers (#655), this produces 8w +4.3%, 12w −1.9%, 16w −1.7%.
+**Unconditional approach docking (#655→#661→#690):** Base approach is 24.5 loops (animation 20 + path deviation ~4.5). Recalibrated in #661 from 8w SC2 cadence data. The approach models positioning overhead, approach animation, and path deviation that EM straight-line walks don't capture — the EM lacks obstacle-aware pathfinding for mineral patches (#707), so the approach docking compensates for the missing curved outbound path. **Wait-time absorption (#690):** workers that were already waiting at a patch absorb approach docking proportionally to their wait time, floored at `APPROACH_ANIMATION_LOOPS` (20). Physics: a waiting worker has already completed the walk — only the approach animation remains. Matches gas docking absorption (#695). Pre-#690: 8w +4.9%, 12w −1.9%, 16w −1.7%, 24w −2.7%. Post-#690: 8w +4.3%, 12w −0.3%, 16w −2.0%, 24w +0.8%.
+
+**Effective mining/deposit radii (#690 investigation):** SC2 cadence data at 3 saturations shows workers stop at different effective distances from buildings, varying with saturation:
+
+| Saturation | Workers | Mining radius | Deposit distance | Path deviation |
+|------------|---------|---------------|-----------------|----------------|
+| 8w (1/patch) | 8 | 1.215u | 3.755u | 0.863 |
+| 12w (1.5/patch) | 12 | 1.291u | 3.765u | 0.836 |
+| 16w (2/patch) | 13 | 1.623u | 3.559u | 0.905 |
+
+Mining radius increases with saturation (contention effect — workers compete for approach angles). Per-patch mining radius varies 0.9–1.6u at 8w and 0.9–2.8u at 16w with no distance correlation — determined by rectangular patch geometry and approach angle, not distance. Fixed effective radius constants do not work across saturations; the wait-time absorption mechanism handles this correctly without artificial constants. Root cause of the walk model gap: EM lacks obstacle-aware pathfinding for buildings and resources (#707).
 
 **Wait-then-reroute (#636):** Workers waiting at an occupied patch for longer than `rerouteThresholdLoops` (default 22.0, config: `starcraft.worker.reroute-threshold-loops`) scan for idle patches at the same base. Reroutes only when estimated travel time < estimated remaining wait. Permanent reassignment — worker's `assignedPatch` is updated. 12w diagnostic shows 31 reroute events per 304 ticks (post-#655). At 2 workers/patch (16w optimal saturation), the lockout bypass (#655) means waiting workers start mining immediately when the active miner departs — wait time ≈ 22 loops, equal to but not exceeding the threshold, so no rerouting triggers. This is correct: SC2 workers at 2/patch alternate efficiently without rerouting (#662).
 
