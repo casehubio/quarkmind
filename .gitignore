@@ -64,3 +64,4 @@ proj
 .playwright-mcp/
 .worktrees
 .claude/
+.doc-cache.json

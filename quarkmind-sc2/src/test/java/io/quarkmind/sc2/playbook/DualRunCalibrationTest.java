@@ -9,6 +9,7 @@ import io.quarkmind.domain.Race;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.sc2.emulated.EmulatedGame;
 import io.quarkmind.sc2.emulated.RaceModelFactory;
+import io.quarkmind.sc2.intent.BuildIntent;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
@@ -215,7 +216,7 @@ class DualRunCalibrationTest {
     @Test
     void dualRunCalMineralSaturated16wAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-saturated-16w.json");
-        CalibrationResult   result      = calibrate("playbooks/cal-mineral-saturated-16w.yaml", sc2Baseline, true, 1);
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-saturated-16w.yaml", sc2Baseline, 1);
         System.out.println(result.report());
         if (!result.passed()) {
             System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
@@ -227,7 +228,7 @@ class DualRunCalibrationTest {
     @Test
     void dualRunCalGasBaseline3wAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-gas-baseline-3w.json");
-        CalibrationResult   result      = calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2Baseline, true, 1);
+        CalibrationResult   result      = calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2Baseline, 1);
         System.out.println(result.report());
         if (!result.passed()) {
             System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
@@ -239,7 +240,7 @@ class DualRunCalibrationTest {
     @Test
     void dualRunCalGasDual6wAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-gas-dual-6w.json");
-        CalibrationResult   result      = calibrate("playbooks/cal-gas-dual-6w.yaml", sc2Baseline, true, 3);
+        CalibrationResult   result      = calibrate("playbooks/cal-gas-dual-6w.yaml", sc2Baseline, 3);
         System.out.println(result.report());
         if (!result.passed()) {
             System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
@@ -264,7 +265,7 @@ class DualRunCalibrationTest {
         java.io.PrintStream           capture = new java.io.PrintStream(buf);
         java.io.PrintStream           origOut = System.out;
         System.setOut(capture);
-        calibrate("playbooks/cal-gas-dual-6w.yaml", sc2, true, 3);
+        calibrate("playbooks/cal-gas-dual-6w.yaml", sc2, 3);
         System.setOut(origOut);
 
         int prevSc2           = 0, prevEm = 0;
@@ -320,7 +321,7 @@ class DualRunCalibrationTest {
             io.quarkmind.sc2.emulated.EmulatedGame.setGasDepositLockLoops(lock);
             buf.reset();
             System.setOut(capture);
-            calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, true, 3);
+            calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, 3);
             System.setOut(origOut);
 
             int emGas = -1;
@@ -363,12 +364,12 @@ class DualRunCalibrationTest {
 
             buf.reset();
             System.setOut(capture);
-            calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2_3w, true, 1);
+            calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2_3w, 1);
             String out3w = buf.toString();
             int    em3w  = parseLastVespene(out3w);
 
             buf.reset();
-            calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, true, 3);
+            calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, 3);
             String out6w = buf.toString();
             int    em6w  = parseLastVespene(out6w);
             System.setOut(origOut);
@@ -409,11 +410,11 @@ class DualRunCalibrationTest {
 
                 buf.reset();
                 System.setOut(capture);
-                calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2_3w, true, 1);
+                calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2_3w, 1);
                 int em3w = parseLastVespene(buf.toString());
 
                 buf.reset();
-                calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, true, 3);
+                calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, 3);
                 int em6w = parseLastVespene(buf.toString());
                 System.setOut(origOut);
 
@@ -451,7 +452,7 @@ class DualRunCalibrationTest {
     @Test
     void dualRunCalMineralSaturated24wAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-saturated-24w.json");
-        CalibrationResult   result      = calibrate("playbooks/cal-mineral-saturated-24w.yaml", sc2Baseline, true, 1);
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-saturated-24w.yaml", sc2Baseline, 1);
         System.out.println(result.report());
         if (!result.passed()) {
             System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
@@ -470,7 +471,7 @@ class DualRunCalibrationTest {
     @Test
     void dualRunCalMuleIsolationAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mule-isolation.json");
-        CalibrationResult   result      = calibrate("playbooks/cal-mule-isolation.yaml", sc2Baseline, true, 1);
+        CalibrationResult   result      = calibrate("playbooks/cal-mule-isolation.yaml", sc2Baseline, 1);
         System.out.println(result.report());
         if (!result.passed()) {
             System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
@@ -482,9 +483,7 @@ class DualRunCalibrationTest {
     @Test
     void dualRunCalExpansionTransferAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-expansion-transfer.json");
-        // skipBuildings: EM can't place buildings at SC2 map positions
-        // deductBuildingCosts: spend minerals; instant construction still gives supply early
-        CalibrationResult result = calibrate("playbooks/cal-expansion-transfer.yaml", sc2Baseline, true, 50, true);
+        CalibrationResult result = calibrate("playbooks/cal-expansion-transfer.yaml", sc2Baseline, 5);
         System.out.println(result.report());
         if (!result.passed()) {
             System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
@@ -733,22 +732,11 @@ class DualRunCalibrationTest {
     }
 
     static CalibrationResult calibrate(String playbookResource, CalibrationBaseline baseline) {
-        return calibrate(playbookResource, baseline, false);
+        return calibrate(playbookResource, baseline, 0);
     }
 
     static CalibrationResult calibrate(String playbookResource, CalibrationBaseline baseline,
-                                       boolean skipBuildings) {
-        return calibrate(playbookResource, baseline, skipBuildings, 0);
-    }
-
-    static CalibrationResult calibrate(String playbookResource, CalibrationBaseline baseline,
-                                       boolean skipBuildings, int unitTolerance) {
-        return calibrate(playbookResource, baseline, skipBuildings, unitTolerance, false);
-    }
-
-    static CalibrationResult calibrate(String playbookResource, CalibrationBaseline baseline,
-                                       boolean skipBuildings, int unitTolerance,
-                                       boolean deductBuildingCosts) {
+                                       int unitTolerance) {
         String   yaml = SC2PlaybookRunner.loadResource(playbookResource);
         JsonNode root;
         try {root = YAML.readTree(yaml);} catch (Exception e) {
@@ -792,7 +780,7 @@ class DualRunCalibrationTest {
             CalibrationSnapshot expected = baseline.snapshots().get(tick);
             CalibrationSnapshot actual   = CalibrationSnapshot.from(tick, game.snapshot());
 
-            CalibrationResult divergence = compare(expected, actual, skipBuildings, unitTolerance);
+            CalibrationResult divergence = compare(expected, actual, unitTolerance, unitTolerance);
             if (divergence != null) {return divergence;}
 
             if (expected.minerals() != actual.minerals() || expected.vespene() != actual.vespene()) {
@@ -833,24 +821,23 @@ class DualRunCalibrationTest {
                     if ("build".equals(step.action()) && step.supplyTrigger() > 0 && !fired[i]) {continue;}
                 }
                 if (canFire) {
-                    if (skipBuildings && "build".equals(step.action())) {
+                    if ("build".equals(step.action())) {
                         BuildingType bt = BuildingType.valueOf((String) step.params().get("build"));
                         int mCost = SC2Data.mineralCost(bt);
                         int gCost = SC2Data.gasCost(bt);
-                        if (deductBuildingCosts && game.snapshot().minerals() < mCost) { continue; }
+                        if ((int) game.snapshot().minerals() < mCost || game.snapshot().vespene() < gCost) {
+                            continue;
+                        }
                         Point2d pos;
-                        if (SC2Data.isGasBuilding(bt)) {
+                        if (SC2Data.isGasBuilding(bt) && baseline.geyserPositions() != null) {
                             var geysers = game.snapshot().geysers();
                             pos = (geysers != null && gasIdx < geysers.size())
                                   ? geysers.get(gasIdx++).position()
-                                  : new Point2d(16, 12);
+                                  : new Point2d(30, 30);
                         } else {
                             pos = new Point2d(30, 30);
                         }
-                        game.debugCreateBuilding(bt, pos);
-                        if (deductBuildingCosts) {
-                            game.debugDeductResources(mCost, gCost);
-                        }
+                        game.applyIntent(BuildIntent.of("cal-playbook", bt, pos));
                         fired[i] = true;
                     } else {
                         Map<String, Object> data = new HashMap<>(step.params());
@@ -869,12 +856,8 @@ class DualRunCalibrationTest {
         return CalibrationResult.passed(tickLimit);
     }
 
-    private static CalibrationResult compare(CalibrationSnapshot expected, CalibrationSnapshot actual) {
-        return compare(expected, actual, false, 0);
-    }
-
     private static CalibrationResult compare(CalibrationSnapshot expected, CalibrationSnapshot actual,
-                                             boolean skipBuildings, int unitTolerance) {
+                                             int unitTolerance, int buildingTolerance) {
         for (Map.Entry<String, Integer> entry : expected.units().entrySet()) {
             int actualCount = actual.units().getOrDefault(entry.getKey(), 0);
             if (Math.abs(actualCount - entry.getValue()) > unitTolerance) {
@@ -893,23 +876,21 @@ class DualRunCalibrationTest {
             }
         }
 
-        if (!skipBuildings) {
-            for (Map.Entry<String, Integer> entry : expected.buildings().entrySet()) {
-                int actualCount = actual.buildings().getOrDefault(entry.getKey(), 0);
-                if (actualCount != entry.getValue()) {
-                    return CalibrationResult.diverged(expected.tick(),
-                        "buildings." + entry.getKey(),
-                        String.valueOf(entry.getValue()),
-                        String.valueOf(actualCount));
-                }
+        for (Map.Entry<String, Integer> entry : expected.buildings().entrySet()) {
+            int actualCount = actual.buildings().getOrDefault(entry.getKey(), 0);
+            if (Math.abs(actualCount - entry.getValue()) > buildingTolerance) {
+                return CalibrationResult.diverged(expected.tick(),
+                    "buildings." + entry.getKey(),
+                    String.valueOf(entry.getValue()),
+                    String.valueOf(actualCount));
             }
-            for (Map.Entry<String, Integer> entry : actual.buildings().entrySet()) {
-                if (!expected.buildings().containsKey(entry.getKey()) && entry.getValue() > 0) {
-                    return CalibrationResult.diverged(expected.tick(),
-                        "buildings." + entry.getKey(),
-                        "0",
-                        String.valueOf(entry.getValue()));
-                }
+        }
+        for (Map.Entry<String, Integer> entry : actual.buildings().entrySet()) {
+            if (!expected.buildings().containsKey(entry.getKey()) && entry.getValue() > buildingTolerance) {
+                return CalibrationResult.diverged(expected.tick(),
+                    "buildings." + entry.getKey(),
+                    "0",
+                    String.valueOf(entry.getValue()));
             }
         }
 
