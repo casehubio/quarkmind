@@ -245,9 +245,9 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 | 12w Zerg (tick 304) | 3415 | 3425 | — | — | **+0.3%** | — |
 | 12w Terran (tick 304) | 3460 | 3450 | — | — | **−0.3%** | — |
 | 1w speed (tick 121) | 1370 | 1355 | — | — | **−1.1%** | — |
-| MULE isolation (tick 304) | 3565 | 3300† | — | — | **−7.4%†** | — |
+| MULE isolation (tick 304) | 3565 | 3686 | — | — | **+3.4%** | — |
 
-**†** MULE isolation: EM lacks MULE calldown (#711) — EM value reflects SCV-only income. Delta measures the MULE income gap.
+**MULE calldown operational (#711).** The morph naming mismatch (playbook YAML uses UPPER_SNAKE_CASE `ORBITAL_COMMAND`, but `MORPH_BUILDING_TARGETS` mapped CamelCase `OrbitalCommand`) silently dropped the OC morph. `BuildingType.valueOf()` fallback added in `EmulatedGame.handleMorph()` and `SC2DeliveryHandler.doMorph()`. EM MULE income uses a flat rate (277.8 min/min) rather than SC2's trip-based mining, explaining the +3.4% over-production.
 
 **6w gas multi-run variance (#688, #696):** 5 SC2 runs produce bimodal vespene at tick 304: {1044, 1204, 1204, 1044, 1204}. Mean=1140, σ=78.4, CV=6.88%. Baseline updated from outlier (1012) to run-2 (1204, dominant mode) in #696. SC2's random worker-to-geyser assignment creates two distinct outcomes per game — the EM tracks the lower mode (1044), suggesting its worker-to-geyser routing matches the less-efficient SC2 pattern. Baselines in `calibration/multi-run/cal-gas-dual-6w-run-{1..5}.json`.
 
@@ -516,9 +516,9 @@ The previous lumped mining constant absorbed three distinct phases. These are no
 
 **Patch affinity (#620):** Workers return to the same patch each trip (SC2 behaviour). Routing is not the cadence bottleneck — the root cause is per-trip variance from collision timing and walk distance variance that straight-line movement cannot reproduce.
 
-### Per-patch approach docking (#636)
+### Per-patch approach docking (#636→#679)
 
-`APPROACH_DISTANCE_SCALE` removed (#653) — it was a compensation constant, not a physics simulation. All patches use the global approach constant (24.5 loops, recalibrated #661). The per-distance formula was tested (SCALE=2.5 improved cadence from 81.6% to 75.3%) but reverted because it masked the real cadence variance from collision timing and walk distance.
+`APPROACH_DISTANCE_SCALE` removed (#653) — it was a compensation constant, not a physics simulation. The global approach constant (24.5 loops, #661) was replaced by per-patch values computed by `MineralPatch.computeApproachDocking()` (#679). Each patch's approach docking is `approachAnimation(20.0) + rawPathDelay`, where `rawPathDelay = (medianE2E − e2e[i]) × loopsPerUnit × PATH_DEVIATION_SCALE + PATH_DEVIATION_BASE`. Constants: `PATH_DEVIATION_SCALE=0.4`, `PATH_DEVIATION_BASE=4.5`. Close patches get more delay (longer navigation path around central patches), far patches get less (direct edge paths). Typical range: 23–28 loops depending on patch distance. See §3 (line 71) for the decomposition.
 
 **Delivery quantisation (finding):** Uniform phase constants produce discrete delivery counts because workers synchronise. Worker stagger (6.1 loops) breaks the phase relationship to hit the SC2 target.
 
