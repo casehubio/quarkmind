@@ -230,16 +230,16 @@ Mining radius increases with saturation (contention effect — workers compete f
 
 Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle replay MAPE sweep, which conflated worker allocation differences with physics. The dual-run isolates physics and shows no race-specific difference.
 
-### SC2 dual-run calibration results (TorchesAIE_v4, post-#695)
+### SC2 dual-run calibration results (TorchesAIE_v4, post-#690)
 
 | Baseline | SC2 minerals | EM minerals | SC2 vespene | EM vespene | Mineral Δ | Gas Δ |
 |----------|-------------|------------|-------------|------------|-----------|-------|
-| 8w Protoss (tick 304) | 2330 | 2445 | — | — | **+4.9%** | — |
-| 12w Protoss (tick 304) | 3460 | 3395 | — | — | **−1.9%** | — |
-| 16w saturation (tick 304) | 4235 | 4165 | — | — | **−1.7%** | — |
-| 24w saturation (tick 304) | 3955 | 3850 | — | — | **−2.7%** | — |
-| 3w gas (tick 304) | 3885 | 3805 | 552 | 544 | −2.1% | **−1.4%** |
-| 6w gas (tick 304, run-2) | 3260 | 3280 | 1204 | 1108 | +0.6% | **−8.0%** |
+| 8w Protoss (tick 304) | 2330 | 2430 | — | — | **+4.3%** | — |
+| 12w Protoss (tick 304) | 3460 | 3450 | — | — | **−0.3%** | — |
+| 16w saturation (tick 304) | 4235 | 4150 | — | — | **−2.0%** | — |
+| 24w saturation (tick 304) | 3955 | 3985 | — | — | **+0.8%** | — |
+| 3w gas (tick 304) | 3885 | 3910 | 552 | 568 | +0.6% | **+2.9%** |
+| 6w gas (tick 304, run-2) | 3260 | 3430 | 1204 | 1108 | +5.2% | **−8.0%** |
 | 6w gas (5-run mean) | — | — | 1140 | 1108 | — | **−2.8%** |
 
 **6w gas multi-run variance (#688, #696):** 5 SC2 runs produce bimodal vespene at tick 304: {1044, 1204, 1204, 1044, 1204}. Mean=1140, σ=78.4, CV=6.88%. Baseline updated from outlier (1012) to run-2 (1204, dominant mode) in #696. SC2's random worker-to-geyser assignment creates two distinct outcomes per game — the EM tracks the lower mode (1044), suggesting its worker-to-geyser routing matches the less-efficient SC2 pattern. Baselines in `calibration/multi-run/cal-gas-dual-6w-run-{1..5}.json`.
