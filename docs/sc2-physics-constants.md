@@ -118,7 +118,7 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 |----------|-----------|----------|--------|------------|-----------------|
 | Gas harvest duration | 31.7 loops (1.415s) | 32 loops (1.43s) inside geyser | Liquipedia 1.415s; SC2 profiler confirms 32 loops inside (#665) | **Published** — Liquipedia + #665 | `starcraft.worker.gas-harvest-duration-loops` |
 | Gas approach docking | 11.5 loops (0.51s) | (entry animation + path deviation) | Dual-run sweep against 3w/6w baselines (#689, was 12.5 in #677) | **Calibrated** — #689 | `starcraft.worker.gas-approach-docking-loops` |
-| Gas deposit congestion | 4.0 loops per extra worker | (TH approach path congestion) | 2D docking×congestion sweep against 3w/6w baselines (#689) | **Calibrated** — #689 | `GAS_DEPOSIT_CONGESTION_PER_WORKER` (compile-time) |
+| Gas deposit congestion | 0.0 (removed) | — | SC2 dual-geyser shows no throughput penalty vs 2× single-geyser (#696). Previous 4.0 loops/worker penalized throughput that SC2 doesn't penalize | **Removed** — #696 | `GAS_DEPOSIT_CONGESTION_PER_WORKER` (compile-time) |
 | Gas building radius | 1.75u | 1.69u (Assimilator) | SC2 API `Unit.getRadius()` (#665) | **Calibrated** — #665 | `GAS_BUILDING_RADIUS` (compile-time) |
 | Gas cargo | 4 | 4 | Liquipedia | **Published** | — |
 | Max workers per geyser | 3 | 3 | SC2 mechanics | **Published** | — |
@@ -229,8 +229,8 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 | 16w saturation (tick 304) | 4235 | 4165 | — | — | **−1.7%** | — |
 | 24w saturation (tick 304) | 3955 | 3850 | — | — | **−2.7%** | — |
 | 3w gas (tick 304) | 3885 | 3805 | 552 | 544 | −2.1% | **−1.4%** |
-| 6w gas (tick 304, run-2) | 3260 | 3280 | 1204 | 1016 | +0.6% | **−15.6%** |
-| 6w gas (5-run mean) | — | — | 1140 | 1016 | — | **−10.9%** |
+| 6w gas (tick 304, run-2) | 3260 | 3280 | 1204 | 1108 | +0.6% | **−8.0%** |
+| 6w gas (5-run mean) | — | — | 1140 | 1108 | — | **−2.8%** |
 
 **6w gas multi-run variance (#688, #696):** 5 SC2 runs produce bimodal vespene at tick 304: {1044, 1204, 1204, 1044, 1204}. Mean=1140, σ=78.4, CV=6.88%. Baseline updated from outlier (1012) to run-2 (1204, dominant mode) in #696. SC2's random worker-to-geyser assignment creates two distinct outcomes per game — the EM tracks the lower mode (1044), suggesting its worker-to-geyser routing matches the less-efficient SC2 pattern. Baselines in `calibration/multi-run/cal-gas-dual-6w-run-{1..5}.json`.
 
