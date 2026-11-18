@@ -484,10 +484,8 @@ class DualRunCalibrationTest {
     void dualRunCalExpansionTransferAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-expansion-transfer.json");
         // skipBuildings: EM can't place buildings at SC2 map positions
-        // Without skipBuildings: building placement fails at tick 14
-        // With skipBuildings: free buildings create extra Probes that distort economy
-        // Economy comparison is not valid until calibrate() deducts building costs
-        CalibrationResult result = calibrate("playbooks/cal-expansion-transfer.yaml", sc2Baseline, true, 50);
+        // deductBuildingCosts: spend minerals; instant construction still gives supply early
+        CalibrationResult result = calibrate("playbooks/cal-expansion-transfer.yaml", sc2Baseline, true, 50, true);
         System.out.println(result.report());
         if (!result.passed()) {
             System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
@@ -746,6 +744,12 @@ class DualRunCalibrationTest {
 
     static CalibrationResult calibrate(String playbookResource, CalibrationBaseline baseline,
                                        boolean skipBuildings, int unitTolerance) {
+        return calibrate(playbookResource, baseline, skipBuildings, unitTolerance, false);
+    }
+
+    static CalibrationResult calibrate(String playbookResource, CalibrationBaseline baseline,
+                                       boolean skipBuildings, int unitTolerance,
+                                       boolean deductBuildingCosts) {
         String   yaml = SC2PlaybookRunner.loadResource(playbookResource);
         JsonNode root;
         try {root = YAML.readTree(yaml);} catch (Exception e) {
@@ -832,6 +836,10 @@ class DualRunCalibrationTest {
                 if (canFire) {
                     if (skipBuildings && "build".equals(step.action())) {
                         BuildingType bt = BuildingType.valueOf((String) step.params().get("build"));
+                        if (deductBuildingCosts) {
+                            int mCost = SC2Data.mineralCost(bt);
+                            if (game.snapshot().minerals() < mCost) { continue; }
+                        }
                         Point2d pos;
                         if (SC2Data.isGasBuilding(bt)) {
                             var geysers = game.snapshot().geysers();
@@ -842,6 +850,9 @@ class DualRunCalibrationTest {
                             pos = new Point2d(30, 30);
                         }
                         game.debugCreateBuilding(bt, pos);
+                        if (deductBuildingCosts) {
+                            game.debugDeductResources(SC2Data.mineralCost(bt), SC2Data.gasCost(bt));
+                        }
                         fired[i] = true;
                     } else {
                         Map<String, Object> data = new HashMap<>(step.params());

@@ -644,6 +644,12 @@ public class EmulatedGame {
         }
     }
 
+    public void debugDeductResources(int minerals, int vespene) {
+        friendly.deductMinerals(minerals);
+        friendly.deductVespene(vespene);
+    }
+
+
     public void debugKillUnit(String tag) {
         Unit unit = friendly.units().stream()
                             .filter(u -> u.tag().equals(tag)).findFirst().orElse(null);

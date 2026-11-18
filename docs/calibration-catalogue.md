@@ -79,7 +79,7 @@
 
 **†** EM lacks MULE calldown — EM value reflects SCV-only income without MULE contribution. Delta measures the MULE income gap.
 
-**‡** Expansion-transfer EM comparison is not valid: `skipBuildings` creates buildings without deducting minerals, which inflates Probe training and distorts economy. Without `skipBuildings`, building placement fails (EM lacks SC2 map positions). Requires `calibrate()` to deduct mineral costs when injecting buildings.
+**‡** Expansion-transfer EM comparison is not valid: `skipBuildings` creates buildings instantly (zero construction time). Mineral costs are now deducted (#710) but instant construction gives supply early, snowballing Probe count (+30 extra by tick 304). Without `skipBuildings`, building placement fails (EM lacks SC2 map positions). Requires construction time delay in the skipBuildings path.
 
 ---
 
