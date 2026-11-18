@@ -96,7 +96,7 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 | Mine cycle (uncontested) | 66 loops (3 ticks) | 33+24.5+22=79.5 loops | Deposit→pickup |
 | Full cycle (average) | 117 loops (5.3 ticks) | ~117 loops (#661) | PICKUP→PICKUP |
 
-SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) = ~79.5 loops. Post-#661, EM unconditional approach is 24.5 loops for all mining starts. Phase transitions consume 1 game loop each (transition loop cost, #661). The net effect at 12w is −1.9% vs SC2. At 8w (uncontested): +4.3%.
+SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) = ~79.5 loops. Post-#661, EM unconditional approach is 24.5 loops for all mining starts. Phase transitions consume 1 game loop each (transition loop cost, #661). The net effect at 12w is −0.3% vs SC2 (post-#690). At 8w (uncontested): +4.3%.
 
 **Collision model (#634→#661→#656):** Collision speed factor disabled (1.0) in #661. Lateral displacement scaled by contention (#656): at ≤2 workers/patch, dodge reduced to 25%. Full displacement at 3+/patch preserves high-saturation contention model. SC2 workers at low saturation don't physically collide — they alternate mining cycles. The reduced displacement at low saturation eliminates random walk extension that was pushing borderline 6-tick cycles to 7+.
 
@@ -236,11 +236,17 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 |----------|-------------|------------|-------------|------------|-----------|-------|
 | 8w Protoss (tick 304) | 2330 | 2430 | — | — | **+4.3%** | — |
 | 12w Protoss (tick 304) | 3460 | 3450 | — | — | **−0.3%** | — |
-| 16w saturation (tick 304) | 4235 | 4150 | — | — | **−2.0%** | — |
+| 16w saturation (tick 304) | 4270 | 4150 | — | — | **−2.8%** | — |
 | 24w saturation (tick 304) | 3955 | 3985 | — | — | **+0.8%** | — |
 | 3w gas (tick 304) | 3885 | 3910 | 552 | 568 | +0.6% | **+2.9%** |
 | 6w gas (tick 304, run-2) | 3260 | 3430 | 1204 | 1108 | +5.2% | **−8.0%** |
 | 6w gas (5-run mean) | — | — | 1140 | 1108 | — | **−2.8%** |
+| 12w Zerg (tick 304) | 3415 | 3425 | — | — | **+0.3%** | — |
+| 12w Terran (tick 304) | 3460 | 3450 | — | — | **−0.3%** | — |
+| 1w speed (tick 121) | 1370 | 1355 | — | — | **−1.1%** | — |
+| MULE isolation (tick 304) | 3565 | 3300† | — | — | **−7.4%†** | — |
+
+**†** MULE isolation: EM lacks MULE calldown (#711) — EM value reflects SCV-only income. Delta measures the MULE income gap.
 
 **6w gas multi-run variance (#688, #696):** 5 SC2 runs produce bimodal vespene at tick 304: {1044, 1204, 1204, 1044, 1204}. Mean=1140, σ=78.4, CV=6.88%. Baseline updated from outlier (1012) to run-2 (1204, dominant mode) in #696. SC2's random worker-to-geyser assignment creates two distinct outcomes per game — the EM tracks the lower mode (1044), suggesting its worker-to-geyser routing matches the less-efficient SC2 pattern. Baselines in `calibration/multi-run/cal-gas-dual-6w-run-{1..5}.json`.
 
@@ -454,7 +460,7 @@ At a far mineral patch (7.6 units): ~40 loops per leg, 141.5-loop cycle, **47.6 
 
 With `MAX_MINERS=1`, the approach+mining duration (~24.5 base+22=~46.5 loops) controls patch occupancy. A patch is occupied ~46.5/~129 = **~36%** of each cycle (approach varies per patch #656). Two workers per patch alternate efficiently — one mines while the other walks. The approach+mine phase (46.5 loops) approximately fills the time the other worker spends walking+depositing (~45 loops), producing near-zero contention at 2 workers/patch. SC2 8w and 12w per-worker rates are nearly identical (57.0 vs 56.8 deliveries/worker), confirming near-zero contention at ≤2 workers/patch.
 
-16w dual-run (#661): EM=4165 vs SC2=4235 (−1.7%). Collision speed factor disabled (1.0) since #661 — transition loop cost provides correct timing without collision-based compensation.
+16w dual-run (#661→#690): EM=4150 vs SC2=4270 (−2.8%). Collision speed factor disabled (1.0) since #661 — transition loop cost provides correct timing without collision-based compensation.
 
 ### Gas cycle breakdown
 
@@ -491,7 +497,7 @@ Fixing rate accuracy is the primary lever for reducing balance MAPE. The balance
 
 ### Per-race efficiency factors — removed
 
-Factor removed in #623. With decomposed mining phases (mine=22, approach=24.5, deposit=12), edge-to-edge walk distances, and transition loop cost (#661), no compensation factor is needed. SC2 dual-run shows 12w EM within −1.9% of SC2 at tick 304.
+Factor removed in #623. With decomposed mining phases (mine=22, approach=24.5, deposit=12), edge-to-edge walk distances, transition loop cost (#661), and wait-time absorption (#690), no compensation factor is needed. SC2 dual-run shows 12w EM within −0.3% of SC2 at tick 304.
 
 ### The overhead gap — decomposed (#620→#631)
 
@@ -505,7 +511,7 @@ The previous lumped mining constant absorbed three distinct phases. These are no
 | Transition costs | 2 | 1 loop per phase transition × 2 (#661) | **Modeled** — `loopConsumed=true` |
 | **Total per-cycle overhead** | **60.5** | | |
 
-8w dual-run: EM +4.3% vs SC2 (post-#661). 12w: −1.9%. 16w: −1.7%.
+8w dual-run: EM +4.3% vs SC2 (post-#661). Post-#690 (wait-time absorption): 12w −0.3%, 16w −2.8%, 24w +0.8%.
 
 **Patch affinity (#620):** Workers return to the same patch each trip (SC2 behaviour). Routing is not the cadence bottleneck — the root cause is per-trip variance from collision timing and walk distance variance that straight-line movement cannot reproduce.
 
@@ -558,7 +564,7 @@ Calibration results (12w Protoss, TorchesAIE_v4 patch positions):
 | 20 (delta) | +4 | -20 | — | ±30 |
 | 304 (balance) | — | 3460 | 3460 | **0.0% — exact match** |
 
-Stagger=6.1 with walk delay=40 produced 3460 minerals at tick 304 (**0.0%** vs SC2's 3460) pre-shuffle with the previous collision/approach constants. Re-calibrated from 6.0 (#609) via fine sweep. Post-#661 (approach=24.5, deposit=12, collision=1.0, transition cost): 12w EM=3365 vs SC2=3460 (−2.7%). Walk delay (#619) shifted first deliveries from tick 3-4 to tick 5-6.
+Stagger=6.1 with walk delay=40 produced 3460 minerals at tick 304 (**0.0%** vs SC2's 3460) pre-shuffle with the previous collision/approach constants. Re-calibrated from 6.0 (#609) via fine sweep. Post-#661 (approach=24.5, deposit=12, collision=1.0, transition cost): 12w EM=3365 vs SC2=3460 (−2.7%). Post-#690 (wait-time absorption): 12w EM=3450 vs SC2=3460 (−0.3%). Walk delay (#619) shifted first deliveries from tick 3-4 to tick 5-6.
 
 ### Worker management constants
 
@@ -739,7 +745,7 @@ Worker physics and economy constants — override without recompiling:
 ```properties
 # application.properties or -D flags
 starcraft.worker.mining-duration-loops=22.0        # SC2 observed — restored in #634
-starcraft.worker.gas-harvest-duration-loops=32.0   # SC2 profiler — calibrated #665
+starcraft.worker.gas-harvest-duration-loops=31.7   # Liquipedia 1.415s; SC2 profiler confirms 32 loops (#665)
 starcraft.worker.gas-approach-docking-loops=11.5   # gas geyser entry overhead — calibrated #689
 starcraft.worker.deposit-duration-loops=12.0       # 8w SC2 cadence — calibrated #661
 starcraft.worker.approach-docking-loops=24.5       # legacy base value — sum of animation + mean path delay (#679)

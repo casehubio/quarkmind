@@ -12,12 +12,12 @@
 
 | Recording | Playbook | Race | Ticks | SC2 final | EM final | Delta | Calibrating issue |
 |---|---|---|---|---|---|---|---|
-| `cal-mineral-baseline-12w` | cal-mineral-baseline-12w | Protoss | 305 | 3460 min | 3430 min | -0.9% | #605, #609 |
-| `cal-mineral-baseline-8w` | cal-mineral-baseline-8w | Protoss | 305 | 2330 min | 2430 min | +4.3% | #661 |
-| `cal-mineral-baseline-terran` | cal-mineral-baseline-terran | Terran | 305 | 3460 min | 3430 min | -0.9% | #604, #600 |
+| `cal-mineral-baseline-12w` | cal-mineral-baseline-12w | Protoss | 305 | 3460 min | 3450 min | -0.3% | #605, #609 |
+| `cal-mineral-baseline-8w` | cal-mineral-baseline-8w | Protoss | 305 | 2330 min | 2430 min | +4.3% | #661, #705 |
+| `cal-mineral-baseline-terran` | cal-mineral-baseline-terran | Terran | 305 | 3460 min | 3450 min | -0.3% | #604, #600 |
 | `cal-mineral-baseline-zerg` | cal-mineral-baseline-zerg | Zerg | 305 | 3415 min | 3425 min | +0.3% | #604, #600 |
-| `cal-mineral-saturated-16w` | cal-mineral-saturated-16w | Protoss | 305 | 4235 min | 4090 min | -3.4% | #655 |
-| `cal-mineral-saturated-24w` | cal-mineral-saturated-24w | Protoss | 305 | 3955 min | 3850 min | -2.7% | #604 |
+| `cal-mineral-saturated-16w` | cal-mineral-saturated-16w | Protoss | 305 | 4270 min | 4150 min | -2.8% | #655 |
+| `cal-mineral-saturated-24w` | cal-mineral-saturated-24w | Protoss | 305 | 3955 min | 3985 min | +0.8% | #604 |
 | `cal-gas-baseline-3w` | cal-gas-baseline-3w | Protoss | 305 | 552 gas | 568 gas | +2.9% | #695, #677 |
 | `cal-gas-dual-6w` | cal-gas-dual-6w | Protoss | 305 | 1204 gas | 1108 gas | -8.0% | #696, #688 |
 | `cal-mule-isolation` | cal-mule-isolation | Terran | 305 | 3565 min | 3300 min | -7.4%† | #604, #598 |
