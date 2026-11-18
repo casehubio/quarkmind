@@ -203,8 +203,7 @@ class DualRunCalibrationTest {
     @Test
     void dualRunCalMineralBaselineZergAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-zerg.json");
-        // unitTolerance=3: EM lacks Larvae (don't affect mining income)
-        CalibrationResult   result      = calibrate("playbooks/cal-mineral-baseline-zerg.yaml", sc2Baseline, false, 3);
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-baseline-zerg.yaml", sc2Baseline);
         System.out.println(result.report());
         if (!result.passed()) {
             System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",

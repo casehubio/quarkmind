@@ -57,6 +57,12 @@ class ZergRaceModel implements RaceModel {
             true));
         hatcheryLarvaCount.put(hatcheryTag, MAX_LARVA);
 
+        for (int i = 0; i < MAX_LARVA; i++) {
+            final int larvaHp = SC2Data.maxHealth(UnitType.LARVA);
+            state.addUnit(new Unit("larva-" + i, UnitType.LARVA,
+                new Point2d(8 + i * 0.3f, 8.5f), larvaHp, larvaHp, 0, 0, 0, 0));
+        }
+
         final int overlordHp = SC2Data.maxHealth(UnitType.OVERLORD);
         state.addUnit(new Unit("overlord-0", UnitType.OVERLORD,
             new Point2d(14, 14), overlordHp, overlordHp, 0, 0, 0, 0));
