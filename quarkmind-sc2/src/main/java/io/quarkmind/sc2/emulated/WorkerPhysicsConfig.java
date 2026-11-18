@@ -13,7 +13,6 @@ public record WorkerPhysicsConfig(
         double collisionSpeedFactor,
         double approachDockingLoops,
         double rerouteThresholdLoops,
-        double approachEqualizationScale,
         float lowSaturationDodgeScale,
         double approachAnimationLoops
 ) {
@@ -30,7 +29,6 @@ public record WorkerPhysicsConfig(
     public static final double DEFAULT_COLLISION_SPEED_FACTOR      = 1.0;
     public static final double DEFAULT_APPROACH_DOCKING_LOOPS      = 24.5;
     public static final double DEFAULT_REROUTE_THRESHOLD_LOOPS     = 22.0;
-    public static final double DEFAULT_APPROACH_EQUALIZATION_SCALE = 0.4;
     public static final float  DEFAULT_LOW_SATURATION_DODGE_SCALE  = 0.25f;
     public static final double DEFAULT_APPROACH_ANIMATION_LOOPS    = 20.0;
 
@@ -42,7 +40,7 @@ public record WorkerPhysicsConfig(
              acceleration, deceleration, patchDockingOverheadLoops, DEFAULT_PATCH_DISTANCE,
              DEFAULT_INITIAL_WORKER_STAGGER, DEFAULT_COLLISION_SPEED_FACTOR,
              DEFAULT_APPROACH_DOCKING_LOOPS, DEFAULT_REROUTE_THRESHOLD_LOOPS,
-             DEFAULT_APPROACH_EQUALIZATION_SCALE, DEFAULT_LOW_SATURATION_DODGE_SCALE,
+             DEFAULT_LOW_SATURATION_DODGE_SCALE,
              DEFAULT_APPROACH_ANIMATION_LOOPS);
     }
 
@@ -55,7 +53,7 @@ public record WorkerPhysicsConfig(
              acceleration, deceleration, patchDockingOverheadLoops, patchDistance,
              DEFAULT_INITIAL_WORKER_STAGGER, DEFAULT_COLLISION_SPEED_FACTOR,
              DEFAULT_APPROACH_DOCKING_LOOPS, DEFAULT_REROUTE_THRESHOLD_LOOPS,
-             DEFAULT_APPROACH_EQUALIZATION_SCALE, DEFAULT_LOW_SATURATION_DODGE_SCALE,
+             DEFAULT_LOW_SATURATION_DODGE_SCALE,
              DEFAULT_APPROACH_ANIMATION_LOOPS);
     }
 
@@ -73,7 +71,6 @@ public record WorkerPhysicsConfig(
                 DEFAULT_COLLISION_SPEED_FACTOR,
                 DEFAULT_APPROACH_DOCKING_LOOPS,
                 DEFAULT_REROUTE_THRESHOLD_LOOPS,
-                DEFAULT_APPROACH_EQUALIZATION_SCALE,
                 DEFAULT_LOW_SATURATION_DODGE_SCALE,
                 DEFAULT_APPROACH_ANIMATION_LOOPS
         );

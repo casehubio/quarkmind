@@ -70,7 +70,6 @@ class SimulatedWorker {
         APPROACH_ANIMATION_LOOPS                    = config.approachAnimationLoops();
         REROUTE_THRESHOLD_LOOPS                     = config.rerouteThresholdLoops();
         MineralPatch.PATCH_DISTANCE                 = config.patchDistance();
-        MineralPatch.APPROACH_EQUALIZATION_SCALE    = config.approachEqualizationScale();
         WorkerSimulation.LOW_SATURATION_DODGE_SCALE = config.lowSaturationDodgeScale();
     }
 

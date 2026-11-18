@@ -25,7 +25,6 @@ class MineralPatch {
     double approachDockingLoops = SimulatedWorker.APPROACH_DOCKING_LOOPS;
     double outboundPathDelay;
 
-    static double APPROACH_EQUALIZATION_SCALE = 0.4;
     static double PATH_DEVIATION_SCALE        = 0.4;
     static double PATH_DEVIATION_BASE         = 4.5;
 
