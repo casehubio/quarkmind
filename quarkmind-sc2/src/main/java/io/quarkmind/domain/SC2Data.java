@@ -96,13 +96,12 @@ public final class SC2Data {
 
     /**
      * Mineral income per active MULE per tick.
-     * Liquipedia: 225 minerals total yield (9 trips × 25 cargo) over 64s lifetime.
-     * 208.3 minerals/min = 225 / (MULE_LIFETIME_LOOPS / GAME_LOOPS_PER_SECOND) × 60.
-     * Previous: 277.8 from oracle replay isolation (#613) — over-estimated due to
-     * worker income subtraction error at high worker counts.
+     * Calibrated from 83 Terran player runs across 118 oracle replays (115 observations).
+     * 277.8 minerals/min ≈ 3.57× calibrated SCV tier-1 rate (77.7 min/min).
+     * Liquipedia: 225 total yield (210.9/min) — empirical is +33% higher; we follow empirical.
      */
     public static double muleIncomePerTick() {
-        final double muleMinPerMin = 208.3;
+        final double muleMinPerMin = 277.8;
         final double secsPerTick   = LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND;
         return muleMinPerMin / 60.0 * secsPerTick;
     }

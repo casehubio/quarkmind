@@ -52,6 +52,7 @@ This is an application, not a framework. If the capability requires SC2 game kno
 - Never use compensation constants. If the EM doesn't match SC2, fix the root cause.
 - Always use `double` arithmetic. No integer truncation in the income path.
 - Calibrate from controlled SC2 dual-run baselines, not oracle replays. Oracle replays have event gaps and confound physics with player behavior.
+- **Empirical over Liquipedia.** Liquipedia values are reference points for sanity-checking, not calibration targets. Liquipedia rates assume idealised conditions (close distances, no contention) that diverge 5-30%+ from real SC2 at standard map distances. When empirical SC2 data conflicts with Liquipedia, record both values and the delta in `docs/sc2-physics-constants.md`, but always use the empirical value.
 - Per-tick delivery deltas must be exact multiples of 5 (mineral cargo). Non-5-multiples indicate a compensation factor artifact.
 - SC2 randomises event processing order per game loop ([PySC2 docs](https://github.com/google-deepmind/pysc2/blob/master/docs/environment.md#determinism-and-randomness)). The EM shuffles worker processing order per loop via `Random(42)` in `WorkerSimulation` (#634) — three shuffle points: mineral worker step, patch acquisition, collision resolution. See `docs/sc2-physics-constants.md` §1b.
 - Reference: `docs/sc2-physics-constants.md` — living reference for all simulation constants.

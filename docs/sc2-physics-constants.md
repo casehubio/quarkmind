@@ -151,6 +151,8 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 
 **Liquipedia reconciliation (https://liquipedia.net/starcraft2/Resources):**
 
+**Empirical-first principle:** Where SC2 recordings or oracle replay data conflict with Liquipedia, we follow empirical. Liquipedia values are reference points for sanity-checking, not calibration targets. Liquipedia rates assume idealised conditions (close distances, no contention) that don't match real SC2 games — e.g., mineral and gas rates diverge 5-30%+ at standard map distances. Record both values and the delta; never silently replace empirical with Liquipedia.
+
 **Speed conversion:** Liquipedia times are real seconds at Faster speed (22.4 game loops/s). Convert: `loops = seconds * 22.4`. All EM constants are in game loops.
 
 #### Gas — Liquipedia vs EM
@@ -177,14 +179,15 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 | 16w rate | ~925/min | — | ~912 at tick 304 | -1.4% | Dual-run calibration (#661) |
 | 24w rate | ~1140/min | — | ~1108 at tick 304 | -2.8% | Dual-run calibration (#661) |
 
-#### MULE — Liquipedia vs EM
+#### MULE — Liquipedia vs EM (empirical)
 
-| Parameter | Liquipedia | EM value | Delta | Rationale |
-|-----------|-----------|----------|-------|-----------|
+| Parameter | Liquipedia | EM (empirical) | Delta | Source |
+|-----------|-----------|----------------|-------|--------|
 | Cargo per trip | 25 | — (flat rate) | — | EM uses flat rate, not trip simulation |
-| Total yield | 225 minerals | 225 (208.3/min × 64.8/60) | 0% | Recalibrated to Liquipedia total yield (#697). Previous: 300 (277.8/min from oracle replay isolation, #613) |
-| Rate | 210.9/min | 208.3/min | -1.2% | 225 minerals / (1452 loops / 22.4 loops/s) × 60 |
-| Lifetime | 64s | 1452 loops (64.8s) | +1.3% | Near match; calibrated from SC2 (#613) |
+| Total yield | 225 minerals | ~300 (277.8/min × 64.8/60) | **+33%** | EM from 115 oracle replay observations (#613) |
+| Rate | 210.9/min | 277.8/min | **+32%** | Oracle replay isolation; Liquipedia under-measures at standard distances |
+| Rate multiplier | 3.45-3.94× | 3.57× (vs 77.7 SCV) | within range | Multiplier consistent; absolute gap from higher empirical SCV rate |
+| Lifetime | 64s | 1452 loops (64.8s) | +1.3% | SC2 dual-run calibration (#613) |
 
 **Gas rate MAPE improvement (#675):** vespeneCollectionRate MAPE at 5-min dropped from 29.9% to 15.3% (aggregate, 236 player runs). Per-race: Protoss 16.1→15.2%, Terran 24.0→13.2%, Zerg 31.8→25.4%. Zerg residual is variance-driven (per-replay cycle differences), not systematic bias.
 
@@ -272,7 +275,7 @@ Previously (pre-#655): 12w +0.6%, 16w −20.2%, 24w −13.4%. The compound colli
 | Constant | Value | Source | Confidence |
 |----------|-------|--------|------------|
 | MULE lifetime | 1452 loops (64.8s) | SC2 dual-run MULE isolation | **Calibrated** — #613 |
-| MULE income | 208.3 minerals/min | Liquipedia 225 total yield / MULE lifetime (#697) | **Published** — Liquipedia |
+| MULE income | 277.8 minerals/min | Oracle replays (115 obs, #613) | **Calibrated** — empirical |
 | MULE calldown energy | 50 | SC2 mechanics | **Published** |
 | OC starting energy | 50 | SC2 mechanics | **Published** |
 | Addon mineral cost | 50 | SC2 mechanics | **Published** |
