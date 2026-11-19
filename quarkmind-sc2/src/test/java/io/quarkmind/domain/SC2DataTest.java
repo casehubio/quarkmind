@@ -325,11 +325,6 @@ class SC2DataTest {
     }
 
     @Test
-    void muleIncomePerTickIsPositive() {
-        assertThat(SC2Data.muleIncomePerTick()).isGreaterThan(0);
-    }
-
-    @Test
     void queenEnergyRegenPerLoopIsPositive() {
         assertThat(SC2Data.CASTER_ENERGY_REGEN_PER_LOOP).isGreaterThan(0);
     }

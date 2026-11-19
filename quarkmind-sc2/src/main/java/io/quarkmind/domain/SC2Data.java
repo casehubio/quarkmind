@@ -98,18 +98,6 @@ public final class SC2Data {
 
 
     /**
-     * Mineral income per active MULE per tick.
-     * Calibrated from 83 Terran player runs across 118 oracle replays (115 observations).
-     * 277.8 minerals/min ≈ 3.57× calibrated SCV tier-1 rate (77.7 min/min).
-     * Liquipedia: 225 total yield (210.9/min) — empirical is +33% higher; we follow empirical.
-     */
-    public static double muleIncomePerTick() {
-        final double muleMinPerMin = 277.8;
-        final double secsPerTick   = LOOPS_PER_TICK / GAME_LOOPS_PER_SECOND;
-        return muleMinPerMin / 60.0 * secsPerTick;
-    }
-
-    /**
      * Number of units spawned from a single TrainIntent.
      * Zergling produces 2 from 1 larva/1 supply cost; all others produce 1.
      */

@@ -46,6 +46,8 @@ class MuleIncomeCalibrationTest {
         38.8 / 60.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND,
         7.8 / 60.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND,
     };
+    private static final double   OLD_MULE_PER_TICK = 277.8 / 60.0 * SC2Data.LOOPS_PER_TICK / SC2Data.GAME_LOOPS_PER_SECOND;
+
     private static double approxMineralIncomePerTick(int workerCount) {
         double income = 0;
         for (int tier = 0; tier < MINERAL_TIERS.length; tier++) {
@@ -202,7 +204,7 @@ class MuleIncomeCalibrationTest {
         System.out.printf("Checkpoints with active MULEs: %d%n%n", checkpointsWithMules);
 
         System.out.printf("Current SC2Data MULE income: %.1f minerals/min (%.3f per tick)%n",
-            172.5, SC2Data.muleIncomePerTick());
+            172.5, OLD_MULE_PER_TICK);
 
         System.out.printf("%n%-12s  %10s  %12s  %8s  %10s  %6s%n",
             "Checkpoint", "GT MinRate", "WorkerIncome", "MULEs", "MULEIncome", "Runs");
@@ -232,7 +234,7 @@ class MuleIncomeCalibrationTest {
 
             System.out.printf("%n=== Calibrated MULE Income ===%n");
             System.out.printf("  Per minute: %.1f minerals/min (was %.1f)%n", calibratedPerMinute, 172.5);
-            System.out.printf("  Per tick:   %.3f (was %.3f)%n", calibratedPerTick, SC2Data.muleIncomePerTick());
+            System.out.printf("  Per tick:   %.3f (was %.3f)%n", calibratedPerTick, OLD_MULE_PER_TICK);
             System.out.printf("  Scale:      %.2f×%n", calibratedPerMinute / 172.5);
             System.out.printf("  Observations: %d checkpoints with active MULEs%n", sumMuleCount);
 
