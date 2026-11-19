@@ -376,6 +376,7 @@ public final class ObservationTranslator {
         var     pos      = u.getPosition();
         String  tag      = String.valueOf(u.getTag().getValue());
         Point2d position = new Point2d(pos.getX(), pos.getY());
+        boolean isMule   = toUnitsEnum(u) == Units.TERRAN_MULE;
 
         Set<com.github.ocraft.s2client.protocol.data.Buff> buffs = u.getBuffs();
         boolean hasCarryMineralBuff = buffs.contains(Buffs.CARRY_MINERAL_FIELD_MINERALS)
@@ -387,7 +388,7 @@ public final class ObservationTranslator {
 
         List<UnitOrder> orders = u.getOrders();
         if (orders.isEmpty()) {
-            return new WorkerSnapshot(tag, position, WorkerAction.IDLE, carrying);
+            return new WorkerSnapshot(tag, position, WorkerAction.IDLE, carrying, isMule);
         }
 
         com.github.ocraft.s2client.protocol.data.Ability ability  = orders.getFirst().getAbility();
@@ -407,7 +408,7 @@ public final class ObservationTranslator {
             action = WorkerAction.OTHER;
         }
 
-        return new WorkerSnapshot(tag, position, action, carrying);
+        return new WorkerSnapshot(tag, position, action, carrying, isMule);
     }
 
     private static boolean isHarvestGather(com.github.ocraft.s2client.protocol.data.Ability ability) {

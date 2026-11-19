@@ -125,6 +125,46 @@ class WorkerSnapshotEmTest {
     }
 
     @Test
+    void regularWorkerHasMuleFalse() {
+        SimulatedWorker w = new SimulatedWorker("w11", new Point2d(10, 20), 0);
+        w.task = WorkerTask.MINING_MINERALS;
+
+        WorkerSnapshot snapshot = toSnapshot(w);
+
+        assertThat(snapshot.mule()).isFalse();
+    }
+
+    @Test
+    void muleWorkerHasMuleTrue() {
+        SimulatedWorker w = new SimulatedWorker("m1", new Point2d(10, 20), 0);
+        w.task = WorkerTask.MINING_MINERALS;
+
+        WorkerSimulation sim = new WorkerSimulation();
+        sim.addMuleForTest(w);
+        WorkerSnapshot snapshot = sim.workerSnapshots().getFirst();
+
+        assertThat(snapshot.tag()).isEqualTo("m1");
+        assertThat(snapshot.action()).isEqualTo(WorkerAction.GATHERING_MINERALS);
+        assertThat(snapshot.mule()).isTrue();
+    }
+
+    @Test
+    void workerSnapshotsIncludesBothWorkersAndMules() {
+        WorkerSimulation sim = new WorkerSimulation();
+        sim.addWorkerForTest(new SimulatedWorker("w12", new Point2d(10, 20), 0));
+        SimulatedWorker mule = new SimulatedWorker("m2", new Point2d(15, 25), 0);
+        mule.task = WorkerTask.MINING_MINERALS;
+        sim.addMuleForTest(mule);
+
+        List<WorkerSnapshot> snapshots = sim.workerSnapshots();
+
+        assertThat(snapshots).hasSize(2);
+        assertThat(snapshots).anyMatch(s -> s.tag().equals("w12") && !s.mule());
+        assertThat(snapshots).anyMatch(s -> s.tag().equals("m2") && s.mule());
+    }
+
+
+    @Test
     void workerSimulationExposesList() {
         WorkerSimulation sim = new WorkerSimulation();
         List<WorkerSnapshot> snapshots = sim.workerSnapshots();

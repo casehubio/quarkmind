@@ -1150,17 +1150,22 @@ class WorkerSimulation {
     }
 
     List<io.quarkmind.sc2.playbook.WorkerSnapshot> workerSnapshots() {
-        return workers.values().stream()
-                      .map(WorkerSimulation::toWorkerSnapshot)
-                      .toList();
+        return java.util.stream.Stream.concat(
+                workers.values().stream().map(w -> toWorkerSnapshot(w, false)),
+                mules.values().stream().map(w -> toWorkerSnapshot(w, true))
+                                             ).toList();
     }
 
     void addWorkerForTest(SimulatedWorker w) {
         workers.put(w.tag, w);
     }
 
+    void addMuleForTest(SimulatedWorker w) {
+        mules.put(w.tag, w);
+    }
 
-    private static io.quarkmind.sc2.playbook.WorkerSnapshot toWorkerSnapshot(SimulatedWorker w) {
+
+    private static io.quarkmind.sc2.playbook.WorkerSnapshot toWorkerSnapshot(SimulatedWorker w, boolean mule) {
         boolean carrying = w.cargo > 0;
         io.quarkmind.domain.WorkerAction action = switch (w.task) {
             case MINING_MINERALS -> io.quarkmind.domain.WorkerAction.GATHERING_MINERALS;
@@ -1170,6 +1175,6 @@ class WorkerSimulation {
             case IDLE -> io.quarkmind.domain.WorkerAction.IDLE;
             case BUILDING, SCOUTING, TRANSFERRING -> io.quarkmind.domain.WorkerAction.OTHER;
         };
-        return new io.quarkmind.sc2.playbook.WorkerSnapshot(w.tag, w.position, action, carrying);
+        return new io.quarkmind.sc2.playbook.WorkerSnapshot(w.tag, w.position, action, carrying, mule);
     }
 }

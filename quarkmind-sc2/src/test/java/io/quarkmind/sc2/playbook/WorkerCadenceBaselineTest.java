@@ -12,8 +12,8 @@ class WorkerCadenceBaselineTest {
 
     @Test
     void jsonRoundTrip() {
-        var w1 = new WorkerSnapshot("100", new Point2d(10.5f, 20.3f), WorkerAction.GATHERING_MINERALS, false);
-        var w2 = new WorkerSnapshot("101", new Point2d(12.0f, 18.0f), WorkerAction.RETURNING_MINERALS, true);
+        var w1 = new WorkerSnapshot("100", new Point2d(10.5f, 20.3f), WorkerAction.GATHERING_MINERALS, false, false);
+        var w2 = new WorkerSnapshot("101", new Point2d(12.0f, 18.0f), WorkerAction.RETURNING_MINERALS, true, false);
         var cadence = List.of(
                 new WorkerCadenceSnapshot(0, List.of(w1, w2)),
                 new WorkerCadenceSnapshot(1, List.of(w1, w2))
