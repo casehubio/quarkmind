@@ -97,7 +97,7 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 | Mine cycle (uncontested) | 66 loops (3 ticks) | 33+24.5+22=79.5 loops | Deposit→pickup |
 | Full cycle (average) | 117 loops (5.3 ticks) | ~117 loops (#661) | PICKUP→PICKUP |
 
-SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) = ~79.5 loops. Post-#661, EM unconditional approach is 24.5 loops for all mining starts. Phase transitions consume 1 game loop each (transition loop cost, #661). The net effect at 12w is −0.3% vs SC2 (post-#690). At 8w (uncontested): +4.3%.
+SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) = ~79.5 loops. Post-#661, EM unconditional approach is 24.5 loops for all mining starts. Phase transitions consume 1 game loop each (transition loop cost, #661). The net effect at 12w is −0.3% vs SC2 (post-#690). At 8w: −0.2% (post-#727 density-dependent path deviation).
 
 **Collision model (#634→#661→#656):** Collision speed factor disabled (1.0) in #661. Lateral displacement scaled by contention (#656): at ≤2 workers/patch, dodge reduced to 25%. Full displacement at 3+/patch preserves high-saturation contention model. SC2 workers at low saturation don't physically collide — they alternate mining cycles. The reduced displacement at low saturation eliminates random walk extension that was pushing borderline 6-tick cycles to 7+.
 
@@ -280,9 +280,9 @@ Previously (pre-#655): 12w +0.6%, 16w −20.2%, 24w −13.4%. The compound colli
 | 24 | 3.0 | 46.8 | 82.1% |
 | 30 | 3.8 | 37.5 | 65.7% |
 
-**Saturation model calibrated** — contention fix (assignment-based spreading + wake-up pass), patch docking overhead (22 loops), transition loop cost (#661), unconditional approach docking (24.5 loops, #661), deposit duration (12 loops, #661), lockout bypass for waiting workers (#655), wait-then-reroute (#636), and low-saturation approach bonus (4.5 loops at ≤1 worker/patch, #714). Collision speed factor disabled (1.0) since #661.
+**Saturation model calibrated** — contention fix (assignment-based spreading + wake-up pass), patch docking overhead (22 loops), transition loop cost (#661), unconditional approach docking (24.5 loops, #661), deposit duration (12 loops, #661), lockout bypass for waiting workers (#655), wait-then-reroute (#636), and density-dependent path deviation (outboundPathDelay / max(density, 0.5), #727). Collision speed factor disabled (1.0) since #661.
 
-**Low-saturation boundary validation (#721):** SC2 dual-run at 4w/6w/10w reveals the flat 4.5-loop bonus over-corrects at very low saturation: 4w=-9.6%, 6w=-5.0%, 10w=-1.7% (bonus inactive, correct). The bonus was calibrated for 8w (+0.4%) and works at 12w (-0.3%). Fix: saturation-proportional scaling (#727).
+**Low-saturation boundary validation (#721→#727):** SC2 dual-run at 4w/6w/10w exposed a data error: the #721 finding had SC2/EM columns swapped. The EM actually *over*-produces at low saturation (EM walks straight lines, SC2 curves). The flat bonus was correct in direction (adding overhead) but wrong in shape (uniform across all densities ≤1 w/p). Fixed in #727 with inverse-density scaling. Post-#727 deltas: 4w +3.6% (was +10.7%), 6w +2.7% (was +5.3%), 8w −0.2%, 10w +1.8%, 12w −0.3%.
 
 ---
 
@@ -526,7 +526,7 @@ The previous lumped mining constant absorbed three distinct phases. These are no
 | Transition costs | 2 | 1 loop per phase transition × 2 (#661) | **Modeled** — `loopConsumed=true` |
 | **Total per-cycle overhead** | **60.5** | | |
 
-8w dual-run: EM +4.3% vs SC2 (post-#661). Post-#690 (wait-time absorption): 12w −0.3%, 16w −2.8%, 24w +0.8%.
+Post-#727 (density-dependent path deviation): 4w +3.6%, 6w +2.7%, 8w −0.2%, 10w +1.8%, 12w −0.3%. Historical: 8w was +4.3% post-#661, reduced to +0.4% by #714 bonus, then −0.2% by #727 inverse-density scaling.
 
 **Patch affinity (#620):** Workers return to the same patch each trip (SC2 behaviour). Routing is not the cadence bottleneck — the root cause is per-trip variance from collision timing and walk distance variance that straight-line movement cannot reproduce.
 
