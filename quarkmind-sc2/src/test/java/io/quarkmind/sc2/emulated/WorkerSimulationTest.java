@@ -978,8 +978,8 @@ class WorkerSimulationTest {
             }
             totalIncome += income;
         }
-        assertTrue(firstDeliveryTick <= 6,
-                   "Single worker should deliver by tick 6 (with approach docking), got " + firstDeliveryTick);
+        assertTrue(firstDeliveryTick <= 7,
+                   "Single worker should deliver by tick 7 (with density-dependent approach docking), got " + firstDeliveryTick);
     }
 
     @Test

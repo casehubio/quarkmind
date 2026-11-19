@@ -3,7 +3,7 @@ schema: sc2
 meta:
   race: PROTOSS
   duration: 305 ticks
-  purpose: Transition-saturation mineral rate — 10 workers (1.25 per patch), validates LOW_SATURATION_APPROACH_BONUS threshold
+  purpose: Transition-saturation mineral rate — 10 workers (1.25 per patch), validates density-dependent path deviation threshold
 
 steps:
   - kill: 2

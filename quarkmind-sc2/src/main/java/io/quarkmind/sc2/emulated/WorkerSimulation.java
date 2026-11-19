@@ -17,7 +17,6 @@ class WorkerSimulation {
     static final float MINERAL_PATCH_RADIUS = 1.0f;
     static final float GAS_BUILDING_RADIUS  = 1.75f;
     static       float LOW_SATURATION_DODGE_SCALE = 0.25f;
-    static       double LOW_SATURATION_APPROACH_BONUS = WorkerPhysicsConfig.DEFAULT_LOW_SATURATION_APPROACH_BONUS;
 
 
     static Point2d edgePoint(Point2d center, Point2d toward, float radius) {
@@ -89,22 +88,25 @@ class WorkerSimulation {
 
     static void resetToDefaults() {
         LOW_SATURATION_DODGE_SCALE        = WorkerPhysicsConfig.DEFAULT_LOW_SATURATION_DODGE_SCALE;
-        LOW_SATURATION_APPROACH_BONUS     = WorkerPhysicsConfig.DEFAULT_LOW_SATURATION_APPROACH_BONUS;
         GAS_DEPOSIT_LOCK_LOOPS            = WorkerPhysicsConfig.DEFAULT_GAS_DEPOSIT_LOCK_LOOPS;
         GAS_DEPOSIT_CONGESTION_PER_WORKER = WorkerPhysicsConfig.DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER;
     }
 
     private double effectiveApproachDocking(MineralPatch patch, int baseIndex) {
-        double docking = patch.approachDockingLoops;
         int workers = countMineralWorkersAtBase(baseIndex);
         int activePatchCount = 0;
         for (MineralPatch p : bases.get(baseIndex).patches()) {
             if (!p.isDepleted()) activePatchCount++;
         }
-        if (activePatchCount > 0 && workers <= activePatchCount) {
-            docking += LOW_SATURATION_APPROACH_BONUS;
-        }
-        return docking;
+        if (activePatchCount == 0) return patch.approachDockingLoops;
+        double density = (double) workers / activePatchCount;
+        if (density > 1.0) return patch.approachDockingLoops;
+        // At low density, collision and rerouting contribute less cycle overhead,
+        // so approach docking must absorb the EM's straight-line advantage.
+        // Inverse scaling floored at 0.5 — below the calibration range (4w/8p=0.5),
+        // straight-line advantage saturates; workers already walk unobstructed paths.
+        double effectiveDensity = Math.max(density, 0.5);
+        return patch.approachDockingLoops + patch.outboundPathDelay / effectiveDensity;
     }
 
 

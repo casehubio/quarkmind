@@ -71,7 +71,6 @@ class SimulatedWorker {
         REROUTE_THRESHOLD_LOOPS                            = config.rerouteThresholdLoops();
         MineralPatch.PATCH_DISTANCE                        = config.patchDistance();
         WorkerSimulation.LOW_SATURATION_DODGE_SCALE        = config.lowSaturationDodgeScale();
-        WorkerSimulation.LOW_SATURATION_APPROACH_BONUS     = config.lowSaturationApproachBonus();
         WorkerSimulation.GAS_DEPOSIT_LOCK_LOOPS            = config.gasDepositLockLoops();
         WorkerSimulation.GAS_DEPOSIT_CONGESTION_PER_WORKER = config.gasDepositCongestionPerWorker();
     }

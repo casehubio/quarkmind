@@ -62,9 +62,6 @@ class WorkerPhysicsConfigProducer {
     @ConfigProperty(name = "starcraft.worker.approach-animation-loops",
                     defaultValue = "20.0")
     double approachAnimationLoops;
-    @ConfigProperty(name = "starcraft.worker.low-saturation-approach-bonus",
-                    defaultValue = "4.5")
-    double lowSaturationApproachBonus;
 
     @ConfigProperty(name = "starcraft.worker.gas-deposit-lock-loops",
                     defaultValue = "8.0")
@@ -84,7 +81,7 @@ class WorkerPhysicsConfigProducer {
                 acceleration, deceleration, patchDockingOverheadLoops, (float) patchDistance,
                 initialWorkerStaggerLoops, collisionSpeedFactor, approachDockingLoops,
                 rerouteThresholdLoops, (float) lowSaturationDodgeScale,
-                approachAnimationLoops, lowSaturationApproachBonus,
+                approachAnimationLoops,
                 gasDepositLockLoops, gasDepositCongestionPerWorker);
         SimulatedWorker.configure(config);
         return config;

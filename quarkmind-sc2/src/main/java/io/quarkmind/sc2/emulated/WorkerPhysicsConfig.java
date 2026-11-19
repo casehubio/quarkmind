@@ -15,7 +15,6 @@ public record WorkerPhysicsConfig(
         double rerouteThresholdLoops,
         float lowSaturationDodgeScale,
         double approachAnimationLoops,
-        double lowSaturationApproachBonus,
         double gasDepositLockLoops,
         double gasDepositCongestionPerWorker
 ) {
@@ -34,7 +33,6 @@ public record WorkerPhysicsConfig(
     public static final double DEFAULT_REROUTE_THRESHOLD_LOOPS           = 22.0;
     public static final float  DEFAULT_LOW_SATURATION_DODGE_SCALE        = 0.25f;
     public static final double DEFAULT_APPROACH_ANIMATION_LOOPS          = 20.0;
-    public static final double DEFAULT_LOW_SATURATION_APPROACH_BONUS     = 4.5;
     public static final double DEFAULT_GAS_DEPOSIT_LOCK_LOOPS            = 8.0;
     public static final double DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER = 0.0;
 
@@ -48,7 +46,6 @@ public record WorkerPhysicsConfig(
              DEFAULT_APPROACH_DOCKING_LOOPS, DEFAULT_REROUTE_THRESHOLD_LOOPS,
              DEFAULT_LOW_SATURATION_DODGE_SCALE,
              DEFAULT_APPROACH_ANIMATION_LOOPS,
-             DEFAULT_LOW_SATURATION_APPROACH_BONUS,
              DEFAULT_GAS_DEPOSIT_LOCK_LOOPS,
              DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER);
     }
@@ -64,7 +61,6 @@ public record WorkerPhysicsConfig(
              DEFAULT_APPROACH_DOCKING_LOOPS, DEFAULT_REROUTE_THRESHOLD_LOOPS,
              DEFAULT_LOW_SATURATION_DODGE_SCALE,
              DEFAULT_APPROACH_ANIMATION_LOOPS,
-             DEFAULT_LOW_SATURATION_APPROACH_BONUS,
              DEFAULT_GAS_DEPOSIT_LOCK_LOOPS,
              DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER);
     }
@@ -85,7 +81,6 @@ public record WorkerPhysicsConfig(
                 DEFAULT_REROUTE_THRESHOLD_LOOPS,
                 DEFAULT_LOW_SATURATION_DODGE_SCALE,
                 DEFAULT_APPROACH_ANIMATION_LOOPS,
-                DEFAULT_LOW_SATURATION_APPROACH_BONUS,
                 DEFAULT_GAS_DEPOSIT_LOCK_LOOPS,
                 DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER
         );
