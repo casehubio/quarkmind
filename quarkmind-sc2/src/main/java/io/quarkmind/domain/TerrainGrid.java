@@ -7,6 +7,8 @@ public final class TerrainGrid {
     public enum Height { HIGH, LOW, RAMP, WALL }
 
     private final Height[][] grid;  // [x][y]
+    private final int[][]    obstacles; // [x][y], reference-counted
+
     private final int width;
     private final int height;
 
@@ -17,6 +19,7 @@ public final class TerrainGrid {
         for (int x = 0; x < width; x++) {
             this.grid[x] = Arrays.copyOf(grid[x], height);
         }
+        this.obstacles = new int[width][height];
     }
 
     public Height heightAt(int x, int y) {
@@ -25,8 +28,54 @@ public final class TerrainGrid {
     }
 
     public boolean isWalkable(int x, int y) {
-        return heightAt(x, y) != Height.WALL;
+        if (x < 0 || x >= width || y < 0 || y >= height) {return false;}
+        return grid[x][y] != Height.WALL && obstacles[x][y] == 0;
     }
+
+    public void markObstacle(int x, int y) {
+        if (x >= 0 && x < width && y >= 0 && y < height) {obstacles[x][y]++;}
+    }
+
+    public void clearObstacle(int x, int y) {
+        if (x >= 0 && x < width && y >= 0 && y < height && obstacles[x][y] > 0) {obstacles[x][y]--;}
+    }
+
+    public void markCircularObstacle(float centerX, float centerY, float radius) {
+        int minX = Math.max(0, (int) (centerX - radius));
+        int maxX = Math.min(width - 1, (int) (centerX + radius));
+        int minY = Math.max(0, (int) (centerY - radius));
+        int maxY = Math.min(height - 1, (int) (centerY + radius));
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                double dx = (x + 0.5) - centerX;
+                double dy = (y + 0.5) - centerY;
+                if (dx * dx + dy * dy <= (double) radius * radius) {
+                    markObstacle(x, y);
+                }
+            }
+        }
+    }
+
+    public void clearCircularObstacle(float centerX, float centerY, float radius) {
+        int minX = Math.max(0, (int) (centerX - radius));
+        int maxX = Math.min(width - 1, (int) (centerX + radius));
+        int minY = Math.max(0, (int) (centerY - radius));
+        int maxY = Math.min(height - 1, (int) (centerY + radius));
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                double dx = (x + 0.5) - centerX;
+                double dy = (y + 0.5) - centerY;
+                if (dx * dx + dy * dy <= (double) radius * radius) {
+                    clearObstacle(x, y);
+                }
+            }
+        }
+    }
+
+    public void clearAllObstacles() {
+        for (int[] col : obstacles) {java.util.Arrays.fill(col, 0);}
+    }
+
 
     /** Movement cost multiplier for this tile. RAMP = 1.5×, all others = 1.0×. */
     public double movementCost(int x, int y) {
