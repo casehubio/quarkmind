@@ -79,6 +79,7 @@ public class QuarkusSC2Transport {
     private volatile Thread gameLoopThread;
     private volatile boolean running = false;
     private final AtomicBoolean quitting = new AtomicBoolean(false);
+    private String baseBuild = "unknown";
 
     @ConfigProperty(name = "starcraft.sc2.skip-launch", defaultValue = "false")
     public boolean skipProcessLaunch;
@@ -526,10 +527,12 @@ public class QuarkusSC2Transport {
     private void launchSC2() throws IOException {
         if (isPortOpen(sc2Port)) {
             log.info("[SC2] Port already open — SC2 is running, skipping launch");
+            baseBuild = resolveSC2Executable().baseBuild();
             return;
         }
         SC2Executable sc2 = resolveSC2Executable();
-        log.infof("[SC2] Launching: %s", sc2.path());
+        baseBuild = sc2.baseBuild();
+        log.infof("[SC2] Launching: %s (build %s)", sc2.path(), baseBuild);
         sc2Process = new ProcessBuilder(sc2.path().toString(),
                                         "-listen", "127.0.0.1", "-port", String.valueOf(sc2Port), "-displayMode", "0").start();
     }
@@ -557,6 +560,8 @@ public class QuarkusSC2Transport {
         }
         throw new RuntimeException("[SC2] Port " + port + " did not open after " + connectRetryCount + " attempts");
     }
+
+    public String baseBuild() { return baseBuild; }
 
     public static boolean isSC2Available() {
         Path info = Path.of(System.getProperty("user.home"),

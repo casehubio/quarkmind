@@ -40,7 +40,7 @@ class PlaybookSC2RecorderTest {
         assertFalse(adapter.snapshots().isEmpty(), "Should have recorded snapshots");
         System.out.printf("[Recorder] Captured %d snapshots%n", adapter.snapshots().size());
 
-        CalibrationBaseline baseline = adapter.buildBaseline("unknown");
+        CalibrationBaseline baseline = adapter.buildBaseline(transport.baseBuild());
         String json = baseline.toJson();
 
         Path output = Path.of("src/test/resources/calibration/protoss-probe-economy.json");
@@ -130,7 +130,7 @@ class PlaybookSC2RecorderTest {
                     "Should have recorded calibration snapshots");
 
         io.quarkmind.sc2.playbook.WorkerCadenceBaseline cadenceBaseline =
-                adapter.buildWorkerCadenceBaseline("unknown");
+                adapter.buildWorkerCadenceBaseline(transport.baseBuild());
         String cadenceJson   = cadenceBaseline.toJson();
         Path   cadenceOutput = Path.of("src/test/resources/calibration/cal-worker-cadence-12w.json");
         Files.createDirectories(cadenceOutput.getParent());
@@ -138,7 +138,7 @@ class PlaybookSC2RecorderTest {
         System.out.printf("[Recorder] Worker cadence baseline written to %s (%d bytes)%n",
                           cadenceOutput, cadenceJson.length());
 
-        CalibrationBaseline calBaseline = adapter.buildBaseline("unknown");
+        CalibrationBaseline calBaseline = adapter.buildBaseline(transport.baseBuild());
         String              calJson     = calBaseline.toJson();
         Path                calOutput   = Path.of("src/test/resources/calibration/cal-mineral-baseline-12w.json");
         Files.writeString(calOutput, calJson);
@@ -179,7 +179,7 @@ class PlaybookSC2RecorderTest {
                     "Should have recorded calibration snapshots");
 
         io.quarkmind.sc2.playbook.WorkerCadenceBaseline cadenceBaseline =
-                adapter.buildWorkerCadenceBaseline("unknown");
+                adapter.buildWorkerCadenceBaseline(transport.baseBuild());
         String cadenceJson   = cadenceBaseline.toJson();
         Path   cadenceOutput = Path.of("src/test/resources/calibration/cal-worker-cadence-16w.json");
         Files.createDirectories(cadenceOutput.getParent());
@@ -187,7 +187,7 @@ class PlaybookSC2RecorderTest {
         System.out.printf("[Recorder] Worker cadence baseline written to %s (%d bytes)%n",
                           cadenceOutput, cadenceJson.length());
 
-        CalibrationBaseline calBaseline = adapter.buildBaseline("unknown");
+        CalibrationBaseline calBaseline = adapter.buildBaseline(transport.baseBuild());
         String              calJson     = calBaseline.toJson();
         Path                calOutput   = Path.of("src/test/resources/calibration/cal-mineral-saturated-16w.json");
         Files.writeString(calOutput, calJson);
@@ -229,7 +229,7 @@ class PlaybookSC2RecorderTest {
                     "Should have recorded calibration snapshots");
 
         io.quarkmind.sc2.playbook.WorkerCadenceBaseline cadenceBaseline =
-                adapter.buildWorkerCadenceBaseline("unknown");
+                adapter.buildWorkerCadenceBaseline(transport.baseBuild());
         String cadenceJson   = cadenceBaseline.toJson();
         Path   cadenceOutput = Path.of("src/test/resources/calibration/cal-worker-cadence-8w.json");
         Files.createDirectories(cadenceOutput.getParent());
@@ -237,7 +237,7 @@ class PlaybookSC2RecorderTest {
         System.out.printf("[Recorder] Worker cadence baseline written to %s (%d bytes)%n",
                           cadenceOutput, cadenceJson.length());
 
-        CalibrationBaseline calBaseline = adapter.buildBaseline("unknown");
+        CalibrationBaseline calBaseline = adapter.buildBaseline(transport.baseBuild());
         String              calJson     = calBaseline.toJson();
         Path                calOutput   = Path.of("src/test/resources/calibration/cal-mineral-baseline-8w.json");
         Files.writeString(calOutput, calJson);
@@ -294,7 +294,7 @@ class PlaybookSC2RecorderTest {
                         "Run " + run + ": should have recorded worker cadence snapshots");
 
             io.quarkmind.sc2.playbook.WorkerCadenceBaseline cadenceBaseline =
-                    adapter.buildWorkerCadenceBaseline("unknown");
+                    adapter.buildWorkerCadenceBaseline(transport.baseBuild());
             String cadenceJson   = cadenceBaseline.toJson();
             Path   cadenceOutput = Path.of("src/test/resources/calibration/multi-run/cal-worker-cadence-12w-run-" + run + ".json");
             Files.createDirectories(cadenceOutput.getParent());
@@ -337,7 +337,7 @@ class PlaybookSC2RecorderTest {
             assertFalse(adapter.snapshots().isEmpty(),
                         "Run " + run + ": should have recorded snapshots");
 
-            CalibrationBaseline baseline = adapter.buildBaseline("unknown");
+            CalibrationBaseline baseline = adapter.buildBaseline(transport.baseBuild());
             String              json     = baseline.toJson();
             Path                output   = Path.of("src/test/resources/calibration/multi-run/cal-gas-dual-6w-run-" + run + ".json");
             Files.createDirectories(output.getParent());
@@ -400,7 +400,7 @@ class PlaybookSC2RecorderTest {
         assertFalse(adapter.snapshots().isEmpty(), "Should have recorded snapshots");
         System.out.printf("[Recorder] %s: Captured %d snapshots%n", playbookResource, adapter.snapshots().size());
 
-        CalibrationBaseline baseline = adapter.buildBaseline("unknown");
+        CalibrationBaseline baseline = adapter.buildBaseline(transport.baseBuild());
         String              json     = baseline.toJson();
 
         Path output = Path.of("src/test/resources/" + outputPath);
