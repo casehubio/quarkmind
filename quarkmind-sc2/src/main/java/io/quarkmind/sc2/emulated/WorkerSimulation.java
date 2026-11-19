@@ -72,6 +72,9 @@ class WorkerSimulation {
     static double GAS_DEPOSIT_LOCK_LOOPS = 8.0;
     static double GAS_DEPOSIT_CONGESTION_PER_WORKER = 0.0;
     private WorkerPhaseListener phaseListener;
+    private io.quarkmind.domain.TerrainGrid terrainGrid;
+    private io.quarkmind.domain.AStarPathfinder pathfinder;
+
 
     void setPhaseListener(WorkerPhaseListener listener) {
         this.phaseListener = listener;
@@ -111,9 +114,37 @@ class WorkerSimulation {
 
 
     WorkerSimulation() {
+        this(null);
+    }
+
+    WorkerSimulation(io.quarkmind.domain.TerrainGrid terrainGrid) {
         double speed = SC2Data.unitSpeed(UnitType.PROBE);
         this.workerDistancePerTick = speed / SC2Data.GAME_LOOPS_PER_SECOND * SC2Data.LOOPS_PER_TICK;
+        this.terrainGrid           = terrainGrid;
+        this.pathfinder            = (terrainGrid != null) ? new io.quarkmind.domain.AStarPathfinder() : null;
     }
+
+    void setTerrainGrid(io.quarkmind.domain.TerrainGrid grid) {
+        this.terrainGrid = grid;
+        this.pathfinder  = (grid != null) ? new io.quarkmind.domain.AStarPathfinder() : null;
+    }
+
+    private void setTargetWithPath(SimulatedWorker w, Point2d target) {
+        if (pathfinder == null || terrainGrid == null) {
+            w.targetPosition = target;
+            w.clearWaypoints();
+            return;
+        }
+        java.util.List<Point2d> path = pathfinder.findPath(terrainGrid, w.position, target);
+        if (path.isEmpty()) {
+            w.targetPosition = target;
+            w.clearWaypoints();
+        } else {
+            java.util.List<Point2d> smoothed = io.quarkmind.domain.AStarPathfinder.smoothPath(path, terrainGrid);
+            w.setWaypoints(new java.util.ArrayDeque<>(smoothed));
+        }
+    }
+
 
     private static final int OPTIMAL_WORKERS_PER_BASE = MineralPatch.PATCHES_PER_BASE * MineralPatch.MAX_MINERS;
 
@@ -129,6 +160,12 @@ class WorkerSimulation {
         }
         MineralPatch.computeApproachDocking(patches, position);
         bases.add(new BaseEntry(tag, position, patches));
+        if (terrainGrid != null) {
+            terrainGrid.markCircularObstacle(position.x(), position.y(), TOWN_HALL_RADIUS);
+            for (MineralPatch p : patches) {
+                terrainGrid.markCircularObstacle(p.position.x(), p.position.y(), MINERAL_PATCH_RADIUS);
+            }
+        }
         rebalanceMineralWorkersAcrossBases();
     }
 
@@ -140,6 +177,12 @@ class WorkerSimulation {
         }
         MineralPatch.computeApproachDocking(patches, position);
         bases.add(new BaseEntry(tag, position, patches));
+        if (terrainGrid != null) {
+            terrainGrid.markCircularObstacle(position.x(), position.y(), TOWN_HALL_RADIUS);
+            for (MineralPatch p : patches) {
+                terrainGrid.markCircularObstacle(p.position.x(), p.position.y(), MINERAL_PATCH_RADIUS);
+            }
+        }
         rebalanceMineralWorkersAcrossBases();
     }
 
@@ -183,7 +226,7 @@ class WorkerSimulation {
             w.assignedPatch    = null;
             w.baseIndex        = toBase;
             w.task             = WorkerTask.TRANSFERRING;
-            w.targetPosition   = targetPos;
+            setTargetWithPath(w, targetPos);
             w.waitingSinceLoop = 0;
             transferred++;
         }
@@ -226,6 +269,9 @@ class WorkerSimulation {
         if (baseIdx < 0) {return;}
         GasSlot slot = new GasSlot(tag, position, baseIdx);
         gasSlots.add(slot);
+        if (terrainGrid != null) {
+            terrainGrid.markCircularObstacle(position.x(), position.y(), GAS_BUILDING_RADIUS);
+        }
         int transferred = 0;
         for (SimulatedWorker w : new ArrayList<>(workers.values())) {
             if (transferred >= GasSlot.MAX_WORKERS) {break;}
@@ -237,10 +283,10 @@ class WorkerSimulation {
             if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
                 w.assignedPatch.miners.remove(w);
             }
-            w.assignedPatch    = null;
-            w.assignedGasSlot  = slot;
-            w.task             = WorkerTask.HARVESTING_GAS;
-            w.targetPosition   = gasTarget(slot);
+            w.assignedPatch   = null;
+            w.assignedGasSlot = slot;
+            w.task            = WorkerTask.HARVESTING_GAS;
+            setTargetWithPath(w, gasTarget(slot));
             w.waitingSinceLoop = 0;
             slot.assignedWorkers.add(w);
             transferred++;
@@ -269,7 +315,7 @@ class WorkerSimulation {
                 w.assignedPatch    = null;
                 w.assignedGasSlot  = slot;
                 w.task             = WorkerTask.HARVESTING_GAS;
-                w.targetPosition   = gasTarget(slot);
+                setTargetWithPath(w, gasTarget(slot));
                 w.waitingSinceLoop = 0;
                 slot.assignedWorkers.add(w);
                 toTransfer--;
@@ -417,7 +463,7 @@ class WorkerSimulation {
         if (w.task == WorkerTask.HARVESTING_GAS || w.task == WorkerTask.RETURNING_GAS
             || w.task == WorkerTask.DEPOSITING_GAS) {return 0;}
 
-        double income = 0;
+        double  income       = 0;
         boolean loopConsumed = false;
 
         while (!loopConsumed) {
@@ -434,7 +480,11 @@ class WorkerSimulation {
                     w.moveOneLoop();
                     loopConsumed = true;
                     if (w.isAtTarget()) {
-                        tryStartMining(w, currentLoop);
+                        if (!w.isAtFinalTarget()) {
+                            w.advanceWaypoint();
+                        } else {
+                            tryStartMining(w, currentLoop);
+                        }
                     }
                     continue;
                 }
@@ -448,7 +498,7 @@ class WorkerSimulation {
                         MineralPatch better = findBetterPatch(w, currentLoop);
                         if (better != null) {
                             w.assignedPatch = better;
-                            w.targetPosition = miningTarget(better, w.baseIndex);
+                            setTargetWithPath(w, miningTarget(better, w.baseIndex));
                             w.waitingSinceLoop = 0;
                             continue;
                         }
@@ -463,8 +513,8 @@ class WorkerSimulation {
                     w.cargo = w.assignedPatch.harvest(cargo);
                     w.assignedPatch.miners.remove(w);
                     w.assignedPatch.lockEndLoop = currentLoop + SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS;
-                    w.task           = WorkerTask.RETURNING_MINERALS;
-                    w.targetPosition = depositTarget(w);
+                    w.task                      = WorkerTask.RETURNING_MINERALS;
+                    setTargetWithPath(w, depositTarget(w));
                     notifyPhase(w.tag, WorkerPhase.MINING, WorkerPhase.WALKING_TO_BASE, currentLoop);
                     loopConsumed = true;
                     continue;
@@ -476,18 +526,22 @@ class WorkerSimulation {
                 boolean arrived = w.moveOneLoop();
                 loopConsumed = true;
                 if (arrived) {
-                    double delivered = w.cargo;
-                    income += delivered;
-                    w.cargo = 0;
-                    notifyDelivery(w.tag, delivered, currentLoop);
-                    if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
-                        notifyPhase(w.tag, WorkerPhase.WALKING_TO_BASE, WorkerPhase.WALKING_TO_PATCH, currentLoop);
-                        returnToPatchOrReassign(w);
-                        return income;
+                    if (!w.isAtFinalTarget()) {
+                        w.advanceWaypoint();
+                    } else {
+                        double delivered = w.cargo;
+                        income += delivered;
+                        w.cargo = 0;
+                        notifyDelivery(w.tag, delivered, currentLoop);
+                        if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
+                            notifyPhase(w.tag, WorkerPhase.WALKING_TO_BASE, WorkerPhase.WALKING_TO_PATCH, currentLoop);
+                            returnToPatchOrReassign(w);
+                            return income;
+                        }
+                        w.task         = WorkerTask.DEPOSITING_MINERALS;
+                        w.phaseEndLoop = currentLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
+                        notifyPhase(w.tag, WorkerPhase.WALKING_TO_BASE, WorkerPhase.DEPOSITING, currentLoop);
                     }
-                    w.task         = WorkerTask.DEPOSITING_MINERALS;
-                    w.phaseEndLoop = currentLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
-                    notifyPhase(w.tag, WorkerPhase.WALKING_TO_BASE, WorkerPhase.DEPOSITING, currentLoop);
                 }
                 continue;
             }
@@ -644,21 +698,25 @@ class WorkerSimulation {
                 if (currentLoop >= w.phaseEndLoop) {
                     w.cargo = SimulatedWorker.GAS_CARGO;
                     slot.exitBuilding(w);
-                    w.task           = WorkerTask.RETURNING_GAS;
-                    w.targetPosition = gasReturnTarget(slot);
+                    w.task = WorkerTask.RETURNING_GAS;
+                    setTargetWithPath(w, gasReturnTarget(slot));
                 }
                 return 0;
             }
             boolean arrived = w.moveOneLoop();
-            if (arrived && slot.canEnter(currentLoop)) {
-                slot.enterBuilding(w, currentLoop);
-                double waitedLoops = w.geyserWaitStartLoop >= 0 ? (currentLoop - w.geyserWaitStartLoop) : 0;
-                double docking = Math.max(0, SimulatedWorker.GAS_APPROACH_DOCKING_LOOPS - waitedLoops);
-                w.phaseEndLoop = currentLoop + docking + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
-                w.geyserWaitStartLoop = -1;
-            } else if (arrived) {
-                if (w.geyserWaitStartLoop < 0) {
-                    w.geyserWaitStartLoop = currentLoop;
+            if (arrived) {
+                if (!w.isAtFinalTarget()) {
+                    w.advanceWaypoint();
+                } else if (slot.canEnter(currentLoop)) {
+                    slot.enterBuilding(w, currentLoop);
+                    double waitedLoops = w.geyserWaitStartLoop >= 0 ? (currentLoop - w.geyserWaitStartLoop) : 0;
+                    double docking     = Math.max(0, SimulatedWorker.GAS_APPROACH_DOCKING_LOOPS - waitedLoops);
+                    w.phaseEndLoop        = currentLoop + docking + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
+                    w.geyserWaitStartLoop = -1;
+                } else {
+                    if (w.geyserWaitStartLoop < 0) {
+                        w.geyserWaitStartLoop = currentLoop;
+                    }
                 }
             }
             return 0;
@@ -667,6 +725,10 @@ class WorkerSimulation {
         if (w.task == WorkerTask.RETURNING_GAS) {
             boolean arrived = w.moveOneLoop();
             if (arrived) {
+                if (!w.isAtFinalTarget()) {
+                    w.advanceWaypoint();
+                    return 0;
+                }
                 double lockEnd = gasDepositLockEndLoop.getOrDefault(w.baseIndex, 0.0);
                 if (currentLoop < lockEnd) {
                     return 0;
@@ -675,10 +737,10 @@ class WorkerSimulation {
                 w.cargo = 0;
                 gasDepositLockEndLoop.put(w.baseIndex, currentLoop + GAS_DEPOSIT_LOCK_LOOPS);
                 if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
-                    w.task           = WorkerTask.HARVESTING_GAS;
-                    w.targetPosition = gasTarget(slot);
+                    w.task = WorkerTask.HARVESTING_GAS;
+                    setTargetWithPath(w, gasTarget(slot));
                 } else {
-                    w.task         = WorkerTask.DEPOSITING_GAS;
+                    w.task = WorkerTask.DEPOSITING_GAS;
                     int extraGasWorkers = Math.max(0, totalGasWorkersAtBase(w.baseIndex) - GasSlot.MAX_WORKERS);
                     w.phaseEndLoop = currentLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS + extraGasWorkers * GAS_DEPOSIT_CONGESTION_PER_WORKER;
                 }
@@ -689,8 +751,8 @@ class WorkerSimulation {
 
         if (w.task == WorkerTask.DEPOSITING_GAS) {
             if (currentLoop >= w.phaseEndLoop) {
-                w.task           = WorkerTask.HARVESTING_GAS;
-                w.targetPosition = gasTarget(slot);
+                w.task = WorkerTask.HARVESTING_GAS;
+                setTargetWithPath(w, gasTarget(slot));
             }
             return 0;
         }
@@ -709,8 +771,8 @@ class WorkerSimulation {
 
     private void returnToPatchOrReassign(SimulatedWorker w) {
         if (w.assignedPatch != null && !w.assignedPatch.isDepleted()) {
-            w.targetPosition = miningTarget(w.assignedPatch, w.baseIndex);
-            w.task           = WorkerTask.MINING_MINERALS;
+            setTargetWithPath(w, miningTarget(w.assignedPatch, w.baseIndex));
+            w.task = WorkerTask.MINING_MINERALS;
             return;
         }
         assignToNearestPatch(w);
@@ -743,13 +805,13 @@ class WorkerSimulation {
             return;
         }
 
-        w.assignedPatch  = nearest;
-        w.targetPosition = miningTarget(nearest, w.baseIndex);
-        w.task           = WorkerTask.MINING_MINERALS;
-        if (w.isAtTarget()) {
+        w.assignedPatch = nearest;
+        setTargetWithPath(w, miningTarget(nearest, w.baseIndex));
+        w.task = WorkerTask.MINING_MINERALS;
+        if (w.isAtFinalTarget()) {
             if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
                 if (!nearest.miners.contains(w)) {nearest.miners.add(w);}
-                w.phaseEndLoop = currentTickStartLoop + effectiveApproachDocking(nearest, w.baseIndex) + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop     = currentTickStartLoop + effectiveApproachDocking(nearest, w.baseIndex) + SimulatedWorker.MINING_DURATION_LOOPS;
                 w.waitingSinceLoop = 0;
                 notifyPhase(w.tag, WorkerPhase.WALKING_TO_PATCH, WorkerPhase.MINING, currentTickStartLoop);
             }
@@ -847,7 +909,7 @@ class WorkerSimulation {
                         w.assignedPatch    = null;
                         w.assignedGasSlot  = slot;
                         w.task             = WorkerTask.HARVESTING_GAS;
-                        w.targetPosition   = gasTarget(slot);
+                        setTargetWithPath(w, gasTarget(slot));
                         w.waitingSinceLoop = 0;
                         slot.assignedWorkers.add(w);
                         needed--;
@@ -894,7 +956,7 @@ class WorkerSimulation {
                     best.assignedPatch    = null;
                     best.assignedGasSlot  = slot;
                     best.task             = WorkerTask.HARVESTING_GAS;
-                    best.targetPosition   = gasTarget(slot);
+                    setTargetWithPath(best, gasTarget(slot));
                     best.waitingSinceLoop = 0;
                     slot.assignedWorkers.add(best);
                     needed--;
@@ -1028,10 +1090,10 @@ class WorkerSimulation {
             w.task = WorkerTask.IDLE;
             return;
         }
-        w.assignedPatch  = nearest;
-        w.targetPosition = miningTarget(nearest, w.baseIndex);
-        w.task           = WorkerTask.MINING_MINERALS;
-        w.phaseEndLoop   = -1;
+        w.assignedPatch = nearest;
+        setTargetWithPath(w, miningTarget(nearest, w.baseIndex));
+        w.task         = WorkerTask.MINING_MINERALS;
+        w.phaseEndLoop = -1;
     }
 
     private double stepOneMuleLoop(SimulatedWorker w, double currentLoop) {
@@ -1043,7 +1105,11 @@ class WorkerSimulation {
             if (!w.isAtTarget()) {
                 w.moveOneLoop();
                 if (w.isAtTarget()) {
-                    w.phaseEndLoop = currentLoop + SimulatedWorker.APPROACH_ANIMATION_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS + SC2Data.MULE_MINING_OVERHEAD_LOOPS;
+                    if (!w.isAtFinalTarget()) {
+                        w.advanceWaypoint();
+                    } else {
+                        w.phaseEndLoop = currentLoop + SimulatedWorker.APPROACH_ANIMATION_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS + SC2Data.MULE_MINING_OVERHEAD_LOOPS;
+                    }
                 }
                 return 0;
             }
@@ -1052,9 +1118,9 @@ class WorkerSimulation {
                 return 0;
             }
             if (currentLoop >= w.phaseEndLoop) {
-                w.cargo          = w.assignedPatch.harvest(SC2Data.MULE_MINERAL_CARGO);
-                w.task           = WorkerTask.RETURNING_MINERALS;
-                w.targetPosition = depositTarget(w);
+                w.cargo = w.assignedPatch.harvest(SC2Data.MULE_MINERAL_CARGO);
+                w.task  = WorkerTask.RETURNING_MINERALS;
+                setTargetWithPath(w, depositTarget(w));
             }
             return 0;
         }
@@ -1062,6 +1128,10 @@ class WorkerSimulation {
         if (w.task == WorkerTask.RETURNING_MINERALS) {
             boolean arrived = w.moveOneLoop();
             if (arrived) {
+                if (!w.isAtFinalTarget()) {
+                    w.advanceWaypoint();
+                    return 0;
+                }
                 double income = w.cargo;
                 w.cargo = 0;
                 if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
@@ -1087,9 +1157,9 @@ class WorkerSimulation {
 
     private void returnMuleToPath(SimulatedWorker w) {
         if (w.assignedPatch != null && !w.assignedPatch.isDepleted()) {
-            w.targetPosition = miningTarget(w.assignedPatch, w.baseIndex);
-            w.task           = WorkerTask.MINING_MINERALS;
-            w.phaseEndLoop   = -1;
+            setTargetWithPath(w, miningTarget(w.assignedPatch, w.baseIndex));
+            w.task         = WorkerTask.MINING_MINERALS;
+            w.phaseEndLoop = -1;
         } else {
             assignMuleToNearestPatch(w);
         }
@@ -1099,7 +1169,11 @@ class WorkerSimulation {
     private void tickTransferringWorker(SimulatedWorker w) {
         w.moveToward();
         if (w.isAtTarget()) {
-            assignToNearestPatch(w);
+            if (!w.isAtFinalTarget()) {
+                w.advanceWaypoint();
+            } else {
+                assignToNearestPatch(w);
+            }
         }
     }
 

@@ -96,6 +96,7 @@ class SimulatedWorker {
     double walkStartLoop;
     double waitingSinceLoop;
     double geyserWaitStartLoop = -1;
+    java.util.Deque<io.quarkmind.domain.Point2d> waypoints;
 
 
     SimulatedWorker(String tag, Point2d position, int baseIndex) {
@@ -109,6 +110,30 @@ class SimulatedWorker {
         return targetPosition != null
                 && position.distanceTo(targetPosition) <= ARRIVAL_THRESHOLD;
     }
+
+    void setWaypoints(java.util.Deque<io.quarkmind.domain.Point2d> waypoints) {
+        this.waypoints = waypoints;
+        if (waypoints != null && !waypoints.isEmpty()) {
+            this.targetPosition = waypoints.poll();
+            this.currentSpeed   = 0;
+        }
+    }
+
+    boolean isAtFinalTarget() {
+        return isAtTarget() && (waypoints == null || waypoints.isEmpty());
+    }
+
+    void advanceWaypoint() {
+        if (waypoints != null && !waypoints.isEmpty()) {
+            this.targetPosition = waypoints.poll();
+            this.currentSpeed   = 0;
+        }
+    }
+
+    void clearWaypoints() {
+        this.waypoints = null;
+    }
+
 
     void moveToward() {moveLoops(LOOPS_PER_TICK);}
 

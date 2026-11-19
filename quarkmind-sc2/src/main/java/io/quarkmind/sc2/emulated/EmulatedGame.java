@@ -1658,7 +1658,11 @@ public class EmulatedGame {
 
     /** Swap movement strategy — used by pathfinding tests. Default is DirectMovement. */
     public void setMovementStrategy(MovementStrategy s) { this.movementStrategy = s; }
-    public void setTerrainGrid(TerrainGrid g) { this.terrainGrid = g; }
+
+    public void setTerrainGrid(TerrainGrid g) {
+        this.terrainGrid = g;
+        workerSimulation.setTerrainGrid(g);
+    }
 
     /** Injects a predictable Random for miss-chance tests. */
     void setRandomForTesting(Random r) { this.random = r; }
