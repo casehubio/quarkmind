@@ -193,7 +193,7 @@ class ExpansionTransferDiagnosticTest {
                         } else {
                             pos = new Point2d(14, 14);
                         }
-                        game.debugCreateBuilding(bt, pos);
+                        game.applyIntent(io.quarkmind.sc2.intent.BuildIntent.of("pb-playbook", bt, pos));
                         fired[i] = true;
                     } else {
                         Map<String, Object> data = new HashMap<>(step.params());

@@ -421,7 +421,7 @@ class ApproachDockingSweepTest {
                             var geysers = game.snapshot().geysers();
                             Point2d pos = (geysers != null && gasIdx < geysers.size())
                                           ? geysers.get(gasIdx++).position() : new Point2d(16, 12);
-                            game.debugCreateBuilding(bt, pos);
+                            game.applyIntent(io.quarkmind.sc2.intent.BuildIntent.of("pb-playbook", bt, pos));
                             fired[i] = true;
                             continue;
                         }
