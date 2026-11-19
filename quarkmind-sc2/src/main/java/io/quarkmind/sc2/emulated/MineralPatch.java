@@ -23,11 +23,6 @@ class MineralPatch {
     double lockEndLoop;
     double distanceToBase;
     double approachDockingLoops = SimulatedWorker.APPROACH_DOCKING_LOOPS;
-    double outboundPathDelay;
-
-    static double PATH_DEVIATION_SCALE        = 0.4;
-    static double PATH_DEVIATION_BASE         = 4.5;
-
 
     MineralPatch(Point2d position, int baseIndex, double initialMinerals, boolean rich) {
         this.position          = position;
@@ -61,30 +56,9 @@ class MineralPatch {
 
 
     static void computeApproachDocking(List<MineralPatch> patches, Point2d basePos) {
-        double townHallRadius = WorkerSimulation.TOWN_HALL_RADIUS;
-        double patchRadius    = WorkerSimulation.MINERAL_PATCH_RADIUS;
-        double loopsPerUnit = io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND
-                              / io.quarkmind.domain.SC2Data.unitSpeed(io.quarkmind.domain.UnitType.PROBE);
-
-        double[] e2eDistances = new double[patches.size()];
-        for (int i = 0; i < patches.size(); i++) {
-            MineralPatch p = patches.get(i);
-            p.distanceToBase = p.position.distanceTo(basePos);
-            e2eDistances[i]  = Math.max(0, p.distanceToBase - townHallRadius - patchRadius);
-        }
-
-        double[] sorted = e2eDistances.clone();
-        java.util.Arrays.sort(sorted);
-        double medianE2E = sorted.length % 2 == 0
-                           ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2.0
-                           : sorted[sorted.length / 2];
-
-        double approachAnimation = SimulatedWorker.APPROACH_ANIMATION_LOOPS;
-        for (int i = 0; i < patches.size(); i++) {
-            double rawPathDelay = (medianE2E - e2eDistances[i]) * loopsPerUnit * PATH_DEVIATION_SCALE
-                    + PATH_DEVIATION_BASE;
-            patches.get(i).outboundPathDelay = Math.max(0, rawPathDelay);
-            patches.get(i).approachDockingLoops = Math.max(0, approachAnimation + rawPathDelay);
+        for (MineralPatch p : patches) {
+            p.distanceToBase       = p.position.distanceTo(basePos);
+            p.approachDockingLoops = SimulatedWorker.APPROACH_ANIMATION_LOOPS;
         }
     }
 

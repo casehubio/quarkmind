@@ -227,8 +227,8 @@ class ApproachDockingSweepTest {
             for (double scale = 0.1; scale <= 0.6; scale += 0.1) {
                 for (double base = 0.0; base <= 8.0; base += 0.5) {
                     SimulatedWorker.APPROACH_ANIMATION_LOOPS = animation;
-                    MineralPatch.PATH_DEVIATION_SCALE        = scale;
-                    MineralPatch.PATH_DEVIATION_BASE         = base;
+                    // PATH_DEVIATION_SCALE and PATH_DEVIATION_BASE removed in #707
+                    // — path deviation now emerges from obstacle-aware A* paths
 
                     int em8  = runPlaybook("playbooks/cal-mineral-baseline-8w.yaml", Race.PROTOSS, sc2_8w);
                     int em12 = runPlaybook("playbooks/cal-mineral-baseline-12w.yaml", Race.PROTOSS, sc2_12w);

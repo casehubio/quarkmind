@@ -1035,7 +1035,7 @@ class WorkerSimulationTest {
     }
 
     @Test
-    void perPatchApproachDocking_variesByDistance() {
+    void perPatchApproachDocking_uniformAfterCompensationRemoved() {
         sim = new WorkerSimulation();
         List<Resource> patches = List.of(
                 new Resource("close", new Point2d(53.0f, 50.0f), 1500, false),
@@ -1047,20 +1047,15 @@ class WorkerSimulationTest {
         List<WorkerSimulation.BaseEntry> bases = sim.bases();
         List<MineralPatch>               mp    = bases.get(0).patches();
 
-        double closeApproach = mp.get(0).approachDockingLoops;
-        double midApproach   = mp.get(1).approachDockingLoops;
-        double farApproach   = mp.get(2).approachDockingLoops;
-
-        assertTrue(closeApproach > midApproach,
-                   "Close patch should have MORE approach than mid: " + closeApproach + " vs " + midApproach);
-        assertTrue(midApproach > farApproach,
-                   "Mid patch should have MORE approach than far: " + midApproach + " vs " + farApproach);
-        assertTrue(farApproach > 0,
-                   "Far patch approach should still be positive: " + farApproach);
+        double expected = SimulatedWorker.APPROACH_ANIMATION_LOOPS;
+        for (MineralPatch p : mp) {
+            assertEquals(expected, p.approachDockingLoops, 0.001,
+                         "All patches should have uniform approach = APPROACH_ANIMATION_LOOPS");
+        }
     }
 
     @Test
-    void approachDockingDecomposition_preservesTotalAndSplitsComponents() {
+    void approachDockingIsAnimationOnly() {
         sim = new WorkerSimulation();
         List<Resource> patches = List.of(
                 new Resource("close", new Point2d(56.0f, 50.0f), 1500, false),
@@ -1071,28 +1066,11 @@ class WorkerSimulationTest {
 
         List<MineralPatch> mp = sim.bases().get(0).patches();
 
-        for (MineralPatch p : mp) {
-            assertTrue(p.outboundPathDelay >= 0,
-                       "outboundPathDelay must be non-negative: " + p.outboundPathDelay);
-            assertTrue(p.approachDockingLoops >= 0,
-                       "approachDockingLoops must be non-negative: " + p.approachDockingLoops);
-        }
-
         double animation = SimulatedWorker.APPROACH_ANIMATION_LOOPS;
         for (MineralPatch p : mp) {
-            if (p.outboundPathDelay > 0) {
-                assertEquals(animation + p.outboundPathDelay, p.approachDockingLoops, 0.001,
-                             "approachDockingLoops should equal animation + pathDelay when pathDelay > 0");
-            } else {
-                assertTrue(p.approachDockingLoops <= animation,
-                           "when pathDelay clipped to 0, total should be <= animation");
-            }
+            assertEquals(animation, p.approachDockingLoops, 0.001,
+                         "approachDockingLoops should equal APPROACH_ANIMATION_LOOPS");
         }
-
-        assertTrue(mp.get(0).outboundPathDelay > mp.get(1).outboundPathDelay,
-                   "Close patch path delay should exceed mid");
-        assertTrue(mp.get(1).outboundPathDelay > mp.get(2).outboundPathDelay,
-                   "Mid patch path delay should exceed far");
     }
 
 

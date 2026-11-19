@@ -95,22 +95,6 @@ class WorkerSimulation {
         GAS_DEPOSIT_CONGESTION_PER_WORKER = WorkerPhysicsConfig.DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER;
     }
 
-    private double effectiveApproachDocking(MineralPatch patch, int baseIndex) {
-        int workers = countMineralWorkersAtBase(baseIndex);
-        int activePatchCount = 0;
-        for (MineralPatch p : bases.get(baseIndex).patches()) {
-            if (!p.isDepleted()) activePatchCount++;
-        }
-        if (activePatchCount == 0) return patch.approachDockingLoops;
-        double density = (double) workers / activePatchCount;
-        if (density > 1.0) return patch.approachDockingLoops;
-        // At low density, collision and rerouting contribute less cycle overhead,
-        // so approach docking must absorb the EM's straight-line advantage.
-        // Inverse scaling floored at 0.5 — below the calibration range (4w/8p=0.5),
-        // straight-line advantage saturates; workers already walk unobstructed paths.
-        double effectiveDensity = Math.max(density, 0.5);
-        return patch.approachDockingLoops + patch.outboundPathDelay / effectiveDensity;
-    }
 
 
     WorkerSimulation() {
@@ -448,7 +432,7 @@ class WorkerSimulation {
                 if (!wasWaiting && tickEndLoop < w.assignedPatch.lockEndLoop) {continue;}
                 WorkerPhase from = wasWaiting ? WorkerPhase.WAITING_FOR_PATCH : WorkerPhase.WALKING_TO_PATCH;
                 w.assignedPatch.miners.add(w);
-                w.phaseEndLoop     = tickEndLoop + effectiveApproachDocking(w.assignedPatch, w.baseIndex) + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop     = tickEndLoop + SimulatedWorker.APPROACH_ANIMATION_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS;
                 w.waitingSinceLoop = 0;
                 notifyPhase(w.tag, from, WorkerPhase.MINING, tickEndLoop);
             }
@@ -651,7 +635,7 @@ class WorkerSimulation {
         if (!wasWaiting && currentLoop < w.assignedPatch.lockEndLoop) {return;}
         WorkerPhase from = wasWaiting ? WorkerPhase.WAITING_FOR_PATCH : WorkerPhase.WALKING_TO_PATCH;
         w.assignedPatch.miners.add(w);
-        double approachDocking = effectiveApproachDocking(w.assignedPatch, w.baseIndex);
+        double approachDocking = SimulatedWorker.APPROACH_ANIMATION_LOOPS;
         if (wasWaiting) {
             double waited = currentLoop - w.waitingSinceLoop;
             approachDocking = Math.max(SimulatedWorker.APPROACH_ANIMATION_LOOPS, approachDocking - waited);
@@ -811,7 +795,7 @@ class WorkerSimulation {
         if (w.isAtFinalTarget()) {
             if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
                 if (!nearest.miners.contains(w)) {nearest.miners.add(w);}
-                w.phaseEndLoop     = currentTickStartLoop + effectiveApproachDocking(nearest, w.baseIndex) + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop     = currentTickStartLoop + SimulatedWorker.APPROACH_ANIMATION_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS;
                 w.waitingSinceLoop = 0;
                 notifyPhase(w.tag, WorkerPhase.WALKING_TO_PATCH, WorkerPhase.MINING, currentTickStartLoop);
             }
