@@ -3,8 +3,8 @@ layout: post
 title: "The Simulator Learns to Build"
 date: 2026-11-05
 type: technical
-entry_type: diary
-subtype: deep-dive
+entry_type: note
+subtype: diary
 projects: [QuarkMind]
 ---
 
