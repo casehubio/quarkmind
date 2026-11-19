@@ -32,9 +32,10 @@ class MuleCargoVerificationTest {
         sim.addMule("mule-1", BASE_POS);
 
         List<Double> deposits = new ArrayList<>();
-        int lifetimeTicks = SC2Data.MULE_LIFETIME_LOOPS / SC2Data.LOOPS_PER_TICK + 10;
+        // WorkerSimulation doesn't handle MULE expiry — that's EmulatedGame.tick()
+        int ticksToRun = SC2Data.MULE_LIFETIME_LOOPS / SC2Data.LOOPS_PER_TICK + 10;
 
-        for (int t = 0; t < lifetimeTicks; t++) {
+        for (int t = 0; t < ticksToRun; t++) {
             double loop = t * (double) SC2Data.LOOPS_PER_TICK;
             TickIncome income = sim.tick(loop);
             if (income.mineralIncome() > 0) {
