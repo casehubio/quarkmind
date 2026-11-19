@@ -197,7 +197,7 @@ Mining radius increases with saturation (contention effect — workers compete f
 
 | Parameter | Liquipedia | EM (trip-based) | Delta | Source |
 |-----------|-----------|-----------------|-------|--------|
-| Cargo per trip | 25 | 25 (`MULE_MINERAL_CARGO`) | 0% | Direct match (#717) |
+| Cargo per trip | 25 | 25 (`MULE_MINERAL_CARGO`) | 0% | **Empirically verified** (#726): cargo=25 gives +1.4% delta vs SC2 baseline; cargo=30 gives +12.3% (#717). MuleCargoVerificationTest confirms 13 trips × 25 = 325 minerals per MULE lifetime. SC2 build version: unknown (baseline recorded before build tracking) |
 | Mining overhead | — | 20 loops (`MULE_MINING_OVERHEAD_LOOPS`) | — | Calibrated from SC2 dual-run MULE isolation baseline (#717) |
 | Total yield | 225 minerals | ~263 (3615-3352 worker baseline at tick 305) | **+17%** | EM trip-based at standard distances; Liquipedia assumes ideal short distance |
 | Isolation delta | — | +1.4% (EM=3615 vs SC2=3565) | — | MULE isolation playbook (#717) |
