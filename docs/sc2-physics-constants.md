@@ -103,7 +103,7 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 
 **Collision radius (#634):** Increased from 0.375 to 0.75 (diameter 1.5). PySC2 docs confirm SC2 unit size is ~0.75 game units — validates the collision diameter. The larger interaction zone creates more collision events, producing contention at higher saturation.
 
-**Unconditional approach docking (#655→#661→#690→#714):** Base approach is 24.5 loops (animation 20 + path deviation ~4.5). Recalibrated in #661 from 8w SC2 cadence data. The approach models positioning overhead, approach animation, and path deviation that EM straight-line walks don't capture — the EM lacks obstacle-aware pathfinding for mineral patches (#707), so the approach docking compensates for the missing curved outbound path. **Wait-time absorption (#690):** workers that were already waiting at a patch absorb approach docking proportionally to their wait time, floored at `APPROACH_ANIMATION_LOOPS` (20). Physics: a waiting worker has already completed the walk — only the approach animation remains. Matches gas docking absorption (#695). **Low-saturation approach bonus (#714):** SC2 cadence data shows per-worker cycle time is constant (~116 loops) regardless of saturation — 8w and 12w workers have identical outbound (75.8 vs 76.2 loops) and inbound (39.9 vs 39.9 loops) phase durations. At ≤1 worker/patch, the EM adds `LOW_SATURATION_APPROACH_BONUS` (4.5 loops) to effective approach docking. Physics: at zero contention, workers have unconstrained maneuvering room and their approach paths are less direct — no queueing pressure to streamline entry. At >1 worker/patch, waiting-time absorption already extends cycles correctly. Pre-#714: 8w +4.3%, 12w −0.3%. Post-#714: 8w +0.4%, 12w −0.3%.
+**Unconditional approach docking (#655→#661→#690→#714):** Base approach is 24.5 loops (animation 20 + path deviation ~4.5). Recalibrated in #661 from 8w SC2 cadence data. The approach models positioning overhead, approach animation, and path deviation that EM straight-line walks don't capture — the EM lacks obstacle-aware pathfinding for mineral patches (#707), so the approach docking compensates for the missing curved outbound path. **Wait-time absorption (#690):** workers that were already waiting at a patch absorb approach docking proportionally to their wait time, floored at `APPROACH_ANIMATION_LOOPS` (20). Physics: a waiting worker has already completed the walk — only the approach animation remains. Matches gas docking absorption (#695). **Low-saturation approach bonus (#714):** SC2 cadence data shows per-worker cycle time is constant (~116 loops) regardless of saturation — 8w and 12w workers have identical outbound (75.8 vs 76.2 loops) and inbound (39.9 vs 39.9 loops) phase durations. At ≤1 worker/patch, the EM adds `LOW_SATURATION_APPROACH_BONUS` (4.5 loops, `starcraft.worker.low-saturation-approach-bonus`) to effective approach docking. Physics: at zero contention, workers have unconstrained maneuvering room and their approach paths are less direct — no queueing pressure to streamline entry. At >1 worker/patch, waiting-time absorption already extends cycles correctly. Pre-#714: 8w +4.3%, 12w −0.3%. Post-#714: 8w +0.4%, 12w −0.3%.
 
 **Effective mining/deposit radii (#690 investigation):** SC2 cadence data at 3 saturations shows workers stop at different effective distances from buildings, varying with saturation:
 
@@ -129,7 +129,8 @@ Mining radius increases with saturation (contention effect — workers compete f
 |----------|-----------|----------|--------|------------|-----------------|
 | Gas harvest duration | 31.7 loops (1.415s) | 32 loops (1.43s) inside geyser | Liquipedia 1.415s; SC2 profiler confirms 32 loops inside (#665) | **Published** — Liquipedia + #665 | `starcraft.worker.gas-harvest-duration-loops` |
 | Gas approach docking | 11.5 loops (0.51s) | (entry animation + path deviation) | Dual-run sweep against 3w/6w baselines (#689, was 12.5 in #677) | **Calibrated** — #689 | `starcraft.worker.gas-approach-docking-loops` |
-| Gas deposit congestion | 0.0 (removed) | — | SC2 dual-geyser shows no throughput penalty vs 2× single-geyser (#696). Previous 4.0 loops/worker penalized throughput that SC2 doesn't penalize | **Removed** — #696 | `GAS_DEPOSIT_CONGESTION_PER_WORKER` (compile-time) |
+| Gas deposit congestion | 0.0 (removed) | — | SC2 dual-geyser shows no throughput penalty vs 2× single-geyser (#696). Previous 4.0 loops/worker penalized throughput that SC2 doesn't penalize | **Removed** — #696 | `starcraft.worker.gas-deposit-congestion-per-worker` |
+| Gas deposit lock | 8.0 loops | — | Deposit lock prevents immediate re-entry | **Default** | `starcraft.worker.gas-deposit-lock-loops` |
 | Gas building radius | 1.75u | 1.69u (Assimilator) | SC2 API `Unit.getRadius()` (#665) | **Calibrated** — #665 | `GAS_BUILDING_RADIUS` (compile-time) |
 | Gas cargo | 4 | 4 | Liquipedia | **Published** | — |
 | Max workers per geyser | 3 | 3 | SC2 mechanics | **Published** | — |
@@ -259,6 +260,13 @@ Previous per-race factors (Protoss=0.997, Terran/Zerg=0.984) were from oracle re
 4. **Collision speed factor disabled**: 0.96→1.0. The transition loop cost provides correct cycle timing across all saturation levels; the collision-based compensation that previously masked the fast base cycle is no longer needed.
 
 Previously (pre-#655): 12w +0.6%, 16w −20.2%, 24w −13.4%. The compound collision model penalised 16w workers with 5+ overlapping neighbours per loop, reducing throughput far beyond SC2's actual contention.
+
+**Per-phase cycle decomposition (#719):** `WorkerPhaseListener` instrumentation at 8w (zero contention) shows two worker clusters matching SC2 cadence data:
+- Close patches (probes 8–11): EM 110–111 loops (5.04 ticks) vs SC2 ~4.8 ticks — EM is **+5% per cycle** (too slow)
+- Far patches (probes 4–7): EM 119–120 loops (5.44 ticks) vs SC2 ~5.6 ticks — EM is **−2.9% per cycle** (too fast)
+- Mining phase is constant (51–52 loops = approach animation 20 + approach docking 4–5 + mining 22 + path deviation 5–6)
+- Walk and deposit phases account for the remaining gap: walk→patch varies 28–34 loops by distance, walk→base 18–23 loops, deposit constant at 12 loops
+- The per-patch approach docking formula partially normalises cycle times across distances but over-corrects for close patches, making them slightly too slow while leaving far patches slightly too fast
 
 ### Saturation curve (SC2 dual-run, Protoss, TorchesAIE_v4)
 

@@ -73,6 +73,20 @@ class WorkerSimulation {
     private final java.util.Map<Integer, Double> gasDepositLockEndLoop = new java.util.HashMap<>();
     static double GAS_DEPOSIT_LOCK_LOOPS = 8.0;
     static double GAS_DEPOSIT_CONGESTION_PER_WORKER = 0.0;
+    private WorkerPhaseListener phaseListener;
+
+    void setPhaseListener(WorkerPhaseListener listener) {
+        this.phaseListener = listener;
+    }
+
+    private void notifyPhase(String tag, WorkerPhase from, WorkerPhase to, double loop) {
+        if (phaseListener != null) {phaseListener.onPhaseChange(tag, from, to, loop);}
+    }
+
+    private void notifyDelivery(String tag, double minerals, double loop) {
+        if (phaseListener != null) {phaseListener.onDelivery(tag, minerals, loop);}
+    }
+
 
     static void resetToDefaults() {
         LOW_SATURATION_DODGE_SCALE = WorkerPhysicsConfig.DEFAULT_LOW_SATURATION_DODGE_SCALE;
@@ -385,9 +399,11 @@ class WorkerSimulation {
                 && w.assignedPatch.miners.size() < MineralPatch.MAX_MINERS) {
                 boolean wasWaiting = w.waitingSinceLoop > 0;
                 if (!wasWaiting && tickEndLoop < w.assignedPatch.lockEndLoop) {continue;}
+                WorkerPhase from = wasWaiting ? WorkerPhase.WAITING_FOR_PATCH : WorkerPhase.WALKING_TO_PATCH;
                 w.assignedPatch.miners.add(w);
                 w.phaseEndLoop     = tickEndLoop + effectiveApproachDocking(w.assignedPatch, w.baseIndex) + SimulatedWorker.MINING_DURATION_LOOPS;
                 w.waitingSinceLoop = 0;
+                notifyPhase(w.tag, from, WorkerPhase.MINING, tickEndLoop);
             }
         }
 
@@ -424,6 +440,7 @@ class WorkerSimulation {
                 if (!w.assignedPatch.miners.contains(w)) {
                     if (w.waitingSinceLoop <= 0) {
                         w.waitingSinceLoop = currentLoop;
+                        notifyPhase(w.tag, WorkerPhase.WALKING_TO_PATCH, WorkerPhase.WAITING_FOR_PATCH, currentLoop);
                     }
                     if (w.waitingSinceLoop > 0
                         && currentLoop - w.waitingSinceLoop > SimulatedWorker.REROUTE_THRESHOLD_LOOPS) {
@@ -447,6 +464,7 @@ class WorkerSimulation {
                     w.assignedPatch.lockEndLoop = currentLoop + SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS;
                     w.task           = WorkerTask.RETURNING_MINERALS;
                     w.targetPosition = depositTarget(w);
+                    notifyPhase(w.tag, WorkerPhase.MINING, WorkerPhase.WALKING_TO_BASE, currentLoop);
                     loopConsumed = true;
                     continue;
                 }
@@ -457,20 +475,25 @@ class WorkerSimulation {
                 boolean arrived = w.moveOneLoop();
                 loopConsumed = true;
                 if (arrived) {
-                    income += w.cargo;
+                    double delivered = w.cargo;
+                    income += delivered;
                     w.cargo = 0;
+                    notifyDelivery(w.tag, delivered, currentLoop);
                     if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
+                        notifyPhase(w.tag, WorkerPhase.WALKING_TO_BASE, WorkerPhase.WALKING_TO_PATCH, currentLoop);
                         returnToPatchOrReassign(w);
                         return income;
                     }
                     w.task         = WorkerTask.DEPOSITING_MINERALS;
                     w.phaseEndLoop = currentLoop + SimulatedWorker.DEPOSIT_DURATION_LOOPS;
+                    notifyPhase(w.tag, WorkerPhase.WALKING_TO_BASE, WorkerPhase.DEPOSITING, currentLoop);
                 }
                 continue;
             }
 
             if (w.task == WorkerTask.DEPOSITING_MINERALS) {
                 if (currentLoop >= w.phaseEndLoop) {
+                    notifyPhase(w.tag, WorkerPhase.DEPOSITING, WorkerPhase.WALKING_TO_PATCH, currentLoop);
                     returnToPatchOrReassign(w);
                     loopConsumed = true;
                     continue;
@@ -571,6 +594,7 @@ class WorkerSimulation {
         if (w.assignedPatch.miners.size() >= MineralPatch.MAX_MINERS) {return;}
         boolean wasWaiting = w.waitingSinceLoop > 0;
         if (!wasWaiting && currentLoop < w.assignedPatch.lockEndLoop) {return;}
+        WorkerPhase from = wasWaiting ? WorkerPhase.WAITING_FOR_PATCH : WorkerPhase.WALKING_TO_PATCH;
         w.assignedPatch.miners.add(w);
         double approachDocking = effectiveApproachDocking(w.assignedPatch, w.baseIndex);
         if (wasWaiting) {
@@ -579,6 +603,7 @@ class WorkerSimulation {
         }
         w.phaseEndLoop     = currentLoop + approachDocking + SimulatedWorker.MINING_DURATION_LOOPS;
         w.waitingSinceLoop = 0;
+        notifyPhase(w.tag, from, WorkerPhase.MINING, currentLoop);
     }
 
     private MineralPatch findBetterPatch(SimulatedWorker w, double currentLoop) {
@@ -725,6 +750,7 @@ class WorkerSimulation {
                 if (!nearest.miners.contains(w)) {nearest.miners.add(w);}
                 w.phaseEndLoop = currentTickStartLoop + effectiveApproachDocking(nearest, w.baseIndex) + SimulatedWorker.MINING_DURATION_LOOPS;
                 w.waitingSinceLoop = 0;
+                notifyPhase(w.tag, WorkerPhase.WALKING_TO_PATCH, WorkerPhase.MINING, currentTickStartLoop);
             }
         }
     }
