@@ -1245,7 +1245,10 @@ public class EmulatedGame {
     private void handleMorph(MorphIntent m, PlayerState state, PhysicsState physics, long absLoop) {
         BuildingType targetBt = MORPH_BUILDING_TARGETS.get(m.targetName());
         if (targetBt == null) {
-            try {targetBt = BuildingType.valueOf(m.targetName());} catch (IllegalArgumentException ignored) {}
+            try {
+                targetBt = BuildingType.valueOf(m.targetName());
+                log.warnf("[EMULATED] Morph target '%s' not in map — resolved via valueOf()", m.targetName());
+            } catch (IllegalArgumentException ignored) {}
         }
         if (targetBt != null) {
             String buildingTag = m.unitTag();

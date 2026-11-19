@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class SC2DeliveryHandler implements DeliveryHandler {
+    private static final org.jboss.logging.Logger log = org.jboss.logging.Logger.getLogger(SC2DeliveryHandler.class);
 
 
     private static final Map<String, BuildingType> MORPH_BUILDING_TARGETS = Map.of(
@@ -100,7 +101,10 @@ public class SC2DeliveryHandler implements DeliveryHandler {
         String       source = (String) data.get("source");
         BuildingType bt     = MORPH_BUILDING_TARGETS.get(target);
         if (bt == null) {
-            try {bt = BuildingType.valueOf(target);} catch (IllegalArgumentException ignored) {}
+            try {
+                bt = BuildingType.valueOf(target);
+                log.warnf("[PLAYBOOK] Morph target '%s' not in map — resolved via valueOf()", target);
+            } catch (IllegalArgumentException ignored) {}
         }
         if (bt != null) {
             int mCost = SC2Data.mineralCost(bt);
