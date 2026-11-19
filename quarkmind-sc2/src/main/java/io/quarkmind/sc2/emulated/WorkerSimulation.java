@@ -17,8 +17,7 @@ class WorkerSimulation {
     static final float MINERAL_PATCH_RADIUS = 1.0f;
     static final float GAS_BUILDING_RADIUS  = 1.75f;
     static       float LOW_SATURATION_DODGE_SCALE = 0.25f;
-    static final double DEFAULT_LOW_SATURATION_APPROACH_BONUS = 4.5;
-    static       double LOW_SATURATION_APPROACH_BONUS = DEFAULT_LOW_SATURATION_APPROACH_BONUS;
+    static       double LOW_SATURATION_APPROACH_BONUS = WorkerPhysicsConfig.DEFAULT_LOW_SATURATION_APPROACH_BONUS;
 
 
     static Point2d edgePoint(Point2d center, Point2d toward, float radius) {
@@ -89,10 +88,10 @@ class WorkerSimulation {
 
 
     static void resetToDefaults() {
-        LOW_SATURATION_DODGE_SCALE = WorkerPhysicsConfig.DEFAULT_LOW_SATURATION_DODGE_SCALE;
-        LOW_SATURATION_APPROACH_BONUS = DEFAULT_LOW_SATURATION_APPROACH_BONUS;
-        GAS_DEPOSIT_LOCK_LOOPS = 8.0;
-        GAS_DEPOSIT_CONGESTION_PER_WORKER = 0.0;
+        LOW_SATURATION_DODGE_SCALE        = WorkerPhysicsConfig.DEFAULT_LOW_SATURATION_DODGE_SCALE;
+        LOW_SATURATION_APPROACH_BONUS     = WorkerPhysicsConfig.DEFAULT_LOW_SATURATION_APPROACH_BONUS;
+        GAS_DEPOSIT_LOCK_LOOPS            = WorkerPhysicsConfig.DEFAULT_GAS_DEPOSIT_LOCK_LOOPS;
+        GAS_DEPOSIT_CONGESTION_PER_WORKER = WorkerPhysicsConfig.DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER;
     }
 
     private double effectiveApproachDocking(MineralPatch patch, int baseIndex) {

@@ -57,20 +57,23 @@ class SimulatedWorker {
     static final int    LOOPS_PER_TICK    = io.quarkmind.domain.SC2Data.LOOPS_PER_TICK;
 
     static void configure(WorkerPhysicsConfig config) {
-        MINING_DURATION_LOOPS                       = config.miningDurationLoops();
-        GAS_HARVEST_DURATION_LOOPS                  = config.gasHarvestDurationLoops();
-        GAS_APPROACH_DOCKING_LOOPS                  = config.gasApproachDockingLoops();
-        DEPOSIT_DURATION_LOOPS                      = config.depositDurationLoops();
-        ACCELERATION                                = config.acceleration();
-        DECELERATION                                = config.deceleration();
-        PATCH_DOCKING_OVERHEAD_LOOPS                = config.patchDockingOverheadLoops();
-        INITIAL_WORKER_STAGGER_LOOPS                = config.initialWorkerStaggerLoops();
-        COLLISION_SPEED_FACTOR                      = config.collisionSpeedFactor();
-        APPROACH_DOCKING_LOOPS                      = config.approachDockingLoops();
-        APPROACH_ANIMATION_LOOPS                    = config.approachAnimationLoops();
-        REROUTE_THRESHOLD_LOOPS                     = config.rerouteThresholdLoops();
-        MineralPatch.PATCH_DISTANCE                 = config.patchDistance();
-        WorkerSimulation.LOW_SATURATION_DODGE_SCALE = config.lowSaturationDodgeScale();
+        MINING_DURATION_LOOPS                              = config.miningDurationLoops();
+        GAS_HARVEST_DURATION_LOOPS                         = config.gasHarvestDurationLoops();
+        GAS_APPROACH_DOCKING_LOOPS                         = config.gasApproachDockingLoops();
+        DEPOSIT_DURATION_LOOPS                             = config.depositDurationLoops();
+        ACCELERATION                                       = config.acceleration();
+        DECELERATION                                       = config.deceleration();
+        PATCH_DOCKING_OVERHEAD_LOOPS                       = config.patchDockingOverheadLoops();
+        INITIAL_WORKER_STAGGER_LOOPS                       = config.initialWorkerStaggerLoops();
+        COLLISION_SPEED_FACTOR                             = config.collisionSpeedFactor();
+        APPROACH_DOCKING_LOOPS                             = config.approachDockingLoops();
+        APPROACH_ANIMATION_LOOPS                           = config.approachAnimationLoops();
+        REROUTE_THRESHOLD_LOOPS                            = config.rerouteThresholdLoops();
+        MineralPatch.PATCH_DISTANCE                        = config.patchDistance();
+        WorkerSimulation.LOW_SATURATION_DODGE_SCALE        = config.lowSaturationDodgeScale();
+        WorkerSimulation.LOW_SATURATION_APPROACH_BONUS     = config.lowSaturationApproachBonus();
+        WorkerSimulation.GAS_DEPOSIT_LOCK_LOOPS            = config.gasDepositLockLoops();
+        WorkerSimulation.GAS_DEPOSIT_CONGESTION_PER_WORKER = config.gasDepositCongestionPerWorker();
     }
 
     static void resetToDefaults() {
