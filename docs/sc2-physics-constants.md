@@ -280,6 +280,8 @@ Previously (pre-#655): 12w +0.6%, 16w −20.2%, 24w −13.4%. The compound colli
 
 **Saturation model calibrated** — contention fix (assignment-based spreading + wake-up pass), patch docking overhead (22 loops), transition loop cost (#661), unconditional approach docking (24.5 loops, #661), deposit duration (12 loops, #661), lockout bypass for waiting workers (#655), wait-then-reroute (#636), and low-saturation approach bonus (4.5 loops at ≤1 worker/patch, #714). Collision speed factor disabled (1.0) since #661.
 
+**Low-saturation boundary validation (#721):** SC2 dual-run at 4w/6w/10w reveals the flat 4.5-loop bonus over-corrects at very low saturation: 4w=-9.6%, 6w=-5.0%, 10w=-1.7% (bonus inactive, correct). The bonus was calibrated for 8w (+0.4%) and works at 12w (-0.3%). Fix: saturation-proportional scaling (#727).
+
 ---
 
 ## 7. Race Mechanics

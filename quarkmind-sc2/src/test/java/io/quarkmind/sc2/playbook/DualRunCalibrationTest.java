@@ -481,6 +481,28 @@ class DualRunCalibrationTest {
     }
 
     @Test
+    void dualRunCalMineralBaseline4wAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-4w.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-baseline-4w.yaml", sc2Baseline);
+        System.out.println(result.report());
+    }
+
+    @Test
+    void dualRunCalMineralBaseline6wAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-6w.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-baseline-6w.yaml", sc2Baseline);
+        System.out.println(result.report());
+    }
+
+    @Test
+    void dualRunCalMineralBaseline10wAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-10w.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-baseline-10w.yaml", sc2Baseline);
+        System.out.println(result.report());
+    }
+
+
+    @Test
     void dualRunCalExpansionTransferAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-expansion-transfer.json");
         CalibrationResult result = calibrate("playbooks/cal-expansion-transfer.yaml", sc2Baseline, 5);
@@ -643,6 +665,22 @@ class DualRunCalibrationTest {
     void selfBaselineCalMuleIsolation() {
         assertSelfBaseline("playbooks/cal-mule-isolation.yaml", Race.TERRAN);
     }
+
+    @Test
+    void selfBaselineCalMineralBaseline4w() {
+        assertSelfBaseline("playbooks/cal-mineral-baseline-4w.yaml", Race.PROTOSS);
+    }
+
+    @Test
+    void selfBaselineCalMineralBaseline6w() {
+        assertSelfBaseline("playbooks/cal-mineral-baseline-6w.yaml", Race.PROTOSS);
+    }
+
+    @Test
+    void selfBaselineCalMineralBaseline10w() {
+        assertSelfBaseline("playbooks/cal-mineral-baseline-10w.yaml", Race.PROTOSS);
+    }
+
 
     @Test
     void selfBaselineCalMineralBaselineZerg() {

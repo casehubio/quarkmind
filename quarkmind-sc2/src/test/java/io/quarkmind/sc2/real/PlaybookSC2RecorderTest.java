@@ -248,6 +248,21 @@ class PlaybookSC2RecorderTest {
                           adapter.snapshots().size());
     }
 
+    @Test
+    void recordCalMineralBaseline4w() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-mineral-baseline-4w.yaml", "calibration/cal-mineral-baseline-4w.json");
+    }
+
+    @Test
+    void recordCalMineralBaseline6w() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-mineral-baseline-6w.yaml", "calibration/cal-mineral-baseline-6w.json");
+    }
+
+    @Test
+    void recordCalMineralBaseline10w() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-mineral-baseline-10w.yaml", "calibration/cal-mineral-baseline-10w.json");
+    }
+
 
     @Test
     void recordMultiRunCadence12w() throws Exception {

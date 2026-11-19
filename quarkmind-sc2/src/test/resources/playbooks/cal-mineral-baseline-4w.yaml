@@ -1,0 +1,22 @@
+playbook: cal-mineral-baseline-4w
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 305 ticks
+  purpose: Low-saturation mineral rate — 4 workers (0.5 per patch), validates LOW_SATURATION_APPROACH_BONUS below ideal
+
+steps:
+  - kill: 8
+    at: 0 ticks
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        PROBE: { min: 4, max: 4 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        PROBE: { min: 4, max: 4 }

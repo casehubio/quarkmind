@@ -1,0 +1,22 @@
+playbook: cal-mineral-baseline-10w
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 305 ticks
+  purpose: Transition-saturation mineral rate — 10 workers (1.25 per patch), validates LOW_SATURATION_APPROACH_BONUS threshold
+
+steps:
+  - kill: 2
+    at: 0 ticks
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        PROBE: { min: 10, max: 10 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        PROBE: { min: 10, max: 10 }

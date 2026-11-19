@@ -98,4 +98,20 @@ class SC2PlaybookCalibrationTest {
     void mineralBaseline8w() {
         runner.execute("playbooks/cal-mineral-baseline-8w.yaml");
     }
+
+    @Test
+    void mineralBaseline4w() {
+        runner.execute("playbooks/cal-mineral-baseline-4w.yaml");
+    }
+
+    @Test
+    void mineralBaseline6w() {
+        runner.execute("playbooks/cal-mineral-baseline-6w.yaml");
+    }
+
+    @Test
+    void mineralBaseline10w() {
+        runner.execute("playbooks/cal-mineral-baseline-10w.yaml");
+    }
+
 }
