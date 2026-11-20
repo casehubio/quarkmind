@@ -278,22 +278,15 @@ public class EmulatedGame {
                 return current;
             }
         }
-        // Building collision — always active; both sides' completed buildings are solid.
-        // Only block entry: units already inside a radius (e.g. workers near Nexus) move freely.
+        // Building collision — rectangular tile footprints. Only block entry.
         for (var bldg : friendly.buildings()) {
-            float r = SC2Data.buildingRadius(bldg.type());
-            if (bldg.isComplete()
-                    && distance(current, bldg.position()) >= r
-                    && distance(proposed, bldg.position()) < r) {
+            if (bldg.isComplete() && !insideFootprint(current, bldg) && insideFootprint(proposed, bldg)) {
                 movementStrategy.invalidatePath(unitTag);
                 return current;
             }
         }
         for (var bldg : enemy.buildings()) {
-            float r = SC2Data.buildingRadius(bldg.type());
-            if (bldg.isComplete()
-                    && distance(current, bldg.position()) >= r
-                    && distance(proposed, bldg.position()) < r) {
+            if (bldg.isComplete() && !insideFootprint(current, bldg) && insideFootprint(proposed, bldg)) {
                 movementStrategy.invalidatePath(unitTag);
                 return current;
             }
@@ -1413,6 +1406,16 @@ public class EmulatedGame {
         return new Point2d(
             (float)(from.x() + dx * speed / dist),
             (float)(from.y() + dy * speed / dist));
+    }
+
+
+    private static boolean insideFootprint(Point2d p, Building bldg) {
+        int[] fp = SC2Data.buildingFootprint(bldg.type());
+        float hw = fp[0] / 2.0f;
+        float hh = fp[1] / 2.0f;
+        float cx = (float) bldg.position().x();
+        float cy = (float) bldg.position().y();
+        return p.x() >= cx - hw && p.x() <= cx + hw && p.y() >= cy - hh && p.y() <= cy + hh;
     }
 
     static double distance(Point2d a, Point2d b) {

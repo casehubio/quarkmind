@@ -1367,9 +1367,9 @@ class EmulatedGameTest {
         EmulatedGame runA = new EmulatedGame();
         runA.configureWave(9999, 1, UnitType.ZEALOT);
         runA.reset();
-        String stalkerTagA = runA.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(10.0f, 10.0f));
+        String stalkerTagA = runA.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(12.0f, 12.0f));
         runA.setShieldsForTesting(stalkerTagA, 25); // near threshold: first hit drops to 18 < 20
-        runA.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(10.0f, 10.3f));
+        runA.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(12.0f, 12.3f));
 
         boolean blinkUsedA = false;
         for (int t = 0; t < 30; t++) {
@@ -1392,9 +1392,9 @@ class EmulatedGameTest {
         EmulatedGame runB = new EmulatedGame();
         runB.configureWave(9999, 1, UnitType.ZEALOT);
         runB.reset();
-        String stalkerTagB = runB.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(10.0f, 10.0f));
+        String stalkerTagB = runB.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(12.0f, 12.0f));
         runB.setShieldsForTesting(stalkerTagB, 25); // same starting state
-        runB.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(10.0f, 10.3f));
+        runB.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(12.0f, 12.3f));
 
         for (int t = 0; t < 30; t++) {
             List<Unit> enemiesB = runB.snapshot().enemyUnits();
@@ -1430,7 +1430,8 @@ class EmulatedGameTest {
     // but the Stalker never retreats.  This isolates the retreat movement as the only
     // variable.
     //
-    // Starting setup: Stalker at (8,12), Zealot at (8,16), distance = 4.0 tiles.
+    // Starting setup: Stalker at (8,13), Zealot at (8,17), distance = 4.0 tiles.
+    // Positions chosen to avoid Nexus (8,8) rectangular footprint [5.5, 10.5]².
     // Standing:  Zealot closes 0.5/tick (unimpeded) → melee contact in ~6 ticks.
     // Kiting:    on cooldown ticks Stalker retreats 0.5 while Zealot advances 0.5 →
     //            net separation unchanged that tick → melee contact doubled to ~12 ticks.
@@ -1451,8 +1452,8 @@ class EmulatedGameTest {
      */
     private int runStandingStillScenario() {
         game.reset();
-        String tag = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(8, 12));
-        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(8, 16));
+        String tag = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(8, 13));
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(8, 17));
         for (int tick = 0; tick < 25; tick++) {
             GameState state = game.snapshot();
             Unit stalker = state.myUnits().stream()
@@ -1482,8 +1483,8 @@ class EmulatedGameTest {
      */
     private int runKitingScenario() {
         game.reset();
-        String tag = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(8, 12));
-        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(8, 16));
+        String tag = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(8, 13));
+        game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(8, 17));
         for (int tick = 0; tick < 25; tick++) {
             GameState state = game.snapshot();
             Unit stalker = state.myUnits().stream()

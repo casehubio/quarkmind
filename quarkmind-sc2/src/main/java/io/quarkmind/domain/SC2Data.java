@@ -1320,27 +1320,19 @@ public final class SC2Data {
         return type == UnitType.STALKER ? 40 : 0;
     }
 
+
     /**
-     * Circular collision radius (in tiles) used by the emulated physics engine.
-     * Units cannot enter a completed building's radius — they are blocked and repath.
-     * Radii approximate real SC2 building footprints: 5×5 → 2.5, 3×3 → 1.5, 2×2 → 1.0.
+     * Rectangular tile footprint {width, height} from the SC2 data editor.
+     * Buildings occupy width×height tiles centered on the building position.
      */
-    public static float buildingRadius(BuildingType type) {
+    public static int[] buildingFootprint(BuildingType type) {
         return switch (type) {
-            // Large (5×5 footprint)
+            // Town halls (5×5)
             case NEXUS, HATCHERY, LAIR, HIVE,
-                 COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS -> 2.5f;
-            // Large-medium (4×4)
-            case ULTRALISK_CAVERN -> 2.0f;
-            // Small (2×2 footprint) — turrets, extractors, crawlers, power structures
-            case PYLON, SUPPLY_DEPOT, MISSILE_TURRET, SENSOR_TOWER,
-                 PHOTON_CANNON, SHIELD_BATTERY,
-                 SPINE_CRAWLER, SPORE_CRAWLER,
-                 EVOLUTION_CHAMBER, ASSIMILATOR, REFINERY, EXTRACTOR,
-                 NYDUS_CANAL, ASSIMILATOR_RICH -> 1.0f;
-            // Tiny — tumors, stasis traps
-            case CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP -> 0.5f;
-            // Medium (3×3 or 4×3) — tech buildings
+                 COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS -> new int[]{5, 5};
+            // Large tech (4×4)
+            case ULTRALISK_CAVERN -> new int[]{4, 4};
+            // Tech and production (3×3)
             case GATEWAY, CYBERNETICS_CORE, FORGE, TWILIGHT_COUNCIL,
                  DARK_SHRINE, TEMPLAR_ARCHIVES, FLEET_BEACON, ROBOTICS_BAY,
                  ROBOTICS_FACILITY, STARGATE,
@@ -1348,8 +1340,27 @@ public final class SC2Data {
                  FACTORY, STARPORT, FUSION_CORE, BUNKER,
                  SPAWNING_POOL, ROACH_WARREN, BANELING_NEST,
                  HYDRALISK_DEN, LURKER_DEN, INFESTATION_PIT,
-                 SPIRE, GREATER_SPIRE, NYDUS_NETWORK, UNKNOWN -> 1.5f;
+                 SPIRE, GREATER_SPIRE, NYDUS_NETWORK, UNKNOWN -> new int[]{3, 3};
+            // Small structures (2×2)
+            case PYLON, SUPPLY_DEPOT, MISSILE_TURRET, SENSOR_TOWER,
+                 PHOTON_CANNON, SHIELD_BATTERY,
+                 SPINE_CRAWLER, SPORE_CRAWLER,
+                 EVOLUTION_CHAMBER, ASSIMILATOR, REFINERY, EXTRACTOR,
+                 NYDUS_CANAL, ASSIMILATOR_RICH -> new int[]{2, 2};
+            // Tiny (1×1)
+            case CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP -> new int[]{1, 1};
         };
+    }
+
+    /**
+     * Circular collision radius (in tiles) used by the emulated physics engine.
+     *
+     * @deprecated Use {@link #buildingFootprint(BuildingType)} for rectangular tile footprints.
+     */
+    @Deprecated
+    public static float buildingRadius(BuildingType type) {
+        int[] fp = buildingFootprint(type);
+        return Math.max(fp[0], fp[1]) / 2.0f;
     }
 
     /**
