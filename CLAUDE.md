@@ -49,12 +49,14 @@ This is an application, not a framework. If the capability requires SC2 game kno
 4. Remove efficiency factor (revert to 1.0) — totals must converge naturally
 
 **Design rules for EmulatedGame physics:**
+- **No approximations. Replicate SC2's actual mechanisms.** If SC2 uses rectangular tile footprints, use rectangular tile footprints. If SC2 uses per-loop simulation, simulate per-loop. If SC2 uses a flow-field pathfinder, don't substitute a formula. Every approximation — a radius for a rectangle, a formula for a simulation, a constant for a dynamic system — is a compensation by another name. It can never be exactly correct and it creates a treadmill of re-calibration. When you don't know how SC2 does something, investigate first. If investigation is infeasible, document the approximation explicitly as a known gap with an issue to replace it.
 - Never use compensation constants. If the EM doesn't match SC2, fix the root cause.
 - Always use `double` arithmetic. No integer truncation in the income path.
 - Calibrate from controlled SC2 dual-run baselines, not oracle replays. Oracle replays have event gaps and confound physics with player behavior.
 - **Empirical over Liquipedia.** Liquipedia values are reference points for sanity-checking, not calibration targets. Liquipedia rates assume idealised conditions (close distances, no contention) that diverge 5-30%+ from real SC2 at standard map distances. When empirical SC2 data conflicts with Liquipedia, record both values and the delta in `docs/sc2-physics-constants.md`, but always use the empirical value.
 - Per-tick delivery deltas must be exact multiples of 5 (mineral cargo). Non-5-multiples indicate a compensation factor artifact.
 - SC2 randomises event processing order per game loop ([PySC2 docs](https://github.com/google-deepmind/pysc2/blob/master/docs/environment.md#determinism-and-randomness)). The EM shuffles worker processing order per loop via `Random(42)` in `WorkerSimulation` (#634) — three shuffle points: mineral worker step, patch acquisition, collision resolution. See `docs/sc2-physics-constants.md` §1b.
+- **Rectangular footprints, not radii.** SC2 buildings and resources have rectangular tile footprints on the pathing grid — never radii. Use radii only where SC2 genuinely uses radii (unit-unit collision). For pathing grid obstacles, building collision (`enforceWall`), and edge-point calculations, use rectangular tile footprints from `SC2Data.buildingFootprint()`. See #733.
 - Reference: `docs/sc2-physics-constants.md` — living reference for all simulation constants.
 
 ---
