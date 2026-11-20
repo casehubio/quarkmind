@@ -217,7 +217,7 @@ public class EmulatedGame {
         trackerDrivenBuildings.clear();
         cumulativeGasIncome = 0;
         // pendingWaves intentionally NOT cleared — configured before reset() via configureWave()
-        // terrainGrid and random intentionally NOT cleared — defaulted in constructor, overridden by EmulatedEngine
+        // terrainGrid, fogEnabled, and random intentionally NOT cleared — defaulted in constructor, overridden by EmulatedEngine
     }
 
     public void tick() {
@@ -1409,6 +1409,7 @@ public class EmulatedGame {
     }
 
 
+    // Tile-inclusive: boundary points are inside (SC2 tiles are occupied on all edges).
     private static boolean insideFootprint(Point2d p, Building bldg) {
         int[] fp = SC2Data.buildingFootprint(bldg.type());
         float hw = fp[0] / 2.0f;

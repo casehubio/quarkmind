@@ -1536,14 +1536,13 @@ class EmulatedGameTest {
     /**
      * Units must not walk through completed buildings.
      * A friendly Stalker heading directly into an enemy Hatchery must be blocked
-     * at the building's collision radius — it must not reach or pass through the centre.
+     * at the building's rectangular tile footprint — it must not enter the footprint.
      */
     @Test
     void buildingCollisionBlocksFriendlyUnitFromEnteringEnemyBuilding() {
-        game.setTerrainGrid(TerrainGrid.emulatedMap()); // enables enforceWall backstop
         // Enemy Hatchery at (20, 20) — well away from terrain wall
         final var hatcheryPos = new Point2d(20f, 20f);
-        final float radius = SC2Data.buildingRadius(BuildingType.HATCHERY);
+        int[] fp = SC2Data.buildingFootprint(BuildingType.HATCHERY);
         game.enemy.addBuilding(new Building("test-hatchery", BuildingType.HATCHERY,
             hatcheryPos, 1500, 1500, true));
         // Friendly Stalker starts 4 tiles south, heading north through the Hatchery
@@ -1553,22 +1552,22 @@ class EmulatedGameTest {
 
         Unit unit = game.snapshot().myUnits().stream()
             .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow();
-        double dist = EmulatedGame.distance(unit.position(), hatcheryPos);
-        assertThat(dist)
-            .as("Stalker must stop outside Hatchery radius %.1f — was %.2f", radius, dist)
-            .isGreaterThanOrEqualTo(radius - 0.1f);
+        float hw = fp[0] / 2.0f;
+        float hh = fp[1] / 2.0f;
+        assertThat(unit.position().y())
+            .as("Stalker must stop outside Hatchery footprint (y <= %.1f)", hatcheryPos.y() - hh)
+            .isLessThanOrEqualTo(hatcheryPos.y() - hh);
     }
 
     /**
      * Enemy units must also be blocked by friendly buildings.
-     * An enemy Zergling heading into the friendly Nexus at (8,8) must stop outside its radius.
+     * An enemy Zergling heading into the friendly Nexus at (8,8) must stop outside its footprint.
      */
     @Test
     void buildingCollisionBlocksEnemyUnitFromEnteringFriendlyBuilding() {
-        game.setTerrainGrid(TerrainGrid.emulatedMap());
         game.reset(); // Nexus is at (8,8) in friendly.buildings after reset
         final var nexusPos = new Point2d(8f, 8f);
-        final float radius = SC2Data.buildingRadius(BuildingType.NEXUS);
+        int[] fp = SC2Data.buildingFootprint(BuildingType.NEXUS);
         // Enemy Zergling starts 5 tiles north of Nexus, heading straight at it.
         // HP=1500 so it survives probe auto-attacks (probes enter range as it crosses y≈9).
         String tag = "test-enemy-bldg-coll";
@@ -1579,10 +1578,10 @@ class EmulatedGameTest {
 
         Unit unit = game.snapshot().enemyUnits().stream()
             .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow();
-        double dist = EmulatedGame.distance(unit.position(), nexusPos);
-        assertThat(dist)
-            .as("Zergling must stop outside Nexus radius %.1f — was %.2f", radius, dist)
-            .isGreaterThanOrEqualTo(radius - 0.1f);
+        float hh = fp[1] / 2.0f;
+        assertThat(unit.position().y())
+            .as("Zergling must stop outside Nexus footprint (y >= %.1f)", nexusPos.y() + hh)
+            .isGreaterThanOrEqualTo(nexusPos.y() + hh);
     }
 
     /**
@@ -1590,9 +1589,8 @@ class EmulatedGameTest {
      */
     @Test
     void incompleteBuildingDoesNotBlockMovement() {
-        // No terrain grid needed — building collision is always active, but incomplete
-        // buildings must not block. Unit at (20,9) heading to (20,17): passes through
-        // incomplete Hatchery at (20,13) and reaches past it.
+        // Building collision is always active, but incomplete buildings must not block.
+        // Unit at (20,9) heading to (20,17): passes through incomplete Hatchery at (20,13).
         final var bldgPos = new Point2d(20f, 13f);
         game.enemy.addBuilding(new Building("wip-hatchery", BuildingType.HATCHERY,
             bldgPos, 1500, 1500, false)); // isComplete = false

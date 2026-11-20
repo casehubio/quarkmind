@@ -1321,18 +1321,22 @@ public final class SC2Data {
     }
 
 
+    private static final int[] FP_5x5 = {5, 5};
+    private static final int[] FP_4x4 = {4, 4};
+    private static final int[] FP_3x3 = {3, 3};
+    private static final int[] FP_2x2 = {2, 2};
+    private static final int[] FP_1x1 = {1, 1};
+
     /**
      * Rectangular tile footprint {width, height} from the SC2 data editor.
      * Buildings occupy width×height tiles centered on the building position.
+     * Returns shared array — do not mutate.
      */
     public static int[] buildingFootprint(BuildingType type) {
         return switch (type) {
-            // Town halls (5×5)
             case NEXUS, HATCHERY, LAIR, HIVE,
-                 COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS -> new int[]{5, 5};
-            // Large tech (4×4)
-            case ULTRALISK_CAVERN -> new int[]{4, 4};
-            // Tech and production (3×3)
+                 COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS -> FP_5x5;
+            case ULTRALISK_CAVERN -> FP_4x4;
             case GATEWAY, CYBERNETICS_CORE, FORGE, TWILIGHT_COUNCIL,
                  DARK_SHRINE, TEMPLAR_ARCHIVES, FLEET_BEACON, ROBOTICS_BAY,
                  ROBOTICS_FACILITY, STARGATE,
@@ -1340,15 +1344,13 @@ public final class SC2Data {
                  FACTORY, STARPORT, FUSION_CORE, BUNKER,
                  SPAWNING_POOL, ROACH_WARREN, BANELING_NEST,
                  HYDRALISK_DEN, LURKER_DEN, INFESTATION_PIT,
-                 SPIRE, GREATER_SPIRE, NYDUS_NETWORK, UNKNOWN -> new int[]{3, 3};
-            // Small structures (2×2)
+                 SPIRE, GREATER_SPIRE, NYDUS_NETWORK, UNKNOWN -> FP_3x3;
             case PYLON, SUPPLY_DEPOT, MISSILE_TURRET, SENSOR_TOWER,
                  PHOTON_CANNON, SHIELD_BATTERY,
                  SPINE_CRAWLER, SPORE_CRAWLER,
                  EVOLUTION_CHAMBER, ASSIMILATOR, REFINERY, EXTRACTOR,
-                 NYDUS_CANAL, ASSIMILATOR_RICH -> new int[]{2, 2};
-            // Tiny (1×1)
-            case CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP -> new int[]{1, 1};
+                 NYDUS_CANAL, ASSIMILATOR_RICH -> FP_2x2;
+            case CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP -> FP_1x1;
         };
     }
 
