@@ -51,6 +51,7 @@ class SimulatedWorker {
     static double APPROACH_ANIMATION_LOOPS      = WorkerPhysicsConfig.DEFAULT_APPROACH_ANIMATION_LOOPS;
 
     static double REROUTE_THRESHOLD_LOOPS       = WorkerPhysicsConfig.DEFAULT_REROUTE_THRESHOLD_LOOPS;
+    static float  MINERAL_PATCH_OBSTACLE_RADIUS = WorkerPhysicsConfig.DEFAULT_MINERAL_PATCH_OBSTACLE_RADIUS;
 
 
     static final double LOOP_DURATION     = 1.0 / io.quarkmind.domain.SC2Data.GAME_LOOPS_PER_SECOND;
@@ -69,6 +70,7 @@ class SimulatedWorker {
         APPROACH_DOCKING_LOOPS                             = config.approachDockingLoops();
         APPROACH_ANIMATION_LOOPS                           = config.approachAnimationLoops();
         REROUTE_THRESHOLD_LOOPS                            = config.rerouteThresholdLoops();
+        MINERAL_PATCH_OBSTACLE_RADIUS                      = config.mineralPatchObstacleRadius();
         MineralPatch.PATCH_DISTANCE                        = config.patchDistance();
         WorkerSimulation.LOW_SATURATION_DODGE_SCALE        = config.lowSaturationDodgeScale();
         WorkerSimulation.GAS_DEPOSIT_LOCK_LOOPS            = config.gasDepositLockLoops();
@@ -126,7 +128,7 @@ class SimulatedWorker {
     void advanceWaypoint() {
         if (waypoints != null && !waypoints.isEmpty()) {
             this.targetPosition = waypoints.poll();
-            this.currentSpeed   = 0;
+            this.currentSpeed   = MAX_SPEED;
         }
     }
 

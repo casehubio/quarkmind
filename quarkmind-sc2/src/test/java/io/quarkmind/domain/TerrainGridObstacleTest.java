@@ -1,7 +1,10 @@
 package io.quarkmind.domain;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TerrainGridObstacleTest {
 
@@ -111,6 +114,26 @@ class TerrainGridObstacleTest {
         double detourDist = pathLength(detourPath);
         assertTrue(detourDist > directDist, "detour should be longer: " + detourDist + " vs " + directDist);
     }
+
+    @Test
+    void markRectangularObstacleBlocksCells() {
+        var grid = grid16();
+        grid.markRectangularObstacle(8.0f, 8.0f, 1.5f, 0.5f);
+        assertFalse(grid.isWalkable(7, 8), "within half-width");
+        assertFalse(grid.isWalkable(8, 8), "center");
+        assertFalse(grid.isWalkable(9, 8), "within half-width");
+        assertTrue(grid.isWalkable(8, 6), "outside half-height");
+    }
+
+    @Test
+    void clearRectangularObstacleRestoresCells() {
+        var grid = grid16();
+        grid.markRectangularObstacle(8.0f, 8.0f, 1.5f, 0.5f);
+        grid.clearRectangularObstacle(8.0f, 8.0f, 1.5f, 0.5f);
+        assertTrue(grid.isWalkable(7, 8));
+        assertTrue(grid.isWalkable(8, 8));
+    }
+
 
     private static double pathLength(java.util.List<Point2d> path) {
         double len = 0;

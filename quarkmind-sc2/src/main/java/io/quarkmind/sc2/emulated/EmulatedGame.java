@@ -59,7 +59,7 @@ public class EmulatedGame {
     // --- Per-player state ---
     final PlayerState friendly = new PlayerState();
     public final PlayerState enemy    = new PlayerState();
-    private final WorkerSimulation workerSimulation = new WorkerSimulation();
+    private final WorkerSimulation workerSimulation;
     private       double           cumulativeGasIncome;
 
 
@@ -150,12 +150,14 @@ public class EmulatedGame {
 
     private MovementStrategy movementStrategy = new DirectMovement();
     // E7: hard physics constraint — no unit may land on a wall tile regardless of movement strategy.
-    // Null in mock/test contexts where no terrain exists.
+    // Null by default — set via setTerrainGrid() to enable obstacle-aware pathfinding.
     private TerrainGrid terrainGrid = null;
     private Random random = new Random(42L);
     // E9: fog of war — persists across ticks, reset on game restart
     private final VisibilityGrid visibility = new VisibilityGrid();
     private       List<Resource> mineralPatchResources = List.of();
+
+    public EmulatedGame() {this.workerSimulation = new WorkerSimulation();}
 
 
     public void reset() {

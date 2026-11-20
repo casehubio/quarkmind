@@ -70,6 +70,9 @@ class WorkerPhysicsConfigProducer {
     @ConfigProperty(name = "starcraft.worker.gas-deposit-congestion-per-worker",
                     defaultValue = "0.0")
     double gasDepositCongestionPerWorker;
+    @ConfigProperty(name = "starcraft.worker.mineral-patch-obstacle-radius",
+                    defaultValue = "0.3")
+    double mineralPatchObstacleRadius;
 
 
     @Produces
@@ -82,7 +85,8 @@ class WorkerPhysicsConfigProducer {
                 initialWorkerStaggerLoops, collisionSpeedFactor, approachDockingLoops,
                 rerouteThresholdLoops, (float) lowSaturationDodgeScale,
                 approachAnimationLoops,
-                gasDepositLockLoops, gasDepositCongestionPerWorker);
+                gasDepositLockLoops, gasDepositCongestionPerWorker,
+                (float) mineralPatchObstacleRadius);
         SimulatedWorker.configure(config);
         return config;
     }

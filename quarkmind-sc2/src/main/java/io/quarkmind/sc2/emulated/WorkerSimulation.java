@@ -145,9 +145,8 @@ class WorkerSimulation {
         MineralPatch.computeApproachDocking(patches, position);
         bases.add(new BaseEntry(tag, position, patches));
         if (terrainGrid != null) {
-            terrainGrid.markCircularObstacle(position.x(), position.y(), TOWN_HALL_RADIUS);
             for (MineralPatch p : patches) {
-                terrainGrid.markCircularObstacle(p.position.x(), p.position.y(), MINERAL_PATCH_RADIUS);
+                terrainGrid.markCircularObstacle(p.position.x(), p.position.y(), SimulatedWorker.MINERAL_PATCH_OBSTACLE_RADIUS);
             }
         }
         rebalanceMineralWorkersAcrossBases();
@@ -162,9 +161,8 @@ class WorkerSimulation {
         MineralPatch.computeApproachDocking(patches, position);
         bases.add(new BaseEntry(tag, position, patches));
         if (terrainGrid != null) {
-            terrainGrid.markCircularObstacle(position.x(), position.y(), TOWN_HALL_RADIUS);
             for (MineralPatch p : patches) {
-                terrainGrid.markCircularObstacle(p.position.x(), p.position.y(), MINERAL_PATCH_RADIUS);
+                terrainGrid.markCircularObstacle(p.position.x(), p.position.y(), SimulatedWorker.MINERAL_PATCH_OBSTACLE_RADIUS);
             }
         }
         rebalanceMineralWorkersAcrossBases();
@@ -253,9 +251,6 @@ class WorkerSimulation {
         if (baseIdx < 0) {return;}
         GasSlot slot = new GasSlot(tag, position, baseIdx);
         gasSlots.add(slot);
-        if (terrainGrid != null) {
-            terrainGrid.markCircularObstacle(position.x(), position.y(), GAS_BUILDING_RADIUS);
-        }
         int transferred = 0;
         for (SimulatedWorker w : new ArrayList<>(workers.values())) {
             if (transferred >= GasSlot.MAX_WORKERS) {break;}

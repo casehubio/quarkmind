@@ -72,6 +72,31 @@ public final class TerrainGrid {
         }
     }
 
+    public void markRectangularObstacle(float centerX, float centerY, float halfWidth, float halfHeight) {
+        int minX = Math.max(0, (int) (centerX - halfWidth));
+        int maxX = Math.min(width - 1, (int) (centerX + halfWidth));
+        int minY = Math.max(0, (int) (centerY - halfHeight));
+        int maxY = Math.min(height - 1, (int) (centerY + halfHeight));
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                markObstacle(x, y);
+            }
+        }
+    }
+
+    public void clearRectangularObstacle(float centerX, float centerY, float halfWidth, float halfHeight) {
+        int minX = Math.max(0, (int) (centerX - halfWidth));
+        int maxX = Math.min(width - 1, (int) (centerX + halfWidth));
+        int minY = Math.max(0, (int) (centerY - halfHeight));
+        int maxY = Math.min(height - 1, (int) (centerY + halfHeight));
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                clearObstacle(x, y);
+            }
+        }
+    }
+
+
     public void clearAllObstacles() {
         for (int[] col : obstacles) {java.util.Arrays.fill(col, 0);}
     }

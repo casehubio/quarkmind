@@ -11,6 +11,7 @@ class SC2PlaybookCalibrationTest {
     @BeforeEach
     void setUp() {
         var game = new EmulatedGame();
+        game.setTerrainGrid(io.quarkmind.domain.TerrainGrid.emulatedMap());
         var handler = new SC2DeliveryHandler(game);
         runner = new SC2PlaybookRunner(handler, game);
     }
@@ -43,6 +44,7 @@ class SC2PlaybookCalibrationTest {
     @Test
     void muleIsolation() {
         var game    = new EmulatedGame();
+        game.setTerrainGrid(io.quarkmind.domain.TerrainGrid.emulatedMap());
         var handler = new SC2DeliveryHandler(game);
         var r       = new SC2PlaybookRunner(handler, game);
         r.execute("playbooks/cal-mule-isolation.yaml");
@@ -53,7 +55,7 @@ class SC2PlaybookCalibrationTest {
                           snapshot.minerals(), sc2Baseline, delta * 100.0);
         org.assertj.core.api.Assertions.assertThat(delta)
                                        .as("MULE isolation delta vs SC2 baseline")
-                                       .isLessThanOrEqualTo(0.05); // widened from 0.02 — #707 removed approach compensation; recalibrate APPROACH_ANIMATION_LOOPS
+                                       .isLessThanOrEqualTo(0.02);
     }
 
 

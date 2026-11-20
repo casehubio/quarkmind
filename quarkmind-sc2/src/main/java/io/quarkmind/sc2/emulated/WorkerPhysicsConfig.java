@@ -16,7 +16,8 @@ public record WorkerPhysicsConfig(
         float lowSaturationDodgeScale,
         double approachAnimationLoops,
         double gasDepositLockLoops,
-        double gasDepositCongestionPerWorker
+        double gasDepositCongestionPerWorker,
+        float mineralPatchObstacleRadius
 ) {
 
     public static final double DEFAULT_MINING_DURATION_LOOPS             = 22.0;
@@ -35,6 +36,7 @@ public record WorkerPhysicsConfig(
     public static final double DEFAULT_APPROACH_ANIMATION_LOOPS          = 20.0;
     public static final double DEFAULT_GAS_DEPOSIT_LOCK_LOOPS            = 8.0;
     public static final double DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER = 0.0;
+    public static final float  DEFAULT_MINERAL_PATCH_OBSTACLE_RADIUS     = 0.3f;
 
     public WorkerPhysicsConfig(double miningDurationLoops, double gasHarvestDurationLoops,
                                double depositDurationLoops, double acceleration,
@@ -47,7 +49,8 @@ public record WorkerPhysicsConfig(
              DEFAULT_LOW_SATURATION_DODGE_SCALE,
              DEFAULT_APPROACH_ANIMATION_LOOPS,
              DEFAULT_GAS_DEPOSIT_LOCK_LOOPS,
-             DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER);
+             DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER,
+             DEFAULT_MINERAL_PATCH_OBSTACLE_RADIUS);
     }
 
     public WorkerPhysicsConfig(double miningDurationLoops, double gasHarvestDurationLoops,
@@ -62,7 +65,8 @@ public record WorkerPhysicsConfig(
              DEFAULT_LOW_SATURATION_DODGE_SCALE,
              DEFAULT_APPROACH_ANIMATION_LOOPS,
              DEFAULT_GAS_DEPOSIT_LOCK_LOOPS,
-             DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER);
+             DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER,
+             DEFAULT_MINERAL_PATCH_OBSTACLE_RADIUS);
     }
 
     public static WorkerPhysicsConfig defaults() {
@@ -82,7 +86,8 @@ public record WorkerPhysicsConfig(
                 DEFAULT_LOW_SATURATION_DODGE_SCALE,
                 DEFAULT_APPROACH_ANIMATION_LOOPS,
                 DEFAULT_GAS_DEPOSIT_LOCK_LOOPS,
-                DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER
+                DEFAULT_GAS_DEPOSIT_CONGESTION_PER_WORKER,
+                DEFAULT_MINERAL_PATCH_OBSTACLE_RADIUS
         );
     }
 }
