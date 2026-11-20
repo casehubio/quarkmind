@@ -17,6 +17,12 @@ public interface MovementStrategy {
      */
     default void invalidatePath(String unitTag) {}
 
+    /**
+     * Called when obstacles change (building placed/destroyed) — invalidate ALL cached paths.
+     */
+    default void invalidateAllPaths() {}
+
+
     /** Called from EmulatedGame.reset() — clear ALL per-unit state. */
     default void reset() {}
 }

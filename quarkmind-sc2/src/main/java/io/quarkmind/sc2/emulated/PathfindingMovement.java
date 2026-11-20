@@ -5,7 +5,11 @@ import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.TerrainGrid;
 import org.jboss.logging.Logger;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** A* based movement: computes and follows waypoint queues per unit. */
 public class PathfindingMovement implements MovementStrategy {
@@ -66,6 +70,13 @@ public class PathfindingMovement implements MovementStrategy {
         waypoints.remove(unitTag);
         lastTargets.remove(unitTag);
     }
+
+    @Override
+    public void invalidateAllPaths() {
+        waypoints.clear();
+        lastTargets.clear();
+    }
+
 
     @Override
     public void reset() {

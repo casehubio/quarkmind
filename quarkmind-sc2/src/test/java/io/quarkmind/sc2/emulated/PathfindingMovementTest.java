@@ -1,8 +1,11 @@
 package io.quarkmind.sc2.emulated;
 
-import io.quarkmind.domain.*;
+import io.quarkmind.domain.Point2d;
+import io.quarkmind.domain.TerrainGrid;
 import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PathfindingMovementTest {
@@ -74,6 +77,23 @@ class PathfindingMovementTest {
         assertThat(pm.advance("u1", new Point2d(1f, 1f), new Point2d(10f, 10f), 0.5)).isNotNull();
         assertThat(pm.advance("u2", new Point2d(2f, 2f), new Point2d(12f, 12f), 0.5)).isNotNull();
     }
+
+    @Test
+    void invalidateAllPaths_clearsAllCachedPaths() {
+        PathfindingMovement pm = new PathfindingMovement(open());
+        // Cache paths for two units
+        pm.advance("u1", new Point2d(2f, 2f), new Point2d(20f, 20f), 0.5);
+        pm.advance("u2", new Point2d(3f, 3f), new Point2d(18f, 18f), 0.5);
+
+        pm.invalidateAllPaths();
+
+        // After invalidation, advancing with the same targets recomputes fresh paths
+        Point2d resultA = pm.advance("u1", new Point2d(2f, 2f), new Point2d(20f, 20f), 0.5);
+        Point2d resultB = pm.advance("u2", new Point2d(3f, 3f), new Point2d(18f, 18f), 0.5);
+        assertThat(resultA).isNotNull();
+        assertThat(resultB).isNotNull();
+    }
+
 
     @Test
     void smoothingReducesWaypointCount_onOpenGround() {
