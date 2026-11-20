@@ -1584,26 +1584,28 @@ class EmulatedGameTest {
             .isGreaterThanOrEqualTo(nexusPos.y() + hh);
     }
 
-    /**
-     * Incomplete buildings must NOT block movement — they are still under construction.
-     */
     @Test
     void incompleteBuildingDoesNotBlockMovement() {
-        // Building collision is always active, but incomplete buildings must not block.
-        // Unit at (20,9) heading to (20,17): passes through incomplete Hatchery at (20,13).
+        // #731: incomplete buildings block movement (matching SC2 — buildings block pathing
+        // from the moment construction starts). With PathfindingMovement, army units route
+        // around the obstacle.
+        TerrainGrid grid = game.getTerrainGrid();
+        game.setMovementStrategy(new PathfindingMovement(grid));
+
         final var bldgPos = new Point2d(20f, 13f);
         game.enemy.addBuilding(new Building("wip-hatchery", BuildingType.HATCHERY,
-            bldgPos, 1500, 1500, false)); // isComplete = false
+                                            bldgPos, 1500, 1500, false));
+        game.registerBuildingObstacle(new Building("wip-hatchery", BuildingType.HATCHERY,
+                                                   bldgPos, 1500, 1500, false));
         String tag = game.spawnFriendlyForTesting(UnitType.STALKER, new Point2d(20f, 9f));
         game.applyIntent(new MoveIntent(tag, new Point2d(20f, 17f)));
-        for (int i = 0; i < 20; i++) game.tick();
+        for (int i = 0; i < 50; i++) {game.tick();}
 
         Unit unit = game.snapshot().myUnits().stream()
-            .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow();
-        // Unit must have passed through — it must be beyond the building centre
+                        .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow();
         assertThat(unit.position().y())
-            .as("Unit must pass through incomplete building — y should exceed building y=13")
-            .isGreaterThan(13f);
+                .as("Unit must route around incomplete building — y should exceed building y=13")
+                .isGreaterThan(13f);
     }
 
     @Test

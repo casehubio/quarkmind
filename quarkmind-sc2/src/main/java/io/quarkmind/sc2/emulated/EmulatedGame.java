@@ -218,6 +218,9 @@ public class EmulatedGame {
         cumulativeGasIncome = 0;
         // pendingWaves intentionally NOT cleared — configured before reset() via configureWave()
         // terrainGrid, fogEnabled, and random intentionally NOT cleared — defaulted in constructor, overridden by EmulatedEngine
+        if (terrainGrid != null) {
+            terrainGrid.clearAllObstacles();
+        }
     }
 
     public void tick() {
@@ -261,6 +264,25 @@ public class EmulatedGame {
             friendly.supply(), friendly.supplyUsed(), workerCount);
     }
 
+
+    void registerBuildingObstacle(Building bldg) {
+        if (terrainGrid == null) {return;}
+        int[] fp = SC2Data.buildingFootprint(bldg.type());
+        terrainGrid.markRectangularObstacle(
+                (float) bldg.position().x(), (float) bldg.position().y(),
+                fp[0] / 2.0f, fp[1] / 2.0f);
+        movementStrategy.invalidateAllPaths();
+    }
+
+    private void clearBuildingObstacle(Building bldg) {
+        if (terrainGrid == null) {return;}
+        int[] fp = SC2Data.buildingFootprint(bldg.type());
+        terrainGrid.clearRectangularObstacle(
+                (float) bldg.position().x(), (float) bldg.position().y(),
+                fp[0] / 2.0f, fp[1] / 2.0f);
+        movementStrategy.invalidateAllPaths();
+    }
+
     /**
      * Hard physics wall constraint — applied after every movement strategy call.
      * If the proposed position lands on a wall tile, the unit stays put.
@@ -280,13 +302,13 @@ public class EmulatedGame {
         }
         // Building collision — rectangular tile footprints. Only block entry.
         for (var bldg : friendly.buildings()) {
-            if (bldg.isComplete() && !insideFootprint(current, bldg) && insideFootprint(proposed, bldg)) {
+            if (!insideFootprint(current, bldg) && insideFootprint(proposed, bldg)) {
                 movementStrategy.invalidatePath(unitTag);
                 return current;
             }
         }
         for (var bldg : enemy.buildings()) {
-            if (bldg.isComplete() && !insideFootprint(current, bldg) && insideFootprint(proposed, bldg)) {
+            if (!insideFootprint(current, bldg) && insideFootprint(proposed, bldg)) {
                 movementStrategy.invalidatePath(unitTag);
                 return current;
             }
@@ -635,8 +657,10 @@ public class EmulatedGame {
 
     public void debugCreateBuilding(BuildingType bt, Point2d location) {
         String tag = "debug-" + nextTag++;
-        friendly.addBuilding(new Building(tag, bt, location,
-                                          SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), true));
+        Building debugBldg = new Building(tag, bt, location,
+                                          SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), true);
+        friendly.addBuilding(debugBldg);
+        registerBuildingObstacle(debugBldg);
         friendly.addSupply(SC2Data.supplyBonus(bt));
         if (playerRaceModel != null && playerRaceModel.townHallTypes().contains(bt)) {
             registerTownHallWithPatches(tag, location);
@@ -782,8 +806,10 @@ public class EmulatedGame {
         final String tag = trackerDriven ? b.replayTag() : "bldg-" + nextTag++;
         if (trackerDriven) {trackerDrivenBuildings.add(tag);}
         final BuildingType bt = b.buildingType();
-        state.addBuilding(new Building(tag, bt, b.location(),
-                                       SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), false));
+        Building newBldg = new Building(tag, bt, b.location(),
+                                       SC2Data.maxBuildingHealth(bt), SC2Data.maxBuildingHealth(bt), false);
+        state.addBuilding(newBldg);
+        registerBuildingObstacle(newBldg);
         final long completesAtLoop = (b.completionLoop() >= 0)
                                      ? b.completionLoop()
                                      : absLoop + SC2Data.buildTimeInLoops(bt);
@@ -1666,6 +1692,11 @@ public class EmulatedGame {
         workerSimulation.setTerrainGrid(g);
     }
 
+    TerrainGrid getTerrainGrid() {
+        return terrainGrid;
+    }
+
+
     public void setFogEnabled(boolean enabled) { this.fogEnabled = enabled; }
 
     /** Injects a predictable Random for miss-chance tests. */
@@ -1694,6 +1725,7 @@ public class EmulatedGame {
         Building b = new Building(tag, type, position,
             SC2Data.maxBuildingHealth(type), SC2Data.maxBuildingHealth(type), true);
         friendly.addBuilding(b);
+        registerBuildingObstacle(b);
         if (playerRaceModel != null) {
             playerRaceModel.onBuildingComplete(friendly, type, tag);
         }
@@ -1704,7 +1736,9 @@ public class EmulatedGame {
     void spawnEnemyBuildingForTesting(BuildingType type, Point2d position) {
         String tag = "enemy-bldg-test-" + nextTag++;
         int hp = SC2Data.maxBuildingHealth(type);
-        enemy.addBuilding(new Building(tag, type, position, hp, hp, true));
+        Building enemyBldg = new Building(tag, type, position, hp, hp, true);
+        enemy.addBuilding(enemyBldg);
+        registerBuildingObstacle(enemyBldg);
     }
 
     /** Sets friendly supply caps — for tests that need more than the 3 default free supply. */
@@ -1797,6 +1831,7 @@ public class EmulatedGame {
      */
     public void removeDestroyedBuilding(String tag, BuildingType type) {
         friendly.buildings().stream().filter(b -> b.tag().equals(tag)).findFirst().ifPresent(b -> {
+            clearBuildingObstacle(b);
             friendly.addSupply(-SC2Data.supplyBonus(type));
             economyTracker.recordBuildingDestroyed(type);
         });
@@ -1804,8 +1839,10 @@ public class EmulatedGame {
     }
 
     private void handleBuildingBorn(BuildingBornIntent bb, PlayerState state, PhysicsState physics) {
-        state.addBuilding(new Building(bb.tag(), bb.type(), bb.position(),
-                                       SC2Data.maxBuildingHealth(bb.type()), SC2Data.maxBuildingHealth(bb.type()), true));
+        Building bornBldg = new Building(bb.tag(), bb.type(), bb.position(),
+                                       SC2Data.maxBuildingHealth(bb.type()), SC2Data.maxBuildingHealth(bb.type()), true);
+        state.addBuilding(bornBldg);
+        registerBuildingObstacle(bornBldg);
         state.addSupply(SC2Data.supplyBonus(bb.type()));
         if (state == friendly) {
             economyTracker.recordBuildSpending(bb.type(),
@@ -1823,6 +1860,7 @@ public class EmulatedGame {
     private void handleBuildingDied(BuildingDiedIntent bd, PlayerState state, PhysicsState physics) {
         physics.cancelCompletionsForEntity(bd.tag());
         state.buildings().stream().filter(b -> b.tag().equals(bd.tag())).findFirst().ifPresent(b -> {
+            clearBuildingObstacle(b);
             state.addSupply(-SC2Data.supplyBonus(bd.type()));
             if (state == friendly) {
                 economyTracker.recordBuildingDestroyed(bd.type());
@@ -1837,6 +1875,7 @@ public class EmulatedGame {
 
     public void injectReplayBuilding(Building building) {
         friendly.addBuilding(building);
+        registerBuildingObstacle(building);
         if (building.isComplete()) {
             economyTracker.recordBuildSpending(building.type(), SC2Data.mineralCost(building.type()), SC2Data.gasCost(building.type()));
             friendly.addSupply(SC2Data.supplyBonus(building.type()));
@@ -1861,6 +1900,7 @@ public class EmulatedGame {
     public void injectReplayBuildingWithCost(Building building) {
         friendly.deductMinerals(SC2Data.mineralCost(building.type()));
         friendly.addBuilding(building);
+        registerBuildingObstacle(building);
         if (building.isComplete()) {
             friendly.addSupply(SC2Data.supplyBonus(building.type()));
             if (playerRaceModel != null) {

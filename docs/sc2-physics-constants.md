@@ -657,7 +657,9 @@ Workers use A* pathfinding around mineral patches registered as circular obstacl
 
 **Fog decoupling (#734):** Fog-of-war visibility filtering is controlled by `fogEnabled` (default false), independent of terrain. Previously gated on `terrainGrid != null`, which coupled pathfinding terrain with snapshot visibility filtering. Production profiles (`EmulatedEngine`, `EmulatedSC2Server`) enable fog explicitly.
 
-**Building collision (#736):** `enforceWall()` uses rectangular tile footprints via `insideFootprint()` — see §13. Army units cannot enter completed building footprints. Workers are not affected by `enforceWall()` — they use the pathing grid obstacle layer for A* routing.
+**Building collision (#736):** `enforceWall()` uses rectangular tile footprints via `insideFootprint()` — see §13. Army units cannot enter building footprints (complete or incomplete). Workers are not affected by `enforceWall()` — they use the pathing grid obstacle layer for A* routing.
+
+**Army building obstacles (#731):** Buildings are registered as rectangular obstacles on `TerrainGrid` via `markRectangularObstacle()` from the moment construction starts (incomplete buildings block pathing, matching SC2). `AStarPathfinder` routes army units around buildings. `enforceWall()` remains as a safety net for edge cases. All army paths are invalidated when a building is placed or destroyed — `MovementStrategy.invalidateAllPaths()` clears all cached waypoints. Building obstacles are cleared on `reset()` via `clearAllObstacles()`.
 
 ### Larva spawn calibration
 
