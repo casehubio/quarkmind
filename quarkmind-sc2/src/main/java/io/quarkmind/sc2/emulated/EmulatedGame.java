@@ -56,6 +56,8 @@ public class EmulatedGame {
 
     private static final Logger log = Logger.getLogger(EmulatedGame.class);
 
+    static final float GEYSER_OBSTACLE_HALF_EXTENT = 1.5f;
+
     // --- Per-player state ---
     final PlayerState friendly = new PlayerState();
     public final PlayerState enemy    = new PlayerState();
@@ -95,8 +97,19 @@ public class EmulatedGame {
     }
 
     public void setGeyserResources(List<Resource> resources) {
+        if (terrainGrid != null) {
+            for (Resource g : geysers) {
+                terrainGrid.clearRectangularObstacle(g.position().x(), g.position().y(), GEYSER_OBSTACLE_HALF_EXTENT, GEYSER_OBSTACLE_HALF_EXTENT);
+            }
+        }
         geysers.clear();
         geysers.addAll(resources);
+        if (terrainGrid != null) {
+            for (Resource g : geysers) {
+                terrainGrid.markRectangularObstacle(g.position().x(), g.position().y(), GEYSER_OBSTACLE_HALF_EXTENT, GEYSER_OBSTACLE_HALF_EXTENT);
+            }
+            movementStrategy.invalidateAllPaths();
+        }
     }
 
 
