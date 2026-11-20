@@ -58,6 +58,7 @@ public class EmulatedEngine implements SC2Engine {
         TerrainGrid grid = TerrainGrid.emulatedMap();
         game.setMovementStrategy(new PathfindingMovement(grid));
         game.setTerrainGrid(grid);
+        game.setFogEnabled(true);
         terrainProvider.setTerrain(grid);
         log.info("[EMULATED] PathfindingMovement wired — wall y=18, gap x=11-13");
 

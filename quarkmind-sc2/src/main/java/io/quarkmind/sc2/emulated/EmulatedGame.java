@@ -150,14 +150,17 @@ public class EmulatedGame {
 
     private MovementStrategy movementStrategy = new DirectMovement();
     // E7: hard physics constraint — no unit may land on a wall tile regardless of movement strategy.
-    // Null by default — set via setTerrainGrid() to enable obstacle-aware pathfinding.
-    private TerrainGrid terrainGrid = null;
+    private TerrainGrid terrainGrid;
+    private boolean fogEnabled;
     private Random random = new Random(42L);
     // E9: fog of war — persists across ticks, reset on game restart
     private final VisibilityGrid visibility = new VisibilityGrid();
     private       List<Resource> mineralPatchResources = List.of();
 
-    public EmulatedGame() {this.workerSimulation = new WorkerSimulation();}
+    public EmulatedGame() {
+        this.workerSimulation = new WorkerSimulation();
+        setTerrainGrid(TerrainGrid.emulatedMap());
+    }
 
 
     public void reset() {
@@ -214,7 +217,7 @@ public class EmulatedGame {
         trackerDrivenBuildings.clear();
         cumulativeGasIncome = 0;
         // pendingWaves intentionally NOT cleared — configured before reset() via configureWave()
-        // terrainGrid and random intentionally NOT cleared — set by EmulatedEngine before reset()
+        // terrainGrid and random intentionally NOT cleared — defaulted in constructor, overridden by EmulatedEngine
     }
 
     public void tick() {
@@ -1418,13 +1421,6 @@ public class EmulatedGame {
     }
 
     public GameState snapshot() {
-        // Fog filtering is only active when terrain is configured.
-        // Without terrain (mock/test contexts) all enemies are visible as before.
-        // Fog gated on terrainGrid: recompute(null terrain) treats all tiles as LOW and
-        // produces selective visibility (only tiles within probe range are VISIBLE), which
-        // would make distant enemies invisible in no-terrain test contexts. When no terrain
-        // is configured, return all enemies as pre-fog behaviour.
-
         // Stamp weapon cooldown from unitCooldowns map onto each friendly unit.
         // friendly.units always carries weaponCooldownTicks=0; the true cooldown lives in unitCooldowns.
         List<Unit> friendlyWithCooldown = friendly.units().stream()
@@ -1447,7 +1443,7 @@ public class EmulatedGame {
             reportedMinerals, reportedVespene,
             friendly.supply(), friendly.supplyUsed(), workerCount);
 
-        if (terrainGrid != null) {
+        if (fogEnabled) {
             List<Unit> visibleEnemies = enemy.units().stream()
                 .filter(u -> visibility.isVisible(u.position()))
                 .toList();
@@ -1665,6 +1661,8 @@ public class EmulatedGame {
         this.terrainGrid = g;
         workerSimulation.setTerrainGrid(g);
     }
+
+    public void setFogEnabled(boolean enabled) { this.fogEnabled = enabled; }
 
     /** Injects a predictable Random for miss-chance tests. */
     void setRandomForTesting(Random r) { this.random = r; }

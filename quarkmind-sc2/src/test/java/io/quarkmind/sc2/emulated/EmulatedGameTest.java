@@ -1163,7 +1163,7 @@ class EmulatedGameTest {
     void enemyOnHighGroundIsInvisibleFromLow() {
         // Emulated map: nexus at (8,8)=LOW, enemy staging at (26,26)=HIGH
         // Friendly units are on LOW — they cannot see HIGH ground
-        game.setTerrainGrid(TerrainGrid.emulatedMap());
+        game.setFogEnabled(true);
         game.reset();
         // Spawn enemy on HIGH ground (y=25 > 18)
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(26, 25));
@@ -1174,7 +1174,7 @@ class EmulatedGameTest {
 
     @Test
     void enemyOnLowGroundIsVisibleFromLow() {
-        game.setTerrainGrid(TerrainGrid.emulatedMap());
+        game.setFogEnabled(true);
         game.reset();
         // Spawn enemy on LOW ground adjacent to our units (y=10 < 18), within sight range
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(12, 10));
@@ -1184,7 +1184,7 @@ class EmulatedGameTest {
 
     @Test
     void enemyOnHighRemainsHiddenAcrossMultipleTicks() {
-        game.setTerrainGrid(TerrainGrid.emulatedMap());
+        game.setFogEnabled(true);
         game.reset();
         game.spawnEnemyForTesting(UnitType.ZEALOT, new Point2d(26, 25));
 
@@ -1197,7 +1197,7 @@ class EmulatedGameTest {
 
     @Test
     void stagingAreaEnemiesAreFilteredByVisibility() {
-        game.setTerrainGrid(TerrainGrid.emulatedMap());
+        game.setFogEnabled(true);
         // setEnemyStrategy required — addStagedUnitForTesting writes to enemyBehavior.stagingArea
         game.setEnemyStrategy(retreatStrategy(new EnemyAttackConfig(4, 100, 0, 0)));
         game.reset();

@@ -11,7 +11,6 @@ class SC2PlaybookCalibrationTest {
     @BeforeEach
     void setUp() {
         var game = new EmulatedGame();
-        game.setTerrainGrid(io.quarkmind.domain.TerrainGrid.emulatedMap());
         var handler = new SC2DeliveryHandler(game);
         runner = new SC2PlaybookRunner(handler, game);
     }
@@ -44,7 +43,6 @@ class SC2PlaybookCalibrationTest {
     @Test
     void muleIsolation() {
         var game    = new EmulatedGame();
-        game.setTerrainGrid(io.quarkmind.domain.TerrainGrid.emulatedMap());
         var handler = new SC2DeliveryHandler(game);
         var r       = new SC2PlaybookRunner(handler, game);
         r.execute("playbooks/cal-mule-isolation.yaml");

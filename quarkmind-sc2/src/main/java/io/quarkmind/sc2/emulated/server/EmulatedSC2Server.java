@@ -167,6 +167,7 @@ public class EmulatedSC2Server {
         terrainGrid = TerrainGrid.emulatedMap();
         game.setMovementStrategy(new PathfindingMovement(terrainGrid));
         game.setTerrainGrid(terrainGrid);
+        game.setFogEnabled(true);
 
         playerRace = config != null ? config.getPlayerRace() : Race.PROTOSS;
         game.setPlayerRaceModel(RaceModelFactory.forRace(playerRace));
