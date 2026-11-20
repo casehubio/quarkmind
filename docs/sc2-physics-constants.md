@@ -101,7 +101,7 @@ SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) =
 
 **Collision radius (#634):** Increased from 0.375 to 0.75 (diameter 1.5). PySC2 docs confirm SC2 unit size is ~0.75 game units — validates the collision diameter. The larger interaction zone creates more collision events, producing contention at higher saturation.
 
-**Approach docking (#707 simplification):** Approach docking is now `APPROACH_ANIMATION_LOOPS` (20 loops) only — uniform for all patches at a base. The previous compensation stack (per-patch path deviation formula, density-dependent scaling, `effectiveApproachDocking()`) was removed in #707. Walk path deviation now emerges from obstacle-aware A* pathfinding: mineral patches, town halls, and gas buildings are registered as obstacles in `TerrainGrid`, and workers compute waypoint paths via `AStarPathfinder`. Outbound paths naturally route around the mineral line formation (longer), while return paths are approximately direct (shorter) — matching SC2's observed 6% outbound deviation and 35% shorter returns (#690). **Wait-time absorption (#690):** workers that were already waiting at a patch absorb approach docking proportionally to their wait time, floored at `APPROACH_ANIMATION_LOOPS` (20). Physics: a waiting worker has already completed the walk — only the approach animation remains. **Historical context:** The approach docking compensation stack evolved through #655→#661→#679→#690→#714→#727, peaking at a per-patch formula with density-dependent scaling. Each iteration improved accuracy but remained a compensation for missing obstacle physics. #707 replaces the entire stack with the root-cause fix.
+**Approach docking (#707 simplification):** Approach docking is now `APPROACH_ANIMATION_LOOPS` (20 loops) only — uniform for all patches at a base. The previous compensation stack (per-patch path deviation formula, density-dependent scaling, `effectiveApproachDocking()`) was removed in #707. Walk path deviation now emerges from obstacle-aware A* pathfinding: mineral patches are registered as circular obstacles (radius 0.3) in `TerrainGrid`, and workers compute waypoint paths via `AStarPathfinder`. Outbound paths naturally route around the mineral line formation (longer), while return paths are approximately direct (shorter) — matching SC2's observed 6% outbound deviation and 35% shorter returns (#690). **Wait-time absorption (#690):** workers that were already waiting at a patch absorb approach docking proportionally to their wait time, floored at `APPROACH_ANIMATION_LOOPS` (20). Physics: a waiting worker has already completed the walk — only the approach animation remains. **Historical context:** The approach docking compensation stack evolved through #655→#661→#679→#690→#714→#727, peaking at a per-patch formula with density-dependent scaling. Each iteration improved accuracy but remained a compensation for missing obstacle physics. #707 replaces the entire stack with the root-cause fix.
 
 **Speed mining and deceleration (#721 research):** SC2 workers decelerate before reaching targets (patch or TH). At standard mineral distances (~3-4 tiles edge-to-edge), workers never reach max speed — the walk is entirely acceleration + deceleration (triangular velocity profile). Speed mining (issuing move commands to bypass deceleration) gives 10-12% income boost in real SC2. The EM's acceleration/deceleration values (3.5 u/s² at Faster speed) match SC2 data editor values. The deceleration overhead is a natural mechanism, not a bug — a future QuarkMind agent could use speed mining as a legitimate optimisation by issuing two-point commands, just like human players and AI bots do.
 
@@ -278,7 +278,7 @@ Previously (pre-#655): 12w +0.6%, 16w −20.2%, 24w −13.4%. The compound colli
 | 24 | 3.0 | 46.8 | 82.1% |
 | 30 | 3.8 | 37.5 | 65.7% |
 
-**Saturation model calibrated** — contention fix (assignment-based spreading + wake-up pass), patch docking overhead (22 loops), transition loop cost (#661), unconditional approach docking (24.5 loops, #661), deposit duration (12 loops, #661), lockout bypass for waiting workers (#655), wait-then-reroute (#636), and density-dependent path deviation (outboundPathDelay / max(density, 0.5), #727). Collision speed factor disabled (1.0) since #661.
+**Saturation model calibrated** — contention fix (assignment-based spreading + wake-up pass), patch docking overhead (22 loops), transition loop cost (#661), approach animation (20 loops, #707), deposit duration (12 loops, #661), lockout bypass for waiting workers (#655), wait-then-reroute (#636), and obstacle-aware A* pathfinding (#707, replaced density-dependent path deviation). Collision speed factor disabled (1.0) since #661.
 
 **Low-saturation boundary validation (#721→#727):** SC2 dual-run at 4w/6w/10w exposed a data error: the #721 finding had SC2/EM columns swapped. The EM actually *over*-produces at low saturation (EM walks straight lines, SC2 curves). The flat bonus was correct in direction (adding overhead) but wrong in shape (uniform across all densities ≤1 w/p). Fixed in #727 with inverse-density scaling. Post-#727 deltas: 4w +3.6% (was +10.7%), 6w +2.7% (was +5.3%), 8w −0.2%, 10w +1.8%, 12w −0.3%.
 
@@ -432,17 +432,21 @@ Most defaulted to 9. Probe specifically set to 8. Confidence: **Estimated** — 
 
 ## 13. Building Footprints
 
-All building types mapped to collision radii for physics. Categories:
+All building types mapped to rectangular tile footprints via `SC2Data.buildingFootprint(BuildingType)` (#736). `enforceWall()` uses `insideFootprint()` — axis-aligned rectangle containment check, tile-inclusive boundaries. The deprecated `buildingRadius()` delegates to `buildingFootprint()` and returns `max(width, height) / 2.0f` for backward compatibility.
 
-| Footprint | Radius | Examples |
-|-----------|--------|----------|
-| 5×5 (Large) | 2.5 | Nexus, CC, Hatchery |
-| 4×4 | 2.0 | Ultralisk Cavern |
-| 3×3 (Medium) | 1.5 | Gateway, Barracks, Spawning Pool |
-| 2×2 (Small) | 1.0 | Pylon, Supply Depot, Photon Cannon |
-| Tiny | 0.5 | Creep Tumor |
+| Footprint | Half-extents | Examples |
+|-----------|-------------|----------|
+| 5×5 (Large) | 2.5 × 2.5 | Nexus, CC, Hatchery |
+| 4×4 | 2.0 × 2.0 | Ultralisk Cavern |
+| 3×3 (Medium) | 1.5 × 1.5 | Gateway, Barracks, Spawning Pool |
+| 2×2 (Small) | 1.0 × 1.0 | Pylon, Supply Depot, Photon Cannon |
+| 1×1 (Tiny) | 0.5 × 0.5 | Creep Tumor |
 
-Confidence: **Published** (SC2 map editor).
+Confidence: **Published** (SC2 data editor). EVOLUTION_CHAMBER classified as 2×2 — may be 3×3 per SC2 data editor (#738).
+
+**Rectangular vs circular collision (#736):** The rectangular footprint differs from the old circular radius at diagonal positions — the rectangle extends to sqrt(hw²+hh²) at corners while the circle boundary is constant at max(hw,hh). For a 5×5 Nexus at (8,8): a unit at (10,10) is inside the rectangle (10 ≤ 10.5) but outside the circle (distance=2.83 > 2.5). This is correct SC2 behaviour — buildings occupy rectangular tiles, not circles.
+
+**Mineral patch obstacles:** Still use circular obstacles (radius 0.3, `MINERAL_PATCH_OBSTACLE_RADIUS`) on the pathing grid for A* pathfinding. Converting to 2×1 rectangular footprint was tested (#733) but caused +4.1% MULE regression — the 2×1 rectangle blocks twice as many tiles as the calibrated 0.3-radius circle. Conversion deferred to #735 pending empirical calibration of the correct pathfinding obstacle size.
 
 ---
 
@@ -528,9 +532,9 @@ Post-#727 (density-dependent path deviation): 4w +3.6%, 6w +2.7%, 8w −0.2%, 10
 
 **Patch affinity (#620):** Workers return to the same patch each trip (SC2 behaviour). Routing is not the cadence bottleneck — the root cause is per-trip variance from collision timing and walk distance variance that straight-line movement cannot reproduce.
 
-### Per-patch approach docking (#636→#679)
+### Per-patch approach docking — history
 
-`APPROACH_DISTANCE_SCALE` removed (#653) — it was a compensation constant, not a physics simulation. The global approach constant (24.5 loops, #661) was replaced by per-patch values computed by `MineralPatch.computeApproachDocking()` (#679). Each patch's approach docking is `approachAnimation(20.0) + rawPathDelay`, where `rawPathDelay = (medianE2E − e2e[i]) × loopsPerUnit × PATH_DEVIATION_SCALE + PATH_DEVIATION_BASE`. Constants: `PATH_DEVIATION_SCALE=0.4`, `PATH_DEVIATION_BASE=4.5`. Close patches get more delay (longer navigation path around central patches), far patches get less (direct edge paths). Typical range: 23–28 loops depending on patch distance. See §3 (line 71) for the decomposition.
+**#636→#679:** Per-patch approach docking evolved through `APPROACH_DISTANCE_SCALE` (#653, removed), per-patch formula with `PATH_DEVIATION_SCALE=0.4` and `PATH_DEVIATION_BASE=4.5` (#679), and density-dependent scaling (#727). **All removed in #707** — obstacle-aware A* pathfinding makes path deviation emerge from simulation, not constants. Current approach docking is `APPROACH_ANIMATION_LOOPS=20.0` only, uniform for all patches. See §3 for details.
 
 **Delivery quantisation (finding):** Uniform phase constants produce discrete delivery counts because workers synchronise. Worker stagger (6.1 loops) breaks the phase relationship to hit the SC2 target.
 
@@ -645,9 +649,15 @@ Real SC2 close patches (4-6 units from town hall) yield ~40% more per-worker inc
 
 Building morphs (Hatchery→Lair→Hive, CC→OC/PF) are tracked via tracker events and the building type is updated immediately. The morph period during which the building is functionally unavailable (can't produce units, reduced or absent capabilities) is not simulated. Impact: minor for economy — these morphs are infrequent and short relative to game duration.
 
-### Worker pathing around mineral line — OBSTACLE-AWARE (#707)
+### Worker pathing and terrain — OBSTACLE-AWARE (#707, #734)
 
-Workers use A* pathfinding around mineral patches, buildings, and gas buildings registered as obstacles in `TerrainGrid` (#707). The dynamic obstacle layer uses reference-counted `int[][]` cells; buildings and resources register circular footprints at lifecycle events (`onTownHallCompleted`, `onGasBuildingCompleted`). Workers compute waypoint paths via `AStarPathfinder` once per route and follow waypoints using existing `moveOneLoop()` acceleration physics. Outbound paths naturally route around the mineral line (longer walks), return paths are approximately direct (shorter walks) — matching SC2's observed path asymmetry (#690). The per-patch approach docking formula (#656) and density-dependent scaling (#727) have been replaced by this physical obstacle routing. Path deviation emerges from simulation, not constants.
+Workers use A* pathfinding around mineral patches registered as circular obstacles (radius 0.3, `MINERAL_PATCH_OBSTACLE_RADIUS`) in `TerrainGrid` (#707). The dynamic obstacle layer uses reference-counted `int[][]` cells. Workers compute waypoint paths via `AStarPathfinder` once per route and follow waypoints using existing `moveOneLoop()` acceleration physics. Outbound paths naturally route around the mineral line (longer walks), return paths are approximately direct (shorter walks) — matching SC2's observed path asymmetry (#690). The per-patch approach docking formula (#656) and density-dependent scaling (#727) have been replaced by this physical obstacle routing. Path deviation emerges from simulation, not constants.
+
+**Default terrain (#734):** `EmulatedGame()` constructor wires `TerrainGrid.emulatedMap()` by default — all tests get obstacle-aware worker pathfinding without explicit setup. `setTerrainGrid()` overrides the default for real SC2 maps.
+
+**Fog decoupling (#734):** Fog-of-war visibility filtering is controlled by `fogEnabled` (default false), independent of terrain. Previously gated on `terrainGrid != null`, which coupled pathfinding terrain with snapshot visibility filtering. Production profiles (`EmulatedEngine`, `EmulatedSC2Server`) enable fog explicitly.
+
+**Building collision (#736):** `enforceWall()` uses rectangular tile footprints via `insideFootprint()` — see §13. Army units cannot enter completed building footprints. Workers are not affected by `enforceWall()` — they use the pathing grid obstacle layer for A* routing.
 
 ### Larva spawn calibration
 
@@ -763,6 +773,7 @@ starcraft.worker.gas-approach-docking-loops=11.5   # gas geyser entry overhead �
 starcraft.worker.deposit-duration-loops=12.0       # 8w SC2 cadence — calibrated #661
 starcraft.worker.approach-docking-loops=24.5       # legacy base value — sum of animation + mean path delay (#679)
 starcraft.worker.approach-animation-loops=20.0     # approach animation only — decomposed from approach docking (#679)
+starcraft.worker.mineral-patch-obstacle-radius=0.3  # A* pathing grid obstacle radius for mineral patches; calibrated #707
 starcraft.worker.collision-speed-factor=1.0        # disabled — transition loop cost replaces (#661)
 starcraft.worker.acceleration=3.5                  # SC2Mapster × 1.4 — restored from 10.0 (#634)
 starcraft.worker.deceleration=3.5                  # SC2Mapster × 1.4 — restored from 10.0 (#634)
@@ -777,8 +788,8 @@ starcraft.economy.rate-interval-loops=160
 - `SimulatedWorker.COLLISION_RADIUS` (0.75, was 0.375) — worker collision detection radius; calibrated #634
 - `MineralPatch.CLOSE_PATCH_DISTANCE` (6.7f) — default close patch distance for first 4 patches; calibrated #651 from SC2 API positions
 - `MineralPatch.FAR_PATCH_DISTANCE` (7.5f) — default far patch distance for last 4 patches; calibrated #651 from SC2 API positions
-- `MineralPatch.PATH_DEVIATION_SCALE` (0.4) — outbound path delay scaling factor: fraction of E2E distance difference converted to loop delay; calibrated #679 from 8w cadence data
-- `MineralPatch.PATH_DEVIATION_BASE` (4.5) — outbound path delay base offset in loops; at median E2E, pathDelay = PATH_DEVIATION_BASE; calibrated #679
+- ~~`MineralPatch.PATH_DEVIATION_SCALE`~~ — **removed** in #707 (obstacle-aware A* replaced per-patch path delay formula)
+- ~~`MineralPatch.PATH_DEVIATION_BASE`~~ — **removed** in #707
 - `WorkerSimulation.LOW_SATURATION_DODGE_SCALE` (0.25f) — collision dodge reduction at ≤2 workers/patch; calibrated #656 from dodge sweep
 - `GasSlot.MAX_INSIDE` (1) — max workers inside gas building simultaneously; Liquipedia: "Only one worker can be inside the building collecting at any one time" (#682)
 - `GasSlot.ENTRY_LOCK_DURATION` (default 0) — gas entrance queuing lock duration in loops
