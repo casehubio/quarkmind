@@ -1,6 +1,5 @@
 package io.quarkmind.sc2.emulated;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.scelight.sc2.rep.factory.RepContent;
 import hu.scelight.sc2.rep.factory.RepParserEngine;
 import hu.scelight.sc2.rep.model.Replay;

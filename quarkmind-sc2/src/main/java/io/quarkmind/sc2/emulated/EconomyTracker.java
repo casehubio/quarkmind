@@ -6,7 +6,6 @@ import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 
 import java.util.Arrays;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
@@ -43,12 +42,10 @@ class EconomyTracker {
     private int mineralRate;
     private int vespeneRate;
     private int loopsSinceSpendingUpdate;
-    private double grossMinerals;
-    private double grossVespene;
 
     private static final double LOOPS_PER_MINUTE = 60.0 * SC2Data.GAME_LOOPS_PER_SECOND;
     static final int WINDOW_LOOPS = 240;
-    private static final int WINDOW_TICKS = (WINDOW_LOOPS + SC2Data.LOOPS_PER_TICK - 1) / SC2Data.LOOPS_PER_TICK;
+    static final int WINDOW_TICKS = (WINDOW_LOOPS + SC2Data.LOOPS_PER_TICK - 1) / SC2Data.LOOPS_PER_TICK;
     private final double[] windowMineralIncome = new double[WINDOW_TICKS];
     private final double[] windowGasIncome = new double[WINDOW_TICKS];
     private int windowHead;
@@ -226,8 +223,6 @@ class EconomyTracker {
     }
 
     void recordIncome(double mineralIncome, double vespeneIncome) {
-        grossMinerals += mineralIncome;
-        grossVespene += vespeneIncome;
         pendingMineralIncome += mineralIncome;
         pendingGasIncome += vespeneIncome;
     }
@@ -264,9 +259,9 @@ class EconomyTracker {
                     int supply, double supplyUsed, int workerCount) {
         windowMineralIncome[windowHead] = pendingMineralIncome;
         windowGasIncome[windowHead]     = pendingGasIncome;
-                                          pendingMineralIncome = 0;
-                                          pendingGasIncome = 0;
-                                          windowHead = (windowHead + 1) % WINDOW_TICKS;
+        pendingMineralIncome = 0;
+        pendingGasIncome = 0;
+        windowHead = (windowHead + 1) % WINDOW_TICKS;
         if (windowFilled < WINDOW_TICKS) {windowFilled++;}
 
         double windowMineral = 0, windowGas = 0;
@@ -324,8 +319,6 @@ class EconomyTracker {
         inProgressVespeneEconomy    = 0;
         inProgressMineralTechnology = 0;
         inProgressVespeneTechnology = 0;
-        grossMinerals               = 0;
-        grossVespene                = 0;
         mineralRate                 = 0;
         vespeneRate                 = 0;
         Arrays.fill(windowMineralIncome, 0);

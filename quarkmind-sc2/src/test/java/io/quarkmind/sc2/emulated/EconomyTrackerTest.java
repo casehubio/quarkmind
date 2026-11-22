@@ -327,5 +327,31 @@ class EconomyTrackerTest {
         assertThat(stats.vespeneCollectionRate()).isEqualTo(expectedVespeneRate);
     }
 
+    @Test
+    void slidingWindowEvictsOldDataAfterWrapping() {
+        var tracker = new EconomyTracker(160);
+        // Fill 11 ticks (full window) with 10.0 mineral income each
+        for (int i = 0; i < EconomyTracker.WINDOW_TICKS; i++) {
+            tracker.recordIncome(10.0, 0);
+            tracker.tickUpdate(0, 0, 15, 6, 12);
+        }
+        var fullWindow = tracker.currentStats(0, 0, 15, 6, 12);
+        int rateAtFull = fullWindow.mineralsCollectionRate();
+        assertThat(rateAtFull).as("rate with 11 ticks of 10.0 income").isGreaterThan(0);
+
+        // Now record 4 more ticks with zero income — these overwrite the oldest slots
+        for (int i = 0; i < 4; i++) {
+            tracker.recordIncome(0, 0);
+            tracker.tickUpdate(0, 0, 15, 6, 12);
+        }
+        var afterEviction = tracker.currentStats(0, 0, 15, 6, 12);
+        // Window now has 7 ticks of 10.0 and 4 ticks of 0.0 — rate should drop
+        double loopsPerMin  = 60.0 * 22.4;
+        int    expectedRate = (int) (70.0 / (11.0 * 22.0) * loopsPerMin);
+        assertThat(afterEviction.mineralsCollectionRate())
+                .as("rate drops after 4 zero-income ticks evict old data")
+                .isEqualTo(expectedRate);
+    }
+
 
 }
