@@ -118,7 +118,7 @@ class WorkerSimulationTest {
             double actualCycle = 200.0 * 22 / deliveries;
             System.out.printf("%nTotal income: %.1f minerals = %d deliveries%n", totalIncome, deliveries);
             System.out.printf("Actual cycle: %.1f loops (%.2f ticks)%n", actualCycle, actualCycle / 22.0);
-            System.out.printf("Theoretical: 2×walk + 24 + 22 + 10 = ?  (walk for e2e=%.3f)%n", e2e);
+            System.out.printf("Theoretical: 2×walk + 20 + 22 + 10 = ?  (walk for e2e=%.3f)%n", e2e);
         } finally {
             SimulatedWorker.DEPOSIT_DURATION_LOOPS = origDeposit;
         }

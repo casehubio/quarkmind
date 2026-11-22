@@ -302,7 +302,6 @@ public class EmulatedGame {
      * This is independent of pathfinding and acts as an inviolable backstop.
      */
     private Point2d enforceWall(String unitTag, Point2d proposed, Point2d current) {
-        // Terrain wall — requires a terrain grid
         if (terrainGrid != null) {
             int tx = (int) proposed.x();
             int ty = (int) proposed.y();
@@ -313,14 +312,22 @@ public class EmulatedGame {
                 return current;
             }
         }
-        // Building collision — rectangular tile footprints. Only block entry.
+        // Building collision — entry-only check for buildings not registered as terrain obstacles.
+        // Mid-game buildings are registered as obstacles (covered by isWalkable above).
+        // Initial buildings (seeded by race model) are not registered to avoid blocking worker A* paths.
         for (var bldg : friendly.buildings()) {
+            if (terrainGrid != null && !terrainGrid.isWalkable((int) bldg.position().x(), (int) bldg.position().y())) {
+                continue;
+            }
             if (!insideFootprint(current, bldg) && insideFootprint(proposed, bldg)) {
                 movementStrategy.invalidatePath(unitTag);
                 return current;
             }
         }
         for (var bldg : enemy.buildings()) {
+            if (terrainGrid != null && !terrainGrid.isWalkable((int) bldg.position().x(), (int) bldg.position().y())) {
+                continue;
+            }
             if (!insideFootprint(current, bldg) && insideFootprint(proposed, bldg)) {
                 movementStrategy.invalidatePath(unitTag);
                 return current;

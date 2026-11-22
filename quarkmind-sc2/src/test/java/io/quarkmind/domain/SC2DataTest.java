@@ -743,4 +743,40 @@ class SC2DataTest {
     void isTechBuilding_pylon_false_notTech() {
         assertThat(SC2Data.isTechBuilding(BuildingType.PYLON)).isFalse();
     }
+
+    @Test void footprint_nexus_5x5() {
+        SC2Data.Footprint fp = SC2Data.buildingFootprint(BuildingType.NEXUS);
+        assertThat(fp.width()).isEqualTo(5);
+        assertThat(fp.height()).isEqualTo(5);
+        assertThat(fp.halfWidth()).isEqualTo(2.5f);
+        assertThat(fp.halfHeight()).isEqualTo(2.5f);
+    }
+
+    @Test void footprint_evolutionChamber_3x3() {
+        SC2Data.Footprint fp = SC2Data.buildingFootprint(BuildingType.EVOLUTION_CHAMBER);
+        assertThat(fp.width()).isEqualTo(3);
+        assertThat(fp.height()).isEqualTo(3);
+    }
+
+    @Test void footprint_gasBuildings_3x3() {
+        for (BuildingType gas : java.util.List.of(
+                BuildingType.ASSIMILATOR, BuildingType.REFINERY,
+                BuildingType.EXTRACTOR, BuildingType.ASSIMILATOR_RICH)) {
+            SC2Data.Footprint fp = SC2Data.buildingFootprint(gas);
+            assertThat(fp.width()).as(gas.name()).isEqualTo(3);
+            assertThat(fp.height()).as(gas.name()).isEqualTo(3);
+        }
+    }
+
+    @Test void footprint_pylon_2x2() {
+        SC2Data.Footprint fp = SC2Data.buildingFootprint(BuildingType.PYLON);
+        assertThat(fp.width()).isEqualTo(2);
+        assertThat(fp.height()).isEqualTo(2);
+    }
+
+    @Test void footprint_creepTumor_1x1() {
+        SC2Data.Footprint fp = SC2Data.buildingFootprint(BuildingType.CREEP_TUMOR);
+        assertThat(fp.width()).isEqualTo(1);
+        assertThat(fp.height()).isEqualTo(1);
+    }
 }
