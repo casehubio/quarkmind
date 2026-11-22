@@ -541,9 +541,7 @@ Post-#727 (density-dependent path deviation): 4w +3.6%, 6w +2.7%, 8w −0.2%, 10
 
 ### Rate computation algorithm
 
-SC2 uses **exponential moving average (EMA)**, not a simple windowed average. Confirmed by RateAlgorithmAnalysisTest (#593), which computed income from delta(totalMined) across consecutive PlayerStatsEvents and fitted simple window vs EMA (11 alpha values) against SC2's reported rates.
-
-**Quantisation discovery (#676):** SC2 mineral rates are quantised at exactly 28 minerals/min. Across 118 oracle replays, every reported `mineralsCollectionRate` (after the first interval) satisfies `rate ≡ 27 (mod 28)`, i.e. `rate = 28N - 1`. This implies SC2 counts discrete deliveries in a 240-loop window: `deliveries × MINERAL_CARGO / 240 × LOOPS_PER_MINUTE = deliveries × 28`. The -1 offset is likely integer truncation. However, implementing a 240-loop sliding window in the EM's EconomyTracker increased gas rate MAPE (18.8% vs 15.3% EMA) because the EM's delivery timing doesn't match SC2's closely enough — the EMA's smoothing compensates for per-delivery timing errors. The window approach becomes viable only after tighter physics alignment.
+SC2 mineral rates are quantised at exactly 28 minerals/min (`MINERAL_CARGO(5) × LOOPS_PER_MINUTE(1344) / 240 = 28`), implying SC2 counts discrete deliveries in a **240-loop sliding window**. The EM now uses a matching 240-loop (11-tick) sliding window in EconomyTracker (#676). Previously used EMA (α=0.25 minerals, α=0.35 gas), which compensated for delivery timing errors but diverged from SC2's quantised signal. Physics improvements (#656, #661, #707, #733) tightened delivery timing enough that the sliding window now outperforms EMA at all checkpoints.
 
 | Algorithm | Mineral MAPE | Gas MAPE |
 |-----------|-------------|----------|
@@ -727,7 +725,7 @@ Target after all land: mineralsCollectionRate ≤12%, vespeneCollectionRate ≤1
 
 ### Rate algorithm
 
-EMA (mineral α=0.25, vespene α=0.35) approximates SC2's rate computation. Confirmed by RateAlgorithmAnalysisTest (#593) as best-fit among tested algorithms, but still carries ~16% MAPE floor — SC2's internal rate signal differs from our EMA-from-delta(totalMined) approach (#676). Rate MAPE at 7-min: minerals 38.6%, vespene 20.5%.
+240-loop sliding window (11 ticks) replaces EMA (#676). Rate = `windowIncome × LOOPS_PER_MINUTE / windowDuration`. Standalone MAPE at 7-min: minerals 38.2%, vespene 18.7%. Improvement over EMA: minerals -0.4pp, vespene -1.8pp at 7-min; minerals -14.0pp at 1-min.
 
 ### Gas harvest recalibration (#606, #615, #639, #689, #695)
 

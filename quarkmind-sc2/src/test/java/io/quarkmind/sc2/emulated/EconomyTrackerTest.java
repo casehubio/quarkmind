@@ -290,19 +290,24 @@ class EconomyTrackerTest {
     @Test
     void rateRecalculationFiresAtLoopThreshold() {
         var tracker = new EconomyTracker(160);
-        // 160 loops / 22 loops per tick = 7.27 ticks — rate should NOT fire after 7 ticks
+        // With sliding window, rate updates every tick — not gated by spending interval
+        tracker.recordIncome(10.0, 2.0);
+        tracker.tickUpdate(0, 0, 15, 6, 12);
+        var after1 = tracker.currentStats(0, 0, 15, 6, 12);
+        assertThat(after1.mineralsCollectionRate()).as("sliding window rate updates after first tick").isGreaterThan(0);
+
+        // Spending reports still gated at 160 loops — not visible after 1 tick (22 loops)
+        tracker.recordTrainSpending(UnitType.MARINE, 50, 0);
+        var afterSpend = tracker.currentStats(0, 0, 15, 6, 12);
+        assertThat(afterSpend.mineralsUsedCurrentArmy()).as("spending not yet reported (22 < 160 loops)").isEqualTo(0);
+
+        // After 8 ticks (176 loops >= 160), spending should be visible
         for (int i = 0; i < 7; i++) {
             tracker.recordIncome(10.0, 2.0);
             tracker.tickUpdate(0, 0, 15, 6, 12);
         }
-        var after7 = tracker.currentStats(0, 0, 15, 6, 12);
-        assertThat(after7.mineralsCollectionRate()).as("rate should not update after 7 ticks (154 loops < 160)").isEqualTo(0);
-
-        // 8th tick pushes to 176 loops >= 160 — rate should fire
-        tracker.recordIncome(10.0, 2.0);
-        tracker.tickUpdate(0, 0, 15, 6, 12);
         var after8 = tracker.currentStats(0, 0, 15, 6, 12);
-        assertThat(after8.mineralsCollectionRate()).as("rate should update after 8 ticks (176 loops >= 160)").isGreaterThan(0);
+        assertThat(after8.mineralsUsedCurrentArmy()).as("spending reported after 8 ticks (176 loops >= 160)").isEqualTo(50);
     }
 
     @Test

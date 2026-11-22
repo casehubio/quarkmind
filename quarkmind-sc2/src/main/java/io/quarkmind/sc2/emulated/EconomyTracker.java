@@ -5,6 +5,8 @@ import io.quarkmind.domain.PlayerEconomyStats;
 import io.quarkmind.domain.SC2Data;
 import io.quarkmind.domain.UnitType;
 
+import java.util.Arrays;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
@@ -40,27 +42,28 @@ class EconomyTracker {
 
     private int mineralRate;
     private int vespeneRate;
-    private int loopsSinceRateUpdate;
+    private int loopsSinceSpendingUpdate;
     private double grossMinerals;
     private double grossVespene;
-    private double prevGrossMinerals;
-    private double prevGrossVespene;
-    private double emaMineralRate;
-    private double emaVespeneRate;
-    private boolean emaSeeded;
 
-    static final double MINERAL_EMA_ALPHA = 0.25;
-    static final double VESPENE_EMA_ALPHA = 0.35;
-
-    private final int rateIntervalLoops;
     private static final double LOOPS_PER_MINUTE = 60.0 * SC2Data.GAME_LOOPS_PER_SECOND;
+    static final int WINDOW_LOOPS = 240;
+    private static final int WINDOW_TICKS = (WINDOW_LOOPS + SC2Data.LOOPS_PER_TICK - 1) / SC2Data.LOOPS_PER_TICK;
+    private final double[] windowMineralIncome = new double[WINDOW_TICKS];
+    private final double[] windowGasIncome = new double[WINDOW_TICKS];
+    private int windowHead;
+    private int windowFilled;
+    private double pendingMineralIncome;
+    private double pendingGasIncome;
+
+    private final int spendingIntervalLoops;
 
     EconomyTracker() {
         this(160);
     }
 
-    EconomyTracker(int rateIntervalLoops) {
-        this.rateIntervalLoops = rateIntervalLoops;
+    EconomyTracker(int spendingIntervalLoops) {
+        this.spendingIntervalLoops = spendingIntervalLoops;
     }
 
 
@@ -225,6 +228,8 @@ class EconomyTracker {
     void recordIncome(double mineralIncome, double vespeneIncome) {
         grossMinerals += mineralIncome;
         grossVespene += vespeneIncome;
+        pendingMineralIncome += mineralIncome;
+        pendingGasIncome += vespeneIncome;
     }
 
     private int mineralRateOverride = -1;
@@ -257,36 +262,35 @@ class EconomyTracker {
 
     void tickUpdate(double minerals, int vespene,
                     int supply, double supplyUsed, int workerCount) {
-        loopsSinceRateUpdate += SC2Data.LOOPS_PER_TICK;
-        if (loopsSinceRateUpdate >= rateIntervalLoops) {
-            double perLoopMineral = (grossMinerals - prevGrossMinerals) / loopsSinceRateUpdate;
-            double perLoopVespene = (grossVespene - prevGrossVespene) / loopsSinceRateUpdate;
-            double instantMinRate = perLoopMineral * LOOPS_PER_MINUTE;
-            double instantGasRate = perLoopVespene * LOOPS_PER_MINUTE;
-            if (!emaSeeded) {
-                emaMineralRate = instantMinRate;
-                emaVespeneRate = instantGasRate;
-                emaSeeded = true;
-            } else {
-                emaMineralRate = MINERAL_EMA_ALPHA * instantMinRate + (1 - MINERAL_EMA_ALPHA) * emaMineralRate;
-                emaVespeneRate = VESPENE_EMA_ALPHA * instantGasRate + (1 - VESPENE_EMA_ALPHA) * emaVespeneRate;
-            }
-            mineralRate    = mineralRateOverride >= 0
-                             ? mineralRateOverride
-                             : (int) Math.max(0, emaMineralRate);
-            vespeneRate    = vespeneRateOverride >= 0
-                             ? vespeneRateOverride
-                             : (int) Math.max(0, emaVespeneRate);
-            prevGrossMinerals    = grossMinerals;
-            prevGrossVespene     = grossVespene;
-            loopsSinceRateUpdate = 0;
+        windowMineralIncome[windowHead] = pendingMineralIncome;
+        windowGasIncome[windowHead]     = pendingGasIncome;
+                                          pendingMineralIncome = 0;
+                                          pendingGasIncome = 0;
+                                          windowHead = (windowHead + 1) % WINDOW_TICKS;
+        if (windowFilled < WINDOW_TICKS) {windowFilled++;}
 
+        double windowMineral = 0, windowGas = 0;
+        for (int i = 0; i < windowFilled; i++) {
+            windowMineral += windowMineralIncome[i];
+            windowGas += windowGasIncome[i];
+        }
+        double windowDuration = windowFilled * (double) SC2Data.LOOPS_PER_TICK;
+        mineralRate = mineralRateOverride >= 0
+                      ? mineralRateOverride
+                      : (int) Math.max(0, windowMineral * LOOPS_PER_MINUTE / windowDuration);
+        vespeneRate = vespeneRateOverride >= 0
+                      ? vespeneRateOverride
+                      : (int) Math.max(0, windowGas * LOOPS_PER_MINUTE / windowDuration);
+
+        loopsSinceSpendingUpdate += SC2Data.LOOPS_PER_TICK;
+        if (loopsSinceSpendingUpdate >= spendingIntervalLoops) {
             reportedMineralsUsedArmy       = mineralsUsedArmy;
             reportedVespeneUsedArmy        = vespeneUsedArmy;
             reportedMineralsUsedEconomy    = mineralsUsedEconomy;
             reportedVespeneUsedEconomy     = vespeneUsedEconomy;
             reportedMineralsUsedTechnology = mineralsUsedTechnology;
             reportedVespeneUsedTechnology  = vespeneUsedTechnology;
+            loopsSinceSpendingUpdate       = 0;
         }
     }
 
@@ -308,28 +312,29 @@ class EconomyTracker {
     }
 
     void reset() {
-        mineralsUsedArmy       = 0;
-        vespeneUsedArmy        = 0;
-        mineralsUsedEconomy    = 0;
-        vespeneUsedEconomy     = 0;
-        mineralsUsedTechnology = 0;
-        vespeneUsedTechnology  = 0;
+        mineralsUsedArmy            = 0;
+        vespeneUsedArmy             = 0;
+        mineralsUsedEconomy         = 0;
+        vespeneUsedEconomy          = 0;
+        mineralsUsedTechnology      = 0;
+        vespeneUsedTechnology       = 0;
         inProgressMineralArmy       = 0;
         inProgressVespeneArmy       = 0;
         inProgressMineralEconomy    = 0;
         inProgressVespeneEconomy    = 0;
         inProgressMineralTechnology = 0;
         inProgressVespeneTechnology = 0;
-        grossMinerals          = 0;
-        grossVespene           = 0;
-        prevGrossMinerals      = 0;
-        prevGrossVespene       = 0;
-        mineralRate            = 0;
-        vespeneRate            = 0;
-        emaMineralRate         = 0;
-        emaVespeneRate         = 0;
-        emaSeeded              = false;
-        loopsSinceRateUpdate   = 0;
+        grossMinerals               = 0;
+        grossVespene                = 0;
+        mineralRate                 = 0;
+        vespeneRate                 = 0;
+        Arrays.fill(windowMineralIncome, 0);
+        Arrays.fill(windowGasIncome, 0);
+        windowHead                     = 0;
+        windowFilled                   = 0;
+        pendingMineralIncome           = 0;
+        pendingGasIncome               = 0;
+        loopsSinceSpendingUpdate       = 0;
         reportedMineralsUsedArmy       = 0;
         reportedVespeneUsedArmy        = 0;
         reportedMineralsUsedEconomy    = 0;
