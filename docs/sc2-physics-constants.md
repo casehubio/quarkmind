@@ -82,9 +82,9 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 | Collision radius | 0.75 | units | PySC2 unit size ~0.75, #634 | **Calibrated** — #634 | `COLLISION_RADIUS` (compile-time) |
 
 
-**Mining cycle decomposition (#620→#631→#634→#661):** Originally three explicit phases: mining animation (22 loops), deposit at base (12 loops), and approach/docking at patch (24.5 loops), totalling 58.5 loops overhead per cycle. Deposit and approach recalibrated from 8w SC2 cadence data (#661). Phase transitions consume 1 game loop each (#661).
+**Mining cycle decomposition (#620→#631→#634→#661→#707):** Originally three explicit phases: mining animation (22 loops), deposit at base (12 loops), and approach/docking at patch. Deposit and approach recalibrated from 8w SC2 cadence data (#661). Phase transitions consume 1 game loop each (#661). Approach simplified to animation-only (20.0 loops) in #707 — path deviation now emerges from obstacle-aware A* pathfinding. The `APPROACH_DOCKING_LOOPS` constant (24.5) was removed in #739.
 
-**#634 revision:** Per-loop worker processing order shuffling (§1b) produces small cycle variance matching SC2's tight distribution (σ=0.56). Direction-dependent collision model reverted. SC2-observed phase durations (mining=22) and original acceleration (3.5) restored. Approach and deposit recalibrated in #661 from 8w cadence data (approach=24.5, deposit=12). Collision speed factor disabled in #661 (1.0) — transition loop cost provides correct timing.
+**#634 revision:** Per-loop worker processing order shuffling (§1b) produces small cycle variance matching SC2's tight distribution (σ=0.56). Direction-dependent collision model reverted. SC2-observed phase durations (mining=22) and original acceleration (3.5) restored. Deposit recalibrated in #661 from 8w cadence data (deposit=12). Collision speed factor disabled in #661 (1.0) — transition loop cost provides correct timing.
 
 **SC2 observed cycle phases (#631, 12w cadence data, 1366 transitions):**
 
@@ -92,10 +92,10 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 |-------|-------------|-------------------|--------|
 | Mining animation | 22 loops (1 tick) | 22 loops | Position stability at patch |
 | Return + deposit | 40 loops (1.8 ticks) | 33+12=45 loops | Cargo flip timing; deposit recalibrated #661 |
-| Mine cycle (uncontested) | 66 loops (3 ticks) | 33+24.5+22=79.5 loops | Deposit→pickup |
-| Full cycle (average) | 117 loops (5.3 ticks) | ~117 loops (#661) | PICKUP→PICKUP |
+| Mine cycle (uncontested) | 66 loops (3 ticks) | 33+20+22=75 loops | Deposit→pickup |
+| Full cycle (average) | 117 loops (5.3 ticks) | ~122 loops (#707) | PICKUP→PICKUP |
 
-SC2 uncontested mine cycle decomposes as walk(33) + approach(~24.5) + mine(22) = ~79.5 loops. Post-#661, EM unconditional approach is 24.5 loops for all mining starts. Phase transitions consume 1 game loop each (transition loop cost, #661). The net effect at 12w is −0.3% vs SC2 (post-#690). At 8w: −0.2% (post-#727 density-dependent path deviation).
+SC2 uncontested mine cycle decomposes as walk(33) + approach(20) + mine(22) = 75 loops. Approach is `APPROACH_ANIMATION_LOOPS` (20.0) — uniform for all patches (#707). Path deviation emerges from obstacle-aware A* routing. Phase transitions consume 1 game loop each (transition loop cost, #661). The net effect at 12w is −0.3% vs SC2 (post-#690). At 8w: −0.2% (post-#727 density-dependent path deviation).
 
 **Collision model (#634→#661→#656):** Collision speed factor disabled (1.0) in #661. Lateral displacement scaled by contention (#656): at ≤2 workers/patch, dodge reduced to 25%. Full displacement at 3+/patch preserves high-saturation contention model. SC2 workers at low saturation don't physically collide — they alternate mining cycles. The reduced displacement at low saturation eliminates random walk extension that was pushing borderline 6-tick cycles to 7+.
 
@@ -432,17 +432,17 @@ Most defaulted to 9. Probe specifically set to 8. Confidence: **Estimated** — 
 
 ## 13. Building Footprints
 
-All building types mapped to rectangular tile footprints via `SC2Data.buildingFootprint(BuildingType)` (#736). `enforceWall()` uses `insideFootprint()` — axis-aligned rectangle containment check, tile-inclusive boundaries. The deprecated `buildingRadius()` delegates to `buildingFootprint()` and returns `max(width, height) / 2.0f` for backward compatibility.
+All building types mapped to rectangular tile footprints via `SC2Data.buildingFootprint(BuildingType)` (#736), returning an immutable `SC2Data.Footprint(width, height)` record (#740) with `halfWidth()`/`halfHeight()` helpers. `enforceWall()` uses `insideFootprint()` — axis-aligned rectangle containment check, tile-inclusive boundaries. The deprecated `buildingRadius()` delegates to `buildingFootprint()` and returns `max(width, height) / 2.0f` for backward compatibility.
 
 | Footprint | Half-extents | Examples |
 |-----------|-------------|----------|
 | 5×5 (Large) | 2.5 × 2.5 | Nexus, CC, Hatchery |
 | 4×4 | 2.0 × 2.0 | Ultralisk Cavern |
-| 3×3 (Medium) | 1.5 × 1.5 | Gateway, Barracks, Spawning Pool |
-| 2×2 (Small) | 1.0 × 1.0 | Pylon, Supply Depot, Photon Cannon |
+| 3×3 (Medium) | 1.5 × 1.5 | Gateway, Barracks, Spawning Pool, Evolution Chamber, Assimilator, Refinery, Extractor |
+| 2×2 (Small) | 1.0 × 1.0 | Pylon, Supply Depot, Photon Cannon, Spine/Spore Crawler, Nydus Canal |
 | 1×1 (Tiny) | 0.5 × 0.5 | Creep Tumor |
 
-Confidence: **Published** (SC2 data editor). EVOLUTION_CHAMBER classified as 2×2 — may be 3×3 per SC2 data editor (#738).
+Confidence: **Published** (SC2 data editor). Evolution Chamber corrected 2×2→3×3 (#738). Gas buildings (Assimilator/Refinery/Extractor/Assimilator_Rich) corrected 2×2→3×3 (#738) — matches 3×3 geyser footprint (#742).
 
 **Rectangular vs circular collision (#736):** The rectangular footprint differs from the old circular radius at diagonal positions — the rectangle extends to sqrt(hw²+hh²) at corners while the circle boundary is constant at max(hw,hh). For a 5×5 Nexus at (8,8): a unit at (10,10) is inside the rectangle (10 ≤ 10.5) but outside the circle (distance=2.83 > 2.5). This is correct SC2 behaviour — buildings occupy rectangular tiles, not circles.
 
@@ -461,21 +461,22 @@ At a close mineral patch (6.6 units from town hall), edge-to-edge walk:
 | Phase | Loops | Seconds | Notes |
 |-------|-------|---------|-------|
 | Walk to patch (edge-to-edge) | 33 | 1.47 | Trapezoidal profile, collision footprint boundary |
-| Approach animation | 20 | 0.89 | Fixed docking/positioning overhead at the patch (#679) |
-| Outbound path delay | ~7 (per-patch) | ~0.31 | Path deviation around mineral line; close patches get more (#679) |
+| Approach animation | 20 | 0.89 | Fixed docking/positioning overhead at the patch (#679, #707) |
 | Mine | 22 | 0.98 | SC2 per-worker observation: position stable 1 tick (#631) |
 | Walk home (edge-to-edge) | 33 | 1.47 | Same distance, same profile |
 | Deposit | 12 | 0.54 | 8w SC2 cadence: return half-cycle gap (#661) |
 | Transition costs | 2 | 0.09 | 1 loop per phase transition × 2 transitions (#661) |
-| **Total cycle** | **~129** | **~5.76** | 5 minerals per trip; approach varies ±3 loops by patch |
+| **Total cycle** | **~122** | **~5.45** | 5 minerals per trip |
 
-**Per-worker income:** 5 minerals × (22.4 loops/sec × 60 sec / 126.5 loops) = **53.2 minerals/min** on a close patch. SC2 8w measured: 57.0 deliveries/worker in 304 ticks = ~53.7 min/worker (within 5%).
+Per-patch path deviation was previously modeled as a constant (#656, #679) but removed in #707 — it now emerges from obstacle-aware A* paths (workers route around mineral patches and buildings). The `APPROACH_DOCKING_LOOPS` config constant was removed in #739.
 
-At a far mineral patch (7.6 units): ~40 loops per leg, 141.5-loop cycle, **47.6 minerals/min** per worker. At uniform 7.0 units (unit tests): ~37 loops per leg, 135.5-loop cycle, **49.7 minerals/min** per worker.
+**Per-worker income:** 5 minerals × (22.4 loops/sec × 60 sec / 122 loops) = **55.1 minerals/min** on a close patch. SC2 8w measured: 57.0 deliveries/worker in 304 ticks = ~53.7 min/worker.
+
+At a far mineral patch (7.6 units): ~40 loops per leg, 129-loop cycle, **52.1 minerals/min** per worker. At uniform 7.0 units (unit tests): ~37 loops per leg, 126-loop cycle, **53.3 minerals/min** per worker.
 
 ### Saturation curve mechanics
 
-With `MAX_MINERS=1`, the approach+mining duration (~24.5 base+22=~46.5 loops) controls patch occupancy. A patch is occupied ~46.5/~129 = **~36%** of each cycle (approach varies per patch #656). Two workers per patch alternate efficiently — one mines while the other walks. The approach+mine phase (46.5 loops) approximately fills the time the other worker spends walking+depositing (~45 loops), producing near-zero contention at 2 workers/patch. SC2 8w and 12w per-worker rates are nearly identical (57.0 vs 56.8 deliveries/worker), confirming near-zero contention at ≤2 workers/patch.
+With `MAX_MINERS=1`, the approach+mining duration (20+22=42 loops) controls patch occupancy. A patch is occupied 42/122 = **~34%** of each cycle. Two workers per patch alternate efficiently — one mines while the other walks. The approach+mine phase (42 loops) approximately fills the time the other worker spends walking+depositing (~45 loops), producing near-zero contention at 2 workers/patch. SC2 8w and 12w per-worker rates are nearly identical (57.0 vs 56.8 deliveries/worker), confirming near-zero contention at ≤2 workers/patch.
 
 16w dual-run (#661→#690): EM=4150 vs SC2=4270 (−2.8%). Collision speed factor disabled (1.0) since #661 — transition loop cost provides correct timing without collision-based compensation.
 
@@ -508,13 +509,13 @@ Sub-tick chaining (implemented in #578 for movement, #583 for mining, #584 for g
 
 ### Cumulative drift
 
-Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 7-min is 26.5%. Each tick's income error accumulates in mineralsCurrent — the mineral *balance* diverges by roughly the rate error × elapsed time. This is why mineralsCurrent MAPE (74.1%) is far higher than the rate MAPE (26.5%).
+Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 7-min is 38.6% (2026-11-22 baseline). Each tick's income error accumulates in mineralsCurrent — the mineral *balance* diverges by roughly the rate error × elapsed time. This is why mineralsCurrent MAPE (84.9%) is far higher than the rate MAPE (38.6%). Drift amplification ratio is ~2.2× at 7-min.
 
-Fixing rate accuracy is the primary lever for reducing balance MAPE. The balance fields will converge automatically as rate accuracy improves.
+Fixing rate accuracy is the primary lever for reducing balance MAPE. Gap decomposition (#744) is quantifying the per-component contribution — rate algorithm (#676), map geometry (#745), worker timing (#746). The balance fields will converge automatically as rate accuracy improves (#747 will validate).
 
 ### Per-race efficiency factors — removed
 
-Factor removed in #623. With decomposed mining phases (mine=22, approach=24.5, deposit=12), edge-to-edge walk distances, transition loop cost (#661), and wait-time absorption (#690), no compensation factor is needed. SC2 dual-run shows 12w EM within −0.3% of SC2 at tick 304.
+Factor removed in #623. With decomposed mining phases (mine=22, approach=20.0, deposit=12), edge-to-edge walk distances, transition loop cost (#661), obstacle-aware A* paths (#707), and wait-time absorption (#690), no compensation factor is needed. SC2 dual-run shows 12w EM within −0.3% of SC2 at tick 304.
 
 ### The overhead gap — decomposed (#620→#631)
 
@@ -657,7 +658,7 @@ Workers use A* pathfinding around mineral patches registered as circular obstacl
 
 **Fog decoupling (#734):** Fog-of-war visibility filtering is controlled by `fogEnabled` (default false), independent of terrain. Previously gated on `terrainGrid != null`, which coupled pathfinding terrain with snapshot visibility filtering. Production profiles (`EmulatedEngine`, `EmulatedSC2Server`) enable fog explicitly.
 
-**Building collision (#736):** `enforceWall()` uses rectangular tile footprints via `insideFootprint()` — see §13. Army units cannot enter building footprints (complete or incomplete). Workers are not affected by `enforceWall()` — they use the pathing grid obstacle layer for A* routing.
+**Building collision (#736, #743):** `enforceWall()` uses rectangular tile footprints via `insideFootprint()` — see §13. Army units cannot enter building footprints (complete or incomplete). Workers are not affected by `enforceWall()` — they use the pathing grid obstacle layer for A* routing. `enforceWall` skips buildings that are registered as terrain obstacles (covered by the `isWalkable` check), reducing iteration from O(units × all_buildings) to O(units × initial_buildings) per tick (#743). Initial town hall buildings are NOT registered as obstacles because worker A* paths route through the base area.
 
 **Army building obstacles (#731):** Buildings are registered as rectangular obstacles on `TerrainGrid` via `markRectangularObstacle()` from the moment construction starts (incomplete buildings block pathing, matching SC2). `AStarPathfinder` routes army units around buildings. `enforceWall()` remains as a safety net for edge cases. All army paths are invalidated when a building is placed or destroyed — `MovementStrategy.invalidateAllPaths()` clears all cached waypoints. Building obstacles are cleared on `reset()` via `clearAllObstacles()`.
 
@@ -683,41 +684,54 @@ Newly produced workers spawn at the town hall position and walk to an assigned m
 
 ## 16. Economy Baseline
 
-Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA rate algorithm):
+Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA rate algorithm). Baseline date: 2026-11-22.
 
 ### Rate MAPE by checkpoint
 
 | Checkpoint | mineralsCollectionRate | vespeneCollectionRate |
 |------------|----------------------|---------------------|
-| 1-min | 12.2% | 91.5% (no gas yet) |
-| 3-min | 13.4% | 40.1% |
-| 5-min | 17.1% | 34.0% |
-| 7-min | **26.5%** | **35.0%** |
+| 1-min | 35.6% | 90.8% (few gas workers) |
+| 3-min | 24.8% | 29.5% |
+| 5-min | 29.3% | 22.2% |
+| 7-min | **38.6%** | **20.5%** |
+
+Mineral rate MAPE increased vs prior baselines — under investigation (#744). Gas rate MAPE improved significantly from recalibrated harvest decomposition (#689, #695).
 
 ### Full economy at 7-min
 
-| Field | MAPE | Status |
-|-------|------|--------|
-| mineralsCollectionRate | 26.5% | Structural — worker allocation (#572), not physics |
-| vespeneCollectionRate | 25.1% | Structural floor — GAS_PER_WORKER_PER_MIN recalibrated 54→34 (#639) |
-| mineralsCurrent | 74.1% | Cumulative drift from rate error |
-| vespeneCurrent | 65.0% | Calibrated worker estimation (#615, #639) |
-| foodMade | 2.9% | At floor |
-| foodUsed | 3.7% | At floor |
-| workersActiveCount | 2.5% | At floor |
-| mineralsUsedCurrentArmy | 4.3% | Snapshot-aligned spending (#579) |
-| mineralsUsedCurrentEconomy | 5.5% | Snapshot-aligned spending (#579) |
-| mineralsUsedCurrentTechnology | 15.4% | Snapshot-aligned spending (#579) |
-| vespeneUsedCurrentArmy | 3.9% | Snapshot-aligned spending (#579) |
-| vespeneUsedCurrentTechnology | 39.7% | Structural — InProgress/Current timing boundary |
+| Field | MAPE | Structural floor | Status |
+|-------|------|-----------------|--------|
+| mineralsCollectionRate | 38.6% | ~10-12% | Gap: rate algorithm (#676), map geometry (#745), worker timing (#746) |
+| vespeneCollectionRate | 20.5% | ~12-15% | Approaching floor — rate algorithm (#676) is remaining lever |
+| mineralsCurrent | 84.9% | ~40-50% | Cumulative drift from rate error; reduces proportionally with rate fix |
+| vespeneCurrent | 61.1% | ~35-45% | Cumulative drift; gas rate closer to floor so less headroom |
+| foodMade | 0.9% | ~0.5-1% | At floor |
+| foodUsed | 3.7% | ~2-3% | Near floor |
+| workersActiveCount | 2.5% | ~2-3% | At floor |
+| mineralsUsedCurrentArmy | 4.3% | ~5-8% | At floor — snapshot-aligned spending (#579) |
+| mineralsUsedCurrentEconomy | 0.9% | ~0.5-1% | At floor |
+| vespeneUsedCurrentArmy | 3.9% | ~5-8% | At floor |
+| vespeneUsedCurrentTechnology | 39.7% | ~10-15% | Structural — InProgress/Current timing boundary |
+
+### Accuracy plan — closing the gap
+
+Six issues scheduled in dependency order under epic #607:
+1. **#744** (M/Med) — Gap decomposition: identify which components drive the 38.6% mineral rate MAPE
+2. **#745** (S/Med) — Per-replay mineral patch geometry: quantify map distance contribution
+3. **#746** (S/Med) — Worker startup/transfer timing: quantify allocation delay contribution
+4. **#676** (M/High) — Rate algorithm reverse-engineering: break the ~16% EMA floor
+5. **#747** (S/Low) — Balance validation: verify balance MAPE drops proportionally after rate fixes
+6. **#666** (L/High) — Forward simulation mode: EM-driven income without GT sync
+
+Target after all land: mineralsCollectionRate ≤12%, vespeneCollectionRate ≤15%, mineralsCurrent ≤50%.
 
 ### Rate algorithm
 
-EMA (mineral α=0.25, vespene α=0.35) matches SC2's rate computation. Confirmed by RateAlgorithmAnalysisTest (#593). Rate MAPE at 7-min: minerals 26.5%, vespene 25.1%.
+EMA (mineral α=0.25, vespene α=0.35) approximates SC2's rate computation. Confirmed by RateAlgorithmAnalysisTest (#593) as best-fit among tested algorithms, but still carries ~16% MAPE floor — SC2's internal rate signal differs from our EMA-from-delta(totalMined) approach (#676). Rate MAPE at 7-min: minerals 38.6%, vespene 20.5%.
 
-### Gas harvest recalibration (#606, #615, #639)
+### Gas harvest recalibration (#606, #615, #639, #689, #695)
 
-Gas harvest duration: 26 loops (calibrated via dual-run sweep #606). Gas worker estimation: `GAS_PER_WORKER_PER_MIN=34` (calibrated via decomposition sweep #639, down from 54). vespeneCollectionRate MAPE decomposition (#639): 17.7% from income, 25.1% rate — the 25% floor is structural (per-worker physics, integer rounding, PlayerStatsEvent cadence).
+Gas harvest duration: 31.7 loops / 1.415s (Liquipedia; SC2 profiler confirms 32 loops inside geyser, #665). Gas approach docking: 11.5 loops (recalibrated #689, proportionally absorbed by wait time #695). vespeneCollectionRate MAPE improved from 35.0% to 20.5% at 7-min through harvest decomposition and docking absorption model.
 
 ---
 

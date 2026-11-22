@@ -1,7 +1,7 @@
-# Tracker-Driven EmulatedGame Accuracy Baseline — 2026-11-04
+# Tracker-Driven EmulatedGame Accuracy Baseline — 2026-11-22
 
 **Dataset:** Oracle (118 replays, v4.9.3)
-**Processed:** 118 replays, 236 player runs
+**Processed:** 118 replays, 148 player runs
 **Method:** Tracker-event-driven (100% input coverage)
 
 ---
@@ -13,10 +13,8 @@
 | Type | GT | Emulated | Accuracy |
 |---|---|---|---|
 | PROBE | 969 | 969 | 100.0% |
-| DRONE | 1142 | 1142 | 100.0% |
-| OVERLORD | 134 | 134 | 100.0% |
 | SCV | 1156 | 1156 | 100.0% |
-| **TOTAL** | 3401 | 3401 | **100.0%** |
+| **TOTAL** | 2125 | 2125 | **100.0%** |
 
 ### Buildings — Per-Type
 
@@ -28,9 +26,7 @@
 | COMMAND_CENTER | 74 | 74 | 100.0% |
 | SUPPLY_DEPOT | 74 | 74 | 100.0% |
 | REFINERY | 28 | 28 | 100.0% |
-| HATCHERY | 71 | 71 | 100.0% |
-| EXTRACTOR | 6 | 6 | 100.0% |
-| **TOTAL** | 385 | 385 | **100.0%** |
+| **TOTAL** | 308 | 308 | **100.0%** |
 
 ### Upgrades
 
@@ -40,13 +36,13 @@ Accuracy: 100.0% (0/0)
 
 | Field | GT (sum) | Em (sum) | Error% |
 |---|---|---|---|
-| mineralsCurrent | 20630 | 20630 | 0.0% |
-| vespeneCurrent | 232 | 232 | 0.0% |
-| mineralsCollectionRate | 150658 | 150658 | 0.0% |
-| vespeneCollectionRate | 1241 | 1241 | 0.0% |
-| foodMade | 4579 | 4579 | 0.0% |
-| foodUsed | 3338 | 3338 | 0.0% |
-| workersActiveCount | 3162 | 3162 | 0.0% |
+| mineralsCurrent | 14143 | 14143 | 0.0% |
+| vespeneCurrent | 180 | 180 | 0.0% |
+| mineralsCollectionRate | 97277 | 97277 | 0.0% |
+| vespeneCollectionRate | 997 | 997 | 0.0% |
+| foodMade | 3105 | 3105 | 0.0% |
+| foodUsed | 2209 | 2209 | 0.0% |
+| workersActiveCount | 2102 | 2102 | 0.0% |
 | mineralsUsedCurrentArmy | 0 | 0 | 0.0% |
 
 ## 3-minute checkpoint
@@ -61,19 +57,13 @@ Accuracy: 100.0% (0/0)
 | ADEPT | 26 | 26 | 100.0% |
 | SENTRY | 2 | 2 | 100.0% |
 | ADEPT_PHASE_SHIFT | 5 | 5 | 100.0% |
-| ZERGLING | 296 | 296 | 100.0% |
-| ROACH | 4 | 4 | 100.0% |
-| QUEEN | 89 | 89 | 100.0% |
-| DRONE | 1303 | 1303 | 100.0% |
-| OVERLORD | 180 | 180 | 100.0% |
-| BANELING | 1 | 1 | 100.0% |
 | MARINE | 98 | 98 | 100.0% |
 | MARAUDER | 2 | 2 | 100.0% |
 | WIDOW_MINE | 2 | 2 | 100.0% |
 | SCV | 1493 | 1493 | 100.0% |
 | REAPER | 47 | 47 | 100.0% |
 | HELLION | 5 | 5 | 100.0% |
-| **TOTAL** | 4863 | 4863 | **100.0%** |
+| **TOTAL** | 2990 | 2990 | **100.0%** |
 
 ### Buildings — Per-Type
 
@@ -88,46 +78,38 @@ Accuracy: 100.0% (0/0)
 | FORGE | 9 | 9 | 100.0% |
 | TWILIGHT_COUNCIL | 6 | 6 | 100.0% |
 | PHOTON_CANNON | 6 | 6 | 100.0% |
-| COMMAND_CENTER | 94 | 94 | 100.0% |
+| COMMAND_CENTER | 41 | 41 | 100.0% |
+| ORBITAL_COMMAND | 53 | 53 | 100.0% |
 | SUPPLY_DEPOT | 153 | 153 | 100.0% |
-| BARRACKS | 139 | 139 | 100.0% |
+| BARRACKS | 135 | 135 | 100.0% |
 | ENGINEERING_BAY | 9 | 9 | 100.0% |
 | MISSILE_TURRET | 1 | 1 | 100.0% |
 | BUNKER | 6 | 6 | 100.0% |
-| FACTORY | 33 | 33 | 100.0% |
+| FACTORY | 37 | 37 | 100.0% |
 | STARPORT | 2 | 2 | 100.0% |
 | REFINERY | 121 | 121 | 100.0% |
-| HATCHERY | 119 | 119 | 100.0% |
-| SPAWNING_POOL | 62 | 62 | 100.0% |
-| EVOLUTION_CHAMBER | 1 | 1 | 100.0% |
-| ROACH_WARREN | 5 | 5 | 100.0% |
-| BANELING_NEST | 1 | 1 | 100.0% |
-| SPINE_CRAWLER | 2 | 2 | 100.0% |
-| EXTRACTOR | 68 | 68 | 100.0% |
-| UNKNOWN | 4 | 4 | 100.0% |
-| **TOTAL** | 1312 | 1312 | **100.0%** |
+| **TOTAL** | 1050 | 1050 | **100.0%** |
 
 ### Upgrades
 
-Accuracy: 100.0% (4/4)
+Accuracy: 100.0% (1/1)
 
 | Upgrade | GT | Matched | Accuracy |
 |---|---|---|---|
 | PunisherGrenades | 1 | 1 | 100.0% |
-| zerglingmovementspeed | 3 | 3 | 100.0% |
 
 ### Economy — Aggregate Error
 
 | Field | GT (sum) | Em (sum) | Error% |
 |---|---|---|---|
-| mineralsCurrent | 46751 | 46751 | 0.0% |
-| vespeneCurrent | 24254 | 24254 | 0.0% |
-| mineralsCollectionRate | 171704 | 171704 | 0.0% |
-| vespeneCollectionRate | 39512 | 39512 | 0.0% |
-| foodMade | 7024 | 7024 | 0.0% |
-| foodUsed | 5150 | 5150 | 0.0% |
-| workersActiveCount | 4000 | 4000 | 0.0% |
-| mineralsUsedCurrentArmy | 36875 | 36875 | 0.0% |
+| mineralsCurrent | 32341 | 32341 | 0.0% |
+| vespeneCurrent | 17951 | 17951 | 0.0% |
+| mineralsCollectionRate | 113638 | 113638 | 0.0% |
+| vespeneCollectionRate | 31236 | 31236 | 0.0% |
+| foodMade | 4868 | 4868 | 0.0% |
+| foodUsed | 3345 | 3345 | 0.0% |
+| workersActiveCount | 2744 | 2744 | 0.0% |
+| mineralsUsedCurrentArmy | 16175 | 16175 | 0.0% |
 
 ## 5-minute checkpoint
 
@@ -145,27 +127,24 @@ Accuracy: 100.0% (4/4)
 | SENTRY | 7 | 7 | 100.0% |
 | PHOENIX | 8 | 8 | 100.0% |
 | ORACLE | 9 | 9 | 100.0% |
-| WARP_PRISM | 4 | 4 | 100.0% |
-| ZERGLING | 531 | 531 | 100.0% |
-| ROACH | 65 | 65 | 100.0% |
-| QUEEN | 145 | 145 | 100.0% |
-| DRONE | 1724 | 1724 | 100.0% |
-| OVERLORD | 305 | 305 | 100.0% |
-| BANELING | 17 | 17 | 100.0% |
+| WARP_PRISM | 3 | 3 | 100.0% |
+| WARP_PRISM_PHASING | 1 | 1 | 100.0% |
 | MARINE | 372 | 372 | 100.0% |
 | MARAUDER | 25 | 25 | 100.0% |
 | MEDIVAC | 9 | 9 | 100.0% |
-| SIEGE_TANK | 33 | 33 | 100.0% |
+| SIEGE_TANK | 12 | 12 | 100.0% |
+| SIEGE_TANK_SIEGED | 21 | 21 | 100.0% |
 | VIKING | 4 | 4 | 100.0% |
 | RAVEN | 1 | 1 | 100.0% |
 | BANSHEE | 2 | 2 | 100.0% |
 | CYCLONE | 8 | 8 | 100.0% |
-| LIBERATOR | 3 | 3 | 100.0% |
+| LIBERATOR | 2 | 2 | 100.0% |
 | WIDOW_MINE | 28 | 28 | 100.0% |
 | SCV | 1850 | 1850 | 100.0% |
 | REAPER | 36 | 36 | 100.0% |
 | HELLION | 52 | 52 | 100.0% |
-| **TOTAL** | 6807 | 6807 | **100.0%** |
+| LIBERATOR_AG | 1 | 1 | 100.0% |
+| **TOTAL** | 4020 | 4020 | **100.0%** |
 
 ### Buildings — Per-Type
 
@@ -184,33 +163,25 @@ Accuracy: 100.0% (4/4)
 | SHIELD_BATTERY | 16 | 16 | 100.0% |
 | DARK_SHRINE | 3 | 3 | 100.0% |
 | ROBOTICS_BAY | 2 | 2 | 100.0% |
-| COMMAND_CENTER | 113 | 113 | 100.0% |
+| COMMAND_CENTER | 22 | 22 | 100.0% |
+| ORBITAL_COMMAND | 90 | 90 | 100.0% |
+| PLANETARY_FORTRESS | 1 | 1 | 100.0% |
 | SUPPLY_DEPOT | 236 | 236 | 100.0% |
-| BARRACKS | 212 | 212 | 100.0% |
+| BARRACKS | 195 | 195 | 100.0% |
 | ENGINEERING_BAY | 31 | 31 | 100.0% |
 | ARMORY | 2 | 2 | 100.0% |
 | MISSILE_TURRET | 27 | 27 | 100.0% |
 | BUNKER | 17 | 17 | 100.0% |
-| FACTORY | 105 | 105 | 100.0% |
-| STARPORT | 58 | 58 | 100.0% |
+| FACTORY | 118 | 118 | 100.0% |
+| STARPORT | 62 | 62 | 100.0% |
 | FUSION_CORE | 3 | 3 | 100.0% |
 | REFINERY | 158 | 158 | 100.0% |
-| HATCHERY | 122 | 122 | 100.0% |
-| SPAWNING_POOL | 54 | 54 | 100.0% |
-| EVOLUTION_CHAMBER | 15 | 15 | 100.0% |
-| ROACH_WARREN | 28 | 28 | 100.0% |
-| BANELING_NEST | 14 | 14 | 100.0% |
-| SPINE_CRAWLER | 20 | 20 | 100.0% |
-| SPORE_CRAWLER | 10 | 10 | 100.0% |
-| HYDRALISK_DEN | 1 | 1 | 100.0% |
-| INFESTATION_PIT | 1 | 1 | 100.0% |
-| EXTRACTOR | 114 | 114 | 100.0% |
-| UNKNOWN | 218 | 218 | 100.0% |
-| **TOTAL** | 2255 | 2255 | **100.0%** |
+| ORACLE_STASIS_TRAP | 1 | 1 | 100.0% |
+| **TOTAL** | 1659 | 1659 | **100.0%** |
 
 ### Upgrades
 
-Accuracy: 100.0% (103/103)
+Accuracy: 100.0% (59/59)
 
 | Upgrade | GT | Matched | Accuracy |
 |---|---|---|---|
@@ -224,22 +195,19 @@ Accuracy: 100.0% (103/103)
 | Stimpack | 5 | 5 | 100.0% |
 | TerranInfantryWeaponsLevel1 | 2 | 2 | 100.0% |
 | WarpGateResearch | 39 | 39 | 100.0% |
-| ZergMeleeWeaponsLevel1 | 1 | 1 | 100.0% |
-| overlordspeed | 3 | 3 | 100.0% |
-| zerglingmovementspeed | 40 | 40 | 100.0% |
 
 ### Economy — Aggregate Error
 
 | Field | GT (sum) | Em (sum) | Error% |
 |---|---|---|---|
-| mineralsCurrent | 66699 | 66699 | 0.0% |
-| vespeneCurrent | 43390 | 43390 | 0.0% |
-| mineralsCollectionRate | 208770 | 208770 | 0.0% |
-| vespeneCollectionRate | 50869 | 50869 | 0.0% |
-| foodMade | 9520 | 9520 | 0.0% |
-| foodUsed | 7483 | 7483 | 0.0% |
-| workersActiveCount | 4907 | 4907 | 0.0% |
-| mineralsUsedCurrentArmy | 108250 | 108250 | 0.0% |
+| mineralsCurrent | 41445 | 41445 | 0.0% |
+| vespeneCurrent | 30589 | 30589 | 0.0% |
+| mineralsCollectionRate | 136023 | 136023 | 0.0% |
+| vespeneCollectionRate | 37734 | 37734 | 0.0% |
+| foodMade | 6408 | 6408 | 0.0% |
+| foodUsed | 4925 | 4925 | 0.0% |
+| workersActiveCount | 3224 | 3224 | 0.0% |
+| mineralsUsedCurrentArmy | 68200 | 68200 | 0.0% |
 
 ## 7-minute checkpoint
 
@@ -259,21 +227,14 @@ Accuracy: 100.0% (103/103)
 | SENTRY | 6 | 6 | 100.0% |
 | PHOENIX | 5 | 5 | 100.0% |
 | ORACLE | 10 | 10 | 100.0% |
-| WARP_PRISM | 10 | 10 | 100.0% |
-| ZERGLING | 487 | 487 | 100.0% |
-| ROACH | 287 | 287 | 100.0% |
-| HYDRALISK | 9 | 9 | 100.0% |
-| MUTALISK | 11 | 11 | 100.0% |
-| SWARM_HOST | 6 | 6 | 100.0% |
-| QUEEN | 153 | 153 | 100.0% |
-| DRONE | 1848 | 1848 | 100.0% |
-| OVERLORD | 403 | 403 | 100.0% |
-| BANELING | 31 | 31 | 100.0% |
+| WARP_PRISM | 7 | 7 | 100.0% |
+| WARP_PRISM_PHASING | 3 | 3 | 100.0% |
 | CHANGELING | 1 | 1 | 100.0% |
 | MARINE | 605 | 605 | 100.0% |
 | MARAUDER | 52 | 52 | 100.0% |
 | MEDIVAC | 45 | 45 | 100.0% |
-| SIEGE_TANK | 85 | 85 | 100.0% |
+| SIEGE_TANK | 35 | 35 | 100.0% |
+| SIEGE_TANK_SIEGED | 50 | 50 | 100.0% |
 | VIKING | 19 | 19 | 100.0% |
 | RAVEN | 3 | 3 | 100.0% |
 | BANSHEE | 6 | 6 | 100.0% |
@@ -284,7 +245,7 @@ Accuracy: 100.0% (103/103)
 | SCV | 1929 | 1929 | 100.0% |
 | REAPER | 17 | 17 | 100.0% |
 | HELLION | 39 | 39 | 100.0% |
-| **TOTAL** | 7558 | 7558 | **100.0%** |
+| **TOTAL** | 4323 | 4323 | **100.0%** |
 
 ### Buildings — Per-Type
 
@@ -304,38 +265,25 @@ Accuracy: 100.0% (103/103)
 | DARK_SHRINE | 3 | 3 | 100.0% |
 | FLEET_BEACON | 1 | 1 | 100.0% |
 | ROBOTICS_BAY | 5 | 5 | 100.0% |
-| COMMAND_CENTER | 115 | 115 | 100.0% |
+| COMMAND_CENTER | 18 | 18 | 100.0% |
+| ORBITAL_COMMAND | 97 | 97 | 100.0% |
 | SUPPLY_DEPOT | 326 | 326 | 100.0% |
-| BARRACKS | 245 | 245 | 100.0% |
+| BARRACKS | 232 | 232 | 100.0% |
 | ENGINEERING_BAY | 51 | 51 | 100.0% |
 | ARMORY | 10 | 10 | 100.0% |
 | MISSILE_TURRET | 52 | 52 | 100.0% |
 | BUNKER | 21 | 21 | 100.0% |
 | SENSOR_TOWER | 3 | 3 | 100.0% |
 | GHOST_ACADEMY | 2 | 2 | 100.0% |
-| FACTORY | 135 | 135 | 100.0% |
-| STARPORT | 84 | 84 | 100.0% |
+| FACTORY | 140 | 140 | 100.0% |
+| STARPORT | 92 | 92 | 100.0% |
 | FUSION_CORE | 7 | 7 | 100.0% |
 | REFINERY | 181 | 181 | 100.0% |
-| HATCHERY | 114 | 114 | 100.0% |
-| SPAWNING_POOL | 45 | 45 | 100.0% |
-| EVOLUTION_CHAMBER | 39 | 39 | 100.0% |
-| ROACH_WARREN | 32 | 32 | 100.0% |
-| BANELING_NEST | 23 | 23 | 100.0% |
-| SPINE_CRAWLER | 19 | 19 | 100.0% |
-| SPORE_CRAWLER | 34 | 34 | 100.0% |
-| HYDRALISK_DEN | 10 | 10 | 100.0% |
-| INFESTATION_PIT | 5 | 5 | 100.0% |
-| SPIRE | 1 | 1 | 100.0% |
-| NYDUS_NETWORK | 4 | 4 | 100.0% |
-| NYDUS_CANAL | 1 | 1 | 100.0% |
-| EXTRACTOR | 162 | 162 | 100.0% |
-| UNKNOWN | 506 | 506 | 100.0% |
-| **TOTAL** | 2938 | 2938 | **100.0%** |
+| **TOTAL** | 1943 | 1943 | **100.0%** |
 
 ### Upgrades
 
-Accuracy: 100.0% (185/185)
+Accuracy: 100.0% (119/119)
 
 | Upgrade | GT | Matched | Accuracy |
 |---|---|---|---|
@@ -343,15 +291,11 @@ Accuracy: 100.0% (185/185)
 | BansheeCloak | 4 | 4 | 100.0% |
 | BattlecruiserEnableSpecializations | 2 | 2 | 100.0% |
 | BlinkTech | 8 | 8 | 100.0% |
-| Burrow | 1 | 1 | 100.0% |
-| CentrificalHooks | 1 | 1 | 100.0% |
 | Charge | 3 | 3 | 100.0% |
 | CycloneLockOnDamageUpgrade | 2 | 2 | 100.0% |
 | DarkTemplarBlinkUpgrade | 1 | 1 | 100.0% |
 | DrillClaws | 1 | 1 | 100.0% |
-| EvolveGroovedSpines | 1 | 1 | 100.0% |
 | ExtendedThermalLance | 2 | 2 | 100.0% |
-| GlialReconstitution | 8 | 8 | 100.0% |
 | HiSecAutoTracking | 1 | 1 | 100.0% |
 | HighCapacityBarrels | 2 | 2 | 100.0% |
 | ProtossGroundWeaponsLevel1 | 4 | 4 | 100.0% |
@@ -360,24 +304,18 @@ Accuracy: 100.0% (185/185)
 | Stimpack | 23 | 23 | 100.0% |
 | TerranInfantryArmorsLevel1 | 5 | 5 | 100.0% |
 | TerranInfantryWeaponsLevel1 | 12 | 12 | 100.0% |
-| TunnelingClaws | 1 | 1 | 100.0% |
 | WarpGateResearch | 28 | 28 | 100.0% |
-| ZergGroundArmorsLevel1 | 3 | 3 | 100.0% |
-| ZergMeleeWeaponsLevel1 | 2 | 2 | 100.0% |
-| ZergMissileWeaponsLevel1 | 6 | 6 | 100.0% |
-| overlordspeed | 8 | 8 | 100.0% |
-| zerglingmovementspeed | 35 | 35 | 100.0% |
 
 ### Economy — Aggregate Error
 
 | Field | GT (sum) | Em (sum) | Error% |
 |---|---|---|---|
-| mineralsCurrent | 89788 | 89788 | 0.0% |
-| vespeneCurrent | 52228 | 52228 | 0.0% |
-| mineralsCollectionRate | 201496 | 201496 | 0.0% |
-| vespeneCollectionRate | 61091 | 61091 | 0.0% |
-| foodMade | 11184 | 11184 | 0.0% |
-| foodUsed | 9012 | 9012 | 0.0% |
-| workersActiveCount | 5004 | 5004 | 0.0% |
-| mineralsUsedCurrentArmy | 175225 | 175225 | 0.0% |
+| mineralsCurrent | 55302 | 55302 | 0.0% |
+| vespeneCurrent | 35210 | 35210 | 0.0% |
+| mineralsCollectionRate | 128404 | 128404 | 0.0% |
+| vespeneCollectionRate | 40670 | 40670 | 0.0% |
+| foodMade | 7306 | 7298 | 0.1% |
+| foodUsed | 5811 | 5811 | 0.0% |
+| workersActiveCount | 3227 | 3227 | 0.0% |
+| mineralsUsedCurrentArmy | 114025 | 114025 | 0.0% |
 
