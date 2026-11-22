@@ -424,6 +424,7 @@ mvn quarkus:dev -pl quarkmind-sc2 -Dquarkus.profile=sc2 -Dstarcraft.sc2.game-cou
 - `RateAlgorithmAnalysisTest` — reverse-engineers SC2's rate computation algorithm from oracle replay PlayerStatsEvents; computes income from delta(totalMined), tests simple window vs EMA (11 alpha values) fit against reported mineralsCollectionRate/vespeneCollectionRate; includes per-interval trace for first 3 replays
 - `GasWorkerCycleDiagnosticTest` — instruments gas workers through full harvest cycles measuring actual loop counts per phase (walk-to-geyser, wait-at-entry, inside-geyser, walk-to-TH, deposit); runs 3w single-geyser and 6w dual-geyser configurations; includes per-tick state trace
 - `MineralPatchGeometryDiagnosticTest` — per-replay mineral patch center-to-center and edge-to-edge distances vs EM seeded constants (6.7/7.5); runs standalone baseline with replay vs seeded positions; reports per-checkpoint mineral rate MAPE delta; writes docs/benchmarks/mineral-patch-geometry.md
+- `WorkerStartupTimingDiagnosticTest` — per-worker first mineral delivery timing: controlled 12w calibration (stagger vs no-stagger paths) compared against SC2 baseline; standalone oracle first-10-tick EM vs GT mineral balance; uses WorkerPhaseListener to track delivery loops
 - Run with: `mvn test -pl quarkmind-sc2 -Pdiagnostic`
 
 **Never use `@QuarkusTest` for tests that can be plain JUnit** — boot cost is significant.
