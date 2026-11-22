@@ -1542,7 +1542,7 @@ class EmulatedGameTest {
     void buildingCollisionBlocksFriendlyUnitFromEnteringEnemyBuilding() {
         // Enemy Hatchery at (20, 20) — well away from terrain wall
         final var hatcheryPos = new Point2d(20f, 20f);
-        int[] fp = SC2Data.buildingFootprint(BuildingType.HATCHERY);
+        SC2Data.Footprint fp = SC2Data.buildingFootprint(BuildingType.HATCHERY);
         game.enemy.addBuilding(new Building("test-hatchery", BuildingType.HATCHERY,
             hatcheryPos, 1500, 1500, true));
         // Friendly Stalker starts 4 tiles south, heading north through the Hatchery
@@ -1552,22 +1552,18 @@ class EmulatedGameTest {
 
         Unit unit = game.snapshot().myUnits().stream()
             .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow();
-        float hw = fp[0] / 2.0f;
-        float hh = fp[1] / 2.0f;
+        float hw = fp.halfWidth();
+        float hh = fp.halfHeight();
         assertThat(unit.position().y())
             .as("Stalker must stop outside Hatchery footprint (y <= %.1f)", hatcheryPos.y() - hh)
             .isLessThanOrEqualTo(hatcheryPos.y() - hh);
     }
 
-    /**
-     * Enemy units must also be blocked by friendly buildings.
-     * An enemy Zergling heading into the friendly Nexus at (8,8) must stop outside its footprint.
-     */
     @Test
     void buildingCollisionBlocksEnemyUnitFromEnteringFriendlyBuilding() {
-        game.reset(); // Nexus is at (8,8) in friendly.buildings after reset
+        game.reset();
         final var nexusPos = new Point2d(8f, 8f);
-        int[] fp = SC2Data.buildingFootprint(BuildingType.NEXUS);
+        SC2Data.Footprint fp = SC2Data.buildingFootprint(BuildingType.NEXUS);
         // Enemy Zergling starts 5 tiles north of Nexus, heading straight at it.
         // HP=1500 so it survives probe auto-attacks (probes enter range as it crosses y≈9).
         String tag = "test-enemy-bldg-coll";
@@ -1578,7 +1574,7 @@ class EmulatedGameTest {
 
         Unit unit = game.snapshot().enemyUnits().stream()
             .filter(u -> u.tag().equals(tag)).findFirst().orElseThrow();
-        float hh = fp[1] / 2.0f;
+        float hh = fp.halfHeight();
         assertThat(unit.position().y())
             .as("Zergling must stop outside Nexus footprint (y >= %.1f)", nexusPos.y() + hh)
             .isGreaterThanOrEqualTo(nexusPos.y() + hh);

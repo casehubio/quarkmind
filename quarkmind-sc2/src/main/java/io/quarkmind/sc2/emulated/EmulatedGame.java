@@ -280,19 +280,19 @@ public class EmulatedGame {
 
     void registerBuildingObstacle(Building bldg) {
         if (terrainGrid == null) {return;}
-        int[] fp = SC2Data.buildingFootprint(bldg.type());
+        SC2Data.Footprint fp = SC2Data.buildingFootprint(bldg.type());
         terrainGrid.markRectangularObstacle(
                 (float) bldg.position().x(), (float) bldg.position().y(),
-                fp[0] / 2.0f, fp[1] / 2.0f);
+                fp.halfWidth(), fp.halfHeight());
         movementStrategy.invalidateAllPaths();
     }
 
     private void clearBuildingObstacle(Building bldg) {
         if (terrainGrid == null) {return;}
-        int[] fp = SC2Data.buildingFootprint(bldg.type());
+        SC2Data.Footprint fp = SC2Data.buildingFootprint(bldg.type());
         terrainGrid.clearRectangularObstacle(
                 (float) bldg.position().x(), (float) bldg.position().y(),
-                fp[0] / 2.0f, fp[1] / 2.0f);
+                fp.halfWidth(), fp.halfHeight());
         movementStrategy.invalidateAllPaths();
     }
 
@@ -1450,9 +1450,9 @@ public class EmulatedGame {
 
     // Tile-inclusive: boundary points are inside (SC2 tiles are occupied on all edges).
     private static boolean insideFootprint(Point2d p, Building bldg) {
-        int[] fp = SC2Data.buildingFootprint(bldg.type());
-        float hw = fp[0] / 2.0f;
-        float hh = fp[1] / 2.0f;
+        SC2Data.Footprint fp = SC2Data.buildingFootprint(bldg.type());
+        float hw = fp.halfWidth();
+        float hh = fp.halfHeight();
         float cx = (float) bldg.position().x();
         float cy = (float) bldg.position().y();
         return p.x() >= cx - hw && p.x() <= cx + hw && p.y() >= cy - hh && p.y() <= cy + hh;

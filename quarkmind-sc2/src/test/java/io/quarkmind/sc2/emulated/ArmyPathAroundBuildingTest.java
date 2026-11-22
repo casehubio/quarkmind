@@ -46,9 +46,9 @@ class ArmyPathAroundBuildingTest {
         String tag = game.spawnFriendlyForTesting(UnitType.ZEALOT, new Point2d(5, 8));
         game.friendlyPhysics.unitTargets.put(tag, new Point2d(16, 8));
 
-        int[] fp = SC2Data.buildingFootprint(BuildingType.NEXUS);
-        float hw = fp[0] / 2.0f;
-        float hh = fp[1] / 2.0f;
+        SC2Data.Footprint fp = SC2Data.buildingFootprint(BuildingType.NEXUS);
+        float hw = fp.halfWidth();
+        float hh = fp.halfHeight();
 
         for (int i = 0; i < 40; i++) {
             game.tick();
@@ -79,8 +79,8 @@ class ArmyPathAroundBuildingTest {
         game.friendly.addBuilding(new Building("test-inc", BuildingType.GATEWAY,
             new Point2d(10, 8), 100, 1000, false));
         // Register obstacle manually (would be done by handleBuild in real code)
-        int[] fp = SC2Data.buildingFootprint(BuildingType.GATEWAY);
-        grid.markRectangularObstacle(10, 8, fp[0] / 2.0f, fp[1] / 2.0f);
+        SC2Data.Footprint fp = SC2Data.buildingFootprint(BuildingType.GATEWAY);
+        grid.markRectangularObstacle(10, 8, fp.halfWidth(), fp.halfHeight());
 
         assertFalse(grid.isWalkable(10, 8), "Incomplete building should block pathfinding");
 
@@ -93,8 +93,8 @@ class ArmyPathAroundBuildingTest {
             Unit u = game.snapshot().myUnits().stream()
                 .filter(unit -> unit.tag().equals(tag))
                 .findFirst().orElseThrow();
-            boolean inside = u.position().x() >= 10 - fp[0] / 2.0f && u.position().x() <= 10 + fp[0] / 2.0f
-                          && u.position().y() >= 8 - fp[1] / 2.0f && u.position().y() <= 8 + fp[1] / 2.0f;
+            boolean inside = u.position().x() >= 10 - fp.halfWidth() && u.position().x() <= 10 + fp.halfWidth()
+                          && u.position().y() >= 8 - fp.halfHeight() && u.position().y() <= 8 + fp.halfHeight();
             assertFalse(inside, "Unit entered incomplete building footprint at tick " + i);
         }
     }

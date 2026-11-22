@@ -1321,18 +1321,18 @@ public final class SC2Data {
     }
 
 
-    private static final int[] FP_5x5 = {5, 5};
-    private static final int[] FP_4x4 = {4, 4};
-    private static final int[] FP_3x3 = {3, 3};
-    private static final int[] FP_2x2 = {2, 2};
-    private static final int[] FP_1x1 = {1, 1};
+    public record Footprint(int width, int height) {
+        public float halfWidth()  { return width / 2.0f; }
+        public float halfHeight() { return height / 2.0f; }
+    }
 
-    /**
-     * Rectangular tile footprint {width, height} from the SC2 data editor.
-     * Buildings occupy width×height tiles centered on the building position.
-     * Returns shared array — do not mutate.
-     */
-    public static int[] buildingFootprint(BuildingType type) {
+    private static final Footprint FP_5x5 = new Footprint(5, 5);
+    private static final Footprint FP_4x4 = new Footprint(4, 4);
+    private static final Footprint FP_3x3 = new Footprint(3, 3);
+    private static final Footprint FP_2x2 = new Footprint(2, 2);
+    private static final Footprint FP_1x1 = new Footprint(1, 1);
+
+    public static Footprint buildingFootprint(BuildingType type) {
         return switch (type) {
             case NEXUS, HATCHERY, LAIR, HIVE,
                  COMMAND_CENTER, ORBITAL_COMMAND, PLANETARY_FORTRESS -> FP_5x5;
@@ -1354,15 +1354,10 @@ public final class SC2Data {
         };
     }
 
-    /**
-     * Circular collision radius (in tiles) used by the emulated physics engine.
-     *
-     * @deprecated Use {@link #buildingFootprint(BuildingType)} for rectangular tile footprints.
-     */
     @Deprecated
     public static float buildingRadius(BuildingType type) {
-        int[] fp = buildingFootprint(type);
-        return Math.max(fp[0], fp[1]) / 2.0f;
+        Footprint fp = buildingFootprint(type);
+        return Math.max(fp.width(), fp.height()) / 2.0f;
     }
 
     /**
