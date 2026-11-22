@@ -11,7 +11,6 @@ public record WorkerPhysicsConfig(
         float patchDistance,
         double initialWorkerStaggerLoops,
         double collisionSpeedFactor,
-        double approachDockingLoops,
         double rerouteThresholdLoops,
         float lowSaturationDodgeScale,
         double approachAnimationLoops,
@@ -30,7 +29,6 @@ public record WorkerPhysicsConfig(
     public static final float  DEFAULT_PATCH_DISTANCE                    = 7.0f;
     public static final double DEFAULT_INITIAL_WORKER_STAGGER            = 6.1;
     public static final double DEFAULT_COLLISION_SPEED_FACTOR            = 1.0;
-    public static final double DEFAULT_APPROACH_DOCKING_LOOPS            = 24.5;
     public static final double DEFAULT_REROUTE_THRESHOLD_LOOPS           = 22.0;
     public static final float  DEFAULT_LOW_SATURATION_DODGE_SCALE        = 0.25f;
     public static final double DEFAULT_APPROACH_ANIMATION_LOOPS          = 20.0;
@@ -45,7 +43,7 @@ public record WorkerPhysicsConfig(
              depositDurationLoops,
              acceleration, deceleration, patchDockingOverheadLoops, DEFAULT_PATCH_DISTANCE,
              DEFAULT_INITIAL_WORKER_STAGGER, DEFAULT_COLLISION_SPEED_FACTOR,
-             DEFAULT_APPROACH_DOCKING_LOOPS, DEFAULT_REROUTE_THRESHOLD_LOOPS,
+             DEFAULT_REROUTE_THRESHOLD_LOOPS,
              DEFAULT_LOW_SATURATION_DODGE_SCALE,
              DEFAULT_APPROACH_ANIMATION_LOOPS,
              DEFAULT_GAS_DEPOSIT_LOCK_LOOPS,
@@ -61,7 +59,7 @@ public record WorkerPhysicsConfig(
              depositDurationLoops,
              acceleration, deceleration, patchDockingOverheadLoops, patchDistance,
              DEFAULT_INITIAL_WORKER_STAGGER, DEFAULT_COLLISION_SPEED_FACTOR,
-             DEFAULT_APPROACH_DOCKING_LOOPS, DEFAULT_REROUTE_THRESHOLD_LOOPS,
+             DEFAULT_REROUTE_THRESHOLD_LOOPS,
              DEFAULT_LOW_SATURATION_DODGE_SCALE,
              DEFAULT_APPROACH_ANIMATION_LOOPS,
              DEFAULT_GAS_DEPOSIT_LOCK_LOOPS,
@@ -81,7 +79,6 @@ public record WorkerPhysicsConfig(
                 DEFAULT_PATCH_DISTANCE,
                 DEFAULT_INITIAL_WORKER_STAGGER,
                 DEFAULT_COLLISION_SPEED_FACTOR,
-                DEFAULT_APPROACH_DOCKING_LOOPS,
                 DEFAULT_REROUTE_THRESHOLD_LOOPS,
                 DEFAULT_LOW_SATURATION_DODGE_SCALE,
                 DEFAULT_APPROACH_ANIMATION_LOOPS,

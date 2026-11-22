@@ -47,7 +47,6 @@ class SimulatedWorker {
     static double PATCH_DOCKING_OVERHEAD_LOOPS = WorkerPhysicsConfig.DEFAULT_PATCH_DOCKING_OVERHEAD;
     static double INITIAL_WORKER_STAGGER_LOOPS = WorkerPhysicsConfig.DEFAULT_INITIAL_WORKER_STAGGER;
     static double COLLISION_SPEED_FACTOR       = WorkerPhysicsConfig.DEFAULT_COLLISION_SPEED_FACTOR;
-    static double APPROACH_DOCKING_LOOPS        = WorkerPhysicsConfig.DEFAULT_APPROACH_DOCKING_LOOPS;
     static double APPROACH_ANIMATION_LOOPS      = WorkerPhysicsConfig.DEFAULT_APPROACH_ANIMATION_LOOPS;
 
     static double REROUTE_THRESHOLD_LOOPS       = WorkerPhysicsConfig.DEFAULT_REROUTE_THRESHOLD_LOOPS;
@@ -67,7 +66,6 @@ class SimulatedWorker {
         PATCH_DOCKING_OVERHEAD_LOOPS                       = config.patchDockingOverheadLoops();
         INITIAL_WORKER_STAGGER_LOOPS                       = config.initialWorkerStaggerLoops();
         COLLISION_SPEED_FACTOR                             = config.collisionSpeedFactor();
-        APPROACH_DOCKING_LOOPS                             = config.approachDockingLoops();
         APPROACH_ANIMATION_LOOPS                           = config.approachAnimationLoops();
         REROUTE_THRESHOLD_LOOPS                            = config.rerouteThresholdLoops();
         MINERAL_PATCH_OBSTACLE_RADIUS                      = config.mineralPatchObstacleRadius();

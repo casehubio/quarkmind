@@ -47,10 +47,6 @@ class WorkerPhysicsConfigProducer {
                     defaultValue = "1.0")
     double collisionSpeedFactor;
 
-    @ConfigProperty(name = "starcraft.worker.approach-docking-loops",
-                    defaultValue = "24.5")
-    double approachDockingLoops;
-
     @ConfigProperty(name = "starcraft.worker.reroute-threshold-loops",
                     defaultValue = "22.0")
     double rerouteThresholdLoops;
@@ -82,7 +78,7 @@ class WorkerPhysicsConfigProducer {
                 miningDurationLoops, gasHarvestDurationLoops, gasApproachDockingLoops,
                 depositDurationLoops,
                 acceleration, deceleration, patchDockingOverheadLoops, (float) patchDistance,
-                initialWorkerStaggerLoops, collisionSpeedFactor, approachDockingLoops,
+                initialWorkerStaggerLoops, collisionSpeedFactor,
                 rerouteThresholdLoops, (float) lowSaturationDodgeScale,
                 approachAnimationLoops,
                 gasDepositLockLoops, gasDepositCongestionPerWorker,

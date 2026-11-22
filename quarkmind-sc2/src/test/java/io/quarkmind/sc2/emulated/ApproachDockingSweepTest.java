@@ -50,7 +50,7 @@ class ApproachDockingSweepTest {
         for (double approach = 11.5; approach <= 28.0; approach += 0.5) {
             for (double deposit = 7.0; deposit <= 14.0; deposit += 1.0) {
                 for (double lockout = 0; lockout <= 22.0; lockout += 1.0) {
-                    SimulatedWorker.APPROACH_DOCKING_LOOPS       = approach;
+                    SimulatedWorker.APPROACH_ANIMATION_LOOPS       = approach;
                     SimulatedWorker.DEPOSIT_DURATION_LOOPS       = deposit;
                     SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS = lockout;
 
@@ -80,7 +80,7 @@ class ApproachDockingSweepTest {
 
         System.out.printf("%nBest 8w (with 12w/16w within ±3%%): approach=%.1f deposit=%.1f lockout=%.1f%n",
                           bestApproach, bestDeposit, bestLockout);
-        SimulatedWorker.APPROACH_DOCKING_LOOPS       = bestApproach;
+        SimulatedWorker.APPROACH_ANIMATION_LOOPS       = bestApproach;
         SimulatedWorker.DEPOSIT_DURATION_LOOPS       = bestDeposit;
         SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS = bestLockout;
         int em8  = runPlaybook("playbooks/cal-mineral-baseline-8w.yaml", Race.PROTOSS, sc2_8w);
@@ -122,7 +122,7 @@ class ApproachDockingSweepTest {
         System.out.println("-".repeat(95));
 
         for (double[] c : configs) {
-            SimulatedWorker.APPROACH_DOCKING_LOOPS       = c[0];
+            SimulatedWorker.APPROACH_ANIMATION_LOOPS       = c[0];
             SimulatedWorker.DEPOSIT_DURATION_LOOPS       = c[1];
             SimulatedWorker.COLLISION_SPEED_FACTOR       = c[2];
             SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS = 22.0;
@@ -163,7 +163,7 @@ class ApproachDockingSweepTest {
         for (double approach = 20.0; approach <= 26.0; approach += 0.5) {
             for (double collision = 0.975; collision <= 1.001; collision += 0.005) {
                 for (double deposit = 9.0; deposit <= 12.0; deposit += 1.0) {
-                SimulatedWorker.APPROACH_DOCKING_LOOPS       = approach;
+                SimulatedWorker.APPROACH_ANIMATION_LOOPS       = approach;
                 SimulatedWorker.DEPOSIT_DURATION_LOOPS       = deposit;
                 SimulatedWorker.COLLISION_SPEED_FACTOR       = collision;
                 SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS = 22.0;
@@ -195,7 +195,7 @@ class ApproachDockingSweepTest {
 
         System.out.printf("%nBest: approach=%.1f deposit=%.1f collision=%.3f (combined=%.1f%%)%n",
                           bestA, bestD, bestC, bestCombined);
-        SimulatedWorker.APPROACH_DOCKING_LOOPS = bestA;
+        SimulatedWorker.APPROACH_ANIMATION_LOOPS = bestA;
         SimulatedWorker.DEPOSIT_DURATION_LOOPS = bestD;
         SimulatedWorker.COLLISION_SPEED_FACTOR = bestC;
         int em8  = runPlaybook("playbooks/cal-mineral-baseline-8w.yaml", Race.PROTOSS, sc2_8w);
@@ -264,7 +264,7 @@ class ApproachDockingSweepTest {
     void traceTargetConstants8w() throws IOException {
         CalibrationBaseline sc2_8w = loadBaseline("calibration/cal-mineral-baseline-8w.json");
 
-        SimulatedWorker.APPROACH_DOCKING_LOOPS = 24.0;
+        SimulatedWorker.APPROACH_ANIMATION_LOOPS = 24.0;
         SimulatedWorker.DEPOSIT_DURATION_LOOPS = 10.0;
         SimulatedWorker.COLLISION_SPEED_FACTOR = 0.99;
 
@@ -289,7 +289,7 @@ class ApproachDockingSweepTest {
         List<SC2PlaybookRunner.PlaybookStep> steps = SC2PlaybookRunner.parseSteps(root);
         boolean[]                            fired = new boolean[steps.size()];
 
-        System.out.printf("APPROACH_DOCKING_LOOPS static: %.1f%n", SimulatedWorker.APPROACH_DOCKING_LOOPS);
+        System.out.printf("APPROACH_ANIMATION_LOOPS static: %.1f%n", SimulatedWorker.APPROACH_ANIMATION_LOOPS);
         System.out.printf("DEPOSIT_DURATION_LOOPS: %.1f%n", SimulatedWorker.DEPOSIT_DURATION_LOOPS);
         System.out.printf("COLLISION_SPEED_FACTOR: %.3f%n", SimulatedWorker.COLLISION_SPEED_FACTOR);
         for (SimulatedWorker w : game.workerSimulation().allWorkers()) {

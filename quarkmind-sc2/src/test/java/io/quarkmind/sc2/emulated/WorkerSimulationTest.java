@@ -78,10 +78,8 @@ class WorkerSimulationTest {
     @org.junit.jupiter.api.Tag("diagnostic")
     @Test
     void singleWorkerCycleTimingDiagnostic() {
-        double origApproach = SimulatedWorker.APPROACH_DOCKING_LOOPS;
         double origDeposit  = SimulatedWorker.DEPOSIT_DURATION_LOOPS;
         try {
-            SimulatedWorker.APPROACH_DOCKING_LOOPS = 24.0;
             SimulatedWorker.DEPOSIT_DURATION_LOOPS = 10.0;
 
             sim = new WorkerSimulation();
@@ -95,7 +93,7 @@ class WorkerSimulationTest {
                               w.assignedPatch.approachDockingLoops, w.assignedPatch.position);
             double e2e = w.assignedPatch.position.distanceTo(BASE_POS) - WorkerSimulation.TOWN_HALL_RADIUS - WorkerSimulation.MINERAL_PATCH_RADIUS;
             System.out.printf("Edge-to-edge distance: %.3f%n", e2e);
-            System.out.printf("APPROACH_DOCKING_LOOPS: %.1f%n", SimulatedWorker.APPROACH_DOCKING_LOOPS);
+            System.out.printf("APPROACH_ANIMATION_LOOPS: %.1f%n", SimulatedWorker.APPROACH_ANIMATION_LOOPS);
             System.out.printf("DEPOSIT_DURATION_LOOPS: %.1f%n", SimulatedWorker.DEPOSIT_DURATION_LOOPS);
             System.out.printf("MINING_DURATION_LOOPS: %.1f%n", SimulatedWorker.MINING_DURATION_LOOPS);
 
@@ -122,7 +120,6 @@ class WorkerSimulationTest {
             System.out.printf("Actual cycle: %.1f loops (%.2f ticks)%n", actualCycle, actualCycle / 22.0);
             System.out.printf("Theoretical: 2×walk + 24 + 22 + 10 = ?  (walk for e2e=%.3f)%n", e2e);
         } finally {
-            SimulatedWorker.APPROACH_DOCKING_LOOPS = origApproach;
             SimulatedWorker.DEPOSIT_DURATION_LOOPS = origDeposit;
         }
     }
@@ -130,10 +127,8 @@ class WorkerSimulationTest {
     @org.junit.jupiter.api.Tag("diagnostic")
     @Test
     void singleWorkerPerLoopTrace() {
-        double origApproach = SimulatedWorker.APPROACH_DOCKING_LOOPS;
         double origDeposit  = SimulatedWorker.DEPOSIT_DURATION_LOOPS;
         try {
-            SimulatedWorker.APPROACH_DOCKING_LOOPS = 24.0;
             SimulatedWorker.DEPOSIT_DURATION_LOOPS = 10.0;
 
             sim = new WorkerSimulation();
@@ -171,7 +166,6 @@ class WorkerSimulationTest {
                 }
             }
         } finally {
-            SimulatedWorker.APPROACH_DOCKING_LOOPS = origApproach;
             SimulatedWorker.DEPOSIT_DURATION_LOOPS = origDeposit;
         }
     }

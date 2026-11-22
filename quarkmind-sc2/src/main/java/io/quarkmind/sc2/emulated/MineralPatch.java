@@ -22,7 +22,7 @@ class MineralPatch {
     final boolean rich;
     double lockEndLoop;
     double distanceToBase;
-    double approachDockingLoops = SimulatedWorker.APPROACH_DOCKING_LOOPS;
+    double approachDockingLoops = SimulatedWorker.APPROACH_ANIMATION_LOOPS;
 
     MineralPatch(Point2d position, int baseIndex, double initialMinerals, boolean rich) {
         this.position          = position;

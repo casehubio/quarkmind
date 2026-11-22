@@ -524,9 +524,9 @@ The previous lumped mining constant absorbed three distinct phases. These are no
 |-----------|-------|--------|--------|
 | Mining animation | 22 | SC2 per-worker observation: position stable 1 tick | **Modeled** — `mining-duration-loops=22` |
 | Deposit at town hall | 12 | 8w SC2 cadence: return half-cycle gap (#661) | **Modeled** — `deposit-duration-loops=12` |
-| Approach/docking at patch | 24.5 | 8w SC2 cadence: outbound half-cycle gap (#661) | **Modeled** — `approach-docking-loops=24.5` |
+| Approach animation at patch | 20.0 | Base animation overhead (#679, #707) | **Modeled** — `approach-animation-loops=20.0` |
 | Transition costs | 2 | 1 loop per phase transition × 2 (#661) | **Modeled** — `loopConsumed=true` |
-| **Total per-cycle overhead** | **60.5** | | |
+| **Total per-cycle overhead** | **56.0** | | |
 
 Post-#727 (density-dependent path deviation): 4w +3.6%, 6w +2.7%, 8w −0.2%, 10w +1.8%, 12w −0.3%. Historical: 8w was +4.3% post-#661, reduced to +0.4% by #714 bonus, then −0.2% by #727 inverse-density scaling.
 
@@ -775,8 +775,7 @@ starcraft.worker.mining-duration-loops=22.0        # SC2 observed — restored i
 starcraft.worker.gas-harvest-duration-loops=31.7   # Liquipedia 1.415s; SC2 profiler confirms 32 loops (#665)
 starcraft.worker.gas-approach-docking-loops=11.5   # gas geyser entry overhead — calibrated #689
 starcraft.worker.deposit-duration-loops=12.0       # 8w SC2 cadence — calibrated #661
-starcraft.worker.approach-docking-loops=24.5       # legacy base value — sum of animation + mean path delay (#679)
-starcraft.worker.approach-animation-loops=20.0     # approach animation only — decomposed from approach docking (#679)
+starcraft.worker.approach-animation-loops=20.0     # approach animation overhead (#679, #707)
 starcraft.worker.mineral-patch-obstacle-radius=0.3  # A* pathing grid obstacle radius for mineral patches; calibrated #707
 starcraft.worker.collision-speed-factor=1.0        # disabled — transition loop cost replaces (#661)
 starcraft.worker.acceleration=3.5                  # SC2Mapster × 1.4 — restored from 10.0 (#634)
