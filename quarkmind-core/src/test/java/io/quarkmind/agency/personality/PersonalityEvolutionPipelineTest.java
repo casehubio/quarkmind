@@ -92,7 +92,7 @@ class PersonalityEvolutionPipelineTest {
         String lastDecayAgentId;
 
         @Override public void recordActivation(String agentId, String tenancyId, String functionTerm) {}
-        @Override public Map<String, Integer> activationCounts(String agentId, String tenancyId) { return Map.of(); }
+        @Override public Map<String, Double> activationWeights(String agentId, String tenancyId) { return Map.of(); }
         @Override public void decay(String agentId, String tenancyId, double decayFactor) {
             decayCalled = true;
             lastDecayFactor = decayFactor;
