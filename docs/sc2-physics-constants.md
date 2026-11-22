@@ -661,7 +661,7 @@ Workers use A* pathfinding around mineral patches registered as circular obstacl
 
 **Army building obstacles (#731):** Buildings are registered as rectangular obstacles on `TerrainGrid` via `markRectangularObstacle()` from the moment construction starts (incomplete buildings block pathing, matching SC2). `AStarPathfinder` routes army units around buildings. `enforceWall()` remains as a safety net for edge cases. All army paths are invalidated when a building is placed or destroyed — `MovementStrategy.invalidateAllPaths()` clears all cached waypoints. Building obstacles are cleared on `reset()` via `clearAllObstacles()`.
 
-**Resource obstacles (#732):** Vespene geysers are registered as 3×3 rectangular obstacles (half-extents 1.5) on `TerrainGrid` via `setGeyserResources()`. Mineral patches are already registered as circular obstacles (radius 0.3) by `WorkerSimulation` on the shared grid — army A* routes around both. Geyser obstacles are cleared and re-registered when `setGeyserResources()` is called, and cleared on `reset()` via `clearAllObstacles()`.
+**Resource obstacles (#732, #742):** Vespene geysers are registered as 3×3 rectangular obstacles (half-extents 1.5) on `TerrainGrid` via `setGeyserResources()`. The 3×3 footprint matches gas buildings (Assimilator/Refinery/Extractor) confirmed as 3×3 in the SC2 data editor (#738). Mineral patches are already registered as circular obstacles (radius 0.3) by `WorkerSimulation` on the shared grid — army A* routes around both. Geyser obstacles are cleared and re-registered when `setGeyserResources()` is called, and cleared on `reset()` via `clearAllObstacles()`.
 
 ### Larva spawn calibration
 
