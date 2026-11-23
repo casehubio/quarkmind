@@ -1356,12 +1356,6 @@ public final class SC2Data {
         };
     }
 
-    @Deprecated
-    public static float buildingRadius(BuildingType type) {
-        Footprint fp = buildingFootprint(type);
-        return Math.max(fp.width(), fp.height()) / 2.0f;
-    }
-
     /**
      * Tech tier per building type (1-4). Empty for non-tech buildings (bases, supply, defence, gas).
      */
