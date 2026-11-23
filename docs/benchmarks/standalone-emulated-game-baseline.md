@@ -1,4 +1,4 @@
-# Standalone EmulatedGame Accuracy Baseline — 2026-11-22
+# Standalone EmulatedGame Accuracy Baseline — 2026-11-23
 
 **Dataset:** Oracle (118 replays, v4.9.3)
 **Processed:** 118 replays, 236 player runs
@@ -51,7 +51,7 @@ Accuracy: 100.0% (0/0)
 | foodUsed | 3338 | 3473 | 137 | 4.1% |
 | workersActiveCount | 3162 | 3267 | 105 | 3.3% |
 | mineralsUsedCurrentArmy | 0 | 0 | 0 | 0.0% |
-| mineralsUsedCurrentEconomy | 266325 | 264525 | 2350 | 0.9% |
+| mineralsUsedCurrentEconomy | 266325 | 58525 | 207800 | 78.0% |
 | mineralsUsedCurrentTechnology | 0 | 0 | 0 | 0.0% |
 | vespeneUsedCurrentArmy | 0 | 0 | 0 | 0.0% |
 | vespeneUsedCurrentEconomy | 0 | 0 | 0 | 0.0% |
@@ -137,7 +137,7 @@ Accuracy: 100.0% (4/4)
 | foodUsed | 5153 | 5259 | 128 | 2.5% |
 | workersActiveCount | 4000 | 4055 | 57 | 1.4% |
 | mineralsUsedCurrentArmy | 36875 | 34050 | 3375 | 9.2% |
-| mineralsUsedCurrentEconomy | 385100 | 360125 | 25475 | 6.6% |
+| mineralsUsedCurrentEconomy | 385100 | 172125 | 212975 | 55.3% |
 | mineralsUsedCurrentTechnology | 63850 | 56075 | 8175 | 12.8% |
 | vespeneUsedCurrentArmy | 4450 | 3975 | 475 | 10.7% |
 | vespeneUsedCurrentEconomy | 0 | 0 | 0 | 0.0% |
@@ -262,7 +262,7 @@ Accuracy: 100.0% (103/103)
 | foodUsed | 7488 | 7798 | 454 | 6.1% |
 | workersActiveCount | 4907 | 4995 | 152 | 3.1% |
 | mineralsUsedCurrentArmy | 108250 | 110500 | 8950 | 8.3% |
-| mineralsUsedCurrentEconomy | 478750 | 460025 | 24875 | 5.2% |
+| mineralsUsedCurrentEconomy | 478750 | 292025 | 186725 | 39.0% |
 | mineralsUsedCurrentTechnology | 119150 | 120975 | 13575 | 11.4% |
 | vespeneUsedCurrentArmy | 24475 | 25900 | 2875 | 11.7% |
 | vespeneUsedCurrentEconomy | 150 | 0 | 150 | 100.0% |
@@ -413,7 +413,7 @@ Accuracy: 100.0% (185/185)
 | foodUsed | 9017 | 9193 | 337 | 3.7% |
 | workersActiveCount | 5004 | 5096 | 124 | 2.5% |
 | mineralsUsedCurrentArmy | 175225 | 173400 | 7525 | 4.3% |
-| mineralsUsedCurrentEconomy | 506875 | 480925 | 27700 | 5.5% |
+| mineralsUsedCurrentEconomy | 506875 | 347075 | 159800 | 31.5% |
 | mineralsUsedCurrentTechnology | 148600 | 149150 | 22900 | 15.4% |
 | vespeneUsedCurrentArmy | 57400 | 57200 | 2250 | 3.9% |
 | vespeneUsedCurrentEconomy | 50 | 0 | 50 | 100.0% |
