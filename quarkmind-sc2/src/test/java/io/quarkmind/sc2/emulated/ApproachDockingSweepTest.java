@@ -47,7 +47,7 @@ class ApproachDockingSweepTest {
         double bestGap8     = Double.MAX_VALUE;
         double bestApproach = 0, bestDeposit = 0, bestLockout = 0;
 
-        for (double approach = 11.5; approach <= 28.0; approach += 0.5) {
+        for (double approach = 16.0; approach <= 26.0; approach += 0.5) {
             for (double deposit = 7.0; deposit <= 14.0; deposit += 1.0) {
                 for (double lockout = 0; lockout <= 22.0; lockout += 1.0) {
                     SimulatedWorker.APPROACH_ANIMATION_LOOPS       = approach;
@@ -110,8 +110,8 @@ class ApproachDockingSweepTest {
         int s6v = sc2_6wg.snapshots().get(sc2_6wg.snapshots().size() - 1).vespene();
 
         double[][] configs = {
-                {11.5, 7.0, 0.96},
-                {24.5, 12.0, 1.0},
+                {20.0, 10.0, 1.0},
+                {22.0, 11.0, 0.99},
                 {23.5, 12.0, 0.985},
                 {24.5, 12.0, 0.99},
                 {25.0, 12.0, 1.0},
@@ -216,47 +216,39 @@ class ApproachDockingSweepTest {
         int sc2_12 = sc2_12w.snapshots().get(sc2_12w.snapshots().size() - 1).minerals();
         int sc2_16 = sc2_16w.snapshots().get(sc2_16w.snapshots().size() - 1).minerals();
 
-        System.out.printf("%-6s %-6s %-6s | %7s %7s %7s | %5s%n",
-                          "Anim", "Scale", "Base", "8w%", "12w%", "16w%", "comb");
-        System.out.println("-".repeat(65));
+        System.out.printf("%-6s | %7s %7s %7s | %5s%n",
+                          "Anim", "8w%", "12w%", "16w%", "comb");
+        System.out.println("-".repeat(50));
 
         double bestCombined = Double.MAX_VALUE;
-        double bestAnim     = 0, bestScale = 0, bestBase = 0;
+        double bestAnim     = 0;
 
-        for (double animation = 18.0; animation <= 24.0; animation += 1.0) {
-            for (double scale = 0.1; scale <= 0.6; scale += 0.1) {
-                for (double base = 0.0; base <= 8.0; base += 0.5) {
-                    SimulatedWorker.APPROACH_ANIMATION_LOOPS = animation;
-                    // PATH_DEVIATION_SCALE and PATH_DEVIATION_BASE removed in #707
-                    // — path deviation now emerges from obstacle-aware A* paths
+        for (double animation = 16.0; animation <= 26.0; animation += 0.5) {
+            SimulatedWorker.APPROACH_ANIMATION_LOOPS = animation;
 
-                    int em8  = runPlaybook("playbooks/cal-mineral-baseline-8w.yaml", Race.PROTOSS, sc2_8w);
-                    int em12 = runPlaybook("playbooks/cal-mineral-baseline-12w.yaml", Race.PROTOSS, sc2_12w);
-                    int em16 = runPlaybook("playbooks/cal-mineral-saturated-16w.yaml", Race.PROTOSS, sc2_16w);
+            int em8  = runPlaybook("playbooks/cal-mineral-baseline-8w.yaml", Race.PROTOSS, sc2_8w);
+            int em12 = runPlaybook("playbooks/cal-mineral-baseline-12w.yaml", Race.PROTOSS, sc2_12w);
+            int em16 = runPlaybook("playbooks/cal-mineral-saturated-16w.yaml", Race.PROTOSS, sc2_16w);
 
-                    double g8       = (em8 - sc2_8) * 100.0 / sc2_8;
-                    double g12      = (em12 - sc2_12) * 100.0 / sc2_12;
-                    double g16      = (em16 - sc2_16) * 100.0 / sc2_16;
-                    double combined = Math.abs(g8) + Math.abs(g12) + Math.abs(g16);
+            double g8       = (em8 - sc2_8) * 100.0 / sc2_8;
+            double g12      = (em12 - sc2_12) * 100.0 / sc2_12;
+            double g16      = (em16 - sc2_16) * 100.0 / sc2_16;
+            double combined = Math.abs(g8) + Math.abs(g12) + Math.abs(g16);
 
-                    if (combined < bestCombined) {
-                        bestCombined = combined;
-                        bestAnim     = animation;
-                        bestScale    = scale;
-                        bestBase     = base;
-                    }
+            if (combined < bestCombined) {
+                bestCombined = combined;
+                bestAnim     = animation;
+            }
 
-                    boolean good = Math.abs(g8) <= 6 && Math.abs(g12) <= 3 && Math.abs(g16) <= 3;
-                    if (good) {
-                        System.out.printf("%-6.1f %-6.1f %-6.1f | %+6.1f%% %+6.1f%% %+6.1f%% | %5.1f%n",
-                                          animation, scale, base, g8, g12, g16, combined);
-                    }
-                }
+            boolean good = Math.abs(g8) <= 6 && Math.abs(g12) <= 3 && Math.abs(g16) <= 3;
+            if (good) {
+                System.out.printf("%-6.1f | %+6.1f%% %+6.1f%% %+6.1f%% | %5.1f%n",
+                                  animation, g8, g12, g16, combined);
             }
         }
 
-        System.out.printf("%nBest: animation=%.1f scale=%.1f base=%.1f (combined=%.1f%%)%n",
-                          bestAnim, bestScale, bestBase, bestCombined);
+        System.out.printf("%nBest: animation=%.1f (combined=%.1f%%)%n",
+                          bestAnim, bestCombined);
     }
 
 
