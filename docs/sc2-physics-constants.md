@@ -699,7 +699,7 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, 240
 | foodUsed | 3.7% | ~2-3% | Near floor |
 | workersActiveCount | 2.5% | ~2-3% | At floor |
 | mineralsUsedCurrentArmy | 4.3% | ~5-8% | At floor — snapshot-aligned spending (#579) |
-| mineralsUsedCurrentEconomy | 5.5% | ~0.5-1% | At floor |
+| mineralsUsedCurrentEconomy | 5.5% | ~0.5-1% | Above floor — building cost timing variance |
 | vespeneUsedCurrentArmy | 3.9% | ~5-8% | At floor |
 | vespeneUsedCurrentTechnology | 39.7% | ~10-15% | Structural — InProgress/Current timing boundary |
 
