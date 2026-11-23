@@ -2430,4 +2430,64 @@ class EmulatedGameTest {
     }
 
 
+// ---- Expansion mineral patch seeding (#756) ----
+
+
+// ---- Terrain grid auto-sizing for replay coordinates (#756) ----
+
+    @Test
+    void terrainGridAutoSizesWhenPatchesExceedGrid() {
+        EmulatedGame em = new EmulatedGame();
+        em.setPlayerRaceModel(new ProtossRaceModel());
+
+        // Patches at positions beyond the 64x64 emulated map
+        Point2d                            farBase = new Point2d(120, 80);
+        List<io.quarkmind.domain.Resource> patches = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            double angle = Math.PI * (0.2 + 0.6 * i / 7.0);
+            float  dist  = i < 4 ? 4.0f : 5.0f;
+            patches.add(new io.quarkmind.domain.Resource("patch-" + i,
+                                                         new Point2d(farBase.x() + (float) (dist * Math.cos(angle)),
+                                                                     farBase.y() + (float) (dist * Math.sin(angle))),
+                                                         i < 4 ? 1500 : 750));
+        }
+        em.setMineralPatchResources(patches);
+
+        TerrainGrid grid = em.getTerrainGrid();
+        assertThat(grid.width())
+                .as("Grid should auto-size to cover patch at x=120")
+                .isGreaterThan(120);
+        assertThat(grid.height())
+                .as("Grid should auto-size to cover patch at y=80")
+                .isGreaterThan(80);
+        assertThat(grid.isWalkable(120, 80))
+                .as("Far base position should be walkable on the resized grid")
+                .isTrue();
+    }
+
+// ---- BuildingBornIntent mineral deduction (#761) ----
+
+    @Test
+    void buildingBornIntentDeductsMineralsFromBalance() {
+        EmulatedGame em = new EmulatedGame();
+        em.setPlayerRaceModel(new ProtossRaceModel());
+        em.reset();
+
+        // Run a few ticks to accumulate minerals
+        for (int i = 0; i < 50; i++) {em.tick();}
+
+        int mineralsBefore = em.snapshot().minerals();
+        assertThat(mineralsBefore).as("Should have accumulated minerals").isGreaterThan(100);
+
+        int pylonCost = io.quarkmind.domain.SC2Data.mineralCost(BuildingType.PYLON);
+        assertThat(pylonCost).isEqualTo(100);
+
+        em.applyIntent(new TimedIntent(50 * 22L,
+                                       new BuildingBornIntent("pylon-1", BuildingType.PYLON, new Point2d(12, 12))));
+
+        int mineralsAfter = em.snapshot().minerals();
+        assertThat(mineralsAfter)
+                .as("BuildingBornIntent should deduct mineral cost (%d) from balance", pylonCost)
+                .isEqualTo(mineralsBefore - pylonCost);
+    }
 }

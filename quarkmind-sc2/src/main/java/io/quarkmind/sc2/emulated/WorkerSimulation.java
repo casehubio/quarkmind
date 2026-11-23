@@ -16,7 +16,15 @@ class WorkerSimulation {
     static final float TOWN_HALL_RADIUS     = 2.75f;
     static final float MINERAL_PATCH_RADIUS = 1.0f;
     static final float GAS_BUILDING_RADIUS  = 1.75f;
-    static       float LOW_SATURATION_DODGE_SCALE = 0.25f;
+    static       float LOW_SATURATION_DODGE_SCALE = WorkerPhysicsConfig.DEFAULT_LOW_SATURATION_DODGE_SCALE;
+    static       double WAIT_ABSORPTION_THRESHOLD = Double.MAX_VALUE;
+    static       float  HIGH_SATURATION_DODGE_SCALE = 1.0f;
+    static       boolean COLLISION_ENABLED = true;
+    static       double MIN_APPROACH_AFTER_WAIT = 0;
+    static       boolean TILE_CENTER_SNAP = true;
+    static       boolean APPROACH_WALK_EXTENSION = false;
+    static       boolean WAYPOINT_SPEED_RESET = true;
+    static       double  WAYPOINT_SPEED_FACTOR = 1.0;
 
 
     static Point2d edgePoint(Point2d center, Point2d toward, float radius) {
@@ -114,21 +122,101 @@ class WorkerSimulation {
     }
 
     private void setTargetWithPath(SimulatedWorker w, Point2d target) {
+        setTargetWithPath(w, target, false, false);
+    }
+
+    private void setTargetWithPath(SimulatedWorker w, Point2d target, boolean approachWalk) {
+        setTargetWithPath(w, target, false, approachWalk);
+    }
+
+    private void setTargetWithPath(SimulatedWorker w, Point2d target, boolean routeAroundMiners, boolean approachWalk) {
         if (pathfinder == null || terrainGrid == null) {
             w.targetPosition = target;
             w.clearWaypoints();
             return;
         }
-        java.util.List<Point2d> path = pathfinder.findPath(terrainGrid, w.position, target);
-        if (path.isEmpty()) {
-            w.targetPosition = target;
-            w.clearWaypoints();
-        } else {
-            java.util.List<Point2d> smoothed = io.quarkmind.domain.AStarPathfinder.smoothPath(path, terrainGrid);
-            w.setWaypoints(new java.util.ArrayDeque<>(smoothed));
+        List<int[]> tempObstacles = java.util.Collections.emptyList();
+        if (routeAroundMiners) {
+            tempObstacles = markActiveMinersAsObstacles(w);
+        }
+        try {
+            java.util.List<Point2d> path = pathfinder.findPath(terrainGrid, w.position, target);
+            if (path.isEmpty()) {
+                w.targetPosition = target;
+                w.clearWaypoints();
+            } else {
+                java.util.List<Point2d> smoothed = io.quarkmind.domain.AStarPathfinder.smoothPath(path, terrainGrid);
+                if (TILE_CENTER_SNAP) smoothed.set(smoothed.size() - 1, target);
+                if (approachWalk && APPROACH_WALK_EXTENSION) {
+                    insertApproachDetour(smoothed, w);
+                }
+                w.setWaypoints(new java.util.ArrayDeque<>(smoothed));
+            }
+        } finally {
+            for (int[] tile : tempObstacles) {
+                terrainGrid.clearObstacle(tile[0], tile[1]);
+            }
         }
     }
 
+    static float MINER_OBSTACLE_RADIUS = 0.3f;
+
+    private List<int[]> markActiveMinersAsObstacles(SimulatedWorker exclude) {
+        if (MINER_OBSTACLE_RADIUS <= 0) return java.util.Collections.emptyList();
+        List<int[]> marked = new java.util.ArrayList<>();
+        for (SimulatedWorker other : workers.values()) {
+            if (other == exclude) continue;
+            if (other.assignedGasSlot != null) continue;
+            if (other.task != WorkerTask.MINING_MINERALS) continue;
+            if (other.assignedPatch == null || !other.assignedPatch.miners.contains(other)) continue;
+            float cx = other.position.x(), cy = other.position.y();
+            int minX = Math.max(0, (int)(cx - MINER_OBSTACLE_RADIUS));
+            int maxX = Math.min(terrainGrid.width()-1, (int)(cx + MINER_OBSTACLE_RADIUS));
+            int minY = Math.max(0, (int)(cy - MINER_OBSTACLE_RADIUS));
+            int maxY = Math.min(terrainGrid.height()-1, (int)(cy + MINER_OBSTACLE_RADIUS));
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    float dx = x + 0.5f - cx, dy = y + 0.5f - cy;
+                    if (dx*dx + dy*dy <= MINER_OBSTACLE_RADIUS * MINER_OBSTACLE_RADIUS) {
+                        terrainGrid.markObstacle(x, y);
+                        marked.add(new int[]{x, y});
+                    }
+                }
+            }
+        }
+        return marked;
+    }
+
+
+    private void insertApproachDetour(java.util.List<Point2d> smoothed, SimulatedWorker w) {
+        if (w.baseIndex < 0 || w.baseIndex >= bases.size()) return;
+        int mineralWorkers = countMineralWorkersAtBase(w.baseIndex);
+        int patches = bases.get(w.baseIndex).patches().size();
+        if (patches == 0) return;
+        double wpatch = (double) mineralWorkers / patches;
+        double extension = approachWalkExtension(wpatch);
+        if (extension < 0.05) return;
+        Point2d start = w.position;
+        Point2d end = smoothed.get(smoothed.size() - 1);
+        float dx = end.x() - start.x();
+        float dy = end.y() - start.y();
+        float dist = (float) Math.sqrt(dx * dx + dy * dy);
+        if (dist < 0.5f) return;
+        float perpX = -dy / dist;
+        float perpY = dx / dist;
+        int sign = (w.tag.hashCode() & 1) == 0 ? 1 : -1;
+        float detourX = (start.x() + end.x()) / 2 + perpX * (float) extension * sign;
+        float detourY = (start.y() + end.y()) / 2 + perpY * (float) extension * sign;
+        smoothed.add(smoothed.size() - 1, new Point2d(detourX, detourY));
+    }
+
+    static double approachWalkExtension(double workersPerPatch) {
+        if (workersPerPatch <= 1.0) return 0;
+        if (workersPerPatch <= 1.5) return 0.06 * (workersPerPatch - 1.0) / 0.5;
+        if (workersPerPatch <= 2.0) return 0.06 + (0.56 - 0.06) * (workersPerPatch - 1.5) / 0.5;
+        if (workersPerPatch <= 3.0) return 0.56 + (1.51 - 0.56) * (workersPerPatch - 2.0) / 1.0;
+        return 1.51;
+    }
 
     private static final int OPTIMAL_WORKERS_PER_BASE = MineralPatch.PATCHES_PER_BASE * MineralPatch.MAX_MINERS;
 
@@ -168,9 +256,17 @@ class WorkerSimulation {
         rebalanceMineralWorkersAcrossBases();
     }
 
+
+    private boolean autoTransferEnabled = true;
+
+    void setAutoTransferEnabled(boolean enabled) {
+        this.autoTransferEnabled = enabled;
+    }
+
     static final int MAX_TRANSFER_PER_EXPANSION = 4;
 
     private void rebalanceMineralWorkersAcrossBases() {
+        if (!autoTransferEnabled) return;
         if (bases.size() < 2) return;
         int newBaseIdx = bases.size() - 1;
 
@@ -229,12 +325,49 @@ class WorkerSimulation {
     }
 
     void onWorkerProduced(String tag, Point2d position) {
-        int baseIdx = findNearestBaseIndex(position);
-        if (baseIdx < 0) {return;}
+        if (bases.isEmpty()) {return;}
+        int baseIdx;
+        if (bases.size() == 1) {
+            baseIdx = 0;
+        } else {
+            baseIdx = leastSaturatedBaseIndex();
+        }
         SimulatedWorker w = new SimulatedWorker(tag, position, baseIdx);
+        workers.put(tag, w);
+        if (baseIdx != findNearestBaseIndex(position)) {
+            w.task = WorkerTask.TRANSFERRING;
+            setTargetWithPath(w, bases.get(baseIdx).position());
+        } else {
+            assignToNearestPatch(w);
+        }
+    }
+
+    void onWorkerProducedAtBase(String tag, Point2d basePosition) {
+        if (bases.isEmpty()) {return;}
+        int baseIdx = findNearestBaseIndex(basePosition);
+        if (baseIdx < 0) {baseIdx = 0;}
+        SimulatedWorker w = new SimulatedWorker(tag, basePosition, baseIdx);
         workers.put(tag, w);
         assignToNearestPatch(w);
     }
+
+
+    private int leastSaturatedBaseIndex() {
+        int    bestIdx   = 0;
+        double bestRatio = Double.MAX_VALUE;
+        for (int i = 0; i < bases.size(); i++) {
+            int patches = bases.get(i).patches().size();
+            if (patches == 0) {continue;}
+            int    workers = countMineralWorkersAtBase(i);
+            double ratio   = (double) workers / patches;
+            if (ratio < bestRatio) {
+                bestRatio = ratio;
+                bestIdx   = i;
+            }
+        }
+        return bestIdx;
+    }
+
 
     private GasSlot findUndersaturatedGasSlot(int baseIdx) {
         for (GasSlot slot : gasSlots) {
@@ -477,7 +610,7 @@ class WorkerSimulation {
                         MineralPatch better = findBetterPatch(w, currentLoop);
                         if (better != null) {
                             w.assignedPatch = better;
-                            setTargetWithPath(w, miningTarget(better, w.baseIndex));
+                            setTargetWithPath(w, miningTarget(better, w.baseIndex), true);
                             w.waitingSinceLoop = 0;
                             continue;
                         }
@@ -488,11 +621,16 @@ class WorkerSimulation {
                     continue;
                 }
                 if (currentLoop >= w.phaseEndLoop) {
-                    double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
-                    w.cargo = w.assignedPatch.harvest(cargo);
+                    if (w.cargo <= 0) {
+                        double cargo = w.assignedPatch.rich ? SimulatedWorker.RICH_MINERAL_CARGO : SimulatedWorker.MINERAL_CARGO;
+                        w.cargo = w.assignedPatch.harvest(cargo);
+                        w.phaseEndLoop = currentLoop + SimulatedWorker.POST_PICKUP_LOOPS;
+                        loopConsumed = true;
+                        continue;
+                    }
                     w.assignedPatch.miners.remove(w);
                     w.assignedPatch.lockEndLoop = currentLoop + SimulatedWorker.PATCH_DOCKING_OVERHEAD_LOOPS;
-                    w.task                      = WorkerTask.RETURNING_MINERALS;
+                    w.task = WorkerTask.RETURNING_MINERALS;
                     setTargetWithPath(w, depositTarget(w));
                     notifyPhase(w.tag, WorkerPhase.MINING, WorkerPhase.WALKING_TO_BASE, currentLoop);
                     loopConsumed = true;
@@ -541,6 +679,7 @@ class WorkerSimulation {
     }
 
     private void resolveAllMineralCollisions() {
+        if (!COLLISION_ENABLED) return;
         List<SimulatedWorker> walking    = new ArrayList<>();
         List<SimulatedWorker> stationary = new ArrayList<>();
         for (SimulatedWorker w : workers.values()) {
@@ -575,6 +714,8 @@ class WorkerSimulation {
                 int bContention = b.assignedPatch != null ? countAssignedWorkers(b.assignedPatch, b) + 1 : 1;
                 if (aContention <= 2 && bContention <= 2) {
                     dodge *= LOW_SATURATION_DODGE_SCALE;
+                } else if (HIGH_SATURATION_DODGE_SCALE < 1.0f) {
+                    dodge *= HIGH_SATURATION_DODGE_SCALE;
                 }
 
                 if (a.tag.hashCode() < b.tag.hashCode()) {
@@ -605,6 +746,8 @@ class WorkerSimulation {
                 int sContention = s.assignedPatch != null ? countAssignedWorkers(s.assignedPatch, s) + 1 : 1;
                 if (wContention <= 2 && sContention <= 2) {
                     dodge *= LOW_SATURATION_DODGE_SCALE;
+                } else if (HIGH_SATURATION_DODGE_SCALE < 1.0f) {
+                    dodge *= HIGH_SATURATION_DODGE_SCALE;
                 }
 
                 if (w.tag.hashCode() < s.tag.hashCode()) {
@@ -630,12 +773,7 @@ class WorkerSimulation {
         if (!wasWaiting && currentLoop < w.assignedPatch.lockEndLoop) {return;}
         WorkerPhase from = wasWaiting ? WorkerPhase.WAITING_FOR_PATCH : WorkerPhase.WALKING_TO_PATCH;
         w.assignedPatch.miners.add(w);
-        double approachDocking = SimulatedWorker.APPROACH_ANIMATION_LOOPS;
-        if (wasWaiting) {
-            double waited = currentLoop - w.waitingSinceLoop;
-            approachDocking = Math.max(SimulatedWorker.APPROACH_ANIMATION_LOOPS, approachDocking - waited);
-        }
-        w.phaseEndLoop     = currentLoop + approachDocking + SimulatedWorker.MINING_DURATION_LOOPS;
+        w.phaseEndLoop     = currentLoop + SimulatedWorker.APPROACH_ANIMATION_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS;
         w.waitingSinceLoop = 0;
         notifyPhase(w.tag, from, WorkerPhase.MINING, currentLoop);
     }
@@ -750,7 +888,7 @@ class WorkerSimulation {
 
     private void returnToPatchOrReassign(SimulatedWorker w) {
         if (w.assignedPatch != null && !w.assignedPatch.isDepleted()) {
-            setTargetWithPath(w, miningTarget(w.assignedPatch, w.baseIndex));
+            setTargetWithPath(w, miningTarget(w.assignedPatch, w.baseIndex), true);
             w.task = WorkerTask.MINING_MINERALS;
             return;
         }
@@ -785,7 +923,7 @@ class WorkerSimulation {
         }
 
         w.assignedPatch = nearest;
-        setTargetWithPath(w, miningTarget(nearest, w.baseIndex));
+        setTargetWithPath(w, miningTarget(nearest, w.baseIndex), true);
         w.task = WorkerTask.MINING_MINERALS;
         if (w.isAtFinalTarget()) {
             if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
@@ -826,6 +964,50 @@ class WorkerSimulation {
         }
         return counts;
     }
+
+    Point2d mineralCentroidForBase(Point2d basePos) {
+        int bestIdx = -1;
+        double bestDist = Double.MAX_VALUE;
+        for (int i = 0; i < bases.size(); i++) {
+            double d = bases.get(i).position().distanceTo(basePos);
+            if (d < bestDist) { bestDist = d; bestIdx = i; }
+        }
+        if (bestIdx < 0) return null;
+        List<MineralPatch> patches = bases.get(bestIdx).patches();
+        if (patches.isEmpty()) return null;
+        float cx = 0, cy = 0;
+        for (MineralPatch p : patches) { cx += p.position.x(); cy += p.position.y(); }
+        return new Point2d(cx / patches.size(), cy / patches.size());
+    }
+
+    record WorkerStateCounts(int mining, int walking, int waiting, int returning, int depositing, int idle, int other) {
+        @Override
+        public String toString() {
+            return String.format("mine=%d walk=%d wait=%d ret=%d dep=%d idle=%d oth=%d", mining, walking, waiting, returning, depositing, idle, other);
+        }
+    }
+
+    WorkerStateCounts workerStateCounts() {
+        int mining = 0, walking = 0, waiting = 0, returning = 0, depositing = 0, idle = 0, other = 0;
+        for (SimulatedWorker w : workers.values()) {
+            if (w.assignedGasSlot != null) {continue;}
+            switch (w.task) {
+                case MINING_MINERALS -> {
+                    if (w.assignedPatch != null && w.assignedPatch.miners.contains(w)) {
+                        mining++;
+                    } else if (w.waitingSinceLoop > 0) {waiting++;} else if (!w.isAtTarget()) {walking++;} else {
+                        waiting++;
+                    }
+                }
+                case RETURNING_MINERALS -> returning++;
+                case DEPOSITING_MINERALS -> depositing++;
+                case IDLE -> idle++;
+                default -> other++;
+            }
+        }
+        return new WorkerStateCounts(mining, walking, waiting, returning, depositing, idle, other);
+    }
+
 
     void syncMineralWorkersFromGt(int[] mineralWorkersPerBase) {
         for (int baseIdx = 0; baseIdx < bases.size() && baseIdx < mineralWorkersPerBase.length; baseIdx++) {
@@ -1070,7 +1252,7 @@ class WorkerSimulation {
             return;
         }
         w.assignedPatch = nearest;
-        setTargetWithPath(w, miningTarget(nearest, w.baseIndex));
+        setTargetWithPath(w, miningTarget(nearest, w.baseIndex), true);
         w.task         = WorkerTask.MINING_MINERALS;
         w.phaseEndLoop = -1;
     }
@@ -1136,7 +1318,7 @@ class WorkerSimulation {
 
     private void returnMuleToPath(SimulatedWorker w) {
         if (w.assignedPatch != null && !w.assignedPatch.isDepleted()) {
-            setTargetWithPath(w, miningTarget(w.assignedPatch, w.baseIndex));
+            setTargetWithPath(w, miningTarget(w.assignedPatch, w.baseIndex), true);
             w.task         = WorkerTask.MINING_MINERALS;
             w.phaseEndLoop = -1;
         } else {
@@ -1176,6 +1358,14 @@ class WorkerSimulation {
     }
 
     List<BaseEntry> bases() {return java.util.Collections.unmodifiableList(bases);}
+
+    java.util.Set<String> buildingWorkerTags() {
+        java.util.Set<String> tags = new java.util.HashSet<>();
+        for (SimulatedWorker w : workers.values()) {
+            if (w.task == WorkerTask.BUILDING) tags.add(w.tag);
+        }
+        return tags;
+    }
 
 
     void setSeed(long seed) {

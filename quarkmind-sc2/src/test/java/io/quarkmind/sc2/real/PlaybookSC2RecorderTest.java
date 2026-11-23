@@ -66,6 +66,17 @@ class PlaybookSC2RecorderTest {
     }
 
     @Test
+    void recordCalMineralSaturated32w() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-mineral-saturated-32w.yaml", "calibration/cal-mineral-saturated-32w.json");
+    }
+
+    @Test
+    void recordCalMineralSaturated40w() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-mineral-saturated-40w.yaml", "calibration/cal-mineral-saturated-40w.json");
+    }
+
+
+    @Test
     void recordCalGasBaseline3w() throws Exception {
         recordPlaybook("PROTOSS", "playbooks/cal-gas-baseline-3w.yaml", "calibration/cal-gas-baseline-3w.json");
     }
@@ -263,6 +274,16 @@ class PlaybookSC2RecorderTest {
         recordPlaybook("PROTOSS", "playbooks/cal-mineral-baseline-10w.yaml", "calibration/cal-mineral-baseline-10w.json");
     }
 
+    @Test
+    void recordCalTwoBaseEconomy() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-two-base-economy.yaml", "calibration/cal-two-base-economy.json");
+    }
+
+    @Test
+    void recordCalSingleBaseProbes() throws Exception {
+        recordPlaybook("PROTOSS", "playbooks/cal-single-base-probes.yaml", "calibration/cal-single-base-probes.json");
+    }
+
 
     @Test
     void recordMultiRunCadence12w() throws Exception {
@@ -394,8 +415,8 @@ class PlaybookSC2RecorderTest {
 
         transport.runGameLoop(adapter);
 
-        while (!transport.isRunning()) { Thread.sleep(50); }
-        while (transport.isRunning()) { Thread.sleep(100); }
+        while (!transport.isRunning()) {Thread.sleep(50);}
+        while (transport.isRunning()) {Thread.sleep(100);}
 
         assertFalse(adapter.snapshots().isEmpty(), "Should have recorded snapshots");
         System.out.printf("[Recorder] %s: Captured %d snapshots%n", playbookResource, adapter.snapshots().size());
@@ -408,6 +429,20 @@ class PlaybookSC2RecorderTest {
         Files.writeString(output, json);
         System.out.printf("[Recorder] Baseline written to %s (%d bytes)%n",
                           output, json.length());
+
+        if (adapter.capturedTerrain() != null && adapter.capturedMapName() != null) {
+            Path terrainDir = Path.of("src/test/resources/terrain");
+            io.quarkmind.sc2.replay.MapTerrainCache.save(terrainDir, adapter.capturedMapName(), adapter.capturedTerrain());
+            System.out.printf("[Recorder] Terrain cached to terrain/%s.pathgrid%n", adapter.capturedMapName());
+        }
+        if (!adapter.capturedBuildingPositions().isEmpty()) {
+            String bldgJson = new com.fasterxml.jackson.databind.ObjectMapper()
+                .writerWithDefaultPrettyPrinter()
+                .writeValueAsString(adapter.capturedBuildingPositions());
+            Path bldgPath = Path.of("src/test/resources/" + outputPath.replace(".json", "-buildings.json"));
+            Files.writeString(bldgPath, bldgJson);
+            System.out.printf("[Recorder] Building positions written to %s%n", bldgPath);
+        }
     }
 
 }

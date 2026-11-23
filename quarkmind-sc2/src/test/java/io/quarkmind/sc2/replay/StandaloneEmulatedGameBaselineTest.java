@@ -25,8 +25,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,6 +88,8 @@ class StandaloneEmulatedGameBaselineTest {
             if (replay == null || replay.details == null) continue;
             if (replay.details.getPlayerList().length < 2) continue;
 
+            String mapName = ReplayValidationHarness.resolveMapName(replayPath);
+
             for (int playerId = 1; playerId <= 2; playerId++) {
                 try {
                     ReplaySimulatedGame groundTruth = new ReplaySimulatedGame(replayPath, playerId);
@@ -97,7 +97,7 @@ class StandaloneEmulatedGameBaselineTest {
                     Race race = TrackerIntentExtractor.resolvePlayerRace(replay, playerId);
 
                     List<DivergenceReport.TickSnapshot> snapshots = runStandalone(
-                        groundTruth, intents, TICK_LIMIT, race);
+                        groundTruth, intents, TICK_LIMIT, race, mapName);
 
                     for (int cp : CHECKPOINTS_MIN) {
                         int tickIndex = cp * TICKS_PER_MINUTE - 1;
@@ -243,36 +243,34 @@ class StandaloneEmulatedGameBaselineTest {
         System.out.printf("%n=== Standalone baseline written to %s ===%n", outputPath);
     }
 
-    /**
-     * Runs EmulatedGame with tracker-driven intents but NO economy GT syncs.
-     * Buildings are injected from GT (structural necessity).
-     */
+
     static List<DivergenceReport.TickSnapshot> runStandalone(
             ReplaySimulatedGame groundTruth, List<TimedIntent> intents,
             int tickLimit, Race race) {
+        return runStandalone(groundTruth, intents, tickLimit, race, null);
+    }
+
+    static List<DivergenceReport.TickSnapshot> runStandalone(
+            ReplaySimulatedGame groundTruth, List<TimedIntent> intents,
+            int tickLimit, Race race, String mapName) {
 
         EmulatedGame emulated = new EmulatedGame();
         emulated.setPlayerRaceModel(RaceModelFactory.forRace(race));
+        ReplayValidationHarness.loadTerrainFromCache(emulated, mapName);
         groundTruth.reset();
         emulated.setMineralPatchResources(groundTruth.getMineralPatches());
         emulated.resetForHarness();
 
-        int cursor = 0;
+        int                                 cursor    = 0;
         List<DivergenceReport.TickSnapshot> snapshots = new ArrayList<>(Math.min(tickLimit, 10000));
 
         for (int tick = 0; tick < tickLimit && !groundTruth.isComplete(); tick++) {
             long windowEnd = (long) (tick + 1) * SC2Data.LOOPS_PER_TICK;
 
-            // NO syncMineralWorkersFromGt — EmulatedGame tracks workers itself
-
             emulated.tick();
             groundTruth.tick();
 
             GameState gt = groundTruth.snapshot();
-
-            // NO syncBuildings — EmulatedGame tracks buildings from tracker intents (#523)
-            // NO setSupplyCapForHarness — EmulatedGame tracks supply from buildings
-            // NO setVespeneForHarness (pre-tick) — EmulatedGame earns vespene via mining
 
             emulated.processDeferredTrainIntents();
             emulated.processDeferredResearchIntents();
@@ -282,46 +280,35 @@ class StandaloneEmulatedGameBaselineTest {
                 cursor++;
             }
 
-            // Sync gas worker count from GT rate — EM auto-saturates but real
-            // players vary gas worker count significantly (#564)
             int gtGasRate = gt.playerEconomy().vespeneCollectionRate();
             if (gtGasRate > 0) {
                 int estimatedGasWorkers = Math.max(1, Math.round(gtGasRate / GAS_PER_WORKER_PER_MIN));
                 emulated.syncTotalGasWorkers(estimatedGasWorkers);
             }
 
-            // NO setMineralsForHarness (post-tick) — EmulatedGame uses own balance
-            // NO setVespeneForHarness (post-tick) — EmulatedGame uses own balance
-            // NO syncGasRateFromGt — EmulatedGame calculates own gas rate
-            // NO syncMineralRateFromGt — EmulatedGame calculates own mineral rate
-            // NO syncVespeneRateFromGt — EmulatedGame calculates own vespene rate
-            // NO setSupplyUsedForHarness — EmulatedGame tracks own supply used
-            // NO setWorkerCountForHarness — EmulatedGame counts own workers
-            // NO syncSpendingFromGt — EmulatedGame tracks own spending
-
             GameState em = emulated.snapshot();
 
             Map<UnitType, Integer> gtUnitsByType = gt.myUnits().stream()
-                .collect(Collectors.groupingBy(Unit::type, Collectors.summingInt(u -> 1)));
+                                                     .collect(Collectors.groupingBy(Unit::type, Collectors.summingInt(u -> 1)));
             Map<UnitType, Integer> emUnitsByType = em.myUnits().stream()
-                .collect(Collectors.groupingBy(Unit::type, Collectors.summingInt(u -> 1)));
+                                                     .collect(Collectors.groupingBy(Unit::type, Collectors.summingInt(u -> 1)));
             Map<BuildingType, Integer> gtBldgsByType = gt.myBuildings().stream()
-                .filter(Building::isComplete)
-                .collect(Collectors.groupingBy(Building::type, Collectors.summingInt(b -> 1)));
+                                                         .filter(Building::isComplete)
+                                                         .collect(Collectors.groupingBy(Building::type, Collectors.summingInt(b -> 1)));
             Map<BuildingType, Integer> emBldgsByType = em.myBuildings().stream()
-                .filter(Building::isComplete)
-                .collect(Collectors.groupingBy(Building::type, Collectors.summingInt(b -> 1)));
+                                                         .filter(Building::isComplete)
+                                                         .collect(Collectors.groupingBy(Building::type, Collectors.summingInt(b -> 1)));
 
             snapshots.add(new DivergenceReport.TickSnapshot(
-                tick,
-                gt.myUnits().size(), em.myUnits().size(),
-                gt.myBuildings().size(), em.myBuildings().size(),
-                gt.minerals(), em.minerals(),
-                gt.vespene(), em.vespene(),
-                gtUnitsByType, emUnitsByType,
-                gtBldgsByType, emBldgsByType,
-                gt.playerUpgrades(), em.playerUpgrades(),
-                gt.playerEconomy(), em.playerEconomy()));
+                    tick,
+                    gt.myUnits().size(), em.myUnits().size(),
+                    gt.myBuildings().size(), em.myBuildings().size(),
+                    gt.minerals(), em.minerals(),
+                    gt.vespene(), em.vespene(),
+                    gtUnitsByType, emUnitsByType,
+                    gtBldgsByType, emBldgsByType,
+                    gt.playerUpgrades(), em.playerUpgrades(),
+                    gt.playerEconomy(), em.playerEconomy()));
         }
 
         return snapshots;

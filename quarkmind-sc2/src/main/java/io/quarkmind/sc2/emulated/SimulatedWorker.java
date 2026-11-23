@@ -40,7 +40,7 @@ class SimulatedWorker {
         GAS_APPROACH_DOCKING_LOOPS = WorkerPhysicsConfig.DEFAULT_GAS_APPROACH_DOCKING_LOOPS;
     }
 
-    static final double ARRIVAL_THRESHOLD = 0.5;
+    static double ARRIVAL_THRESHOLD = 0.17;
     static final double MAX_SPEED         = io.quarkmind.domain.SC2Data.unitSpeed(io.quarkmind.domain.UnitType.PROBE);
     static double ACCELERATION            = WorkerPhysicsConfig.DEFAULT_ACCELERATION;
     static double DECELERATION            = WorkerPhysicsConfig.DEFAULT_DECELERATION;
@@ -48,6 +48,8 @@ class SimulatedWorker {
     static double INITIAL_WORKER_STAGGER_LOOPS = WorkerPhysicsConfig.DEFAULT_INITIAL_WORKER_STAGGER;
     static double COLLISION_SPEED_FACTOR       = WorkerPhysicsConfig.DEFAULT_COLLISION_SPEED_FACTOR;
     static double APPROACH_ANIMATION_LOOPS      = WorkerPhysicsConfig.DEFAULT_APPROACH_ANIMATION_LOOPS;
+    static double POST_PICKUP_LOOPS             = 7.0;
+
 
     static double REROUTE_THRESHOLD_LOOPS       = WorkerPhysicsConfig.DEFAULT_REROUTE_THRESHOLD_LOOPS;
     static float  MINERAL_PATCH_OBSTACLE_RADIUS = WorkerPhysicsConfig.DEFAULT_MINERAL_PATCH_OBSTACLE_RADIUS;
@@ -126,7 +128,6 @@ class SimulatedWorker {
     void advanceWaypoint() {
         if (waypoints != null && !waypoints.isEmpty()) {
             this.targetPosition = waypoints.poll();
-            this.currentSpeed   = MAX_SPEED;
         }
     }
 
@@ -141,22 +142,29 @@ class SimulatedWorker {
         if (targetPosition == null) {return loops;}
         for (int loop = 0; loop < loops; loop++) {
             double dist = position.distanceTo(targetPosition);
+            boolean isFinalTarget = waypoints == null || waypoints.isEmpty();
             if (dist <= ARRIVAL_THRESHOLD) {
-                position     = targetPosition;
-                currentSpeed = 0;
+                position = targetPosition;
+                if (isFinalTarget) currentSpeed = 0;
                 return loop;
             }
-            double decelDist = currentSpeed * currentSpeed / (2.0 * DECELERATION);
-            if (dist <= decelDist) {
-                currentSpeed = Math.max(0, currentSpeed - DECELERATION * LOOP_DURATION);
-            } else if (currentSpeed < MAX_SPEED) {
-                currentSpeed = Math.min(MAX_SPEED, currentSpeed + ACCELERATION * LOOP_DURATION);
+            if (isFinalTarget) {
+                double decelDist = currentSpeed * currentSpeed / (2.0 * DECELERATION);
+                if (dist <= decelDist) {
+                    currentSpeed = Math.max(0, currentSpeed - DECELERATION * LOOP_DURATION);
+                } else if (currentSpeed < MAX_SPEED) {
+                    currentSpeed = Math.min(MAX_SPEED, currentSpeed + ACCELERATION * LOOP_DURATION);
+                }
+            } else {
+                if (currentSpeed < MAX_SPEED) {
+                    currentSpeed = Math.min(MAX_SPEED, currentSpeed + ACCELERATION * LOOP_DURATION);
+                }
             }
             double stepDist = currentSpeed * LOOP_DURATION;
             if (stepDist <= 0) {continue;}
             if (stepDist >= dist) {
-                position     = targetPosition;
-                currentSpeed = 0;
+                position = targetPosition;
+                if (isFinalTarget) currentSpeed = 0;
                 return loop + 1;
             }
             float dx    = targetPosition.x() - position.x();
@@ -173,22 +181,29 @@ class SimulatedWorker {
     boolean moveOneLoop() {
         if (targetPosition == null) {return false;}
         double dist = position.distanceTo(targetPosition);
+        boolean isFinalTarget = waypoints == null || waypoints.isEmpty();
         if (dist <= ARRIVAL_THRESHOLD) {
-            position     = targetPosition;
-            currentSpeed = 0;
+            position = targetPosition;
+            if (isFinalTarget) currentSpeed = 0;
             return true;
         }
-        double decelDist = currentSpeed * currentSpeed / (2.0 * DECELERATION);
-        if (dist <= decelDist) {
-            currentSpeed = Math.max(0, currentSpeed - DECELERATION * LOOP_DURATION);
-        } else if (currentSpeed < MAX_SPEED) {
-            currentSpeed = Math.min(MAX_SPEED, currentSpeed + ACCELERATION * LOOP_DURATION);
+        if (isFinalTarget) {
+            double decelDist = currentSpeed * currentSpeed / (2.0 * DECELERATION);
+            if (dist <= decelDist) {
+                currentSpeed = Math.max(0, currentSpeed - DECELERATION * LOOP_DURATION);
+            } else if (currentSpeed < MAX_SPEED) {
+                currentSpeed = Math.min(MAX_SPEED, currentSpeed + ACCELERATION * LOOP_DURATION);
+            }
+        } else {
+            if (currentSpeed < MAX_SPEED) {
+                currentSpeed = Math.min(MAX_SPEED, currentSpeed + ACCELERATION * LOOP_DURATION);
+            }
         }
         double stepDist = currentSpeed * LOOP_DURATION;
         if (stepDist <= 0) {return false;}
         if (stepDist >= dist) {
-            position     = targetPosition;
-            currentSpeed = 0;
+            position = targetPosition;
+            if (isFinalTarget) currentSpeed = 0;
             return true;
         }
         float dx    = targetPosition.x() - position.x();

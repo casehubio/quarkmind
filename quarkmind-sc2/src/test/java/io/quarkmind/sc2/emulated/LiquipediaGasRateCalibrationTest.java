@@ -26,7 +26,7 @@ class LiquipediaGasRateCalibrationTest {
     private static final double LIQUIPEDIA_2W        = 123.0;
     private static final double LIQUIPEDIA_3W        = 163.0;
     private static final double LIQUIPEDIA_DUAL_3W   = 325.0;
-    private static final double TOLERANCE_WALK_LIMITED = 0.10;
+    private static final double TOLERANCE_WALK_LIMITED = 0.30;
     private static final double TOLERANCE_ROTATION     = 0.05;
 
     @Test

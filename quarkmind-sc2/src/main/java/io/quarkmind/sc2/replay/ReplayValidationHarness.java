@@ -20,10 +20,8 @@ import io.quarkmind.sc2.mock.SimulatedGame;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -158,19 +156,14 @@ public final class ReplayValidationHarness {
     }
 
 
-    /**
-     * Runs the validation harness against a replay file.
-     *
-     * @param replayPath  path to a .SC2Replay file
-     * @param playerId    1-indexed player to validate
-     * @param tickLimit   maximum ticks to run (use Integer.MAX_VALUE for full replay)
-     * @return divergence report comparing emulated vs ground-truth state at each tick
-     */
     public static DivergenceReport run(Path replayPath, int playerId, int tickLimit) {
-        ReplaySimulatedGame game    = new ReplaySimulatedGame(replayPath, playerId);
-        List<TimedIntent>   intents = ReplayCommandExtractor.extract(replayPath, playerId).intents();
-        Race race = resolvePlayerRace(replayPath, playerId);
-        return run(game, intents, tickLimit, race);
+        ReplaySimulatedGame game     = new ReplaySimulatedGame(replayPath, playerId);
+        List<TimedIntent>   intents  = ReplayCommandExtractor.extract(replayPath, playerId).intents();
+        Race                race     = resolvePlayerRace(replayPath, playerId);
+        EmulatedGame        emulated = new EmulatedGame();
+        emulated.setPlayerRaceModel(RaceModelFactory.forRace(race));
+        loadTerrainFromCache(emulated, resolveMapName(replayPath));
+        return runInternal(game, intents, tickLimit, emulated, race);
     }
 
     private static Race resolvePlayerRace(Path replayPath, int playerId) {
@@ -189,6 +182,37 @@ public final class ReplayValidationHarness {
         }
         return Race.PROTOSS;
     }
+
+    static String resolveMapName(Path replayPath) {
+        try {
+            Replay replay = RepParserEngine.parseReplay(replayPath,
+                EnumSet.of(RepContent.INIT_DATA, RepContent.DETAILS));
+            if (replay != null && replay.initData != null) {
+                var gd = replay.initData.getGameDescription();
+                String fileName = gd.getMapFileName();
+                if (fileName != null && !fileName.isEmpty() && fileName.endsWith(".SC2Map")) {
+                    return fileName.substring(0, fileName.length() - 7);
+                }
+                if (fileName != null && !fileName.isEmpty()) return fileName;
+            }
+            if (replay != null && replay.details != null) {
+                String title = replay.details.getTitle();
+                if (title != null && !title.isEmpty()) return title;
+            }
+        } catch (Exception e) {
+            // fall through
+        }
+        return null;
+    }
+
+    static void loadTerrainFromCache(EmulatedGame emulated, String mapName) {
+        if (mapName == null) {return;}
+        var grid = MapTerrainCache.loadFromClasspath("terrain/" + mapName + ".pathgrid");
+        if (grid.isPresent()) {
+            emulated.setTerrainGrid(grid.get());
+        }
+    }
+
 
     /** Counts worker units per base, assigning each to its nearest complete town hall. */
     static int[] countWorkersPerBase(Race race, GameState state) {

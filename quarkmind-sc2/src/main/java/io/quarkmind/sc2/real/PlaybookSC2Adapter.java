@@ -48,6 +48,19 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
     private List<CalibrationBaseline.PatchPosition> capturedMineralPatches;
     private List<CalibrationBaseline.GeyserPosition> capturedGeyserPositions;
     private float[] capturedBasePosition;
+    private io.quarkmind.domain.TerrainGrid capturedTerrain;
+    private String capturedMapName;
+    private final java.util.Map<String, float[]> capturedBuildingPositions = new java.util.LinkedHashMap<>();
+    private final java.util.Set<String> seenBuildingTags = new java.util.HashSet<>();
+    private static final java.util.Set<com.github.ocraft.s2client.protocol.data.Units> TOWN_HALLS = java.util.Set.of(
+            com.github.ocraft.s2client.protocol.data.Units.PROTOSS_NEXUS,
+            com.github.ocraft.s2client.protocol.data.Units.TERRAN_COMMAND_CENTER,
+            com.github.ocraft.s2client.protocol.data.Units.TERRAN_ORBITAL_COMMAND,
+            com.github.ocraft.s2client.protocol.data.Units.TERRAN_PLANETARY_FORTRESS,
+            com.github.ocraft.s2client.protocol.data.Units.ZERG_HATCHERY,
+            com.github.ocraft.s2client.protocol.data.Units.ZERG_LAIR,
+            com.github.ocraft.s2client.protocol.data.Units.ZERG_HIVE
+                                                                                                                    );
 
 
     public PlaybookSC2Adapter(QuarkusSC2Transport transport, String playbookResource) {
@@ -69,6 +82,14 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
 
     @Override
     public void onGameStart(ResponseGameInfo info) {
+        info.getStartRaw().ifPresent(startRaw -> {
+            var pg = startRaw.getPathingGrid();
+            capturedTerrain = io.quarkmind.domain.TerrainGrid.fromPathingGrid(
+                    pg.getData(), pg.getSize().getX(), pg.getSize().getY());
+            capturedMapName = info.getMapName();
+            log.infof("[Recorder] Terrain captured — %dx%d pathing grid, map=%s",
+                      pg.getSize().getX(), pg.getSize().getY(), capturedMapName);
+        });
         log.infof("[Recorder] Game started — recording %d ticks for %s", durationTicks, playbookName);
     }
 
@@ -84,7 +105,9 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
             if (newTick) {
                 tick = emTick;
                 GameState state = ObservationTranslator.translate(obs, null);
-                snapshots.add(CalibrationSnapshot.from(tick, state));
+                CalibrationSnapshot snap = CalibrationSnapshot.from(tick, state);
+                int[] perBase = extractWorkersPerBase(obs);
+                snapshots.add(perBase != null ? snap.withWorkersPerBase(perBase) : snap);
                 workerCadenceSnapshots.add(ObservationTranslator.extractWorkerCadence(
                         tick, obs.getRaw().orElseThrow().getUnits()));
 
@@ -105,6 +128,14 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
                         .filter(b -> b.isComplete())
                         .findFirst()
                         .ifPresent(b -> capturedBasePosition = new float[]{b.position().x(), b.position().y()});
+                }
+                for (var b : state.myBuildings()) {
+                    if (!seenBuildingTags.contains(b.tag())) {
+                        seenBuildingTags.add(b.tag());
+                        capturedBuildingPositions.put(
+                            b.type().name() + "-" + tick,
+                            new float[]{b.position().x(), b.position().y()});
+                    }
                 }
 
                 int                   supplyUsed = (int) state.supplyUsed();
@@ -205,6 +236,13 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
         return List.copyOf(workerCadenceSnapshots);
     }
 
+    public io.quarkmind.domain.TerrainGrid capturedTerrain() {return capturedTerrain;}
+
+    public String capturedMapName()                          {return capturedMapName;}
+
+    public java.util.Map<String, float[]> capturedBuildingPositions() {return java.util.Collections.unmodifiableMap(capturedBuildingPositions);}
+
+
     public io.quarkmind.sc2.playbook.WorkerCadenceBaseline buildWorkerCadenceBaseline(String sc2Build) {
         return new io.quarkmind.sc2.playbook.WorkerCadenceBaseline(
                 playbookName, race.name(), sc2Build,
@@ -212,6 +250,25 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
                 workerCadenceSnapshots.size(),
                 List.copyOf(workerCadenceSnapshots)
         );
+    }
+
+    private int[] extractWorkersPerBase(Observation obs) {
+        var rawUnits = obs.getRaw().orElseThrow().getUnits();
+        var townHalls = rawUnits.stream()
+                                .filter(u -> u.getAlliance() == com.github.ocraft.s2client.protocol.unit.Alliance.SELF)
+                                .filter(u -> {
+                                    var t = u.getType();
+                                    return t instanceof com.github.ocraft.s2client.protocol.data.Units e && TOWN_HALLS.contains(e);
+                                })
+                                .filter(u -> u.getBuildProgress() >= 1.0f)
+                                .sorted(java.util.Comparator.comparingLong(u -> u.getTag().getValue()))
+                                .toList();
+        if (townHalls.isEmpty()) {return null;}
+        int[] result = new int[townHalls.size()];
+        for (int i = 0; i < townHalls.size(); i++) {
+            result[i] = townHalls.get(i).getAssignedHarvesters().orElse(0);
+        }
+        return result;
     }
 
 

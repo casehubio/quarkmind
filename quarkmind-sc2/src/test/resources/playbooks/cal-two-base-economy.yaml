@@ -1,0 +1,88 @@
+playbook: cal-two-base-economy
+schema: sc2
+meta:
+  race: PROTOSS
+  duration: 450 ticks
+  purpose: Two-base economy with gas — measures expansion income, worker distribution, gas+mineral balance at 7-min
+
+steps:
+  - train: PROBE
+    loop: continuous
+
+  - build: PYLON
+    at: 14 supply
+
+  - build: ASSIMILATOR
+    at: 15 supply
+
+  - build: NEXUS
+    at: 20 supply
+
+  - build: PYLON
+    at: 22 supply
+
+  - build: ASSIMILATOR
+    at: 24 supply
+
+  - build: PYLON
+    at: 30 supply
+
+  - build: PYLON
+    at: 38 supply
+
+  - build: PYLON
+    at: 46 supply
+
+  - build: PYLON
+    at: 54 supply
+
+  - build: PYLON
+    at: 62 supply
+
+  - build: PYLON
+    at: 70 supply
+
+  - build: PYLON
+    at: 78 supply
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        PROBE: { min: 14 }
+
+  - assert: tick-122
+    at: 122 ticks
+    expect:
+      units:
+        PROBE: { min: 20 }
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      units:
+        PROBE: { min: 25 }
+
+  - assert: tick-244
+    at: 244 ticks
+    expect:
+      units:
+        PROBE: { min: 30 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        PROBE: { min: 36 }
+
+  - assert: tick-366
+    at: 366 ticks
+    expect:
+      units:
+        PROBE: { min: 40 }
+
+  - assert: tick-427
+    at: 427 ticks
+    expect:
+      units:
+        PROBE: { min: 44 }

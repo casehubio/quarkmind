@@ -31,6 +31,10 @@ public interface RaceModel {
      */
     void seedInitialState(PlayerState state, List<Resource> geysers);
 
+    default void seedInitialState(PlayerState state, List<Resource> geysers, io.quarkmind.domain.Point2d basePosition) {
+        seedInitialState(state, geysers);
+    }
+
     /**
      * Passive per-tick mechanics: larva regeneration, MULE expiry and income, Queen energy
      * regen and auto-inject. Called by EmulatedGame.tick() after worker income is accumulated.

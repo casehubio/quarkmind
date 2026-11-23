@@ -1,0 +1,299 @@
+{
+  "scenario" : "first-delivery-timing",
+  "map" : "TorchesAIE_v4",
+  "totalProbes" : 36,
+  "initialProbes" : 12,
+  "newProbes" : 24,
+  "thPositions" : {
+    "4353949697" : [ 124.5, 48.5 ]
+  },
+  "probes" : [ {
+    "tag" : 4354736129,
+    "initial" : true,
+    "firstSeenLoop" : 0,
+    "spawnX" : 126.5,
+    "spawnY" : 45.5,
+    "firstCarryLoop" : 89,
+    "firstDeliveryLoop" : 134
+  }, {
+    "tag" : 4354473985,
+    "initial" : true,
+    "firstSeenLoop" : 0,
+    "spawnX" : 127.5,
+    "spawnY" : 46.5,
+    "firstCarryLoop" : 84,
+    "firstDeliveryLoop" : 127
+  }, {
+    "tag" : 4354998273,
+    "initial" : true,
+    "firstSeenLoop" : 0,
+    "spawnX" : 127.5,
+    "spawnY" : 47.5,
+    "firstCarryLoop" : 103,
+    "firstDeliveryLoop" : 145
+  }, {
+    "tag" : 4356308993,
+    "initial" : true,
+    "firstSeenLoop" : 0,
+    "spawnX" : 123.5,
+    "spawnY" : 45.5,
+    "firstCarryLoop" : 131,
+    "firstDeliveryLoop" : 168
+  }, {
+    "tag" : 4356571137,
+    "initial" : true,
+    "firstSeenLoop" : 0,
+    "spawnX" : 127.5,
+    "spawnY" : 50.5,
+    "firstCarryLoop" : 130,
+    "firstDeliveryLoop" : 174
+  }, {
+    "tag" : 4356833281,
+    "initial" : true,
+    "firstSeenLoop" : 0,
+    "spawnX" : 122.5,
+    "spawnY" : 45.5,
+    "firstCarryLoop" : 135,
+    "firstDeliveryLoop" : 179
+  }, {
+    "tag" : 4355522561,
+    "initial" : true,
+    "firstSeenLoop" : 0,
+    "spawnX" : 127.5,
+    "spawnY" : 48.5,
+    "firstCarryLoop" : 126,
+    "firstDeliveryLoop" : 184
+  }, {
+    "tag" : 4356046849,
+    "initial" : true,
+    "firstSeenLoop" : 0,
+    "spawnX" : 127.5,
+    "spawnY" : 49.5,
+    "firstCarryLoop" : 117,
+    "firstDeliveryLoop" : 162
+  }, {
+    "tag" : 4355260417,
+    "initial" : true,
+    "firstSeenLoop" : 0,
+    "spawnX" : 125.5,
+    "spawnY" : 45.5,
+    "firstCarryLoop" : 107,
+    "firstDeliveryLoop" : 149
+  }, {
+    "tag" : 4355784705,
+    "initial" : true,
+    "firstSeenLoop" : 0,
+    "spawnX" : 124.5,
+    "spawnY" : 45.5,
+    "firstCarryLoop" : 116,
+    "firstDeliveryLoop" : 156
+  }, {
+    "tag" : 4354211841,
+    "initial" : true,
+    "firstSeenLoop" : 0,
+    "spawnX" : 127.5,
+    "spawnY" : 45.5,
+    "firstCarryLoop" : 71,
+    "firstDeliveryLoop" : 112
+  }, {
+    "tag" : 4357095425,
+    "initial" : true,
+    "firstSeenLoop" : 0,
+    "spawnX" : 127.5,
+    "spawnY" : 51.5,
+    "firstCarryLoop" : 149,
+    "firstDeliveryLoop" : 191
+  }, {
+    "tag" : 4360765441,
+    "initial" : false,
+    "firstSeenLoop" : 272,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 366,
+    "firstDeliveryLoop" : 409
+  }, {
+    "tag" : 4361814017,
+    "initial" : false,
+    "firstSeenLoop" : 543,
+    "spawnX" : 127.38257,
+    "spawnY" : 47.338867,
+    "firstCarryLoop" : 654,
+    "firstDeliveryLoop" : 716
+  }, {
+    "tag" : 4362338305,
+    "initial" : false,
+    "firstSeenLoop" : 814,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 913,
+    "firstDeliveryLoop" : 956
+  }, {
+    "tag" : 4363124737,
+    "initial" : false,
+    "firstSeenLoop" : 1085,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 1189,
+    "firstDeliveryLoop" : 1232
+  }, {
+    "tag" : 4363386881,
+    "initial" : false,
+    "firstSeenLoop" : 1356,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 1458,
+    "firstDeliveryLoop" : 1504
+  }, {
+    "tag" : 4363911169,
+    "initial" : false,
+    "firstSeenLoop" : 1627,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 1740,
+    "firstDeliveryLoop" : 1783
+  }, {
+    "tag" : 4364435457,
+    "initial" : false,
+    "firstSeenLoop" : 1898,
+    "spawnX" : 127.38257,
+    "spawnY" : 47.338867,
+    "firstCarryLoop" : 1976,
+    "firstDeliveryLoop" : 2019
+  }, {
+    "tag" : 4364697601,
+    "initial" : false,
+    "firstSeenLoop" : 2169,
+    "spawnX" : 127.38257,
+    "spawnY" : 47.338867,
+    "firstCarryLoop" : 2264,
+    "firstDeliveryLoop" : 2307
+  }, {
+    "tag" : 4365221889,
+    "initial" : false,
+    "firstSeenLoop" : 2440,
+    "spawnX" : 127.38257,
+    "spawnY" : 47.338867,
+    "firstCarryLoop" : 2528,
+    "firstDeliveryLoop" : 2571
+  }, {
+    "tag" : 4366270465,
+    "initial" : false,
+    "firstSeenLoop" : 2711,
+    "spawnX" : 127.377686,
+    "spawnY" : 47.33545,
+    "firstCarryLoop" : 2847,
+    "firstDeliveryLoop" : 2889
+  }, {
+    "tag" : 4366794753,
+    "initial" : false,
+    "firstSeenLoop" : 2982,
+    "spawnX" : 127.377686,
+    "spawnY" : 47.33545,
+    "firstCarryLoop" : 3112,
+    "firstDeliveryLoop" : 3158
+  }, {
+    "tag" : 4367581185,
+    "initial" : false,
+    "firstSeenLoop" : 3253,
+    "spawnX" : 127.377686,
+    "spawnY" : 47.33545,
+    "firstCarryLoop" : 3387,
+    "firstDeliveryLoop" : 3425
+  }, {
+    "tag" : 4368105473,
+    "initial" : false,
+    "firstSeenLoop" : 3524,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 3627,
+    "firstDeliveryLoop" : 3667
+  }, {
+    "tag" : 4368629761,
+    "initial" : false,
+    "firstSeenLoop" : 3795,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 3923,
+    "firstDeliveryLoop" : 3960
+  }, {
+    "tag" : 4369154049,
+    "initial" : false,
+    "firstSeenLoop" : 4066,
+    "spawnX" : 127.38257,
+    "spawnY" : 47.338867,
+    "firstCarryLoop" : 4189,
+    "firstDeliveryLoop" : 4232
+  }, {
+    "tag" : 4369678337,
+    "initial" : false,
+    "firstSeenLoop" : 4337,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 4492,
+    "firstDeliveryLoop" : 4538
+  }, {
+    "tag" : 4369940481,
+    "initial" : false,
+    "firstSeenLoop" : 4608,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 4731,
+    "firstDeliveryLoop" : 4774
+  }, {
+    "tag" : 4370464769,
+    "initial" : false,
+    "firstSeenLoop" : 4879,
+    "spawnX" : 127.38257,
+    "spawnY" : 47.338867,
+    "firstCarryLoop" : 5017,
+    "firstDeliveryLoop" : 5060
+  }, {
+    "tag" : 4370726913,
+    "initial" : false,
+    "firstSeenLoop" : 5150,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 5274,
+    "firstDeliveryLoop" : 5320
+  }, {
+    "tag" : 4370989057,
+    "initial" : false,
+    "firstSeenLoop" : 5421,
+    "spawnX" : 127.377686,
+    "spawnY" : 47.33545,
+    "firstCarryLoop" : 5596,
+    "firstDeliveryLoop" : 5639
+  }, {
+    "tag" : 4371513345,
+    "initial" : false,
+    "firstSeenLoop" : 5692,
+    "spawnX" : 127.377686,
+    "spawnY" : 47.33545,
+    "firstCarryLoop" : 5896,
+    "firstDeliveryLoop" : 5938
+  }, {
+    "tag" : 4369416194,
+    "initial" : false,
+    "firstSeenLoop" : 5963,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 6121,
+    "firstDeliveryLoop" : 6164
+  }, {
+    "tag" : 4371775489,
+    "initial" : false,
+    "firstSeenLoop" : 6234,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 6387,
+    "firstDeliveryLoop" : 6430
+  }, {
+    "tag" : 4372037633,
+    "initial" : false,
+    "firstSeenLoop" : 6505,
+    "spawnX" : 127.38037,
+    "spawnY" : 47.33667,
+    "firstCarryLoop" : 6663,
+    "firstDeliveryLoop" : 6706
+  } ]
+}

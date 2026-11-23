@@ -12,7 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CalibrationBaselineTest {
 
@@ -99,6 +104,51 @@ class CalibrationBaselineTest {
         assertEquals(51, restored.snapshots().get(1).minerals());
         assertEquals(Set.of(), restored.snapshots().get(0).upgrades());
     }
+
+    @Test
+    void workersPerBaseRoundTrip() {
+        CalibrationSnapshot snap = new CalibrationSnapshot(
+                10, 500, 100, 23, 20,
+                Map.of("PROBE", 20),
+                Map.of("NEXUS", 2),
+                Set.of(),
+                new int[]{14, 6}
+        );
+
+        CalibrationBaseline baseline = new CalibrationBaseline(
+                "two-base", "PROTOSS", "5.0.16",
+                "2026-11-24T00:00:00Z", 1,
+                List.of(snap), null, null, null
+        );
+
+        String              json     = baseline.toJson();
+        CalibrationBaseline restored = CalibrationBaseline.fromJson(json);
+
+        assertNotNull(restored.snapshots().get(0).workersPerBase());
+        assertArrayEquals(new int[]{14, 6}, restored.snapshots().get(0).workersPerBase());
+    }
+
+    @Test
+    void workersPerBaseNullWhenAbsent() {
+        CalibrationSnapshot snap = new CalibrationSnapshot(
+                0, 50, 0, 15, 12,
+                Map.of("PROBE", 12),
+                Map.of("NEXUS", 1),
+                Set.of()
+        );
+
+        CalibrationBaseline baseline = new CalibrationBaseline(
+                "single-base", "PROTOSS", "5.0.16",
+                "2026-11-24T00:00:00Z", 1,
+                List.of(snap), null, null, null
+        );
+
+        String              json     = baseline.toJson();
+        CalibrationBaseline restored = CalibrationBaseline.fromJson(json);
+
+        assertNull(restored.snapshots().get(0).workersPerBase());
+    }
+
 
     @Test
     void calibrationResultDivergedReport() {

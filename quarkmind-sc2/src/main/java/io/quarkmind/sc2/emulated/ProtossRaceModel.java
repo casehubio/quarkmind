@@ -21,6 +21,11 @@ class ProtossRaceModel implements RaceModel {
 
     @Override
     public void seedInitialState(final PlayerState state, final List<Resource> geysers) {
+        seedInitialState(state, geysers, new Point2d(8, 8));
+    }
+
+    @Override
+    public void seedInitialState(final PlayerState state, final List<Resource> geysers, final Point2d basePosition) {
         nexusEnergyMap.clear();
         chronoBoostedUntil.clear();
 
@@ -29,21 +34,22 @@ class ProtossRaceModel implements RaceModel {
         state.setSupply(SC2Data.INITIAL_SUPPLY);
         state.setSupplyUsed(SC2Data.INITIAL_SUPPLY_USED);
 
+        float bx = basePosition.x(), by = basePosition.y();
         for (int i = 0; i < SC2Data.INITIAL_PROBES; i++) {
             final int hp = SC2Data.maxHealth(UnitType.PROBE);
             state.addUnit(new Unit("probe-" + i, UnitType.PROBE,
-                                   new Point2d(9 + i * 0.5f, 9),
+                                   new Point2d(bx + 1 + i * 0.5f, by + 1),
                                    hp, hp, SC2Data.maxShields(UnitType.PROBE), SC2Data.maxShields(UnitType.PROBE), 0, 0));
         }
         state.addBuilding(new Building("nexus-0", BuildingType.NEXUS,
-                                       new Point2d(8, 8),
+                                       basePosition,
                                        SC2Data.maxBuildingHealth(BuildingType.NEXUS),
                                        SC2Data.maxBuildingHealth(BuildingType.NEXUS),
                                        true));
         nexusEnergyMap.put("nexus-0", SC2Data.NEXUS_STARTING_ENERGY);
 
-        geysers.add(new Resource("geyser-0", new Point2d(15, 11), 2250));
-        geysers.add(new Resource("geyser-1", new Point2d(11, 15), 2250));
+        geysers.add(new Resource("geyser-0", new Point2d(bx + 7, by + 3), 2250));
+        geysers.add(new Resource("geyser-1", new Point2d(bx + 3, by + 7), 2250));
     }
 
     @Override

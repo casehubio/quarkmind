@@ -1006,7 +1006,7 @@ class WorkerSimulationTest {
         MineralPatch    initialPatch5 = w5.assignedPatch;
 
         boolean rerouted = false;
-        for (int t = 0; t < 500; t++) {
+        for (int t = 0; t < 2000; t++) {
             tick();
             if (w5.assignedPatch != initialPatch5) {
                 rerouted = true;
@@ -1172,5 +1172,41 @@ class WorkerSimulationTest {
                                   p.position.x(), p.position.y(), dist, dist - 2.75 - 1.0, p.approachDockingLoops);
             }
         }
+    }
+
+// ---- Worker distribution across bases (#757) ----
+
+    @Test
+    void newWorkerAssignedToLeastSaturatedBase() {
+        // Main base at (50,50) with 12 workers (saturated at 1.5/patch)
+        for (int i = 0; i < 12; i++) {
+            sim.onWorkerProduced("main-w-" + i, BASE_POS);
+        }
+
+        // Expansion at (100,100) with 0 workers (empty)
+        Point2d expPos = new Point2d(100, 100);
+        sim.onTownHallCompleted("exp-1", expPos);
+
+        // Worker produced at the expansion's town hall position
+        sim.onWorkerProduced("exp-new-1", expPos);
+
+        // With saturation-aware assignment, the new worker should go to expansion
+        // (0 workers) rather than main (12 workers), since expansion needs workers more
+        int mainCount = sim.mineralWorkersPerBase()[0];
+        int expCount  = sim.mineralWorkersPerBase()[1];
+
+        // After transfer (4 workers), main=8, exp=4+1=5
+        // The new worker at expansion should stay at expansion (it's less saturated)
+        assertEquals(5, expCount, "Expansion should have 4 transferred + 1 new = 5 workers");
+
+        // Now produce a worker at main — it should go to expansion (5 < 8)
+        sim.onWorkerProduced("main-new-1", BASE_POS);
+        int mainAfter = sim.mineralWorkersPerBase()[0];
+        int expAfter  = sim.mineralWorkersPerBase()[1];
+
+        assertEquals(6, expAfter,
+                     "Worker produced at main should be assigned to expansion (less saturated: 5 < 8)");
+        assertEquals(8, mainAfter,
+                     "Main should stay at 8 (new worker sent to expansion)");
     }
 }

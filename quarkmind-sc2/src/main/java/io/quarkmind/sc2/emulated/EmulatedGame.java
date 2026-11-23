@@ -71,6 +71,11 @@ public class EmulatedGame {
         return workerSimulation.mineralWorkersPerBase();
     }
 
+    WorkerSimulation.WorkerStateCounts workerStateCounts() {
+        return workerSimulation.workerStateCounts();
+    }
+
+
     public void syncMineralWorkersFromGt(int[] mineralWorkersPerBase) {
         workerSimulation.syncMineralWorkersFromGt(mineralWorkersPerBase);
     }
@@ -94,6 +99,20 @@ public class EmulatedGame {
 
     public void setMineralPatchResources(List<Resource> patches) {
         this.mineralPatchResources = List.copyOf(patches);
+        if (terrainGrid != null && !patches.isEmpty()) {
+            float maxX = 0, maxY = 0;
+            for (Resource r : patches) {
+                maxX = Math.max(maxX, r.position().x());
+                maxY = Math.max(maxY, r.position().y());
+            }
+            int neededWidth  = (int) maxX + 16;
+            int neededHeight = (int) maxY + 16;
+            if (neededWidth > terrainGrid.width() || neededHeight > terrainGrid.height()) {
+                setTerrainGrid(TerrainGrid.flatMap(
+                        Math.max(neededWidth, terrainGrid.width()),
+                        Math.max(neededHeight, terrainGrid.height())));
+            }
+        }
     }
 
     public void setGeyserResources(List<Resource> resources) {
@@ -169,10 +188,15 @@ public class EmulatedGame {
     // E9: fog of war — persists across ticks, reset on game restart
     private final VisibilityGrid visibility = new VisibilityGrid();
     private       List<Resource> mineralPatchResources = List.of();
+    private       Point2d initialBasePosition;
 
     public EmulatedGame() {
         this.workerSimulation = new WorkerSimulation();
         setTerrainGrid(TerrainGrid.emulatedMap());
+    }
+
+    public void setInitialBasePosition(Point2d position) {
+        this.initialBasePosition = position;
     }
 
 
@@ -180,7 +204,11 @@ public class EmulatedGame {
         resetInternal();
 
         // Seed friendly player via race model
-        playerRaceModel.seedInitialState(friendly, geysers);
+        if (initialBasePosition != null) {
+            playerRaceModel.seedInitialState(friendly, geysers, initialBasePosition);
+        } else {
+            playerRaceModel.seedInitialState(friendly, geysers);
+        }
         for (Building b : friendly.buildings()) {
             if (playerRaceModel.townHallTypes().contains(b.type()) && b.isComplete()) {
                 registerTownHallWithPatches(b.tag(), b.position());
@@ -193,7 +221,8 @@ public class EmulatedGame {
             .filter(b -> playerRaceModel.townHallTypes().contains(b.type()) && b.isComplete())
             .findFirst().orElse(null);
         if (mainBase != null && !initialWorkerTags.isEmpty()) {
-            workerSimulation.onInitialWorkers(initialWorkerTags, mainBase.position(), mainBase.tag());
+            Point2d rallyPos = workerRallySpawnPos(mainBase.position());
+            workerSimulation.onInitialWorkers(initialWorkerTags, rallyPos, mainBase.tag());
         }
 
         // Seed enemy player with effectively unlimited supply and gas so TrainIntents are never
@@ -305,29 +334,20 @@ public class EmulatedGame {
         if (terrainGrid != null) {
             int tx = (int) proposed.x();
             int ty = (int) proposed.y();
-            if (!terrainGrid.isWalkable(tx, ty)) {
+            if (terrainGrid.heightAt(tx, ty) == TerrainGrid.Height.WALL) {
                 log.warnf("[PHYSICS] Wall collision blocked %s at (%.2f,%.2f) tile(%d,%d) — invalidating path",
                     unitTag, proposed.x(), proposed.y(), tx, ty);
                 movementStrategy.invalidatePath(unitTag);
                 return current;
             }
         }
-        // Building collision — entry-only check for buildings not registered as terrain obstacles.
-        // Mid-game buildings are registered as obstacles (covered by isWalkable above).
-        // Initial buildings (seeded by race model) are not registered to avoid blocking worker A* paths.
         for (var bldg : friendly.buildings()) {
-            if (terrainGrid != null && !terrainGrid.isWalkable((int) bldg.position().x(), (int) bldg.position().y())) {
-                continue;
-            }
             if (!insideFootprint(current, bldg) && insideFootprint(proposed, bldg)) {
                 movementStrategy.invalidatePath(unitTag);
                 return current;
             }
         }
         for (var bldg : enemy.buildings()) {
-            if (terrainGrid != null && !terrainGrid.isWalkable((int) bldg.position().x(), (int) bldg.position().y())) {
-                continue;
-            }
             if (!insideFootprint(current, bldg) && insideFootprint(proposed, bldg)) {
                 movementStrategy.invalidatePath(unitTag);
                 return current;
@@ -769,7 +789,7 @@ public class EmulatedGame {
                 if (!isEnemy && model != null && unitType == playerRaceModel.workerType()) {
                     Building bldg = state.buildings().stream()
                         .filter(bl -> bl.tag().equals(buildingTag)).findFirst().orElse(null);
-                    Point2d spawnPos = (bldg != null) ? bldg.position() : new Point2d(9, 9);
+                    Point2d spawnPos = (bldg != null) ? workerRallySpawnPos(bldg.position()) : new Point2d(9, 9);
                     workerSimulation.onWorkerProduced(tag, spawnPos);
                 }
                 if (isEnemy && enemyBehavior != null) {enemyBehavior.notifyUnitTrained();}
@@ -1316,10 +1336,17 @@ public class EmulatedGame {
                 return;
             }
             if (trackerDriven) {
+                int mCost = SC2Data.mineralCost(targetBt);
+                int gCost = SC2Data.gasCost(targetBt);
+                state.deductMinerals(mCost);
+                state.deductVespene(gCost);
                 state.replaceAllBuildings(b -> b.tag().equals(resolvedTag)
                                                ? new Building(b.tag(), finalTargetBt, b.position(), b.health(), b.maxHealth(), b.isComplete())
                                                : b);
-                log.debugf("[EMULATED] Tracker-driven building morph — %s → %s (tag=%s)", m.sourceName(), finalTargetBt, resolvedTag);
+                if (state == friendly) {
+                    economyTracker.recordMorphSpending(finalTargetBt, mCost, gCost);
+                }
+                log.debugf("[EMULATED] Tracker-driven building morph — %s → %s (tag=%s, cost=%d/%d)", m.sourceName(), finalTargetBt, resolvedTag, mCost, gCost);
                 return;
             }
             int mCost = SC2Data.mineralCost(targetBt);
@@ -1473,7 +1500,10 @@ public class EmulatedGame {
     public GameState snapshot() {
         // Stamp weapon cooldown from unitCooldowns map onto each friendly unit.
         // friendly.units always carries weaponCooldownTicks=0; the true cooldown lives in unitCooldowns.
+        // Exclude workers in BUILDING state — SC2 removes them from the unit list during building warp.
+        java.util.Set<String> buildingTags = workerSimulation.buildingWorkerTags();
         List<Unit> friendlyWithCooldown = friendly.units().stream()
+            .filter(u -> !buildingTags.contains(u.tag()))
             .map(u -> new Unit(u.tag(), u.type(), u.position(),
                                u.health(), u.maxHealth(), u.shields(), u.maxShields(),
                                friendlyPhysics.unitCooldowns.getOrDefault(u.tag(), 0),
@@ -1717,6 +1747,48 @@ public class EmulatedGame {
     }
 
 
+    public void injectWorkerForPinnedCalibration() {
+        UnitType workerType = playerRaceModel.workerType();
+        int      mCost      = SC2Data.mineralCost(workerType);
+        friendly.deductMinerals(mCost);
+        friendly.addSupplyUsed(SC2Data.supplyCost(workerType));
+        String tag = nextTagString();
+        int    hp  = SC2Data.maxHealth(workerType);
+        Building nexus = friendly.buildings().stream()
+                                 .filter(b -> playerRaceModel.townHallTypes().contains(b.type()) && b.isComplete())
+                                 .findFirst().orElse(null);
+        Point2d spawnPos = nexus != null ? workerRallySpawnPos(nexus.position()) : new Point2d(9, 9);
+        friendly.addUnit(new Unit(tag, workerType, spawnPos, hp, hp,
+                                  SC2Data.maxShields(workerType), SC2Data.maxShields(workerType), 0, 0));
+        workerSimulation.onWorkerProducedAtBase(tag, spawnPos);
+        economyTracker.recordTrainSpending(workerType, mCost, 0);
+    }
+
+    private Point2d workerRallySpawnPos(Point2d nexusPos) {
+        Point2d mineralCentroid = workerSimulation.mineralCentroidForBase(nexusPos);
+        if (mineralCentroid == null) return nexusPos;
+        return WorkerSimulation.edgePoint(nexusPos, mineralCentroid, WorkerSimulation.TOWN_HALL_RADIUS);
+    }
+
+    public void injectWorkerAtBase(Point2d basePosition) {
+        UnitType workerType = playerRaceModel.workerType();
+        int      mCost      = SC2Data.mineralCost(workerType);
+        friendly.deductMinerals(mCost);
+        friendly.addSupplyUsed(SC2Data.supplyCost(workerType));
+        String tag = nextTagString();
+        int    hp  = SC2Data.maxHealth(workerType);
+        Point2d spawnPos = workerRallySpawnPos(basePosition);
+        friendly.addUnit(new Unit(tag, workerType, spawnPos, hp, hp,
+                                  SC2Data.maxShields(workerType), SC2Data.maxShields(workerType), 0, 0));
+        workerSimulation.onWorkerProducedAtBase(tag, spawnPos);
+        economyTracker.recordTrainSpending(workerType, mCost, 0);
+    }
+
+    public void setAutoTransferEnabled(boolean enabled) {
+        workerSimulation.setAutoTransferEnabled(enabled);
+    }
+
+
     public void setFogEnabled(boolean enabled) { this.fogEnabled = enabled; }
 
     /** Injects a predictable Random for miss-chance tests. */
@@ -1866,8 +1938,11 @@ public class EmulatedGame {
         registerBuildingObstacle(bornBldg);
         state.addSupply(SC2Data.supplyBonus(bb.type()));
         if (state == friendly && loop > 0) {
-            economyTracker.recordBuildSpending(bb.type(),
-                                               SC2Data.mineralCost(bb.type()), SC2Data.gasCost(bb.type()));
+            int mCost = SC2Data.mineralCost(bb.type());
+            int gCost = SC2Data.gasCost(bb.type());
+            state.deductMinerals(mCost);
+            state.deductVespene(gCost);
+            economyTracker.recordBuildSpending(bb.type(), mCost, gCost);
         }
         if (state == friendly && playerRaceModel != null) {
             if (playerRaceModel.townHallTypes().contains(bb.type())) {

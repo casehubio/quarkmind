@@ -202,6 +202,40 @@ class DualRunCalibrationTest {
     }
 
     @Test
+    void dualRunCalSingleBaseProbesAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-single-base-probes.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-single-base-probes.yaml", sc2Baseline, 2);
+        System.out.println(result.report());
+        if (!result.passed()) {
+            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
+                              result.divergenceTick(), result.divergenceField(),
+                              result.expected(), result.actual());
+        }
+    }
+
+    @Test
+    void pinnedCalSingleBaseProbesAgainstSC2() {
+        pinnedCalibrate("calibration/cal-single-base-probes.json");
+    }
+
+    @Test
+    void pinnedCalTwoBaseEconomyAgainstSC2() {
+        pinnedCalibrate("calibration/cal-two-base-economy.json");
+    }
+
+    @Test
+    void dualRunCalTwoBaseEconomyAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-two-base-economy.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-two-base-economy.yaml", sc2Baseline, 2);
+        System.out.println(result.report());
+        if (!result.passed()) {
+            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
+                              result.divergenceTick(), result.divergenceField(),
+                              result.expected(), result.actual());
+        }
+    }
+
+    @Test
     void dualRunCalMineralBaselineZergAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-baseline-zerg.json");
         CalibrationResult   result      = calibrate("playbooks/cal-mineral-baseline-zerg.yaml", sc2Baseline);
@@ -460,6 +494,31 @@ class DualRunCalibrationTest {
                               result.expected(), result.actual());
         }
     }
+
+    @Test
+    void dualRunCalMineralSaturated32wAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-saturated-32w.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-saturated-32w.yaml", sc2Baseline, 1);
+        System.out.println(result.report());
+        if (!result.passed()) {
+            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
+                              result.divergenceTick(), result.divergenceField(),
+                              result.expected(), result.actual());
+        }
+    }
+
+    @Test
+    void dualRunCalMineralSaturated40wAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-mineral-saturated-40w.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-mineral-saturated-40w.yaml", sc2Baseline, 1);
+        System.out.println(result.report());
+        if (!result.passed()) {
+            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
+                              result.divergenceTick(), result.divergenceField(),
+                              result.expected(), result.actual());
+        }
+    }
+
 
     @Test
     void dualRunCalWorkerSpeedSingleAgainstSC2() {
@@ -786,25 +845,38 @@ class DualRunCalibrationTest {
 
         EmulatedGame game = new EmulatedGame();
         game.setPlayerRaceModel(RaceModelFactory.forRace(race));
-        float offX = 0, offY = 0;
+
+        boolean useRealTerrain = false;
+        if (baseline.basePosition() != null) {
+            var cachedTerrain = io.quarkmind.sc2.replay.MapTerrainCache.loadFromClasspath("terrain/Torches AIE.pathgrid");
+            if (cachedTerrain.isPresent()) {
+                useRealTerrain = true;
+                game.setTerrainGrid(cachedTerrain.get());
+                Point2d realBase = new Point2d(baseline.basePosition()[0], baseline.basePosition()[1]);
+                game.setInitialBasePosition(realBase);
+            }
+        }
+
         if (baseline.basePosition() != null && baseline.mineralPatches() != null) {
-            offX = 8f - baseline.basePosition()[0];
-            offY = 8f - baseline.basePosition()[1];
-            float fx = offX, fy = offY;
+            float offX = useRealTerrain ? 0 : 8f - baseline.basePosition()[0];
+            float offY = useRealTerrain ? 0 : 8f - baseline.basePosition()[1];
             game.setMineralPatchResources(baseline.mineralPatches().stream()
                 .map(p -> new io.quarkmind.domain.Resource(
                     "cal-" + baseline.mineralPatches().indexOf(p),
-                    new Point2d(p.x() + fx, p.y() + fy), p.amount(), p.rich()))
+                    new Point2d(p.x() + offX, p.y() + offY), p.amount(), p.rich()))
                 .toList());
         }
         game.reset();
         if (baseline.basePosition() != null && baseline.geyserPositions() != null) {
-            float fx = offX, fy = offY;
-            Point2d emBase = new Point2d(8, 8);
+            float offX = useRealTerrain ? 0 : 8f - baseline.basePosition()[0];
+            float offY = useRealTerrain ? 0 : 8f - baseline.basePosition()[1];
+            Point2d emBase = useRealTerrain
+                ? new Point2d(baseline.basePosition()[0], baseline.basePosition()[1])
+                : new Point2d(8, 8);
             game.setGeyserResources(baseline.geyserPositions().stream()
                 .map(g -> new io.quarkmind.domain.Resource(
                     "cal-geyser-" + baseline.geyserPositions().indexOf(g),
-                    new Point2d(g.x() + fx, g.y() + fy), g.amount()))
+                    new Point2d(g.x() + offX, g.y() + offY), g.amount()))
                 .filter(g -> g.position().distanceTo(emBase) <= 12.0)
                 .toList());
         }
@@ -942,13 +1014,238 @@ class DualRunCalibrationTest {
         return null;
     }
 
-    private static CalibrationBaseline loadBaseline(String resourcePath) {
+    static CalibrationBaseline loadBaseline(String resourcePath) {
         try (InputStream is = DualRunCalibrationTest.class.getClassLoader().getResourceAsStream(resourcePath)) {
             if (is == null) throw new IllegalArgumentException("Baseline not found: " + resourcePath);
             String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
             return CalibrationBaseline.fromJson(json);
         } catch (Exception e) {
             throw new RuntimeException("Failed to load baseline: " + resourcePath, e);
+        }
+    }
+
+    private static java.util.Map<String, float[]> loadBuildingPositions(String baselinePath) {
+        String bldgPath = baselinePath.replace(".json", "-buildings.json");
+        try (InputStream is = DualRunCalibrationTest.class.getClassLoader().getResourceAsStream(bldgPath)) {
+            if (is == null) return Map.of();
+            return new com.fasterxml.jackson.databind.ObjectMapper().readValue(
+                new String(is.readAllBytes(), StandardCharsets.UTF_8),
+                new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, float[]>>() {});
+        } catch (Exception e) {
+            return Map.of();
+        }
+    }
+
+    private static void pinnedCalibrate(String baselinePath) {
+        CalibrationBaseline baseline = loadBaseline(baselinePath);
+        java.util.Map<String, float[]> buildingPositions = loadBuildingPositions(baselinePath);
+        java.util.Iterator<java.util.Map.Entry<String, float[]>> bldgPosIterator =
+            buildingPositions.entrySet().iterator();
+        EmulatedGame game = new EmulatedGame();
+        Race race = Race.valueOf(baseline.race());
+        game.setPlayerRaceModel(RaceModelFactory.forRace(race));
+
+        var cachedTerrain = io.quarkmind.sc2.replay.MapTerrainCache.loadFromClasspath("terrain/Torches AIE.pathgrid");
+        if (cachedTerrain.isPresent() && baseline.basePosition() != null) {
+            game.setTerrainGrid(cachedTerrain.get());
+            game.setInitialBasePosition(new Point2d(baseline.basePosition()[0], baseline.basePosition()[1]));
+        }
+
+        if (baseline.mineralPatches() != null) {
+            float offX = cachedTerrain.isPresent() ? 0 : 8f - baseline.basePosition()[0];
+            float offY = cachedTerrain.isPresent() ? 0 : 8f - baseline.basePosition()[1];
+            game.setMineralPatchResources(baseline.mineralPatches().stream()
+                .map(p -> new io.quarkmind.domain.Resource(
+                    "cal-" + baseline.mineralPatches().indexOf(p),
+                    new Point2d(p.x() + offX, p.y() + offY), p.amount(), p.rich()))
+                .toList());
+        }
+        game.setAutoTransferEnabled(false);
+        game.reset();
+        if (baseline.geyserPositions() != null) {
+            float offX = cachedTerrain.isPresent() ? 0 : 8f - baseline.basePosition()[0];
+            float offY = cachedTerrain.isPresent() ? 0 : 8f - baseline.basePosition()[1];
+            Point2d emBase = cachedTerrain.isPresent()
+                ? new Point2d(baseline.basePosition()[0], baseline.basePosition()[1])
+                : new Point2d(8, 8);
+            game.setGeyserResources(baseline.geyserPositions().stream()
+                .map(g -> new io.quarkmind.domain.Resource(
+                    "cal-geyser-" + baseline.geyserPositions().indexOf(g),
+                    new Point2d(g.x() + offX, g.y() + offY), g.amount()))
+                .filter(g -> g.position().distanceTo(emBase) <= 12.0)
+                .toList());
+        }
+
+        List<CalibrationSnapshot> sc2 = baseline.snapshots();
+        int tickLimit = sc2.size();
+
+        int maxMineralDelta = 0;
+        int maxMineralDeltaTick = 0;
+        int sc2ProbesInjected = 0;
+        int sc2StartProbes = sc2.get(0).units().getOrDefault("PROBE", 0);
+        int sc2FinalProbes = sc2.get(tickLimit - 1).units().getOrDefault("PROBE", 0);
+        int sc2TotalToInject = sc2FinalProbes - sc2StartProbes;
+        int sc2ProbeHighWater = sc2StartProbes;
+        java.util.Map<String, Integer> sc2BuildingHighWater = new java.util.HashMap<>(
+            sc2.get(0).buildings());
+        int prevSc2Income = 0;
+        int prevEmIncome = 0;
+        int prevSc2Minerals = 50;
+        int prevEmMinerals = 50;
+        int sc2CumulativeIncome = 0;
+        int emCumulativeIncome = 0;
+
+        List<Point2d> nexusPositions = new java.util.ArrayList<>();
+        for (var entry : buildingPositions.entrySet()) {
+            if (entry.getKey().startsWith("NEXUS-") || entry.getKey().startsWith("COMMAND_CENTER-")
+                || entry.getKey().startsWith("HATCHERY-")) {
+                float[] p = entry.getValue();
+                nexusPositions.add(new Point2d(p[0], p[1]));
+            }
+        }
+
+        System.out.println("=== Pinned calibration — SC2 build order replayed at exact ticks ===");
+        System.out.println("tick | SC2 min | EM min | Δ bal | SC2 Δinc | EM Δinc | cum SC2 | cum EM | probes | SC2 w/base | EM w/base");
+
+        for (int tick = 0; tick < tickLimit; tick++) {
+            CalibrationSnapshot expected = sc2.get(tick);
+            CalibrationSnapshot actual = CalibrationSnapshot.from(tick, game.snapshot());
+
+            int mineralDelta = actual.minerals() - expected.minerals();
+            if (Math.abs(mineralDelta) > Math.abs(maxMineralDelta)) {
+                maxMineralDelta = mineralDelta;
+                maxMineralDeltaTick = tick;
+            }
+
+            int sc2Spent = 0;
+            int emSpent = 0;
+            if (tick + 1 < tickLimit) {
+                CalibrationSnapshot next = sc2.get(tick + 1);
+                int nextProbes = next.units().getOrDefault("PROBE", 0);
+                int curProbes = expected.units().getOrDefault("PROBE", 0);
+                if (nextProbes > curProbes) sc2Spent += (nextProbes - curProbes) * 50;
+                for (var e : next.buildings().entrySet()) {
+                    int cur = expected.buildings().getOrDefault(e.getKey(), 0);
+                    if (e.getValue() > cur) {
+                        BuildingType bt = BuildingType.valueOf(e.getKey());
+                        sc2Spent += (e.getValue() - cur) * io.quarkmind.domain.SC2Data.mineralCost(bt);
+                    }
+                }
+                emSpent = sc2Spent;
+            }
+
+            int sc2Income = expected.minerals() - prevSc2Minerals + sc2Spent;
+            int emIncome = actual.minerals() - prevEmMinerals + emSpent;
+            if (tick == 0) { sc2Income = 0; emIncome = 0; }
+            sc2CumulativeIncome += sc2Income;
+            emCumulativeIncome += emIncome;
+
+            if (tick % 5 == 0 || tick == tickLimit - 1) {
+                int sc2Probes = expected.units().getOrDefault("PROBE", 0);
+                int emProbes = actual.units().getOrDefault("PROBE", 0);
+                String sc2PerBase = expected.workersPerBase() != null
+                    ? java.util.Arrays.toString(expected.workersPerBase()) : "-";
+                int[] emPerBase = game.mineralWorkersPerBase();
+                String emPerBaseStr = emPerBase.length > 0
+                    ? java.util.Arrays.toString(emPerBase) : "-";
+                System.out.printf("%3d  | %6d | %6d | %+4d | %+7d | %+7d | %7d | %7d | %d/%d | %s | %s%n",
+                    tick, expected.minerals(), actual.minerals(), mineralDelta,
+                    sc2Income, emIncome, sc2CumulativeIncome, emCumulativeIncome,
+                    sc2Probes, emProbes, sc2PerBase, emPerBaseStr);
+            }
+
+            prevSc2Minerals = expected.minerals();
+            prevEmMinerals = actual.minerals();
+
+            int probesBefore = (int) game.snapshot().myUnits().stream()
+                .filter(u -> u.type() == io.quarkmind.domain.UnitType.PROBE).count();
+            game.tick();
+            game.processDeferredResearchIntents();
+            int probesAfter = (int) game.snapshot().myUnits().stream()
+                .filter(u -> u.type() == io.quarkmind.domain.UnitType.PROBE).count();
+            if (probesAfter > probesBefore) {
+                System.out.printf("  [PROBE] tick %d: %d → %d (+%d from tick())%n",
+                    tick, probesBefore, probesAfter, probesAfter - probesBefore);
+            }
+
+            if (tick + 1 < tickLimit) {
+                CalibrationSnapshot next = sc2.get(tick + 1);
+                int curProbes = expected.units().getOrDefault("PROBE", 0);
+                int nextProbes = next.units().getOrDefault("PROBE", 0);
+                if (nextProbes > sc2ProbeHighWater && sc2ProbesInjected < sc2TotalToInject) {
+                    int toInject = Math.min(nextProbes - sc2ProbeHighWater,
+                                           sc2TotalToInject - sc2ProbesInjected);
+                    int[] nextPerBase = next.workersPerBase();
+                    int[] curPerBase = expected.workersPerBase();
+                    if (nextPerBase != null && curPerBase != null && !nexusPositions.isEmpty()) {
+                        int injected = 0;
+                        for (int bi = 0; bi < Math.min(curPerBase.length, nextPerBase.length)
+                                         && bi < nexusPositions.size() && injected < toInject; bi++) {
+                            int gained = nextPerBase[bi] - (bi < curPerBase.length ? curPerBase[bi] : 0);
+                            for (int g = 0; g < gained && injected < toInject; g++) {
+                                game.injectWorkerAtBase(nexusPositions.get(bi));
+                                injected++;
+                            }
+                        }
+                        while (injected < toInject) {
+                            game.injectWorkerAtBase(nexusPositions.get(0));
+                            injected++;
+                        }
+                    } else {
+                        for (int p = 0; p < toInject; p++) {
+                            game.injectWorkerForPinnedCalibration();
+                        }
+                    }
+                    sc2ProbesInjected += toInject;
+                    sc2ProbeHighWater = nextProbes;
+                }
+                for (var entry : next.buildings().entrySet()) {
+                    int cur = sc2BuildingHighWater.getOrDefault(entry.getKey(), 0);
+                    if (entry.getValue() > cur) {
+                        BuildingType bt = BuildingType.valueOf(entry.getKey());
+                        sc2BuildingHighWater.put(entry.getKey(), entry.getValue());
+                        for (int b = 0; b < entry.getValue() - cur; b++) {
+                            Point2d pos = new Point2d(30, 30);
+                            String lookupKey = entry.getKey() + "-" + (tick + 1);
+                            if (buildingPositions.containsKey(lookupKey)) {
+                                float[] p = buildingPositions.get(lookupKey);
+                                pos = new Point2d(p[0], p[1]);
+                            } else {
+                                for (var bp : buildingPositions.entrySet()) {
+                                    if (bp.getKey().startsWith(entry.getKey()) && !bp.getKey().equals("NEXUS-0")) {
+                                        pos = new Point2d(bp.getValue()[0], bp.getValue()[1]);
+                                        break;
+                                    }
+                                }
+                            }
+                            game.applyIntent(new io.quarkmind.sc2.intent.TimedIntent(
+                                (long)(tick + 1) * SC2Data.LOOPS_PER_TICK,
+                                io.quarkmind.sc2.intent.BuildIntent.of("cal-pinned", bt, pos)));
+                        }
+                    }
+                }
+            }
+        }
+
+        CalibrationSnapshot finalSc2 = sc2.get(tickLimit - 1);
+        CalibrationSnapshot finalEm = CalibrationSnapshot.from(tickLimit - 1, game.snapshot());
+        int finalMineralDelta = finalEm.minerals() - finalSc2.minerals();
+        double mineralPct = finalSc2.minerals() > 0 ? finalMineralDelta * 100.0 / finalSc2.minerals() : 0;
+
+        System.out.printf("%nFinal: SC2 minerals=%d EM minerals=%d (Δ=%+d, %+.1f%%)%n",
+            finalSc2.minerals(), finalEm.minerals(), finalMineralDelta, mineralPct);
+        System.out.printf("Final: SC2 vespene=%d EM vespene=%d (Δ=%+d)%n",
+            finalSc2.vespene(), finalEm.vespene(), finalEm.vespene() - finalSc2.vespene());
+        System.out.printf("Max mineral delta: %+d at tick %d%n", maxMineralDelta, maxMineralDeltaTick);
+        System.out.printf("Final probes: SC2=%d EM=%d%n",
+            finalSc2.units().getOrDefault("PROBE", 0),
+            finalEm.units().getOrDefault("PROBE", 0));
+        if (finalSc2.workersPerBase() != null) {
+            System.out.printf("SC2 workers/base: %s%n", java.util.Arrays.toString(finalSc2.workersPerBase()));
+        }
+        int[] finalEmPerBase = game.mineralWorkersPerBase();
+        if (finalEmPerBase.length > 0) {
+            System.out.printf("EM workers/base:  %s%n", java.util.Arrays.toString(finalEmPerBase));
         }
     }
 }

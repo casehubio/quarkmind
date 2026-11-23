@@ -168,6 +168,13 @@ public final class TerrainGrid {
         return new TerrainGrid(64, 64, grid);
     }
 
+    public static TerrainGrid flatMap(int width, int height) {
+        Height[][] grid = new Height[width][height];
+        for (Height[] col : grid) {Arrays.fill(col, Height.LOW);}
+        return new TerrainGrid(width, height, grid);
+    }
+
+
     /**
      * Constructs a TerrainGrid from ocraft's PathingGrid bitmap.
      * All walkable tiles return LOW; height data integration deferred to real SC2 phase.
