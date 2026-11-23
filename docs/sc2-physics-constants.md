@@ -432,17 +432,17 @@ Most defaulted to 9. Probe specifically set to 8. Confidence: **Estimated** — 
 
 ## 13. Building Footprints
 
-All building types mapped to rectangular tile footprints via `SC2Data.buildingFootprint(BuildingType)` (#736), returning an immutable `SC2Data.Footprint(width, height)` record (#740) with `halfWidth()`/`halfHeight()` helpers. `enforceWall()` uses `insideFootprint()` — axis-aligned rectangle containment check, tile-inclusive boundaries. The deprecated `buildingRadius()` delegates to `buildingFootprint()` and returns `max(width, height) / 2.0f` for backward compatibility.
+All building types mapped to rectangular tile footprints via `SC2Data.buildingFootprint(BuildingType)` (#736), returning an immutable `SC2Data.Footprint(width, height)` record (#740) with `halfWidth()`/`halfHeight()` helpers. `enforceWall()` uses `insideFootprint()` — axis-aligned rectangle containment check, tile-inclusive boundaries. The deprecated `buildingRadius()` was removed in #748 (zero callers remained after #740).
 
 | Footprint | Half-extents | Examples |
 |-----------|-------------|----------|
 | 5×5 (Large) | 2.5 × 2.5 | Nexus, CC, Hatchery |
 | 4×4 | 2.0 × 2.0 | Ultralisk Cavern |
-| 3×3 (Medium) | 1.5 × 1.5 | Gateway, Barracks, Spawning Pool, Evolution Chamber, Assimilator, Refinery, Extractor |
-| 2×2 (Small) | 1.0 × 1.0 | Pylon, Supply Depot, Photon Cannon, Spine/Spore Crawler, Nydus Canal |
+| 3×3 (Medium) | 1.5 × 1.5 | Gateway, Barracks, Spawning Pool, Evolution Chamber, Nydus Canal, Assimilator, Refinery, Extractor |
+| 2×2 (Small) | 1.0 × 1.0 | Pylon, Supply Depot, Photon Cannon, Spine/Spore Crawler |
 | 1×1 (Tiny) | 0.5 × 0.5 | Creep Tumor |
 
-Confidence: **Published** (SC2 data editor). Evolution Chamber corrected 2×2→3×3 (#738). Gas buildings (Assimilator/Refinery/Extractor/Assimilator_Rich) corrected 2×2→3×3 (#738) — matches 3×3 geyser footprint (#742).
+Confidence: **Published** (SC2 data editor). Evolution Chamber corrected 2×2→3×3 (#738). Gas buildings (Assimilator/Refinery/Extractor/Assimilator_Rich) corrected 2×2→3×3 (#738) — matches 3×3 geyser footprint (#742). Nydus Canal corrected 2×2→3×3 (#750) — SC2 data editor Footprint3x3.
 
 **Rectangular vs circular collision (#736):** The rectangular footprint differs from the old circular radius at diagonal positions — the rectangle extends to sqrt(hw²+hh²) at corners while the circle boundary is constant at max(hw,hh). For a 5×5 Nexus at (8,8): a unit at (10,10) is inside the rectangle (10 ≤ 10.5) but outside the circle (distance=2.83 > 2.5). This is correct SC2 behaviour — buildings occupy rectangular tiles, not circles.
 
@@ -509,9 +509,9 @@ Sub-tick chaining (implemented in #578 for movement, #583 for mining, #584 for g
 
 ### Cumulative drift
 
-Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 7-min is 38.6% (2026-11-22 baseline). Each tick's income error accumulates in mineralsCurrent — the mineral *balance* diverges by roughly the rate error × elapsed time. This is why mineralsCurrent MAPE (84.9%) is far higher than the rate MAPE (38.6%). Drift amplification ratio is ~2.2× at 7-min.
+Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 7-min is 38.2% (2026-11-22 baseline, sliding window). Each tick's income error accumulates in mineralsCurrent — the mineral *balance* diverges by roughly the rate error × elapsed time. This is why mineralsCurrent MAPE (84.9%) is far higher than the rate MAPE (38.2%). Drift amplification ratio is ~2.2× at 7-min.
 
-Fixing rate accuracy is the primary lever for reducing balance MAPE. Gap decomposition (#744) is quantifying the per-component contribution — rate algorithm (#676), map geometry (#745), worker timing (#746). The balance fields will converge automatically as rate accuracy improves (#747 will validate).
+Fixing rate accuracy is the primary lever for reducing balance MAPE. Gap decomposition (#744) confirmed the dominant driver is **cycle cadence variance** — EM cycles are too uniform (σ≈0.5 ticks vs SC2 σ≈3+). Rate algorithm (#676) and map geometry (#745) contributed minor improvements. Balance is confirmed independent of rate reporting (#747) — it tracks actual income minus spending, not reported rate. Next improvement: #751 (starting worker deduction), #752 (variance diagnostic), #753 (dynamic patch selection).
 
 ### Per-race efficiency factors — removed
 
@@ -543,15 +543,9 @@ Post-#727 (density-dependent path deviation): 4w +3.6%, 6w +2.7%, 8w −0.2%, 10
 
 SC2 mineral rates are quantised at exactly 28 minerals/min (`MINERAL_CARGO(5) × LOOPS_PER_MINUTE(1344) / 240 = 28`), implying SC2 counts discrete deliveries in a **240-loop sliding window**. The EM now uses a matching 240-loop (11-tick) sliding window in EconomyTracker (#676). Previously used EMA (α=0.25 minerals, α=0.35 gas), which compensated for delivery timing errors but diverged from SC2's quantised signal. Physics improvements (#656, #661, #707, #733) tightened delivery timing enough that the sliding window now outperforms EMA at all checkpoints.
 
-| Algorithm | Mineral MAPE | Gas MAPE |
-|-----------|-------------|----------|
-| Simple window | 39.2% | 36.1% |
-| **EMA α=0.25** | **15.8%** | 27.6% |
-| EMA α=0.30 | 16.1% | 26.7% |
-| **EMA α=0.35** | — | **~26.5%** |
-| EMA α=0.40 | 18.0% | 26.4% |
+EconomyTracker uses a 240-loop (11-tick) sliding window (`WINDOW_TICKS = ceil(240/22) = 11`). Rate = `windowIncome × LOOPS_PER_MINUTE / windowDuration`. The window advances every tick, overwriting the oldest slot in a circular buffer. The ~0.83% rate effect from tick quantisation (242 loops actual vs 240 theoretical) is accepted per the "no compensation constants" rule.
 
-EconomyTracker now uses EMA: `MINERAL_EMA_ALPHA=0.25`, `VESPENE_EMA_ALPHA=0.35`. First window seeds the EMA with the instantaneous rate to avoid cold-start suppression.
+**Historical:** EMA (α=0.25 minerals, α=0.35 gas) was used before #676. At 7-min, EMA produced 38.6% mineral MAPE vs sliding window's 38.2% — a small improvement. At 1-min, the window is dramatically better (54.2% → 21.6%) because EMA's lag suppresses early-game rate signals.
 
 ### Snapshot-aligned spending (#579)
 
@@ -682,50 +676,66 @@ Newly produced workers spawn at the town hall position and walk to an assigned m
 
 ## 16. Economy Baseline
 
-Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, EMA rate algorithm). Baseline date: 2026-11-22.
+Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, 240-loop sliding window rate algorithm). Baseline date: 2026-11-22.
 
 ### Rate MAPE by checkpoint
 
 | Checkpoint | mineralsCollectionRate | vespeneCollectionRate |
 |------------|----------------------|---------------------|
-| 1-min | 35.6% | 90.8% (few gas workers) |
-| 3-min | 24.8% | 29.5% |
-| 5-min | 29.3% | 22.2% |
-| 7-min | **38.6%** | **20.5%** |
-
-Mineral rate MAPE increased vs prior baselines — under investigation (#744). Gas rate MAPE improved significantly from recalibrated harvest decomposition (#689, #695).
+| 1-min | 21.6% | 84.1% (few gas workers) |
+| 3-min | 23.9% | 23.1% |
+| 5-min | 27.9% | 20.2% |
+| 7-min | **38.2%** | **18.7%** |
 
 ### Full economy at 7-min
 
 | Field | MAPE | Structural floor | Status |
 |-------|------|-----------------|--------|
-| mineralsCollectionRate | 38.6% | ~10-12% | Gap: rate algorithm (#676), map geometry (#745), worker timing (#746) |
-| vespeneCollectionRate | 20.5% | ~12-15% | Approaching floor — rate algorithm (#676) is remaining lever |
-| mineralsCurrent | 84.9% | ~40-50% | Cumulative drift from rate error; reduces proportionally with rate fix |
+| mineralsCollectionRate | 38.2% | ~10-12% | Gap driver: cycle cadence variance (EM σ≈0.5 vs SC2 σ≈3+) |
+| vespeneCollectionRate | 18.7% | ~12-15% | Approaching floor |
+| mineralsCurrent | 84.9% | ~40-50% | Cumulative drift from rate error; also -600 from starting worker deduction (#751) |
 | vespeneCurrent | 61.1% | ~35-45% | Cumulative drift; gas rate closer to floor so less headroom |
-| foodMade | 0.9% | ~0.5-1% | At floor |
+| foodMade | 2.9% | ~0.5-1% | Near floor |
 | foodUsed | 3.7% | ~2-3% | Near floor |
 | workersActiveCount | 2.5% | ~2-3% | At floor |
 | mineralsUsedCurrentArmy | 4.3% | ~5-8% | At floor — snapshot-aligned spending (#579) |
-| mineralsUsedCurrentEconomy | 0.9% | ~0.5-1% | At floor |
+| mineralsUsedCurrentEconomy | 5.5% | ~0.5-1% | At floor |
 | vespeneUsedCurrentArmy | 3.9% | ~5-8% | At floor |
 | vespeneUsedCurrentTechnology | 39.7% | ~10-15% | Structural — InProgress/Current timing boundary |
 
-### Accuracy plan — closing the gap
+### Improvement since #517 (first standalone baseline)
 
-Six issues scheduled in dependency order under epic #607:
-1. **#744** (M/Med) — Gap decomposition: identify which components drive the 38.6% mineral rate MAPE
-2. **#745** (S/Med) — Per-replay mineral patch geometry: quantify map distance contribution
-3. **#746** (S/Med) — Worker startup/transfer timing: quantify allocation delay contribution
-4. **#676** (M/High) — Rate algorithm reverse-engineering: break the ~16% EMA floor
-5. **#747** (S/Low) — Balance validation: verify balance MAPE drops proportionally after rate fixes
-6. **#666** (L/High) — Forward simulation mode: EM-driven income without GT sync
+| Field | #517 (original) | Current | Delta |
+|-------|----------------|---------|-------|
+| mineralsCurrent (7-min) | 178.4% | 84.9% | **-93.5pp** |
+| vespeneCurrent (7-min) | 147.3% | 61.1% | **-86.2pp** |
+| vespeneCollectionRate (7-min) | 55.6% | 18.7% | **-36.9pp** |
+| mineralsCollectionRate (7-min) | 29.5% | 38.2% | +8.7pp (rate algo changed, 1-min improved 54%→22%) |
 
-Target after all land: mineralsCollectionRate ≤12%, vespeneCollectionRate ≤15%, mineralsCurrent ≤50%.
+### Completed accuracy work (under epic #607)
+
+| Issue | Result |
+|-------|--------|
+| #744 — Gap decomposition | Identified cycle cadence variance as dominant driver |
+| #745 — Mineral patch geometry | Seeded positions outperform replay positions (5-12pp) — physics calibrated for uniform distances |
+| #746 — Worker startup timing | Found starting worker cost deduction bug (→#751) |
+| #676 — Rate algorithm | 240-loop sliding window replaces EMA; 1-min mineral rate -14pp |
+| #747 — Balance validation | Balance unchanged — independent of rate reporting |
+
+### Accuracy plan — next phase
+
+Five issues queued in dependency order:
+1. **#751** (S/Low) — Skip initial worker mineral deduction: fix -600 mineral offset at tick 0
+2. **#752** (M/Med) — Per-worker cycle variance diagnostic: measure EM σ vs SC2 σ, identify gap sources
+3. **#753** (M/High) — Dynamic worker patch selection: workers scan for idle patches on return
+4. **#754** (M/High) — Walk-path collision between workers in transit: add missing variance source
+5. **#755** (XS/Low) — Regenerate standalone baseline after fixes
+
+Target: mineralsCollectionRate ≤20%, vespeneCollectionRate ≤15%, mineralsCurrent ≤60%.
 
 ### Rate algorithm
 
-240-loop sliding window (11 ticks) replaces EMA (#676). Rate = `windowIncome × LOOPS_PER_MINUTE / windowDuration`. Standalone MAPE at 7-min: minerals 38.2%, vespene 18.7%. Improvement over EMA: minerals -0.4pp, vespene -1.8pp at 7-min; minerals -14.0pp at 1-min.
+240-loop sliding window (11 ticks), matching SC2's quantisation (#676). See §14 for details. Standalone MAPE at 7-min: minerals 38.2%, vespene 18.7%.
 
 ### Gas harvest recalibration (#606, #615, #639, #689, #695)
 
