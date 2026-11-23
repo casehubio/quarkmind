@@ -7,7 +7,6 @@ import static io.quarkmind.domain.UnitAttribute.BIOLOGICAL;
 import static io.quarkmind.domain.UnitAttribute.LIGHT;
 import static io.quarkmind.domain.UnitAttribute.MECHANICAL;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SC2DataTest {
 
@@ -779,4 +778,12 @@ class SC2DataTest {
         assertThat(fp.width()).isEqualTo(1);
         assertThat(fp.height()).isEqualTo(1);
     }
+
+    @Test
+    void footprint_nydusCanal_3x3() {
+        SC2Data.Footprint fp = SC2Data.buildingFootprint(BuildingType.NYDUS_CANAL);
+        assertThat(fp.width()).isEqualTo(3);
+        assertThat(fp.height()).isEqualTo(3);
+    }
+
 }

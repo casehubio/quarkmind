@@ -1344,14 +1344,13 @@ public final class SC2Data {
                  FACTORY, STARPORT, FUSION_CORE, BUNKER,
                  SPAWNING_POOL, ROACH_WARREN, BANELING_NEST,
                  HYDRALISK_DEN, LURKER_DEN, INFESTATION_PIT,
-                 SPIRE, GREATER_SPIRE, NYDUS_NETWORK,
+                 SPIRE, GREATER_SPIRE, NYDUS_NETWORK, NYDUS_CANAL,
                  EVOLUTION_CHAMBER,
                  ASSIMILATOR, REFINERY, EXTRACTOR, ASSIMILATOR_RICH,
                  UNKNOWN -> FP_3x3;
             case PYLON, SUPPLY_DEPOT, MISSILE_TURRET, SENSOR_TOWER,
                  PHOTON_CANNON, SHIELD_BATTERY,
-                 SPINE_CRAWLER, SPORE_CRAWLER,
-                 NYDUS_CANAL -> FP_2x2;
+                 SPINE_CRAWLER, SPORE_CRAWLER -> FP_2x2;
             case CREEP_TUMOR, CREEP_TUMOR_QUEEN, ORACLE_STASIS_TRAP -> FP_1x1;
         };
     }
