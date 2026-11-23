@@ -18,6 +18,7 @@ import io.quarkmind.sc2.intent.AddonKind;
 import io.quarkmind.sc2.intent.AttackIntent;
 import io.quarkmind.sc2.intent.BlinkIntent;
 import io.quarkmind.sc2.intent.BuildIntent;
+import io.quarkmind.sc2.intent.BuildingBornIntent;
 import io.quarkmind.sc2.intent.BuildingDiedIntent;
 import io.quarkmind.sc2.intent.MorphIntent;
 import io.quarkmind.sc2.intent.MoveIntent;
@@ -2354,4 +2355,79 @@ class EmulatedGameTest {
             SC2Data.maxHealth(UnitType.PROBE), SC2Data.maxHealth(UnitType.PROBE),
             SC2Data.maxShields(UnitType.PROBE), SC2Data.maxShields(UnitType.PROBE), 0, 0);
     }
+
+// ---- #751: Starting workers should not incur mineral cost or spending ----
+
+    @Test
+    void startingWorkerTrainIntents_doNotDeductMinerals() {
+        EmulatedGame harness = new EmulatedGame();
+        harness.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));
+        harness.resetForHarness();
+
+        assertThat(harness.snapshot().minerals()).isEqualTo(50);
+
+        harness.applyIntent(new TimedIntent(0,
+                                            new BuildingBornIntent("r-nexus-1", BuildingType.NEXUS, new Point2d(50, 50))));
+
+        for (int i = 0; i < 12; i++) {
+            harness.applyIntent(new TimedIntent(0,
+                                                new TrainIntent("r-nexus-1", UnitType.PROBE, true, false, 0, "r-w-" + i)));
+        }
+
+        for (int t = 0; t < 5; t++) {harness.tick();}
+
+        GameState snap = harness.snapshot();
+        assertThat(snap.minerals())
+                .as("Starting workers are free — mineral balance must not go negative")
+                .isGreaterThanOrEqualTo(50);
+    }
+
+
+    @Test
+    void startingWorkerTrainIntents_doNotRecordSpending() {
+        EmulatedGame harness = new EmulatedGame();
+        harness.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));
+        harness.resetForHarness();
+
+        harness.applyIntent(new TimedIntent(0,
+                                            new BuildingBornIntent("r-nexus-1", BuildingType.NEXUS, new Point2d(50, 50))));
+
+        for (int i = 0; i < 12; i++) {
+            harness.applyIntent(new TimedIntent(0,
+                                                new TrainIntent("r-nexus-1", UnitType.PROBE, true, false, 0, "r-w-" + i)));
+        }
+
+        // 160-loop spending interval / 22 loops per tick = ~8 ticks minimum
+        for (int t = 0; t < 10; t++) {harness.tick();}
+
+        GameState snap = harness.snapshot();
+        assertThat(snap.playerEconomy().mineralsUsedCurrentEconomy())
+                .as("Starting workers are free — economy spending must be 0, not 600")
+                .isEqualTo(0);
+    }
+
+
+    @Test
+    void nonStartingWorkerTrainIntents_stillRecordSpending() {
+        EmulatedGame harness = new EmulatedGame();
+        harness.setPlayerRaceModel(RaceModelFactory.forRace(Race.PROTOSS));
+        harness.resetForHarness();
+
+        harness.applyIntent(new TimedIntent(0,
+                                            new BuildingBornIntent("r-nexus-1", BuildingType.NEXUS, new Point2d(50, 50))));
+
+        int completionLoop = 500;
+        harness.applyIntent(new TimedIntent(0,
+                                            new TrainIntent("r-nexus-1", UnitType.PROBE, true, false, completionLoop, "r-trained-1")));
+
+        int ticksNeeded = (int) (completionLoop / SC2Data.LOOPS_PER_TICK) + 5;
+        for (int t = 0; t < ticksNeeded; t++) {harness.tick();}
+
+        GameState snap = harness.snapshot();
+        assertThat(snap.playerEconomy().mineralsUsedCurrentEconomy())
+                .as("Non-starting workers must still record spending")
+                .isGreaterThanOrEqualTo(50);
+    }
+
+
 }
