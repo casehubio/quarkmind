@@ -41,7 +41,7 @@ SC2 is "mostly deterministic" with two documented randomness sources ([PySC2 env
 
 **Replays** work by saving the random seed alongside the action list. Same seed + same actions = identical game. This confirms the randomness is real but seeded.
 
-**EM implementation status:** Worker processing order is shuffled per loop via `Random(42)` in `WorkerSimulation` (#634). Three shuffle points: mineral worker step order, patch acquisition priority, and collision resolution walking-list order. Fixed seed ensures test determinism; `setSeed()` allows per-game variation. EM σ=0.57 (SC2: 0.56, #656), mean=5.29 (SC2: 5.28). Weapon speed randomness is not yet modeled.
+**EM implementation status:** Worker processing order is shuffled per loop via `Random(42)` in `WorkerSimulation` (#634). Three shuffle points: mineral worker step order, patch acquisition priority, and collision resolution walking-list order. Fixed seed ensures test determinism; `setSeed()` allows per-game variation. Controlled 12w cycle variance (#752 diagnostic): EM σ=0.85 vs SC2 σ=0.56 — EM is *more* variable than SC2 in controlled conditions. The EM's higher variance comes from walk-time jitter and collision avoidance; SC2's tighter distribution reflects its flow-field pathfinder. In oracle replays, EM cycle σ=7-10 ticks, dominated by expansion walk distances (σ=4-6). See `docs/benchmarks/cycle-variance-diagnostic.md`. Weapon speed randomness is not yet modeled.
 
 ---
 
@@ -336,6 +336,8 @@ Previously (pre-#655): 12w +0.6%, 16w −20.2%, 24w −13.4%. The compound colli
 | Starting workers | 12 | 12 | 12 | SC2 standard | **Published** |
 | Starting base | Nexus | CC | Hatchery | SC2 standard | **Published** |
 
+**Starting entity costs (#751):** Starting workers and buildings at game loop 0 are free — `EmulatedGame.startTraining()` skips `recordTrainSpending` when `completesAtLoop == 0`, and `handleBuildingBorn()` skips `recordBuildSpending` when `loop == 0`. Previously, TrackerIntentExtractor-driven starting workers recorded 600 minerals (12 × 50) and starting town halls recorded 400 minerals of false economy spending at tick 0.
+
 ---
 
 ## 9. Production Timing
@@ -511,7 +513,7 @@ Sub-tick chaining (implemented in #578 for movement, #583 for mining, #584 for g
 
 Rate field errors compound in balance fields. mineralsCollectionRate MAPE at 7-min is 38.2% (2026-11-22 baseline, sliding window). Each tick's income error accumulates in mineralsCurrent — the mineral *balance* diverges by roughly the rate error × elapsed time. This is why mineralsCurrent MAPE (84.9%) is far higher than the rate MAPE (38.2%). Drift amplification ratio is ~2.2× at 7-min.
 
-Fixing rate accuracy is the primary lever for reducing balance MAPE. Gap decomposition (#744) confirmed the dominant driver is **cycle cadence variance** — EM cycles are too uniform (σ≈0.5 ticks vs SC2 σ≈3+). Rate algorithm (#676) and map geometry (#745) contributed minor improvements. Balance is confirmed independent of rate reporting (#747) — it tracks actual income minus spending, not reported rate. Next improvement: #751 (starting worker deduction), #752 (variance diagnostic), #753 (dynamic patch selection).
+Fixing rate accuracy is the primary lever for reducing balance MAPE. Gap decomposition (#744) initially pointed to cycle cadence variance, but #752 diagnostic revealed the assumption was inverted: controlled EM σ=0.85 > SC2 σ=0.56. The original comparison (σ≈0.5 vs σ≈3+) conflated controlled EM with wild SC2 data. Walk distance variance (σ=4-6 ticks) is the dominant variance source in real games, and the EM already models this. #753 (dynamic patch selection) and #754 (walk-path collisions) were closed as not-planned — cycle cadence is not the rate MAPE root cause. Rate algorithm (#676) contributed at 1-min (54%→22%); map geometry (#745) contributed 5-12pp. Balance is confirmed independent of rate reporting (#747).
 
 ### Per-race efficiency factors — removed
 
@@ -676,7 +678,7 @@ Newly produced workers spawn at the town hall position and walk to an assigned m
 
 ## 16. Economy Baseline
 
-Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, 240-loop sliding window rate algorithm). Baseline date: 2026-11-22.
+Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, 240-loop sliding window rate algorithm). Baseline date: 2026-11-23 (post-#751 starting entity spending fix, post-#752 variance diagnostic).
 
 ### Rate MAPE by checkpoint
 
@@ -691,15 +693,15 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, 240
 
 | Field | MAPE | Structural floor | Status |
 |-------|------|-----------------|--------|
-| mineralsCollectionRate | 38.2% | ~10-12% | Gap driver: cycle cadence variance (EM σ≈0.5 vs SC2 σ≈3+) |
+| mineralsCollectionRate | 38.2% | ~10-12% | Root cause under investigation — cycle cadence ruled out (#752) |
 | vespeneCollectionRate | 18.7% | ~12-15% | Approaching floor |
-| mineralsCurrent | 84.9% | ~40-50% | Cumulative drift from rate error; also -600 from starting worker deduction (#751) |
+| mineralsCurrent | 84.9% | ~40-50% | Cumulative drift from rate error (drift amplification ~2.2×) |
 | vespeneCurrent | 61.1% | ~35-45% | Cumulative drift; gas rate closer to floor so less headroom |
 | foodMade | 2.9% | ~0.5-1% | Near floor |
 | foodUsed | 3.7% | ~2-3% | Near floor |
 | workersActiveCount | 2.5% | ~2-3% | At floor |
 | mineralsUsedCurrentArmy | 4.3% | ~5-8% | At floor — snapshot-aligned spending (#579) |
-| mineralsUsedCurrentEconomy | 5.5% | ~0.5-1% | Above floor — building cost timing variance |
+| mineralsUsedCurrentEconomy | 31.5% | — | EM under-tracks building costs (tracker-driven buildings complete faster than GT build times) |
 | vespeneUsedCurrentArmy | 3.9% | ~5-8% | At floor |
 | vespeneUsedCurrentTechnology | 39.7% | ~10-15% | Structural — InProgress/Current timing boundary |
 
@@ -712,26 +714,38 @@ Standalone EmulatedGame accuracy (118 oracle replays, all GT syncs disabled, 240
 | vespeneCollectionRate (7-min) | 55.6% | 18.7% | **-36.9pp** |
 | mineralsCollectionRate (7-min) | 29.5% | 38.2% | +8.7pp (rate algo changed, 1-min improved 54%→22%) |
 
-### Completed accuracy work (under epic #607)
+### Completed accuracy work — gap decomposition phase (#744-#747)
 
 | Issue | Result |
 |-------|--------|
-| #744 — Gap decomposition | Identified cycle cadence variance as dominant driver |
+| #744 — Gap decomposition | Initially pointed to cycle cadence variance; later invalidated by #752 |
 | #745 — Mineral patch geometry | Seeded positions outperform replay positions (5-12pp) — physics calibrated for uniform distances |
-| #746 — Worker startup timing | Found starting worker cost deduction bug (→#751) |
+| #746 — Worker startup timing | Found starting worker cost deduction bug (→#751, fixed) |
 | #676 — Rate algorithm | 240-loop sliding window replaces EMA; 1-min mineral rate -14pp |
 | #747 — Balance validation | Balance unchanged — independent of rate reporting |
 
-### Accuracy plan — next phase
+### Completed accuracy work — variance phase (#751-#755)
 
-Five issues queued in dependency order:
-1. **#751** (S/Low) — Skip initial worker mineral deduction: fix -600 mineral offset at tick 0
-2. **#752** (M/Med) — Per-worker cycle variance diagnostic: measure EM σ vs SC2 σ, identify gap sources
-3. **#753** (M/High) — Dynamic worker patch selection: workers scan for idle patches on return
-4. **#754** (M/High) — Walk-path collision between workers in transit: add missing variance source
-5. **#755** (XS/Low) — Regenerate standalone baseline after fixes
+| Issue | Result |
+|-------|--------|
+| #751 — Starting entity spending fix | Fixed: skip `recordTrainSpending`/`recordBuildSpending` for entities at game loop 0 (starting workers/buildings are free) |
+| #752 — Per-worker cycle variance diagnostic | EM σ=0.85 > SC2 σ=0.56 in controlled 12w — cadence variance assumption inverted. Walk distance (σ=4-6) is the dominant variance source in real games |
+| #753 — Dynamic worker patch selection | Closed not-planned: premise invalidated by #752 |
+| #754 — Walk-path collision between workers | Closed not-planned: premise invalidated by #752 |
+| #755 — Regenerate standalone baseline | Regenerated post-#751; DivergenceRegressionTest passes |
 
-Target: mineralsCollectionRate ≤20%, vespeneCollectionRate ≤15%, mineralsCurrent ≤60%.
+### Accuracy gap — expansion income deficit
+
+mineralsCollectionRate MAPE (38.2%) accelerates with expansions: 21.6% at 1-min → 38.2% at 7-min. Per-worker rate deficit is 12.5% at 1-min → 36.7% at 7-min (worker counts are fine — +1.8%). Root cause decomposition:
+
+| Cause | Est. impact | Issue |
+|-------|------------|-------|
+| Expansion mineral patches not seeded (workers mine at default 7.0u instead of real 3-5u) | 15-20pp | #756 |
+| Fixed worker transfer count (EM=4, real SC2 varies 3-8) | 5-10pp | #757 |
+| Gas worker over-assignment at late checkpoints | 3-5pp | #758 |
+| Baseline regeneration after fixes | — | #759 |
+
+Target: mineralsCollectionRate ≤20%, mineralsCurrent ≤60%.
 
 ### Rate algorithm
 
@@ -784,6 +798,7 @@ Gas harvest duration: 31.7 loops / 1.415s (Liquipedia; SC2 profiler confirms 32 
 | ExpansionTransferDiagnosticTest | Expansion transfer delay, worker distribution per base | `-Pdiagnostic` |
 | ApproachDockingSweepTest | Phase duration, stagger, distance scale, gas harvest, and docking overhead sweeps | `-Pdiagnostic` |
 | GasWorkerCycleDiagnosticTest | Per-phase gas cycle timing: walk, wait, inside, return, deposit | `-Pdiagnostic` |
+| CycleVarianceDiagnosticTest | Per-worker cycle σ: EM vs SC2 controlled + oracle replay phase decomposition | `-Pdiagnostic` |
 
 ---
 
