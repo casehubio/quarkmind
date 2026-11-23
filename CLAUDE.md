@@ -40,7 +40,7 @@ This is an application, not a framework. If the capability requires SC2 game kno
 
 **The EmulatedGame must match SC2 tick-for-tick.** Compensation constants (mining efficiency factor, gas efficiency override) are forbidden — they mask foundational timing differences and create a treadmill where every physics change requires re-sweeping constants.
 
-**Diagnostic findings (#618→#632):** 240 of 305 ticks (78.7%) have per-tick mineral delivery mismatches between EM and SC2 in a controlled 12w economy-only scenario. Collision model changes (#623–#630) reduced mismatches by only 2 ticks — essentially unchanged from the original 242/304 (80%). The structural issue is cadence variance: EM cycles span 4–9 ticks (σ≈0.5) while SC2 cycles span 2–17 ticks (σ≈3+). The EM's fixed-assignment uniform-cycle model cannot reproduce SC2's dynamic worker routing.
+**Diagnostic findings (#618→#632, revised #752):** 240 of 305 ticks (78.7%) have per-tick mineral delivery mismatches between EM and SC2 in a controlled 12w economy-only scenario. Collision model changes (#623–#630) reduced mismatches by only 2 ticks. #752 diagnostic revealed the cadence variance assumption was inverted: controlled EM σ=0.85 vs SC2 σ=0.56 — EM is *more* variable, not less. In oracle replays, EM cycle σ=7-10 ticks, driven by expansion walk distances (σ=4-6) not physics uniformity. The rate MAPE gap is unlikely caused by cycle cadence. See `docs/benchmarks/cycle-variance-diagnostic.md`.
 
 **The fix path:**
 1. ~~Instrument SC2 observation for per-worker delivery events (orders, buffs, cargo)~~ Done (#621)
