@@ -13,6 +13,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,10 @@ public class MapDownloader {
 
     public MapDownloader() {
         this(Path.of(System.getProperty("user.home"), ".quarkmind", "maps"),
-             HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build());
+             HttpClient.newBuilder()
+                       .followRedirects(HttpClient.Redirect.ALWAYS)
+                       .connectTimeout(Duration.ofSeconds(5))
+                       .build());
     }
 
     MapDownloader(Path cacheDir, HttpClient http) {
@@ -76,11 +80,31 @@ public class MapDownloader {
         return Optional.empty();
     }
 
+    static boolean isMapServerReachable() {
+        try {
+            HttpClient probe = HttpClient.newBuilder()
+                                         .connectTimeout(Duration.ofSeconds(3))
+                                         .build();
+            HttpRequest req = HttpRequest.newBuilder(URI.create("https://aiarena.net"))
+                                         .method("HEAD", HttpRequest.BodyPublishers.noBody())
+                                         .timeout(Duration.ofSeconds(3))
+                                         .build();
+            HttpResponse<Void> resp = probe.send(req, HttpResponse.BodyHandlers.discarding());
+            return resp.statusCode() < 500;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
     private Optional<Path> downloadFromPack(int packId, String entryInZip, String saveAs) {
         String url = baseUrl + packId + "/";
         try {
             log.infof("[MAP] Downloading pack %d for map %s", packId, saveAs);
-            HttpRequest req = HttpRequest.newBuilder(URI.create(url)).GET().build();
+            HttpRequest req = HttpRequest.newBuilder(URI.create(url))
+                                         .GET()
+                                         .timeout(Duration.ofSeconds(10))
+                                         .build();
             HttpResponse<byte[]> resp = http.send(req, HttpResponse.BodyHandlers.ofByteArray());
             if (resp.statusCode() != 200) {
                 log.warnf("[MAP] Pack download failed: HTTP %d", resp.statusCode());
