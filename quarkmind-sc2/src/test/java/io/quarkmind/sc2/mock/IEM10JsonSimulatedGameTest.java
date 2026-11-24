@@ -4,6 +4,8 @@ import io.quarkmind.domain.BuildingType;
 import io.quarkmind.domain.GameState;
 import io.quarkmind.domain.Point2d;
 import io.quarkmind.domain.UnitType;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -22,30 +24,38 @@ class IEM10JsonSimulatedGameTest {
 
     private static final Path IEM10_ZIP = Path.of("replays/2016_IEM_10_Taipei.zip");
 
+    private static List<IEM10JsonSimulatedGame> games;
+
+    @BeforeAll
+    static void loadGames() throws IOException {
+        games = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP);
+    }
+
+    @BeforeEach
+    void resetGames() {
+        games.forEach(IEM10JsonSimulatedGame::reset);
+    }
+
     // ---- enumerate() factory ----
 
     @Test
-    void enumerateReturns30Games() throws IOException {
-        List<IEM10JsonSimulatedGame> games = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP);
+    void enumerateReturns30Games() {
         assertThat(games).hasSize(30);
     }
 
     @Test
-    void enumeratedGamesHaveReplayNames() throws IOException {
-        List<IEM10JsonSimulatedGame> games = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP);
+    void enumeratedGamesHaveReplayNames() {
         assertThat(games).allMatch(g -> g.replayName().endsWith(".SC2Replay.json"));
     }
 
     @Test
-    void enumeratedGamesHaveValidMatchups() throws IOException {
-        List<IEM10JsonSimulatedGame> games = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP);
+    void enumeratedGamesHaveValidMatchups() {
         assertThat(games).allMatch(g ->
             g.matchup().equals("PvP") || g.matchup().equals("PvT") || g.matchup().equals("PvZ"));
     }
 
     @Test
-    void datasetContainsPvTAndPvZAndPvP() throws IOException {
-        List<IEM10JsonSimulatedGame> games = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP);
+    void datasetContainsPvTAndPvZAndPvP() {
         assertThat(games.stream().map(IEM10JsonSimulatedGame::matchup))
             .contains("PvT", "PvZ", "PvP");
     }
@@ -53,74 +63,65 @@ class IEM10JsonSimulatedGameTest {
     // ---- matchup detection ----
 
     @Test
-    void firstGameMatchupIsPvT() throws IOException {
-        // ByuN (Terr) vs Lilbow (Prot): watched = Lilbow = Protoss, enemy = Terran → PvT
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        assertThat(game.matchup()).isEqualTo("PvT");
+    void firstGameMatchupIsPvT() {
+        assertThat(games.get(0).matchup()).isEqualTo("PvT");
     }
 
     // ---- initial state ----
 
     @Test
-    void initialStateHasNexus() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        GameState state = game.snapshot();
+    void initialStateHasNexus() {
+        GameState state = games.get(0).snapshot();
         assertThat(state.myBuildings().stream().anyMatch(b -> b.type() == BuildingType.NEXUS))
             .as("Nexus present at game start").isTrue();
     }
 
     @Test
-    void initialStateHas12Probes() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        GameState state = game.snapshot();
+    void initialStateHas12Probes() {
+        GameState state = games.get(0).snapshot();
         assertThat(state.myUnits().stream().filter(u -> u.type() == UnitType.PROBE).count())
             .as("12 probes at game start").isEqualTo(12);
     }
 
     @Test
-    void initialStateHasMineralPatches() throws IOException {
-        IEM10JsonSimulatedGame game  = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        GameState              state = game.snapshot();
+    void initialStateHasMineralPatches() {
+        GameState state = games.get(0).snapshot();
         assertThat(state.mineralPatches())
                 .as("Mineral patches present at game start (neutral UnitBorn at loop 0)")
                 .isNotEmpty();
     }
 
     @Test
-    void initialStateHasGeysers() throws IOException {
-        IEM10JsonSimulatedGame game  = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        GameState              state = game.snapshot();
+    void initialStateHasGeysers() {
+        GameState state = games.get(0).snapshot();
         assertThat(state.geysers())
                 .as("Geysers present at game start (neutral UnitBorn at loop 0)")
                 .isNotEmpty();
     }
 
     @Test
-    void mineralPatchesHavePositiveRemaining() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        assertThat(game.snapshot().mineralPatches())
+    void mineralPatchesHavePositiveRemaining() {
+        assertThat(games.get(0).snapshot().mineralPatches())
                 .allMatch(r -> r.remaining() > 0, "all mineral patches have positive remaining");
     }
 
     @Test
-    void geysersHavePositiveRemaining() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        assertThat(game.snapshot().geysers())
+    void geysersHavePositiveRemaining() {
+        assertThat(games.get(0).snapshot().geysers())
                 .allMatch(r -> r.remaining() > 0, "all geysers have positive remaining");
     }
 
 
     @Test
-    void initialGameFrameIsZero() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        assertThat(game.snapshot().gameFrame()).isEqualTo(0L);
+    void initialGameFrameIsZero() {
+        assertThat(games.get(0).snapshot().gameFrame()).isEqualTo(0L);
     }
 
     // ---- tick() progression ----
 
     @Test
-    void tickAdvancesGameFrameByOne() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
+    void tickAdvancesGameFrameByOne() {
+        IEM10JsonSimulatedGame game = games.get(0);
         game.tick();
         assertThat(game.snapshot().gameFrame()).isEqualTo(1L);
         game.tick();
@@ -128,16 +129,16 @@ class IEM10JsonSimulatedGameTest {
     }
 
     @Test
-    void mineralsPopulatedAfterFewTicks() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
+    void mineralsPopulatedAfterFewTicks() {
+        IEM10JsonSimulatedGame game = games.get(0);
         for (int i = 0; i < 5; i++) game.tick();
         assertThat(game.snapshot().minerals())
             .as("Minerals from PlayerStats after 5 ticks").isGreaterThan(0);
     }
 
     @Test
-    void supplyPopulatedAfterFewTicks() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
+    void supplyPopulatedAfterFewTicks() {
+        IEM10JsonSimulatedGame game = games.get(0);
         for (int i = 0; i < 5; i++) game.tick();
         GameState state = game.snapshot();
         assertThat(state.supply()).as("Supply cap > 0").isGreaterThan(0);
@@ -145,8 +146,8 @@ class IEM10JsonSimulatedGameTest {
     }
 
     @Test
-    void unitCountGrowsOver3Minutes() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
+    void unitCountGrowsOver3Minutes() {
+        IEM10JsonSimulatedGame game = games.get(0);
         int initialUnits = game.snapshot().myUnits().size();
         for (int i = 0; i < 183; i++) game.tick(); // 3 min
         assertThat(game.snapshot().myUnits().size())
@@ -156,32 +157,22 @@ class IEM10JsonSimulatedGameTest {
     // ---- isComplete() ----
 
     @Test
-    void isNotCompleteAtStart() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        assertThat(game.isComplete()).isFalse();
+    void isNotCompleteAtStart() {
+        assertThat(games.get(0).isComplete()).isFalse();
     }
 
     @Test
-    void isCompleteAfterAllEvents() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        // Replays can have 10k+ frames. Cap iteration to prevent CI timeout —
-        // a real game at 22.4 fps × 20 min ≈ 27k frames. 30k is generous.
-        int maxFrames = 30_000;
-        int frame = 0;
-        while (!game.isComplete() && frame < maxFrames) {
-            game.tick();
-            frame++;
-        }
-        assertThat(game.isComplete())
-            .as("Game should complete within %d frames", maxFrames)
-            .isTrue();
+    void isCompleteAfterAllEvents() {
+        IEM10JsonSimulatedGame game = games.get(0);
+        while (!game.isComplete()) game.tick();
+        assertThat(game.isComplete()).isTrue();
     }
 
     // ---- reset() ----
 
     @Test
-    void resetRestoresInitialState() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
+    void resetRestoresInitialState() {
+        IEM10JsonSimulatedGame game = games.get(0);
         for (int i = 0; i < 100; i++) game.tick();
         assertThat(game.snapshot().gameFrame()).isEqualTo(100L);
 
@@ -195,8 +186,8 @@ class IEM10JsonSimulatedGameTest {
     // ---- applyIntent() is a no-op ----
 
     @Test
-    void applyIntentIsNoOp() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
+    void applyIntentIsNoOp() {
+        IEM10JsonSimulatedGame game = games.get(0);
         int buildingsBeforeIntent = game.snapshot().myBuildings().size();
         String probeTag = game.snapshot().myUnits().get(0).tag();
         game.applyIntent(io.quarkmind.sc2.intent.BuildIntent.of(
@@ -209,9 +200,7 @@ class IEM10JsonSimulatedGameTest {
     // ---- enemy unit tracking ----
 
     @Test
-    void terranEnemyUnitsTrackedInPvTGame() throws IOException {
-        // ByuN is extremely aggressive with Marines — should have some by 3 min
-        List<IEM10JsonSimulatedGame> games = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP);
+    void terranEnemyUnitsTrackedInPvTGame() {
         IEM10JsonSimulatedGame pvtGame = games.stream()
             .filter(g -> g.matchup().equals("PvT"))
             .findFirst().orElseThrow(() -> new AssertionError("No PvT game found"));
@@ -222,8 +211,7 @@ class IEM10JsonSimulatedGameTest {
     }
 
     @Test
-    void zergEnemyUnitsTrackedInPvZGame() throws IOException {
-        List<IEM10JsonSimulatedGame> games = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP);
+    void zergEnemyUnitsTrackedInPvZGame() {
         IEM10JsonSimulatedGame pvzGame = games.stream()
             .filter(g -> g.matchup().equals("PvZ"))
             .findFirst().orElseThrow(() -> new AssertionError("No PvZ game found"));

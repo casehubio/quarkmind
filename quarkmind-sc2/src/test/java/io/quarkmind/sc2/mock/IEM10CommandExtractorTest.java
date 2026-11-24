@@ -3,6 +3,7 @@ package io.quarkmind.sc2.mock;
 import io.quarkmind.domain.UnitType;
 import io.quarkmind.sc2.intent.TimedIntent;
 import io.quarkmind.sc2.intent.TrainIntent;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -15,40 +16,44 @@ class IEM10CommandExtractorTest {
 
     private static final Path IEM10_ZIP = Path.of("replays/2016_IEM_10_Taipei.zip");
 
+    private static List<IEM10JsonSimulatedGame> games;
+    private static IEM10JsonSimulatedGame firstGame;
+
+    @BeforeAll
+    static void loadGames() throws IOException {
+        games = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP);
+        firstGame = games.get(0);
+    }
+
     @Test
-    void extractReturnsNonEmptyForFirstGame() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        List<TimedIntent> intents = IEM10CommandExtractor.extract(game);
+    void extractReturnsNonEmptyForFirstGame() {
+        List<TimedIntent> intents = IEM10CommandExtractor.extract(firstGame);
         assertThat(intents).isNotEmpty();
     }
 
     @Test
-    void extractedIntentsAreAllTrainIntent() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        List<TimedIntent> intents = IEM10CommandExtractor.extract(game);
+    void extractedIntentsAreAllTrainIntent() {
+        List<TimedIntent> intents = IEM10CommandExtractor.extract(firstGame);
         assertThat(intents).allMatch(ti -> ti.intent() instanceof TrainIntent);
     }
 
     @Test
-    void extractedIntentsHavePositiveLoops() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        List<TimedIntent> intents = IEM10CommandExtractor.extract(game);
+    void extractedIntentsHavePositiveLoops() {
+        List<TimedIntent> intents = IEM10CommandExtractor.extract(firstGame);
         assertThat(intents).allMatch(ti -> ti.loop() > 0);
     }
 
     @Test
-    void extractedIntentsAreOrderedByLoop() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        List<TimedIntent> intents = IEM10CommandExtractor.extract(game);
+    void extractedIntentsAreOrderedByLoop() {
+        List<TimedIntent> intents = IEM10CommandExtractor.extract(firstGame);
         for (int i = 1; i < intents.size(); i++) {
             assertThat(intents.get(i).loop()).isGreaterThanOrEqualTo(intents.get(i - 1).loop());
         }
     }
 
     @Test
-    void probeIntentsHaveNexusBuildingTag() throws IOException {
-        IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        List<TimedIntent> intents = IEM10CommandExtractor.extract(game);
+    void probeIntentsHaveNexusBuildingTag() {
+        List<TimedIntent> intents = IEM10CommandExtractor.extract(firstGame);
         List<TimedIntent> probeTrains = intents.stream()
             .filter(ti -> ((TrainIntent) ti.intent()).unitType() == UnitType.PROBE)
             .toList();
@@ -59,9 +64,7 @@ class IEM10CommandExtractorTest {
     }
 
     @Test
-    void allGamesProduceNonTrivialProbeCount() throws IOException {
-        List<IEM10JsonSimulatedGame> games = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP);
-        // Only Protoss-perspective games can produce Probe trains; non-Protoss games are skipped.
+    void allGamesProduceNonTrivialProbeCount() {
         List<IEM10JsonSimulatedGame> protossGames = games.stream()
             .filter(IEM10JsonSimulatedGame::hasProtossPlayer)
             .toList();
@@ -78,14 +81,12 @@ class IEM10CommandExtractorTest {
     }
 
     @Test
-    void extractWithExplicitUserIdReturnsZergIntentsInPvZGame() throws IOException {
-        List<IEM10JsonSimulatedGame> games = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP);
+    void extractWithExplicitUserIdReturnsZergIntentsInPvZGame() {
         IEM10JsonSimulatedGame pvzGame = games.stream()
             .filter(g -> g.matchup().equals("PvZ"))
             .findFirst()
             .orElseThrow(() -> new AssertionError("No PvZ game found"));
 
-        // Try userId values 0..7 to find the Zerg player (skip watched Protoss player)
         List<TimedIntent> zergIntents = List.of();
         for (int uid = 0; uid <= 7; uid++) {
             List<TimedIntent> candidate = IEM10CommandExtractor.extract(pvzGame, uid);
