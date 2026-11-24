@@ -164,8 +164,17 @@ class IEM10JsonSimulatedGameTest {
     @Test
     void isCompleteAfterAllEvents() throws IOException {
         IEM10JsonSimulatedGame game = IEM10JsonSimulatedGame.enumerate(IEM10_ZIP).get(0);
-        while (!game.isComplete()) game.tick();
-        assertThat(game.isComplete()).isTrue();
+        // Replays can have 10k+ frames. Cap iteration to prevent CI timeout —
+        // a real game at 22.4 fps × 20 min ≈ 27k frames. 30k is generous.
+        int maxFrames = 30_000;
+        int frame = 0;
+        while (!game.isComplete() && frame < maxFrames) {
+            game.tick();
+            frame++;
+        }
+        assertThat(game.isComplete())
+            .as("Game should complete within %d frames", maxFrames)
+            .isTrue();
     }
 
     // ---- reset() ----
