@@ -296,33 +296,35 @@ class DualRunCalibrationTest {
     @Test
     void dualRunCalGasBaseline3wAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-gas-baseline-3w.json");
-        CalibrationResult   result      = calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2Baseline, 1);
-        System.out.println(result.report());
-        if (!result.passed()) {
-            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
-                              result.divergenceTick(), result.divergenceField(),
-                              result.expected(), result.actual());
-        }
+        java.io.ByteArrayOutputStream buf     = new java.io.ByteArrayOutputStream();
+        java.io.PrintStream           origOut = System.out;
+        System.setOut(new java.io.PrintStream(buf));
+        calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2Baseline, 100);
+        System.setOut(origOut);
+        int sc2Gas = sc2Baseline.snapshots().get(sc2Baseline.snapshots().size() - 1).vespene();
+        int emGas  = parseLastVespene(buf.toString());
+        double errPct = (emGas - sc2Gas) * 100.0 / sc2Gas;
+        System.out.printf("[Gas 3w] SC2=%d EM=%d err=%.1f%%%n", sc2Gas, emGas, errPct);
+        assertTrue(emGas > 0, "EM produced no gas — calibration failed to reach tick 304");
+        assertTrue(Math.abs(errPct) <= 15.0,
+                   "Gas 3w vespene error " + errPct + "% exceeds 15% threshold");
     }
 
     @Test
     void dualRunCalGasDual6wAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-gas-dual-6w.json");
-        CalibrationResult   result      = calibrate("playbooks/cal-gas-dual-6w.yaml", sc2Baseline, 3);
-        System.out.println(result.report());
-        if (!result.passed()) {
-            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
-                              result.divergenceTick(), result.divergenceField(),
-                              result.expected(), result.actual());
-        }
-        // Print gas rate comparison at checkpoints
-        var snapshots = sc2Baseline.snapshots();
-        for (int cp : new int[]{60, 120, 180, 240, 304}) {
-            if (cp < snapshots.size()) {
-                var s = snapshots.get(cp);
-                System.out.printf("[Gas] tick %d: SC2 vespene=%d%n", cp, s.vespene());
-            }
-        }
+        java.io.ByteArrayOutputStream buf     = new java.io.ByteArrayOutputStream();
+        java.io.PrintStream           origOut = System.out;
+        System.setOut(new java.io.PrintStream(buf));
+        calibrate("playbooks/cal-gas-dual-6w.yaml", sc2Baseline, 100);
+        System.setOut(origOut);
+        int sc2Gas = sc2Baseline.snapshots().get(sc2Baseline.snapshots().size() - 1).vespene();
+        int emGas  = parseLastVespene(buf.toString());
+        double errPct = (emGas - sc2Gas) * 100.0 / sc2Gas;
+        System.out.printf("[Gas 6w] SC2=%d EM=%d err=%.1f%%%n", sc2Gas, emGas, errPct);
+        assertTrue(emGas > 0, "EM produced no gas — calibration failed to reach tick 304");
+        assertTrue(Math.abs(errPct) <= 15.0,
+                   "Gas 6w vespene error " + errPct + "% exceeds 15% threshold");
     }
 
     @org.junit.jupiter.api.Tag("diagnostic")
@@ -389,7 +391,7 @@ class DualRunCalibrationTest {
             io.quarkmind.sc2.emulated.EmulatedGame.setGasDepositLockLoops(lock);
             buf.reset();
             System.setOut(capture);
-            calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, 3);
+            calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, 100);
             System.setOut(origOut);
 
             int emGas = -1;
@@ -427,17 +429,17 @@ class DualRunCalibrationTest {
         java.io.ByteArrayOutputStream buf     = new java.io.ByteArrayOutputStream();
         java.io.PrintStream           capture = new java.io.PrintStream(buf);
 
-        for (double docking : new double[]{8, 9, 10, 11, 11.5, 12, 12.5, 13, 13.5, 14, 15, 16}) {
+        for (double docking : new double[]{0, 2, 4, 6, 8, 10, 12, 14, 16}) {
             io.quarkmind.sc2.emulated.EmulatedGame.setGasApproachDockingLoops(docking);
 
             buf.reset();
             System.setOut(capture);
-            calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2_3w, 1);
+            calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2_3w, 100);
             String out3w = buf.toString();
             int    em3w  = parseLastVespene(out3w);
 
             buf.reset();
-            calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, 3);
+            calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, 100);
             String out6w = buf.toString();
             int    em6w  = parseLastVespene(out6w);
             System.setOut(origOut);
@@ -478,11 +480,11 @@ class DualRunCalibrationTest {
 
                 buf.reset();
                 System.setOut(capture);
-                calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2_3w, 1);
+                calibrate("playbooks/cal-gas-baseline-3w.yaml", sc2_3w, 100);
                 int em3w = parseLastVespene(buf.toString());
 
                 buf.reset();
-                calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, 3);
+                calibrate("playbooks/cal-gas-dual-6w.yaml", sc2_6w, 100);
                 int em6w = parseLastVespene(buf.toString());
                 System.setOut(origOut);
 
