@@ -1,0 +1,18 @@
+{
+  "COMMAND_CENTER-0" : [ 124.5, 48.5 ],
+  "SUPPLY_DEPOT-14" : [ 117.0, 57.0 ],
+  "REFINERY-26" : [ 124.5, 39.5 ],
+  "BARRACKS-38" : [ 113.5, 55.5 ],
+  "COMMAND_CENTER-88" : [ 103.5, 61.5 ],
+  "SUPPLY_DEPOT-90" : [ 117.0, 61.0 ],
+  "ORBITAL_COMMAND-100" : [ 124.5, 48.5 ],
+  "REFINERY-114" : [ 96.5, 82.5 ],
+  "SUPPLY_DEPOT-163" : [ 109.0, 62.0 ],
+  "ORBITAL_COMMAND-163" : [ 103.5, 61.5 ],
+  "SUPPLY_DEPOT-201" : [ 95.0, 79.0 ],
+  "SUPPLY_DEPOT-238" : [ 92.0, 78.0 ],
+  "SUPPLY_DEPOT-275" : [ 88.0, 78.0 ],
+  "SUPPLY_DEPOT-349" : [ 92.0, 82.0 ],
+  "SUPPLY_DEPOT-386" : [ 109.0, 69.0 ],
+  "SUPPLY_DEPOT-446" : [ 96.0, 86.0 ]
+}

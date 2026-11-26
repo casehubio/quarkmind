@@ -224,9 +224,43 @@ class DualRunCalibrationTest {
     }
 
     @Test
+    void pinnedCalTwoBaseEconomyTerranAgainstSC2() {
+        pinnedCalibrate("calibration/cal-two-base-economy-terran.json");
+    }
+
+    @Test
+    void pinnedCalTwoBaseEconomyZergAgainstSC2() {
+        pinnedCalibrate("calibration/cal-two-base-economy-zerg.json");
+    }
+
+    @Test
     void dualRunCalTwoBaseEconomyAgainstSC2() {
         CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-two-base-economy.json");
         CalibrationResult   result      = calibrate("playbooks/cal-two-base-economy.yaml", sc2Baseline, 2);
+        System.out.println(result.report());
+        if (!result.passed()) {
+            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
+                              result.divergenceTick(), result.divergenceField(),
+                              result.expected(), result.actual());
+        }
+    }
+
+    @Test
+    void dualRunCalTwoBaseEconomyTerranAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-two-base-economy-terran.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-two-base-economy-terran.yaml", sc2Baseline, 2);
+        System.out.println(result.report());
+        if (!result.passed()) {
+            System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
+                              result.divergenceTick(), result.divergenceField(),
+                              result.expected(), result.actual());
+        }
+    }
+
+    @Test
+    void dualRunCalTwoBaseEconomyZergAgainstSC2() {
+        CalibrationBaseline sc2Baseline = loadBaseline("calibration/cal-two-base-economy-zerg.json");
+        CalibrationResult   result      = calibrate("playbooks/cal-two-base-economy-zerg.yaml", sc2Baseline, 2);
         System.out.println(result.report());
         if (!result.passed()) {
             System.out.printf("[DualRun] Diverged at tick %d: %s expected=%s actual=%s%n",
@@ -1089,13 +1123,24 @@ class DualRunCalibrationTest {
         List<CalibrationSnapshot> sc2 = baseline.snapshots();
         int tickLimit = sc2.size();
 
+        String workerKey = switch (race) {
+            case PROTOSS -> "PROBE";
+            case TERRAN  -> "SCV";
+            case ZERG    -> "DRONE";
+        };
+        io.quarkmind.domain.UnitType workerUnitType = switch (race) {
+            case PROTOSS -> io.quarkmind.domain.UnitType.PROBE;
+            case TERRAN  -> io.quarkmind.domain.UnitType.SCV;
+            case ZERG    -> io.quarkmind.domain.UnitType.DRONE;
+        };
+
         int maxMineralDelta = 0;
         int maxMineralDeltaTick = 0;
-        int sc2ProbesInjected = 0;
-        int sc2StartProbes = sc2.get(0).units().getOrDefault("PROBE", 0);
-        int sc2FinalProbes = sc2.get(tickLimit - 1).units().getOrDefault("PROBE", 0);
-        int sc2TotalToInject = sc2FinalProbes - sc2StartProbes;
-        int sc2ProbeHighWater = sc2StartProbes;
+        int sc2WorkersInjected = 0;
+        int sc2StartWorkers = sc2.get(0).units().getOrDefault(workerKey, 0);
+        int sc2FinalWorkers = sc2.get(tickLimit - 1).units().getOrDefault(workerKey, 0);
+        int sc2TotalToInject = sc2FinalWorkers - sc2StartWorkers;
+        int sc2WorkerHighWater = sc2StartWorkers;
         java.util.Map<String, Integer> sc2BuildingHighWater = new java.util.HashMap<>(
             sc2.get(0).buildings());
         int prevSc2Income = 0;
@@ -1105,17 +1150,17 @@ class DualRunCalibrationTest {
         int sc2CumulativeIncome = 0;
         int emCumulativeIncome = 0;
 
-        List<Point2d> nexusPositions = new java.util.ArrayList<>();
+        List<Point2d> basePositions = new java.util.ArrayList<>();
         for (var entry : buildingPositions.entrySet()) {
             if (entry.getKey().startsWith("NEXUS-") || entry.getKey().startsWith("COMMAND_CENTER-")
                 || entry.getKey().startsWith("HATCHERY-")) {
                 float[] p = entry.getValue();
-                nexusPositions.add(new Point2d(p[0], p[1]));
+                basePositions.add(new Point2d(p[0], p[1]));
             }
         }
 
         System.out.println("=== Pinned calibration — SC2 build order replayed at exact ticks ===");
-        System.out.println("tick | SC2 min | EM min | Δ bal | SC2 Δinc | EM Δinc | cum SC2 | cum EM | probes | SC2 w/base | EM w/base");
+        System.out.println("tick | SC2 min | EM min | Δ bal | SC2 Δinc | EM Δinc | cum SC2 | cum EM | workers | SC2 w/base | EM w/base");
 
         for (int tick = 0; tick < tickLimit; tick++) {
             CalibrationSnapshot expected = sc2.get(tick);
@@ -1131,8 +1176,8 @@ class DualRunCalibrationTest {
             int emSpent = 0;
             if (tick + 1 < tickLimit) {
                 CalibrationSnapshot next = sc2.get(tick + 1);
-                int nextProbes = next.units().getOrDefault("PROBE", 0);
-                int curProbes = expected.units().getOrDefault("PROBE", 0);
+                int nextProbes = next.units().getOrDefault(workerKey, 0);
+                int curProbes = expected.units().getOrDefault(workerKey, 0);
                 if (nextProbes > curProbes) sc2Spent += (nextProbes - curProbes) * 50;
                 for (var e : next.buildings().entrySet()) {
                     int cur = expected.buildings().getOrDefault(e.getKey(), 0);
@@ -1151,8 +1196,8 @@ class DualRunCalibrationTest {
             emCumulativeIncome += emIncome;
 
             if (tick % 5 == 0 || tick == tickLimit - 1) {
-                int sc2Probes = expected.units().getOrDefault("PROBE", 0);
-                int emProbes = actual.units().getOrDefault("PROBE", 0);
+                int sc2Probes = expected.units().getOrDefault(workerKey, 0);
+                int emProbes = actual.units().getOrDefault(workerKey, 0);
                 String sc2PerBase = expected.workersPerBase() != null
                     ? java.util.Arrays.toString(expected.workersPerBase()) : "-";
                 int[] emPerBase = game.mineralWorkersPerBase();
@@ -1167,38 +1212,38 @@ class DualRunCalibrationTest {
             prevSc2Minerals = expected.minerals();
             prevEmMinerals = actual.minerals();
 
-            int probesBefore = (int) game.snapshot().myUnits().stream()
-                .filter(u -> u.type() == io.quarkmind.domain.UnitType.PROBE).count();
+            int workersBefore = (int) game.snapshot().myUnits().stream()
+                .filter(u -> u.type() == workerUnitType).count();
             game.tick();
             game.processDeferredResearchIntents();
-            int probesAfter = (int) game.snapshot().myUnits().stream()
-                .filter(u -> u.type() == io.quarkmind.domain.UnitType.PROBE).count();
-            if (probesAfter > probesBefore) {
-                System.out.printf("  [PROBE] tick %d: %d → %d (+%d from tick())%n",
-                    tick, probesBefore, probesAfter, probesAfter - probesBefore);
+            int workersAfter = (int) game.snapshot().myUnits().stream()
+                .filter(u -> u.type() == workerUnitType).count();
+            if (workersAfter > workersBefore) {
+                System.out.printf("  [%s] tick %d: %d → %d (+%d from tick())%n",
+                    workerKey, tick, workersBefore, workersAfter, workersAfter - workersBefore);
             }
 
             if (tick + 1 < tickLimit) {
                 CalibrationSnapshot next = sc2.get(tick + 1);
-                int curProbes = expected.units().getOrDefault("PROBE", 0);
-                int nextProbes = next.units().getOrDefault("PROBE", 0);
-                if (nextProbes > sc2ProbeHighWater && sc2ProbesInjected < sc2TotalToInject) {
-                    int toInject = Math.min(nextProbes - sc2ProbeHighWater,
-                                           sc2TotalToInject - sc2ProbesInjected);
+                int curProbes = expected.units().getOrDefault(workerKey, 0);
+                int nextProbes = next.units().getOrDefault(workerKey, 0);
+                if (nextProbes > sc2WorkerHighWater && sc2WorkersInjected < sc2TotalToInject) {
+                    int toInject = Math.min(nextProbes - sc2WorkerHighWater,
+                                           sc2TotalToInject - sc2WorkersInjected);
                     int[] nextPerBase = next.workersPerBase();
                     int[] curPerBase = expected.workersPerBase();
-                    if (nextPerBase != null && curPerBase != null && !nexusPositions.isEmpty()) {
+                    if (nextPerBase != null && curPerBase != null && !basePositions.isEmpty()) {
                         int injected = 0;
                         for (int bi = 0; bi < Math.min(curPerBase.length, nextPerBase.length)
-                                         && bi < nexusPositions.size() && injected < toInject; bi++) {
+                                         && bi < basePositions.size() && injected < toInject; bi++) {
                             int gained = nextPerBase[bi] - (bi < curPerBase.length ? curPerBase[bi] : 0);
                             for (int g = 0; g < gained && injected < toInject; g++) {
-                                game.injectWorkerAtBase(nexusPositions.get(bi));
+                                game.injectWorkerAtBase(basePositions.get(bi));
                                 injected++;
                             }
                         }
                         while (injected < toInject) {
-                            game.injectWorkerAtBase(nexusPositions.get(0));
+                            game.injectWorkerAtBase(basePositions.get(0));
                             injected++;
                         }
                     } else {
@@ -1206,8 +1251,8 @@ class DualRunCalibrationTest {
                             game.injectWorkerForPinnedCalibration();
                         }
                     }
-                    sc2ProbesInjected += toInject;
-                    sc2ProbeHighWater = nextProbes;
+                    sc2WorkersInjected += toInject;
+                    sc2WorkerHighWater = nextProbes;
                 }
                 for (var entry : next.buildings().entrySet()) {
                     int cur = sc2BuildingHighWater.getOrDefault(entry.getKey(), 0);
@@ -1222,7 +1267,10 @@ class DualRunCalibrationTest {
                                 pos = new Point2d(p[0], p[1]);
                             } else {
                                 for (var bp : buildingPositions.entrySet()) {
-                                    if (bp.getKey().startsWith(entry.getKey()) && !bp.getKey().equals("NEXUS-0")) {
+                                    if (bp.getKey().startsWith(entry.getKey())
+                                        && !bp.getKey().equals("NEXUS-0")
+                                        && !bp.getKey().equals("COMMAND_CENTER-0")
+                                        && !bp.getKey().equals("HATCHERY-0")) {
                                         pos = new Point2d(bp.getValue()[0], bp.getValue()[1]);
                                         break;
                                     }
@@ -1247,9 +1295,9 @@ class DualRunCalibrationTest {
         System.out.printf("Final: SC2 vespene=%d EM vespene=%d (Δ=%+d)%n",
             finalSc2.vespene(), finalEm.vespene(), finalEm.vespene() - finalSc2.vespene());
         System.out.printf("Max mineral delta: %+d at tick %d%n", maxMineralDelta, maxMineralDeltaTick);
-        System.out.printf("Final probes: SC2=%d EM=%d%n",
-            finalSc2.units().getOrDefault("PROBE", 0),
-            finalEm.units().getOrDefault("PROBE", 0));
+        System.out.printf("Final workers: SC2=%d EM=%d%n",
+            finalSc2.units().getOrDefault(workerKey, 0),
+            finalEm.units().getOrDefault(workerKey, 0));
         if (finalSc2.workersPerBase() != null) {
             System.out.printf("SC2 workers/base: %s%n", java.util.Arrays.toString(finalSc2.workersPerBase()));
         }

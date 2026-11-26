@@ -1,0 +1,8891 @@
+{
+  "playbook" : "cal-two-base-economy-terran",
+  "race" : "TERRAN",
+  "sc2Build" : "Base96883",
+  "recordedAt" : "2026-11-26T20:54:01.660035Z",
+  "tickCount" : 450,
+  "snapshots" : [ {
+    "tick" : 0,
+    "minerals" : 50,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 12,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 1,
+    "minerals" : 0,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 13,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 2,
+    "minerals" : 0,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 13,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 3,
+    "minerals" : 0,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 13,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 4,
+    "minerals" : 0,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 13,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 5,
+    "minerals" : 0,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 13,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 6,
+    "minerals" : 10,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 13,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 7,
+    "minerals" : 25,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 13,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 8,
+    "minerals" : 45,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 13,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 9,
+    "minerals" : 60,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 13,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 10,
+    "minerals" : 10,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 13,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 11,
+    "minerals" : 15,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 13,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 12,
+    "minerals" : 35,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 13,
+    "units" : {
+      "SCV" : 12
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 13,
+    "minerals" : 50,
+    "vespene" : 0,
+    "supply" : 15,
+    "supplyUsed" : 14,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 14,
+    "minerals" : 20,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 14,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 15,
+    "minerals" : 20,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 14,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 16,
+    "minerals" : 20,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 14,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 17,
+    "minerals" : 40,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 14,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 18,
+    "minerals" : 55,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 14,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 19,
+    "minerals" : 20,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 14,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 20,
+    "minerals" : 30,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 14,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 21,
+    "minerals" : 35,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 14,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 22,
+    "minerals" : 50,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 14,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 23,
+    "minerals" : 15,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 14,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 24,
+    "minerals" : 25,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 14,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 25,
+    "minerals" : 40,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 15,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 26,
+    "minerals" : 50,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 15,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 27,
+    "minerals" : 5,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 15,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 11 ]
+  }, {
+    "tick" : 28,
+    "minerals" : 20,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 15,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 11 ]
+  }, {
+    "tick" : 29,
+    "minerals" : 35,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 15,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 11 ]
+  }, {
+    "tick" : 30,
+    "minerals" : 40,
+    "vespene" : 0,
+    "supply" : 23,
+    "supplyUsed" : 15,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 11 ]
+  }, {
+    "tick" : 31,
+    "minerals" : 50,
+    "vespene" : 4,
+    "supply" : 23,
+    "supplyUsed" : 15,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 11 ]
+  }, {
+    "tick" : 32,
+    "minerals" : 15,
+    "vespene" : 4,
+    "supply" : 23,
+    "supplyUsed" : 15,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 11 ]
+  }, {
+    "tick" : 33,
+    "minerals" : 20,
+    "vespene" : 8,
+    "supply" : 23,
+    "supplyUsed" : 15,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 11 ]
+  }, {
+    "tick" : 34,
+    "minerals" : 30,
+    "vespene" : 8,
+    "supply" : 23,
+    "supplyUsed" : 15,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 11 ]
+  }, {
+    "tick" : 35,
+    "minerals" : 40,
+    "vespene" : 12,
+    "supply" : 23,
+    "supplyUsed" : 15,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 11 ]
+  }, {
+    "tick" : 36,
+    "minerals" : 45,
+    "vespene" : 16,
+    "supply" : 23,
+    "supplyUsed" : 15,
+    "units" : {
+      "SCV" : 13
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 11 ]
+  }, {
+    "tick" : 37,
+    "minerals" : 65,
+    "vespene" : 16,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 38,
+    "minerals" : 20,
+    "vespene" : 16,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 39,
+    "minerals" : 30,
+    "vespene" : 20,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 40,
+    "minerals" : 40,
+    "vespene" : 24,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 15
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 41,
+    "minerals" : 50,
+    "vespene" : 24,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 42,
+    "minerals" : 65,
+    "vespene" : 28,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 43,
+    "minerals" : 75,
+    "vespene" : 28,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 15
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 44,
+    "minerals" : 90,
+    "vespene" : 32,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 45,
+    "minerals" : 95,
+    "vespene" : 36,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 15
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 46,
+    "minerals" : 110,
+    "vespene" : 36,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 47,
+    "minerals" : 125,
+    "vespene" : 40,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 48,
+    "minerals" : 135,
+    "vespene" : 40,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 49,
+    "minerals" : 140,
+    "vespene" : 44,
+    "supply" : 23,
+    "supplyUsed" : 16,
+    "units" : {
+      "SCV" : 14
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 12 ]
+  }, {
+    "tick" : 50,
+    "minerals" : 150,
+    "vespene" : 48,
+    "supply" : 23,
+    "supplyUsed" : 17,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 51,
+    "minerals" : 115,
+    "vespene" : 48,
+    "supply" : 23,
+    "supplyUsed" : 17,
+    "units" : {
+      "SCV" : 15
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 52,
+    "minerals" : 135,
+    "vespene" : 52,
+    "supply" : 23,
+    "supplyUsed" : 17,
+    "units" : {
+      "SCV" : 15
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 53,
+    "minerals" : 135,
+    "vespene" : 52,
+    "supply" : 23,
+    "supplyUsed" : 17,
+    "units" : {
+      "SCV" : 15
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 54,
+    "minerals" : 150,
+    "vespene" : 56,
+    "supply" : 23,
+    "supplyUsed" : 17,
+    "units" : {
+      "SCV" : 15
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 55,
+    "minerals" : 160,
+    "vespene" : 56,
+    "supply" : 23,
+    "supplyUsed" : 17,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 56,
+    "minerals" : 165,
+    "vespene" : 60,
+    "supply" : 23,
+    "supplyUsed" : 17,
+    "units" : {
+      "SCV" : 15
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 57,
+    "minerals" : 190,
+    "vespene" : 64,
+    "supply" : 23,
+    "supplyUsed" : 17,
+    "units" : {
+      "SCV" : 15
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 58,
+    "minerals" : 195,
+    "vespene" : 64,
+    "supply" : 23,
+    "supplyUsed" : 17,
+    "units" : {
+      "SCV" : 15
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 59,
+    "minerals" : 205,
+    "vespene" : 68,
+    "supply" : 23,
+    "supplyUsed" : 17,
+    "units" : {
+      "SCV" : 15
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 60,
+    "minerals" : 215,
+    "vespene" : 68,
+    "supply" : 23,
+    "supplyUsed" : 17,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 61,
+    "minerals" : 235,
+    "vespene" : 72,
+    "supply" : 23,
+    "supplyUsed" : 17,
+    "units" : {
+      "SCV" : 15
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 13 ]
+  }, {
+    "tick" : 62,
+    "minerals" : 245,
+    "vespene" : 76,
+    "supply" : 23,
+    "supplyUsed" : 18,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 63,
+    "minerals" : 205,
+    "vespene" : 76,
+    "supply" : 23,
+    "supplyUsed" : 18,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 64,
+    "minerals" : 220,
+    "vespene" : 80,
+    "supply" : 23,
+    "supplyUsed" : 18,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 65,
+    "minerals" : 230,
+    "vespene" : 80,
+    "supply" : 23,
+    "supplyUsed" : 18,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 66,
+    "minerals" : 250,
+    "vespene" : 84,
+    "supply" : 23,
+    "supplyUsed" : 18,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 67,
+    "minerals" : 255,
+    "vespene" : 88,
+    "supply" : 23,
+    "supplyUsed" : 18,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 68,
+    "minerals" : 270,
+    "vespene" : 88,
+    "supply" : 23,
+    "supplyUsed" : 18,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 69,
+    "minerals" : 280,
+    "vespene" : 92,
+    "supply" : 23,
+    "supplyUsed" : 18,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 70,
+    "minerals" : 290,
+    "vespene" : 92,
+    "supply" : 23,
+    "supplyUsed" : 18,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 71,
+    "minerals" : 310,
+    "vespene" : 96,
+    "supply" : 23,
+    "supplyUsed" : 18,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 72,
+    "minerals" : 320,
+    "vespene" : 96,
+    "supply" : 23,
+    "supplyUsed" : 18,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 73,
+    "minerals" : 335,
+    "vespene" : 100,
+    "supply" : 23,
+    "supplyUsed" : 18,
+    "units" : {
+      "SCV" : 16
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 14 ]
+  }, {
+    "tick" : 74,
+    "minerals" : 350,
+    "vespene" : 100,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 17
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 75,
+    "minerals" : 300,
+    "vespene" : 104,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 17
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 76,
+    "minerals" : 320,
+    "vespene" : 108,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 17
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 77,
+    "minerals" : 335,
+    "vespene" : 108,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 17
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 78,
+    "minerals" : 340,
+    "vespene" : 112,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 17
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 79,
+    "minerals" : 365,
+    "vespene" : 112,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 17
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 80,
+    "minerals" : 375,
+    "vespene" : 116,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 17
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 81,
+    "minerals" : 390,
+    "vespene" : 120,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 17
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 82,
+    "minerals" : 405,
+    "vespene" : 120,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 17
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 83,
+    "minerals" : 415,
+    "vespene" : 124,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 17
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 84,
+    "minerals" : 435,
+    "vespene" : 124,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 18
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 85,
+    "minerals" : 450,
+    "vespene" : 128,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 17
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 86,
+    "minerals" : 460,
+    "vespene" : 132,
+    "supply" : 23,
+    "supplyUsed" : 19,
+    "units" : {
+      "SCV" : 18
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 15 ]
+  }, {
+    "tick" : 87,
+    "minerals" : 475,
+    "vespene" : 132,
+    "supply" : 23,
+    "supplyUsed" : 20,
+    "units" : {
+      "SCV" : 18
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16 ]
+  }, {
+    "tick" : 88,
+    "minerals" : 430,
+    "vespene" : 136,
+    "supply" : 38,
+    "supplyUsed" : 20,
+    "units" : {
+      "SCV" : 18
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 2,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 89,
+    "minerals" : 400,
+    "vespene" : 136,
+    "supply" : 38,
+    "supplyUsed" : 21,
+    "units" : {
+      "SCV" : 18
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 2,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 1
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 90,
+    "minerals" : 415,
+    "vespene" : 140,
+    "supply" : 46,
+    "supplyUsed" : 21,
+    "units" : {
+      "SCV" : 18
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 2,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 91,
+    "minerals" : 435,
+    "vespene" : 144,
+    "supply" : 46,
+    "supplyUsed" : 21,
+    "units" : {
+      "SCV" : 19
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 2,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 92,
+    "minerals" : 385,
+    "vespene" : 144,
+    "supply" : 46,
+    "supplyUsed" : 21,
+    "units" : {
+      "SCV" : 18
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 2,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 93,
+    "minerals" : 410,
+    "vespene" : 148,
+    "supply" : 46,
+    "supplyUsed" : 21,
+    "units" : {
+      "SCV" : 18
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 2,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 94,
+    "minerals" : 370,
+    "vespene" : 148,
+    "supply" : 46,
+    "supplyUsed" : 21,
+    "units" : {
+      "SCV" : 18
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 2,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 95,
+    "minerals" : 330,
+    "vespene" : 152,
+    "supply" : 46,
+    "supplyUsed" : 21,
+    "units" : {
+      "SCV" : 18
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 2,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 96,
+    "minerals" : 355,
+    "vespene" : 152,
+    "supply" : 46,
+    "supplyUsed" : 21,
+    "units" : {
+      "SCV" : 19
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 2,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 97,
+    "minerals" : 305,
+    "vespene" : 156,
+    "supply" : 46,
+    "supplyUsed" : 21,
+    "units" : {
+      "SCV" : 18
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 2,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 98,
+    "minerals" : 315,
+    "vespene" : 160,
+    "supply" : 46,
+    "supplyUsed" : 21,
+    "units" : {
+      "SCV" : 18
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 2,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 99,
+    "minerals" : 340,
+    "vespene" : 160,
+    "supply" : 46,
+    "supplyUsed" : 22,
+    "units" : {
+      "SCV" : 19
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 2,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 17, 0 ]
+  }, {
+    "tick" : 100,
+    "minerals" : 550,
+    "vespene" : 164,
+    "supply" : 46,
+    "supplyUsed" : 21,
+    "units" : {
+      "SCV" : 19
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 101,
+    "minerals" : 520,
+    "vespene" : 164,
+    "supply" : 46,
+    "supplyUsed" : 23,
+    "units" : {
+      "SCV" : 21
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 102,
+    "minerals" : 485,
+    "vespene" : 168,
+    "supply" : 46,
+    "supplyUsed" : 23,
+    "units" : {
+      "SCV" : 20
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 103,
+    "minerals" : 435,
+    "vespene" : 172,
+    "supply" : 46,
+    "supplyUsed" : 23,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 21
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 104,
+    "minerals" : 465,
+    "vespene" : 172,
+    "supply" : 46,
+    "supplyUsed" : 23,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 20
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 105,
+    "minerals" : 470,
+    "vespene" : 176,
+    "supply" : 46,
+    "supplyUsed" : 23,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 20
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 106,
+    "minerals" : 445,
+    "vespene" : 176,
+    "supply" : 46,
+    "supplyUsed" : 23,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 20
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 107,
+    "minerals" : 405,
+    "vespene" : 180,
+    "supply" : 46,
+    "supplyUsed" : 23,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 20
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 108,
+    "minerals" : 415,
+    "vespene" : 184,
+    "supply" : 46,
+    "supplyUsed" : 23,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 20
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 109,
+    "minerals" : 385,
+    "vespene" : 184,
+    "supply" : 46,
+    "supplyUsed" : 23,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 20
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 110,
+    "minerals" : 395,
+    "vespene" : 188,
+    "supply" : 46,
+    "supplyUsed" : 23,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 20
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 111,
+    "minerals" : 420,
+    "vespene" : 188,
+    "supply" : 46,
+    "supplyUsed" : 23,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 20
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 112,
+    "minerals" : 435,
+    "vespene" : 192,
+    "supply" : 46,
+    "supplyUsed" : 23,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 20
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 113,
+    "minerals" : 445,
+    "vespene" : 192,
+    "supply" : 46,
+    "supplyUsed" : 25,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 22
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 1,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 114,
+    "minerals" : 415,
+    "vespene" : 196,
+    "supply" : 46,
+    "supplyUsed" : 25,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 22
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 17 ]
+  }, {
+    "tick" : 115,
+    "minerals" : 370,
+    "vespene" : 196,
+    "supply" : 46,
+    "supplyUsed" : 25,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 22
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 116,
+    "minerals" : 400,
+    "vespene" : 200,
+    "supply" : 46,
+    "supplyUsed" : 25,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 22
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 117,
+    "minerals" : 405,
+    "vespene" : 204,
+    "supply" : 46,
+    "supplyUsed" : 25,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 22
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 118,
+    "minerals" : 425,
+    "vespene" : 204,
+    "supply" : 46,
+    "supplyUsed" : 25,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 22
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 119,
+    "minerals" : 435,
+    "vespene" : 208,
+    "supply" : 46,
+    "supplyUsed" : 25,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 22
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 120,
+    "minerals" : 450,
+    "vespene" : 208,
+    "supply" : 46,
+    "supplyUsed" : 25,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 23
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 121,
+    "minerals" : 465,
+    "vespene" : 212,
+    "supply" : 46,
+    "supplyUsed" : 25,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 22
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 122,
+    "minerals" : 480,
+    "vespene" : 216,
+    "supply" : 46,
+    "supplyUsed" : 25,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 23
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 123,
+    "minerals" : 500,
+    "vespene" : 216,
+    "supply" : 46,
+    "supplyUsed" : 25,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 22
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 124,
+    "minerals" : 505,
+    "vespene" : 220,
+    "supply" : 46,
+    "supplyUsed" : 25,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 22
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 125,
+    "minerals" : 520,
+    "vespene" : 220,
+    "supply" : 46,
+    "supplyUsed" : 27,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 24
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 126,
+    "minerals" : 485,
+    "vespene" : 224,
+    "supply" : 46,
+    "supplyUsed" : 27,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 23
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 127,
+    "minerals" : 490,
+    "vespene" : 228,
+    "supply" : 46,
+    "supplyUsed" : 27,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 24
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 128,
+    "minerals" : 525,
+    "vespene" : 228,
+    "supply" : 46,
+    "supplyUsed" : 27,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 23
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 129,
+    "minerals" : 530,
+    "vespene" : 232,
+    "supply" : 46,
+    "supplyUsed" : 27,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 24
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 130,
+    "minerals" : 545,
+    "vespene" : 232,
+    "supply" : 46,
+    "supplyUsed" : 27,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 24
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 131,
+    "minerals" : 515,
+    "vespene" : 236,
+    "supply" : 46,
+    "supplyUsed" : 27,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 24
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 132,
+    "minerals" : 515,
+    "vespene" : 236,
+    "supply" : 46,
+    "supplyUsed" : 27,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 25
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 133,
+    "minerals" : 540,
+    "vespene" : 240,
+    "supply" : 46,
+    "supplyUsed" : 27,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 23
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 134,
+    "minerals" : 555,
+    "vespene" : 244,
+    "supply" : 46,
+    "supplyUsed" : 27,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 23
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 135,
+    "minerals" : 570,
+    "vespene" : 244,
+    "supply" : 46,
+    "supplyUsed" : 27,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 24
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 136,
+    "minerals" : 585,
+    "vespene" : 248,
+    "supply" : 46,
+    "supplyUsed" : 27,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 24
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 137,
+    "minerals" : 600,
+    "vespene" : 252,
+    "supply" : 46,
+    "supplyUsed" : 28,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 26
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 138,
+    "minerals" : 560,
+    "vespene" : 256,
+    "supply" : 46,
+    "supplyUsed" : 29,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 26
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 139,
+    "minerals" : 525,
+    "vespene" : 264,
+    "supply" : 46,
+    "supplyUsed" : 29,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 27
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 140,
+    "minerals" : 545,
+    "vespene" : 264,
+    "supply" : 46,
+    "supplyUsed" : 29,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 26
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 141,
+    "minerals" : 555,
+    "vespene" : 268,
+    "supply" : 46,
+    "supplyUsed" : 29,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 26
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 142,
+    "minerals" : 575,
+    "vespene" : 268,
+    "supply" : 46,
+    "supplyUsed" : 29,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 26
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 143,
+    "minerals" : 585,
+    "vespene" : 272,
+    "supply" : 46,
+    "supplyUsed" : 29,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 26
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 144,
+    "minerals" : 595,
+    "vespene" : 276,
+    "supply" : 46,
+    "supplyUsed" : 29,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 26
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 145,
+    "minerals" : 615,
+    "vespene" : 280,
+    "supply" : 46,
+    "supplyUsed" : 29,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 26
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 146,
+    "minerals" : 630,
+    "vespene" : 284,
+    "supply" : 46,
+    "supplyUsed" : 29,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 26
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 147,
+    "minerals" : 645,
+    "vespene" : 284,
+    "supply" : 46,
+    "supplyUsed" : 29,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 26
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 148,
+    "minerals" : 665,
+    "vespene" : 288,
+    "supply" : 46,
+    "supplyUsed" : 29,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 25
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 149,
+    "minerals" : 665,
+    "vespene" : 288,
+    "supply" : 46,
+    "supplyUsed" : 29,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 25
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 150,
+    "minerals" : 685,
+    "vespene" : 292,
+    "supply" : 46,
+    "supplyUsed" : 31,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 27
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 151,
+    "minerals" : 655,
+    "vespene" : 292,
+    "supply" : 46,
+    "supplyUsed" : 31,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 28
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 152,
+    "minerals" : 665,
+    "vespene" : 296,
+    "supply" : 46,
+    "supplyUsed" : 31,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 28
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 153,
+    "minerals" : 640,
+    "vespene" : 300,
+    "supply" : 46,
+    "supplyUsed" : 31,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 28
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 154,
+    "minerals" : 650,
+    "vespene" : 300,
+    "supply" : 46,
+    "supplyUsed" : 31,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 28
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 155,
+    "minerals" : 660,
+    "vespene" : 304,
+    "supply" : 46,
+    "supplyUsed" : 31,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 27
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 156,
+    "minerals" : 680,
+    "vespene" : 304,
+    "supply" : 46,
+    "supplyUsed" : 31,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 28
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 157,
+    "minerals" : 690,
+    "vespene" : 308,
+    "supply" : 46,
+    "supplyUsed" : 31,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 28
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 158,
+    "minerals" : 715,
+    "vespene" : 312,
+    "supply" : 46,
+    "supplyUsed" : 31,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 29
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 159,
+    "minerals" : 725,
+    "vespene" : 316,
+    "supply" : 46,
+    "supplyUsed" : 31,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 28
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 160,
+    "minerals" : 735,
+    "vespene" : 320,
+    "supply" : 46,
+    "supplyUsed" : 31,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 28
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 161,
+    "minerals" : 750,
+    "vespene" : 324,
+    "supply" : 46,
+    "supplyUsed" : 31,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 28
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 162,
+    "minerals" : 765,
+    "vespene" : 328,
+    "supply" : 46,
+    "supplyUsed" : 33,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 30
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "COMMAND_CENTER" : 1,
+      "ORBITAL_COMMAND" : 1,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 2
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 0, 16 ]
+  }, {
+    "tick" : 163,
+    "minerals" : 930,
+    "vespene" : 332,
+    "supply" : 54,
+    "supplyUsed" : 32,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 31
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 164,
+    "minerals" : 895,
+    "vespene" : 332,
+    "supply" : 54,
+    "supplyUsed" : 33,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 30
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 165,
+    "minerals" : 910,
+    "vespene" : 336,
+    "supply" : 54,
+    "supplyUsed" : 33,
+    "units" : {
+      "MULE" : 1,
+      "SCV" : 30
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 166,
+    "minerals" : 925,
+    "vespene" : 336,
+    "supply" : 54,
+    "supplyUsed" : 33,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 30
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 167,
+    "minerals" : 935,
+    "vespene" : 344,
+    "supply" : 54,
+    "supplyUsed" : 33,
+    "units" : {
+      "MULE" : 3,
+      "SCV" : 30
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 168,
+    "minerals" : 950,
+    "vespene" : 348,
+    "supply" : 54,
+    "supplyUsed" : 33,
+    "units" : {
+      "MULE" : 3,
+      "SCV" : 31
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 169,
+    "minerals" : 975,
+    "vespene" : 348,
+    "supply" : 54,
+    "supplyUsed" : 33,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 30
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 170,
+    "minerals" : 930,
+    "vespene" : 352,
+    "supply" : 54,
+    "supplyUsed" : 33,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 29
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 171,
+    "minerals" : 905,
+    "vespene" : 352,
+    "supply" : 54,
+    "supplyUsed" : 33,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 29
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 172,
+    "minerals" : 910,
+    "vespene" : 356,
+    "supply" : 54,
+    "supplyUsed" : 33,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 29
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 173,
+    "minerals" : 885,
+    "vespene" : 356,
+    "supply" : 54,
+    "supplyUsed" : 33,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 31
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 174,
+    "minerals" : 890,
+    "vespene" : 360,
+    "supply" : 54,
+    "supplyUsed" : 34,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 31
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 175,
+    "minerals" : 860,
+    "vespene" : 364,
+    "supply" : 54,
+    "supplyUsed" : 34,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 31
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 176,
+    "minerals" : 870,
+    "vespene" : 364,
+    "supply" : 54,
+    "supplyUsed" : 35,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 32
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 177,
+    "minerals" : 840,
+    "vespene" : 368,
+    "supply" : 54,
+    "supplyUsed" : 35,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 31
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 178,
+    "minerals" : 805,
+    "vespene" : 368,
+    "supply" : 54,
+    "supplyUsed" : 35,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 31
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 179,
+    "minerals" : 820,
+    "vespene" : 372,
+    "supply" : 54,
+    "supplyUsed" : 35,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 32
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 180,
+    "minerals" : 835,
+    "vespene" : 376,
+    "supply" : 54,
+    "supplyUsed" : 35,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 32
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 181,
+    "minerals" : 850,
+    "vespene" : 376,
+    "supply" : 54,
+    "supplyUsed" : 35,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 32
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 182,
+    "minerals" : 865,
+    "vespene" : 384,
+    "supply" : 54,
+    "supplyUsed" : 35,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 32
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 183,
+    "minerals" : 880,
+    "vespene" : 388,
+    "supply" : 54,
+    "supplyUsed" : 35,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 32
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 184,
+    "minerals" : 890,
+    "vespene" : 392,
+    "supply" : 54,
+    "supplyUsed" : 35,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 32
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 185,
+    "minerals" : 905,
+    "vespene" : 392,
+    "supply" : 54,
+    "supplyUsed" : 35,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 32
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 186,
+    "minerals" : 920,
+    "vespene" : 396,
+    "supply" : 54,
+    "supplyUsed" : 35,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 32
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 187,
+    "minerals" : 930,
+    "vespene" : 400,
+    "supply" : 54,
+    "supplyUsed" : 36,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 33
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 188,
+    "minerals" : 905,
+    "vespene" : 400,
+    "supply" : 54,
+    "supplyUsed" : 37,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 34
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 189,
+    "minerals" : 865,
+    "vespene" : 408,
+    "supply" : 54,
+    "supplyUsed" : 37,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 34
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 190,
+    "minerals" : 885,
+    "vespene" : 408,
+    "supply" : 54,
+    "supplyUsed" : 37,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 34
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 191,
+    "minerals" : 890,
+    "vespene" : 412,
+    "supply" : 54,
+    "supplyUsed" : 37,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 34
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 192,
+    "minerals" : 910,
+    "vespene" : 412,
+    "supply" : 54,
+    "supplyUsed" : 37,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 33
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 193,
+    "minerals" : 925,
+    "vespene" : 416,
+    "supply" : 54,
+    "supplyUsed" : 37,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 33
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 194,
+    "minerals" : 940,
+    "vespene" : 420,
+    "supply" : 54,
+    "supplyUsed" : 37,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 33
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 195,
+    "minerals" : 955,
+    "vespene" : 420,
+    "supply" : 54,
+    "supplyUsed" : 37,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 34
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 196,
+    "minerals" : 970,
+    "vespene" : 424,
+    "supply" : 54,
+    "supplyUsed" : 37,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 34
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 197,
+    "minerals" : 980,
+    "vespene" : 424,
+    "supply" : 54,
+    "supplyUsed" : 37,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 35
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 198,
+    "minerals" : 1005,
+    "vespene" : 428,
+    "supply" : 54,
+    "supplyUsed" : 37,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 34
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 199,
+    "minerals" : 1015,
+    "vespene" : 432,
+    "supply" : 54,
+    "supplyUsed" : 38,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 35
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 200,
+    "minerals" : 985,
+    "vespene" : 432,
+    "supply" : 54,
+    "supplyUsed" : 39,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 36
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 3
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 201,
+    "minerals" : 935,
+    "vespene" : 436,
+    "supply" : 62,
+    "supplyUsed" : 39,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 36
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 202,
+    "minerals" : 960,
+    "vespene" : 436,
+    "supply" : 62,
+    "supplyUsed" : 39,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 36
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 203,
+    "minerals" : 965,
+    "vespene" : 440,
+    "supply" : 62,
+    "supplyUsed" : 39,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 36
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 204,
+    "minerals" : 995,
+    "vespene" : 448,
+    "supply" : 62,
+    "supplyUsed" : 39,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 37
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 205,
+    "minerals" : 1000,
+    "vespene" : 452,
+    "supply" : 62,
+    "supplyUsed" : 39,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 36
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 206,
+    "minerals" : 1015,
+    "vespene" : 456,
+    "supply" : 62,
+    "supplyUsed" : 39,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 36
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 207,
+    "minerals" : 1035,
+    "vespene" : 456,
+    "supply" : 62,
+    "supplyUsed" : 39,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 36
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 208,
+    "minerals" : 1040,
+    "vespene" : 460,
+    "supply" : 62,
+    "supplyUsed" : 39,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 36
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 209,
+    "minerals" : 1065,
+    "vespene" : 460,
+    "supply" : 62,
+    "supplyUsed" : 39,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 37
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 210,
+    "minerals" : 1075,
+    "vespene" : 464,
+    "supply" : 62,
+    "supplyUsed" : 39,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 36
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 211,
+    "minerals" : 1090,
+    "vespene" : 472,
+    "supply" : 62,
+    "supplyUsed" : 40,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 37
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 212,
+    "minerals" : 1100,
+    "vespene" : 472,
+    "supply" : 62,
+    "supplyUsed" : 40,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 37
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 213,
+    "minerals" : 1070,
+    "vespene" : 476,
+    "supply" : 62,
+    "supplyUsed" : 41,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 38
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 214,
+    "minerals" : 1030,
+    "vespene" : 476,
+    "supply" : 62,
+    "supplyUsed" : 41,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 38
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 215,
+    "minerals" : 1055,
+    "vespene" : 480,
+    "supply" : 62,
+    "supplyUsed" : 41,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 37
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 216,
+    "minerals" : 1060,
+    "vespene" : 484,
+    "supply" : 62,
+    "supplyUsed" : 41,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 38
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 217,
+    "minerals" : 1080,
+    "vespene" : 484,
+    "supply" : 62,
+    "supplyUsed" : 41,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 38
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 218,
+    "minerals" : 1090,
+    "vespene" : 488,
+    "supply" : 62,
+    "supplyUsed" : 41,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 38
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 219,
+    "minerals" : 1110,
+    "vespene" : 488,
+    "supply" : 62,
+    "supplyUsed" : 41,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 38
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 220,
+    "minerals" : 1120,
+    "vespene" : 492,
+    "supply" : 62,
+    "supplyUsed" : 41,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 38
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 221,
+    "minerals" : 1145,
+    "vespene" : 496,
+    "supply" : 62,
+    "supplyUsed" : 41,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 37
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 222,
+    "minerals" : 1150,
+    "vespene" : 496,
+    "supply" : 62,
+    "supplyUsed" : 41,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 37
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 223,
+    "minerals" : 1175,
+    "vespene" : 500,
+    "supply" : 62,
+    "supplyUsed" : 41,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 38
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 224,
+    "minerals" : 1185,
+    "vespene" : 500,
+    "supply" : 62,
+    "supplyUsed" : 42,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 39
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 225,
+    "minerals" : 1200,
+    "vespene" : 508,
+    "supply" : 62,
+    "supplyUsed" : 43,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 40
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 226,
+    "minerals" : 1165,
+    "vespene" : 508,
+    "supply" : 62,
+    "supplyUsed" : 43,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 40
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 227,
+    "minerals" : 1125,
+    "vespene" : 516,
+    "supply" : 62,
+    "supplyUsed" : 43,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 40
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 228,
+    "minerals" : 1145,
+    "vespene" : 516,
+    "supply" : 62,
+    "supplyUsed" : 43,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 40
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 229,
+    "minerals" : 1160,
+    "vespene" : 520,
+    "supply" : 62,
+    "supplyUsed" : 43,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 40
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 230,
+    "minerals" : 1170,
+    "vespene" : 524,
+    "supply" : 62,
+    "supplyUsed" : 43,
+    "units" : {
+      "MULE" : 3,
+      "SCV" : 40
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 231,
+    "minerals" : 1190,
+    "vespene" : 524,
+    "supply" : 62,
+    "supplyUsed" : 43,
+    "units" : {
+      "MULE" : 3,
+      "SCV" : 40
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 232,
+    "minerals" : 1200,
+    "vespene" : 528,
+    "supply" : 62,
+    "supplyUsed" : 43,
+    "units" : {
+      "MULE" : 3,
+      "SCV" : 40
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 233,
+    "minerals" : 1220,
+    "vespene" : 532,
+    "supply" : 62,
+    "supplyUsed" : 43,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 41
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 234,
+    "minerals" : 1230,
+    "vespene" : 536,
+    "supply" : 62,
+    "supplyUsed" : 43,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 40
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 235,
+    "minerals" : 1245,
+    "vespene" : 540,
+    "supply" : 62,
+    "supplyUsed" : 43,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 41
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 236,
+    "minerals" : 1265,
+    "vespene" : 540,
+    "supply" : 62,
+    "supplyUsed" : 44,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 40
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 237,
+    "minerals" : 1220,
+    "vespene" : 544,
+    "supply" : 62,
+    "supplyUsed" : 45,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 41
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 4
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 238,
+    "minerals" : 1190,
+    "vespene" : 544,
+    "supply" : 70,
+    "supplyUsed" : 45,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 41
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 239,
+    "minerals" : 1200,
+    "vespene" : 548,
+    "supply" : 70,
+    "supplyUsed" : 45,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 42
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 240,
+    "minerals" : 1220,
+    "vespene" : 552,
+    "supply" : 70,
+    "supplyUsed" : 45,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 43
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 241,
+    "minerals" : 1235,
+    "vespene" : 552,
+    "supply" : 70,
+    "supplyUsed" : 45,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 42
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 242,
+    "minerals" : 1255,
+    "vespene" : 556,
+    "supply" : 70,
+    "supplyUsed" : 45,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 42
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 243,
+    "minerals" : 1265,
+    "vespene" : 556,
+    "supply" : 70,
+    "supplyUsed" : 45,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 41
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 244,
+    "minerals" : 1280,
+    "vespene" : 560,
+    "supply" : 70,
+    "supplyUsed" : 45,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 41
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 245,
+    "minerals" : 1295,
+    "vespene" : 560,
+    "supply" : 70,
+    "supplyUsed" : 45,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 43
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 246,
+    "minerals" : 1310,
+    "vespene" : 564,
+    "supply" : 70,
+    "supplyUsed" : 45,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 42
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 247,
+    "minerals" : 1330,
+    "vespene" : 572,
+    "supply" : 70,
+    "supplyUsed" : 45,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 42
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 248,
+    "minerals" : 1340,
+    "vespene" : 572,
+    "supply" : 70,
+    "supplyUsed" : 46,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 43
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 249,
+    "minerals" : 1345,
+    "vespene" : 580,
+    "supply" : 70,
+    "supplyUsed" : 46,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 43
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 250,
+    "minerals" : 1325,
+    "vespene" : 580,
+    "supply" : 70,
+    "supplyUsed" : 47,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 45
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 251,
+    "minerals" : 1330,
+    "vespene" : 584,
+    "supply" : 70,
+    "supplyUsed" : 47,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 44
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 252,
+    "minerals" : 1355,
+    "vespene" : 588,
+    "supply" : 70,
+    "supplyUsed" : 47,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 45
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 253,
+    "minerals" : 1315,
+    "vespene" : 588,
+    "supply" : 70,
+    "supplyUsed" : 47,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 44
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 254,
+    "minerals" : 1315,
+    "vespene" : 592,
+    "supply" : 70,
+    "supplyUsed" : 47,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 44
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 255,
+    "minerals" : 1340,
+    "vespene" : 596,
+    "supply" : 70,
+    "supplyUsed" : 47,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 44
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 256,
+    "minerals" : 1355,
+    "vespene" : 600,
+    "supply" : 70,
+    "supplyUsed" : 47,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 44
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 257,
+    "minerals" : 1370,
+    "vespene" : 604,
+    "supply" : 70,
+    "supplyUsed" : 47,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 44
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 258,
+    "minerals" : 1390,
+    "vespene" : 604,
+    "supply" : 70,
+    "supplyUsed" : 47,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 43
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 259,
+    "minerals" : 1400,
+    "vespene" : 608,
+    "supply" : 70,
+    "supplyUsed" : 47,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 43
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 260,
+    "minerals" : 1410,
+    "vespene" : 608,
+    "supply" : 70,
+    "supplyUsed" : 47,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 43
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 261,
+    "minerals" : 1430,
+    "vespene" : 612,
+    "supply" : 70,
+    "supplyUsed" : 48,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 45
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 262,
+    "minerals" : 1445,
+    "vespene" : 612,
+    "supply" : 70,
+    "supplyUsed" : 49,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 46
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 263,
+    "minerals" : 1410,
+    "vespene" : 616,
+    "supply" : 70,
+    "supplyUsed" : 49,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 46
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 264,
+    "minerals" : 1375,
+    "vespene" : 616,
+    "supply" : 70,
+    "supplyUsed" : 49,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 46
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 265,
+    "minerals" : 1385,
+    "vespene" : 620,
+    "supply" : 70,
+    "supplyUsed" : 49,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 45
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 266,
+    "minerals" : 1405,
+    "vespene" : 624,
+    "supply" : 70,
+    "supplyUsed" : 49,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 45
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 267,
+    "minerals" : 1420,
+    "vespene" : 624,
+    "supply" : 70,
+    "supplyUsed" : 49,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 46
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 268,
+    "minerals" : 1430,
+    "vespene" : 628,
+    "supply" : 70,
+    "supplyUsed" : 49,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 46
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 269,
+    "minerals" : 1450,
+    "vespene" : 632,
+    "supply" : 70,
+    "supplyUsed" : 49,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 47
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 270,
+    "minerals" : 1460,
+    "vespene" : 636,
+    "supply" : 70,
+    "supplyUsed" : 49,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 46
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 271,
+    "minerals" : 1480,
+    "vespene" : 644,
+    "supply" : 70,
+    "supplyUsed" : 49,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 47
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 272,
+    "minerals" : 1495,
+    "vespene" : 644,
+    "supply" : 70,
+    "supplyUsed" : 49,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 46
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 273,
+    "minerals" : 1505,
+    "vespene" : 648,
+    "supply" : 70,
+    "supplyUsed" : 50,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 47
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 274,
+    "minerals" : 1470,
+    "vespene" : 648,
+    "supply" : 70,
+    "supplyUsed" : 51,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 48
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 5
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 275,
+    "minerals" : 1440,
+    "vespene" : 652,
+    "supply" : 78,
+    "supplyUsed" : 51,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 48
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 276,
+    "minerals" : 1450,
+    "vespene" : 656,
+    "supply" : 78,
+    "supplyUsed" : 51,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 49
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 277,
+    "minerals" : 1480,
+    "vespene" : 660,
+    "supply" : 78,
+    "supplyUsed" : 51,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 48
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 278,
+    "minerals" : 1485,
+    "vespene" : 664,
+    "supply" : 78,
+    "supplyUsed" : 51,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 48
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 279,
+    "minerals" : 1490,
+    "vespene" : 664,
+    "supply" : 78,
+    "supplyUsed" : 51,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 48
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 280,
+    "minerals" : 1510,
+    "vespene" : 668,
+    "supply" : 78,
+    "supplyUsed" : 51,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 47
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 281,
+    "minerals" : 1525,
+    "vespene" : 672,
+    "supply" : 78,
+    "supplyUsed" : 51,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 48
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 282,
+    "minerals" : 1540,
+    "vespene" : 672,
+    "supply" : 78,
+    "supplyUsed" : 51,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 47
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 283,
+    "minerals" : 1560,
+    "vespene" : 676,
+    "supply" : 78,
+    "supplyUsed" : 51,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 48
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 284,
+    "minerals" : 1565,
+    "vespene" : 676,
+    "supply" : 78,
+    "supplyUsed" : 51,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 48
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 285,
+    "minerals" : 1590,
+    "vespene" : 680,
+    "supply" : 78,
+    "supplyUsed" : 52,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 49
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 286,
+    "minerals" : 1600,
+    "vespene" : 680,
+    "supply" : 78,
+    "supplyUsed" : 52,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 50
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 287,
+    "minerals" : 1615,
+    "vespene" : 684,
+    "supply" : 78,
+    "supplyUsed" : 53,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 49
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 288,
+    "minerals" : 1590,
+    "vespene" : 688,
+    "supply" : 78,
+    "supplyUsed" : 53,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 49
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 289,
+    "minerals" : 1590,
+    "vespene" : 688,
+    "supply" : 78,
+    "supplyUsed" : 53,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 50
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 290,
+    "minerals" : 1615,
+    "vespene" : 692,
+    "supply" : 78,
+    "supplyUsed" : 53,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 50
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 291,
+    "minerals" : 1570,
+    "vespene" : 692,
+    "supply" : 78,
+    "supplyUsed" : 53,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 50
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 292,
+    "minerals" : 1590,
+    "vespene" : 700,
+    "supply" : 78,
+    "supplyUsed" : 53,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 50
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 293,
+    "minerals" : 1600,
+    "vespene" : 708,
+    "supply" : 78,
+    "supplyUsed" : 53,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 50
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 294,
+    "minerals" : 1620,
+    "vespene" : 708,
+    "supply" : 78,
+    "supplyUsed" : 53,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 50
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 295,
+    "minerals" : 1635,
+    "vespene" : 712,
+    "supply" : 78,
+    "supplyUsed" : 53,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 50
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 296,
+    "minerals" : 1645,
+    "vespene" : 712,
+    "supply" : 78,
+    "supplyUsed" : 53,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 50
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 297,
+    "minerals" : 1660,
+    "vespene" : 716,
+    "supply" : 78,
+    "supplyUsed" : 53,
+    "units" : {
+      "MULE" : 3,
+      "SCV" : 50
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 298,
+    "minerals" : 1675,
+    "vespene" : 716,
+    "supply" : 78,
+    "supplyUsed" : 54,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 51
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 299,
+    "minerals" : 1690,
+    "vespene" : 724,
+    "supply" : 78,
+    "supplyUsed" : 55,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 52
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 300,
+    "minerals" : 1660,
+    "vespene" : 728,
+    "supply" : 78,
+    "supplyUsed" : 55,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 52
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 301,
+    "minerals" : 1670,
+    "vespene" : 728,
+    "supply" : 78,
+    "supplyUsed" : 55,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 52
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 302,
+    "minerals" : 1635,
+    "vespene" : 732,
+    "supply" : 78,
+    "supplyUsed" : 55,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 51
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 303,
+    "minerals" : 1650,
+    "vespene" : 732,
+    "supply" : 78,
+    "supplyUsed" : 55,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 51
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 304,
+    "minerals" : 1660,
+    "vespene" : 736,
+    "supply" : 78,
+    "supplyUsed" : 55,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 51
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 305,
+    "minerals" : 1690,
+    "vespene" : 736,
+    "supply" : 78,
+    "supplyUsed" : 55,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 52
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 306,
+    "minerals" : 1690,
+    "vespene" : 740,
+    "supply" : 78,
+    "supplyUsed" : 55,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 52
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 307,
+    "minerals" : 1715,
+    "vespene" : 744,
+    "supply" : 78,
+    "supplyUsed" : 55,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 52
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 308,
+    "minerals" : 1720,
+    "vespene" : 744,
+    "supply" : 78,
+    "supplyUsed" : 55,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 52
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 309,
+    "minerals" : 1740,
+    "vespene" : 748,
+    "supply" : 78,
+    "supplyUsed" : 55,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 51
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 310,
+    "minerals" : 1755,
+    "vespene" : 748,
+    "supply" : 78,
+    "supplyUsed" : 56,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 53
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 311,
+    "minerals" : 1770,
+    "vespene" : 752,
+    "supply" : 78,
+    "supplyUsed" : 57,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 54
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 312,
+    "minerals" : 1740,
+    "vespene" : 756,
+    "supply" : 78,
+    "supplyUsed" : 57,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 55
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 313,
+    "minerals" : 1745,
+    "vespene" : 756,
+    "supply" : 78,
+    "supplyUsed" : 57,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 54
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 314,
+    "minerals" : 1760,
+    "vespene" : 764,
+    "supply" : 78,
+    "supplyUsed" : 57,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 54
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 315,
+    "minerals" : 1780,
+    "vespene" : 768,
+    "supply" : 78,
+    "supplyUsed" : 57,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 54
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 316,
+    "minerals" : 1790,
+    "vespene" : 772,
+    "supply" : 78,
+    "supplyUsed" : 57,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 54
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 317,
+    "minerals" : 1770,
+    "vespene" : 776,
+    "supply" : 78,
+    "supplyUsed" : 57,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 55
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 318,
+    "minerals" : 1770,
+    "vespene" : 776,
+    "supply" : 78,
+    "supplyUsed" : 57,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 54
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 319,
+    "minerals" : 1785,
+    "vespene" : 780,
+    "supply" : 78,
+    "supplyUsed" : 57,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 54
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 320,
+    "minerals" : 1800,
+    "vespene" : 780,
+    "supply" : 78,
+    "supplyUsed" : 57,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 54
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 321,
+    "minerals" : 1815,
+    "vespene" : 788,
+    "supply" : 78,
+    "supplyUsed" : 57,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 54
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 322,
+    "minerals" : 1840,
+    "vespene" : 788,
+    "supply" : 78,
+    "supplyUsed" : 58,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 56
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 323,
+    "minerals" : 1850,
+    "vespene" : 792,
+    "supply" : 78,
+    "supplyUsed" : 58,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 55
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 324,
+    "minerals" : 1810,
+    "vespene" : 796,
+    "supply" : 78,
+    "supplyUsed" : 59,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 55
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 325,
+    "minerals" : 1815,
+    "vespene" : 796,
+    "supply" : 78,
+    "supplyUsed" : 59,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 56
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 326,
+    "minerals" : 1840,
+    "vespene" : 800,
+    "supply" : 78,
+    "supplyUsed" : 59,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 55
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 327,
+    "minerals" : 1855,
+    "vespene" : 800,
+    "supply" : 78,
+    "supplyUsed" : 59,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 57
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 328,
+    "minerals" : 1880,
+    "vespene" : 804,
+    "supply" : 78,
+    "supplyUsed" : 59,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 56
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 329,
+    "minerals" : 1890,
+    "vespene" : 808,
+    "supply" : 78,
+    "supplyUsed" : 59,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 57
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 330,
+    "minerals" : 1845,
+    "vespene" : 808,
+    "supply" : 78,
+    "supplyUsed" : 59,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 56
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 331,
+    "minerals" : 1850,
+    "vespene" : 812,
+    "supply" : 78,
+    "supplyUsed" : 59,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 56
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 332,
+    "minerals" : 1880,
+    "vespene" : 812,
+    "supply" : 78,
+    "supplyUsed" : 59,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 55
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 333,
+    "minerals" : 1890,
+    "vespene" : 816,
+    "supply" : 78,
+    "supplyUsed" : 59,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 56
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 334,
+    "minerals" : 1920,
+    "vespene" : 820,
+    "supply" : 78,
+    "supplyUsed" : 59,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 56
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 335,
+    "minerals" : 1920,
+    "vespene" : 820,
+    "supply" : 78,
+    "supplyUsed" : 60,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 57
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 336,
+    "minerals" : 1935,
+    "vespene" : 828,
+    "supply" : 78,
+    "supplyUsed" : 61,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 58
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 337,
+    "minerals" : 1900,
+    "vespene" : 832,
+    "supply" : 78,
+    "supplyUsed" : 61,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 58
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 338,
+    "minerals" : 1870,
+    "vespene" : 836,
+    "supply" : 78,
+    "supplyUsed" : 61,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 58
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 339,
+    "minerals" : 1895,
+    "vespene" : 836,
+    "supply" : 78,
+    "supplyUsed" : 61,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 58
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 340,
+    "minerals" : 1900,
+    "vespene" : 840,
+    "supply" : 78,
+    "supplyUsed" : 61,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 58
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 341,
+    "minerals" : 1915,
+    "vespene" : 840,
+    "supply" : 78,
+    "supplyUsed" : 61,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 58
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 342,
+    "minerals" : 1925,
+    "vespene" : 844,
+    "supply" : 78,
+    "supplyUsed" : 61,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 58
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 343,
+    "minerals" : 1940,
+    "vespene" : 852,
+    "supply" : 78,
+    "supplyUsed" : 61,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 58
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 344,
+    "minerals" : 1965,
+    "vespene" : 852,
+    "supply" : 78,
+    "supplyUsed" : 61,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 58
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 345,
+    "minerals" : 1980,
+    "vespene" : 856,
+    "supply" : 78,
+    "supplyUsed" : 61,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 58
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 346,
+    "minerals" : 1995,
+    "vespene" : 856,
+    "supply" : 78,
+    "supplyUsed" : 61,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 58
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 347,
+    "minerals" : 2000,
+    "vespene" : 860,
+    "supply" : 78,
+    "supplyUsed" : 62,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 59
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 348,
+    "minerals" : 1960,
+    "vespene" : 864,
+    "supply" : 78,
+    "supplyUsed" : 63,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 60
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 6
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 349,
+    "minerals" : 1935,
+    "vespene" : 864,
+    "supply" : 86,
+    "supplyUsed" : 63,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 60
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 350,
+    "minerals" : 1945,
+    "vespene" : 868,
+    "supply" : 86,
+    "supplyUsed" : 63,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 60
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 351,
+    "minerals" : 1970,
+    "vespene" : 868,
+    "supply" : 86,
+    "supplyUsed" : 63,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 60
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 352,
+    "minerals" : 1975,
+    "vespene" : 872,
+    "supply" : 86,
+    "supplyUsed" : 63,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 60
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 353,
+    "minerals" : 1985,
+    "vespene" : 876,
+    "supply" : 86,
+    "supplyUsed" : 63,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 61
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 354,
+    "minerals" : 2000,
+    "vespene" : 876,
+    "supply" : 86,
+    "supplyUsed" : 63,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 59
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 355,
+    "minerals" : 2025,
+    "vespene" : 880,
+    "supply" : 86,
+    "supplyUsed" : 63,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 60
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 356,
+    "minerals" : 2040,
+    "vespene" : 880,
+    "supply" : 86,
+    "supplyUsed" : 63,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 60
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 357,
+    "minerals" : 2055,
+    "vespene" : 884,
+    "supply" : 86,
+    "supplyUsed" : 63,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 60
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 358,
+    "minerals" : 2055,
+    "vespene" : 888,
+    "supply" : 86,
+    "supplyUsed" : 63,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 61
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 359,
+    "minerals" : 2075,
+    "vespene" : 896,
+    "supply" : 86,
+    "supplyUsed" : 64,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 61
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 360,
+    "minerals" : 2090,
+    "vespene" : 900,
+    "supply" : 86,
+    "supplyUsed" : 64,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 61
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 361,
+    "minerals" : 2065,
+    "vespene" : 900,
+    "supply" : 86,
+    "supplyUsed" : 65,
+    "units" : {
+      "MULE" : 3,
+      "SCV" : 62
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 362,
+    "minerals" : 2025,
+    "vespene" : 904,
+    "supply" : 86,
+    "supplyUsed" : 65,
+    "units" : {
+      "MULE" : 3,
+      "SCV" : 62
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 363,
+    "minerals" : 2035,
+    "vespene" : 904,
+    "supply" : 86,
+    "supplyUsed" : 65,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 63
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 364,
+    "minerals" : 2055,
+    "vespene" : 908,
+    "supply" : 86,
+    "supplyUsed" : 65,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 62
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 365,
+    "minerals" : 2065,
+    "vespene" : 916,
+    "supply" : 86,
+    "supplyUsed" : 65,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 63
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 366,
+    "minerals" : 2085,
+    "vespene" : 916,
+    "supply" : 86,
+    "supplyUsed" : 65,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 62
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 367,
+    "minerals" : 2100,
+    "vespene" : 920,
+    "supply" : 86,
+    "supplyUsed" : 65,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 62
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 368,
+    "minerals" : 2105,
+    "vespene" : 920,
+    "supply" : 86,
+    "supplyUsed" : 65,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 61
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 369,
+    "minerals" : 2135,
+    "vespene" : 924,
+    "supply" : 86,
+    "supplyUsed" : 65,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 61
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 370,
+    "minerals" : 2135,
+    "vespene" : 928,
+    "supply" : 86,
+    "supplyUsed" : 65,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 61
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 371,
+    "minerals" : 2160,
+    "vespene" : 928,
+    "supply" : 86,
+    "supplyUsed" : 65,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 62
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 372,
+    "minerals" : 2175,
+    "vespene" : 932,
+    "supply" : 86,
+    "supplyUsed" : 66,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 63
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 373,
+    "minerals" : 2130,
+    "vespene" : 932,
+    "supply" : 86,
+    "supplyUsed" : 67,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 64
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 374,
+    "minerals" : 2105,
+    "vespene" : 936,
+    "supply" : 86,
+    "supplyUsed" : 67,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 64
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 375,
+    "minerals" : 2110,
+    "vespene" : 936,
+    "supply" : 86,
+    "supplyUsed" : 67,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 64
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 376,
+    "minerals" : 2130,
+    "vespene" : 940,
+    "supply" : 86,
+    "supplyUsed" : 67,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 63
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 377,
+    "minerals" : 2145,
+    "vespene" : 940,
+    "supply" : 86,
+    "supplyUsed" : 67,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 64
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 378,
+    "minerals" : 2155,
+    "vespene" : 944,
+    "supply" : 86,
+    "supplyUsed" : 67,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 64
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 379,
+    "minerals" : 2175,
+    "vespene" : 948,
+    "supply" : 86,
+    "supplyUsed" : 67,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 64
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 380,
+    "minerals" : 2190,
+    "vespene" : 952,
+    "supply" : 86,
+    "supplyUsed" : 67,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 64
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 381,
+    "minerals" : 2205,
+    "vespene" : 960,
+    "supply" : 86,
+    "supplyUsed" : 67,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 64
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 382,
+    "minerals" : 2225,
+    "vespene" : 960,
+    "supply" : 86,
+    "supplyUsed" : 67,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 65
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 383,
+    "minerals" : 2230,
+    "vespene" : 964,
+    "supply" : 86,
+    "supplyUsed" : 67,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 64
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 384,
+    "minerals" : 2255,
+    "vespene" : 968,
+    "supply" : 86,
+    "supplyUsed" : 68,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 66
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 385,
+    "minerals" : 2260,
+    "vespene" : 968,
+    "supply" : 86,
+    "supplyUsed" : 69,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 66
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 7
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 386,
+    "minerals" : 2235,
+    "vespene" : 972,
+    "supply" : 94,
+    "supplyUsed" : 69,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 66
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 387,
+    "minerals" : 2235,
+    "vespene" : 976,
+    "supply" : 94,
+    "supplyUsed" : 69,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 66
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 388,
+    "minerals" : 2265,
+    "vespene" : 980,
+    "supply" : 94,
+    "supplyUsed" : 69,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 66
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 389,
+    "minerals" : 2270,
+    "vespene" : 984,
+    "supply" : 94,
+    "supplyUsed" : 69,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 67
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 390,
+    "minerals" : 2245,
+    "vespene" : 984,
+    "supply" : 94,
+    "supplyUsed" : 69,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 65
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 391,
+    "minerals" : 2255,
+    "vespene" : 988,
+    "supply" : 94,
+    "supplyUsed" : 69,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 65
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 392,
+    "minerals" : 2265,
+    "vespene" : 988,
+    "supply" : 94,
+    "supplyUsed" : 69,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 65
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 393,
+    "minerals" : 2285,
+    "vespene" : 992,
+    "supply" : 94,
+    "supplyUsed" : 69,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 66
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 394,
+    "minerals" : 2295,
+    "vespene" : 996,
+    "supply" : 94,
+    "supplyUsed" : 69,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 67
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 395,
+    "minerals" : 2310,
+    "vespene" : 996,
+    "supply" : 94,
+    "supplyUsed" : 69,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 66
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 396,
+    "minerals" : 2330,
+    "vespene" : 1000,
+    "supply" : 94,
+    "supplyUsed" : 70,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 67
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 397,
+    "minerals" : 2285,
+    "vespene" : 1000,
+    "supply" : 94,
+    "supplyUsed" : 70,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 67
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 398,
+    "minerals" : 2300,
+    "vespene" : 1004,
+    "supply" : 94,
+    "supplyUsed" : 71,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 67
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 399,
+    "minerals" : 2325,
+    "vespene" : 1004,
+    "supply" : 94,
+    "supplyUsed" : 71,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 69
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 400,
+    "minerals" : 2285,
+    "vespene" : 1008,
+    "supply" : 94,
+    "supplyUsed" : 71,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 68
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 401,
+    "minerals" : 2300,
+    "vespene" : 1012,
+    "supply" : 94,
+    "supplyUsed" : 71,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 68
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 402,
+    "minerals" : 2310,
+    "vespene" : 1016,
+    "supply" : 94,
+    "supplyUsed" : 71,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 68
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 403,
+    "minerals" : 2330,
+    "vespene" : 1024,
+    "supply" : 94,
+    "supplyUsed" : 71,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 68
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 404,
+    "minerals" : 2345,
+    "vespene" : 1024,
+    "supply" : 94,
+    "supplyUsed" : 71,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 68
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 405,
+    "minerals" : 2365,
+    "vespene" : 1028,
+    "supply" : 94,
+    "supplyUsed" : 71,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 68
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 406,
+    "minerals" : 2370,
+    "vespene" : 1032,
+    "supply" : 94,
+    "supplyUsed" : 71,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 68
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 407,
+    "minerals" : 2395,
+    "vespene" : 1032,
+    "supply" : 94,
+    "supplyUsed" : 71,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 68
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 408,
+    "minerals" : 2405,
+    "vespene" : 1036,
+    "supply" : 94,
+    "supplyUsed" : 72,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 69
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 409,
+    "minerals" : 2425,
+    "vespene" : 1040,
+    "supply" : 94,
+    "supplyUsed" : 72,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 69
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 410,
+    "minerals" : 2385,
+    "vespene" : 1044,
+    "supply" : 94,
+    "supplyUsed" : 73,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 70
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 411,
+    "minerals" : 2400,
+    "vespene" : 1044,
+    "supply" : 94,
+    "supplyUsed" : 73,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 70
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 412,
+    "minerals" : 2355,
+    "vespene" : 1048,
+    "supply" : 94,
+    "supplyUsed" : 73,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 69
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 413,
+    "minerals" : 2385,
+    "vespene" : 1052,
+    "supply" : 94,
+    "supplyUsed" : 73,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 69
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 414,
+    "minerals" : 2390,
+    "vespene" : 1052,
+    "supply" : 94,
+    "supplyUsed" : 73,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 69
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 415,
+    "minerals" : 2410,
+    "vespene" : 1056,
+    "supply" : 94,
+    "supplyUsed" : 73,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 70
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 416,
+    "minerals" : 2425,
+    "vespene" : 1056,
+    "supply" : 94,
+    "supplyUsed" : 73,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 70
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 417,
+    "minerals" : 2430,
+    "vespene" : 1060,
+    "supply" : 94,
+    "supplyUsed" : 73,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 70
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 418,
+    "minerals" : 2455,
+    "vespene" : 1060,
+    "supply" : 94,
+    "supplyUsed" : 73,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 70
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 419,
+    "minerals" : 2465,
+    "vespene" : 1064,
+    "supply" : 94,
+    "supplyUsed" : 73,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 70
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 420,
+    "minerals" : 2480,
+    "vespene" : 1068,
+    "supply" : 94,
+    "supplyUsed" : 73,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 69
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 421,
+    "minerals" : 2495,
+    "vespene" : 1068,
+    "supply" : 94,
+    "supplyUsed" : 74,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 71
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 422,
+    "minerals" : 2460,
+    "vespene" : 1072,
+    "supply" : 94,
+    "supplyUsed" : 75,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 72
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 423,
+    "minerals" : 2420,
+    "vespene" : 1072,
+    "supply" : 94,
+    "supplyUsed" : 75,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 73
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 424,
+    "minerals" : 2440,
+    "vespene" : 1080,
+    "supply" : 94,
+    "supplyUsed" : 75,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 72
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 425,
+    "minerals" : 2450,
+    "vespene" : 1088,
+    "supply" : 94,
+    "supplyUsed" : 75,
+    "units" : {
+      "MULE" : 3,
+      "SCV" : 73
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 426,
+    "minerals" : 2475,
+    "vespene" : 1088,
+    "supply" : 94,
+    "supplyUsed" : 75,
+    "units" : {
+      "MULE" : 4,
+      "SCV" : 72
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 427,
+    "minerals" : 2480,
+    "vespene" : 1092,
+    "supply" : 94,
+    "supplyUsed" : 75,
+    "units" : {
+      "MULE" : 3,
+      "SCV" : 72
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 428,
+    "minerals" : 2500,
+    "vespene" : 1092,
+    "supply" : 94,
+    "supplyUsed" : 75,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 72
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 429,
+    "minerals" : 2510,
+    "vespene" : 1096,
+    "supply" : 94,
+    "supplyUsed" : 75,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 72
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 430,
+    "minerals" : 2525,
+    "vespene" : 1100,
+    "supply" : 94,
+    "supplyUsed" : 75,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 73
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 431,
+    "minerals" : 2545,
+    "vespene" : 1104,
+    "supply" : 94,
+    "supplyUsed" : 75,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 72
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 432,
+    "minerals" : 2555,
+    "vespene" : 1108,
+    "supply" : 94,
+    "supplyUsed" : 75,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 72
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 433,
+    "minerals" : 2580,
+    "vespene" : 1108,
+    "supply" : 94,
+    "supplyUsed" : 76,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 73
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 434,
+    "minerals" : 2590,
+    "vespene" : 1112,
+    "supply" : 94,
+    "supplyUsed" : 76,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 72
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 435,
+    "minerals" : 2550,
+    "vespene" : 1112,
+    "supply" : 94,
+    "supplyUsed" : 77,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 74
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 436,
+    "minerals" : 2525,
+    "vespene" : 1116,
+    "supply" : 94,
+    "supplyUsed" : 77,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 73
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 437,
+    "minerals" : 2530,
+    "vespene" : 1120,
+    "supply" : 94,
+    "supplyUsed" : 77,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 74
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 438,
+    "minerals" : 2555,
+    "vespene" : 1120,
+    "supply" : 94,
+    "supplyUsed" : 77,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 74
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 439,
+    "minerals" : 2560,
+    "vespene" : 1124,
+    "supply" : 94,
+    "supplyUsed" : 77,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 74
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 440,
+    "minerals" : 2570,
+    "vespene" : 1124,
+    "supply" : 94,
+    "supplyUsed" : 77,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 75
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 441,
+    "minerals" : 2590,
+    "vespene" : 1128,
+    "supply" : 94,
+    "supplyUsed" : 77,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 74
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 442,
+    "minerals" : 2605,
+    "vespene" : 1132,
+    "supply" : 94,
+    "supplyUsed" : 77,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 74
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 443,
+    "minerals" : 2625,
+    "vespene" : 1132,
+    "supply" : 94,
+    "supplyUsed" : 77,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 74
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 444,
+    "minerals" : 2635,
+    "vespene" : 1136,
+    "supply" : 94,
+    "supplyUsed" : 77,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 74
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 445,
+    "minerals" : 2650,
+    "vespene" : 1136,
+    "supply" : 94,
+    "supplyUsed" : 78,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 75
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 8
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 446,
+    "minerals" : 2660,
+    "vespene" : 1144,
+    "supply" : 102,
+    "supplyUsed" : 78,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 75
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 9
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 447,
+    "minerals" : 2680,
+    "vespene" : 1152,
+    "supply" : 102,
+    "supplyUsed" : 79,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 76
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 9
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 448,
+    "minerals" : 2645,
+    "vespene" : 1152,
+    "supply" : 102,
+    "supplyUsed" : 79,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 76
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 9
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  }, {
+    "tick" : 449,
+    "minerals" : 2660,
+    "vespene" : 1156,
+    "supply" : 102,
+    "supplyUsed" : 79,
+    "units" : {
+      "MULE" : 2,
+      "SCV" : 76
+    },
+    "buildings" : {
+      "BARRACKS" : 1,
+      "ORBITAL_COMMAND" : 2,
+      "REFINERY" : 2,
+      "SUPPLY_DEPOT" : 9
+    },
+    "upgrades" : [ ],
+    "workersPerBase" : [ 16, 0 ]
+  } ],
+  "mineralPatches" : [ {
+    "x" : 113.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 109.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 115.0,
+    "y" : 68.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 98.0,
+    "y" : 163.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 33.0,
+    "y" : 81.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 69.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 68.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 121.0,
+    "y" : 104.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 65.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 26.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 95.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 47.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 24.0,
+    "y" : 161.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 133.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 68.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 43.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 111.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 28.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 161.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 45.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 64.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 73.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 48.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 115.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 25.0,
+    "y" : 47.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 126.0,
+    "y" : 69.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 92.0,
+    "y" : 139.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 31.0,
+    "y" : 41.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 61.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 28.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 129.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 44.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 29.0,
+    "y" : 128.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 30.0,
+    "y" : 80.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 123.0,
+    "y" : 103.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 111.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 98.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 135.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 24.0,
+    "y" : 46.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 56.0,
+    "y" : 163.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 163.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 26.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 164.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 63.0,
+    "y" : 103.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 102.0,
+    "y" : 48.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 46.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 91.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 134.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 126.0,
+    "y" : 138.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 54.0,
+    "y" : 103.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 91.0,
+    "y" : 69.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 73.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 95.0,
+    "y" : 138.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 133.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 28.0,
+    "y" : 78.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 103.0,
+    "y" : 158.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 46.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 115.0,
+    "y" : 139.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 98.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 56.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 69.0,
+    "y" : 163.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 33.0,
+    "y" : 126.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 162.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 31.0,
+    "y" : 166.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 70.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 165.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 61.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 134.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 128.0,
+    "y" : 103.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 30.0,
+    "y" : 40.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 56.0,
+    "y" : 44.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 92.0,
+    "y" : 68.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 30.0,
+    "y" : 167.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 104.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 126.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 50.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 65.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 76.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 96.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 131.0,
+    "y" : 72.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 95.0,
+    "y" : 69.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 111.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 130.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 125.0,
+    "y" : 137.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 57.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 42.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 103.0,
+    "y" : 49.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 74.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 60.0,
+    "y" : 165.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 98.0,
+    "y" : 44.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 30.0,
+    "y" : 127.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 27.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 68.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 53.0,
+    "y" : 104.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 34.0,
+    "y" : 127.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 97.0,
+    "y" : 131.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 157.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 103.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 101.0,
+    "y" : 162.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 27.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 159.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 109.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 25.0,
+    "y" : 164.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 27.0,
+    "y" : 132.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 64.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 60.0,
+    "y" : 103.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 95.0,
+    "y" : 163.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 130.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 132.0,
+    "y" : 160.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 129.0,
+    "y" : 137.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 105.0,
+    "y" : 135.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 29.0,
+    "y" : 79.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 28.0,
+    "y" : 74.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 25.0,
+    "y" : 160.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 124.0,
+    "y" : 104.5,
+    "amount" : 750,
+    "rich" : true
+  }, {
+    "x" : 115.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 101.0,
+    "y" : 45.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 27.0,
+    "y" : 75.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 126.0,
+    "y" : 41.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 105.0,
+    "y" : 72.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 107.0,
+    "y" : 136.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 60.0,
+    "y" : 42.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 34.0,
+    "y" : 80.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 113.0,
+    "y" : 138.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 109.0,
+    "y" : 70.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 113.0,
+    "y" : 139.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 61.0,
+    "y" : 166.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 107.0,
+    "y" : 71.5,
+    "amount" : 1500,
+    "rich" : true
+  }, {
+    "x" : 25.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  }, {
+    "x" : 131.0,
+    "y" : 161.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 102.0,
+    "y" : 159.5,
+    "amount" : 1500,
+    "rich" : false
+  }, {
+    "x" : 57.0,
+    "y" : 43.5,
+    "amount" : 750,
+    "rich" : false
+  } ],
+  "geyserPositions" : [ {
+    "x" : 88.5,
+    "y" : 160.5,
+    "amount" : 2250
+  }, {
+    "x" : 55.5,
+    "y" : 47.5,
+    "amount" : 2250
+  }, {
+    "x" : 27.5,
+    "y" : 136.5,
+    "amount" : 2250
+  }, {
+    "x" : 131.5,
+    "y" : 128.5,
+    "amount" : 2250
+  }, {
+    "x" : 24.5,
+    "y" : 157.5,
+    "amount" : 2250
+  }, {
+    "x" : 69.5,
+    "y" : 47.5,
+    "amount" : 2250
+  }, {
+    "x" : 131.5,
+    "y" : 79.5,
+    "amount" : 2250
+  }, {
+    "x" : 34.5,
+    "y" : 167.5,
+    "amount" : 2250
+  }, {
+    "x" : 121.5,
+    "y" : 138.5,
+    "amount" : 2250
+  }, {
+    "x" : 50.5,
+    "y" : 99.5,
+    "amount" : 2250
+  }, {
+    "x" : 121.5,
+    "y" : 166.5,
+    "amount" : 2250
+  }, {
+    "x" : 132.5,
+    "y" : 108.5,
+    "amount" : 2250
+  }, {
+    "x" : 121.5,
+    "y" : 41.5,
+    "amount" : 2250
+  }, {
+    "x" : 131.5,
+    "y" : 156.5,
+    "amount" : 2250
+  }, {
+    "x" : 97.5,
+    "y" : 79.5,
+    "amount" : 2250
+  }, {
+    "x" : 131.5,
+    "y" : 51.5,
+    "amount" : 2250
+  }, {
+    "x" : 121.5,
+    "y" : 69.5,
+    "amount" : 2250
+  }, {
+    "x" : 55.5,
+    "y" : 160.5,
+    "amount" : 2250
+  }, {
+    "x" : 24.5,
+    "y" : 50.5,
+    "amount" : 2250
+  }, {
+    "x" : 91.5,
+    "y" : 43.5,
+    "amount" : 2250
+  }, {
+    "x" : 88.5,
+    "y" : 68.5,
+    "amount" : 2250
+  }, {
+    "x" : 88.5,
+    "y" : 47.5,
+    "amount" : 2250
+  }, {
+    "x" : 34.5,
+    "y" : 40.5,
+    "amount" : 2250
+  }, {
+    "x" : 132.5,
+    "y" : 99.5,
+    "amount" : 2250
+  }, {
+    "x" : 69.5,
+    "y" : 160.5,
+    "amount" : 2250
+  }, {
+    "x" : 31.5,
+    "y" : 67.5,
+    "amount" : 2250
+  }, {
+    "x" : 88.5,
+    "y" : 139.5,
+    "amount" : 2250
+  }, {
+    "x" : 27.5,
+    "y" : 71.5,
+    "amount" : 2250
+  }, {
+    "x" : 97.5,
+    "y" : 128.5,
+    "amount" : 2250
+  }, {
+    "x" : 31.5,
+    "y" : 140.5,
+    "amount" : 2250
+  }, {
+    "x" : 91.5,
+    "y" : 164.5,
+    "amount" : 2250
+  }, {
+    "x" : 50.5,
+    "y" : 108.5,
+    "amount" : 2250
+  } ],
+  "basePosition" : [ 124.5, 48.5 ]
+}

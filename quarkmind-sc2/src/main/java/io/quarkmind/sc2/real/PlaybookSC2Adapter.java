@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.ocraft.s2client.protocol.data.Abilities;
 import com.github.ocraft.s2client.protocol.observation.Observation;
 import com.github.ocraft.s2client.protocol.response.ResponseGameInfo;
+import com.github.ocraft.s2client.protocol.unit.Alliance;
 import com.github.ocraft.s2client.protocol.unit.Tag;
 import io.quarkmind.domain.Building;
 import io.quarkmind.domain.BuildingType;
@@ -27,6 +28,13 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
 
     private static final Logger log = Logger.getLogger(PlaybookSC2Adapter.class);
     private static final ObjectMapper YAML = new ObjectMapper(new YAMLFactory());
+    private static final java.util.Map<String, BuildingType> MORPH_BUILDING_NAMES = java.util.Map.of(
+            "OrbitalCommand", BuildingType.ORBITAL_COMMAND,
+            "PlanetaryFortress", BuildingType.PLANETARY_FORTRESS,
+            "Lair", BuildingType.LAIR,
+            "Hive", BuildingType.HIVE,
+            "GreaterSpire", BuildingType.GREATER_SPIRE
+    );
 
     private final QuarkusSC2Transport transport;
     private final List<SC2PlaybookRunner.PlaybookStep> steps;
@@ -37,6 +45,7 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
 
     private final List<CalibrationSnapshot> snapshots = new ArrayList<>();
     private final java.util.Set<String> assignedGasBuildings = new java.util.HashSet<>();
+    private final java.util.Set<Long> usedLarvaThisTick = new java.util.HashSet<>();
     private final List<io.quarkmind.sc2.playbook.WorkerCadenceSnapshot> workerCadenceSnapshots = new ArrayList<>();
 
     private int gameLoop = 0;
@@ -138,6 +147,9 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
                     }
                 }
 
+                killEnemyUnits(obs);
+                usedLarvaThisTick.clear();
+
                 int                   supplyUsed = (int) state.supplyUsed();
                 List<ResolvedCommand> commands   = new ArrayList<>();
 
@@ -162,7 +174,7 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
                         String morphTarget = (String) step.params().get("morph");
                         String sourceStr = (String) step.params().get("source");
                         pendingMorphStepIndex = i;
-                        pendingMorphTargetType = BuildingType.valueOf(morphTarget != null ? morphTarget : sourceStr);
+                        pendingMorphTargetType = resolveBuildingType(morphTarget != null ? morphTarget : sourceStr);
                         log.infof("[Recorder] tick %d (loop %d): morph %s via debug API supply=%d/%d",
                                   tick, gameLoop, pendingMorphTargetType, supplyUsed, (int) state.supply());
                         continue;
@@ -291,6 +303,23 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
         Abilities ability = ActionTranslator.mapTrainAbility(unitType);
         if (ability == null) return null;
 
+        if (isZergLarvaUnit(unitType)) {
+            int mineralCost = io.quarkmind.domain.SC2Data.mineralCost(unitType);
+            if (state.minerals() < mineralCost) {
+                return null;
+            }
+            double supplyCost = io.quarkmind.domain.SC2Data.supplyCost(unitType);
+            if (supplyCost > 0 && state.supplyUsed() + supplyCost > state.supply()) {
+                return null;
+            }
+            Tag larvaTag = findAvailableLarva(state);
+            if (larvaTag == null) {
+                return null;
+            }
+            usedLarvaThisTick.add(larvaTag.getValue());
+            return new ResolvedCommand(larvaTag, ability, Optional.empty());
+        }
+
         BuildingType producerType = findProducerType(unitType);
         if (producerType == null) return null;
 
@@ -300,6 +329,23 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
             return null;
         }
         return new ResolvedCommand(producerTag, ability, Optional.empty());
+    }
+
+    private Tag findAvailableLarva(GameState state) {
+        return state.myUnits().stream()
+                .filter(u -> u.type() == UnitType.LARVA)
+                .filter(u -> !usedLarvaThisTick.contains(Long.parseLong(u.tag())))
+                .findFirst()
+                .map(u -> Tag.of(Long.parseLong(u.tag())))
+                .orElse(null);
+    }
+
+    private static boolean isZergLarvaUnit(UnitType type) {
+        return switch (type) {
+            case DRONE, OVERLORD, ZERGLING, ROACH, HYDRALISK, MUTALISK,
+                 CORRUPTOR, INFESTOR, SWARM_HOST, VIPER, ULTRALISK -> true;
+            default -> false;
+        };
     }
 
     private ResolvedCommand translateBuild(SC2PlaybookRunner.PlaybookStep step, GameState state) {
@@ -425,8 +471,8 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
             log.warnf("[Recorder] morph step missing 'source' param");
             return;
         }
-        BuildingType sourceType = BuildingType.valueOf(sourceStr);
-        BuildingType targetType = BuildingType.valueOf(morphTarget != null ? morphTarget : sourceStr);
+        BuildingType sourceType = resolveBuildingType(sourceStr);
+        BuildingType targetType = resolveBuildingType(morphTarget != null ? morphTarget : sourceStr);
 
         Building sourceBuilding = state.myBuildings().stream()
             .filter(b -> b.type() == sourceType && b.isComplete())
@@ -605,6 +651,30 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
             case EXTRACTOR -> 88;
             default -> -1;
         };
+    }
+
+    private static BuildingType resolveBuildingType(String name) {
+        BuildingType mapped = MORPH_BUILDING_NAMES.get(name);
+        return mapped != null ? mapped : BuildingType.valueOf(name);
+    }
+
+    private void killEnemyUnits(Observation obs) {
+        obs.getRaw().ifPresent(raw -> {
+            List<Long> enemyTags = raw.getUnits().stream()
+                    .filter(u -> u.getAlliance() == Alliance.ENEMY)
+                    .map(u -> u.getTag().getValue())
+                    .toList();
+            if (enemyTags.isEmpty()) return;
+            try {
+                SC2APIProtocol.Debug.DebugKillUnit.Builder kill = SC2APIProtocol.Debug.DebugKillUnit.newBuilder();
+                enemyTags.forEach(kill::addTag);
+                transport.sendDebug(SC2APIProtocol.Sc2Api.RequestDebug.newBuilder()
+                        .addDebug(SC2APIProtocol.Debug.DebugCommand.newBuilder().setKillUnit(kill.build()).build())
+                        .build());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
     }
 
 }
