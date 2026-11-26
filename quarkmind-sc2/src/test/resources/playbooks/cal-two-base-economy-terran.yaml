@@ -1,0 +1,108 @@
+playbook: cal-two-base-economy-terran
+schema: sc2
+meta:
+  race: TERRAN
+  duration: 450 ticks
+  purpose: Two-base Terran economy with gas — measures expansion income, OC morph, MULE contribution, worker distribution, gas+mineral balance at 7-min
+
+steps:
+  - train: SCV
+    loop: continuous
+
+  - build: SUPPLY_DEPOT
+    at: 14 supply
+
+  - build: REFINERY
+    at: 15 supply
+
+  - build: BARRACKS
+    at: 16 supply
+
+  - build: COMMAND_CENTER
+    at: 20 supply
+
+  - build: SUPPLY_DEPOT
+    at: 21 supply
+
+  - morph: OrbitalCommand
+    source: COMMAND_CENTER
+    at: 22 supply
+
+  - build: REFINERY
+    at: 24 supply
+
+  - build: SUPPLY_DEPOT
+    at: 27 supply
+
+  - calldown: MULE
+    loop: continuous
+
+  - morph: OrbitalCommand
+    source: COMMAND_CENTER
+    at: 33 supply
+
+  - build: SUPPLY_DEPOT
+    at: 33 supply
+
+  - build: SUPPLY_DEPOT
+    at: 39 supply
+
+  - build: SUPPLY_DEPOT
+    at: 45 supply
+
+  - build: SUPPLY_DEPOT
+    at: 51 supply
+
+  - build: SUPPLY_DEPOT
+    at: 57 supply
+
+  - build: SUPPLY_DEPOT
+    at: 63 supply
+
+  - build: SUPPLY_DEPOT
+    at: 69 supply
+
+  - build: SUPPLY_DEPOT
+    at: 78 supply
+
+  - assert: tick-61
+    at: 61 ticks
+    expect:
+      units:
+        SCV: { min: 14 }
+
+  - assert: tick-122
+    at: 122 ticks
+    expect:
+      units:
+        SCV: { min: 20 }
+
+  - assert: tick-183
+    at: 183 ticks
+    expect:
+      units:
+        SCV: { min: 23 }
+
+  - assert: tick-244
+    at: 244 ticks
+    expect:
+      units:
+        SCV: { min: 28 }
+
+  - assert: tick-305
+    at: 305 ticks
+    expect:
+      units:
+        SCV: { min: 34 }
+
+  - assert: tick-366
+    at: 366 ticks
+    expect:
+      units:
+        SCV: { min: 38 }
+
+  - assert: tick-427
+    at: 427 ticks
+    expect:
+      units:
+        SCV: { min: 42 }

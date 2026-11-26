@@ -284,6 +284,16 @@ class PlaybookSC2RecorderTest {
         recordPlaybook("PROTOSS", "playbooks/cal-single-base-probes.yaml", "calibration/cal-single-base-probes.json");
     }
 
+    @Test
+    void recordCalTwoBaseEconomyTerran() throws Exception {
+        recordPlaybook("TERRAN", "playbooks/cal-two-base-economy-terran.yaml", "calibration/cal-two-base-economy-terran.json");
+    }
+
+    @Test
+    void recordCalTwoBaseEconomyZerg() throws Exception {
+        recordPlaybook("ZERG", "playbooks/cal-two-base-economy-zerg.yaml", "calibration/cal-two-base-economy-zerg.json");
+    }
+
 
     @Test
     void recordMultiRunCadence12w() throws Exception {

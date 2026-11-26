@@ -756,6 +756,16 @@ class DualRunCalibrationTest {
         assertSelfBaseline("playbooks/cal-worker-speed-single.yaml", Race.PROTOSS);
     }
 
+    @Test
+    void selfBaselineCalTwoBaseEconomyTerran() {
+        assertSelfBaseline("playbooks/cal-two-base-economy-terran.yaml", Race.TERRAN);
+    }
+
+    @Test
+    void selfBaselineCalTwoBaseEconomyZerg() {
+        assertSelfBaseline("playbooks/cal-two-base-economy-zerg.yaml", Race.ZERG);
+    }
+
 
     private static void assertSelfBaseline(String playbookResource, Race race) {
         String   yaml = SC2PlaybookRunner.loadResource(playbookResource);

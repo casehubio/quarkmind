@@ -110,4 +110,14 @@ class SC2PlaybookCalibrationTest {
         runner.execute("playbooks/cal-mineral-baseline-10w.yaml");
     }
 
+    @Test
+    void twoBaseEconomyTerran() {
+        runner.execute("playbooks/cal-two-base-economy-terran.yaml");
+    }
+
+    @Test
+    void twoBaseEconomyZerg() {
+        runner.execute("playbooks/cal-two-base-economy-zerg.yaml");
+    }
+
 }
