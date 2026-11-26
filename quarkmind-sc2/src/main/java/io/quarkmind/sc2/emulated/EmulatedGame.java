@@ -210,6 +210,7 @@ public class EmulatedGame {
             playerRaceModel.seedInitialState(friendly, geysers);
         }
         for (Building b : friendly.buildings()) {
+            registerBuildingObstacle(b);
             if (playerRaceModel.townHallTypes().contains(b.type()) && b.isComplete()) {
                 registerTownHallWithPatches(b.tag(), b.position());
             }

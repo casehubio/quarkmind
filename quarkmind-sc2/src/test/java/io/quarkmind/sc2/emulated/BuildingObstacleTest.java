@@ -44,14 +44,14 @@ class BuildingObstacleTest {
         EmulatedGame game = new EmulatedGame();
         TerrainGrid grid = game.getTerrainGrid();
 
-        game.debugCreateBuilding(BuildingType.GATEWAY, new Point2d(10, 10));
-        game.debugCreateBuilding(BuildingType.PYLON, new Point2d(15, 10));
-        assertFalse(grid.isWalkable(10, 10));
-        assertFalse(grid.isWalkable(15, 10));
+        game.debugCreateBuilding(BuildingType.GATEWAY, new Point2d(30, 10));
+        game.debugCreateBuilding(BuildingType.PYLON, new Point2d(35, 10));
+        assertFalse(grid.isWalkable(30, 10));
+        assertFalse(grid.isWalkable(35, 10));
 
         game.reset();
-        assertTrue(grid.isWalkable(10, 10), "Should be walkable after reset");
-        assertTrue(grid.isWalkable(15, 10), "Should be walkable after reset");
+        assertTrue(grid.isWalkable(30, 10), "Should be walkable after reset");
+        assertTrue(grid.isWalkable(35, 10), "Should be walkable after reset");
     }
 
     @Test
