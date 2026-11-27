@@ -9,8 +9,14 @@ steps:
   - train: OVERLORD
     at: 13 supply
 
+  - build: SPAWNING_POOL
+    at: 14 supply
+
   - build: EXTRACTOR
     at: 15 supply
+
+  - train: QUEEN
+    at: 16 supply
 
   - build: HATCHERY
     at: 20 supply
@@ -20,6 +26,9 @@ steps:
 
   - build: EXTRACTOR
     at: 24 supply
+
+  - train: QUEEN
+    at: 26 supply
 
   - train: OVERLORD
     at: 27 supply

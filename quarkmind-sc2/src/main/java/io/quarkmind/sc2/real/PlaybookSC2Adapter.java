@@ -303,15 +303,20 @@ public class PlaybookSC2Adapter implements SC2FrameCallback {
         Abilities ability = ActionTranslator.mapTrainAbility(unitType);
         if (ability == null) return null;
 
+        int mineralCost = io.quarkmind.domain.SC2Data.mineralCost(unitType);
+        if (state.minerals() < mineralCost) {
+            return null;
+        }
+        int gasCost = io.quarkmind.domain.SC2Data.gasCost(unitType);
+        if (gasCost > 0 && state.vespene() < gasCost) {
+            return null;
+        }
+        double supplyCost = io.quarkmind.domain.SC2Data.supplyCost(unitType);
+        if (supplyCost > 0 && state.supplyUsed() + supplyCost > state.supply()) {
+            return null;
+        }
+
         if (isZergLarvaUnit(unitType)) {
-            int mineralCost = io.quarkmind.domain.SC2Data.mineralCost(unitType);
-            if (state.minerals() < mineralCost) {
-                return null;
-            }
-            double supplyCost = io.quarkmind.domain.SC2Data.supplyCost(unitType);
-            if (supplyCost > 0 && state.supplyUsed() + supplyCost > state.supply()) {
-                return null;
-            }
             Tag larvaTag = findAvailableLarva(state);
             if (larvaTag == null) {
                 return null;
