@@ -20,15 +20,15 @@ class WorkerPhysicsConfigProducer {
     double gasApproachDockingLoops;
 
     @ConfigProperty(name = "starcraft.worker.deposit-duration-loops",
-                    defaultValue = "12.0")
+                    defaultValue = "0")
     double depositDurationLoops;
 
     @ConfigProperty(name = "starcraft.worker.acceleration",
-                    defaultValue = "3.5")
+                    defaultValue = "4.9")
     double acceleration;
 
     @ConfigProperty(name = "starcraft.worker.deceleration",
-                    defaultValue = "3.5")
+                    defaultValue = "4.9")
     double deceleration;
 
     @ConfigProperty(name = "starcraft.worker.patch-docking-overhead-loops",
@@ -48,11 +48,11 @@ class WorkerPhysicsConfigProducer {
     double collisionSpeedFactor;
 
     @ConfigProperty(name = "starcraft.worker.reroute-threshold-loops",
-                    defaultValue = "22.0")
+                    defaultValue = "30.0")
     double rerouteThresholdLoops;
 
     @ConfigProperty(name = "starcraft.worker.low-saturation-dodge-scale",
-                    defaultValue = "0.25")
+                    defaultValue = "0.10")
     double lowSaturationDodgeScale;
 
     @ConfigProperty(name = "starcraft.worker.approach-animation-loops",
@@ -67,7 +67,7 @@ class WorkerPhysicsConfigProducer {
                     defaultValue = "0.0")
     double gasDepositCongestionPerWorker;
     @ConfigProperty(name = "starcraft.worker.mineral-patch-obstacle-radius",
-                    defaultValue = "0.3")
+                    defaultValue = "0.5")
     double mineralPatchObstacleRadius;
 
 
