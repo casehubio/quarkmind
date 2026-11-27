@@ -728,7 +728,8 @@ Newly produced workers spawn at the **town hall edge toward the mineral centroid
 
 1. **Real SC2 is available.** The SC2 client is installed. `PlaybookSC2RecorderTest` drives it via the API. Always record controlled baselines from real SC2 — never approximate or guess.
 2. **Use controlled SC2 recordings, not oracle replays.** Oracle replays (blizzard ladder, tournament packs) have combat, scouting, harass, variable builds on dozens of different maps. They confound physics with player behaviour. Create isolated economy-only playbooks and record SC2 baselines for them.
-3. **Use real maps and real terrain.** The EM must run on the same map and terrain as SC2. Flat grids, synthetic maps, and coordinate offsets all create noise that masks real physics errors. If the comparison isn't apples-to-apples, the numbers are not valid for calibration.
+3. **Debug-kill enemies in economy-focused recordings.** When recording SC2 baselines for economy calibration, use the debug API to kill all enemy units at game start. Enemy scouts, harass, and attacks confound economy measurements — the baseline must isolate economy physics from combat interference.
+4. **Use real maps and real terrain.** The EM must run on the same map and terrain as SC2. Flat grids, synthetic maps, and coordinate offsets all create noise that masks real physics errors. If the comparison isn't apples-to-apples, the numbers are not valid for calibration.
 
 ### Methodology — pinned calibration (primary)
 
