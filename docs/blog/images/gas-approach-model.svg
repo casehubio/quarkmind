@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" font-family="system-ui, -apple-system, sans-serif" font-size="13">
+  <style>
+    .label { font-size: 11px; fill: #666; }
+    .title { font-size: 14px; font-weight: 600; fill: #1a1a1a; }
+    .phase { font-size: 11px; fill: #fff; font-weight: 500; }
+    .note { font-size: 10px; fill: #888; font-style: italic; }
+  </style>
+
+  <!-- Title -->
+  <text x="360" y="24" text-anchor="middle" class="title">Gas Approach: Inside vs Outside Geyser</text>
+
+  <!-- OLD MODEL -->
+  <text x="20" y="60" class="label" font-weight="600">Old model (inside)</text>
+
+  <!-- Worker 1 timeline -->
+  <text x="20" y="85" class="label">W1</text>
+  <rect x="50" y="72" width="80" height="22" rx="3" fill="#6b8cce"/>
+  <text x="90" y="87" text-anchor="middle" class="phase">walk →</text>
+  <rect x="130" y="72" width="140" height="22" rx="3" fill="#c0392b"/>
+  <text x="200" y="87" text-anchor="middle" class="phase">dock+harvest (43.2L)</text>
+  <rect x="270" y="72" width="80" height="22" rx="3" fill="#6b8cce"/>
+  <text x="310" y="87" text-anchor="middle" class="phase">← walk</text>
+
+  <!-- Worker 2 timeline -->
+  <text x="20" y="115" class="label">W2</text>
+  <rect x="50" y="102" width="60" height="22" rx="3" fill="#6b8cce"/>
+  <text x="80" y="117" text-anchor="middle" class="phase">walk</text>
+  <rect x="110" y="102" width="20" height="22" rx="3" fill="#f39c12"/>
+  <text x="120" y="117" text-anchor="middle" class="phase" font-size="9">W</text>
+  <rect x="270" y="102" width="140" height="22" rx="3" fill="#c0392b"/>
+  <text x="340" y="117" text-anchor="middle" class="phase">dock+harvest (43.2L)</text>
+
+  <!-- Geyser occupation bar -->
+  <text x="20" y="145" class="label">Geyser</text>
+  <rect x="130" y="132" width="140" height="18" rx="2" fill="#c0392b" opacity="0.3"/>
+  <rect x="270" y="132" width="140" height="18" rx="2" fill="#c0392b" opacity="0.3"/>
+  <text x="200" y="145" text-anchor="middle" class="note">blocked 43.2L</text>
+  <text x="340" y="145" text-anchor="middle" class="note">blocked 43.2L</text>
+
+  <!-- Separator -->
+  <line x1="20" y1="170" x2="700" y2="170" stroke="#ddd" stroke-width="1"/>
+
+  <!-- NEW MODEL -->
+  <text x="20" y="195" class="label" font-weight="600">New model (outside)</text>
+
+  <!-- Worker 1 timeline -->
+  <text x="20" y="220" class="label">W1</text>
+  <rect x="50" y="207" width="80" height="22" rx="3" fill="#6b8cce"/>
+  <text x="90" y="222" text-anchor="middle" class="phase">walk →</text>
+  <rect x="130" y="207" width="40" height="22" rx="3" fill="#27ae60"/>
+  <text x="150" y="222" text-anchor="middle" class="phase" font-size="10">appr</text>
+  <rect x="170" y="207" width="100" height="22" rx="3" fill="#c0392b"/>
+  <text x="220" y="222" text-anchor="middle" class="phase">harvest (31.7L)</text>
+  <rect x="270" y="207" width="80" height="22" rx="3" fill="#6b8cce"/>
+  <text x="310" y="222" text-anchor="middle" class="phase">← walk</text>
+
+  <!-- Worker 2 timeline -->
+  <text x="20" y="250" class="label">W2</text>
+  <rect x="50" y="237" width="60" height="22" rx="3" fill="#6b8cce"/>
+  <text x="80" y="252" text-anchor="middle" class="phase">walk</text>
+  <rect x="110" y="237" width="40" height="22" rx="3" fill="#27ae60" opacity="0.5"/>
+  <text x="130" y="252" text-anchor="middle" class="phase" font-size="10">appr</text>
+  <text x="155" y="252" class="note">↑absorbed</text>
+  <rect x="270" y="237" width="100" height="22" rx="3" fill="#c0392b"/>
+  <text x="320" y="252" text-anchor="middle" class="phase">harvest (31.7L)</text>
+
+  <!-- Geyser occupation bar -->
+  <text x="20" y="280" class="label">Geyser</text>
+  <rect x="170" y="267" width="100" height="18" rx="2" fill="#c0392b" opacity="0.3"/>
+  <rect x="270" y="267" width="100" height="18" rx="2" fill="#c0392b" opacity="0.3"/>
+  <text x="220" y="280" text-anchor="middle" class="note">blocked 31.7L</text>
+  <text x="320" y="280" text-anchor="middle" class="note">blocked 31.7L</text>
+
+  <!-- Legend -->
+  <rect x="440" y="195" width="14" height="14" rx="2" fill="#6b8cce"/>
+  <text x="460" y="206" class="label">Walk (movement physics)</text>
+  <rect x="440" y="215" width="14" height="14" rx="2" fill="#27ae60"/>
+  <text x="460" y="226" class="label">Approach (outside, concurrent)</text>
+  <rect x="440" y="235" width="14" height="14" rx="2" fill="#c0392b"/>
+  <text x="460" y="246" class="label">Inside geyser (harvest only)</text>
+  <rect x="440" y="255" width="14" height="14" rx="2" fill="#f39c12"/>
+  <text x="460" y="266" class="label">Wait (geyser occupied)</text>
+
+  <!-- Key insight -->
+  <text x="440" y="300" class="note">W2's approach runs while W1 harvests —</text>
+  <text x="440" y="313" class="note">natural absorption, no geyser throughput loss</text>
+</svg>
