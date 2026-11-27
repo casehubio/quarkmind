@@ -122,6 +122,7 @@ public final class TrackerIntentExtractor {
                     if (unitType == UnitType.UNKNOWN) {continue;}
                     if (unitType == UnitType.LARVA) {continue;}
                     if (unitType == UnitType.MULE) {continue;}
+                    if (ue.getLoop() == 0) {continue;}
 
                     int completionLoop = ue.getLoop();
                     int trainTime      = SC2Data.trainTimeInLoops(unitType);

@@ -336,4 +336,58 @@ class TrackerIntentExtractorIntentTest {
         assertTrue(totalExtractorDroneDied > 0,
             "Should still emit UnitDied for tracker-reported Drone deaths");
     }
+
+    @Test
+    @EnabledIf("oracleExists")
+    void noTrainIntentsForGameSetupSpawns() throws Exception {
+        List<Path> allReplays;
+        try (var stream = Files.list(ORACLE_DIR)) {
+            allReplays = stream.filter(p -> p.toString().endsWith(".SC2Replay")).sorted().toList();
+        }
+
+        int replaysChecked = 0;
+        for (Path replayPath : allReplays) {
+            for (int pid = 1; pid <= 2; pid++) {
+                List<TimedIntent> intents;
+                try {
+                    intents = TrackerIntentExtractor.extract(replayPath, pid);
+                } catch (Exception e) { continue; }
+                replaysChecked++;
+
+                List<TimedIntent> loop0Trains = intents.stream()
+                    .filter(ti -> ti.intent() instanceof TrainIntent t && t.completionLoop() == 0)
+                    .toList();
+
+                assertTrue(loop0Trains.isEmpty(),
+                    "Game-setup spawns (loop 0) must not produce TrainIntents — " +
+                    "found " + loop0Trains.size() + " in " + replayPath.getFileName() + " pid=" + pid);
+            }
+        }
+        assertTrue(replaysChecked > 0, "Should have checked at least one replay");
+    }
+
+    @Test
+    @EnabledIf("oracleExists")
+    void gameSetupWorkerDeathsStillTracked() throws Exception {
+        List<Path> allReplays;
+        try (var stream = Files.list(ORACLE_DIR)) {
+            allReplays = stream.filter(p -> p.toString().endsWith(".SC2Replay")).sorted().toList();
+        }
+
+        long workerDeaths = 0;
+        for (Path replayPath : allReplays) {
+            for (int pid = 1; pid <= 2; pid++) {
+                try {
+                    List<TimedIntent> intents = TrackerIntentExtractor.extract(replayPath, pid);
+                    workerDeaths += intents.stream()
+                        .filter(ti -> ti.intent() instanceof UnitDiedIntent d
+                            && (d.unitType() == UnitType.PROBE || d.unitType() == UnitType.SCV || d.unitType() == UnitType.DRONE))
+                        .count();
+                } catch (Exception e) { /* skip */ }
+            }
+        }
+
+        assertTrue(workerDeaths > 0,
+            "Skipping loop-0 TrainIntents must not break UnitDied tracking for workers");
+    }
 }
