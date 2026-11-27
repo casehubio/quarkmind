@@ -164,29 +164,32 @@ Mining radius increases with saturation (contention effect — workers compete f
 | Gas approach docking | 11.5 loops (0.51s) | (entry animation + path deviation) | Dual-run sweep against 3w/6w baselines (#689, was 12.5 in #677) | **Calibrated** — #689 | `starcraft.worker.gas-approach-docking-loops` |
 | Gas deposit congestion | 0.0 (removed) | — | SC2 dual-geyser shows no throughput penalty vs 2× single-geyser (#696). Previous 4.0 loops/worker penalized throughput that SC2 doesn't penalize | **Removed** — #696 | `starcraft.worker.gas-deposit-congestion-per-worker` |
 | Gas deposit lock | 8.0 loops | — | Deposit lock prevents immediate re-entry | **Default** | `starcraft.worker.gas-deposit-lock-loops` |
-| Gas building radius | 1.75u | 1.69u (Assimilator) | SC2 API `Unit.getRadius()` (#665) | **Calibrated** — #665 | `GAS_BUILDING_RADIUS` (compile-time) |
+| Gas building radius | 1.5u | 1.69u (Assimilator API radius), 1.5u (3×3 tile half-footprint) | Rectangular footprint per CLAUDE.md rule (#775). SC2 API `Unit.getRadius()`=1.69 is the collision radius, not the pathing edge | **Calibrated** — #775 | `GAS_BUILDING_RADIUS` (compile-time) |
 | Gas cargo | 4 | 4 | Liquipedia | **Published** | — |
 | Max workers per geyser | 3 | 3 | SC2 mechanics | **Published** | — |
 | Gas geyser distance (seeded) | ~7.6u from town hall | — | SC2 dual-run (TorchesAIE_v4) | **Calibrated** — #597 | — |
 | Gas geyser distance (SC2 API) | 5.7u and 8.5u | — | SC2 observation API | **Calibrated** — #602 | — |
 | Inter-geyser distance (same base) | 4.0u (some maps) | — | Oracle replay analysis (451 pairs, 118 replays) | **Measured** — #671 | — |
 
-**Edge-to-edge gas walks (#665, #672, #768):** Gas workers walk to building edge points using reduced radii: `GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD = 1.58` and `TOWN_HALL_RADIUS - ARRIVAL_THRESHOLD = 2.58` (ARRIVAL_THRESHOLD=0.17, corrected #768). This compensates for the arrival threshold stopping distance, so the worker physically stops at the actual building edge. SC2 API confirms Assimilator radius=1.69, Nexus radius=2.75.
+**Edge-to-edge gas walks (#665, #672, #768, #775):** Gas workers walk to building edge points using reduced radii: `GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD = 1.33` and `TOWN_HALL_RADIUS - ARRIVAL_THRESHOLD = 2.58` (ARRIVAL_THRESHOLD=0.17). GAS_BUILDING_RADIUS uses the 3×3 tile half-footprint (1.5) per CLAUDE.md rectangular footprint rule (#775). SC2 API Unit.getRadius()=1.69 is the collision radius; the tile footprint is the correct edge-point basis. Nexus radius=2.75 (SC2 API).
 
-**Gas harvest duration decomposition (#665, #677, #689, #695):** SC2 profiler (per-game-loop tracking, `GasCycleProfilerTest`) confirms the time inside the geyser is exactly 32 loops (1.43s), range=32-32 across 50 cycles. The EM uses `GAS_HARVEST_DURATION_LOOPS=31.7` (Liquipedia's 1.415s) with `GAS_APPROACH_DOCKING_LOOPS=11.5` (recalibrated in #689 from 12.5 in #677). The docking constant absorbs entry animation and path deviation overhead not captured by the straight-line walk model — but is proportionally absorbed by wait time when a worker queues at the entrance (#695) — the longer the wait, the less residual docking on entry. Workers that waited longer than the docking duration enter immediately. Gas walk targets use reduced building radius (`GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD`) so the ARRIVAL_THRESHOLD stopping distance lands the worker at the actual building edge (#672).
+**Gas harvest duration decomposition (#665, #677, #689, #695, #775):** SC2 profiler (per-game-loop tracking, `GasCycleProfilerTest`) confirms the time inside the geyser is exactly 32 loops (1.43s), range=32-32 across 50 cycles. The EM uses `GAS_HARVEST_DURATION_LOOPS=31.7` (Liquipedia's 1.415s). The approach animation (`GAS_APPROACH_DOCKING_LOOPS=11.5`) now runs OUTSIDE the geyser (#775): the worker stands at the geyser door for the approach duration before entering. The geyser is occupied only during harvest (31.7 loops), not harvest+docking. The approach timer starts on arrival and runs in parallel with any geyser wait — if a worker queues while the geyser is occupied, the approach completes during the wait (natural absorption). This prevents geyser rotation degradation for multi-worker configurations while adding correct per-trip overhead for walk-limited (1w/2w) scenarios.
 
 **SC2 gas cycle decomposition (#665, #682, #684 — TorchesAIE_v4, 3w on 1 geyser):**
 
-| Phase | SC2 observed | EM (post-#695) | EM (#682) | EM (#672) |
-|-------|-------------|-------------------|-----------|-----------|
-| Walk to geyser | 45 loops (2.0 ticks) | ~28 loops (a=4.9) | 34 loops | ~42 loops (est.) |
-| Wait at entry | (implicit in walk) | ~8 loops | 2 loops | 0 |
-| Inside geyser (harvest+dock) | 32 loops (1.5 ticks) | 43.2 loops (2.0 ticks) | 32 loops | 32+15.8 loops |
-| Walk to base | 45 loops (2.0 ticks) | ~28 loops (a=4.9) | 36 loops | ~42 loops (est.) |
-| Deposit | (included in walk) | 0 loops (#768) | 12 loops | 12 loops |
-| **Full cycle** | **122 loops (5.5 ticks)** | **~110 loops (est.)** | 116 loops | ~122 loops |
+| Phase | SC2 observed | EM (post-#775) | EM (post-#695) | EM (#682) |
+|-------|-------------|-------------------|----------------|-----------|
+| Walk to geyser | 45 loops (2.0 ticks) | ~30 loops (a=4.9, r=1.5) | ~28 loops (a=4.9) | 34 loops |
+| Approach at door | (implicit in walk) | 11.5 loops (outside) | 0 (inside geyser) | 0 |
+| Wait at entry | (implicit in walk) | ~6 loops | ~8 loops | 2 loops |
+| Inside geyser | 32 loops (1.5 ticks) | 31.7 loops (harvest only) | 43.2 loops (harvest+dock) | 32 loops |
+| Walk to base | 45 loops (2.0 ticks) | ~30 loops (a=4.9, r=1.5) | ~28 loops (a=4.9) | 36 loops |
+| Deposit | (included in walk) | 0 loops (#768) | 0 loops (#768) | 12 loops |
+| **Full cycle** | **122 loops (5.5 ticks)** | **~109 loops (est.)** | **~110 loops (est.)** | 116 loops |
 
-**EM (#689, #695, #696) cycle note:** `GAS_APPROACH_DOCKING_LOOPS=11.5` (#689) models entry animation for the first worker or when no queue exists. Docking is proportionally absorbed by wait time (#695): `effective_docking = max(0, 11.5 - waited_loops)`. In the rotation-limited regime (3w on 1 geyser at close distances), workers wait long enough to absorb the full docking — effective inside time drops to 31.7 loops (harvest only), matching Liquipedia's 163 gas/min (EM 165.6 = +1.6% at 5u). At larger distances (5.7u+), partial absorption applies. Gas deposit congestion model removed (#696) — SC2 dual-geyser shows better efficiency than 2× single-geyser (mean 1140 vs 2×552=1104), so the per-worker penalty was fighting reality. Remaining deposit lock (8 loops) under investigation (#698). Dual-run accuracy: 3w vespene −1.4%, 6w vespene −2.8% vs 5-run mean.
+**EM (#775) outside-approach model:** `GAS_APPROACH_DOCKING_LOOPS=11.5` now models entry animation OUTSIDE the geyser — the worker stands at the geyser door for 11.5 loops before entering. The geyser is occupied only during harvest (31.7 loops), not harvest+docking. The approach timer starts on arrival and runs concurrently with any geyser wait — natural absorption when workers queue. For 3w rotation at close distances, workers wait long enough to absorb the full approach. Result: 3w at 5u = +1.6% vs Liquipedia (was -3.7%), 1w at 5u = +16.2% (was +25.2%). DualRun 3w at 7.62u = -17.5% (was -12.5% — radius increase added walk time). Gas deposit congestion model removed (#696). Remaining deposit lock (8 loops) under investigation (#698).
+
+**Remaining shape mismatch (#775):** 1w rates show distance-dependent error: +16% at 5u, -21% at 7.6u (vs Liquipedia). The constant approach animation (11.5 loops) can't fix the walk model's velocity-distance shape. The EM's trapezoidal velocity profile (a=4.9, validated) traverses distances faster than SC2 at close range and slower at far range. Recording SC2 per-tick gas worker positions would reveal whether SC2 has a distance-dependent approach mechanism (e.g., deceleration approach to buildings) that the EM doesn't model.
 
 **Gas walk ARRIVAL_THRESHOLD compensation (#672):** Gas walk targets use reduced building radius (`GAS_BUILDING_RADIUS - ARRIVAL_THRESHOLD` and `TOWN_HALL_RADIUS - ARRIVAL_THRESHOLD`) so the ARRIVAL_THRESHOLD stopping distance lands the worker at the actual building edge.
 

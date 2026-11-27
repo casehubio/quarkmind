@@ -15,7 +15,7 @@ import java.util.Random;
 class WorkerSimulation {
     static final float TOWN_HALL_RADIUS     = 2.75f;
     static final float MINERAL_PATCH_RADIUS = 1.0f;
-    static final float GAS_BUILDING_RADIUS  = 1.75f;
+    static final float GAS_BUILDING_RADIUS  = 1.5f;
     static       float LOW_SATURATION_DODGE_SCALE = WorkerPhysicsConfig.DEFAULT_LOW_SATURATION_DODGE_SCALE;
     static       double WAIT_ABSORPTION_THRESHOLD = Double.MAX_VALUE;
     static       float  HIGH_SATURATION_DODGE_SCALE = 1.0f;
@@ -398,6 +398,7 @@ class WorkerSimulation {
             w.assignedPatch   = null;
             w.assignedGasSlot = slot;
             w.task            = WorkerTask.HARVESTING_GAS;
+            w.phaseEndLoop    = 0;
             setTargetWithPath(w, gasTarget(slot));
             w.waitingSinceLoop = 0;
             slot.assignedWorkers.add(w);
@@ -427,6 +428,7 @@ class WorkerSimulation {
                 w.assignedPatch    = null;
                 w.assignedGasSlot  = slot;
                 w.task             = WorkerTask.HARVESTING_GAS;
+                w.phaseEndLoop     = 0;
                 setTargetWithPath(w, gasTarget(slot));
                 w.waitingSinceLoop = 0;
                 slot.assignedWorkers.add(w);
@@ -824,14 +826,15 @@ class WorkerSimulation {
             if (arrived) {
                 if (!w.isAtFinalTarget()) {
                     w.advanceWaypoint();
-                } else if (slot.canEnter(currentLoop)) {
-                    slot.enterBuilding(w, currentLoop);
-                    double waitedLoops = w.geyserWaitStartLoop >= 0 ? (currentLoop - w.geyserWaitStartLoop) : 0;
-                    double docking     = Math.max(0, SimulatedWorker.GAS_APPROACH_DOCKING_LOOPS - waitedLoops);
-                    w.phaseEndLoop        = currentLoop + docking + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
-                    w.geyserWaitStartLoop = -1;
                 } else {
-                    if (w.geyserWaitStartLoop < 0) {
+                    if (w.phaseEndLoop <= 0) {
+                        w.phaseEndLoop = currentLoop + SimulatedWorker.GAS_APPROACH_DOCKING_LOOPS;
+                    }
+                    if (currentLoop >= w.phaseEndLoop && slot.canEnter(currentLoop)) {
+                        slot.enterBuilding(w, currentLoop);
+                        w.phaseEndLoop        = currentLoop + SimulatedWorker.GAS_HARVEST_DURATION_LOOPS;
+                        w.geyserWaitStartLoop = -1;
+                    } else if (!slot.canEnter(currentLoop) && w.geyserWaitStartLoop < 0) {
                         w.geyserWaitStartLoop = currentLoop;
                     }
                 }
@@ -855,6 +858,7 @@ class WorkerSimulation {
                 gasDepositLockEndLoop.put(w.baseIndex, currentLoop + GAS_DEPOSIT_LOCK_LOOPS);
                 if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
                     w.task = WorkerTask.HARVESTING_GAS;
+                    w.phaseEndLoop = 0;
                     setTargetWithPath(w, gasTarget(slot));
                 } else {
                     w.task = WorkerTask.DEPOSITING_GAS;
@@ -869,6 +873,7 @@ class WorkerSimulation {
         if (w.task == WorkerTask.DEPOSITING_GAS) {
             if (currentLoop >= w.phaseEndLoop) {
                 w.task = WorkerTask.HARVESTING_GAS;
+                w.phaseEndLoop = 0;
                 setTargetWithPath(w, gasTarget(slot));
             }
             return 0;
@@ -1070,6 +1075,7 @@ class WorkerSimulation {
                         w.assignedPatch    = null;
                         w.assignedGasSlot  = slot;
                         w.task             = WorkerTask.HARVESTING_GAS;
+                        w.phaseEndLoop     = 0;
                         setTargetWithPath(w, gasTarget(slot));
                         w.waitingSinceLoop = 0;
                         slot.assignedWorkers.add(w);
@@ -1117,6 +1123,7 @@ class WorkerSimulation {
                     best.assignedPatch    = null;
                     best.assignedGasSlot  = slot;
                     best.task             = WorkerTask.HARVESTING_GAS;
+                    best.phaseEndLoop     = 0;
                     setTargetWithPath(best, gasTarget(slot));
                     best.waitingSinceLoop = 0;
                     slot.assignedWorkers.add(best);
