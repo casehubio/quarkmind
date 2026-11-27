@@ -320,7 +320,7 @@ class WorkerSimulation {
             SimulatedWorker w = new SimulatedWorker(tags.get(i), basePosition, baseIdx);
             w.walkStartLoop = INITIAL_WALK_DELAY_LOOPS + i * SimulatedWorker.INITIAL_WORKER_STAGGER_LOOPS;
             workers.put(tags.get(i), w);
-            assignToNearestPatch(w);
+            assignToNearestPatch(w, currentTickStartLoop);
         }
     }
 
@@ -338,7 +338,7 @@ class WorkerSimulation {
             w.task = WorkerTask.TRANSFERRING;
             setTargetWithPath(w, bases.get(baseIdx).position());
         } else {
-            assignToNearestPatch(w);
+            assignToNearestPatch(w, currentTickStartLoop);
         }
     }
 
@@ -348,7 +348,7 @@ class WorkerSimulation {
         if (baseIdx < 0) {baseIdx = 0;}
         SimulatedWorker w = new SimulatedWorker(tag, basePosition, baseIdx);
         workers.put(tag, w);
-        assignToNearestPatch(w);
+        assignToNearestPatch(w, currentTickStartLoop);
     }
 
 
@@ -451,7 +451,7 @@ class WorkerSimulation {
             w.assignedGasSlot = null;
             w.geyserWaitStartLoop = -1;
             w.task            = WorkerTask.IDLE;
-            assignToNearestPatch(w);
+            assignToNearestPatch(w, currentTickStartLoop);
         }
         gasSlots.remove(slot);
     }
@@ -652,7 +652,7 @@ class WorkerSimulation {
                         notifyDelivery(w.tag, delivered, currentLoop);
                         if (SimulatedWorker.DEPOSIT_DURATION_LOOPS <= 0) {
                             notifyPhase(w.tag, WorkerPhase.WALKING_TO_BASE, WorkerPhase.WALKING_TO_PATCH, currentLoop);
-                            returnToPatchOrReassign(w);
+                            returnToPatchOrReassign(w, currentLoop);
                             return income;
                         }
                         w.task         = WorkerTask.DEPOSITING_MINERALS;
@@ -666,7 +666,7 @@ class WorkerSimulation {
             if (w.task == WorkerTask.DEPOSITING_MINERALS) {
                 if (currentLoop >= w.phaseEndLoop) {
                     notifyPhase(w.tag, WorkerPhase.DEPOSITING, WorkerPhase.WALKING_TO_PATCH, currentLoop);
-                    returnToPatchOrReassign(w);
+                    returnToPatchOrReassign(w, currentLoop);
                     loopConsumed = true;
                     continue;
                 }
@@ -886,16 +886,16 @@ class WorkerSimulation {
         return count;
     }
 
-    private void returnToPatchOrReassign(SimulatedWorker w) {
+    private void returnToPatchOrReassign(SimulatedWorker w, double currentLoop) {
         if (w.assignedPatch != null && !w.assignedPatch.isDepleted()) {
             setTargetWithPath(w, miningTarget(w.assignedPatch, w.baseIndex), true);
             w.task = WorkerTask.MINING_MINERALS;
             return;
         }
-        assignToNearestPatch(w);
+        assignToNearestPatch(w, currentLoop);
     }
 
-    private void assignToNearestPatch(SimulatedWorker w) {
+    private void assignToNearestPatch(SimulatedWorker w, double currentLoop) {
         if (w.baseIndex < 0 || w.baseIndex >= bases.size()) {
             w.task = WorkerTask.IDLE;
             return;
@@ -928,9 +928,9 @@ class WorkerSimulation {
         if (w.isAtFinalTarget()) {
             if (nearest.miners.size() < MineralPatch.MAX_MINERS || nearest.miners.contains(w)) {
                 if (!nearest.miners.contains(w)) {nearest.miners.add(w);}
-                w.phaseEndLoop     = currentTickStartLoop + SimulatedWorker.APPROACH_ANIMATION_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS;
+                w.phaseEndLoop     = currentLoop + SimulatedWorker.APPROACH_ANIMATION_LOOPS + SimulatedWorker.MINING_DURATION_LOOPS;
                 w.waitingSinceLoop = 0;
-                notifyPhase(w.tag, WorkerPhase.WALKING_TO_PATCH, WorkerPhase.MINING, currentTickStartLoop);
+                notifyPhase(w.tag, WorkerPhase.WALKING_TO_PATCH, WorkerPhase.MINING, currentLoop);
             }
         }
     }
@@ -1033,7 +1033,7 @@ class WorkerSimulation {
                     if (needed <= 0) break;
                     if (w.task == WorkerTask.IDLE) {
                         w.baseIndex = baseIdx;
-                        assignToNearestPatch(w);
+                        assignToNearestPatch(w, currentTickStartLoop);
                         needed--;
                     }
                 }
@@ -1054,7 +1054,7 @@ class WorkerSimulation {
                     w.assignedGasSlot = null;
                     w.geyserWaitStartLoop = -1;
                     w.task = WorkerTask.IDLE;
-                    assignToNearestPatch(w);
+                    assignToNearestPatch(w, currentTickStartLoop);
                 }
             } else if (current < target) {
                 int needed = target - current;
@@ -1092,7 +1092,7 @@ class WorkerSimulation {
                     w.assignedGasSlot = null;
                     w.geyserWaitStartLoop = -1;
                     w.task            = WorkerTask.IDLE;
-                    assignToNearestPatch(w);
+                    assignToNearestPatch(w, currentTickStartLoop);
                     excess--;
                 }
             }
@@ -1187,7 +1187,7 @@ class WorkerSimulation {
             if (currentTick >= entry.returnAtTick()) {
                 SimulatedWorker w = workers.get(entry.workerTag());
                 if (w != null && w.task == WorkerTask.BUILDING) {
-                    assignToNearestPatch(w);
+                    assignToNearestPatch(w, currentTickStartLoop);
                 }
                 it.remove();
             }
@@ -1215,7 +1215,7 @@ class WorkerSimulation {
         SimulatedWorker w = workers.get(tag);
         if (w == null || w.task != WorkerTask.SCOUTING) {return;}
         w.task = WorkerTask.IDLE;
-        assignToNearestPatch(w);
+        assignToNearestPatch(w, currentTickStartLoop);
     }
 
     void addMule(String tag, Point2d position) {
@@ -1333,7 +1333,7 @@ class WorkerSimulation {
             if (!w.isAtFinalTarget()) {
                 w.advanceWaypoint();
             } else {
-                assignToNearestPatch(w);
+                assignToNearestPatch(w, currentTickStartLoop);
             }
         }
     }
